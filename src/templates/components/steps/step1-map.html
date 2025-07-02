@@ -1,0 +1,97 @@
+<div class="fr-mb-4w">
+  <h3>Sélectionnez une parcelle</h3>
+  <p class="fr-text--sm">Cliquez sur la carte pour sélectionner une parcelle à analyser</p>
+
+  <div class="fr-grid-row fr-grid-row--gutters">
+    <div id="map-col" class="fr-col-12">
+      <!-- Carte fictive -->
+      <div id="map-container"
+        style="height: 400px; background: linear-gradient(135deg, #e8f5e8 0%, #f0f8f0 100%); border: 2px solid #18753c; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative;"
+        onclick="selectParcel()">
+        <div style="text-align: center; color: #18753c;">
+          <div style="font-size: 3rem; margin-bottom: 1rem;">🗺️</div>
+          <p style="margin: 0; font-weight: bold;">Carte interactive</p>
+          <p style="margin: 0; font-size: 0.9rem;">Cliquez pour sélectionner la parcelle "Ancienne manufacture Les
+            Allumettes"</p>
+        </div>
+
+        <!-- Point de parcelle fictif -->
+        <div id="parcel-point"
+          style="position: absolute; top: 60%; left: 45%; width: 20px; height: 20px; background: #000091; border: 3px solid white; border-radius: 50%; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.3);"
+          onclick="selectParcel(event)"></div>
+      </div>
+    </div>
+
+    <div id="info-col" class="fr-col-4" style="display: none;">
+      <div id="parcel-info" class="fr-callout">
+        <h4 class="fr-callout__title">📍 Parcelle sélectionnée</h4>
+        <div class="fr-callout__text">
+          <p><strong>Nom :</strong> Ancienne manufacture Les Allumettes</p>
+          <p><strong>Commune :</strong> Trélazé</p>
+          <p><strong>Surface parcelle :</strong> 42 780 m²</p>
+          <p><strong>Surface bâtie :</strong> 6 600 m²</p>
+          <p><strong>Type propriétaire :</strong> Privé</p>
+          <p><strong>Ancienne activité :</strong> Manufacture</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="navigation-buttons" class="fr-btns-group fr-btns-group--right fr-mt-4w" style="display: none;">
+  <button id="next-btn" class="fr-btn" onclick="goToStep(2)">
+    Suivant
+    <span class="fr-icon-arrow-right-s-line fr-icon--sm" aria-hidden="true"></span>
+  </button>
+</div>
+
+<script>
+  function selectParcel(event) {
+    if (event) {
+      event.stopPropagation();
+    }
+
+    // Récupérer les éléments
+    const mapCol = document.getElementById('map-col');
+    const infoCol = document.getElementById('info-col');
+    const navigationButtons = document.getElementById('navigation-buttons');
+    const point = document.getElementById('parcel-point');
+
+    // Réorganiser le layout : carte en col-8, infos en col-4
+    mapCol.className = 'fr-col-8';
+    infoCol.style.display = 'block';
+
+    // Afficher les boutons de navigation
+    navigationButtons.style.display = 'block';
+
+    // Animation du point
+    point.style.transform = 'scale(1.2)';
+    point.style.background = '#18753c';
+
+    setTimeout(() => {
+      point.style.transform = 'scale(1)';
+    }, 200);
+
+    // Animation d'apparition du panneau d'infos
+    infoCol.style.opacity = '0';
+    infoCol.style.transform = 'translateX(20px)';
+    infoCol.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+
+    setTimeout(() => {
+      infoCol.style.opacity = '1';
+      infoCol.style.transform = 'translateX(0)';
+    }, 50);
+
+    // Animation d'apparition des boutons
+    navigationButtons.style.opacity = '0';
+    navigationButtons.style.transition = 'opacity 0.3s ease';
+
+    setTimeout(() => {
+      navigationButtons.style.opacity = '1';
+    }, 300);
+  }
+
+  function goToStep(step) {
+    window.location.href = `/form/${step}`;
+  }
+</script>

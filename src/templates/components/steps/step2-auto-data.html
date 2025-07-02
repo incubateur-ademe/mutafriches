@@ -1,0 +1,173 @@
+<div class="fr-mb-4w">
+  <h3>Données récupérées automatiquement</h3>
+  <p class="fr-text--sm">Ces informations ont été collectées automatiquement depuis les bases de données publiques</p>
+
+  <div class="fr-callout fr-callout--green-emeraude fr-mt-4w">
+    <p class="fr-callout__text">
+      Les informations ci-dessus ont été récupérées automatiquement.
+      Vous pourrez compléter avec des données manuelles à l'étape suivante.
+    </p>
+  </div>
+
+  <!-- Onglets DSFR -->
+  <div class="fr-tabs fr-mt-4w">
+    <ul class="fr-tabs__list" role="tablist" aria-label="Données récupérées automatiquement">
+      <li role="presentation">
+        <button type="button" id="tab-infos" class="fr-tabs__tab" tabindex="0" role="tab" aria-selected="true"
+          aria-controls="tab-infos-panel">
+          📋 Infos parcelle
+        </button>
+      </li>
+      <li role="presentation">
+        <button type="button" id="tab-env" class="fr-tabs__tab" tabindex="-1" role="tab" aria-selected="false"
+          aria-controls="tab-env-panel">
+          🌍 Environnement & alentours
+        </button>
+      </li>
+      <li role="presentation">
+        <button type="button" id="tab-risques" class="fr-tabs__tab" tabindex="-1" role="tab" aria-selected="false"
+          aria-controls="tab-risques-panel">
+          ⚠️ Risques & Zones
+        </button>
+      </li>
+    </ul>
+
+    <!-- Panneau Infos parcelle -->
+    <div id="tab-infos-panel" class="fr-tabs__panel fr-tabs__panel--selected" role="tabpanel"
+      aria-labelledby="tab-infos" tabindex="0">
+      <div class="fr-grid-row fr-grid-row--gutters">
+        <div class="fr-col-6">
+          <div class="fr-input-group">
+            <label class="fr-label">Surface parcelle</label>
+            <input class="fr-input" type="text" value="{{surfaceParcelle}}" readonly>
+          </div>
+        </div>
+        <div class="fr-col-6">
+          <div class="fr-input-group">
+            <label class="fr-label">Surface bâtie</label>
+            <input class="fr-input" type="text" value="{{surfaceBatie}}" readonly>
+          </div>
+        </div>
+        <div class="fr-col-6">
+          <div class="fr-input-group">
+            <label class="fr-label">Type de propriétaire</label>
+            <input class="fr-input" type="text" value="{{typeProprietaire}}" readonly>
+          </div>
+        </div>
+        <div class="fr-col-6">
+          <div class="fr-input-group">
+            <label class="fr-label">Ancienne activité</label>
+            <input class="fr-input" type="text" value="{{ancienneActivite}}" readonly>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panneau Environnement & alentours -->
+    <div id="tab-env-panel" class="fr-tabs__panel" role="tabpanel" aria-labelledby="tab-env" tabindex="0">
+      <div class="fr-grid-row fr-grid-row--gutters">
+        <div class="fr-col-6">
+          <div class="fr-input-group">
+            <label class="fr-label">Centre ville</label>
+            <input class="fr-input" type="text" value="{{centreVille}}" readonly>
+          </div>
+        </div>
+        <div class="fr-col-6">
+          <div class="fr-input-group">
+            <label class="fr-label">Distance autoroute</label>
+            <input class="fr-input" type="text" value="{{distanceAutoroute}}" readonly>
+          </div>
+        </div>
+        <div class="fr-col-6">
+          <div class="fr-input-group">
+            <label class="fr-label">Distance train et TC</label>
+            <input class="fr-input" type="text" value="{{distanceTrain}}" readonly>
+          </div>
+        </div>
+        <div class="fr-col-6">
+          <div class="fr-input-group">
+            <label class="fr-label">Proximité commerces/services</label>
+            <input class="fr-input" type="text" value="{{proximiteCommerces}}" readonly>
+          </div>
+        </div>
+        <div class="fr-col-6">
+          <div class="fr-input-group">
+            <label class="fr-label">Distance raccordement BT/HT</label>
+            <input class="fr-input" type="text" value="{{distanceRaccordement}}" readonly>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panneau Risques & Zones -->
+    <div id="tab-risques-panel" class="fr-tabs__panel" role="tabpanel" aria-labelledby="tab-risques" tabindex="0">
+      <div class="fr-grid-row fr-grid-row--gutters">
+        <div class="fr-col-6">
+          <div class="fr-input-group">
+            <label class="fr-label">Taux de logements vacants</label>
+            <input class="fr-input" type="text" value="{{tauxLV}}" readonly>
+          </div>
+        </div>
+        <div class="fr-col-6">
+          <div class="fr-input-group">
+            <label class="fr-label">Risques technologiques</label>
+            <input class="fr-input" type="text" value="{{risquesTechno}}" readonly>
+          </div>
+        </div>
+        <div class="fr-col-6">
+          <div class="fr-input-group">
+            <label class="fr-label">Risques naturels</label>
+            <input class="fr-input" type="text" value="{{risquesNaturels}}" readonly>
+          </div>
+        </div>
+        <div class="fr-col-6">
+          <div class="fr-input-group">
+            <label class="fr-label">Potentiel de gains écologiques</label>
+            <input class="fr-input" type="text" value="{{potentielEcologique}}" readonly>
+          </div>
+        </div>
+        <div class="fr-col-6">
+          <div class="fr-input-group">
+            <label class="fr-label">Zonage environnemental</label>
+            <input class="fr-input" type="text" value="{{zonageEnviro}}" readonly>
+          </div>
+        </div>
+        <div class="fr-col-6">
+          <div class="fr-input-group">
+            <label class="fr-label">Zonage urbain</label>
+            <input class="fr-input" type="text" value="{{zonageUrba}}" readonly>
+          </div>
+        </div>
+        <div class="fr-col-6">
+          <div class="fr-input-group">
+            <label class="fr-label">Zonage patrimonial</label>
+            <input class="fr-input" type="text" value="{{zonagePatrimonial}}" readonly>
+          </div>
+        </div>
+        <div class="fr-col-6">
+          <div class="fr-input-group">
+            <label class="fr-label">Trame verte et bleue</label>
+            <input class="fr-input" type="text" value="{{tvb}}" readonly>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="fr-btns-group fr-btns-group--right fr-mt-4w">
+  <button class="fr-btn fr-btn--secondary" onclick="goToStep(1)">
+    <span class="fr-icon-arrow-left-s-line fr-icon--sm" aria-hidden="true"></span>
+    Précédent
+  </button>
+  <button class="fr-btn" onclick="goToStep(3)">
+    Suivant
+    <span class="fr-icon-arrow-right-s-line fr-icon--sm" aria-hidden="true"></span>
+  </button>
+</div>
+
+<script>
+  function goToStep(step) {
+    window.location.href = `/form/${step}`;
+  }
+</script>

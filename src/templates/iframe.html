@@ -14,6 +14,58 @@
   <link rel="stylesheet" href="/dsfr/utility/utility.min.css">
 
   <title>{{title}}</title>
+
+  <style>
+    /* Styles personnalisés pour le formulaire */
+    .fr-table__row--green {
+      background-color: rgba(24, 117, 60, 0.1);
+    }
+
+    .fr-table__row--blue {
+      background-color: rgba(0, 120, 243, 0.1);
+    }
+
+    .progress-bar {
+      height: 8px;
+      border-radius: 4px;
+      transition: width 1s ease-in-out;
+    }
+
+    .loading-spinner {
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    .form-step {
+      min-height: 500px;
+    }
+
+    /* Animation pour les éléments qui apparaissent */
+    .fade-in {
+      animation: fadeIn 0.5s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
 </head>
 
 <body>
@@ -23,14 +75,64 @@
 
   <div class="fr-container fr-py-4w">
     <div class="fr-grid-row fr-grid-row--center">
-      <div class="fr-col-12 fr-col-md-8">
-        {{content}}
+      <div class="fr-col-12 fr-col-lg-10">
+        <div class="fade-in">
+          {{content}}
+        </div>
       </div>
     </div>
   </div>
 
   <script type="module" src="/dsfr/dsfr.module.min.js"></script>
   <script type="text/javascript" nomodule src="/dsfr/dsfr.nomodule.min.js"></script>
+
+  <script>
+    // Scripts globaux pour l'iframe
+    document.addEventListener('DOMContentLoaded', function () {
+      // Animation d'entrée
+      document.body.classList.add('fade-in');
+
+      // Gestion des erreurs de validation
+      window.showValidationError = function (message) {
+        const alert = document.createElement('div');
+        alert.className = 'fr-alert fr-alert--error fr-mb-2w';
+        alert.innerHTML = `
+          <h3 class="fr-alert__title">Erreur de validation</h3>
+          <p>${message}</p>
+        `;
+
+        const container = document.querySelector('.fr-container');
+        container.insertBefore(alert, container.firstChild);
+
+        setTimeout(() => {
+          alert.remove();
+        }, 5000);
+      };
+
+      // Gestion des messages de succès
+      window.showSuccessMessage = function (message) {
+        const alert = document.createElement('div');
+        alert.className = 'fr-alert fr-alert--success fr-mb-2w';
+        alert.innerHTML = `
+          <h3 class="fr-alert__title">Succès</h3>
+          <p>${message}</p>
+        `;
+
+        const container = document.querySelector('.fr-container');
+        container.insertBefore(alert, container.firstChild);
+
+        setTimeout(() => {
+          alert.remove();
+        }, 3000);
+      };
+    });
+
+    // Fonction globale pour naviguer vers les étapes du formulaire
+    function goToForm(step) {
+      console.log('Redirection vers étape:', step);
+      window.location.href = `/form/${step}`;
+    }
+  </script>
 </body>
 
 </html>
