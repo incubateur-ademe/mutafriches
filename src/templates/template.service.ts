@@ -10,20 +10,23 @@ import {
 
 @Injectable()
 export class TemplateService {
-  private loadTemplate(templateName: string): string {
-    const templatePath = join(__dirname, `${templateName}.html`);
-
-    // En développement, ne pas mettre en cache
+  private getBasePath(): string {
+    // En développement, utiliser src/
     if (process.env.NODE_ENV !== 'production') {
-      return readFileSync(templatePath, 'utf8');
+      return join(process.cwd(), 'src', 'templates');
     }
+    // En production, utiliser dist/
+    return __dirname;
+  }
 
+  private loadTemplate(templateName: string): string {
+    const templatePath = join(this.getBasePath(), `${templateName}.html`);
     return readFileSync(templatePath, 'utf8');
   }
 
   private loadComponent(componentName: string): string {
     const componentPath = join(
-      __dirname,
+      this.getBasePath(),
       'components',
       `${componentName}.html`,
     );
@@ -32,7 +35,7 @@ export class TemplateService {
 
   private loadStepComponent(stepComponentName: string): string {
     const stepPath = join(
-      __dirname,
+      this.getBasePath(),
       'components',
       'steps',
       `${stepComponentName}.html`,
