@@ -6,20 +6,13 @@ import { Component } from './types';
 @Injectable()
 export class TemplateService {
   private loadTemplate(templateName: string): string {
-    const templatePath = join(
-      process.cwd(),
-      'src',
-      'templates',
-      `${templateName}.html`,
-    );
+    const templatePath = join(__dirname, `${templateName}.html`);
     return readFileSync(templatePath, 'utf8');
   }
 
   private loadComponent(componentName: string): string {
     const componentPath = join(
-      process.cwd(),
-      'src',
-      'templates',
+      __dirname,
       'components',
       `${componentName}.html`,
     );
