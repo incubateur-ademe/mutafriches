@@ -1,0 +1,219 @@
+<div class="fr-mb-4w">
+  <h3>Informations à renseigner</h3>
+  <p class="fr-text--sm">Complétez les informations suivantes pour affiner l'analyse</p>
+
+  <form id="manual-form">
+    <!-- Terrain & Bâti -->
+    <fieldset class="fr-fieldset fr-mb-4w">
+      <legend class="fr-fieldset__legend fr-text--lead">
+        🏗️ Terrain & Bâti
+      </legend>
+
+      <div class="fr-fieldset__content">
+        <div class="fr-grid-row fr-grid-row--gutters">
+          <div class="fr-col-12 fr-col-md-6">
+            <div class="fr-select-group">
+              <label class="fr-label" for="terrain-viabilise">
+                Terrain viabilisé
+                <span class="fr-hint-text">Le terrain dispose-t-il des réseaux de base ?</span>
+              </label>
+              <select class="fr-select" id="terrain-viabilise" name="terrainViabilise" required>
+                <option value="">Sélectionner une option</option>
+                <option value="oui" selected>Oui</option>
+                <option value="non">Non</option>
+                <option value="ne-sait-pas">Ne sait pas</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="fr-col-12 fr-col-md-6">
+            <div class="fr-select-group">
+              <label class="fr-label" for="etat-bati">
+                État du bâti
+                <span class="fr-hint-text">État général des constructions existantes</span>
+              </label>
+              <select class="fr-select" id="etat-bati" name="etatBati" required>
+                <option value="">Sélectionner une option</option>
+                <option value="bon">Bon état</option>
+                <option value="moyen">État moyen</option>
+                <option value="mauvais">Mauvais état</option>
+                <option value="heterogene" selected>Bâtiments hétérogènes</option>
+                <option value="ruine">En ruine</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="fr-col-12 fr-col-md-6">
+            <div class="fr-select-group">
+              <label class="fr-label" for="presence-pollution">
+                Présence de pollution
+                <span class="fr-hint-text">Pollution des sols connue ou suspectée</span>
+              </label>
+              <select class="fr-select" id="presence-pollution" name="presencePollution" required>
+                <option value="">Sélectionner une option</option>
+                <option value="oui">Oui, confirmée</option>
+                <option value="suspectee">Suspectée</option>
+                <option value="non">Non</option>
+                <option value="ne-sait-pas" selected>Ne sait pas</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </fieldset>
+
+    <!-- Qualité -->
+    <fieldset class="fr-fieldset fr-mb-4w">
+      <legend class="fr-fieldset__legend fr-text--lead">
+        ⭐ Qualité
+      </legend>
+
+      <div class="fr-fieldset__content">
+        <div class="fr-grid-row fr-grid-row--gutters">
+          <div class="fr-col-12 fr-col-md-6">
+            <div class="fr-select-group">
+              <label class="fr-label" for="qualite-patrimoniale">
+                Qualité patrimoniale
+                <span class="fr-hint-text">Valeur architecturale et historique</span>
+              </label>
+              <select class="fr-select" id="qualite-patrimoniale" name="qualitePatrimoniale" required>
+                <option value="">Sélectionner une option</option>
+                <option value="exceptionnel" selected>Exceptionnel</option>
+                <option value="remarquable">Remarquable</option>
+                <option value="interessant">Intéressant</option>
+                <option value="banal">Banal</option>
+                <option value="sans-interet">Sans intérêt</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="fr-col-12 fr-col-md-6">
+            <div class="fr-select-group">
+              <label class="fr-label" for="qualite-paysagere">
+                Qualité paysagère
+                <span class="fr-hint-text">Insertion dans le paysage environnant</span>
+              </label>
+              <select class="fr-select" id="qualite-paysagere" name="qualitePaysagere" required>
+                <option value="">Sélectionner une option</option>
+                <option value="remarquable">Remarquable</option>
+                <option value="interessant">Intéressant</option>
+                <option value="banal" selected>Banal / infra-ordinaire</option>
+                <option value="degrade">Dégradé</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="fr-col-12 fr-col-md-6">
+            <div class="fr-select-group">
+              <label class="fr-label" for="qualite-desserte">
+                Qualité de la desserte
+                <span class="fr-hint-text">Accessibilité par les voies de circulation</span>
+              </label>
+              <select class="fr-select" id="qualite-desserte" name="qualiteDesserte" required>
+                <option value="">Sélectionner une option</option>
+                <option value="excellente">Excellente</option>
+                <option value="bonne">Bonne</option>
+                <option value="accessible" selected>Accessible</option>
+                <option value="difficile">Difficile</option>
+                <option value="tres-difficile">Très difficile</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </fieldset>
+
+    <!-- Informations complémentaires -->
+    <fieldset class="fr-fieldset fr-mb-4w">
+      <legend class="fr-fieldset__legend fr-text--lead">
+        📝 Informations complémentaires
+      </legend>
+
+      <div class="fr-fieldset__content">
+        <div class="fr-input-group">
+          <label class="fr-label" for="commentaires">
+            Commentaires ou observations
+            <span class="fr-hint-text">Ajoutez toute information utile pour l'analyse (optionnel)</span>
+          </label>
+          <textarea class="fr-input" id="commentaires" name="commentaires" rows="4"
+            placeholder="Exemple : Présence d'amiante suspectée, accès difficile en hiver, contraintes particulières..."></textarea>
+        </div>
+      </div>
+    </fieldset>
+  </form>
+
+  <div class="fr-callout fr-callout--blue-france fr-mt-4w">
+    <h4 class="fr-callout__title">💡 Information</h4>
+    <p class="fr-callout__text">
+      Ces données permettront d'affiner le calcul de l'indice de mutabilité et d'améliorer la fiabilité des résultats.
+    </p>
+  </div>
+</div>
+
+<div class="fr-btns-group fr-btns-group--right fr-mt-4w">
+  <button class="fr-btn fr-btn--secondary" onclick="goToStep(2)">
+    <span class="fr-icon-arrow-left-s-line fr-icon--sm" aria-hidden="true"></span>
+    Précédent
+  </button>
+  <button class="fr-btn" onclick="submitAndGoToStep4()" id="submit-btn">
+    Calculer les résultats
+    <span class="fr-icon-arrow-right-s-line fr-icon--sm" aria-hidden="true"></span>
+  </button>
+</div>
+
+<script>
+  function goToStep(step) {
+    window.location.href = `/form/${step}`;
+  }
+
+  function submitAndGoToStep4() {
+    const form = document.getElementById('manual-form');
+    const formData = new FormData(form);
+
+    // Validation basique
+    const requiredFields = ['terrainViabilise', 'etatBati', 'presencePollution', 'qualitePatrimoniale', 'qualitePaysagere', 'qualiteDesserte'];
+    let isValid = true;
+
+    requiredFields.forEach(field => {
+      const element = document.getElementById(field.replace(/([A-Z])/g, '-$1').toLowerCase());
+      if (!element.value) {
+        element.classList.add('fr-input--error');
+        isValid = false;
+      } else {
+        element.classList.remove('fr-input--error');
+      }
+    });
+
+    if (!isValid) {
+      alert('Veuillez remplir tous les champs obligatoires');
+      return;
+    }
+
+    // Simulation de sauvegarde
+    const submitBtn = document.getElementById('submit-btn');
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = 'Calcul en cours... <span class="fr-icon-loader-line fr-icon--sm" aria-hidden="true"></span>';
+
+    // Simulation d'un délai de traitement
+    setTimeout(() => {
+      // Ici vous pourriez envoyer les données à votre API
+      // fetch('/api/analyze', { method: 'POST', body: formData })
+
+      goToStep(4);
+    }, 2000);
+  }
+
+  // Validation en temps réel
+  document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('manual-form');
+    const inputs = form.querySelectorAll('select');
+
+    inputs.forEach(input => {
+      input.addEventListener('change', function () {
+        if (this.value) {
+          this.classList.remove('fr-input--error');
+        }
+      });
+    });
+  });
+</script>
