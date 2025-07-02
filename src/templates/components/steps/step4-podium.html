@@ -16,151 +16,336 @@
     </div>
   </div>
 
-  <!-- Tableau des résultats -->
-  <div class="fr-table fr-table--bordered">
-    <div class="fr-table__wrapper">
-      <div class="fr-table__container">
-        <div class="fr-table__content">
-          <table>
-            <caption>Indices de mutabilité par usage - Classement par potentiel</caption>
-            <thead>
-              <tr>
-                <th scope="col">Rang</th>
-                <th scope="col">Usage</th>
-                <th scope="col">Indice de mutabilité</th>
-                <th scope="col">Potentiel</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr class="fr-table__row--green">
-                <td><strong>1er</strong></td>
-                <td><strong>Résidentiel ou mixte</strong></td>
-                <td>
-                  <div style="display: flex; align-items: center; gap: 0.5rem;">
-                    <div style="background: #18753c; height: 8px; width: 68%; border-radius: 4px;"></div>
-                    <strong>68%</strong>
-                  </div>
-                </td>
-                <td><span class="fr-badge fr-badge--success">Très favorable</span></td>
-              </tr>
-              <tr class="fr-table__row--blue">
-                <td><strong>2e</strong></td>
-                <td><strong>Équipements publics</strong></td>
-                <td>
-                  <div style="display: flex; align-items: center; gap: 0.5rem;">
-                    <div style="background: #0078f3; height: 8px; width: 63%; border-radius: 4px;"></div>
-                    <strong>63%</strong>
-                  </div>
-                </td>
-                <td><span class="fr-badge fr-badge--info">Favorable</span></td>
-              </tr>
-              <tr>
-                <td>3e</td>
-                <td>Tertiaire</td>
-                <td>
-                  <div style="display: flex; align-items: center; gap: 0.5rem;">
-                    <div style="background: #666; height: 8px; width: 60%; border-radius: 4px;"></div>
-                    60%
-                  </div>
-                </td>
-                <td><span class="fr-badge">Modéré</span></td>
-              </tr>
-              <tr>
-                <td>4e</td>
-                <td>Culture, tourisme</td>
-                <td>
-                  <div style="display: flex; align-items: center; gap: 0.5rem;">
-                    <div style="background: #666; height: 8px; width: 56%; border-radius: 4px;"></div>
-                    56%
-                  </div>
-                </td>
-                <td><span class="fr-badge">Modéré</span></td>
-              </tr>
-              <tr>
-                <td>5e</td>
-                <td>Industrie</td>
-                <td>
-                  <div style="display: flex; align-items: center; gap: 0.5rem;">
-                    <div style="background: #666; height: 8px; width: 54%; border-radius: 4px;"></div>
-                    54%
-                  </div>
-                </td>
-                <td><span class="fr-badge">Modéré</span></td>
-              </tr>
-              <tr>
-                <td>6e</td>
-                <td>Photovoltaïque au sol</td>
-                <td>
-                  <div style="display: flex; align-items: center; gap: 0.5rem;">
-                    <div style="background: #ce614a; height: 8px; width: 47%; border-radius: 4px;"></div>
-                    47%
-                  </div>
-                </td>
-                <td><span class="fr-badge fr-badge--warning">Peu favorable</span></td>
-              </tr>
-              <tr>
-                <td>7e</td>
-                <td>Renaturation</td>
-                <td>
-                  <div style="display: flex; align-items: center; gap: 0.5rem;">
-                    <div style="background: #ce614a; height: 8px; width: 41%; border-radius: 4px;"></div>
-                    41%
-                  </div>
-                </td>
-                <td><span class="fr-badge fr-badge--warning">Peu favorable</span></td>
-              </tr>
-            </tbody>
-          </table>
+  <!-- Top 3 des usages en cartes -->
+  <h4 class="fr-mb-2w">🏆 Podium des usages recommandés</h4>
+  <div class="fr-grid-row fr-grid-row--gutters fr-mb-4w">
+
+    <!-- Carte 1 - Résidentiel ou mixte -->
+    <div class="fr-col-12 fr-col-md-4">
+      <div class="fr-card fr-card--shadow">
+        <div class="fr-card__body">
+          <div class="fr-card__content" style="text-align: center;">
+
+            <!-- Icône usage -->
+            <div style="font-size: 3rem; margin-bottom: 1rem;">🏠</div>
+
+            <!-- Badge pourcentage -->
+            <div class="fr-mb-2w">
+              <span class="fr-badge fr-badge--success fr-badge--lg"
+                style="font-size: 1.1rem; font-weight: bold;">68%</span>
+            </div>
+
+            <!-- Titre usage -->
+            <h5 class="fr-card__title fr-mb-2w">
+              Résidentiel ou mixte
+            </h5>
+
+            <!-- Description -->
+            <p class="fr-card__desc fr-text--sm fr-mb-3w">
+              Excellent potentiel pour un projet résidentiel grâce à la localisation centrale et la valeur patrimoniale.
+            </p>
+
+            <!-- Critères déterminants -->
+            <div class="fr-card__desc">
+              <h6 class="fr-text--sm fr-text--bold fr-mb-4v">Critères déterminants</h6>
+              <div class="fr-text--xs">
+                Centre-ville
+              </div>
+              <div class="fr-text--xs fr-text--bold" style="margin-bottom: 0.5rem;">
+                Oui
+              </div>
+              <hr style="width: 50%; margin: 0.5rem auto;" />
+              <div class="fr-text--xs">
+                Distance TC
+              </div>
+              <div class="fr-text--xs fr-text--bold" style="margin-bottom: 0.5rem;">
+                &lt; 500m
+              </div>
+              <hr style="width: 50%; margin: 0.5rem auto;" />
+              <div class="fr-text--xs">
+                Valeur architecturale
+              </div>
+              <div class="fr-text--xs fr-text--bold" style="margin-bottom: 0.5rem;">
+                Exceptionnelle
+              </div>
+              <hr style="width: 50%; margin: 0.5rem auto;" />
+              <a href="#details-residentiel"
+                class="fr-link fr-text--xs fr-icon-arrow-right-line fr-link--icon-right">Voir tous les critères</a>
+            </div>
+
+          </div>
         </div>
       </div>
     </div>
+
+    <!-- Carte 2 - Équipements publics -->
+    <div class="fr-col-12 fr-col-md-4">
+      <div class="fr-card fr-card--shadow">
+        <div class="fr-card__body">
+          <div class="fr-card__content" style="text-align: center;">
+
+            <!-- Icône usage -->
+            <div style="font-size: 3rem; margin-bottom: 1rem;">🏛️</div>
+
+            <!-- Badge pourcentage -->
+            <div class="fr-mb-2w">
+              <span class="fr-badge fr-badge--info fr-badge--lg"
+                style="font-size: 1.1rem; font-weight: bold;">63%</span>
+            </div>
+
+            <!-- Titre usage -->
+            <h5 class="fr-card__title fr-mb-2w">
+              Équipements publics
+            </h5>
+
+            <!-- Description -->
+            <p class="fr-card__desc fr-text--sm fr-mb-3w">
+              Très adapté pour des équipements publics avec une bonne accessibilité et situation centrale.
+            </p>
+
+            <!-- Critères déterminants -->
+            <div class="fr-card__desc">
+              <h6 class="fr-text--sm fr-text--bold fr-mb-4v">Critères déterminants</h6>
+              <div class="fr-text--xs">
+                Accessibilité
+              </div>
+              <div class="fr-text--xs fr-text--bold" style="margin-bottom: 0.5rem;">
+                Bonne
+              </div>
+              <hr style="width: 50%; margin: 0.5rem auto;" />
+              <div class="fr-text--xs">
+                Surface parcelle
+              </div>
+              <div class="fr-text--xs fr-text--bold" style="margin-bottom: 0.5rem;">
+                42 780 m²
+              </div>
+              <hr style="width: 50%; margin: 0.5rem auto;" />
+              <div class="fr-text--xs">
+                Zonage
+              </div>
+              <div class="fr-text--xs fr-text--bold" style="margin-bottom: 0.5rem;">
+                Zone U
+              </div>
+              <hr style="width: 50%; margin: 0.5rem auto;" />
+              <a href="#details-equipements"
+                class="fr-link fr-text--xs fr-icon-arrow-right-line fr-link--icon-right">Voir tous les critères</a>
+
+              <div class="fr-mt-8w">
+                <button type="button" class="fr-btn fr-btn--sm fr-btn--secondary fr-icon-team-line fr-btn--icon-left">
+                  Je souhaite rencontrer des porteurs de projets
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Carte 3 - Tertiaire -->
+    <div class="fr-col-12 fr-col-md-4">
+      <div class="fr-card fr-card--shadow">
+        <div class="fr-card__body">
+          <div class="fr-card__content" style="text-align: center;">
+
+            <!-- Icône usage -->
+            <div style="font-size: 3rem; margin-bottom: 1rem;">🏢</div>
+
+            <!-- Badge pourcentage -->
+            <div class="fr-mb-2w">
+              <span class="fr-badge fr-badge--lg" style="font-size: 1.1rem; font-weight: bold;">60%</span>
+            </div>
+
+            <!-- Titre usage -->
+            <h5 class="fr-card__title fr-mb-2w">
+              Tertiaire
+            </h5>
+
+            <!-- Description -->
+            <p class="fr-card__desc fr-text--sm fr-mb-3w">
+              Potentiel modéré pour activités tertiaires, à étudier selon les besoins du marché local.
+            </p>
+
+            <!-- Critères déterminants -->
+            <div class="fr-card__desc">
+              <h6 class="fr-text--sm fr-text--bold fr-mb-4v">Critères déterminants</h6>
+              <div class="fr-text--xs">
+                Distance autoroute
+              </div>
+              <div class="fr-text--xs fr-text--bold" style="margin-bottom: 0.5rem;">
+                1-2 km
+              </div>
+              <hr style="width: 50%; margin: 0.5rem auto;" />
+              <div class="fr-text--xs">
+                Commerces proximité
+              </div>
+              <div class="fr-text--xs fr-text--bold" style="margin-bottom: 0.5rem;">
+                Oui
+              </div>
+              <hr style="width: 50%; margin: 0.5rem auto;" />
+              <div class="fr-text--xs">
+                État du bâti
+              </div>
+              <div class="fr-text--xs fr-text--bold" style="margin-bottom: 0.5rem;">
+                Hétérogène
+              </div>
+              <hr style="width: 50%; margin: 0.5rem auto;" />
+              <a href="#details-tertiaire" class="fr-link fr-text--xs fr-icon-arrow-right-line fr-link--icon-right">Voir
+                tous les critères</a>
+
+              <!-- Bouton d'action -->
+              <div class="fr-mt-8w">
+                <button type="button" class="fr-btn fr-btn--sm fr-btn--secondary fr-icon-team-line fr-btn--icon-left">
+                  Je souhaite rencontrer des porteurs de projets
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 
-  <!-- Recommandations -->
-  <div class="fr-grid-row fr-grid-row--gutters fr-mt-4w">
-    <div class="fr-col-12 fr-col-md-6">
-      <div class="fr-callout fr-callout--blue-france">
-        <h4 class="fr-callout__title">✅ Usage recommandé</h4>
-        <div class="fr-callout__text">
-          <p><strong>Résidentiel ou mixte</strong> (68%)</p>
-          <p>Cette friche présente un excellent potentiel pour un projet résidentiel ou mixte, notamment grâce à :</p>
-          <ul>
-            <li>Sa localisation en centre-ville</li>
-            <li>La proximité des transports</li>
-            <li>La valeur patrimoniale exceptionnelle</li>
-            <li>L'accessibilité et les services à proximité</li>
-          </ul>
+  <!-- Tableau des résultats complets -->
+  <div class="fr-accordions-group fr-mt-4w">
+    <section class="fr-accordion">
+      <h4 class="fr-accordion__title">
+        <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-results">
+          📊 Voir tous les résultats détaillés
+        </button>
+      </h4>
+      <div class="fr-collapse" id="accordion-results">
+        <div class="fr-table fr-table--bordered">
+          <div class="fr-table__wrapper">
+            <div class="fr-table__container">
+              <div class="fr-table__content">
+                <table>
+                  <caption>Indices de mutabilité par usage - Classement complet</caption>
+                  <thead>
+                    <tr>
+                      <th scope="col">Rang</th>
+                      <th scope="col">Usage</th>
+                      <th scope="col">Indice de mutabilité</th>
+                      <th scope="col">Potentiel</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="fr-table__row--green">
+                      <td><strong>1er</strong></td>
+                      <td><strong>Résidentiel ou mixte</strong></td>
+                      <td>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                          <div style="background: #18753c; height: 8px; width: 68%; border-radius: 4px;"></div>
+                          <strong>68%</strong>
+                        </div>
+                      </td>
+                      <td><span class="fr-badge fr-badge--success">Très favorable</span></td>
+                    </tr>
+                    <tr class="fr-table__row--blue">
+                      <td><strong>2e</strong></td>
+                      <td><strong>Équipements publics</strong></td>
+                      <td>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                          <div style="background: #0078f3; height: 8px; width: 63%; border-radius: 4px;"></div>
+                          <strong>63%</strong>
+                        </div>
+                      </td>
+                      <td><span class="fr-badge fr-badge--info">Favorable</span></td>
+                    </tr>
+                    <tr>
+                      <td>3e</td>
+                      <td>Tertiaire</td>
+                      <td>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                          <div style="background: #666; height: 8px; width: 60%; border-radius: 4px;"></div>
+                          60%
+                        </div>
+                      </td>
+                      <td><span class="fr-badge">Modéré</span></td>
+                    </tr>
+                    <tr>
+                      <td>4e</td>
+                      <td>Culture, tourisme</td>
+                      <td>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                          <div style="background: #666; height: 8px; width: 56%; border-radius: 4px;"></div>
+                          56%
+                        </div>
+                      </td>
+                      <td><span class="fr-badge">Modéré</span></td>
+                    </tr>
+                    <tr>
+                      <td>5e</td>
+                      <td>Industrie</td>
+                      <td>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                          <div style="background: #666; height: 8px; width: 54%; border-radius: 4px;"></div>
+                          54%
+                        </div>
+                      </td>
+                      <td><span class="fr-badge">Modéré</span></td>
+                    </tr>
+                    <tr>
+                      <td>6e</td>
+                      <td>Photovoltaïque au sol</td>
+                      <td>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                          <div style="background: #ce614a; height: 8px; width: 47%; border-radius: 4px;"></div>
+                          47%
+                        </div>
+                      </td>
+                      <td><span class="fr-badge fr-badge--warning">Peu favorable</span></td>
+                    </tr>
+                    <tr>
+                      <td>7e</td>
+                      <td>Renaturation</td>
+                      <td>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                          <div style="background: #ce614a; height: 8px; width: 41%; border-radius: 4px;"></div>
+                          41%
+                        </div>
+                      </td>
+                      <td><span class="fr-badge fr-badge--warning">Peu favorable</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-
-    <div class="fr-col-12 fr-col-md-6">
-      <div class="fr-callout fr-callout--yellow-tournesol">
-        <h4 class="fr-callout__title">⚠️ Points d'attention</h4>
-        <div class="fr-callout__text">
-          <p><strong>Facteurs limitants :</strong></p>
-          <ul>
-            <li>État hétérogène des bâtiments</li>
-            <li>Pollution des sols à vérifier</li>
-            <li>Coûts de réhabilitation à évaluer</li>
-          </ul>
-          <p><strong>Recommandation :</strong> Réaliser des études complémentaires sur la pollution et l'état structural
-            avant décision finale.</p>
-        </div>
-      </div>
-    </div>
+    </section>
   </div>
 
-  <!-- Actions possibles -->
-  <div class="fr-callout fr-callout--green-tilleul-verveine fr-mt-4w">
-    <h4 class="fr-callout__title">🚀 Prochaines étapes suggérées</h4>
-    <div class="fr-callout__text">
-      <ol>
-        <li><strong>Études techniques :</strong> Diagnostic pollution, étude géotechnique</li>
-        <li><strong>Faisabilité économique :</strong> Estimation des coûts de dépollution et réhabilitation</li>
-        <li><strong>Concertation :</strong> Dialogue avec les habitants et parties prenantes</li>
-        <li><strong>Programmation :</strong> Définition précise du projet résidentiel/mixte</li>
-      </ol>
+</div>
+
+<!-- Comment aménager -->
+<div class="fr-callout fr-callout--green-tilleul-verveine">
+  <h3 class="fr-callout__title">
+    🛠️ Comment aménager un projet sur une friche ?
+  </h3>
+  <p class="fr-callout__text fr-text--bold fr-text--lg" style="font-style: italic; color: #18753c;">
+    Bonne nouvelle ! Il existe des outils pour vous lancer dans un projet de reconversion de friche :
+  </p>
+
+  <div class="fr-mt-3w">
+    <div class="fr-mb-2w">
+      <span class="fr-badge fr-badge--blue-france fr-badge--sm">👥 Accompagnement</span>
+      <p class="fr-mt-1w fr-mb-1w">
+        <strong><a href="https://urbanvitaliz.fr/" target="_blank" class="fr-link">Urban Vitaliz</a></strong><br>
+        <span class="fr-text--sm">Pour être accompagné dans votre projet de réhabilitation par des conseillers
+          compétents.</span>
+      </p>
+    </div>
+
+    <div class="fr-mb-2w">
+      <span class="fr-badge fr-badge--green-emeraude fr-badge--sm">💰 Financement</span>
+      <p class="fr-mt-1w fr-mb-1w">
+        <strong><a href="#" target="_blank" class="fr-link">Fond vert friche</a></strong><br>
+        <span class="fr-text--sm">Pour obtenir des subventions et financer votre projet de reconversion.</span>
+      </p>
     </div>
   </div>
 </div>
@@ -181,6 +366,8 @@
   </button>
 </div>
 
+
+
 <script>
   function goToStep(step) {
     window.location.href = `/form/${step}`;
@@ -197,17 +384,35 @@
     }
   }
 
-  // Animation d'entrée pour les barres de progression
+  // Animation d'entrée pour les cartes
   document.addEventListener('DOMContentLoaded', function () {
-    const bars = document.querySelectorAll('[style*="width:"]');
-    bars.forEach((bar, index) => {
-      const originalWidth = bar.style.width;
-      bar.style.width = '0%';
-      bar.style.transition = 'width 1s ease-in-out';
+    const cards = document.querySelectorAll('.fr-card');
+    cards.forEach((card, index) => {
+      card.style.opacity = '0';
+      card.style.transform = 'translateY(20px)';
+      card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
 
       setTimeout(() => {
-        bar.style.width = originalWidth;
-      }, 200 + (index * 100));
+        card.style.opacity = '1';
+        card.style.transform = 'translateY(0)';
+      }, 200 + (index * 150));
+    });
+
+    // Animation des barres de progression dans le tableau (si accordéon ouvert)
+    const accordionBtn = document.querySelector('.fr-accordion__btn');
+    accordionBtn.addEventListener('click', function () {
+      setTimeout(() => {
+        const bars = document.querySelectorAll('[style*="width:"]');
+        bars.forEach((bar, index) => {
+          const originalWidth = bar.style.width;
+          bar.style.width = '0%';
+          bar.style.transition = 'width 1s ease-in-out';
+
+          setTimeout(() => {
+            bar.style.width = originalWidth;
+          }, 200 + (index * 100));
+        });
+      }, 300);
     });
   });
 </script>
