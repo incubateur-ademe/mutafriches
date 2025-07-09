@@ -13,7 +13,10 @@ async function bootstrap() {
 
   const port = process.env.PORT || 3000;
   await app.listen(port);
-  console.log('\n🚀 Application is running on: http://localhost:3000');
+  console.log('\nApplication is running on: http://localhost:3000');
 }
 
-bootstrap();
+bootstrap().catch((err) => {
+  console.error("Erreur lors du démarrage de l'application:", err);
+  process.exit(1);
+});

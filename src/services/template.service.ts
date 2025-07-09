@@ -6,7 +6,7 @@ import {
   StepConfig,
   StepConfigMap,
   MockDataResponse,
-} from './types';
+} from '../templates/types';
 
 @Injectable()
 export class TemplateService {

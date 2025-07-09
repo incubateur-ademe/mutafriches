@@ -1,6 +1,6 @@
 import { Controller, Get, Res, Param } from '@nestjs/common';
 import { Response } from 'express';
-import { TemplateService } from './templates/template.service';
+import { TemplateService } from './services/template.service';
 import { MockDataResponse, UsageResult } from './templates/types';
 
 @Controller()
