@@ -14,7 +14,7 @@
     "db:start": "docker-compose up -d postgres",
     "db:stop": "docker-compose down",
     "db:reset": "docker-compose down -v && docker-compose up -d postgres",
-    "db:push": "drizzle-kit push",
+    "db:push": "drizzle-kit push --force",
     "db:studio": "drizzle-kit studio",
     "db:dev:seed:analytics": "ts-node -r tsconfig-paths/register src/scripts/seed.analytics.ts",
     "db:seed:analytics": "node dist/src/scripts/seed.analytics.js",
