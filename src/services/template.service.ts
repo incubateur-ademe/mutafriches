@@ -11,12 +11,12 @@ import {
 @Injectable()
 export class TemplateService {
   private getBasePath(): string {
-    // En développement, utiliser src/
+    // En développement, utiliser src/templates
     if (process.env.NODE_ENV !== 'production') {
       return join(process.cwd(), 'src', 'templates');
     }
-    // En production, utiliser dist/
-    return __dirname;
+    // En production, les templates sont dans dist/templates
+    return join(__dirname, '..', '..', 'templates');
   }
 
   private loadTemplate(templateName: string): string {

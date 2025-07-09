@@ -9,8 +9,8 @@ async function bootstrap() {
   // Assets DSFR - chemin adaptatif selon l'environnement
   const isProduction = process.env.NODE_ENV === 'production';
   const dsfrPath = isProduction
-    ? join(__dirname, '..', 'node_modules/@gouvfr/dsfr/dist') // Production (depuis dist/)
-    : join(process.cwd(), 'node_modules/@gouvfr/dsfr/dist'); // Développement (depuis racine)
+    ? join(__dirname, '..', '..', 'node_modules/@gouvfr/dsfr/dist') // Production
+    : join(process.cwd(), 'node_modules/@gouvfr/dsfr/dist'); // Développement
 
   app.useStaticAssets(dsfrPath, {
     prefix: '/dsfr/',
