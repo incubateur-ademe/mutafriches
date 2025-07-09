@@ -1,11 +1,15 @@
 import { Controller, Get, Res, Param } from '@nestjs/common';
 import { Response } from 'express';
 import { TemplateService } from './services/template.service';
+import { DatabaseService } from './services/database.service';
 import { MockDataResponse, UsageResult } from './templates/types';
 
 @Controller()
 export class AppController {
-  constructor(private readonly templateService: TemplateService) {}
+  constructor(
+    private readonly templateService: TemplateService,
+    private readonly databaseService: DatabaseService,
+  ) {}
 
   @Get()
   getHello() {
@@ -13,12 +17,35 @@ export class AppController {
   }
 
   @Get('health')
-  healthCheck() {
-    return {
+  async healthCheck() {
+    const timestamp = new Date().toISOString();
+
+    // Check de base
+    const health = {
       status: 'OK',
-      timestamp: new Date().toISOString(),
+      timestamp,
       service: 'Mutafriches API',
+      checks: {
+        api: 'OK',
+        database: 'OK',
+      },
     };
+
+    // Test de la connexion base de données
+    try {
+      if (this.databaseService.db) {
+        await this.databaseService.db.execute('SELECT 1 as test');
+        health.checks.database = 'OK';
+      } else {
+        health.checks.database = 'DISCONNECTED';
+        health.status = 'DEGRADED';
+      }
+    } catch {
+      health.checks.database = 'ERROR';
+      health.status = 'DEGRADED';
+    }
+
+    return health;
   }
 
   @Get('iframe')
