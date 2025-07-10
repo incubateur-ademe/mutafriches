@@ -9,6 +9,11 @@
         "include": "templates/**/*",
         "outDir": "dist",
         "watchAssets": true
+      },
+      {
+        "include": "../public/**/*",
+        "outDir": "dist/public",
+        "watchAssets": true
       }
     ]
   }

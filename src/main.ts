@@ -16,6 +16,13 @@ async function bootstrap() {
     prefix: '/dsfr/',
   });
 
+  // Assets publics (images, etc.) - chemin adaptatif selon l'environnement
+  const publicPath = isProduction
+    ? join(__dirname, '..', 'public') // Production (dist/public)
+    : join(process.cwd(), 'public'); // Développement (public)
+
+  app.useStaticAssets(publicPath);
+
   const port = process.env.PORT || 3000;
   const host = isProduction ? '0.0.0.0' : 'localhost';
 
