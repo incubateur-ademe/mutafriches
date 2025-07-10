@@ -2,7 +2,7 @@
   <h3>Informations à renseigner</h3>
   <p class="fr-text--sm">Complétez les informations suivantes pour affiner l'analyse</p>
 
-  <div class="fr-callout fr-callout--blue-france fr-mt-4w">
+  <div class="fr-callout fr-callout--green-emeraude fr-mt-4w">
     <p class="fr-callout__text">
       Ces données permettront d'affiner le calcul de l'indice de mutabilité et d'améliorer la fiabilité des résultats.
     </p>
@@ -24,9 +24,9 @@
               </label>
               <select class="fr-select" id="terrain-viabilise" name="terrainViabilise" required>
                 <option value="">Sélectionner une option</option>
-                <option value="oui" selected>Oui</option>
+                <option value="oui">Oui</option>
                 <option value="non">Non</option>
-                <option value="ne-sait-pas">Ne sait pas</option>
+                <option value="ne-sait-pas" selected>Ne sait pas</option>
               </select>
             </div>
           </div>
@@ -45,8 +45,8 @@
                 <option value="etat-moyen">État moyen</option>
                 <option value="bon-etat-apparent">Bon état apparent</option>
                 <option value="etat-remarquable">État remarquable</option>
-                <option value="batiments-heterogenes" selected>Bâtiments hétérogènes</option>
-                <option value="ne-sait-pas">Ne sait pas</option>
+                <option value="batiments-heterogenes">Bâtiments hétérogènes</option>
+                <option value="ne-sait-pas" selected>Ne sait pas</option>
               </select>
             </div>
           </div>
@@ -91,8 +91,8 @@
                 <option value="banal-infra-ordinaire">Banal / infra-ordinaire</option>
                 <option value="ordinaire">Ordinaire</option>
                 <option value="interet-fort">Intérêt fort</option>
-                <option value="exceptionnel" selected>Exceptionnel</option>
-                <option value="ne-sait-pas">Ne sait pas</option>
+                <option value="exceptionnel">Exceptionnel</option>
+                <option value="ne-sait-pas" selected>Ne sait pas</option>
               </select>
             </div>
           </div>
@@ -106,11 +106,11 @@
               <select class="fr-select" id="qualite-paysagere" name="qualitePaysagere" required>
                 <option value="">Sélectionner une option</option>
                 <option value="degrade">Dégradé</option>
-                <option value="banal-infra-ordinaire" selected>Banal / infra-ordinaire</option>
+                <option value="banal-infra-ordinaire">Banal / infra-ordinaire</option>
                 <option value="quotidien-ordinaire">Quotidien / ordinaire</option>
                 <option value="interessant">Intéressant</option>
                 <option value="remarquable">Remarquable</option>
-                <option value="ne-sait-pas">Ne sait pas</option>
+                <option value="ne-sait-pas" selected>Ne sait pas</option>
               </select>
             </div>
           </div>
@@ -123,10 +123,10 @@
               </label>
               <select class="fr-select" id="qualite-desserte" name="qualiteDesserte" required>
                 <option value="">Sélectionner une option</option>
-                <option value="accessible" selected>Accessible</option>
+                <option value="accessible">Accessible</option>
                 <option value="degradee">Dégradée</option>
                 <option value="peu-accessible">Peu accessible</option>
-                <option value="ne-sait-pas">Ne sait pas</option>
+                <option value="ne-sait-pas" selected>Ne sait pas</option>
               </select>
             </div>
           </div>
@@ -139,12 +139,12 @@
 
 </div>
 
-<div class="fr-btns-group fr-btns-group--right fr-mt-4w">
-  <button class="fr-btn fr-btn--secondary" onclick="goToStep(2)">
+<div class="fr-mt-4w" style="text-align: center;">
+  <button class="fr-btn fr-btn--secondary" onclick="goToStep(1)">
     <span class="fr-icon-arrow-left-s-line fr-icon--sm" aria-hidden="true"></span>
     Précédent
   </button>
-  <button class="fr-btn" onclick="submitAndGoToStep4()" id="submit-btn">
+  <button class="fr-btn fr-ml-2w" onclick="submitAndGoToResult()" id="submit-btn">
     Calculer les résultats
     <span class="fr-icon-arrow-right-s-line fr-icon--sm" aria-hidden="true"></span>
   </button>
@@ -155,7 +155,7 @@
     window.location.href = `/form/${step}`;
   }
 
-  function submitAndGoToStep4() {
+  function submitAndGoToResult() {
     const form = document.getElementById('manual-form');
     const formData = new FormData(form);
 
@@ -187,7 +187,7 @@
     setTimeout(() => {
       // Ici envoyer les données à l'API
       // fetch('/api/evaluate', { method: 'POST', body: formData })
-      goToStep(4);
+      goToStep(3);
     }, 2000);
   }
 

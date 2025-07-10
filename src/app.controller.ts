@@ -50,30 +50,8 @@ export class AppController {
 
   @Get('iframe')
   getIframe(@Res() res: Response): void {
-    const components = [
-      {
-        name: 'hero',
-        data: {
-          title: 'Mutafriches',
-          subtitle: "API pour l'analyse de mutabilité des friches urbaines",
-        },
-      },
-      {
-        name: 'callout',
-        data: {
-          title: 'Mutafriches - Iframe',
-          text: "Cette iframe utilise le Système de Design de l'État français (DSFR).",
-          buttonText: "Commencer l'analyse",
-          buttonAction: 'goToForm(1)',
-        },
-      },
-    ];
-
-    const html = this.templateService.renderIframePage(
-      'Mutafriches - Analyse des friches',
-      components,
-    );
-
+    const mockData: MockDataResponse = this.getMockDataForStep(1);
+    const html = this.templateService.renderFormStep(1, mockData);
     res.setHeader('Content-Type', 'text/html');
     res.send(html);
   }
@@ -82,13 +60,12 @@ export class AppController {
   getFormStep(@Param('step') step: string, @Res() res: Response): void {
     const stepNumber = parseInt(step, 10);
 
-    if (stepNumber < 1 || stepNumber > 4 || isNaN(stepNumber)) {
+    if (stepNumber < 1 || stepNumber > 3 || isNaN(stepNumber)) {
       res.status(400).send('Étape invalide');
       return;
     }
 
     const mockData: MockDataResponse = this.getMockDataForStep(stepNumber);
-
     const html = this.templateService.renderFormStep(stepNumber, mockData);
 
     res.setHeader('Content-Type', 'text/html');
@@ -98,8 +75,6 @@ export class AppController {
   private getMockDataForStep(step: number): MockDataResponse {
     switch (step) {
       case 1:
-        return {};
-      case 2:
         return {
           surfaceParcelle: '42 780 m²',
           surfaceBatie: '6 600 m²',
@@ -119,9 +94,9 @@ export class AppController {
           zonagePatrimonial: 'Non concerné',
           tvb: 'Hors trame',
         };
-      case 3:
+      case 2:
         return {};
-      case 4: {
+      case 3: {
         const results: UsageResult[] = [
           {
             usage: 'Résidentiel ou mixte',

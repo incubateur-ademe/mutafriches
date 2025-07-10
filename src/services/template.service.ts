@@ -81,23 +81,18 @@ export class TemplateService {
     const stepConfig: StepConfigMap = {
       1: {
         title: 'Choix de la parcelle',
-        nextTitle: 'Données automatiques',
+        nextTitle: 'Informations complémentaires',
         component: 'step1-map',
       },
       2: {
-        title: 'Données récupérées',
-        nextTitle: 'Saisie manuelle',
-        component: 'step2-auto-data',
-      },
-      3: {
         title: 'Informations complémentaires',
         nextTitle: 'Résultats',
-        component: 'step3-manual-form',
+        component: 'step2-manual-form',
       },
-      4: {
+      3: {
         title: 'Analyse de mutabilité',
         nextTitle: 'Terminé',
-        component: 'step4-podium',
+        component: 'step3-podium',
       },
     };
 
@@ -110,9 +105,9 @@ export class TemplateService {
         name: 'stepper',
         data: {
           currentStep: stepNumber,
-          totalSteps: 4,
+          totalSteps: 3,
           currentStepTitle: config.title,
-          nextStepTitle: stepNumber < 4 ? config.nextTitle : 'Analyse terminée',
+          nextStepTitle: stepNumber < 3 ? config.nextTitle : 'Analyse terminée',
         },
       },
       {
@@ -121,7 +116,7 @@ export class TemplateService {
           ...formData,
           currentStep: stepNumber,
           showPrevious: stepNumber > 1,
-          showNext: stepNumber < 4,
+          showNext: stepNumber < 3,
           previousStep: stepNumber - 1,
           nextStep: stepNumber + 1,
         },

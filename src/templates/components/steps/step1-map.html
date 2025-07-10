@@ -1,68 +1,439 @@
+<style>
+  .collapsed {
+    height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: height 0.3s ease, opacity 0.3s ease;
+  }
+
+  .collapsed.expanded {
+    height: auto;
+    opacity: 1;
+  }
+
+  .input-mode {
+    display: none;
+  }
+
+  .input-mode.active {
+    display: block;
+  }
+</style>
+
 <div class="fr-mb-4w">
   <h3>Sélectionnez une parcelle</h3>
-  <p class="fr-text--sm">Cliquez sur la carte pour sélectionner une parcelle à analyser</p>
+  <p class="fr-text--sm">Choisissez votre méthode de sélection de parcelle</p>
 
-  <div class="fr-grid-row fr-grid-row--gutters">
-    <div id="map-col" class="fr-col-12">
-      <!-- Carte fictive -->
-      <div id="map-container"
-        style="height: 400px; background: linear-gradient(135deg, #e8f5e8 0%, #f0f8f0 100%); border: 2px solid #18753c; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative;"
-        onclick="selectParcel()">
-        <div style="text-align: center; color: #18753c;">
-          <div style="font-size: 3rem; margin-bottom: 1rem;">🗺️</div>
-          <p style="margin: 0; font-weight: bold;">Carte interactive</p>
-          <p style="margin: 0; font-size: 0.9rem;">Cliquez pour sélectionner la parcelle "Ancienne manufacture Les
-            Allumettes"</p>
-        </div>
-
-        <!-- Point de parcelle fictif -->
-        <div id="parcel-point"
-          style="position: absolute; top: 60%; left: 45%; width: 20px; height: 20px; background: #000091; border: 3px solid white; border-radius: 50%; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.3);"
-          onclick="selectParcel(event)"></div>
+  <!-- Contrôle segmenté pour choisir le mode -->
+  <fieldset class="fr-segmented fr-mb-4w">
+    <legend class="fr-segmented__legend">
+      Mode de sélection
+    </legend>
+    <div class="fr-segmented__elements">
+      <div class="fr-segmented__element">
+        <input value="carte" type="radio" id="mode-carte" name="selection-mode" checked onchange="switchMode('carte')">
+        <label class="fr-icon-map-pin-2-line fr-label" for="mode-carte">
+          Depuis la carte
+        </label>
+      </div>
+      <div class="fr-segmented__element">
+        <input value="id" type="radio" id="mode-id" name="selection-mode" onchange="switchMode('id')">
+        <label class="fr-icon-edit-line fr-label" for="mode-id">
+          Par identifiant de parcelle
+        </label>
       </div>
     </div>
+  </fieldset>
 
-    <div id="info-col" class="fr-col-4" style="display: none;">
-      <div id="parcel-info" class="fr-callout">
-        <h4 class="fr-callout__title">📍 Parcelle sélectionnée</h4>
-        <div class="fr-callout__text">
-          <p><strong>Nom :</strong> Ancienne manufacture Les Allumettes</p>
-          <p><strong>Commune :</strong> Trélazé</p>
-          <p><strong>Surface parcelle :</strong> 42 780 m²</p>
-          <p><strong>Surface bâtie :</strong> 6 600 m²</p>
-          <p><strong>Type propriétaire :</strong> Privé</p>
-          <p><strong>Ancienne activité :</strong> Manufacture</p>
+  <!-- Mode carte -->
+  <div id="carte-mode" class="input-mode active">
+    <div class="fr-grid-row fr-grid-row--gutters">
+      <div id="map-col" class="fr-col-12">
+        <!-- Carte fictive -->
+        <div id="map-container"
+          style="height: 400px; background: linear-gradient(135deg, #e8f5e8 0%, #f0f8f0 100%); border: 2px solid #18753c; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative;"
+          onclick="selectParcel()">
+          <div style="text-align: center; color: #18753c;">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">🗺️</div>
+            <p style="margin: 0; font-weight: bold;">Carte interactive</p>
+            <p style="margin: 0; font-size: 0.9rem;">Cliquez pour sélectionner la parcelle "Ancienne manufacture Les
+              Allumettes"</p>
+          </div>
+
+          <!-- Point de parcelle fictif -->
+          <div id="parcel-point"
+            style="position: absolute; top: 60%; left: 45%; width: 20px; height: 20px; background: #000091; border: 3px solid white; border-radius: 50%; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.3);"
+            onclick="selectParcel(event)"></div>
         </div>
       </div>
     </div>
   </div>
-</div>
 
-<div id="navigation-buttons" class="fr-btns-group fr-btns-group--right fr-mt-4w" style="display: none;">
-  <button id="next-btn" class="fr-btn" onclick="goToStep(2)">
-    Suivant
-    <span class="fr-icon-arrow-right-s-line fr-icon--sm" aria-hidden="true"></span>
-  </button>
+  <!-- Mode saisie Identifiant Parcelle -->
+  <div id="id-mode" class="input-mode">
+    <div class="fr-grid-row fr-grid-row--gutters">
+
+      <!-- Message d'info pour l'ID -->
+      <div class="fr-callout fr-callout--green-emeraude fr-mt-2w">
+        <p class="fr-callout__text">
+          L'Identifiant de parcelle peut être trouvé sur le cadastre ou les documents officiels de la propriété.
+        </p>
+        <a href="https://www.cadastre.gouv.fr" target="_blank" rel="noopener noreferrer"
+          class="fr-btn fr-btn--secondary fr-btn--icon-left">
+          Consulter le cadastre
+        </a>
+      </div>
+
+
+      <div class="fr-col-12 fr-col-md-6">
+        <div class="fr-input-group">
+          <label class="fr-label" for="parcel-id">
+            Identifiant de parcelle
+            <span class="fr-hint-text">Saisissez l'identifiant de la parcelle à analyser</span>
+          </label>
+          <input class="fr-input" type="text" id="parcel-id" name="parcel-id" placeholder="Ex: 49353000AC0123">
+        </div>
+      </div>
+      <div class="fr-col-12 fr-col-md-6" style="display: flex; align-items: end;">
+        <button class="fr-btn fr-btn--icon-left fr-icon-search-line" type="button" onclick="searchParcelById()">
+          Rechercher la parcelle
+        </button>
+      </div>
+    </div>
+
+
+  </div>
+
+  <!-- Zone informations déduites -->
+  <div id="info-col" class="fr-col-12 collapsed">
+    <!-- Bloc info parcelle -->
+    <div class="fr-callout fr-callout--green-emeraude fr-mt-4w">
+      <p class="fr-callout__text">
+        Les informations ci-dessus ont été récupérées automatiquement.
+        Vous pourrez compléter avec des données manuelles à l'étape suivante.
+      </p>
+    </div>
+
+    <!-- Onglets -->
+    <div class="fr-tabs fr-mt-4w">
+      <ul class="fr-tabs__list" role="tablist" aria-label="Données récupérées automatiquement">
+        <li role="presentation">
+          <button type="button" id="tab-infos" class="fr-tabs__tab" tabindex="0" role="tab" aria-selected="true"
+            aria-controls="tab-infos-panel">
+            Informations parcelle
+          </button>
+        </li>
+        <li role="presentation">
+          <button type="button" id="tab-env" class="fr-tabs__tab" tabindex="-1" role="tab" aria-selected="false"
+            aria-controls="tab-env-panel">
+            Environnement de la parcelle
+          </button>
+        </li>
+        <li role="presentation">
+          <button type="button" id="tab-risques" class="fr-tabs__tab" tabindex="-1" role="tab" aria-selected="false"
+            aria-controls="tab-risques-panel">
+            Risques & Zones
+          </button>
+        </li>
+      </ul>
+
+      <!-- Panneau Infos parcelle -->
+      <div id="tab-infos-panel" class="fr-tabs__panel fr-tabs__panel--selected" role="tabpanel"
+        aria-labelledby="tab-infos" tabindex="0">
+        <div class="fr-grid-row fr-grid-row--gutters">
+          <div class="fr-col-6">
+            <div class="fr-text fr-text--lg">
+              <strong>Identifiant parcelle</strong>
+              <button class="fr-btn--tooltip fr-btn fr-btn--sm" type="button" aria-describedby="tooltip-surface">
+                <span class="fr-icon-information-line" aria-hidden="true"></span>
+              </button>
+              <span class="fr-tooltip fr-placement" id="tooltip-surface" role="tooltip">
+                Donnée récupérée depuis l'API du cadastre national (source: DGFiP)
+              </span>
+              <br>
+              <span class="fr-text--lg">154654121</span>
+            </div>
+          </div>
+          <div class="fr-col-6">
+            <div class="fr-text fr-text--lg">
+              <strong>Surface parcelle</strong>
+              <button class="fr-btn--tooltip fr-btn fr-btn--sm" type="button" aria-describedby="tooltip-surface">
+                <span class="fr-icon-information-line" aria-hidden="true"></span>
+              </button>
+              <span class="fr-tooltip fr-placement" id="tooltip-surface" role="tooltip">
+                Donnée récupérée depuis l'API du cadastre national (source: DGFiP)
+              </span>
+              <br>
+              <span class="fr-text--lg">42 780 m²</span>
+            </div>
+          </div>
+          <div class="fr-col-6">
+            <div class="fr-text fr-text--lg">
+              <strong>Surface bâtie</strong>
+              <button class="fr-btn--tooltip fr-btn fr-btn--sm" type="button" aria-describedby="tooltip-batie">
+                <span class="fr-icon-information-line" aria-hidden="true"></span>
+              </button>
+              <span class="fr-tooltip fr-placement" id="tooltip-batie" role="tooltip">
+                Calculée automatiquement depuis les données géospatiales IGN
+              </span>
+              <br>
+              <span class="fr-text--lg">6 600 m²</span>
+            </div>
+          </div>
+          <div class="fr-col-6">
+            <div class="fr-text fr-text--lg">
+              <strong>Type de propriétaire</strong>
+              <button class="fr-btn--tooltip fr-btn fr-btn--sm" type="button" aria-describedby="tooltip-proprietaire">
+                <span class="fr-icon-information-line" aria-hidden="true"></span>
+              </button>
+              <span class="fr-tooltip fr-placement" id="tooltip-proprietaire" role="tooltip">
+                Information extraite des fichiers fonciers (source: DGFiP)
+              </span>
+              <br>
+              <span class="fr-badge fr-badge--blue-france">Privé</span>
+            </div>
+          </div>
+          <div class="fr-col-6">
+            <div class="fr-text fr-text--lg">
+              <strong>Ancienne activité</strong>
+              <button class="fr-btn--tooltip fr-btn fr-btn--sm" type="button" aria-describedby="tooltip-activite">
+                <span class="fr-icon-information-line" aria-hidden="true"></span>
+              </button>
+              <span class="fr-tooltip fr-placement" id="tooltip-activite" role="tooltip">
+                Identifiée via l'analyse historique des archives municipales
+              </span>
+              <br>
+              <span class="fr-badge fr-badge--purple-glycine">Manufacture</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panneau Environnement & alentours -->
+      <div id="tab-env-panel" class="fr-tabs__panel" role="tabpanel" aria-labelledby="tab-env" tabindex="0">
+        <div class="fr-grid-row fr-grid-row--gutters">
+          <div class="fr-col-6">
+            <div class="fr-text fr-text--lg">
+              <strong>Centre ville</strong>
+              <button class="fr-btn--tooltip fr-btn fr-btn--sm" type="button" aria-describedby="tooltip-centre">
+                <span class="fr-icon-information-line" aria-hidden="true"></span>
+              </button>
+              <span class="fr-tooltip fr-placement" id="tooltip-centre" role="tooltip">
+                Déterminé par géolocalisation via l'API des zones urbaines INSEE
+              </span>
+              <br>
+              <span class="fr-badge fr-badge--success">Oui</span>
+            </div>
+          </div>
+          <div class="fr-col-6">
+            <div class="fr-text fr-text--lg">
+              <strong>Distance autoroute</strong>
+              <button class="fr-btn--tooltip fr-btn fr-btn--sm" type="button" aria-describedby="tooltip-autoroute">
+                <span class="fr-icon-information-line" aria-hidden="true"></span>
+              </button>
+              <span class="fr-tooltip fr-placement" id="tooltip-autoroute" role="tooltip">
+                Calculée via l'API de routage du service public de la donnée
+              </span>
+              <br>
+              <span class="fr-text--lg">Entre 1 et 2km</span>
+            </div>
+          </div>
+          <div class="fr-col-6">
+            <div class="fr-text fr-text--lg">
+              <strong>Distance train et TC</strong>
+              <button class="fr-btn--tooltip fr-btn fr-btn--sm" type="button" aria-describedby="tooltip-transport">
+                <span class="fr-icon-information-line" aria-hidden="true"></span>
+              </button>
+              <span class="fr-tooltip fr-placement" id="tooltip-transport" role="tooltip">
+                Données extraites de l'API transport.data.gouv.fr
+              </span>
+              <br>
+              <span class="fr-badge fr-badge--success">Moins de 500m</span>
+            </div>
+          </div>
+          <div class="fr-col-6">
+            <div class="fr-text fr-text--lg">
+              <strong>Proximité commerces/services</strong>
+              <button class="fr-btn--tooltip fr-btn fr-btn--sm" type="button" aria-describedby="tooltip-commerces">
+                <span class="fr-icon-information-line" aria-hidden="true"></span>
+              </button>
+              <span class="fr-tooltip fr-placement" id="tooltip-commerces" role="tooltip">
+                Analysé via les données OpenStreetMap et base SIRENE
+              </span>
+              <br>
+              <span class="fr-badge fr-badge--success">Oui</span>
+            </div>
+          </div>
+          <div class="fr-col-6">
+            <div class="fr-text fr-text--lg">
+              <strong>Distance raccordement BT/HT</strong>
+              <button class="fr-btn--tooltip fr-btn fr-btn--sm" type="button" aria-describedby="tooltip-raccordement">
+                <span class="fr-icon-information-line" aria-hidden="true"></span>
+              </button>
+              <span class="fr-tooltip fr-placement" id="tooltip-raccordement" role="tooltip">
+                Information fournie par l'API géoportail d'Enedis
+              </span>
+              <br>
+              <span class="fr-text--lg">Moins de 1km</span>
+            </div>
+          </div>
+          <div class="fr-col-6">
+            <div class="fr-text fr-text--lg">
+              <strong>Taux de logements vacants</strong>
+              <button class="fr-btn--tooltip fr-btn fr-btn--sm" type="button" aria-describedby="tooltip-vacants">
+                <span class="fr-icon-information-line" aria-hidden="true"></span>
+              </button>
+              <span class="fr-tooltip fr-placement" id="tooltip-vacants" role="tooltip">
+                Statistique communale extraite des données INSEE (dernier recensement)
+              </span>
+              <br>
+              <span class="fr-text--lg fr-text--bold">4,9%</span>
+            </div>
+          </div>
+          <div class="fr-col-6">
+            <div class="fr-text fr-text--lg">
+              <strong>Trame verte et bleue</strong>
+              <button class="fr-btn--tooltip fr-btn fr-btn--sm" type="button" aria-describedby="tooltip-trame">
+                <span class="fr-icon-information-line" aria-hidden="true"></span>
+              </button>
+              <span class="fr-tooltip fr-placement" id="tooltip-trame" role="tooltip">
+                Référentiel établi via les données du Muséum National d'Histoire Naturelle
+              </span>
+              <br>
+              <span class="fr-badge fr-badge--warning">Hors trame</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panneau Risques & Zones -->
+      <div id="tab-risques-panel" class="fr-tabs__panel" role="tabpanel" aria-labelledby="tab-risques" tabindex="0">
+        <div class="fr-grid-row fr-grid-row--gutters">
+          <div class="fr-col-6">
+            <div class="fr-text fr-text--lg">
+              <strong>Risques technologiques</strong>
+              <button class="fr-btn--tooltip fr-btn fr-btn--sm" type="button" aria-describedby="tooltip-techno">
+                <span class="fr-icon-information-line" aria-hidden="true"></span>
+              </button>
+              <span class="fr-tooltip fr-placement" id="tooltip-techno" role="tooltip">
+                Données extraites du portail georisques.gouv.fr (BRGM)
+              </span>
+              <br>
+              <span class="fr-badge fr-badge--success">Non</span>
+            </div>
+          </div>
+          <div class="fr-col-6">
+            <div class="fr-text fr-text--lg">
+              <strong>Risques naturels</strong>
+              <button class="fr-btn--tooltip fr-btn fr-btn--sm" type="button" aria-describedby="tooltip-naturels">
+                <span class="fr-icon-information-line" aria-hidden="true"></span>
+              </button>
+              <span class="fr-tooltip fr-placement" id="tooltip-naturels" role="tooltip">
+                Évaluation basée sur les données BRGM et Météo-France
+              </span>
+              <br>
+              <span class="fr-badge fr-badge--info">Faible</span>
+            </div>
+          </div>
+          <div class="fr-col-6">
+            <div class="fr-text fr-text--lg">
+              <strong>Potentiel de gains écologiques</strong>
+              <button class="fr-btn--tooltip fr-btn fr-btn--sm" type="button" aria-describedby="tooltip-ecologique">
+                <span class="fr-icon-information-line" aria-hidden="true"></span>
+              </button>
+              <span class="fr-tooltip fr-placement" id="tooltip-ecologique" role="tooltip">
+                Calculé via l'algorithme d'analyse environnementale de l'ADEME
+              </span>
+              <br>
+              <span class="fr-badge fr-badge--warning">Moyen</span>
+            </div>
+          </div>
+          <div class="fr-col-6">
+            <div class="fr-text fr-text--lg">
+              <strong>Zonage environnemental</strong>
+              <button class="fr-btn--tooltip fr-btn fr-btn--sm" type="button" aria-describedby="tooltip-zonage-env">
+                <span class="fr-icon-information-line" aria-hidden="true"></span>
+              </button>
+              <span class="fr-tooltip fr-placement" id="tooltip-zonage-env" role="tooltip">
+                Référentiel des zones protégées du Ministère de la Transition Écologique
+              </span>
+              <br>
+              <span class="fr-badge fr-badge--info">Hors zone</span>
+            </div>
+          </div>
+          <div class="fr-col-6">
+            <div class="fr-text fr-text--lg">
+              <strong>Zonage urbain</strong>
+              <button class="fr-btn--tooltip fr-btn fr-btn--sm" type="button" aria-describedby="tooltip-zonage-urb">
+                <span class="fr-icon-information-line" aria-hidden="true"></span>
+              </button>
+              <span class="fr-tooltip fr-placement" id="tooltip-zonage-urb" role="tooltip">
+                Extrait du Plan Local d'Urbanisme communal via le Géoportail de l'Urbanisme
+              </span>
+              <br>
+              <span class="fr-badge fr-badge--blue-france">Zone urbaine – U</span>
+            </div>
+          </div>
+          <div class="fr-col-6">
+            <div class="fr-text fr-text--lg">
+              <strong>Zonage patrimonial</strong>
+              <button class="fr-btn--tooltip fr-btn fr-btn--sm" type="button" aria-describedby="tooltip-patrimoine">
+                <span class="fr-icon-information-line" aria-hidden="true"></span>
+              </button>
+              <span class="fr-tooltip fr-placement" id="tooltip-patrimoine" role="tooltip">
+                Données du service des Monuments Historiques (base Mérimée)
+              </span>
+              <br>
+              <span class="fr-badge fr-badge--info">Non concerné</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation buttons -->
+  <div id="navigation-buttons" class="fr-mt-4w collapsed" style="text-align: center;">
+    <button id="next-btn" class="fr-btn fr-btn--lg" onclick="goToStep(2)">
+      Suivant
+      <span class="fr-icon-arrow-right-s-line fr-icon--sm" aria-hidden="true"></span>
+    </button>
+  </div>
 </div>
 
 <script>
+  function switchMode(mode) {
+    const carteMode = document.getElementById('carte-mode');
+    const idMode = document.getElementById('id-mode');
+
+    // Masquer tous les modes
+    carteMode.classList.remove('active');
+    idMode.classList.remove('active');
+
+    // Afficher le mode sélectionné
+    if (mode === 'carte') {
+      carteMode.classList.add('active');
+    } else if (mode === 'id') {
+      idMode.classList.add('active');
+    }
+
+    // Réinitialiser l'affichage des infos si nécessaire
+    const infoCol = document.getElementById('info-col');
+    const navigationButtons = document.getElementById('navigation-buttons');
+  }
+
   function selectParcel(event) {
     if (event) {
       event.stopPropagation();
     }
 
-    // Récupérer les éléments
-    const mapCol = document.getElementById('map-col');
     const infoCol = document.getElementById('info-col');
     const navigationButtons = document.getElementById('navigation-buttons');
     const point = document.getElementById('parcel-point');
 
-    // Réorganiser le layout : carte en col-8, infos en col-4
-    mapCol.className = 'fr-col-8';
-    infoCol.style.display = 'block';
-
-    // Afficher les boutons de navigation
-    navigationButtons.style.display = 'block';
+    // Afficher les éléments
+    infoCol.classList.add('expanded');
+    navigationButtons.classList.add('expanded');
 
     // Animation du point
     point.style.transform = 'scale(1.2)';
@@ -71,24 +442,16 @@
     setTimeout(() => {
       point.style.transform = 'scale(1)';
     }, 200);
+  }
 
-    // Animation d'apparition du panneau d'infos
-    infoCol.style.opacity = '0';
-    infoCol.style.transform = 'translateX(20px)';
-    infoCol.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+  function searchParcelById() {
+    const parcelId = document.getElementById('parcel-id').value.trim();
+    const infoCol = document.getElementById('info-col');
+    const navigationButtons = document.getElementById('navigation-buttons');
 
-    setTimeout(() => {
-      infoCol.style.opacity = '1';
-      infoCol.style.transform = 'translateX(0)';
-    }, 50);
-
-    // Animation d'apparition des boutons
-    navigationButtons.style.opacity = '0';
-    navigationButtons.style.transition = 'opacity 0.3s ease';
-
-    setTimeout(() => {
-      navigationButtons.style.opacity = '1';
-    }, 300);
+    // Afficher les résultats
+    infoCol.classList.add('expanded');
+    navigationButtons.classList.add('expanded');
   }
 
   function goToStep(step) {
