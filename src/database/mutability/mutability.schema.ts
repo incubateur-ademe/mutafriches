@@ -24,6 +24,9 @@ export const mutabilityResults = pgTable('mutability_results', {
   // Fiabilité
   fiabilite: decimal('fiabilite', { precision: 3, scale: 1 }).notNull(),
 
+  // Pertinence des résultats pour l'utilisateur
+  pertinenceReponse: varchar('pertinence_reponse', { length: 10 }), // 'OUI', 'NON', ou null
+
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 

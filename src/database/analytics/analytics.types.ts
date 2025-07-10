@@ -21,6 +21,7 @@ export const ActionTypes = {
   DETAILS_CLICKED: 'details_clicked',
   CONTACT_CLICKED: 'contact_clicked',
   TOOL_LINK_CLICKED: 'tool_link_clicked',
+  PERTINENCE_ANSWERED: 'pertinence_answered',
 } as const;
 
 export type ActionType = (typeof ActionTypes)[keyof typeof ActionTypes];
@@ -32,6 +33,7 @@ export interface AnalyticsMetrics {
   detailsClicked: number;
   contactClicked: number;
   toolLinkClicked: number;
+  pertinenceAnswered: number;
 }
 
 export interface IntegratorStats {
@@ -45,4 +47,14 @@ export interface ConversionRates {
   detailsClickRate: number;
   contactClickRate: number;
   toolClickRate: number;
+  pertinenceResponseRate: number;
+}
+
+export interface PertinenceStats {
+  totalResponses: number;
+  ouiCount: number;
+  nonCount: number;
+  ouiPercentage: number;
+  nonPercentage: number;
+  responseRate: number;
 }

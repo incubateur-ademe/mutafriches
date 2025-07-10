@@ -17,6 +17,14 @@ export const UsageTypes = {
 
 export type UsageType = (typeof UsageTypes)[keyof typeof UsageTypes];
 
+export const PertinenceReponses = {
+  OUI: 'OUI',
+  NON: 'NON',
+} as const;
+
+export type PertinenceReponse =
+  (typeof PertinenceReponses)[keyof typeof PertinenceReponses];
+
 // Types métier pour la mutabilité
 export interface UsageIndices {
   residentiel: number;
@@ -33,6 +41,7 @@ export interface MutabilityAnalysis {
   fiabilite: number;
   bestUsage: UsageType;
   worstUsage: UsageType;
+  pertinenceReponse?: PertinenceReponse;
 }
 
 export interface UsageRanking {

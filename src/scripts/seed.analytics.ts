@@ -47,6 +47,7 @@ async function bootstrap() {
     let detailsClicked = 0;
     let contactClicked = 0;
     let toolLinkClicked = 0;
+    let pertinenceAnswered = 0;
 
     // Générer 10-30 sessions par jour
     for (let day = 0; day < totalDays; day++) {
@@ -137,7 +138,30 @@ async function bootstrap() {
             createdAt: completionTime,
           });
 
-          // 3. 45% de ceux qui terminent cliquent sur "voir tous les résultats détaillés"
+          // 3. 35% de ceux qui terminent répondent à la question de pertinence
+          if (Math.random() < 0.35) {
+            const pertinenceTime = new Date(
+              completionTime.getTime() + Math.random() * 180000, // 0-3 minutes après
+            );
+
+            // 72% répondent OUI, 28% répondent NON
+            const reponse = Math.random() < 0.72 ? 'OUI' : 'NON';
+
+            // Mettre à jour le résultat avec la réponse de pertinence
+            await analyticsService.updatePertinenceReponse(sessionId, reponse);
+
+            // Tracker l'action
+            await analyticsService.trackUserAction({
+              sessionId,
+              actionType: ActionTypes.PERTINENCE_ANSWERED,
+              actionData: JSON.stringify({ reponse }),
+              timestamp: pertinenceTime,
+            });
+
+            pertinenceAnswered++;
+          }
+
+          // 4. 45% de ceux qui terminent cliquent sur "voir tous les résultats détaillés"
           if (Math.random() < 0.45) {
             const detailsTime = new Date(
               completionTime.getTime() + Math.random() * 120000,
@@ -150,7 +174,7 @@ async function bootstrap() {
             detailsClicked++;
           }
 
-          // 4. 28% de ceux qui terminent cliquent sur "je souhaite être contacté"
+          // 5. 28% de ceux qui terminent cliquent sur "je souhaite être contacté"
           if (Math.random() < 0.28) {
             const contactTime = new Date(
               completionTime.getTime() + Math.random() * 300000,
@@ -163,7 +187,7 @@ async function bootstrap() {
             contactClicked++;
           }
 
-          // 5. 22% de ceux qui terminent cliquent sur un lien d'outil annexe
+          // 6. 22% de ceux qui terminent cliquent sur un lien d'outil annexe
           if (Math.random() < 0.22) {
             const toolTime = new Date(
               completionTime.getTime() + Math.random() * 240000,
@@ -192,12 +216,24 @@ async function bootstrap() {
       );
     }
 
+    // Récupérer les stats de pertinence pour l'affichage final
+    const pertinenceStats = await analyticsService.getPertinenceStats();
+
     // Afficher les statistiques finales
     console.log('\nSTATISTIQUES GÉNÉRÉES:');
     console.log(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
-    console.log(`📈 Total sessions créées: ${totalSessions.toLocaleString()}`);
+    console.log(`Total sessions créées: ${totalSessions.toLocaleString()}`);
     console.log(
       `Sessions terminées: ${completedSessions.toLocaleString()} (${((completedSessions / totalSessions) * 100).toFixed(1)}%)`,
+    );
+    console.log(
+      `Réponses pertinence: ${pertinenceAnswered.toLocaleString()} (${((pertinenceAnswered / completedSessions) * 100).toFixed(1)}% des terminées)`,
+    );
+    console.log(
+      `  - OUI: ${pertinenceStats.ouiCount} (${pertinenceStats.ouiPercentage.toFixed(1)}% des réponses)`,
+    );
+    console.log(
+      `  - NON: ${pertinenceStats.nonCount} (${pertinenceStats.nonPercentage.toFixed(1)}% des réponses)`,
     );
     console.log(
       `Clics "détails": ${detailsClicked.toLocaleString()} (${((detailsClicked / completedSessions) * 100).toFixed(1)}% des terminées)`,
