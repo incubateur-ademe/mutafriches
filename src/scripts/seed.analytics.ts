@@ -17,14 +17,13 @@ async function bootstrap() {
     await analyticsService.clearAllData();
     console.log('Données existantes supprimées');
 
-    // 1. Création d'intégrateurs fictifs
+    // 1. Création d'intégrateurs
     const integrators = [
-      { name: 'Bénéfriches', domain: 'benefriches.beta.gouv.fr' },
-      { name: 'UrbanVitaliz', domain: 'urbanvitaliz.beta.gouv.fr' },
-      {
-        name: 'Collectivité de Nantes Métropole',
-        domain: 'nantesmetropole.fr',
-      },
+      { name: 'Bénéfriches', domain: 'https://benefriches.beta.gouv.fr' },
+      { name: 'UrbanVitaliz', domain: 'https://urbanvitaliz.beta.gouv.fr' },
+      { name: 'Cartofriches', domain: 'https://cartofriches.cerema.fr/' },
+      { name: 'Total Energies', domain: 'https://www.totalenergies.fr/' },
+      { name: 'Groupe François 1er', domain: 'https://francois1er.com/' },
     ];
 
     const createdIntegrators: Integrator[] = [];
