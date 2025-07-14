@@ -80,12 +80,12 @@ export class TemplateService {
   renderFormStep(stepNumber: number, formData: MockDataResponse = {}): string {
     const stepConfig: StepConfigMap = {
       1: {
-        title: 'Choix de la parcelle',
-        nextTitle: 'Informations complémentaires',
+        title: 'Votre site en friche',
+        nextTitle: 'Données complémentaires',
         component: 'step1-map',
       },
       2: {
-        title: 'Informations complémentaires',
+        title: 'Données complémentaires',
         nextTitle: 'Résultats',
         component: 'step2-manual-form',
       },

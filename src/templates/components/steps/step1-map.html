@@ -21,14 +21,9 @@
 </style>
 
 <div class="fr-mb-4w">
-  <h3>Sélectionnez une parcelle</h3>
-  <p class="fr-text--sm">Choisissez votre méthode de sélection de parcelle</p>
-
+  <h3>Sélectionnez la parcelle concernée</h3>
   <!-- Contrôle segmenté pour choisir le mode -->
   <fieldset class="fr-segmented fr-mb-4w">
-    <legend class="fr-segmented__legend">
-      Mode de sélection
-    </legend>
     <div class="fr-segmented__elements">
       <div class="fr-segmented__element">
         <input value="carte" type="radio" id="mode-carte" name="selection-mode" checked onchange="switchMode('carte')">
@@ -47,6 +42,7 @@
 
   <!-- Mode carte -->
   <div id="carte-mode" class="input-mode active">
+    <p class="fr-text--sm">Cliquez sur la carte pour sélectionner la parcelle à analyser</p>
     <div class="fr-grid-row fr-grid-row--gutters">
       <div id="map-col" class="fr-col-12">
         <!-- Carte fictive -->
@@ -71,8 +67,8 @@
 
   <!-- Mode saisie Identifiant Parcelle -->
   <div id="id-mode" class="input-mode">
+    <p class="fr-text--sm">Saisissez l'identifiant de la parcelle à analyser</p>
     <div class="fr-grid-row fr-grid-row--gutters">
-
       <!-- Message d'info pour l'ID -->
       <div class="fr-callout fr-callout--green-emeraude fr-mt-2w">
         <p class="fr-callout__text">
@@ -105,14 +101,11 @@
   </div>
 
   <!-- Zone informations déduites -->
-  <div id="info-col" class="fr-col-12 collapsed">
-    <!-- Bloc info parcelle -->
-    <div class="fr-callout fr-callout--green-emeraude fr-mt-4w">
-      <p class="fr-callout__text">
-        Les informations ci-dessus ont été récupérées automatiquement.
-        Vous pourrez compléter avec des données manuelles à l'étape suivante.
-      </p>
-    </div>
+  <div id="info-col" class="fr-col-12 collapsed fr-mt-4w">
+    <hr />
+    <h3>Vérifiez les données publiques</h3>
+    <p class="fr-text--sm">Ces informations ont été collectée automatiquement depuis les bases de données publiques,
+      assurez-vous qu'elles soient correctes.</p>
 
     <!-- Onglets -->
     <div class="fr-tabs fr-mt-4w">
@@ -120,19 +113,19 @@
         <li role="presentation">
           <button type="button" id="tab-infos" class="fr-tabs__tab" tabindex="0" role="tab" aria-selected="true"
             aria-controls="tab-infos-panel">
-            Informations parcelle
+            Informations du site
           </button>
         </li>
         <li role="presentation">
           <button type="button" id="tab-env" class="fr-tabs__tab" tabindex="-1" role="tab" aria-selected="false"
             aria-controls="tab-env-panel">
-            Environnement de la parcelle
+            Environnement du site
           </button>
         </li>
         <li role="presentation">
           <button type="button" id="tab-risques" class="fr-tabs__tab" tabindex="-1" role="tab" aria-selected="false"
             aria-controls="tab-risques-panel">
-            Risques & Zones
+            Risques & Zonage
           </button>
         </li>
       </ul>
@@ -141,6 +134,19 @@
       <div id="tab-infos-panel" class="fr-tabs__panel fr-tabs__panel--selected" role="tabpanel"
         aria-labelledby="tab-infos" tabindex="0">
         <div class="fr-grid-row fr-grid-row--gutters">
+          <div class="fr-col-6">
+            <div class="fr-text fr-text--lg">
+              <strong>Commune</strong>
+              <button class="fr-btn--tooltip fr-btn fr-btn--sm" type="button" aria-describedby="tooltip-commune">
+                <span class="fr-icon-information-line" aria-hidden="true"></span>
+              </button>
+              <span class="fr-tooltip fr-placement" id="tooltip-commune" role="tooltip">
+                Donnée récupérée depuis l'API du cadastre national (source: DGFiP)
+              </span>
+              <br>
+              <span class="fr-text--lg">Chanteloup-en-brie</span>
+            </div>
+          </div>
           <div class="fr-col-6">
             <div class="fr-text fr-text--lg">
               <strong>Identifiant parcelle</strong>
@@ -156,7 +162,7 @@
           </div>
           <div class="fr-col-6">
             <div class="fr-text fr-text--lg">
-              <strong>Surface parcelle</strong>
+              <strong>Surface du site</strong>
               <button class="fr-btn--tooltip fr-btn fr-btn--sm" type="button" aria-describedby="tooltip-surface">
                 <span class="fr-icon-information-line" aria-hidden="true"></span>
               </button>
@@ -214,7 +220,7 @@
         <div class="fr-grid-row fr-grid-row--gutters">
           <div class="fr-col-6">
             <div class="fr-text fr-text--lg">
-              <strong>Centre ville</strong>
+              <strong>Site en centre ville</strong>
               <button class="fr-btn--tooltip fr-btn fr-btn--sm" type="button" aria-describedby="tooltip-centre">
                 <span class="fr-icon-information-line" aria-hidden="true"></span>
               </button>
@@ -227,7 +233,7 @@
           </div>
           <div class="fr-col-6">
             <div class="fr-text fr-text--lg">
-              <strong>Distance autoroute</strong>
+              <strong>Distance de l'autoroute</strong>
               <button class="fr-btn--tooltip fr-btn fr-btn--sm" type="button" aria-describedby="tooltip-autoroute">
                 <span class="fr-icon-information-line" aria-hidden="true"></span>
               </button>
@@ -235,12 +241,12 @@
                 Calculée via l'API de routage du service public de la donnée
               </span>
               <br>
-              <span class="fr-text--lg">Entre 1 et 2km</span>
+              <span class="fr-badge fr-badge--success">Entre 1 et 2km</span>
             </div>
           </div>
           <div class="fr-col-6">
             <div class="fr-text fr-text--lg">
-              <strong>Distance train et TC</strong>
+              <strong>Distance au transport en commun</strong>
               <button class="fr-btn--tooltip fr-btn fr-btn--sm" type="button" aria-describedby="tooltip-transport">
                 <span class="fr-icon-information-line" aria-hidden="true"></span>
               </button>
@@ -253,7 +259,7 @@
           </div>
           <div class="fr-col-6">
             <div class="fr-text fr-text--lg">
-              <strong>Proximité commerces/services</strong>
+              <strong>Proximité des commerces et services</strong>
               <button class="fr-btn--tooltip fr-btn fr-btn--sm" type="button" aria-describedby="tooltip-commerces">
                 <span class="fr-icon-information-line" aria-hidden="true"></span>
               </button>
@@ -266,7 +272,7 @@
           </div>
           <div class="fr-col-6">
             <div class="fr-text fr-text--lg">
-              <strong>Distance raccordement BT/HT</strong>
+              <strong>Distance au raccordement électrique</strong>
               <button class="fr-btn--tooltip fr-btn fr-btn--sm" type="button" aria-describedby="tooltip-raccordement">
                 <span class="fr-icon-information-line" aria-hidden="true"></span>
               </button>
@@ -274,7 +280,7 @@
                 Information fournie par l'API géoportail d'Enedis
               </span>
               <br>
-              <span class="fr-text--lg">Moins de 1km</span>
+              <span class="fr-badge fr-badge--success">Moins de 1km</span>
             </div>
           </div>
           <div class="fr-col-6">
@@ -290,19 +296,7 @@
               <span class="fr-text--lg fr-text--bold">4,9%</span>
             </div>
           </div>
-          <div class="fr-col-6">
-            <div class="fr-text fr-text--lg">
-              <strong>Trame verte et bleue</strong>
-              <button class="fr-btn--tooltip fr-btn fr-btn--sm" type="button" aria-describedby="tooltip-trame">
-                <span class="fr-icon-information-line" aria-hidden="true"></span>
-              </button>
-              <span class="fr-tooltip fr-placement" id="tooltip-trame" role="tooltip">
-                Référentiel établi via les données du Muséum National d'Histoire Naturelle
-              </span>
-              <br>
-              <span class="fr-badge fr-badge--warning">Hors trame</span>
-            </div>
-          </div>
+
         </div>
       </div>
 
@@ -311,7 +305,7 @@
         <div class="fr-grid-row fr-grid-row--gutters">
           <div class="fr-col-6">
             <div class="fr-text fr-text--lg">
-              <strong>Risques technologiques</strong>
+              <strong>Présence de risques technologiques</strong>
               <button class="fr-btn--tooltip fr-btn fr-btn--sm" type="button" aria-describedby="tooltip-techno">
                 <span class="fr-icon-information-line" aria-hidden="true"></span>
               </button>
@@ -324,7 +318,7 @@
           </div>
           <div class="fr-col-6">
             <div class="fr-text fr-text--lg">
-              <strong>Risques naturels</strong>
+              <strong>Présence de risques naturels</strong>
               <button class="fr-btn--tooltip fr-btn fr-btn--sm" type="button" aria-describedby="tooltip-naturels">
                 <span class="fr-icon-information-line" aria-hidden="true"></span>
               </button>
@@ -337,20 +331,7 @@
           </div>
           <div class="fr-col-6">
             <div class="fr-text fr-text--lg">
-              <strong>Potentiel de gains écologiques</strong>
-              <button class="fr-btn--tooltip fr-btn fr-btn--sm" type="button" aria-describedby="tooltip-ecologique">
-                <span class="fr-icon-information-line" aria-hidden="true"></span>
-              </button>
-              <span class="fr-tooltip fr-placement" id="tooltip-ecologique" role="tooltip">
-                Calculé via l'algorithme d'analyse environnementale de l'ADEME
-              </span>
-              <br>
-              <span class="fr-badge fr-badge--warning">Moyen</span>
-            </div>
-          </div>
-          <div class="fr-col-6">
-            <div class="fr-text fr-text--lg">
-              <strong>Zonage environnemental</strong>
+              <strong>Type de zonage environnemental</strong>
               <button class="fr-btn--tooltip fr-btn fr-btn--sm" type="button" aria-describedby="tooltip-zonage-env">
                 <span class="fr-icon-information-line" aria-hidden="true"></span>
               </button>
@@ -363,7 +344,7 @@
           </div>
           <div class="fr-col-6">
             <div class="fr-text fr-text--lg">
-              <strong>Zonage urbain</strong>
+              <strong>Zonage réglementaire</strong>
               <button class="fr-btn--tooltip fr-btn fr-btn--sm" type="button" aria-describedby="tooltip-zonage-urb">
                 <span class="fr-icon-information-line" aria-hidden="true"></span>
               </button>
@@ -376,7 +357,7 @@
           </div>
           <div class="fr-col-6">
             <div class="fr-text fr-text--lg">
-              <strong>Zonage patrimonial</strong>
+              <strong>Type de zonage patrimonial</strong>
               <button class="fr-btn--tooltip fr-btn fr-btn--sm" type="button" aria-describedby="tooltip-patrimoine">
                 <span class="fr-icon-information-line" aria-hidden="true"></span>
               </button>
@@ -387,13 +368,26 @@
               <span class="fr-badge fr-badge--info">Non concerné</span>
             </div>
           </div>
+          <div class="fr-col-6">
+            <div class="fr-text fr-text--lg">
+              <strong>Continuité écologique (trame verte et bleue)</strong>
+              <button class="fr-btn--tooltip fr-btn fr-btn--sm" type="button" aria-describedby="tooltip-trame">
+                <span class="fr-icon-information-line" aria-hidden="true"></span>
+              </button>
+              <span class="fr-tooltip fr-placement" id="tooltip-trame" role="tooltip">
+                Référentiel établi via les données du Muséum National d'Histoire Naturelle
+              </span>
+              <br>
+              <span class="fr-badge fr-badge--warning">Hors trame</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
   <!-- Navigation buttons -->
-  <div id="navigation-buttons" class="fr-mt-4w collapsed" style="text-align: center;">
+  <div id="navigation-buttons" class="fr-mt-4w collapsed" style="text-align: right;">
     <button id="next-btn" class="fr-btn" onclick="goToStep(2)">
       Suivant
       <span class="fr-icon-arrow-right-s-line fr-icon--sm" aria-hidden="true"></span>
