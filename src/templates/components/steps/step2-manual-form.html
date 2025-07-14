@@ -1,17 +1,13 @@
 <div class="fr-mb-4w">
-  <h3>Informations à renseigner</h3>
-  <p class="fr-text--sm">Complétez les informations suivantes pour affiner l'analyse</p>
+  <h3>Renseignez des données complémentaires</h3>
+  <p class="fr-text--sm">Complétez les champs suivants pour améliorer la fiabilité des résultats qui vont suivre</p>
 
-  <div class="fr-callout fr-callout--green-emeraude fr-mt-4w">
-    <p class="fr-callout__text">
-      Ces données permettront d'affiner le calcul de l'indice de mutabilité et d'améliorer la fiabilité des résultats.
-    </p>
-  </div>
+
   <form id="manual-form">
-    <!-- Terrain & Bâti -->
+    <!-- Infos du site -->
     <fieldset class="fr-fieldset fr-mb-4w">
       <legend class="fr-fieldset__legend fr-text--lead">
-        🏗️ Terrain & Bâti
+        🏗️ Informations du site
       </legend>
 
       <div class="fr-fieldset__content">
@@ -19,8 +15,7 @@
           <div class="fr-col-12 fr-col-md-6">
             <div class="fr-select-group">
               <label class="fr-label" for="terrain-viabilise">
-                Terrain viabilisé
-                <span class="fr-hint-text">Le terrain dispose-t-il des réseaux de base ?</span>
+                Site connecté aux réseaux (eaux & électricité)
               </label>
               <select class="fr-select" id="terrain-viabilise" name="terrainViabilise" required>
                 <option value="">Sélectionner une option</option>
@@ -34,8 +29,7 @@
           <div class="fr-col-12 fr-col-md-6">
             <div class="fr-select-group">
               <label class="fr-label" for="etat-bati">
-                État du bâti et infrastructure
-                <span class="fr-hint-text">État général des constructions existantes</span>
+                État des constructions
               </label>
               <select class="fr-select" id="etat-bati" name="etatBati" required>
                 <option value="">Sélectionner une option</option>
@@ -55,7 +49,6 @@
             <div class="fr-select-group">
               <label class="fr-label" for="presence-pollution">
                 Présence de pollution
-                <span class="fr-hint-text">Pollution des sols connue ou suspectée</span>
               </label>
               <select class="fr-select" id="presence-pollution" name="presencePollution" required>
                 <option value="">Sélectionner une option</option>
@@ -67,23 +60,11 @@
               </select>
             </div>
           </div>
-        </div>
-      </div>
-    </fieldset>
 
-    <!-- Qualité -->
-    <fieldset class="fr-fieldset fr-mb-4w">
-      <legend class="fr-fieldset__legend fr-text--lead">
-        ⭐ Qualité
-      </legend>
-
-      <div class="fr-fieldset__content">
-        <div class="fr-grid-row fr-grid-row--gutters">
           <div class="fr-col-12 fr-col-md-6">
             <div class="fr-select-group">
               <label class="fr-label" for="valeur-architecturale">
-                Valeur architecturale et/ou histoire sociale
-                <span class="fr-hint-text">Intérêt architectural et historique du bâti</span>
+                Intérêt architectural et historique des constructions
               </label>
               <select class="fr-select" id="valeur-architecturale" name="valeurArchitecturale" required>
                 <option value="">Sélectionner une option</option>
@@ -96,12 +77,24 @@
               </select>
             </div>
           </div>
+        </div>
+      </div>
+    </fieldset>
+
+    <!-- Environnement du site -->
+    <fieldset class="fr-fieldset fr-mb-4w">
+      <legend class="fr-fieldset__legend fr-text--lead">
+        ⭐ Environnement du site
+      </legend>
+
+      <div class="fr-fieldset__content">
+        <div class="fr-grid-row fr-grid-row--gutters">
+
 
           <div class="fr-col-12 fr-col-md-6">
             <div class="fr-select-group">
               <label class="fr-label" for="qualite-paysagere">
-                Paysage
-                <span class="fr-hint-text">Insertion dans le paysage environnant</span>
+                Intérêt du paysage environnant
               </label>
               <select class="fr-select" id="qualite-paysagere" name="qualitePaysagere" required>
                 <option value="">Sélectionner une option</option>
@@ -118,8 +111,7 @@
           <div class="fr-col-12 fr-col-md-6">
             <div class="fr-select-group">
               <label class="fr-label" for="qualite-desserte">
-                Qualité de la voie de desserte
-                <span class="fr-hint-text">Accessibilité par les voies de circulation</span>
+                Accessibilité par les voies de circulation
               </label>
               <select class="fr-select" id="qualite-desserte" name="qualiteDesserte" required>
                 <option value="">Sélectionner une option</option>
