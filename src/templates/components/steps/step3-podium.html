@@ -134,22 +134,8 @@
 
   </div>
 
-  <!-- Indice de fiabilité -->
-  <div class="fr-callout fr-callout--green-emeraude fr-mb-4w">
-    <h4 class="fr-callout__title">🎯 Indice de fiabilité global</h4>
-    <div class="fr-callout__text">
-      <div style="display: flex; align-items: center; gap: 1rem;">
-        <div style="font-size: 2rem; font-weight: bold; color: #18753c;">{{fiabilite}}/10</div>
-        <div>
-          <p style="margin: 0; font-weight: bold;">Très fiable</p>
-          <p style="margin: 0; font-size: 0.9rem;">Les données sont suffisamment précises pour une analyse robuste</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <!-- Choix pertinence résultats  -->
-  <div class="fr-mt-4w" style="display: flex; justify-content: center;">
+  <div class="fr-mt-4w fr-mb-4w" style="display: flex; justify-content: center;">
     <div style="display: flex; align-items: center; gap: 1rem;">
       <p class="fr-text--sm" style="margin: 0; font-weight: normal;">
         Ce classement vous semble-t-il pertinent ?
@@ -168,6 +154,22 @@
       </div>
     </div>
   </div>
+
+
+  <!-- Indice de fiabilité -->
+  <div class="fr-callout fr-callout--green-emeraude fr-mb-4w">
+    <h4 class="fr-callout__title">🎯 Indice de fiabilité global</h4>
+    <div class="fr-callout__text">
+      <div style="display: flex; align-items: center; gap: 1rem;">
+        <div style="font-size: 2rem; font-weight: bold; color: #18753c;">{{fiabilite}}/10</div>
+        <div>
+          <p style="margin: 0; font-weight: bold;">Très fiable</p>
+          <p style="margin: 0; font-size: 0.9rem;">Les données sont suffisamment précises pour une analyse robuste</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
 
   <!-- Tableau des résultats complets -->
   <div class="fr-accordions-group fr-mt-4w">
@@ -193,7 +195,7 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr class="fr-table__row--green">
+                    <tr>
                       <td><strong>1er</strong></td>
                       <td><strong>Logement et commerces de proximité</strong></td>
                       <td>
@@ -204,7 +206,7 @@
                       </td>
                       <td><span class="fr-badge fr-badge--success fr-badge--no-icon">Très favorable</span></td>
                     </tr>
-                    <tr class="fr-table__row--blue">
+                    <tr>
                       <td><strong>2e</strong></td>
                       <td><strong>Équipements publics</strong></td>
                       <td>
@@ -216,8 +218,8 @@
                       <td><span class="fr-badge fr-badge--info fr-badge--no-icon">Favorable</span></td>
                     </tr>
                     <tr>
-                      <td>3e</td>
-                      <td>Bureaux</td>
+                      <td><strong>3e</strong></td>
+                      <td><strong>Bureaux</strong></td>
                       <td>
                         <div style="display: flex; align-items: center; gap: 0.5rem;">
                           <div style="background: #666; height: 8px; width: 60%; border-radius: 4px;"></div>

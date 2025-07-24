@@ -11,11 +11,6 @@ export class AppController {
     private readonly databaseService: DatabaseService,
   ) {}
 
-  @Get()
-  getHello() {
-    return { message: 'Mutafriches API is running!' };
-  }
-
   @Get('health')
   async healthCheck() {
     const timestamp = new Date().toISOString();
@@ -48,8 +43,8 @@ export class AppController {
     return health;
   }
 
-  @Get('iframe')
-  getIframe(@Res() res: Response): void {
+  @Get()
+  get(@Res() res: Response): void {
     const mockData: MockDataResponse = this.getMockDataForStep(1);
     const html = this.templateService.renderFormStep(1, mockData);
     res.setHeader('Content-Type', 'text/html');
