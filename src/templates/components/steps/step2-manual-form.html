@@ -2,134 +2,163 @@
   <h3>Renseignez des données complémentaires</h3>
   <p class="fr-text--sm">Complétez les champs suivants pour améliorer la fiabilité des résultats qui vont suivre</p>
 
-
   <form id="manual-form">
+
     <!-- Infos du site -->
-    <fieldset class="fr-fieldset fr-mb-4w">
-      <legend class="fr-fieldset__legend fr-text--lead">
-        🏗️ Informations du site
-      </legend>
+    <h5>Informations du site</h5>
 
-      <div class="fr-fieldset__content">
-        <div class="fr-grid-row fr-grid-row--gutters">
-          <div class="fr-col-12 fr-col-md-6">
-            <div class="fr-select-group">
-              <label class="fr-label" for="terrain-viabilise">
-                Site connecté aux réseaux (eaux & électricité)
-              </label>
-              <select class="fr-select" id="terrain-viabilise" name="terrainViabilise" required>
-                <option value="">Sélectionner une option</option>
-                <option value="oui">Oui</option>
-                <option value="non">Non</option>
-                <option value="ne-sait-pas" selected>Ne sait pas</option>
-              </select>
-            </div>
-          </div>
+    <div class="fr-grid-row fr-grid-row--gutters fr-mb-4w">
 
-          <div class="fr-col-12 fr-col-md-6">
-            <div class="fr-select-group">
-              <label class="fr-label" for="etat-bati">
-                État des constructions
-              </label>
-              <select class="fr-select" id="etat-bati" name="etatBati" required>
-                <option value="">Sélectionner une option</option>
-                <option value="pas-de-bati">Pas de bâti</option>
-                <option value="en-ruine-dangereux">En ruine / dangereux</option>
-                <option value="forte-degradation">Forte dégradation</option>
-                <option value="etat-moyen">État moyen</option>
-                <option value="bon-etat-apparent">Bon état apparent</option>
-                <option value="etat-remarquable">État remarquable</option>
-                <option value="batiments-heterogenes">Bâtiments hétérogènes</option>
-                <option value="ne-sait-pas" selected>Ne sait pas</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="fr-col-12 fr-col-md-6">
-            <div class="fr-select-group">
-              <label class="fr-label" for="presence-pollution">
-                Présence de pollution
-              </label>
-              <select class="fr-select" id="presence-pollution" name="presencePollution" required>
-                <option value="">Sélectionner une option</option>
-                <option value="non">Non</option>
-                <option value="deja-geree">Déjà gérée</option>
-                <option value="oui-composes-volatils">Oui - composés volatils</option>
-                <option value="oui-autres-composes">Oui - autres composés</option>
-                <option value="ne-sait-pas" selected>Ne sait pas</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="fr-col-12 fr-col-md-6">
-            <div class="fr-select-group">
-              <label class="fr-label" for="valeur-architecturale">
-                Intérêt architectural et historique des constructions
-              </label>
-              <select class="fr-select" id="valeur-architecturale" name="valeurArchitecturale" required>
-                <option value="">Sélectionner une option</option>
-                <option value="sans-interet">Sans intérêt</option>
-                <option value="banal-infra-ordinaire">Banal / infra-ordinaire</option>
-                <option value="ordinaire">Ordinaire</option>
-                <option value="interet-fort">Intérêt fort</option>
-                <option value="exceptionnel">Exceptionnel</option>
-                <option value="ne-sait-pas" selected>Ne sait pas</option>
-              </select>
-            </div>
+      <!-- Type de propriétaire -->
+      <div class="fr-col-12 fr-col-md-6">
+        <div class="fr-select-group">
+          <label class="fr-label" for="type-proprietaire">
+            Type de propriétaire <span class="fr-text--red">*</span>
+          </label>
+          <select class="fr-select" id="type-proprietaire" name="typeProprietaire" required>
+            <option value="" selected>Sélectionner une option</option>
+            <option value="public">Public</option>
+            <option value="prive">Privé</option>
+            <option value="mixte">Mixte public et privé</option>
+            <option value="copro-indivision">Copropriété / Indivision</option>
+            <option value="ne-sait-pas">Ne sait pas</option>
+          </select>
+          <div class="fr-error-text" id="type-proprietaire-error" style="display: none;">
+            Obligatoire
           </div>
         </div>
       </div>
-    </fieldset>
+
+      <!-- Réseaux d'eaux -->
+      <div class="fr-col-12 fr-col-md-6">
+        <div class="fr-select-group">
+          <label class="fr-label" for="reseau-eaux">
+            Site connecté aux réseaux d'eaux <span class="fr-text--red">*</span>
+          </label>
+          <select class="fr-select" id="reseau-eaux" name="reseauEaux" required>
+            <option value="" selected>Sélectionner une option</option>
+            <option value="oui">Oui</option>
+            <option value="non">Non</option>
+            <option value="ne-sait-pas">Ne sait pas</option>
+          </select>
+          <div class="fr-error-text" id="reseau-eaux-error" style="display: none;">
+            Obligatoire
+          </div>
+        </div>
+      </div>
+
+      <!-- Etat construction -->
+      <div class="fr-col-12 fr-col-md-6">
+        <div class="fr-select-group">
+          <label class="fr-label" for="etat-bati">
+            État des constructions <span class="fr-text--red">*</span>
+          </label>
+          <select class="fr-select" id="etat-bati" name="etatBati" required>
+            <option value="" selected>Sélectionner une option</option>
+            <option value="pas-de-bati">Pas de bâti</option>
+            <option value="en-ruine-dangereux">En ruine / dangereux</option>
+            <option value="forte-degradation">Forte dégradation</option>
+            <option value="etat-moyen">État moyen</option>
+            <option value="bon-etat-apparent">Bon état apparent</option>
+            <option value="etat-remarquable">État remarquable</option>
+            <option value="batiments-heterogenes">Bâtiments hétérogènes</option>
+            <option value="ne-sait-pas">Ne sait pas</option>
+          </select>
+          <div class="fr-error-text" id="etat-bati-error" style="display: none;">
+            Obligatoire
+          </div>
+        </div>
+      </div>
+
+      <!--  Pollution -->
+      <div class="fr-col-12 fr-col-md-6">
+        <div class="fr-select-group">
+          <label class="fr-label" for="presence-pollution">
+            Présence de pollution <span class="fr-text--red">*</span>
+          </label>
+          <select class="fr-select" id="presence-pollution" name="presencePollution" required>
+            <option value="" selected>Sélectionner une option</option>
+            <option value="non">Non</option>
+            <option value="deja-geree">Déjà gérée</option>
+            <option value="oui-composes-volatils">Oui - composés volatils</option>
+            <option value="oui-autres-composes">Oui - autres composés</option>
+            <option value="ne-sait-pas">Ne sait pas</option>
+          </select>
+          <div class="fr-error-text" id="presence-pollution-error" style="display: none;">
+            Obligatoire
+          </div>
+        </div>
+      </div>
+
+      <!--  Intérêt architectural -->
+      <div class="fr-col-12 fr-col-md-6">
+        <div class="fr-select-group">
+          <label class="fr-label" for="valeur-architecturale">
+            Intérêt architectural et historique des constructions <span class="fr-text--red">*</span>
+          </label>
+          <select class="fr-select" id="valeur-architecturale" name="valeurArchitecturale" required>
+            <option value="" selected>Sélectionner une option</option>
+            <option value="sans-interet">Sans intérêt</option>
+            <option value="banal-infra-ordinaire">Banal / infra-ordinaire</option>
+            <option value="ordinaire">Ordinaire</option>
+            <option value="interet-fort">Intérêt fort</option>
+            <option value="exceptionnel">Exceptionnel</option>
+            <option value="ne-sait-pas">Ne sait pas</option>
+          </select>
+          <div class="fr-error-text" id="valeur-architecturale-error" style="display: none;">
+            Obligatoire
+          </div>
+        </div>
+      </div>
+    </div>
 
     <hr />
 
     <!-- Environnement du site -->
-    <fieldset class="fr-fieldset fr-mb-4w">
-      <legend class="fr-fieldset__legend fr-text--lead">
-        ⭐ Environnement du site
-      </legend>
+    <h5>Environnement du site</h5>
 
-      <div class="fr-fieldset__content">
-        <div class="fr-grid-row fr-grid-row--gutters">
+    <div class="fr-grid-row fr-grid-row--gutters">
 
-
-          <div class="fr-col-12 fr-col-md-6">
-            <div class="fr-select-group">
-              <label class="fr-label" for="qualite-paysagere">
-                Intérêt du paysage environnant
-              </label>
-              <select class="fr-select" id="qualite-paysagere" name="qualitePaysagere" required>
-                <option value="">Sélectionner une option</option>
-                <option value="degrade">Dégradé</option>
-                <option value="banal-infra-ordinaire">Banal / infra-ordinaire</option>
-                <option value="quotidien-ordinaire">Quotidien / ordinaire</option>
-                <option value="interessant">Intéressant</option>
-                <option value="remarquable">Remarquable</option>
-                <option value="ne-sait-pas" selected>Ne sait pas</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="fr-col-12 fr-col-md-6">
-            <div class="fr-select-group">
-              <label class="fr-label" for="qualite-desserte">
-                Accessibilité par les voies de circulation
-              </label>
-              <select class="fr-select" id="qualite-desserte" name="qualiteDesserte" required>
-                <option value="">Sélectionner une option</option>
-                <option value="accessible">Accessible</option>
-                <option value="degradee">Dégradée</option>
-                <option value="peu-accessible">Peu accessible</option>
-                <option value="ne-sait-pas" selected>Ne sait pas</option>
-              </select>
-            </div>
+      <div class="fr-col-12 fr-col-md-6">
+        <div class="fr-select-group">
+          <label class="fr-label" for="qualite-paysagere">
+            Intérêt du paysage environnant <span class="fr-text--red">*</span>
+          </label>
+          <select class="fr-select" id="qualite-paysagere" name="qualitePaysagere" required>
+            <option value="" selected>Sélectionner une option</option>
+            <option value="degrade">Dégradé</option>
+            <option value="banal-infra-ordinaire">Banal / infra-ordinaire</option>
+            <option value="quotidien-ordinaire">Quotidien / ordinaire</option>
+            <option value="interessant">Intéressant</option>
+            <option value="remarquable">Remarquable</option>
+            <option value="ne-sait-pas">Ne sait pas</option>
+          </select>
+          <div class="fr-error-text" id="qualite-paysagere-error" style="display: none;">
+            Obligatoire
           </div>
         </div>
       </div>
-    </fieldset>
+
+      <div class="fr-col-12 fr-col-md-6">
+        <div class="fr-select-group">
+          <label class="fr-label" for="qualite-desserte">
+            Accessibilité par les voies de circulation <span class="fr-text--red">*</span>
+          </label>
+          <select class="fr-select" id="qualite-desserte" name="qualiteDesserte" required>
+            <option value="" selected>Sélectionner une option</option>
+            <option value="accessible">Accessible</option>
+            <option value="degradee">Dégradée</option>
+            <option value="peu-accessible">Peu accessible</option>
+            <option value="ne-sait-pas">Ne sait pas</option>
+          </select>
+          <div class="fr-error-text" id="qualite-desserte-error" style="display: none;">
+            Obligatoire
+          </div>
+        </div>
+      </div>
+    </div>
 
   </form>
-
 
 </div>
 
@@ -153,22 +182,45 @@
     const form = document.getElementById('manual-form');
     const formData = new FormData(form);
 
-    // Validation basique
-    const requiredFields = ['terrainViabilise', 'etatBati', 'presencePollution', 'valeurArchitecturale', 'qualitePaysagere', 'qualiteDesserte'];
+    // Liste des champs obligatoires
+    const requiredFields = [
+      'type-proprietaire',
+      'reseau-eaux',
+      'etat-bati',
+      'presence-pollution',
+      'valeur-architecturale',
+      'qualite-paysagere',
+      'qualite-desserte'
+    ];
+
     let isValid = true;
 
-    requiredFields.forEach(field => {
-      const element = document.getElementById(field.replace(/([A-Z])/g, '-$1').toLowerCase());
-      if (!element.value) {
-        element.classList.add('fr-input--error');
+    // Validation de chaque champ
+    requiredFields.forEach(fieldId => {
+      const element = document.getElementById(fieldId);
+      const errorElement = document.getElementById(fieldId + '-error');
+
+      if (!element.value || element.value === '') {
+        // Afficher l'erreur
+        element.classList.add('fr-select--error');
+        errorElement.style.display = 'block';
         isValid = false;
       } else {
-        element.classList.remove('fr-input--error');
+        // Masquer l'erreur
+        element.classList.remove('fr-select--error');
+        errorElement.style.display = 'none';
       }
     });
 
     if (!isValid) {
-      alert('Veuillez remplir tous les champs obligatoires');
+      // Faire défiler vers le premier champ en erreur
+      const firstError = document.querySelector('.fr-select--error');
+      if (firstError) {
+        firstError.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center'
+        });
+      }
       return;
     }
 
@@ -188,12 +240,16 @@
   // Validation en temps réel
   document.addEventListener('DOMContentLoaded', function () {
     const form = document.getElementById('manual-form');
-    const inputs = form.querySelectorAll('select');
+    const selects = form.querySelectorAll('select');
 
-    inputs.forEach(input => {
-      input.addEventListener('change', function () {
-        if (this.value) {
-          this.classList.remove('fr-input--error');
+    selects.forEach(select => {
+      select.addEventListener('change', function () {
+        const errorElement = document.getElementById(this.id + '-error');
+
+        if (this.value && this.value !== '') {
+          // Masquer l'erreur si une valeur est sélectionnée
+          this.classList.remove('fr-select--error');
+          errorElement.style.display = 'none';
         }
       });
     });

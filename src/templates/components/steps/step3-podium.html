@@ -1,33 +1,19 @@
 <div class="fr-mb-4w">
-  <h3>Résultats de l'analyse de mutabilité</h3>
-  <p class="fr-text--sm">Voici les indices de compatibilité entre votre site et les différents usages projetés.</p>
+  <h3>Consultez les usages les plus appropriés à votre site</h3>
+  <p class="fr-text--sm">Au regard des caractéristiques sourcées et renseignées, vous trouverez les usages les plus
+    pertinents pour votre site.</p>
 
-  <!-- Indice de fiabilité -->
-  <div class="fr-callout fr-callout--green-emeraude fr-mb-4w">
-    <h4 class="fr-callout__title">🎯 Indice de fiabilité global</h4>
-    <div class="fr-callout__text">
-      <div style="display: flex; align-items: center; gap: 1rem;">
-        <div style="font-size: 2rem; font-weight: bold; color: #18753c;">{{fiabilite}}/10</div>
-        <div>
-          <p style="margin: 0; font-weight: bold;">Très fiable</p>
-          <p style="margin: 0; font-size: 0.9rem;">Les données sont suffisamment précises pour une analyse robuste</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <hr />
 
   <!-- Top 3 des usages en cartes -->
   <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-    <h4 class="fr-mb-0">🏆 Podium des usages recommandés</h4>
+    <h4 class="fr-mb-0 fr-mt-4w">🏆 Podium des usages recommandés</h4>
     <button class="fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-download-line fr-btn--sm"
       onclick="exportResults()">
       Exporter les résultats
     </button>
   </div>
 
-  <!-- Zone cartes top 3 -->
+  <!-- Podium -->
   <div class="fr-grid-row fr-grid-row--gutters fr-mb-4w">
 
     <!-- Carte 1 - Résidentiel ou mixte -->
@@ -45,7 +31,7 @@
 
             <!-- Titre usage -->
             <h5 class="fr-card__title fr-mt-2w fr-mb-2w">
-              Résidentiel ou mixte
+              Logement et commerces de proximité
             </h5>
 
             <!-- Badge pourcentage -->
@@ -55,8 +41,8 @@
 
             <!-- Description -->
             <p class="fr-card__desc fr-text--sm fr-mb-3w">
-              Excellent potentiel pour un projet résidentiel grâce à la <strong>localisation centrale et la valeur
-                patrimoniale.</strong>
+              Emplacement central, réseaux déjà en place et absence de pollution majeure font que ce site semble adapté
+              pour un programme mixte logements-commerces.
             </p>
           </div>
 
@@ -96,7 +82,8 @@
 
             <!-- Description -->
             <p class="fr-card__desc fr-text--sm fr-mb-3w">
-              Adapté pour des équipements publics avec <strong>une bonne accessibilité et situation centrale.</strong>
+              Bonne accessibilité et services proches ; quelques travaux de dépollution ou de remise à niveau des
+              bâtiments seront toutefois nécessaires.
             </p>
           </div>
 
@@ -120,7 +107,7 @@
 
             <!-- Titre usage -->
             <h5 class="fr-card__title fr-mt-2w fr-mb-2w">
-              Tertiaire
+              Bureaux
             </h5>
 
             <!-- Badge pourcentage -->
@@ -130,7 +117,8 @@
 
             <!-- Description -->
             <p class="fr-card__desc fr-text--sm fr-mb-3w">
-              Potentiel modéré pour activités tertiaires, <strong>à étudier selon les besoins du marché local.</strong>
+              Accessibilité routière moyenne et surfaces limitées pourraient restreindre l’attractivité pour des
+              activités tertiaires.
             </p>
           </div>
 
@@ -144,6 +132,20 @@
       </div>
     </div>
 
+  </div>
+
+  <!-- Indice de fiabilité -->
+  <div class="fr-callout fr-callout--green-emeraude fr-mb-4w">
+    <h4 class="fr-callout__title">🎯 Indice de fiabilité global</h4>
+    <div class="fr-callout__text">
+      <div style="display: flex; align-items: center; gap: 1rem;">
+        <div style="font-size: 2rem; font-weight: bold; color: #18753c;">{{fiabilite}}/10</div>
+        <div>
+          <p style="margin: 0; font-weight: bold;">Très fiable</p>
+          <p style="margin: 0; font-size: 0.9rem;">Les données sont suffisamment précises pour une analyse robuste</p>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Choix pertinence résultats  -->
@@ -166,8 +168,6 @@
       </div>
     </div>
   </div>
-
-  <hr class="fr-mt-4w" />
 
   <!-- Tableau des résultats complets -->
   <div class="fr-accordions-group fr-mt-4w">
@@ -202,7 +202,7 @@
                           <strong>68%</strong>
                         </div>
                       </td>
-                      <td><span class="fr-badge fr-badge--success">Très favorable</span></td>
+                      <td><span class="fr-badge fr-badge--success fr-badge--no-icon">Très favorable</span></td>
                     </tr>
                     <tr class="fr-table__row--blue">
                       <td><strong>2e</strong></td>
@@ -213,7 +213,7 @@
                           <strong>63%</strong>
                         </div>
                       </td>
-                      <td><span class="fr-badge fr-badge--info">Favorable</span></td>
+                      <td><span class="fr-badge fr-badge--info fr-badge--no-icon">Favorable</span></td>
                     </tr>
                     <tr>
                       <td>3e</td>
@@ -257,7 +257,7 @@
                           47%
                         </div>
                       </td>
-                      <td><span class="fr-badge fr-badge--warning">Peu favorable</span></td>
+                      <td><span class="fr-badge fr-badge--warning fr-badge--no-icon">Peu favorable</span></td>
                     </tr>
                     <tr>
                       <td>7e</td>
@@ -268,7 +268,7 @@
                           41%
                         </div>
                       </td>
-                      <td><span class="fr-badge fr-badge--warning">Peu favorable</span></td>
+                      <td><span class="fr-badge fr-badge--warning fr-badge--no-icon">Peu favorable</span></td>
                     </tr>
                   </tbody>
                 </table>
@@ -298,9 +298,6 @@
               <img src="/images/logo-urbanvitaliz.svg" alt="Logo Urban Vitaliz" style="min-width: 200px; height: auto;">
             </div>
 
-            <!-- Titre -->
-            <h3 class="fr-mb-2w">Urban Vitaliz</h3>
-
             <!-- Description -->
             <p class="fr-text--sm fr-mb-2w">
               Pour être accompagné dans votre projet de réhabilitation par des conseillers compétents.
@@ -318,9 +315,6 @@
             <div class="fr-mb-2w">
               <img src="/images/logo-cartofriches.svg" alt="Logo Cartofriches" style="min-width: 200px; height: auto;">
             </div>
-
-            <!-- Titre -->
-            <h3 class="fr-mb-2w">Cartofriches</h3>
 
             <!-- Description -->
             <p class="fr-text--sm fr-mb-2w">

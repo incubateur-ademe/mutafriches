@@ -103,7 +103,7 @@
   <!-- Zone informations déduites -->
   <div id="info-col" class="fr-col-12 collapsed fr-mt-4w">
     <hr />
-    <h3>Vérifiez les données publiques</h3>
+    <h3>Données publiques sourcées</h3>
     <p class="fr-text--sm">Ces informations ont été collectée automatiquement depuis les bases de données publiques,
       assurez-vous qu'elles soient correctes.</p>
 
@@ -188,15 +188,15 @@
           </div>
           <div class="fr-col-6">
             <div class="fr-text fr-text--lg">
-              <strong>Type de propriétaire</strong>
+              <strong>Connection au réseau d'électricité</strong>
               <button class="fr-btn--tooltip fr-btn fr-btn--sm" type="button" aria-describedby="tooltip-proprietaire">
                 <span class="fr-icon-information-line" aria-hidden="true"></span>
               </button>
               <span class="fr-tooltip fr-placement" id="tooltip-proprietaire" role="tooltip">
-                Information extraite des fichiers fonciers (source: DGFiP)
+                Information extraite de l'API ENEDIS
               </span>
               <br>
-              <span class="fr-badge fr-badge--blue-france">Privé</span>
+              <span class="fr-badge fr-badge--blue-france">Oui</span>
             </div>
           </div>
           <div class="fr-col-6">
@@ -209,7 +209,7 @@
                 Identifiée via l'analyse historique des archives municipales
               </span>
               <br>
-              <span class="fr-badge fr-badge--purple-glycine">Manufacture</span>
+              <span class="fr-badge fr-badge--blue-france">Manufacture</span>
             </div>
           </div>
         </div>
@@ -228,7 +228,7 @@
                 Déterminé par géolocalisation via l'API des zones urbaines INSEE
               </span>
               <br>
-              <span class="fr-badge fr-badge--success">Oui</span>
+              <span class="fr-badge fr-badge--blue-france">Oui</span>
             </div>
           </div>
           <div class="fr-col-6">
@@ -241,7 +241,7 @@
                 Calculée via l'API de routage du service public de la donnée
               </span>
               <br>
-              <span class="fr-badge fr-badge--success">Entre 1 et 2km</span>
+              <span class="fr-badge fr-badge--blue-france">Entre 1 et 2km</span>
             </div>
           </div>
           <div class="fr-col-6">
@@ -254,7 +254,7 @@
                 Données extraites de l'API transport.data.gouv.fr
               </span>
               <br>
-              <span class="fr-badge fr-badge--success">Moins de 500m</span>
+              <span class="fr-badge fr-badge--blue-france">Moins de 500m</span>
             </div>
           </div>
           <div class="fr-col-6">
@@ -267,7 +267,7 @@
                 Analysé via les données OpenStreetMap et base SIRENE
               </span>
               <br>
-              <span class="fr-badge fr-badge--success">Oui</span>
+              <span class="fr-badge fr-badge--blue-france">Oui</span>
             </div>
           </div>
           <div class="fr-col-6">
@@ -280,7 +280,7 @@
                 Information fournie par l'API géoportail d'Enedis
               </span>
               <br>
-              <span class="fr-badge fr-badge--success">Moins de 1km</span>
+              <span class="fr-badge fr-badge--blue-france">Moins de 1km</span>
             </div>
           </div>
           <div class="fr-col-6">
@@ -293,7 +293,7 @@
                 Statistique communale extraite des données INSEE (dernier recensement)
               </span>
               <br>
-              <span class="fr-badge fr-badge--success">4,9%</span>
+              <span class="fr-badge fr-badge--blue-france">4,9%</span>
             </div>
           </div>
 
@@ -313,7 +313,7 @@
                 Données extraites du portail georisques.gouv.fr (BRGM)
               </span>
               <br>
-              <span class="fr-badge fr-badge--success">Non</span>
+              <span class="fr-badge fr-badge--blue-france">Non</span>
             </div>
           </div>
           <div class="fr-col-6">
@@ -326,7 +326,7 @@
                 Évaluation basée sur les données BRGM et Météo-France
               </span>
               <br>
-              <span class="fr-badge fr-badge--info">Faible</span>
+              <span class="fr-badge fr-badge--blue-france">Faible</span>
             </div>
           </div>
           <div class="fr-col-6">
@@ -339,7 +339,7 @@
                 Référentiel des zones protégées du Ministère de la Transition Écologique
               </span>
               <br>
-              <span class="fr-badge fr-badge--info">Hors zone</span>
+              <span class="fr-badge fr-badge--blue-france">Hors zone</span>
             </div>
           </div>
           <div class="fr-col-6">
@@ -365,7 +365,7 @@
                 Données du service des Monuments Historiques (base Mérimée)
               </span>
               <br>
-              <span class="fr-badge fr-badge--info">Non concerné</span>
+              <span class="fr-badge fr-badge--blue-france">Non concerné</span>
             </div>
           </div>
           <div class="fr-col-6">
@@ -378,7 +378,7 @@
                 Référentiel établi via les données du Muséum National d'Histoire Naturelle
               </span>
               <br>
-              <span class="fr-badge fr-badge--warning">Hors trame</span>
+              <span class="fr-badge fr-badge--blue-france">Hors trame</span>
             </div>
           </div>
         </div>
@@ -436,6 +436,14 @@
     setTimeout(() => {
       point.style.transform = 'scale(1)';
     }, 200);
+
+    // Scroll vers la zone d'informations après l'animation
+    setTimeout(() => {
+      infoCol.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }, 300);
   }
 
   function searchParcelById() {
@@ -446,6 +454,14 @@
     // Afficher les résultats
     infoCol.classList.add('expanded');
     navigationButtons.classList.add('expanded');
+
+    // Scroll vers la zone d'informations
+    setTimeout(() => {
+      infoCol.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }, 100);
   }
 
   function goToStep(step) {

@@ -50,7 +50,7 @@ export class TemplateService {
     let html: string;
 
     // Vérifier si c'est un composant d'étape
-    if (componentName.startsWith('step') && componentName !== 'stepper') {
+    if (componentName.startsWith('step') && componentName !== 'layout') {
       html = this.loadStepComponent(componentName);
     } else {
       html = this.loadComponent(componentName);
@@ -86,11 +86,11 @@ export class TemplateService {
       },
       2: {
         title: 'Données complémentaires',
-        nextTitle: 'Résultats',
+        nextTitle: 'Usages les plus appropriés',
         component: 'step2-manual-form',
       },
       3: {
-        title: 'Analyse de mutabilité',
+        title: 'Usages les plus appropriés',
         nextTitle: 'Terminé',
         component: 'step3-podium',
       },
@@ -102,7 +102,7 @@ export class TemplateService {
     }
     const components = [
       {
-        name: 'stepper',
+        name: 'layout',
         data: {
           currentStep: stepNumber,
           totalSteps: 3,
