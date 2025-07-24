@@ -21,28 +21,53 @@
 </style>
 
 <div class="fr-mb-4w">
-  <h3>Sélectionnez la parcelle concernée</h3>
-  <!-- Contrôle segmenté pour choisir le mode -->
-  <fieldset class="fr-segmented fr-mb-4w">
-    <div class="fr-segmented__elements">
-      <div class="fr-segmented__element">
-        <input value="carte" type="radio" id="mode-carte" name="selection-mode" checked onchange="switchMode('carte')">
-        <label class="fr-icon-map-pin-2-line fr-label" for="mode-carte">
-          Depuis la carte
-        </label>
-      </div>
-      <div class="fr-segmented__element">
-        <input value="id" type="radio" id="mode-id" name="selection-mode" onchange="switchMode('id')">
-        <label class="fr-icon-edit-line fr-label" for="mode-id">
-          Par identifiant de parcelle
-        </label>
-      </div>
+  <h3>Sélectionnez la (les) parcelle(s) concernée(s)</h3>
+
+  <!-- Choix parcelle.s -->
+  <div class="fr-grid-row fr-grid-row--gutters">
+    <div class="fr-col-12 fr-col-md-8">
+      <!-- Contrôle segmenté pour choisir le mode -->
+      <fieldset class="fr-segmented fr-mb-4w">
+        <div class="fr-segmented__elements">
+          <div class="fr-segmented__element">
+            <input value="carte" type="radio" id="mode-carte" name="selection-mode" checked
+              onchange="switchMode('carte')">
+            <label class="fr-icon-map-pin-2-line fr-label" for="mode-carte">
+              Depuis la carte
+            </label>
+          </div>
+          <div class="fr-segmented__element">
+            <input value="id" type="radio" id="mode-id" name="selection-mode" onchange="switchMode('id')">
+            <label class="fr-icon-edit-line fr-label" for="mode-id">
+              Par identifiant de parcelle
+            </label>
+          </div>
+        </div>
+      </fieldset>
     </div>
-  </fieldset>
+
+    <div class="fr-col-12 fr-col-md-4">
+      <!-- Choix simple ou multi parcelle -->
+      <fieldset class="fr-segmented fr-segmented--sm fr-mb-4w">
+        <div class="fr-segmented__elements">
+          <div class="fr-segmented__element">
+            <input value="1" checked type="radio" id="multiparcelle-map-simple" name="multiparcelle-map"
+              onchange="handleMultiParcelleChange(event)">
+            <label class="fr-icon-home-4-fill fr-label" for="multiparcelle-map-simple">Une parcelle</label>
+          </div>
+          <div class="fr-segmented__element">
+            <input value="2" type="radio" id="multiparcelle-map-multi" name="multiparcelle-map"
+              onchange="handleMultiParcelleChange(event)">
+            <label class="fr-icon-community-fill fr-label" for="multiparcelle-map-multi">Plusieurs parcelles</label>
+          </div>
+        </div>
+      </fieldset>
+    </div>
+  </div>
 
   <!-- Mode carte -->
   <div id="carte-mode" class="input-mode active">
-    <p class="fr-text--sm">Cliquez sur la carte pour sélectionner la parcelle à analyser</p>
+    <p class="fr-text--sm">Cliquez sur la carte pour sélectionner la (les) parcelle(s) à analyser</p>
     <div class="fr-grid-row fr-grid-row--gutters">
       <div id="map-col" class="fr-col-12">
         <!-- Carte fictive -->
@@ -67,7 +92,7 @@
 
   <!-- Mode saisie Identifiant Parcelle -->
   <div id="id-mode" class="input-mode">
-    <p class="fr-text--sm">Saisissez l'identifiant de la parcelle à analyser</p>
+    <p class="fr-text--sm">Saisissez l'identifiant ou les identifiants des parcelles à analyser</p>
     <div class="fr-grid-row fr-grid-row--gutters">
       <!-- Message d'info pour l'ID -->
       <div class="fr-callout fr-callout--green-emeraude fr-mt-2w">
@@ -462,6 +487,18 @@
         block: 'start'
       });
     }, 100);
+  }
+
+  function handleMultiParcelleChange(event) {
+    // Si l'utilisateur sélectionne "Plusieurs parcelles"
+    if (event.target.value === "2") {
+      // Afficher le message d'information
+      alert("La gestion multi-parcelles n'est pas encore disponible mais le sera bientôt !");
+
+      // Remettre automatiquement la sélection sur "Une parcelle"
+      document.getElementById('multiparcelle-map-simple').checked = true;
+      event.target.checked = false;
+    }
   }
 
   function goToStep(step) {
