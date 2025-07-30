@@ -1,10 +1,7 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from '../app.module';
-import { AnalyticsService } from '../services/analytics.service';
-import {
-  ActionTypes,
-  type Integrator,
-} from '../database/analytics/analytics.types';
+import { AppModule } from '../../app.module';
+import { AnalyticsService } from '../../analytics/analytics.service';
+import { ActionTypes, type Integrator } from '../../analytics/analytics.types';
 
 async function bootstrap() {
   const app = await NestFactory.createApplicationContext(AppModule);

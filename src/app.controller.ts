@@ -1,6 +1,6 @@
 import { Controller, Get, Res } from '@nestjs/common';
 import { Response } from 'express';
-import { DatabaseService } from './services/database.service';
+import { DatabaseService } from './shared/database/database.service';
 import { UiService } from './ui/ui.service';
 import { MockService } from './mocks/mock.service';
 

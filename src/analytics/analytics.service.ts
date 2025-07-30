@@ -1,11 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { eq, desc, count, isNotNull } from 'drizzle-orm';
-import {
-  userSessions,
-  userActions,
-  integrators,
-} from '../database/analytics/analytics.schema';
-import { mutabilityResults } from '../database/mutability/mutability.schema';
+import { userSessions, userActions, integrators } from './analytics.schema';
+import { mutabilityResults } from '../mutability/mutability.schema';
 import {
   type NewUserSession,
   type NewUserAction,
@@ -18,12 +14,12 @@ import {
   type ConversionRates,
   type PertinenceStats,
   ActionTypes,
-} from '../database/analytics/analytics.types';
+} from './analytics.types';
 import type {
   NewMutabilityResult,
   PertinenceReponse,
-} from '../database/mutability/mutability.types';
-import { DatabaseService } from './database.service';
+} from '../mutability/mutability.types';
+import { DatabaseService } from '../shared/database/database.service';
 
 @Injectable()
 export class AnalyticsService {

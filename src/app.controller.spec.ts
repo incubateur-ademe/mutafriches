@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppController } from './app.controller';
 import { UiService } from './ui/ui.service';
-import { DatabaseService } from './services/database.service';
+import { DatabaseService } from './shared/database/database.service';
 import { MockService } from './mocks/mock.service';
 
 describe('AppController', () => {

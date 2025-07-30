@@ -1,8 +1,8 @@
 import { defineConfig } from 'drizzle-kit';
 
 export default defineConfig({
-  schema: './src/database/schema.ts',
-  out: './src/database/migrations',
+  schema: './src/shared/database/schema.ts',
+  out: './src/shared/database/migrations',
   dialect: 'postgresql',
   dbCredentials: process.env.SCALINGO_POSTGRESQL_URL
     ? // En production Scalingo
