@@ -17,12 +17,3 @@ export interface StepConfig {
 export interface StepConfigMap {
   [key: number]: StepConfig;
 }
-
-export interface StepData {
-  currentStep: number;
-  totalSteps: number;
-  showPrevious: boolean;
-  showNext: boolean;
-  previousStep: number;
-  nextStep: number;
-}
