@@ -9,9 +9,10 @@ Mutafriches est une API NestJS qui remplace un fichier Excel pour analyser la mu
 - **Framework** : NestJS (TypeScript)
 - **Base de données** : PostgreSQL 16 + Drizzle ORM
 - **Design System** : DSFR (Système de Design de l'État)
-- **Templating** : HTML/CSS/JS avec composants modulaires
-- **Tests** : Jest
+- **UI System** : HTML/CSS/JS avec composants modulaires
+- **Tests** : Vitest
 - **Package Manager** : pnpm
+- **CI/CD** : GitHub Actions
 
 ## 🚀 Installation
 
@@ -70,14 +71,15 @@ pnpm db:studio              # Interface graphique Drizzle Studio
 pnpm db:seed                # Générer des fake data pour analytics
 ```
 
-### Qualité de code
+### Qualité de code & Tests
 
 ```bash
 pnpm lint                   # Linter ESLint
 pnpm format                 # Formatter Prettier
 pnpm typecheck              # Vérification TypeScript
-pnpm test                   # Tests unitaires
-pnpm test:cov               # Tests avec coverage
+pnpm test                   # Tests unitaires (Vitest)
+pnpm test:watch             # Tests en mode watch
+pnpm test:coverage          # Tests avec coverage
 ```
 
 ## 🗄️ Base de données
@@ -137,34 +139,47 @@ src/
 ├── app.controller.ts       # Routes principales
 ├── app.module.ts          # Configuration NestJS
 ├── main.ts                # Bootstrap de l'application
-├── database/              # Schémas et types de données
-│   ├── analytics/         # Tables et types analytics
-│   ├── mutability/        # Tables et types mutabilité
-│   └── schema.ts          # Export consolidé
-├── services/              # Services métier
+├── analytics/             # Schémas, services et types analytics
+│   ├── analytics.schema.ts
 │   ├── analytics.service.ts
-│   ├── database.service.ts
-│   └── template.service.ts
-├── scripts/               # Scripts de seed et maintenance
-└── templates/             # Templates HTML (steps, components etc...)
-    ├── iframe.html
-    └── components/
-        └── steps/
+│   └── analytics.types.ts
+├── mutability/            # Schémas et types mutabilité
+│   ├── mutability.schema.ts
+│   └── mutability.types.ts
+├── mocks/                 # Services et données de test
+│   ├── data/
+│   ├── mock.service.ts
+│   └── mock.types.ts
+├── shared/                # Services partagés et utilitaires
+│   ├── database/
+│   ├── scripts/
+│   └── types/
+└── ui/                    # Système d'interface utilisateur
+    ├── components/        # Composants HTML réutilisables
+    ├── layouts/           # Layouts de base
+    ├── pages/             # Pages complètes (steps)
+    ├── ui.controller.ts   # Controller pour l'UI
+    ├── ui.service.ts      # Service de rendu HTML
+    ├── ui.types.ts        # Types UI
+    └── ui.utils.ts        # Utilitaires UI
 ```
 
-### Système de templates
+### Système UI
 
-L'API utilise un système de templates modulaire avec variables dynamiques et composants réutilisables.
+L'API utilise un système UI modulaire :
+
+- **Layouts** : Structures de base (`base.html`)
+- **Pages** : Pages complètes par étape (`step1-map.html`, `step2-manual-form.html`, etc.)
+- **Composants** : Éléments réutilisables (`form-header.html`)
+- **Variables** : Remplacement dynamique avec `{{variable}}`
 
 ```typescript
-const components = [
-  {
-    name: 'hero',
-    data: { title: 'Mon Titre', subtitle: 'Mon sous-titre' }
-  }
-];
+const pageData = {
+  title: 'Analyse de mutabilité',
+  content: 'Données du formulaire'
+};
 
-const html = templateService.renderIframePage('Page Title', components);
+const html = uiService.renderPage('step1-map', pageData);
 ```
 
 ## 🎨 Design System
@@ -182,6 +197,15 @@ Le système trackage les métriques d'impact :
 5. **Outils annexes** : % cliquant sur les liens d'outils
 
 Les données sont prêtes pour l'analyse dans Metabase.
+
+## 🚀 CI/CD
+
+Le projet utilise GitHub Actions pour l'intégration continue :
+
+- **Linting** et **formatting** automatique
+- **Tests** avec Vitest
+- **Type checking** TypeScript
+- **Build** de validation
 
 ## 📦 Parcours d'utilisation
 
