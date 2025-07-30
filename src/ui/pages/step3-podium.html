@@ -3,7 +3,6 @@
   <p class="fr-text--sm">Au regard des caractéristiques sourcées et renseignées, vous trouverez les usages les plus
     pertinents pour votre site.</p>
 
-
   <!-- Top 3 des usages en cartes -->
   <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
     <h4 class="fr-mb-0 fr-mt-4w">🏆 Podium des usages recommandés</h4>
@@ -16,13 +15,14 @@
   <!-- Podium -->
   <div class="fr-grid-row fr-grid-row--gutters fr-mb-4w">
 
-    <!-- Carte 1 - Résidentiel ou mixte -->
+    <!-- Carte 1 - Premier résultat -->
     <div class="fr-col-12 fr-col-md-4">
       <div class="fr-card fr-card--shadow">
         <div class="fr-card__body">
           <!-- Badge en haut à gauche -->
           <div style="text-align: left;">
-            <p class="fr-badge fr-badge--success fr-badge--no-icon fr-badge--sm fr-mt-2w fr-mb-2w">Très favorable</p>
+            <p class="fr-badge fr-badge--success fr-badge--no-icon fr-badge--sm fr-mt-2w fr-mb-2w">
+              {{resultats.0.potentiel}}</p>
           </div>
 
           <div class="fr-card__content fr-text--center" style="text-align: center;">
@@ -31,18 +31,17 @@
 
             <!-- Titre usage -->
             <h5 class="fr-card__title fr-mt-2w fr-mb-2w">
-              Logement et commerces de proximité
+              {{resultats.0.usage}}
             </h5>
 
             <!-- Badge pourcentage -->
             <h3 class="fr-card__desc fr-mb-2w" style="font-size: 1.05rem; font-weight: bold; color: #18753c;">
-              68% de compatibilité
+              {{resultats.0.indiceMutabilite}}% de compatibilité
             </h3>
 
             <!-- Description -->
             <p class="fr-card__desc fr-text--sm fr-mb-3w">
-              Emplacement central, réseaux déjà en place et absence de pollution majeure font que ce site semble adapté
-              pour un programme mixte logements-commerces.
+              {{resultats.0.explication}}
             </p>
           </div>
 
@@ -56,14 +55,15 @@
       </div>
     </div>
 
-    <!-- Carte 2 - Équipements publics -->
+    <!-- Carte 2 - Deuxième résultat -->
     <div class="fr-col-12 fr-col-md-4">
       <div class="fr-card fr-card--shadow">
         <div class="fr-card__body">
 
           <!-- Badge en haut à gauche -->
           <div style="text-align: left;">
-            <p class="fr-badge fr-badge--info fr-badge--no-icon fr-badge--sm fr-mt-2w fr-mb-2w">Favorable</p>
+            <p class="fr-badge fr-badge--info fr-badge--no-icon fr-badge--sm fr-mt-2w fr-mb-2w">
+              {{resultats.1.potentiel}}</p>
           </div>
 
           <div class="fr-card__content fr-text--center" style="text-align: center;">
@@ -72,18 +72,17 @@
 
             <!-- Titre usage -->
             <h5 class="fr-card__title fr-mt-2w fr-mb-2w">
-              Équipements publics
+              {{resultats.1.usage}}
             </h5>
 
             <!-- Badge pourcentage -->
             <h3 class="fr-card__desc fr-mb-2w" style="font-size: 1.05rem; font-weight: bold; color: #0078f3;">
-              63% de compatibilité
+              {{resultats.1.indiceMutabilite}}% de compatibilité
             </h3>
 
             <!-- Description -->
             <p class="fr-card__desc fr-text--sm fr-mb-3w">
-              Bonne accessibilité et services proches ; quelques travaux de dépollution ou de remise à niveau des
-              bâtiments seront toutefois nécessaires.
+              {{resultats.1.explication}}
             </p>
           </div>
 
@@ -91,14 +90,14 @@
       </div>
     </div>
 
-    <!-- Carte 3 - Tertiaire -->
+    <!-- Carte 3 - Troisième résultat -->
     <div class="fr-col-12 fr-col-md-4">
       <div class="fr-card fr-card--shadow">
         <div class="fr-card__body">
 
           <!-- Badge en haut à gauche -->
           <div style="text-align: left;">
-            <p class="fr-badge fr-badge--sm fr-mt-2w fr-mb-2w">Modéré</p>
+            <p class="fr-badge fr-badge--sm fr-mt-2w fr-mb-2w">{{resultats.2.potentiel}}</p>
           </div>
 
           <div class="fr-card__content fr-text--center" style="text-align: center;">
@@ -107,18 +106,17 @@
 
             <!-- Titre usage -->
             <h5 class="fr-card__title fr-mt-2w fr-mb-2w">
-              Bureaux
+              {{resultats.2.usage}}
             </h5>
 
             <!-- Badge pourcentage -->
             <h3 class="fr-card__desc fr-mb-2w" style="font-size: 1.05rem; font-weight: bold; color: #666666;">
-              60% de compatibilité
+              {{resultats.2.indiceMutabilite}}% de compatibilité
             </h3>
 
             <!-- Description -->
             <p class="fr-card__desc fr-text--sm fr-mb-3w">
-              Accessibilité routière moyenne et surfaces limitées pourraient restreindre l’attractivité pour des
-              activités tertiaires.
+              {{resultats.2.explication}}
             </p>
           </div>
 
@@ -155,21 +153,19 @@
     </div>
   </div>
 
-
   <!-- Indice de fiabilité -->
   <div class="fr-callout fr-callout--green-emeraude fr-mb-4w">
     <h4 class="fr-callout__title">🎯 Indice de fiabilité global</h4>
     <div class="fr-callout__text">
       <div style="display: flex; align-items: center; gap: 1rem;">
-        <div style="font-size: 2rem; font-weight: bold; color: #18753c;">{{fiabilite}}/10</div>
+        <div style="font-size: 2rem; font-weight: bold; color: #18753c;">{{fiabilite.note}}/10</div>
         <div>
-          <p style="margin: 0; font-weight: bold;">Très fiable</p>
-          <p style="margin: 0; font-size: 0.9rem;">Les données sont suffisamment précises pour une analyse robuste</p>
+          <p style="margin: 0; font-weight: bold;">{{fiabilite.text}}</p>
+          <p style="margin: 0; font-size: 0.9rem;">{{fiabilite.description}}</p>
         </div>
       </div>
     </div>
   </div>
-
 
   <!-- Tableau des résultats complets -->
   <div class="fr-accordions-group fr-mt-4w">
@@ -197,80 +193,97 @@
                   <tbody>
                     <tr>
                       <td><strong>1er</strong></td>
-                      <td><strong>Logement et commerces de proximité</strong></td>
+                      <td><strong>{{resultats.0.usage}}</strong></td>
                       <td>
                         <div style="display: flex; align-items: center; gap: 0.5rem;">
-                          <div style="background: #18753c; height: 8px; width: 68%; border-radius: 4px;"></div>
-                          <strong>68%</strong>
+                          <div
+                            style="background: #18753c; height: 8px; width: {{resultats.0.indiceMutabilite}}%; border-radius: 4px;">
+                          </div>
+                          <strong>{{resultats.0.indiceMutabilite}}%</strong>
                         </div>
                       </td>
-                      <td><span class="fr-badge fr-badge--success fr-badge--no-icon">Très favorable</span></td>
+                      <td><span class="fr-badge fr-badge--success fr-badge--no-icon">{{resultats.0.potentiel}}</span>
+                      </td>
                     </tr>
                     <tr>
                       <td><strong>2e</strong></td>
-                      <td><strong>Équipements publics</strong></td>
+                      <td><strong>{{resultats.1.usage}}</strong></td>
                       <td>
                         <div style="display: flex; align-items: center; gap: 0.5rem;">
-                          <div style="background: #0078f3; height: 8px; width: 63%; border-radius: 4px;"></div>
-                          <strong>63%</strong>
+                          <div
+                            style="background: #0078f3; height: 8px; width: {{resultats.1.indiceMutabilite}}%; border-radius: 4px;">
+                          </div>
+                          <strong>{{resultats.1.indiceMutabilite}}%</strong>
                         </div>
                       </td>
-                      <td><span class="fr-badge fr-badge--info fr-badge--no-icon">Favorable</span></td>
+                      <td><span class="fr-badge fr-badge--info fr-badge--no-icon">{{resultats.1.potentiel}}</span></td>
                     </tr>
                     <tr>
                       <td><strong>3e</strong></td>
-                      <td><strong>Bureaux</strong></td>
+                      <td><strong>{{resultats.2.usage}}</strong></td>
                       <td>
                         <div style="display: flex; align-items: center; gap: 0.5rem;">
-                          <div style="background: #666; height: 8px; width: 60%; border-radius: 4px;"></div>
-                          60%
+                          <div
+                            style="background: #666; height: 8px; width: {{resultats.2.indiceMutabilite}}%; border-radius: 4px;">
+                          </div>
+                          {{resultats.2.indiceMutabilite}}%
                         </div>
                       </td>
-                      <td><span class="fr-badge">Modéré</span></td>
+                      <td><span class="fr-badge">{{resultats.2.potentiel}}</span></td>
                     </tr>
                     <tr>
                       <td>4e</td>
-                      <td>Equipements culturels et touristiques</td>
+                      <td>{{resultats.3.usage}}</td>
                       <td>
                         <div style="display: flex; align-items: center; gap: 0.5rem;">
-                          <div style="background: #666; height: 8px; width: 56%; border-radius: 4px;"></div>
-                          56%
+                          <div
+                            style="background: #666; height: 8px; width: {{resultats.3.indiceMutabilite}}%; border-radius: 4px;">
+                          </div>
+                          {{resultats.3.indiceMutabilite}}%
                         </div>
                       </td>
-                      <td><span class="fr-badge">Modéré</span></td>
+                      <td><span class="fr-badge">{{resultats.3.potentiel}}</span></td>
                     </tr>
                     <tr>
                       <td>5e</td>
-                      <td>Bâtiments industriels</td>
+                      <td>{{resultats.4.usage}}</td>
                       <td>
                         <div style="display: flex; align-items: center; gap: 0.5rem;">
-                          <div style="background: #666; height: 8px; width: 54%; border-radius: 4px;"></div>
-                          54%
+                          <div
+                            style="background: #666; height: 8px; width: {{resultats.4.indiceMutabilite}}%; border-radius: 4px;">
+                          </div>
+                          {{resultats.4.indiceMutabilite}}%
                         </div>
                       </td>
-                      <td><span class="fr-badge">Modéré</span></td>
+                      <td><span class="fr-badge">{{resultats.4.potentiel}}</span></td>
                     </tr>
                     <tr>
                       <td>6e</td>
-                      <td>Centrale photovoltaïque au sol</td>
+                      <td>{{resultats.5.usage}}</td>
                       <td>
                         <div style="display: flex; align-items: center; gap: 0.5rem;">
-                          <div style="background: #ce614a; height: 8px; width: 47%; border-radius: 4px;"></div>
-                          47%
+                          <div
+                            style="background: #ce614a; height: 8px; width: {{resultats.5.indiceMutabilite}}%; border-radius: 4px;">
+                          </div>
+                          {{resultats.5.indiceMutabilite}}%
                         </div>
                       </td>
-                      <td><span class="fr-badge fr-badge--warning fr-badge--no-icon">Peu favorable</span></td>
+                      <td><span class="fr-badge fr-badge--warning fr-badge--no-icon">{{resultats.5.potentiel}}</span>
+                      </td>
                     </tr>
                     <tr>
                       <td>7e</td>
-                      <td>Espace renaturé</td>
+                      <td>{{resultats.6.usage}}</td>
                       <td>
                         <div style="display: flex; align-items: center; gap: 0.5rem;">
-                          <div style="background: #ce614a; height: 8px; width: 41%; border-radius: 4px;"></div>
-                          41%
+                          <div
+                            style="background: #ce614a; height: 8px; width: {{resultats.6.indiceMutabilite}}%; border-radius: 4px;">
+                          </div>
+                          {{resultats.6.indiceMutabilite}}%
                         </div>
                       </td>
-                      <td><span class="fr-badge fr-badge--warning fr-badge--no-icon">Peu favorable</span></td>
+                      <td><span class="fr-badge fr-badge--warning fr-badge--no-icon">{{resultats.6.potentiel}}</span>
+                      </td>
                     </tr>
                   </tbody>
                 </table>
@@ -353,7 +366,6 @@
     <span class="fr-icon-add-line fr-icon--sm fr-ml-1v" aria-hidden="true"></span>
   </button>
 </div>
-
 
 <script>
   function goToStep(step) {

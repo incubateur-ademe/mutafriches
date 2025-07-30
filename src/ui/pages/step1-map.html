@@ -105,7 +105,6 @@
         </a>
       </div>
 
-
       <div class="fr-col-12 fr-col-md-6">
         <div class="fr-input-group">
           <label class="fr-label" for="parcel-id">
@@ -121,8 +120,6 @@
         </button>
       </div>
     </div>
-
-
   </div>
 
   <!-- Zone informations déduites -->
@@ -169,7 +166,7 @@
                 Donnée récupérée depuis l'API du cadastre national (source: DGFiP)
               </span>
               <br>
-              <span class="fr-badge fr-badge--blue-france">Chanteloup-en-brie</span>
+              <span class="fr-badge fr-badge--blue-france">{{commune}}</span>
             </div>
           </div>
           <div class="fr-col-6">
@@ -182,7 +179,7 @@
                 Donnée récupérée depuis l'API du cadastre national (source: DGFiP)
               </span>
               <br>
-              <span class="fr-badge fr-badge--blue-france">154654121</span>
+              <span class="fr-badge fr-badge--blue-france">{{identifiantParcelle}}</span>
             </div>
           </div>
           <div class="fr-col-6">
@@ -195,7 +192,7 @@
                 Donnée récupérée depuis l'API du cadastre national (source: DGFiP)
               </span>
               <br>
-              <span class="fr-badge fr-badge--blue-france">42 780 m²</span>
+              <span class="fr-badge fr-badge--blue-france">{{surfaceParcelle}}</span>
             </div>
           </div>
           <div class="fr-col-6">
@@ -208,7 +205,7 @@
                 Calculée automatiquement depuis les données géospatiales IGN
               </span>
               <br>
-              <span class="fr-badge fr-badge--blue-france">6 680 m²</span>
+              <span class="fr-badge fr-badge--blue-france">{{surfaceBatie}}</span>
             </div>
           </div>
           <div class="fr-col-6">
@@ -221,7 +218,7 @@
                 Information extraite de l'API ENEDIS
               </span>
               <br>
-              <span class="fr-badge fr-badge--blue-france">Oui</span>
+              <span class="fr-badge fr-badge--blue-france">{{connectionElectricite}}</span>
             </div>
           </div>
           <div class="fr-col-6">
@@ -234,7 +231,7 @@
                 Identifiée via l'analyse historique des archives municipales
               </span>
               <br>
-              <span class="fr-badge fr-badge--blue-france">Manufacture</span>
+              <span class="fr-badge fr-badge--blue-france">{{ancienneActivite}}</span>
             </div>
           </div>
         </div>
@@ -253,7 +250,7 @@
                 Déterminé par géolocalisation via l'API des zones urbaines INSEE
               </span>
               <br>
-              <span class="fr-badge fr-badge--blue-france">Oui</span>
+              <span class="fr-badge fr-badge--blue-france">{{centreVille}}</span>
             </div>
           </div>
           <div class="fr-col-6">
@@ -266,7 +263,7 @@
                 Calculée via l'API de routage du service public de la donnée
               </span>
               <br>
-              <span class="fr-badge fr-badge--blue-france">Entre 1 et 2km</span>
+              <span class="fr-badge fr-badge--blue-france">{{distanceAutoroute}}</span>
             </div>
           </div>
           <div class="fr-col-6">
@@ -279,7 +276,7 @@
                 Données extraites de l'API transport.data.gouv.fr
               </span>
               <br>
-              <span class="fr-badge fr-badge--blue-france">Moins de 500m</span>
+              <span class="fr-badge fr-badge--blue-france">{{distanceTrain}}</span>
             </div>
           </div>
           <div class="fr-col-6">
@@ -292,7 +289,7 @@
                 Analysé via les données OpenStreetMap et base SIRENE
               </span>
               <br>
-              <span class="fr-badge fr-badge--blue-france">Oui</span>
+              <span class="fr-badge fr-badge--blue-france">{{proximiteCommerces}}</span>
             </div>
           </div>
           <div class="fr-col-6">
@@ -305,7 +302,7 @@
                 Information fournie par l'API géoportail d'Enedis
               </span>
               <br>
-              <span class="fr-badge fr-badge--blue-france">Moins de 1km</span>
+              <span class="fr-badge fr-badge--blue-france">{{distanceRaccordement}}</span>
             </div>
           </div>
           <div class="fr-col-6">
@@ -318,10 +315,9 @@
                 Statistique communale extraite des données INSEE (dernier recensement)
               </span>
               <br>
-              <span class="fr-badge fr-badge--blue-france">4,9%</span>
+              <span class="fr-badge fr-badge--blue-france">{{tauxLV}}</span>
             </div>
           </div>
-
         </div>
       </div>
 
@@ -338,7 +334,7 @@
                 Données extraites du portail georisques.gouv.fr (BRGM)
               </span>
               <br>
-              <span class="fr-badge fr-badge--blue-france">Non</span>
+              <span class="fr-badge fr-badge--blue-france">{{risquesTechno}}</span>
             </div>
           </div>
           <div class="fr-col-6">
@@ -351,7 +347,7 @@
                 Évaluation basée sur les données BRGM et Météo-France
               </span>
               <br>
-              <span class="fr-badge fr-badge--blue-france">Faible</span>
+              <span class="fr-badge fr-badge--blue-france">{{risquesNaturels}}</span>
             </div>
           </div>
           <div class="fr-col-6">
@@ -364,7 +360,7 @@
                 Référentiel des zones protégées du Ministère de la Transition Écologique
               </span>
               <br>
-              <span class="fr-badge fr-badge--blue-france">Hors zone</span>
+              <span class="fr-badge fr-badge--blue-france">{{zonageEnviro}}</span>
             </div>
           </div>
           <div class="fr-col-6">
@@ -377,7 +373,7 @@
                 Extrait du Plan Local d'Urbanisme communal via le Géoportail de l'Urbanisme
               </span>
               <br>
-              <span class="fr-badge fr-badge--blue-france">Zone urbaine – U</span>
+              <span class="fr-badge fr-badge--blue-france">{{zonageUrba}}</span>
             </div>
           </div>
           <div class="fr-col-6">
@@ -390,7 +386,7 @@
                 Données du service des Monuments Historiques (base Mérimée)
               </span>
               <br>
-              <span class="fr-badge fr-badge--blue-france">Non concerné</span>
+              <span class="fr-badge fr-badge--blue-france">{{zonagePatrimonial}}</span>
             </div>
           </div>
           <div class="fr-col-6">
@@ -403,7 +399,7 @@
                 Référentiel établi via les données du Muséum National d'Histoire Naturelle
               </span>
               <br>
-              <span class="fr-badge fr-badge--blue-france">Hors trame</span>
+              <span class="fr-badge fr-badge--blue-france">{{tvb}}</span>
             </div>
           </div>
         </div>
