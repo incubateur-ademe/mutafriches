@@ -10,6 +10,7 @@
   },
   "scripts": {
     "build": "nest build",
+    "ci": "pnpm run typecheck && pnpm run lint && pnpm run test",
     "clean": "rm -rf dist coverage node_modules",
     "db:start": "docker-compose up -d postgres",
     "db:stop": "docker-compose down",
