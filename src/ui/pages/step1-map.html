@@ -408,12 +408,13 @@
   </div>
 
   <!-- Navigation buttons -->
-  <div id="navigation-buttons" class="fr-mt-4w collapsed" style="text-align: right;">
-    <button id="next-btn" class="fr-btn" onclick="goToStep(2)">
+  <div id="navigation-buttons" class="fr-mt-4w" style="text-align: right;">
+    <a href="{{nextUrl}}" class="fr-btn" id="next-btn">
       Suivant
       <span class="fr-icon-arrow-right-s-line fr-icon--sm" aria-hidden="true"></span>
-    </button>
+    </a>
   </div>
+
 </div>
 
 <script>
@@ -495,9 +496,5 @@
       document.getElementById('multiparcelle-map-simple').checked = true;
       event.target.checked = false;
     }
-  }
-
-  function goToStep(step) {
-    window.location.href = `/form/${step}`;
   }
 </script>

@@ -126,58 +126,54 @@
         }, 3000);
       };
     });
-
-    // Fonction globale pour naviguer vers les étapes du formulaire
-    function goToForm(step) {
-      console.log('Redirection vers étape:', step);
-      window.location.href = `/form/${step}`;
-    }
   </script>
 
-<!-- Modale de choix du theme -->
-  <dialog aria-labelledby="fr-theme-modal-title" role="dialog" id="fr-theme-modal" class="fr-modal" data-fr-js-modal="true">
+  <!-- Modale de choix du theme -->
+  <dialog aria-labelledby="fr-theme-modal-title" role="dialog" id="fr-theme-modal" class="fr-modal"
+    data-fr-js-modal="true">
     <div class="fr-container fr-container--fluid fr-container-md">
-        <div class="fr-grid-row fr-grid-row--center">
-            <div class="fr-col-12 fr-col-md-6 fr-col-lg-4">
-                <div class="fr-modal__body" data-fr-js-modal-body="true">
-                    <div class="fr-modal__header">
-                        <button class="fr-btn--close fr-btn" aria-controls="fr-theme-modal" data-fr-js-modal-button="true" title="Fermer">
-                            Fermer
-                        </button>
-                    </div>
-                    <div class="fr-modal__content">
-                        <h1 id="fr-theme-modal-title" class="fr-modal__title">
-                            Paramètres d'affichage
-                        </h1>
-                        <div class="fr-display" data-fr-js-display="true">
-                            <div class="fr-form-group">
-                                <fieldset class="fr-fieldset">
-                                    <legend class="fr-fieldset__legend fr-text--regular" id="radio-theme">
-                                        Choisissez un thème pour personnaliser l'apparence du site.
-                                    </legend>
-                                    <div class="fr-fieldset__content">
-                                        <div class="fr-radio-group">
-                                            <input type="radio" id="fr-radios-theme-light" name="fr-radios-theme" value="light">
-                                            <label class="fr-label" for="fr-radios-theme-light">Thème clair</label>
-                                        </div>
-                                        <div class="fr-radio-group">
-                                            <input type="radio" id="fr-radios-theme-dark" name="fr-radios-theme" value="dark">
-                                            <label class="fr-label" for="fr-radios-theme-dark">Thème sombre</label>
-                                        </div>
-                                        <div class="fr-radio-group">
-                                            <input type="radio" id="fr-radios-theme-system" name="fr-radios-theme" value="system" checked>
-                                            <label class="fr-label" for="fr-radios-theme-system">Système</label>
-                                        </div>
-                                    </div>
-                                </fieldset>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+      <div class="fr-grid-row fr-grid-row--center">
+        <div class="fr-col-12 fr-col-md-6 fr-col-lg-4">
+          <div class="fr-modal__body" data-fr-js-modal-body="true">
+            <div class="fr-modal__header">
+              <button class="fr-btn--close fr-btn" aria-controls="fr-theme-modal" data-fr-js-modal-button="true"
+                title="Fermer">
+                Fermer
+              </button>
             </div>
+            <div class="fr-modal__content">
+              <h1 id="fr-theme-modal-title" class="fr-modal__title">
+                Paramètres d'affichage
+              </h1>
+              <div class="fr-display" data-fr-js-display="true">
+                <div class="fr-form-group">
+                  <fieldset class="fr-fieldset">
+                    <legend class="fr-fieldset__legend fr-text--regular" id="radio-theme">
+                      Choisissez un thème pour personnaliser l'apparence du site.
+                    </legend>
+                    <div class="fr-fieldset__content">
+                      <div class="fr-radio-group">
+                        <input type="radio" id="fr-radios-theme-light" name="fr-radios-theme" value="light">
+                        <label class="fr-label" for="fr-radios-theme-light">Thème clair</label>
+                      </div>
+                      <div class="fr-radio-group">
+                        <input type="radio" id="fr-radios-theme-dark" name="fr-radios-theme" value="dark">
+                        <label class="fr-label" for="fr-radios-theme-dark">Thème sombre</label>
+                      </div>
+                      <div class="fr-radio-group">
+                        <input type="radio" id="fr-radios-theme-system" name="fr-radios-theme" value="system" checked>
+                        <label class="fr-label" for="fr-radios-theme-system">Système</label>
+                      </div>
+                    </div>
+                  </fieldset>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
     </div>
-</dialog>
+  </dialog>
 </body>
 
 </html>

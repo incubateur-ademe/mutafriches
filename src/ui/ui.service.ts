@@ -7,6 +7,12 @@ import { replaceVariables } from './ui.utils';
 
 @Injectable()
 export class UiService {
+  private readonly stepUrls: Record<1 | 2 | 3, string> = {
+    1: '/analyse/localisation',
+    2: '/analyse/donnees-complementaires',
+    3: '/analyse/resultats',
+  };
+
   private getBasePath(): string {
     if (process.env.NODE_ENV !== 'production') {
       return join(process.cwd(), 'src', 'ui');
@@ -73,6 +79,14 @@ export class UiService {
 
   // Méthode pour le rendu d'une étape de formulaire
   renderFormStep(stepNumber: number, formData: MockData = undefined): string {
+    // Validation du numéro d'étape
+    if (stepNumber < 1 || stepNumber > 3) {
+      throw new Error(
+        `Invalid step number: ${stepNumber}. Must be between 1 and 3.`,
+      );
+    }
+
+    const validStepNumber = stepNumber as 1 | 2 | 3;
     const stepConfig: StepConfigMap = {
       1: {
         title: 'Votre site en friche',
@@ -91,35 +105,56 @@ export class UiService {
       },
     };
 
-    const config = stepConfig[stepNumber];
+    const config = stepConfig[validStepNumber];
     if (!config) {
-      throw new Error(`Invalid step number: ${stepNumber}`);
+      throw new Error(`Invalid step number: ${validStepNumber}`);
     }
+
+    // TODO : Ajouter une validation pour formData si nécessaire
 
     const components = [
       {
         name: 'form-header',
         data: {
-          currentStep: stepNumber,
+          currentStep: validStepNumber,
           totalSteps: 3,
           currentStepTitle: config.title,
-          nextStepTitle: stepNumber < 3 ? config.nextTitle : 'Analyse terminée',
+          nextStepTitle:
+            validStepNumber < 3 ? config.nextTitle : 'Analyse terminée',
         },
       },
     ];
 
+    // Helper functions pour un accès sécurisé aux URLs
+    const getPreviousUrl = (): string | null => {
+      const prevStep = (validStepNumber - 1) as 0 | 1 | 2;
+      return prevStep >= 1 ? this.stepUrls[prevStep as 1 | 2] : null;
+    };
+
+    const getNextUrl = (): string | null => {
+      const nextStep = (validStepNumber + 1) as 2 | 3 | 4;
+      return nextStep <= 3 ? this.stepUrls[nextStep as 2 | 3] : null;
+    };
+
+    // Données pour la page avec les nouvelles URLs
+    const pageData = {
+      currentStep: validStepNumber,
+      showPrevious: validStepNumber > 1,
+      showNext: validStepNumber < 3,
+      previousStep: validStepNumber - 1,
+      nextStep: validStepNumber + 1,
+      // URLs pour la navigation
+      previousUrl: getPreviousUrl(),
+      nextUrl: getNextUrl(),
+      currentUrl: this.stepUrls[validStepNumber],
+      // Fusionner avec les données mockées
+      ...(formData || {}),
+    };
+
     const pages = [
       {
         name: config.page,
-        data: {
-          // Spread des données mockées (sera aplati par replaceVariables)
-          ...(formData || {}),
-          currentStep: stepNumber,
-          showPrevious: stepNumber > 1,
-          showNext: stepNumber < 3,
-          previousStep: stepNumber - 1,
-          nextStep: stepNumber + 1,
-        },
+        data: pageData,
       },
     ];
 

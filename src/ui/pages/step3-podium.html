@@ -357,10 +357,10 @@
 
 <!-- Boutons -->
 <div class="fr-mt-4w" style="text-align: center;">
-  <button class="fr-btn fr-btn--secondary" onclick="goToStep(2)">
+  <a href="{{previousUrl}}" class="fr-btn fr-btn--secondary">
     <span class="fr-icon-arrow-left-s-line fr-icon--sm" aria-hidden="true"></span>
     Modifier les données
-  </button>
+  </a>
   <button class="fr-ml-4w fr-btn" onclick="newAnalysis()" id="submit-btn">
     Nouvelle analyse
     <span class="fr-icon-add-line fr-icon--sm fr-ml-1v" aria-hidden="true"></span>
@@ -368,10 +368,6 @@
 </div>
 
 <script>
-  function goToStep(step) {
-    window.location.href = `/form/${step}`;
-  }
-
   function exportResults() {
     // Simulation d'export PDF/Excel
     alert('Fonctionnalité d\'export à venir ! Les résultats seront exportés en PDF.');
@@ -379,7 +375,7 @@
 
   function newAnalysis() {
     if (confirm('Voulez-vous vraiment démarrer une nouvelle analyse ? Les données actuelles seront perdues.')) {
-      window.location.href = `/form/1`;
+      window.location.href = `/`;
     }
   }
 

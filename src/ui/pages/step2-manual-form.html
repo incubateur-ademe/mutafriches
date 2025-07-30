@@ -163,10 +163,10 @@
 </div>
 
 <div class="fr-mt-4w" style="text-align: center;">
-  <button class="fr-btn fr-btn--secondary" onclick="goToStep(1)">
+  <a href="{{previousUrl}}" class="fr-btn fr-btn--secondary">
     <span class="fr-icon-arrow-left-s-line fr-icon--sm" aria-hidden="true"></span>
     Précédent
-  </button>
+  </a>
   <button class="fr-btn fr-ml-2w" onclick="submitAndGoToResult()" id="submit-btn">
     Calculer les résultats
     <span class="fr-icon-arrow-right-s-line fr-icon--sm" aria-hidden="true"></span>
@@ -174,10 +174,6 @@
 </div>
 
 <script>
-  function goToStep(step) {
-    window.location.href = `/form/${step}`;
-  }
-
   function submitAndGoToResult() {
     const form = document.getElementById('manual-form');
     const formData = new FormData(form);
@@ -233,7 +229,7 @@
     setTimeout(() => {
       // Ici envoyer les données à l'API
       // fetch('/api/evaluate', { method: 'POST', body: formData })
-      goToStep(3);
+      window.location.href = '{{nextUrl}}';
     }, 2000);
   }
 

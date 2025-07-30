@@ -96,11 +96,6 @@ export function replaceVariables(
   // Aplatir les données pour gérer les objets imbriqués et tableaux
   const flattenedData = flattenObject(cleanData);
 
-  // Debug en développement
-  if (process.env.NODE_ENV !== 'production') {
-    console.log('Données aplaties pour le template:', flattenedData);
-  }
-
   // Remplacer les variables dans le template
   Object.keys(flattenedData).forEach((key) => {
     const value = flattenedData[key];
