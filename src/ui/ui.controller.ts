@@ -1,7 +1,7 @@
 import { Controller, Get, Res } from '@nestjs/common';
-import { Response } from 'express';
 import { UiService } from './ui.service';
 import { MockService } from '../mocks/mock.service';
+import { SimpleResponse } from '../shared/types/common.types';
 
 @Controller('analyse')
 export class UiController {
@@ -11,7 +11,7 @@ export class UiController {
   ) {}
 
   // Méthode commune pour rendre les étapes
-  private renderStep(stepNumber: number, res: Response): void {
+  private renderStep(stepNumber: number, res: SimpleResponse): void {
     const mockData = this.mockService.getDataForStep(stepNumber);
     const html = this.uiService.renderFormStep(stepNumber, mockData);
 
@@ -21,19 +21,19 @@ export class UiController {
 
   // Étape 1 : Localisation
   @Get('localisation')
-  getLocationStep(@Res() res: Response): void {
+  getLocationStep(@Res() res: SimpleResponse): void {
     this.renderStep(1, res);
   }
 
   // Étape 2 : Données complémentaires
   @Get('donnees-complementaires')
-  getDonneesComplementairesStep(@Res() res: Response): void {
+  getDonneesComplementairesStep(@Res() res: SimpleResponse): void {
     this.renderStep(2, res);
   }
 
   // Étape 3 : Résultats
   @Get('resultats')
-  getResultatsStep(@Res() res: Response): void {
+  getResultatsStep(@Res() res: SimpleResponse): void {
     this.renderStep(3, res);
   }
 }

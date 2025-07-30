@@ -1,8 +1,13 @@
 import { Controller, Get, Res } from '@nestjs/common';
-import { Response } from 'express';
 import { DatabaseService } from './shared/database/database.service';
 import { UiService } from './ui/ui.service';
 import { MockService } from './mocks/mock.service';
+import { HealthResponse } from './shared/types/common.types';
+
+interface SimpleResponse {
+  setHeader(name: string, value: string): void;
+  send(body: string): void;
+}
 
 @Controller()
 export class AppController {
@@ -13,10 +18,10 @@ export class AppController {
   ) {}
 
   @Get('health')
-  async healthCheck() {
+  async healthCheck(): Promise<HealthResponse> {
     const timestamp = new Date().toISOString();
 
-    const health = {
+    const health: HealthResponse = {
       status: 'OK',
       timestamp,
       service: 'Mutafriches API',
@@ -44,7 +49,7 @@ export class AppController {
   }
 
   @Get()
-  getHome(@Res() res: Response): void {
+  getHome(@Res() res: SimpleResponse): void {
     // Page d'accueil du formulaire (étape 1) directement sur /
     const mockData = this.mockService.getDataForStep(1);
     const html = this.uiService.renderFormStep(1, mockData);

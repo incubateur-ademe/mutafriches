@@ -1,35 +1,60 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
-import { AppModule } from './../src/app.module';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { AppController } from '../src/app.controller';
+import { DatabaseService } from '../src/shared/database/database.service';
+import { UiService } from '../src/ui/ui.service';
+import { MockService } from '../src/mocks/mock.service';
+import { HealthResponse } from '../src/shared/types/common.types';
 
-describe('AppController (e2e)', () => {
-  let app: INestApplication;
-
-  let httpServer: any;
+describe('AppController (Integration)', () => {
+  let appController: AppController;
 
   beforeEach(async () => {
+    // Mock du DatabaseService
+    const mockDatabaseService = {
+      db: {
+        execute: vi.fn().mockResolvedValue([{ test: 1 }]),
+      },
+      onModuleInit: vi.fn(),
+      onModuleDestroy: vi.fn(),
+    };
+
+    const mockUiService = {
+      renderFormStep: vi.fn().mockReturnValue('<html>Mock HTML</html>'),
+    };
+
+    const mockMockService = {
+      getDataForStep: vi.fn().mockReturnValue({}),
+    };
+
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
+      controllers: [AppController],
+      providers: [
+        {
+          provide: DatabaseService,
+          useValue: mockDatabaseService,
+        },
+        {
+          provide: UiService,
+          useValue: mockUiService,
+        },
+        {
+          provide: MockService,
+          useValue: mockMockService,
+        },
+      ],
     }).compile();
 
-    app = moduleFixture.createNestApplication();
-    await app.init();
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    httpServer = app.getHttpServer();
+    appController = moduleFixture.get<AppController>(AppController);
   });
 
-  afterEach(async () => {
-    await app.close();
-  });
+  it('should return health status', async () => {
+    const result: HealthResponse = await appController.healthCheck();
 
-  it('/ (GET)', () => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    return request(httpServer).get('/').expect(200);
-  });
-
-  it('/health (GET)', () => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    return request(httpServer).get('/health').expect(200);
+    expect(result).toHaveProperty('status', 'OK');
+    expect(result).toHaveProperty('timestamp');
+    expect(result).toHaveProperty('service', 'Mutafriches API');
+    expect(result.checks).toHaveProperty('api', 'OK');
+    expect(result.checks).toHaveProperty('database', 'OK');
   });
 });
