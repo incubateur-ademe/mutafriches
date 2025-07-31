@@ -1,13 +1,15 @@
-import { Controller, Get, Res } from '@nestjs/common';
+import { Body, Controller, Get, Post, Res } from '@nestjs/common';
 import { UiService } from './ui.service';
 import { MockService } from '../mocks/mock.service';
 import { SimpleResponse } from '../shared/types/common.types';
+import { ParcelleEnrichmentService } from 'src/friches/services/parcelle-enrichment.service';
 
 @Controller('analyse')
 export class UiController {
   constructor(
     private readonly uiService: UiService,
     private readonly mockService: MockService,
+    private readonly enrichmentService: ParcelleEnrichmentService,
   ) {}
 
   // Méthode commune pour rendre les étapes
@@ -35,5 +37,14 @@ export class UiController {
   @Get('resultats')
   getResultatsStep(@Res() res: SimpleResponse): void {
     this.renderStep(3, res);
+  }
+
+  @Post('parcelle/test-enrichment')
+  async testEnrichment(@Body('identifiant') identifiant: string) {
+    // Appel au service d'enrichissement
+    const result =
+      await this.enrichmentService.enrichFromDataSources(identifiant);
+    // Rendu resultats
+    return JSON.stringify(result);
   }
 }

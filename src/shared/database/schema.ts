@@ -4,4 +4,3 @@ export * from '../../friches/schemas/mutability.schema';
 
 // Export de tous les types
 export * from '../../analytics/analytics.types';
-export * from '../../mutability/mutability.types';

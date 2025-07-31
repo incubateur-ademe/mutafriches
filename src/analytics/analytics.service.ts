@@ -15,11 +15,12 @@ import {
   type PertinenceStats,
   ActionTypes,
 } from './analytics.types';
-import type {
+
+import { DatabaseService } from '../shared/database/database.service';
+import {
   NewMutabilityResult,
   PertinenceReponse,
-} from '../mutability/mutability.types';
-import { DatabaseService } from '../shared/database/database.service';
+} from 'src/friches/entities/mutability.entity';
 
 @Injectable()
 export class AnalyticsService {

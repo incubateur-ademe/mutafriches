@@ -1,6 +1,6 @@
 import { IsString, IsNotEmpty, Matches } from 'class-validator';
 
-export class ParcelleDetectionInputDto {
+export class ParcelleInputDto {
   @IsString()
   @IsNotEmpty({ message: "L'identifiant de parcelle est obligatoire" })
   @Matches(/^[0-9]{6}[0-9]{3}[A-Z]{2}[0-9]{4}$/, {

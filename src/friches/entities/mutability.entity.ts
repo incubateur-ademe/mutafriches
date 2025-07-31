@@ -1,4 +1,4 @@
-import type { mutabilityResults } from '../friches/schemas/mutability.schema';
+import { mutabilityResults } from '../schemas/mutability.schema';
 
 // Types inférés depuis le schéma
 export type MutabilityResult = typeof mutabilityResults.$inferSelect;

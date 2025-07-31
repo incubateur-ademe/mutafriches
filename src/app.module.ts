@@ -5,9 +5,10 @@ import { AnalyticsService } from './analytics/analytics.service';
 import { DatabaseService } from './shared/database/database.service';
 import { MockService } from './mocks/mock.service';
 import { UiController } from './ui/ui.controller';
+import { FrichesModule } from './friches/friches.module';
 
 @Module({
-  imports: [],
+  imports: [FrichesModule],
   controllers: [AppController, UiController],
   providers: [UiService, AnalyticsService, DatabaseService, MockService],
 })
