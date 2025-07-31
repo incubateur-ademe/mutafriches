@@ -29,7 +29,3 @@ export const mutabilityResults = pgTable('mutability_results', {
 
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
-
-// Potentiellement d'autres tables liées à la mutabilité
-// export const fricheInputs = pgTable('friche_inputs', { ... });
-// export const algorithmVersions = pgTable('algorithm_versions', { ... });

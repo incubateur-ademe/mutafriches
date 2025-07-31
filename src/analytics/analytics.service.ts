@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { eq, desc, count, isNotNull } from 'drizzle-orm';
 import { userSessions, userActions, integrators } from './analytics.schema';
-import { mutabilityResults } from '../mutability/mutability.schema';
+import { mutabilityResults } from '../friches/schemas/mutability.schema';
 import {
   type NewUserSession,
   type NewUserAction,
