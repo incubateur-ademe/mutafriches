@@ -1,13 +1,28 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import { Parcelle } from '../entities/parcelle.entity';
-import { MockService } from '../../friches-mock/mock-api.service';
-import { ApiResponse } from './external-apis/shared/api-response.interface';
-import { CadastreApiResponse } from './external-apis/cadastre/cadastre.interface';
 import { EnrichmentResultDto } from '../dto/enrichment-result.dto';
+import {
+  CadastreApiResponse,
+  CadastreApiService,
+} from './external-apis/cadastre/cadastre.interface';
+import { EnedisApiService } from './external-apis/enedis/enedis.interface';
+import { BdnbApiService } from './external-apis/bdnb/bdnb.interface';
+import { OverpassApiService } from './external-apis/overpass/overpass.interface';
+import { TransportApiService } from './external-apis/transport/transport.interface';
 
 @Injectable()
 export class ParcelleEnrichmentService {
-  constructor(private readonly mockService: MockService) {}
+  constructor(
+    @Inject('CADASTRE_SERVICE')
+    private readonly cadastreService: CadastreApiService,
+    @Inject('BDNB_SERVICE') private readonly bdnbService: BdnbApiService,
+    @Inject('TRANSPORT_SERVICE')
+    private readonly transportService: TransportApiService,
+    @Inject('ENEDIS_SERVICE') private readonly enedisService: EnedisApiService,
+    @Inject('OVERPASS_SERVICE')
+    private readonly overpassService: OverpassApiService,
+    @Inject('LOVAC_SERVICE') private readonly lovacService: any,
+  ) {}
 
   /**
    * Enrichit une parcelle depuis toutes les sources externes disponibles
@@ -34,7 +49,7 @@ export class ParcelleEnrichmentService {
     parcelle.coordonnees = cadastreData.coordonnees;
     sourcesUtilisees.push('Cadastre');
 
-    // 2. Surface bâtie
+    // 2. Surface bâtie (BDNB)
     const surfaceBatie = await this.getSurfaceBatie(identifiantParcelle);
     if (surfaceBatie !== null) {
       parcelle.surfaceBati = surfaceBatie;
@@ -54,10 +69,34 @@ export class ParcelleEnrichmentService {
       } else {
         champsManquants.push('distanceTransportCommun');
       }
+
+      // 4. Données Enedis
+      await this.enrichWithEnedisData(
+        parcelle,
+        parcelle.coordonnees,
+        sourcesUtilisees,
+        champsManquants,
+      );
+
+      // 5. Données Overpass
+      await this.enrichWithOverpassData(
+        parcelle,
+        parcelle.coordonnees,
+        sourcesUtilisees,
+        champsManquants,
+      );
     }
 
-    // 4. Autres champs via Mock
-    await this.enrichWithMockData(
+    // 6. Données Lovac
+    await this.enrichWithLovacData(
+      parcelle,
+      cadastreData.commune,
+      sourcesUtilisees,
+      champsManquants,
+    );
+
+    // 7. Données complémentaires (en attendant les vrais services)
+    await this.enrichWithRemainingMockData(
       parcelle,
       identifiantParcelle,
       sourcesUtilisees,
@@ -81,70 +120,156 @@ export class ParcelleEnrichmentService {
     };
   }
 
+  /**
+   * Récupère les données cadastrales
+   */
   private async getCadastreData(
     identifiant: string,
   ): Promise<CadastreApiResponse | null> {
-    const result = (await this.mockService.getMockCadastreData(
-      identifiant,
-    )) as ApiResponse<CadastreApiResponse>;
-    return result.success && result.data ? result.data : null;
+    try {
+      const result = await this.cadastreService.getParcelleInfo(identifiant);
+      return result.success && result.data ? result.data : null;
+    } catch (error) {
+      console.error('Erreur cadastre:', error);
+      return null;
+    }
   }
 
+  /**
+   * Récupère la surface bâtie depuis BDNB
+   */
   private async getSurfaceBatie(identifiant: string): Promise<number | null> {
-    const result = await this.mockService.getMockBdnbData(identifiant);
-    return result.success && result.data !== undefined ? result.data : null;
+    try {
+      const result = await this.bdnbService.getSurfaceBatie(identifiant);
+      return result.success && result.data !== undefined ? result.data : null;
+    } catch (error) {
+      console.error('Erreur BDNB:', error);
+      return null;
+    }
   }
 
+  /**
+   * Récupère la distance au transport en commun
+   */
   private async getDistanceTransport(coordonnees: {
     latitude: number;
     longitude: number;
   }): Promise<number | null> {
-    const result = await this.mockService.getMockTransportData(
-      coordonnees.latitude,
-      coordonnees.longitude,
-    );
-    return result.success && result.data !== undefined ? result.data : null;
+    try {
+      const result = await this.transportService.getDistanceTransportCommun(
+        coordonnees.latitude,
+        coordonnees.longitude,
+      );
+      return result.success && result.data !== undefined ? result.data : null;
+    } catch (error) {
+      console.error('Erreur Transport:', error);
+      return null;
+    }
   }
 
-  private async enrichWithMockData(
+  /**
+   * Enrichit avec les données Enedis
+   */
+  private async enrichWithEnedisData(
     parcelle: Parcelle,
-    identifiant: string,
+    coordonnees: { latitude: number; longitude: number },
     sources: string[],
     manquants: string[],
   ): Promise<void> {
-    const champs = [
-      'ancienneActivite',
-      'connectionReseauElectricite',
-      'distanceRaccordementElectrique',
-      'siteEnCentreVille',
-      'distanceAutoroute',
-      'proximiteCommercesServices',
-      'tauxLogementsVacants',
-      'presenceRisquesTechnologiques',
-      'presenceRisquesNaturels',
-      'zonageEnvironnemental',
-      'zonageReglementaire',
-      'zonagePatrimonial',
-      'trameVerteEtBleue',
-    ];
+    try {
+      // Connection électrique
+      const connectionResult = await this.enedisService.checkConnection(
+        parcelle.identifiantParcelle,
+      );
 
-    for (const champ of champs) {
-      const result = (await this.mockService.getMockData(
-        champ,
-        identifiant,
-      )) as ApiResponse<unknown>;
-
-      if (result.success) {
-        // Cast correct pour éviter l'erreur TypeScript
-        (parcelle as unknown as Record<string, unknown>)[champ] = result.data;
+      if (connectionResult.success) {
+        parcelle.connectionReseauElectricite = connectionResult.data as boolean;
       } else {
-        manquants.push(champ);
+        manquants.push('connectionReseauElectricite');
       }
-    }
 
-    sources.push('Mock APIs');
+      // Distance raccordement
+      const distanceResult = await this.enedisService.getDistanceRaccordement(
+        coordonnees.latitude,
+        coordonnees.longitude,
+      );
+
+      if (distanceResult.data) {
+        parcelle.distanceRaccordementElectrique = distanceResult.data.distance;
+        sources.push('Enedis');
+      } else {
+        manquants.push('distanceRaccordementElectrique');
+      }
+    } catch (error) {
+      console.error('Erreur Enedis:', error);
+      manquants.push(
+        'connectionReseauElectricite',
+        'distanceRaccordementElectrique',
+      );
+    }
   }
 
+  /**
+   * Enrichit avec les données Overpass
+   */
+  private async enrichWithOverpassData(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    parcelle: Parcelle,
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    coordonnees: { latitude: number; longitude: number },
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    sources: string[],
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    manquants: string[],
+  ): Promise<void> {
+    // TODO: Implémenter les appels aux services Overpass pour récupérer les données
+  }
+
+  /**
+   * Enrichit avec les données Lovac
+   */
+  private async enrichWithLovacData(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    parcelle: Parcelle,
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    commune: string,
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    sources: string[],
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    manquants: string[],
+  ): Promise<void> {
+    // TODO: Implémenter l'appel au service Lovac pour récupérer les données
+  }
+
+  /**
+   * Enrichit avec les données mockées restantes
+   * TODO: Remplacer par de vrais services quand disponibles
+   */
+  private async enrichWithRemainingMockData(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    parcelle: Parcelle,
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    identifiant: string,
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    sources: string[],
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    manquants: string[],
+  ): Promise<void> {
+    // TODO: Ces champs seront enrichis par de vrais services plus tard
+  }
+
+  /**
+   * Calcule l'indice de fiabilité
+   */
   private calculateFiabilite(
     sourcesCount: number,
     manquantsCount: number,
