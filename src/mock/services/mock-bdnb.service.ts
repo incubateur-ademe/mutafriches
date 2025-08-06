@@ -75,7 +75,7 @@ export class MockBdnbService implements BdnbApiService {
 
     return Promise.resolve({
       success: true,
-      data: parcelle.nombreBatiments || 0,
+      data: 0,
       source: 'Mock BDNB',
       responseTimeMs: 100,
     });

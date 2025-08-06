@@ -24,7 +24,6 @@ export class MockParcellesHelper {
     const trelazeParcel = new Parcelle('490007000ZE0153', 'Trélazé');
     trelazeParcel.surfaceSite = 42780;
     trelazeParcel.surfaceBati = 6600;
-    trelazeParcel.nombreBatiments = 8;
     trelazeParcel.coordonnees = { latitude: 47.4514, longitude: -0.4619 };
     trelazeParcel.connectionReseauElectricite = true;
     trelazeParcel.distanceRaccordementElectrique = 0.3;
@@ -40,19 +39,6 @@ export class MockParcellesHelper {
     trelazeParcel.zonageReglementaire = 'Zone urbaine - U';
     trelazeParcel.zonagePatrimonial = ZonagePatrimonial.NON_CONCERNE;
     trelazeParcel.trameVerteEtBleue = TrameVerteEtBleue.HORS_TRAME;
-    trelazeParcel.typeProprietaire = 'Privé';
-    trelazeParcel.nomProprietaire = 'Podeliha (bailleur social)';
-    trelazeParcel.etatBatiInfrastructure = 'Bâtiments hétérogènes';
-    trelazeParcel.presencePollution = 'Ne sait pas';
-    trelazeParcel.terrainEnPente = false;
-    trelazeParcel.terrainViabilise = true;
-    trelazeParcel.qualiteVoieDesserte = 'Accessible';
-    trelazeParcel.voieEauProximite = false;
-    trelazeParcel.qualitePaysage = 'Banal / infra-ordinaire';
-    trelazeParcel.valeurArchitecturaleHistorique = 'Exceptionnel';
-    trelazeParcel.couvertVegetal = 'Imperméabilisé';
-    trelazeParcel.presenceEspeceProtegee = false;
-    trelazeParcel.zoneHumide = 'Absence';
 
     MOCK_PARCELLES[trelazeParcel.identifiantParcelle] = trelazeParcel;
 
@@ -60,7 +46,6 @@ export class MockParcellesHelper {
     const angersParcel = new Parcelle('490007000AB0001', 'Angers');
     angersParcel.surfaceSite = 15000;
     angersParcel.surfaceBati = 2500;
-    angersParcel.nombreBatiments = 3;
     angersParcel.coordonnees = { latitude: 47.4784, longitude: -0.5632 };
     angersParcel.connectionReseauElectricite = true;
     angersParcel.distanceRaccordementElectrique = 0.8;
@@ -76,19 +61,6 @@ export class MockParcellesHelper {
     angersParcel.zonageReglementaire = "Zone d'activité - AUi";
     angersParcel.zonagePatrimonial = ZonagePatrimonial.NON_CONCERNE;
     angersParcel.trameVerteEtBleue = TrameVerteEtBleue.CORRIDOR_ECOLOGIQUE;
-    angersParcel.typeProprietaire = 'Public';
-    angersParcel.nomProprietaire = "Commune d'Angers";
-    angersParcel.etatBatiInfrastructure = 'Dégradé';
-    angersParcel.presencePollution = 'Oui';
-    angersParcel.terrainEnPente = false;
-    angersParcel.terrainViabilise = true;
-    angersParcel.qualiteVoieDesserte = 'Difficile';
-    angersParcel.voieEauProximite = true;
-    angersParcel.qualitePaysage = 'Dégradé';
-    angersParcel.valeurArchitecturaleHistorique = 'Ordinaire';
-    angersParcel.couvertVegetal = 'Pelouse';
-    angersParcel.presenceEspeceProtegee = true;
-    angersParcel.zoneHumide = 'Potentielle';
 
     MOCK_PARCELLES[angersParcel.identifiantParcelle] = angersParcel;
 
@@ -96,7 +68,6 @@ export class MockParcellesHelper {
     const saumurParcel = new Parcelle('490007000CD0042', 'Saumur');
     saumurParcel.surfaceSite = 8500;
     saumurParcel.surfaceBati = 1200;
-    saumurParcel.nombreBatiments = 2;
     saumurParcel.coordonnees = { latitude: 47.2692, longitude: -0.0737 };
     saumurParcel.connectionReseauElectricite = false;
     saumurParcel.distanceRaccordementElectrique = 1.2;
@@ -112,19 +83,6 @@ export class MockParcellesHelper {
     saumurParcel.zonageReglementaire = 'Zone agricole - A';
     saumurParcel.zonagePatrimonial = ZonagePatrimonial.MONUMENT_HISTORIQUE;
     saumurParcel.trameVerteEtBleue = TrameVerteEtBleue.RESERVOIR_BIODIVERSITE;
-    saumurParcel.typeProprietaire = 'Privé';
-    saumurParcel.nomProprietaire = 'EARL du Val de Loire';
-    saumurParcel.etatBatiInfrastructure = 'Bon état';
-    saumurParcel.presencePollution = 'Non';
-    saumurParcel.terrainEnPente = true;
-    saumurParcel.terrainViabilise = false;
-    saumurParcel.qualiteVoieDesserte = 'Très difficile';
-    saumurParcel.voieEauProximite = true;
-    saumurParcel.qualitePaysage = 'Remarquable';
-    saumurParcel.valeurArchitecturaleHistorique = 'Remarquable';
-    saumurParcel.couvertVegetal = 'Prairie';
-    saumurParcel.presenceEspeceProtegee = true;
-    saumurParcel.zoneHumide = 'Présence';
 
     MOCK_PARCELLES[saumurParcel.identifiantParcelle] = saumurParcel;
   }

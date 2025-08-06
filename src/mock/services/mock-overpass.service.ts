@@ -24,8 +24,7 @@ export class MockOverpassService {
     const parcelle = MockParcellesHelper.findByCoordinates(latitude, longitude);
 
     return Promise.resolve({
-      success: true,
-      data: parcelle?.voieEauProximite ?? false,
+      success: parcelle ? true : false,
       source: 'Mock Overpass',
     });
   }

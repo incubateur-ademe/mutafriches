@@ -1,218 +1,23 @@
 import {
+  EtatBati,
+  PresencePollution,
+  QualiteDesserte,
+  QualitePaysage,
+  ReseauEaux,
   RisqueNaturel,
   TrameVerteEtBleue,
+  TypeProprietaire,
+  ValeurArchitecturale,
   ZonageEnvironnemental,
   ZonagePatrimonial,
 } from '../enums/parcelle.enums';
+import { ParcelleBase } from './shared/parcelle.base';
 
 /**
  * Classe représentant une parcelle avec toutes ses caractéristiques
  * pour l'analyse de mutabilité
  */
-export class Parcelle {
-  /**
-   * Identifiant unique de la parcelle (format cadastral)
-   * Exemple: "490007000ZE0153"
-   */
-  identifiantParcelle: string;
-
-  /**
-   * Nom de la commune où se situe la parcelle
-   * Exemple: "Trélazé"
-   */
-  commune: string;
-
-  /**
-   * Surface totale du site en mètres carrés
-   * Exemple: 42780
-   */
-  surfaceSite: number;
-
-  /**
-   * Surface au sol occupée par les bâtiments en mètres carrés
-   * Peut être undefined si non déterminable
-   * Exemple: 6600
-   */
-  surfaceBati?: number;
-
-  /**
-   * Indique si le site est connecté au réseau électrique
-   * true = connecté, false = non connecté
-   */
-  connectionReseauElectricite: boolean;
-
-  /**
-   * Distance au point de raccordement électrique le plus proche en kilomètres
-   * Exemple: 0.3
-   */
-  distanceRaccordementElectrique: number;
-
-  /**
-   * Indique si le site se trouve en centre-ville ou centre-bourg
-   * true = centre-ville, false = périphérie
-   */
-  siteEnCentreVille: boolean;
-
-  /**
-   * Distance à l'entrée d'autoroute la plus proche en kilomètres
-   * Exemple: 1.5
-   */
-  distanceAutoroute: number;
-
-  /**
-   * Distance à l'arrêt de transport en commun le plus proche en mètres
-   * Exemple: 250
-   */
-  distanceTransportCommun: number;
-
-  /**
-   * Indique la présence de commerces et services à proximité
-   * true = présence, false = absence
-   */
-  proximiteCommercesServices: boolean;
-
-  /**
-   * Taux de logements vacants dans la commune en pourcentage
-   * Exemple: 4.9
-   */
-  tauxLogementsVacants: number;
-
-  /**
-   * Description de l'ancienne activité du site
-   * Peut être undefined si inconnue
-   * Exemple: "Manufacture textile"
-   */
-  ancienneActivite?: string;
-
-  /**
-   * Indique la présence de risques technologiques
-   * true = présence de risques, false = absence
-   */
-  presenceRisquesTechnologiques: boolean;
-
-  /**
-   * Niveau de risques naturels (inondations, argiles, etc.)
-   */
-  presenceRisquesNaturels: RisqueNaturel;
-
-  /**
-   * Type de zonage environnemental applicable
-   */
-  zonageEnvironnemental: ZonageEnvironnemental;
-
-  /**
-   * Zonage réglementaire selon le PLU/PLUi
-   * Exemple: "Zone urbaine - U", "Zone naturelle - N"
-   */
-  zonageReglementaire: string;
-
-  /**
-   * Type de protection patrimoniale
-   */
-  zonagePatrimonial: ZonagePatrimonial;
-
-  /**
-   * Position par rapport à la trame verte et bleue
-   */
-  trameVerteEtBleue: TrameVerteEtBleue;
-
-  /**
-   * Identifiant de session pour lier avec les résultats de mutabilité
-   * Utilisé pour tracer le processus d'analyse
-   */
-  sessionId?: string;
-
-  /**
-   * Coordonnées géographiques de la parcelle
-   * Utilisées pour les calculs de distance
-   */
-  coordonnees?: {
-    latitude: number;
-    longitude: number;
-  };
-
-  /**
-   * Informations complémentaires sur le propriétaire
-   * Exemple: "Privé", "Public", "Bailleur social"
-   */
-  typeProprietaire?: string;
-
-  /**
-   * Nom du propriétaire (pour information)
-   * Exemple: "Jean Dupont", "Mairie de Trélazé"
-   */
-  nomProprietaire?: string;
-
-  /**
-   * Nombre de bâtiments sur la parcelle
-   * Exemple: 8
-   */
-  nombreBatiments?: number;
-
-  /**
-   * État général du bâti et des infrastructures
-   * Exemple: "Bâtiments hétérogènes", "Bon état", "Dégradé"
-   */
-  etatBatiInfrastructure?: string;
-
-  /**
-   * Présence de pollution connue ou suspectée
-   * Exemple: "Oui", "Non", "Ne sait pas"
-   */
-  presencePollution?: string;
-
-  /**
-   * Indique si le terrain présente une pente significative (>20°)
-   */
-  terrainEnPente?: boolean;
-
-  /**
-   * Indique si le terrain est déjà viabilisé
-   * true = viabilisé, false = non viabilisé
-   */
-  terrainViabilise?: boolean;
-
-  /**
-   * Qualité de la voie de desserte
-   * Exemple: "Accessible", "Difficile", "Très difficile"
-   */
-  qualiteVoieDesserte?: string;
-
-  /**
-   * Présence d'une voie d'eau à proximité
-   */
-  voieEauProximite?: boolean;
-
-  /**
-   * Qualité du paysage environnant
-   * Exemple: "Exceptionnel", "Remarquable", "Banal", "Dégradé"
-   */
-  qualitePaysage?: string;
-
-  /**
-   * Valeur architecturale et/ou historique du site
-   * Exemple: "Exceptionnel", "Remarquable", "Ordinaire"
-   */
-  valeurArchitecturaleHistorique?: string;
-
-  /**
-   * Type de couvert végétal présent
-   * Exemple: "Imperméabilisé", "Pelouse", "Arbustes", "Forêt"
-   */
-  couvertVegetal?: string;
-
-  /**
-   * Présence d'espèces protégées recensées
-   * true = présence confirmée, false = absence
-   */
-  presenceEspeceProtegee?: boolean;
-
-  /**
-   * Présence dans une zone humide
-   * Exemple: "Présence", "Absence", "Potentielle"
-   */
-  zoneHumide?: string;
-
+export class Parcelle implements ParcelleBase {
   /**
    * Constructeur pour créer une nouvelle instance de Parcelle
    */
@@ -235,7 +40,43 @@ export class Parcelle {
     this.zonageReglementaire = '';
     this.zonagePatrimonial = ZonagePatrimonial.NON_CONCERNE;
     this.trameVerteEtBleue = TrameVerteEtBleue.HORS_TRAME;
+
+    // Valeurs optionnelles initialisées à undefined
+    this.typeProprietaire = undefined;
+    this.etatBatiInfrastructure = undefined;
+    this.presencePollution = undefined;
+    this.qualiteVoieDesserte = undefined;
+    this.qualitePaysage = undefined;
+    this.valeurArchitecturaleHistorique = undefined;
+    this.reseauEaux = undefined;
   }
+  identifiantParcelle: string;
+  commune: string;
+  surfaceSite: number;
+  surfaceBati?: number | undefined;
+  connectionReseauElectricite: boolean;
+  distanceRaccordementElectrique: number;
+  siteEnCentreVille: boolean;
+  distanceAutoroute: number;
+  distanceTransportCommun: number;
+  proximiteCommercesServices: boolean;
+  tauxLogementsVacants: number;
+  ancienneActivite?: string | undefined;
+  presenceRisquesTechnologiques: boolean;
+  presenceRisquesNaturels: RisqueNaturel;
+  zonageEnvironnemental: ZonageEnvironnemental;
+  zonageReglementaire: string;
+  zonagePatrimonial: ZonagePatrimonial;
+  trameVerteEtBleue: TrameVerteEtBleue;
+  typeProprietaire?: TypeProprietaire | undefined;
+  etatBatiInfrastructure?: EtatBati | undefined;
+  presencePollution?: PresencePollution | undefined;
+  qualiteVoieDesserte?: QualiteDesserte | undefined;
+  qualitePaysage?: QualitePaysage | undefined;
+  valeurArchitecturaleHistorique?: ValeurArchitecturale | undefined;
+  reseauEaux?: ReseauEaux | undefined;
+  sessionId?: string | undefined;
+  coordonnees?: { latitude: number; longitude: number } | undefined;
 
   /**
    * Vérifie si toutes les données obligatoires sont présentes

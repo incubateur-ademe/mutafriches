@@ -1,7 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from '../../app.module';
-import { AnalyticsService } from '../../analytics/analytics.service';
-import { ActionTypes, type Integrator } from '../../analytics/analytics.types';
+import { AnalyticsService } from '../analytics.service';
+import { ActionTypes, type Integrator } from '../analytics.types';
+import { PertinenceReponse } from 'src/friches/enums/mutability.enums';
 
 async function bootstrap() {
   const app = await NestFactory.createApplicationContext(AppModule);
@@ -142,7 +143,10 @@ async function bootstrap() {
             );
 
             // 72% répondent OUI, 28% répondent NON
-            const reponse = Math.random() < 0.72 ? 'OUI' : 'NON';
+            const reponse =
+              Math.random() < 0.72
+                ? PertinenceReponse.OUI
+                : PertinenceReponse.NON;
 
             // Mettre à jour le résultat avec la réponse de pertinence
             await analyticsService.updatePertinenceReponse(sessionId, reponse);

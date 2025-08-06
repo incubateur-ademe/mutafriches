@@ -220,34 +220,79 @@
       return;
     }
 
-    // Simulation de sauvegarde
+    // Désactiver le bouton
     const submitBtn = document.getElementById('submit-btn');
     submitBtn.disabled = true;
-    submitBtn.innerHTML = 'Calcul en cours...';
+    submitBtn.innerHTML = 'Sauvegarde en cours...';
 
-    // Simulation d'un délai de traitement
-    setTimeout(() => {
-      // Ici envoyer les données à l'API
-      // fetch('/api/evaluate', { method: 'POST', body: formData })
-      window.location.href = '{{nextUrl}}';
-    }, 2000);
-  }
+    // Convertir FormData en objet JSON
+    const data = {};
+    for (let [key, value] of formData.entries()) {
+      // Mapper les noms d'attributs HTML vers les noms attendus par l'API
+      const apiFieldName = key.replace(/-/g, ''); // Supprimer les tirets
 
-  // Validation en temps réel
-  document.addEventListener('DOMContentLoaded', function () {
-    const form = document.getElementById('manual-form');
-    const selects = form.querySelectorAll('select');
+      // Mapping spécifique si nécessaire
+      switch (key) {
+        case 'type-proprietaire':
+          data.typeProprietaire = value;
+          break;
+        case 'reseau-eaux':
+          data.reseauEaux = value;
+          break;
+        case 'etat-bati':
+          data.etatBati = value;
+          break;
+        case 'presence-pollution':
+          data.presencePollution = value;
+          break;
+        case 'valeur-architecturale':
+          data.valeurArchitecturale = value;
+          break;
+        case 'qualite-paysagere':
+          data.qualitePaysagere = value;
+          break;
+        case 'qualite-desserte':
+          data.qualiteDesserte = value;
+          break;
+        default:
+          data[apiFieldName] = value;
+      }
+    }
 
-    selects.forEach(select => {
-      select.addEventListener('change', function () {
-        const errorElement = document.getElementById(this.id + '-error');
+    console.log('Données à envoyer:', data);
 
-        if (this.value && this.value !== '') {
-          // Masquer l'erreur si une valeur est sélectionnée
-          this.classList.remove('fr-select--error');
-          errorElement.style.display = 'none';
+    // Appel à l'API pour sauvegarder
+    fetch('/analyse/sauvegarder-donnees', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include', // Important pour les cookies de session
+      body: JSON.stringify(data)
+    })
+      .then(response => response.json())
+      .then(result => {
+        console.log('Réponse API:', result);
+
+        if (result.success) {
+          // Redirection vers l'étape suivante
+          window.location.href = '/analyse/resultats';
+        } else {
+          // Afficher l'erreur
+          alert('Erreur lors de la sauvegarde: ' + (result.message || 'Erreur inconnue'));
+
+          // Réactiver le bouton
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = 'Calculer les résultats <span class="fr-icon-arrow-right-s-line fr-icon--sm" aria-hidden="true"></span>';
         }
+      })
+      .catch(error => {
+        console.error('Erreur:', error);
+        alert('Erreur de communication avec le serveur');
+
+        // Réactiver le bouton
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = 'Calculer les résultats <span class="fr-icon-arrow-right-s-line fr-icon--sm" aria-hidden="true"></span>';
       });
-    });
-  });
+  }
 </script>

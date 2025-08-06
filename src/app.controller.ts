@@ -1,20 +1,19 @@
 import { Controller, Get, Res } from '@nestjs/common';
 import { DatabaseService } from './shared/database/database.service';
-import { UiService } from './ui/ui.service';
-import { MockService } from './mocks/mock.service';
+import { UiService } from './ui/services/ui.service';
 import { HealthResponse } from './shared/types/common.types';
+import { ApiExcludeEndpoint, ApiTags } from '@nestjs/swagger';
 
 interface SimpleResponse {
   setHeader(name: string, value: string): void;
   send(body: string): void;
 }
-
+@ApiTags('health')
 @Controller()
 export class AppController {
   constructor(
     private readonly databaseService: DatabaseService,
     private readonly uiService: UiService,
-    private readonly mockService: MockService,
   ) {}
 
   @Get('health')
@@ -49,10 +48,10 @@ export class AppController {
   }
 
   @Get()
+  @ApiExcludeEndpoint()
   getHome(@Res() res: SimpleResponse): void {
     // Page d'accueil du formulaire (étape 1) directement sur /
-    const mockData = this.mockService.getDataForStep(1);
-    const html = this.uiService.renderFormStep(1, mockData);
+    const html = this.uiService.renderFormStep(1);
 
     res.setHeader('Content-Type', 'text/html');
     res.send(html);

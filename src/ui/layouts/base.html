@@ -87,7 +87,7 @@
   <script type="text/javascript" nomodule src="/dsfr/dsfr.nomodule.min.js"></script>
 
   <script>
-    // Scripts globaux pour l'iframe
+    // Scripts globaux
     document.addEventListener('DOMContentLoaded', function () {
       // Animation d'entrée
       document.body.classList.add('fade-in');
@@ -126,6 +126,25 @@
         }, 3000);
       };
     });
+
+    // Fonction pour remplacer les placeholders dans le contenu
+    function replacePlaceholders(container, data) {
+      const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
+
+      let node;
+      while ((node = walker.nextNode())) {
+        const text = node.nodeValue;
+
+        if (text.includes('{{')) {
+          const replaced = text.replace(/{{\s*(.*?)\s*}}/g, (_, key) => {
+            const val = data[key.trim()];
+            return val ?? '—';
+          });
+
+          node.nodeValue = replaced;
+        }
+      }
+    }
   </script>
 
   <!-- Modale de choix du theme -->

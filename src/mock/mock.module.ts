@@ -37,4 +37,4 @@ import { MockMutabilityService } from './services/mock-mutability.service';
     MockMutabilityService,
   ],
 })
-export class FrichesMockModule {}
+export class MockModule {}

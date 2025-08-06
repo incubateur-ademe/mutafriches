@@ -2,9 +2,46 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { join } from 'path';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+
+import * as session from 'express-session';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
+  // Configuration de la validation
+  app.useGlobalPipes(new ValidationPipe());
+
+  // Configuration Swagger
+  const config = new DocumentBuilder()
+    .setTitle('Mutafriches API')
+    .setDescription('API pour analyser la mutabilité des friches urbaines')
+    .setVersion('1.0')
+    .addTag('friches', 'Opérations sur les friches urbaines')
+    .build();
+
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api', app, document, {
+    swaggerOptions: {
+      persistAuthorization: true,
+      displayRequestDuration: true,
+    },
+  });
+
+  // Configuration de express-session
+  app.use(
+    session({
+      secret: process.env.SESSION_SECRET || 'mutafriches-secret-key',
+      resave: false,
+      saveUninitialized: false,
+      cookie: {
+        maxAge: 24 * 60 * 60 * 1000, // 24 heures
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+      },
+    }),
+  );
 
   // Assets DSFR - chemin adaptatif selon l'environnement
   const isProduction = process.env.NODE_ENV === 'production';
@@ -27,7 +64,8 @@ async function bootstrap() {
   const host = isProduction ? '0.0.0.0' : 'localhost';
 
   await app.listen(port, host);
-  console.log(`Application running on: http://${host}:${port}`);
+  console.log(`Application lancée sur : http://${host}:${port}`);
+  console.log(`Documentation swagger sur : http://${host}:${port}/api`);
 }
 
 bootstrap().catch((err) => {

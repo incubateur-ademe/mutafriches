@@ -1,29 +1,9 @@
+import { PertinenceReponse, UsageType } from '../enums/mutability.enums';
 import { mutabilityResults } from '../schemas/mutability.schema';
 
 // Types inférés depuis le schéma
 export type MutabilityResult = typeof mutabilityResults.$inferSelect;
 export type NewMutabilityResult = typeof mutabilityResults.$inferInsert;
-
-// Enum pour les usages
-export const UsageTypes = {
-  RESIDENTIEL: 'residentiel',
-  EQUIPEMENTS: 'equipements',
-  CULTURE: 'culture',
-  TERTIAIRE: 'tertiaire',
-  INDUSTRIE: 'industrie',
-  RENATURATION: 'renaturation',
-  PHOTOVOLTAIQUE: 'photovoltaique',
-} as const;
-
-export type UsageType = (typeof UsageTypes)[keyof typeof UsageTypes];
-
-export const PertinenceReponses = {
-  OUI: 'OUI',
-  NON: 'NON',
-} as const;
-
-export type PertinenceReponse =
-  (typeof PertinenceReponses)[keyof typeof PertinenceReponses];
 
 // Types métier pour la mutabilité
 export interface UsageIndices {

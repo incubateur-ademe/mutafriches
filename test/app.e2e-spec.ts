@@ -2,8 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { AppController } from '../src/app.controller';
 import { DatabaseService } from '../src/shared/database/database.service';
-import { UiService } from '../src/ui/ui.service';
-import { MockService } from '../src/mocks/mock.service';
+import { UiService } from '../src/ui/services/ui.service';
 import { HealthResponse } from '../src/shared/types/common.types';
 
 describe('AppController (Integration)', () => {
@@ -23,10 +22,6 @@ describe('AppController (Integration)', () => {
       renderFormStep: vi.fn().mockReturnValue('<html>Mock HTML</html>'),
     };
 
-    const mockMockService = {
-      getDataForStep: vi.fn().mockReturnValue({}),
-    };
-
     const moduleFixture: TestingModule = await Test.createTestingModule({
       controllers: [AppController],
       providers: [
@@ -37,10 +32,6 @@ describe('AppController (Integration)', () => {
         {
           provide: UiService,
           useValue: mockUiService,
-        },
-        {
-          provide: MockService,
-          useValue: mockMockService,
         },
       ],
     }).compile();

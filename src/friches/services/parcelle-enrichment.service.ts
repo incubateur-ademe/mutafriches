@@ -1,19 +1,19 @@
-// src/friches/services/parcelle-enrichment.service.ts
 import { Injectable } from '@nestjs/common';
 import { Parcelle } from '../entities/parcelle.entity';
 import { EnrichmentResultDto } from '../dto/enrichment-result.dto';
-import { MockCadastreService } from '../../friches-mock/services/mock-cadastre.service';
-import { MockBdnbService } from '../../friches-mock/services/mock-bdnb.service';
-import { MockEnedisService } from '../../friches-mock/services/mock-enedis.service';
-import { MockTransportService } from '../../friches-mock/services/mock-transport.service';
-import { MockOverpassService } from '../../friches-mock/services/mock-overpass.service';
-import { MockLovacService } from '../../friches-mock/services/mock-lovac.service';
+import { MockCadastreService } from '../../mock/services/mock-cadastre.service';
+import { MockBdnbService } from '../../mock/services/mock-bdnb.service';
+import { MockEnedisService } from '../../mock/services/mock-enedis.service';
+import { MockTransportService } from '../../mock/services/mock-transport.service';
+import { MockOverpassService } from '../../mock/services/mock-overpass.service';
+import { MockLovacService } from '../../mock/services/mock-lovac.service';
 import { ApiResponse } from './external-apis/shared/api-response.interface';
 import { CadastreApiResponse } from './external-apis/cadastre/cadastre.interface';
 import { EnedisRaccordement } from './external-apis/enedis/enedis.interface';
+import { IParcelleEnrichmentService } from '../interfaces/parcelle-enrichment-service.interface';
 
 @Injectable()
-export class ParcelleEnrichmentService {
+export class ParcelleEnrichmentService implements IParcelleEnrichmentService {
   constructor(
     private readonly cadastreService: MockCadastreService,
     private readonly bdnbService: MockBdnbService,
@@ -95,6 +95,7 @@ export class ParcelleEnrichmentService {
     );
 
     // 7. Données complémentaires (en attendant les vrais services)
+    // TODO: Remplacer par de vrais services
     await this.enrichWithRemainingMockData(
       parcelle,
       identifiantParcelle,
@@ -112,11 +113,32 @@ export class ParcelleEnrichmentService {
     );
 
     return {
-      parcelle,
+      // Données déduites automatiquement de la parcelle
+      identifiantParcelle: parcelle.identifiantParcelle,
+      commune: parcelle.commune,
+      surfaceSite: parcelle.surfaceSite,
+      surfaceBati: parcelle.surfaceBati,
+      connectionReseauElectricite: parcelle.connectionReseauElectricite,
+      distanceRaccordementElectrique: parcelle.distanceRaccordementElectrique,
+      siteEnCentreVille: parcelle.siteEnCentreVille,
+      distanceAutoroute: parcelle.distanceAutoroute,
+      distanceTransportCommun: parcelle.distanceTransportCommun,
+      proximiteCommercesServices: parcelle.proximiteCommercesServices,
+      tauxLogementsVacants: parcelle.tauxLogementsVacants,
+      ancienneActivite: parcelle.ancienneActivite,
+      presenceRisquesTechnologiques: parcelle.presenceRisquesTechnologiques,
+      presenceRisquesNaturels: parcelle.presenceRisquesNaturels,
+      zonageEnvironnemental: parcelle.zonageEnvironnemental,
+      zonageReglementaire: parcelle.zonageReglementaire,
+      zonagePatrimonial: parcelle.zonagePatrimonial,
+      trameVerteEtBleue: parcelle.trameVerteEtBleue,
+      coordonnees: parcelle.coordonnees,
+
+      // Métadonnées d'enrichissement
       sourcesUtilisees,
       champsManquants,
       fiabilite,
-    };
+    } as EnrichmentResultDto;
   }
 
   /**

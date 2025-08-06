@@ -1,4 +1,4 @@
-export interface MockInfosParcelle {
+export interface UiParcelleDto {
   // Données de base
   surfaceParcelle: string;
   surfaceBatie: string;
@@ -27,29 +27,5 @@ export interface MockInfosParcelle {
   tvb: string;
 
   // Données techniques
-  potentielEcologique: string;
+  potentielEcologique?: string;
 }
-
-export interface ResultatUsage {
-  rang: number;
-  usage: string;
-  explication: string;
-  indiceMutabilite: number;
-  potentiel:
-    | 'Très favorable'
-    | 'Favorable'
-    | 'Modéré'
-    | 'Peu favorable'
-    | 'Défavorable';
-}
-
-export interface MockResultatsMutabilite {
-  fiabilite: {
-    note: number;
-    text: string;
-    description: string;
-  };
-  resultats: ResultatUsage[];
-}
-
-export type MockData = MockInfosParcelle | MockResultatsMutabilite | undefined;

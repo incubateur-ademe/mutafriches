@@ -1,25 +1,201 @@
 import { Injectable } from '@nestjs/common';
+import { MutabilityInputDto } from 'src/friches/dto/mutability-input.dto';
 import { MutabilityResultDto } from 'src/friches/dto/mutability-result.dto';
+import { PresencePollution } from 'src/friches/enums/parcelle.enums';
+import { IMutabilityService } from 'src/friches/interfaces/mutability-service.interface';
 
 @Injectable()
-export class MockMutabilityService {
+export class MockMutabilityService implements IMutabilityService {
+  /**
+   * Calcule les indices de mutabilité à partir d'un DTO (implémentation mock)
+   */
+  calculateMutability(
+    input: MutabilityInputDto,
+    fiabilite?: number,
+  ): MutabilityResultDto {
+    // Si on reconnaît un identifiant de parcelle spécifique, on retourne des données prédéfinies
+    if (input.identifiantParcelle) {
+      const mockResult = this.getMockResultByParcelle(
+        input.identifiantParcelle,
+      );
+      if (mockResult) {
+        // Si une fiabilité est fournie, on l'utilise à la place de celle du mock
+        if (fiabilite !== undefined) {
+          return {
+            ...mockResult,
+            fiabilite: this.formatFiabilite(fiabilite),
+          };
+        }
+        return mockResult;
+      }
+    }
+
+    // Sinon, on fait un calcul simplifié basé sur les données d'entrée
+    return this.calculateFromInput(input, fiabilite);
+  }
+
   /**
    * Retourne des résultats mockés basés sur l'identifiant de parcelle
    */
-  calculateMutabilityForParcelle(
+  private getMockResultByParcelle(
     identifiantParcelle: string,
-  ): Promise<MutabilityResultDto | null> {
-    // Retourne des données spécifiques selon l'identifiant
+  ): MutabilityResultDto | null {
     switch (identifiantParcelle) {
       case '490007000ZE0153': // Trélazé
-        return Promise.resolve(this.getTrelazeResults());
+        return this.getTrelazeResults();
       case '490007000AB0001': // Angers
-        return Promise.resolve(this.getAngersResults());
+        return this.getAngersResults();
       case '490007000CD0042': // Saumur
-        return Promise.resolve(this.getSaumurResults());
+        return this.getSaumurResults();
       default:
-        return Promise.resolve(this.getDefaultResults());
+        return null;
     }
+  }
+
+  /**
+   * Calcul simplifié basé sur les données d'entrée
+   */
+  private calculateFromInput(
+    input: MutabilityInputDto,
+    fiabilite?: number,
+  ): MutabilityResultDto {
+    const calculatedFiabilite = fiabilite ?? input.fiabilite ?? 7;
+
+    // Calcul simplifié pour les mocks
+    let baseScore = 50;
+
+    // Facteurs positifs simples
+    if (input.siteEnCentreVille) baseScore += 10;
+    if (input.proximiteCommercesServices) baseScore += 8;
+    if (input.connectionReseauElectricite) baseScore += 5;
+    if (input.distanceTransportCommun && input.distanceTransportCommun < 500)
+      baseScore += 8;
+
+    // Facteurs négatifs simples
+    if (input.presencePollution === PresencePollution.OUI_AUTRES_COMPOSES)
+      baseScore -= 15;
+    if (input.presenceRisquesTechnologiques) baseScore -= 12;
+
+    const finalScore = Math.max(20, Math.min(100, baseScore));
+
+    return {
+      fiabilite: this.formatFiabilite(calculatedFiabilite),
+      resultats: [
+        {
+          rang: 1,
+          usage: 'Logement et commerces de proximité',
+          indiceMutabilite: finalScore,
+          potentiel: this.getPotentielFromScore(finalScore),
+          explication: this.getSimpleExplication(input, finalScore),
+        },
+        {
+          rang: 2,
+          usage: 'Équipements publics',
+          indiceMutabilite: Math.max(20, finalScore - 5),
+          potentiel: this.getPotentielFromScore(finalScore - 5),
+          explication:
+            'Évaluation basée sur les données fournies (mode développement).',
+        },
+        {
+          rang: 3,
+          usage: 'Bureaux',
+          indiceMutabilite: Math.max(20, finalScore - 10),
+          potentiel: this.getPotentielFromScore(finalScore - 10),
+          explication:
+            'Évaluation basée sur les données fournies (mode développement).',
+        },
+        {
+          rang: 4,
+          usage: 'Equipements culturels et touristiques',
+          indiceMutabilite: Math.max(20, finalScore - 15),
+          potentiel: this.getPotentielFromScore(finalScore - 15),
+          explication:
+            'Évaluation basée sur les données fournies (mode développement).',
+        },
+        {
+          rang: 5,
+          usage: 'Bâtiments industriels',
+          indiceMutabilite: Math.max(20, finalScore - 20),
+          potentiel: this.getPotentielFromScore(finalScore - 20),
+          explication:
+            'Évaluation basée sur les données fournies (mode développement).',
+        },
+        {
+          rang: 6,
+          usage: 'Centrale photovoltaïque au sol',
+          indiceMutabilite: Math.max(20, finalScore - 25),
+          potentiel: this.getPotentielFromScore(finalScore - 25),
+          explication:
+            'Évaluation basée sur les données fournies (mode développement).',
+        },
+        {
+          rang: 7,
+          usage: 'Espace renaturé',
+          indiceMutabilite: Math.max(20, finalScore - 30),
+          potentiel: this.getPotentielFromScore(finalScore - 30),
+          explication:
+            'Évaluation basée sur les données fournies (mode développement).',
+        },
+      ],
+    };
+  }
+
+  private getSimpleExplication(
+    input: MutabilityInputDto,
+    score: number,
+  ): string {
+    const facteurs: string[] = [];
+
+    if (input.siteEnCentreVille) facteurs.push('emplacement central');
+    if (input.proximiteCommercesServices) facteurs.push('commerces proches');
+    if (input.connectionReseauElectricite) facteurs.push('réseaux en place');
+    if (input.presencePollution !== PresencePollution.OUI_AUTRES_COMPOSES)
+      facteurs.push('absence de pollution majeure');
+
+    if (score >= 60) {
+      return `${facteurs.length > 0 ? facteurs.join(', ') + ' font que ce' : 'Ce'} site semble adapté pour un programme mixte logements-commerces (évaluation simplifiée).`;
+    } else {
+      return 'Site présentant quelques contraintes pour un usage résidentiel (évaluation simplifiée).';
+    }
+  }
+
+  private getPotentielFromScore(
+    score: number,
+  ):
+    | 'Très favorable'
+    | 'Favorable'
+    | 'Modéré'
+    | 'Peu favorable'
+    | 'Défavorable' {
+    if (score >= 75) return 'Très favorable';
+    if (score >= 60) return 'Favorable';
+    if (score >= 40) return 'Modéré';
+    if (score >= 20) return 'Peu favorable';
+    return 'Défavorable';
+  }
+
+  private formatFiabilite(note: number): MutabilityResultDto['fiabilite'] {
+    let text: string;
+    let description: string;
+
+    if (note >= 9) {
+      text = 'Très fiable';
+      description =
+        'Les données sont suffisamment précises pour une analyse robuste.';
+    } else if (note >= 7) {
+      text = 'Fiable';
+      description =
+        'Les données permettent une analyse correcte avec quelques incertitudes.';
+    } else if (note >= 5) {
+      text = 'Modérément fiable';
+      description =
+        'Certaines données manquent, les résultats sont à interpréter avec prudence.';
+    } else {
+      text = 'Peu fiable';
+      description = 'Données insuffisantes, analyse approximative uniquement.';
+    }
+
+    return { note, text, description };
   }
 
   private getTrelazeResults(): MutabilityResultDto {
@@ -217,25 +393,6 @@ export class MockMutabilityService {
             'Contraintes environnementales et patrimoniales majeures.',
           indiceMutabilite: 18,
           potentiel: 'Défavorable',
-        },
-      ],
-    };
-  }
-
-  private getDefaultResults(): MutabilityResultDto {
-    return {
-      fiabilite: {
-        note: 5.0,
-        text: 'Peu fiable',
-        description: 'Données insuffisantes, analyse approximative uniquement.',
-      },
-      resultats: [
-        {
-          rang: 1,
-          usage: 'Analyse insuffisante',
-          explication: 'Données manquantes pour une évaluation précise.',
-          indiceMutabilite: 50,
-          potentiel: 'Modéré',
         },
       ],
     };
