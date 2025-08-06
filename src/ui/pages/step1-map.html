@@ -438,54 +438,6 @@
     const navigationButtons = document.getElementById('navigation-buttons');
   }
 
-  function selectParcel(event) {
-    if (event) {
-      event.stopPropagation();
-    }
-
-    const infoCol = document.getElementById('info-col');
-    const navigationButtons = document.getElementById('navigation-buttons');
-    const point = document.getElementById('parcel-point');
-
-    // Afficher les éléments
-    infoCol.classList.add('expanded');
-    navigationButtons.classList.add('expanded');
-
-    // Animation du point
-    point.style.transform = 'scale(1.2)';
-    point.style.background = '#18753c';
-
-    setTimeout(() => {
-      point.style.transform = 'scale(1)';
-    }, 200);
-
-    // Scroll vers la zone d'informations après l'animation
-    setTimeout(() => {
-      infoCol.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start'
-      });
-    }, 300);
-  }
-
-  function searchParcelById() {
-    const parcelId = document.getElementById('parcel-id').value.trim();
-    const infoCol = document.getElementById('info-col');
-    const navigationButtons = document.getElementById('navigation-buttons');
-
-    // Afficher les résultats
-    infoCol.classList.add('expanded');
-    navigationButtons.classList.add('expanded');
-
-    // Scroll vers la zone d'informations
-    setTimeout(() => {
-      infoCol.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start'
-      });
-    }, 100);
-  }
-
   function handleMultiParcelleChange(event) {
     // Si l'utilisateur sélectionne "Plusieurs parcelles"
     if (event.target.value === "2") {
@@ -496,5 +448,75 @@
       document.getElementById('multiparcelle-map-simple').checked = true;
       event.target.checked = false;
     }
+  }
+
+  async function searchParcelById() {
+    const parcelId = document.getElementById('parcel-id').value.trim();
+    const infoCol = document.getElementById('info-col');
+    const navigationButtons = document.getElementById('navigation-buttons');
+
+    if (!parcelId) {
+      alert('Veuillez saisir un identifiant de parcelle');
+      return;
+    }
+
+    try {
+      // Afficher un loader
+      infoCol.innerHTML = '<div class="fr-loader">Chargement des données...</div>';
+      infoCol.classList.add('expanded');
+
+      // Appel API pour enrichir la parcelle
+      const response = await fetch('/analyse/parcelle/enrichir', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ identifiant: parcelId })
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        // Recharger la page avec les données enrichies
+        window.location.href = `/analyse/localisation?identifiant=${encodeURIComponent(parcelId)}`;
+      } else {
+        // Afficher l'erreur
+        infoCol.innerHTML = `
+        <div class="fr-alert fr-alert--error">
+          <h3 class="fr-alert__title">Erreur</h3>
+          <p>Impossible de trouver les données pour cette parcelle : ${result.error}</p>
+        </div>
+      `;
+      }
+    } catch (error) {
+      console.error('Erreur:', error);
+      infoCol.innerHTML = `
+      <div class="fr-alert fr-alert--error">
+        <h3 class="fr-alert__title">Erreur technique</h3>
+        <p>Une erreur s'est produite lors de la récupération des données.</p>
+      </div>
+    `;
+    }
+
+    // Scroll vers la zone d'informations
+    setTimeout(() => {
+      infoCol.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }, 100);
+  }
+
+  // Fonction pour sélectionner une parcelle depuis la carte (avec identifiant prédéfini)
+  function selectParcel(event) {
+    if (event) {
+      event.stopPropagation();
+    }
+
+    // Utiliser un identifiant de parcelle de test
+    const testParcelId = '490007000ZE0153'; // Parcelle de Trélazé dans vos mocks
+
+    // Rediriger vers la page avec enrichissement
+    window.location.href = `/analyse/localisation?identifiant=${testParcelId}`;
   }
 </script>

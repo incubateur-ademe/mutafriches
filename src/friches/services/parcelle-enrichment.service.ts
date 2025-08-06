@@ -1,27 +1,26 @@
-import { Injectable, Inject } from '@nestjs/common';
+// src/friches/services/parcelle-enrichment.service.ts
+import { Injectable } from '@nestjs/common';
 import { Parcelle } from '../entities/parcelle.entity';
 import { EnrichmentResultDto } from '../dto/enrichment-result.dto';
-import {
-  CadastreApiResponse,
-  CadastreApiService,
-} from './external-apis/cadastre/cadastre.interface';
-import { EnedisApiService } from './external-apis/enedis/enedis.interface';
-import { BdnbApiService } from './external-apis/bdnb/bdnb.interface';
-import { OverpassApiService } from './external-apis/overpass/overpass.interface';
-import { TransportApiService } from './external-apis/transport/transport.interface';
+import { MockCadastreService } from '../../friches-mock/services/mock-cadastre.service';
+import { MockBdnbService } from '../../friches-mock/services/mock-bdnb.service';
+import { MockEnedisService } from '../../friches-mock/services/mock-enedis.service';
+import { MockTransportService } from '../../friches-mock/services/mock-transport.service';
+import { MockOverpassService } from '../../friches-mock/services/mock-overpass.service';
+import { MockLovacService } from '../../friches-mock/services/mock-lovac.service';
+import { ApiResponse } from './external-apis/shared/api-response.interface';
+import { CadastreApiResponse } from './external-apis/cadastre/cadastre.interface';
+import { EnedisRaccordement } from './external-apis/enedis/enedis.interface';
 
 @Injectable()
 export class ParcelleEnrichmentService {
   constructor(
-    @Inject('CADASTRE_SERVICE')
-    private readonly cadastreService: CadastreApiService,
-    @Inject('BDNB_SERVICE') private readonly bdnbService: BdnbApiService,
-    @Inject('TRANSPORT_SERVICE')
-    private readonly transportService: TransportApiService,
-    @Inject('ENEDIS_SERVICE') private readonly enedisService: EnedisApiService,
-    @Inject('OVERPASS_SERVICE')
-    private readonly overpassService: OverpassApiService,
-    @Inject('LOVAC_SERVICE') private readonly lovacService: any,
+    private readonly cadastreService: MockCadastreService,
+    private readonly bdnbService: MockBdnbService,
+    private readonly transportService: MockTransportService,
+    private readonly enedisService: MockEnedisService,
+    private readonly overpassService: MockOverpassService,
+    private readonly lovacService: MockLovacService,
   ) {}
 
   /**
@@ -178,23 +177,23 @@ export class ParcelleEnrichmentService {
   ): Promise<void> {
     try {
       // Connection électrique
-      const connectionResult = await this.enedisService.checkConnection(
-        parcelle.identifiantParcelle,
-      );
+      const connectionResult: ApiResponse<boolean> =
+        await this.enedisService.checkConnection(parcelle.identifiantParcelle);
 
-      if (connectionResult.success) {
-        parcelle.connectionReseauElectricite = connectionResult.data as boolean;
+      if (connectionResult.success && connectionResult.data !== undefined) {
+        parcelle.connectionReseauElectricite = connectionResult.data;
       } else {
         manquants.push('connectionReseauElectricite');
       }
 
       // Distance raccordement
-      const distanceResult = await this.enedisService.getDistanceRaccordement(
-        coordonnees.latitude,
-        coordonnees.longitude,
-      );
+      const distanceResult: ApiResponse<EnedisRaccordement> =
+        await this.enedisService.getDistanceRaccordement(
+          coordonnees.latitude,
+          coordonnees.longitude,
+        );
 
-      if (distanceResult.data) {
+      if (distanceResult.success && distanceResult.data) {
         parcelle.distanceRaccordementElectrique = distanceResult.data.distance;
         sources.push('Enedis');
       } else {

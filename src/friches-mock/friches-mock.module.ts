@@ -5,6 +5,7 @@ import { MockTransportService } from './services/mock-transport.service';
 import { MockEnedisService } from './services/mock-enedis.service';
 import { MockOverpassService } from './services/mock-overpass.service';
 import { MockLovacService } from './services/mock-lovac.service';
+import { MockMutabilityService } from './services/mock-mutability.service';
 
 /**
  * Module contenant tous les services mock pour les APIs externes
@@ -23,6 +24,7 @@ import { MockLovacService } from './services/mock-lovac.service';
     MockEnedisService,
     MockOverpassService,
     MockLovacService,
+    MockMutabilityService,
   ],
   exports: [
     // Export pour injection dans le module friches
@@ -32,6 +34,7 @@ import { MockLovacService } from './services/mock-lovac.service';
     MockEnedisService,
     MockOverpassService,
     MockLovacService,
+    MockMutabilityService,
   ],
 })
 export class FrichesMockModule {}
