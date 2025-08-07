@@ -13,6 +13,7 @@ Mutafriches est une API NestJS qui remplace un fichier Excel pour analyser la mu
 - **Tests** : Vitest
 - **Package Manager** : pnpm
 - **CI/CD** : GitHub Actions
+- **Documentation API** : Swagger/OpenAPI
 
 ## 🚀 Installation
 
@@ -49,6 +50,7 @@ pnpm start:dev
 ```
 
 L'API sera disponible sur : **<http://localhost:3000>**
+Documentation Swagger : **<http://localhost:3000/api>**
 
 ## 🛠️ Scripts disponibles
 
@@ -112,23 +114,21 @@ pnpm db:studio
 # Ouvre http://localhost:4983
 ```
 
-## 🌐 Routes disponibles
+## 🌐 API Routes disponibles
 
 | Route | Méthode | Description |
 |-------|---------|-------------|
 | `/` | GET | Message de base de l'API |
-| `/health` | GET | Healthcheck (status, timestamp, service) |
-| `/iframe` | GET | Interface utilisateur avec DSFR |
+| `/health` | GET | Healthcheck de l'API |
+| `/api` | GET | Documentation Swagger |
+| `/iframe` | GET | Interface utilisateur (step 1) |
+| `/api/form-sessions` | POST | Créer une session de formulaire |
+| `/api/form-sessions/{id}` | GET, PUT | Gérer une session |
+| `/api/friches/mutability` | POST | Calculer la mutabilité |
 
-### Exemples
+### Documentation API
 
-```bash
-# Healthcheck
-curl http://localhost:3000/health
-
-# Interface iframe
-curl http://localhost:3000/iframe
-```
+L'API expose une documentation Swagger complète avec tous les DTO et schémas. Accédez à `/api` pour explorer les endpoints interactivement.
 
 ## 🧩 Architecture
 
@@ -136,67 +136,82 @@ curl http://localhost:3000/iframe
 
 ```
 src/
-├── app.controller.ts       # Routes principales
-├── app.module.ts          # Configuration NestJS
-├── main.ts                # Bootstrap de l'application
-├── analytics/             # Schémas, services et types analytics
-│   ├── analytics.schema.ts
-│   ├── analytics.service.ts
-│   └── analytics.types.ts
-├── mutability/            # Schémas et types mutabilité
-│   ├── mutability.schema.ts
-│   └── mutability.types.ts
-├── mocks/                 # Services et données de test
-│   ├── data/
-│   ├── mock.service.ts
-│   └── mock.types.ts
-├── shared/                # Services partagés et utilitaires
+├── app.controller.ts           # Routes principales
+├── app.module.ts              # Configuration NestJS
+├── main.ts                    # Bootstrap de l'application
+├── analytics/                 # Analytics et métriques
+├── form-sessions/             # Gestion des sessions de formulaire
+│   ├── dto/                  # Data Transfer Objects
+│   ├── form-sessions.controller.ts
+│   ├── form-sessions.service.ts
+│   └── form-sessions.types.ts
+├── friches/                   # Logique métier friches
+│   ├── dto/                  # DTO pour les analyses
+│   ├── friches.controller.ts
+│   ├── friches.service.ts
+│   └── friches.types.ts
+├── mocks/                     # Services et données de test
+├── shared/                    # Services partagés
 │   ├── database/
-│   ├── scripts/
 │   └── types/
-└── ui/                    # Système d'interface utilisateur
-    ├── components/        # Composants HTML réutilisables
-    ├── layouts/           # Layouts de base
-    ├── pages/             # Pages complètes (steps)
-    ├── ui.controller.ts   # Controller pour l'UI
-    ├── ui.service.ts      # Service de rendu HTML
-    ├── ui.types.ts        # Types UI
-    └── ui.utils.ts        # Utilitaires UI
+└── ui/                        # Interface utilisateur
+    ├── components/           # Composants HTML DSFR
+    ├── layouts/              # Layouts de base
+    ├── pages/                # Pages par étapes
+    ├── ui.controller.ts
+    ├── ui.service.ts
+    └── ui.types.ts
 ```
 
-### Système UI
+### Système de sessions
 
-L'API utilise un système UI modulaire :
+Le système de `form-sessions` permet de :
 
-- **Layouts** : Structures de base (`base.html`)
-- **Pages** : Pages complètes par étape (`step1-map.html`, `step2-manual-form.html`, etc.)
-- **Composants** : Éléments réutilisables (`form-header.html`)
-- **Variables** : Remplacement dynamique avec `{{variable}}`
+- Suivre le parcours utilisateur étape par étape
+- Sauvegarder les données partielles
+- Gérer l'état des formulaires multi-étapes
+- Analyser les taux de conversion et d'abandon
 
-```typescript
-const pageData = {
-  title: 'Analyse de mutabilité',
-  content: 'Données du formulaire'
-};
+### DTOs et validation
 
-const html = uiService.renderPage('step1-map', pageData);
-```
+Tous les endpoints utilisent des DTO typés avec validation automatique :
 
-## 🎨 Design System
+- `CreateFormSessionDto` : Création d'une session
+- `UpdateFormSessionDto` : Mise à jour des données
+- `MutabilityAnalysisDto` : Analyse de mutabilité
+- `EnrichmentResultDto` : Résultats enrichis
 
-L'API utilise le [DSFR](https://www.systeme-de-design.gouv.fr/) (Système de Design de l'État français) avec assets servis via `/dsfr/*`.
+## 🎨 Interface utilisateur
 
-## 📊 Analytics & Métriques
+L'UI utilise le DSFR avec un système modulaire :
 
-Le système trackage les métriques d'impact :
+- **Layouts** : Structure HTML de base avec DSFR
+- **Pages** : Templates par étape du parcours
+- **Composants** : Éléments réutilisables (forms, callouts, etc.)
 
-1. **Taux d'initiation** : % d'utilisateurs initiant le parcours
-2. **Taux de complétion** : % d'utilisateurs terminant le parcours  
-3. **Engagement détails** : % cliquant sur "voir tous les résultats"
-4. **Demandes de contact** : % cliquant "être contacté par des porteurs"
-5. **Outils annexes** : % cliquant sur les liens d'outils
+Le rendu se fait côté serveur avec remplacement de variables `{{variable}}`.
 
-Les données sont prêtes pour l'analyse dans Metabase.
+## 🗄️ Base de données
+
+### Configuration
+
+PostgreSQL avec Drizzle ORM. Tables principales :
+
+- **form_sessions** : Sessions utilisateur et données formulaires
+- **integrators** : Organismes utilisateurs
+- **user_actions** : Analytics et tracking
+- **mutability_results** : Résultats d'analyses
+
+Interface graphique : `pnpm db:studio` (<http://localhost:4983>)
+
+## 📊 Analytics
+
+Tracking automatique des métriques d'impact :
+
+- Taux d'initiation et de complétion
+- Engagement par étape
+- Demandes de contact
+- Utilisation des outils annexes
 
 ## 🚀 CI/CD
 
@@ -207,8 +222,10 @@ Le projet utilise GitHub Actions pour l'intégration continue :
 - **Type checking** TypeScript
 - **Build** de validation
 
-## 📦 Parcours d'utilisation
+## Parcours utilisateur
 
-1. **Parcours Initial** : iframe pure pour utilisateurs sans données
-2. **Parcours Complétude Simple** : API REST pour données partielles  
-3. **Parcours Complétude Avancée** : iframe avec token pour affinage
+1. **Landing** : Page d'accueil avec iframe
+2. **Géolocalisation** : Sélection parcelle via carte
+3. **Formulaire** : Saisie critères par étapes
+4. **Résultats** : Indices de mutabilité et recommandations
+5. **Contact** : Mise en relation avec porteurs de projets
