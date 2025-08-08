@@ -5,17 +5,20 @@ import { MutabilityCalculationService } from './services/mutability-calculation.
 import { FrichesController } from './controller/friches.controller';
 import { MockModule } from '../mock/mock.module';
 import { CadastreService } from './services/external-apis/cadastre/cadastre.service';
+import { BdnbService } from './services/external-apis/bdnb/bdnb.service';
 
 @Module({
   imports: [HttpModule, MockModule],
   controllers: [FrichesController],
   providers: [
     CadastreService,
+    BdnbService,
     ParcelleEnrichmentService,
     MutabilityCalculationService,
   ],
   exports: [
     CadastreService,
+    BdnbService,
     ParcelleEnrichmentService,
     MutabilityCalculationService,
   ],

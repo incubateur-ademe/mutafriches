@@ -4,7 +4,7 @@ import { firstValueFrom } from 'rxjs'; // ← Import manquant !
 import { ApiResponse } from '../shared/api-response.interface';
 import {
   CadastreServiceResponse,
-  CadastreApiService,
+  ICadastreService,
 } from './cadastre.interface';
 import {
   IGNLocalisantFeature,
@@ -12,9 +12,10 @@ import {
   IGNParcelleFeature,
   IGNParcelleResponse,
 } from './ign-api.interfaces';
+import { isValidParcelId } from 'src/friches/lib/friches.utils';
 
 @Injectable()
-export class CadastreService implements CadastreApiService {
+export class CadastreService implements ICadastreService {
   private readonly baseUrl =
     process.env.IGN_CADASTRE_API_URL || 'https://apicarto.ign.fr/api/cadastre';
 
@@ -32,7 +33,7 @@ export class CadastreService implements CadastreApiService {
       console.log(`Récupération données parcelle: ${identifiant}`);
 
       // Valider le format de l'identifiant parcellaire
-      if (!this.isValidParcelId(identifiant)) {
+      if (!isValidParcelId(identifiant)) {
         return {
           success: false,
           error: `Format d'identifiant parcellaire invalide: ${identifiant}`,
@@ -110,16 +111,6 @@ export class CadastreService implements CadastreApiService {
   }
 
   /**
-   * Valide le format d'un identifiant parcellaire
-   */
-  private isValidParcelId(identifiant: string): boolean {
-    // Format attendu: 8 chiffres, 2 lettres/numéros, 4 chiffres
-    // TODO : Vérifier si le format est conforme aux spécifications du cadastre
-    const pattern = /^\d{8}[A-Z0-9]{2}\d{4}$/;
-    return pattern.test(identifiant);
-  }
-
-  /**
    * Parse un identifiant parcellaire
    */
   private parseParcelId(identifiant: string): {
@@ -127,7 +118,7 @@ export class CadastreService implements CadastreApiService {
     section: string;
     numero: string;
   } | null {
-    if (!this.isValidParcelId(identifiant)) {
+    if (!isValidParcelId(identifiant)) {
       return null;
     }
 

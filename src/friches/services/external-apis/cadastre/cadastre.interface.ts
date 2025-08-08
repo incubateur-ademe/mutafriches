@@ -10,7 +10,7 @@ export interface CadastreServiceResponse {
   };
 }
 
-export interface CadastreApiService {
+export interface ICadastreService {
   getParcelleInfo(
     identifiant: string,
   ): Promise<ApiResponse<CadastreServiceResponse>>;

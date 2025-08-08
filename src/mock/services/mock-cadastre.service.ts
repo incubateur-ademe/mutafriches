@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { ApiResponse } from '../../friches/services/external-apis/shared/api-response.interface';
 import {
-  CadastreApiService,
+  ICadastreService,
   CadastreServiceResponse,
 } from '../../friches/services/external-apis/cadastre/cadastre.interface';
 import { MockParcellesHelper } from '../data/parcelles.mock';
 
 @Injectable()
-export class MockCadastreService implements CadastreApiService {
+export class MockCadastreService implements ICadastreService {
   // Méthode requise par l'interface
   getParcelleInfo(
     identifiant: string,
