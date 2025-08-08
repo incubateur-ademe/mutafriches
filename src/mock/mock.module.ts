@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { MockTransportService } from './services/mock-transport.service';
-import { MockEnedisService } from './services/mock-enedis.service';
 import { MockOverpassService } from './services/mock-overpass.service';
 import { MockLovacService } from './services/mock-lovac.service';
 import { MockMutabilityService } from './services/mock-mutability.service';
@@ -14,7 +13,6 @@ import { MockMutabilityService } from './services/mock-mutability.service';
   providers: [
     // Services mock implémentant les mêmes interfaces que les vrais services
     MockTransportService,
-    MockEnedisService,
     MockOverpassService,
     MockLovacService,
     MockMutabilityService,
@@ -22,7 +20,6 @@ import { MockMutabilityService } from './services/mock-mutability.service';
   exports: [
     // Export pour injection dans le module friches
     MockTransportService,
-    MockEnedisService,
     MockOverpassService,
     MockLovacService,
     MockMutabilityService,

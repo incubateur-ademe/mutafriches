@@ -6,6 +6,7 @@ import { FrichesController } from './controller/friches.controller';
 import { MockModule } from '../mock/mock.module';
 import { CadastreService } from './services/external-apis/cadastre/cadastre.service';
 import { BdnbService } from './services/external-apis/bdnb/bdnb.service';
+import { EnedisService } from './services/external-apis/enedis/enedis.service';
 
 @Module({
   imports: [HttpModule, MockModule],
@@ -13,12 +14,14 @@ import { BdnbService } from './services/external-apis/bdnb/bdnb.service';
   providers: [
     CadastreService,
     BdnbService,
+    EnedisService,
     ParcelleEnrichmentService,
     MutabilityCalculationService,
   ],
   exports: [
     CadastreService,
     BdnbService,
+    EnedisService,
     ParcelleEnrichmentService,
     MutabilityCalculationService,
   ],

@@ -5,9 +5,7 @@ import { MockEnedisService } from '../../mock/services/mock-enedis.service';
 import { MockTransportService } from '../../mock/services/mock-transport.service';
 import { MockOverpassService } from '../../mock/services/mock-overpass.service';
 import { MockLovacService } from '../../mock/services/mock-lovac.service';
-import { ApiResponse } from './external-apis/shared/api-response.interface';
 import { CadastreServiceResponse } from './external-apis/cadastre/cadastre.interface';
-import { EnedisRaccordement } from './external-apis/enedis/enedis.interface';
 import { IParcelleEnrichmentService } from '../interfaces/parcelle-enrichment-service.interface';
 import { CadastreService } from './external-apis/cadastre/cadastre.service';
 import { BdnbService } from './external-apis/bdnb/bdnb.service';
@@ -199,25 +197,29 @@ export class ParcelleEnrichmentService implements IParcelleEnrichmentService {
   ): Promise<void> {
     try {
       // Connection électrique
-      const connectionResult: ApiResponse<boolean> =
-        await this.enedisService.checkConnection(parcelle.identifiantParcelle);
+      const connectionResult = await this.enedisService.checkConnection(
+        parcelle.identifiantParcelle,
+      );
 
-      if (connectionResult.success && connectionResult.data !== undefined) {
-        parcelle.connectionReseauElectricite = connectionResult.data;
+      if (connectionResult.success && connectionResult.data) {
+        const connexionStatus = connectionResult.data;
+        // Extraction du boolean depuis l'objet EnedisConnexionStatus
+        parcelle.connectionReseauElectricite = connexionStatus.isConnected;
+        sources.push('Enedis-Connection');
       } else {
         manquants.push('connectionReseauElectricite');
       }
 
       // Distance raccordement
-      const distanceResult: ApiResponse<EnedisRaccordement> =
-        await this.enedisService.getDistanceRaccordement(
-          coordonnees.latitude,
-          coordonnees.longitude,
-        );
+      const distanceResult = await this.enedisService.getDistanceRaccordement(
+        coordonnees.latitude,
+        coordonnees.longitude,
+      );
 
       if (distanceResult.success && distanceResult.data) {
-        parcelle.distanceRaccordementElectrique = distanceResult.data.distance;
-        sources.push('Enedis');
+        const raccordementData = distanceResult.data;
+        parcelle.distanceRaccordementElectrique = raccordementData.distance;
+        sources.push('Enedis-Raccordement');
       } else {
         manquants.push('distanceRaccordementElectrique');
       }
