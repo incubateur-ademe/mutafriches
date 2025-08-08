@@ -250,7 +250,7 @@ export class UiService {
       case 'surfaceSite':
       case 'surfaceBati':
         if (typeof value === 'number') {
-          return `${value.toLocaleString()} m²`;
+          return `${value.toLocaleString('fr-FR')} m²`;
         }
         return safeStringify(value);
 
@@ -286,8 +286,8 @@ export class UiService {
   ): UiParcelleDto {
     return {
       // Données de base
-      surfaceParcelle: `${enrichmentResult.surfaceSite?.toLocaleString() || 'Non renseigné'} m²`,
-      surfaceBatie: `${enrichmentResult.surfaceBati?.toLocaleString() || 'Non renseigné'} m²`,
+      surfaceParcelle: `${enrichmentResult.surfaceSite?.toLocaleString('fr-FR') || 'Non renseigné'} m²`,
+      surfaceBatie: `${enrichmentResult.surfaceBati?.toLocaleString('fr-FR') || 'Non renseigné'} m²`,
       typeProprietaire: 'Non renseigné', // Plus dans enrichmentResult, sera dans les données manuelles
       ancienneActivite: enrichmentResult.ancienneActivite || 'Non renseignée',
 
@@ -314,7 +314,7 @@ export class UiService {
         : 'Non',
       distanceRaccordement: this.formatDistance(
         enrichmentResult.distanceRaccordementElectrique,
-        'km',
+        'm',
       ),
       tauxLV: enrichmentResult.tauxLogementsVacants
         ? `${enrichmentResult.tauxLogementsVacants}%`
@@ -415,7 +415,7 @@ export class UiService {
       } else if (distance <= 1000) {
         return 'Entre 500m et 1km';
       } else {
-        return `Plus de 1km (${Math.round(distance)}m)`;
+        return `Plus de 1km (${distance.toFixed(2)} m)`;
       }
     }
 
