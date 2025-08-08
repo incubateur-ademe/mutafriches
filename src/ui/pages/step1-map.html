@@ -30,16 +30,15 @@
       <fieldset class="fr-segmented fr-mb-4w">
         <div class="fr-segmented__elements">
           <div class="fr-segmented__element">
-            <input value="carte" type="radio" id="mode-carte" name="selection-mode" checked
-              onchange="switchMode('carte')">
-            <label class="fr-icon-map-pin-2-line fr-label" for="mode-carte">
-              Depuis la carte
+            <input value="id" type="radio" id="mode-id" name="selection-mode" checked onchange="switchMode('id')">
+            <label class="fr-icon-edit-line fr-label" for="mode-id">
+              Par identifiant de parcelle
             </label>
           </div>
           <div class="fr-segmented__element">
-            <input value="id" type="radio" id="mode-id" name="selection-mode" onchange="switchMode('id')">
-            <label class="fr-icon-edit-line fr-label" for="mode-id">
-              Par identifiant de parcelle
+            <input value="carte" type="radio" id="mode-carte" name="selection-mode" onchange="switchMode('carte')">
+            <label class="fr-icon-map-pin-2-line fr-label" for="mode-carte">
+              Depuis la carte
             </label>
           </div>
         </div>
@@ -66,7 +65,7 @@
   </div>
 
   <!-- Mode carte -->
-  <div id="carte-mode" class="input-mode active">
+  <div id="carte-mode" class="input-mode ">
     <p class="fr-text--sm">Cliquez sur la carte pour sélectionner la (les) parcelle(s) à analyser</p>
     <div class="fr-grid-row fr-grid-row--gutters">
       <div id="map-col" class="fr-col-12">
@@ -91,7 +90,7 @@
   </div>
 
   <!-- Mode saisie Identifiant Parcelle -->
-  <div id="id-mode" class="input-mode">
+  <div id="id-mode" class="input-mode active">
     <p class="fr-text--sm">Saisissez l'identifiant ou les identifiants des parcelles à analyser</p>
     <div class="fr-grid-row fr-grid-row--gutters">
       <!-- Message d'info pour l'ID -->
@@ -111,7 +110,7 @@
             Identifiant de parcelle
             <span class="fr-hint-text">Saisissez l'identifiant de la parcelle à analyser</span>
           </label>
-          <input class="fr-input" type="text" id="parcel-id" name="parcel-id" placeholder="Ex: 49353000AC0123"
+          <input class="fr-input" type="text" id="parcel-id" name="parcel-id" placeholder="Ex: 25056000HZ0346"
             onkeypress="if(event.key==='Enter') searchParcelEnrichmentData()">
         </div>
       </div>
@@ -477,7 +476,7 @@
     if (event) event.stopPropagation();
 
     //TODO: Remplacer cette logique par une vraie sélection de parcelle sur la carte
-    const testParcelId = '490007000ZE0153';
+    const testParcelId = '25056000HZ0346';
     document.getElementById('parcel-id').value = testParcelId;
 
     // Appeler la fonction de recherche des données enrichies avec l'ID de parcelle

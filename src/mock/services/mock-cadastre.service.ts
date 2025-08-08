@@ -34,29 +34,4 @@ export class MockCadastreService implements CadastreApiService {
       responseTimeMs: 150,
     });
   }
-
-  // Méthodes existantes (garder pour compatibilité)
-  getDonneesParcelle(identifiantParcelle: string): Promise<
-    ApiResponse<{
-      identifiant: string;
-      commune: string;
-      surface: number;
-      coordonnees: { latitude: number; longitude: number };
-    }>
-  > {
-    return this.getParcelleInfo(identifiantParcelle);
-  }
-
-  verifierExistenceParcelle(
-    identifiantParcelle: string,
-  ): Promise<ApiResponse<boolean>> {
-    const parcelle = MockParcellesHelper.findById(identifiantParcelle);
-
-    return Promise.resolve({
-      success: true,
-      data: parcelle !== null,
-      source: 'Mock Cadastre',
-      responseTimeMs: 100,
-    });
-  }
 }

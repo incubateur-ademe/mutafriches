@@ -7,10 +7,11 @@ import { UiController } from './ui/ui.controller';
 import { FrichesModule } from './friches/friches.module';
 import { MockModule } from './mock/mock.module';
 import { FormSessionService } from './ui/services/form-session.service';
+import { CadastreTestController } from './test-controllers/cadastre-test.controller';
 
 @Module({
   imports: [FrichesModule, MockModule],
-  controllers: [AppController, UiController],
+  controllers: [AppController, UiController, CadastreTestController],
   providers: [UiService, AnalyticsService, DatabaseService, FormSessionService],
 })
 export class AppModule {}
