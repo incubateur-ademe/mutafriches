@@ -175,9 +175,11 @@ Endpoint de test pour comparer les appels directs à l'API BDNB avec le service 
     },
   })
   async compareWithBDNB(@Query('parcelle') identifiantParcelle: string) {
-    const [surfaceResult, batimentsResult] = await Promise.all([
+    // Par :
+    const [surfaceResult, batimentsResult, risquesResult] = await Promise.all([
       this.bdnbService.getSurfaceBatie(identifiantParcelle),
       this.bdnbService.getBatiments(identifiantParcelle),
+      this.bdnbService.getRisquesNaturels(identifiantParcelle),
     ]);
 
     return {
@@ -190,8 +192,56 @@ Endpoint de test pour comparer les appels directs à l'API BDNB avec le service 
       mutafrichesResults: {
         surface: surfaceResult,
         batiments: batimentsResult,
+        risquesNaturels: risquesResult,
       },
     };
+  }
+
+  /**
+   * Test risques naturels uniquement
+   * GET /test/bdnb/risques?parcelle=77085000YA0126
+   */
+  @Get('risques')
+  @ApiExcludeEndpoint()
+  async testRisquesNaturels(@Query('parcelle') identifiantParcelle: string) {
+    const startTime = Date.now();
+
+    console.log(
+      `Test BDNB Risques Naturels - Parcelle: ${identifiantParcelle}`,
+    );
+
+    const result =
+      await this.bdnbService.getRisquesNaturels(identifiantParcelle);
+
+    const response = {
+      timestamp: new Date().toISOString(),
+      parcelleTeste: identifiantParcelle,
+      dureeMs: Date.now() - startTime,
+      resultat: result,
+      debug: {
+        formatValide: isValidParcelId(identifiantParcelle),
+        aleaArgiles: result.success ? result.data?.aleaArgiles : null,
+        aleaRadon: result.success ? result.data?.aleaRadon : null,
+        altitudeMoyenne: result.success ? result.data?.altitudeMoyenne : null,
+      },
+    };
+
+    console.log(`Résultat:`, JSON.stringify(response, null, 2));
+
+    return response;
+  }
+
+  /**
+   * Test avec POST pour risques naturels
+   * POST /test/bdnb/risques-post
+   * Body: { "identifiantParcelle": "77085000YA0126" }
+   */
+  @Post('risques-post')
+  @ApiExcludeEndpoint()
+  async testRisquesPost(
+    @Body('identifiantParcelle') identifiantParcelle: string,
+  ) {
+    return this.testRisquesNaturels(identifiantParcelle);
   }
 
   /**

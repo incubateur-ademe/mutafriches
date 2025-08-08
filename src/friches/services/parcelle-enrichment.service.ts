@@ -9,6 +9,7 @@ import { IParcelleEnrichmentService } from '../interfaces/parcelle-enrichment-se
 import { CadastreService } from './external-apis/cadastre/cadastre.service';
 import { BdnbService } from './external-apis/bdnb/bdnb.service';
 import { EnedisService } from './external-apis/enedis/enedis.service';
+import { RisqueNaturel } from '../enums/parcelle.enums';
 
 @Injectable()
 export class ParcelleEnrichmentService implements IParcelleEnrichmentService {
@@ -92,7 +93,15 @@ export class ParcelleEnrichmentService implements IParcelleEnrichmentService {
       champsManquants,
     );
 
-    // 7. Données complémentaires (en attendant les vrais services)
+    // 7. Risques naturels (BDNB)
+    await this.enrichWithRisquesNaturels(
+      parcelle,
+      identifiantParcelle,
+      sourcesUtilisees,
+      champsManquants,
+    );
+
+    // 8. Données complémentaires (en attendant les vrais services)
     // TODO: Remplacer par de vrais services
     await this.enrichWithRemainingMockData(
       parcelle,
@@ -269,6 +278,71 @@ export class ParcelleEnrichmentService implements IParcelleEnrichmentService {
     manquants: string[],
   ): Promise<void> {
     // TODO: Implémenter l'appel au service Lovac pour récupérer les données
+  }
+
+  /**
+   * Enrichit avec les risques naturels depuis BDNB
+   */
+  private async enrichWithRisquesNaturels(
+    parcelle: Parcelle,
+    identifiantParcelle: string,
+    sources: string[],
+    manquants: string[],
+  ): Promise<void> {
+    try {
+      const risquesResult =
+        await this.bdnbService.getRisquesNaturels(identifiantParcelle);
+
+      if (risquesResult.success && risquesResult.data) {
+        const risquesData = risquesResult.data;
+
+        if (risquesData.aleaArgiles) {
+          // Transformer l'aléa argiles BDNB en enum de présence de risques naturels
+          parcelle.presenceRisquesNaturels = this.transformAleaArgilesToRisque(
+            risquesData.aleaArgiles,
+          );
+          sources.push('BDNB-Risques');
+        } else {
+          manquants.push('presenceRisquesNaturels');
+        }
+      } else {
+        manquants.push('presenceRisquesNaturels');
+      }
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Erreur inconnue';
+      console.error('Erreur récupération risques naturels BDNB:', errorMessage);
+      manquants.push('presenceRisquesNaturels');
+    }
+  }
+
+  /**
+   * Transforme l'aléa argiles BDNB en risque naturel pour Mutafriches
+   */
+  private transformAleaArgilesToRisque(aleaArgiles: string): RisqueNaturel {
+    const aleaNormalise = aleaArgiles.toLowerCase();
+
+    if (aleaNormalise.includes('fort') || aleaNormalise.includes('élevé')) {
+      return RisqueNaturel.FORT;
+    } else if (
+      aleaNormalise.includes('moyen') ||
+      aleaNormalise.includes('modéré')
+    ) {
+      return RisqueNaturel.MOYEN;
+    } else if (
+      aleaNormalise.includes('faible') ||
+      aleaNormalise.includes('bas')
+    ) {
+      return RisqueNaturel.FAIBLE;
+    } else if (
+      aleaNormalise.includes('nul') ||
+      aleaNormalise.includes('inexistant')
+    ) {
+      return RisqueNaturel.AUCUN;
+    }
+
+    // Valeur par défaut si format non reconnu
+    return RisqueNaturel.AUCUN;
   }
 
   /**

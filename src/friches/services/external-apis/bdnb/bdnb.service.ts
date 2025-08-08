@@ -161,6 +161,60 @@ export class BdnbService implements IBdnbService {
   }
 
   /**
+   * Récupère uniquement les risques naturels d'une parcelle
+   */
+  async getRisquesNaturels(
+    identifiantParcelle: string,
+  ): Promise<ApiResponse<BdnbRisquesNaturels>> {
+    const startTime = Date.now();
+
+    try {
+      console.log(
+        `Récupération risques naturels pour parcelle: ${identifiantParcelle}`,
+      );
+
+      const response = await this.callBdnbApi(identifiantParcelle);
+
+      if (!response.success || !response.data || response.data.length === 0) {
+        return {
+          success: false,
+          error: response.error || "Aucune donnée retournée par l'API BDNB",
+          source: 'API BDNB',
+          responseTimeMs: Date.now() - startTime,
+        };
+      }
+
+      // Utiliser le premier bâtiment pour extraire les risques naturels de la parcelle
+      const premierBatiment = response.data[0];
+      const risquesNaturels = this.extractRisquesNaturels(premierBatiment);
+
+      console.log(
+        `Risques naturels extraits - Aléa argiles: ${risquesNaturels.aleaArgiles}, Aléa radon: ${risquesNaturels.aleaRadon}`,
+      );
+
+      return {
+        success: true,
+        data: risquesNaturels,
+        source: 'API BDNB - Risques naturels',
+        responseTimeMs: Date.now() - startTime,
+      };
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Erreur inconnue';
+      console.error(
+        `Erreur lors de la récupération des risques naturels: ${errorMessage}`,
+        error instanceof Error ? error.stack : undefined,
+      );
+      return {
+        success: false,
+        error: `Erreur technique lors de l'appel à l'API BDNB: ${errorMessage}`,
+        source: 'API BDNB',
+        responseTimeMs: Date.now() - startTime,
+      };
+    }
+  }
+
+  /**
    * Appel générique à l'API BDNB pour récupérer les données d'une parcelle
    */
   private async callBdnbApi(

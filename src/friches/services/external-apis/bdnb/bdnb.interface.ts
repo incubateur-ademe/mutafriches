@@ -79,4 +79,7 @@ export interface IBdnbService {
   getBatiments(
     identifiantParcelle: string,
   ): Promise<ApiResponse<BdnbServiceResponse>>;
+  getRisquesNaturels(
+    identifiantParcelle: string,
+  ): Promise<ApiResponse<BdnbRisquesNaturels>>;
 }

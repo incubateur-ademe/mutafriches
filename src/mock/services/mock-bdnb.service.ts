@@ -2,12 +2,41 @@ import { Injectable } from '@nestjs/common';
 import { ApiResponse } from '../../friches/services/external-apis/shared/api-response.interface';
 import { MockParcellesHelper } from '../data/parcelles.mock';
 import {
+  BdnbRisquesNaturels,
   BdnbServiceResponse,
   IBdnbService,
 } from 'src/friches/services/external-apis/bdnb/bdnb.interface';
 
 @Injectable()
 export class MockBdnbService implements IBdnbService {
+  getRisquesNaturels(
+    identifiantParcelle: string,
+  ): Promise<ApiResponse<BdnbRisquesNaturels>> {
+    const parcelle = MockParcellesHelper.findById(identifiantParcelle);
+
+    if (!parcelle) {
+      return Promise.resolve({
+        success: false,
+        error: `Parcelle ${identifiantParcelle} non trouvée`,
+        source: 'Mock BDNB',
+      });
+    }
+
+    // Mocked risks data
+    const risquesNaturels: BdnbRisquesNaturels = {
+      aleaArgiles: 'faible',
+      aleaRadon: 'modéré',
+      altitudeMoyenne: 12,
+    };
+
+    return Promise.resolve({
+      success: true,
+      data: risquesNaturels,
+      source: 'Mock BDNB',
+      responseTimeMs: 80,
+    });
+  }
+
   getSurfaceBatie(identifiantParcelle: string): Promise<ApiResponse<number>> {
     const parcelle = MockParcellesHelper.findById(identifiantParcelle);
 
