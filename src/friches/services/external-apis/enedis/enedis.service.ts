@@ -20,8 +20,13 @@ import { ApiResponse } from '../shared/api-response.interface';
 @Injectable()
 export class EnedisService implements IEnedisService {
   private readonly baseUrl =
+    process.env.ENEDIS_API_URL ||
     'https://data.enedis.fr/api/explore/v2.1/catalog/datasets';
-  private readonly timeout = 10000; // 10 secondes
+
+  private readonly timeout = parseInt(
+    process.env.ENEDIS_API_TIMEOUT || '10000',
+    10,
+  );
 
   constructor(private readonly httpService: HttpService) {}
 
@@ -431,8 +436,6 @@ export class EnedisService implements IEnedisService {
       return [];
     }
   }
-
-  // ========== Méthodes utilitaires ==========
 
   private async callEnedisApi<T>(
     params: EnedisApiParams,
