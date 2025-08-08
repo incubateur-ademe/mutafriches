@@ -252,39 +252,4 @@ Endpoint de test pour comparer les appels directs à l'API BDNB avec le service 
       },
     };
   }
-
-  /**
-   * Healthcheck rapide
-   * GET /test/bdnb/health
-   */
-  @Get('health')
-  @ApiExcludeEndpoint()
-  async healthCheck() {
-    const testParcelle = '77085000YA0126';
-    const startTime = Date.now();
-
-    try {
-      const result = await this.bdnbService.getSurfaceBatie(testParcelle);
-      const responseTime = Date.now() - startTime;
-
-      return {
-        status: result.success ? 'OK' : 'ERROR',
-        service: 'BDNB API',
-        responseTimeMs: responseTime,
-        testParcelle,
-        timestamp: new Date().toISOString(),
-        details: result.success
-          ? `Surface: ${result.data}m²`
-          : `Erreur: ${result.error}`,
-      };
-    } catch (error) {
-      return {
-        status: 'ERROR',
-        service: 'BDNB API',
-        responseTimeMs: Date.now() - startTime,
-        error: error instanceof Error ? error.message : 'Erreur inconnue',
-        timestamp: new Date().toISOString(),
-      };
-    }
-  }
 }
