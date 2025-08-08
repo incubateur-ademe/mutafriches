@@ -1,8 +1,13 @@
 import { Controller, Get, Query, Post, Body } from '@nestjs/common';
-import { ApiTags, ApiExcludeController } from '@nestjs/swagger';
+import {
+  ApiExcludeEndpoint,
+  ApiOperation,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { CadastreService } from '../friches/services/external-apis/cadastre/cadastre.service';
 
-@ApiExcludeController()
 @ApiTags('🧪 Tests - Cadastre')
 @Controller('test/cadastre')
 export class CadastreTestController {
@@ -13,6 +18,7 @@ export class CadastreTestController {
    * GET /test/cadastre/parcelle?id=490007000ZE0153
    */
   @Get('parcelle')
+  @ApiExcludeEndpoint()
   async testParcelle(@Query('id') identifiant: string) {
     const startTime = Date.now();
 
@@ -43,16 +49,103 @@ export class CadastreTestController {
    * Body: { "identifiantParcelle": "490007000ZE0153" }
    */
   @Post('parcelle-post')
+  @ApiExcludeEndpoint()
   async testParcellePost(@Body('identifiantParcelle') identifiant: string) {
     return this.testParcelle(identifiant);
   }
 
   /**
    * Test de comparaison détaillée
-   * GET /test/cadastre/compare?id=490007000ZE0153
+   * GET /test/cadastre/compare?idu=490007000ZE0153
    */
   @Get('compare')
-  async compareWithIGN(@Query('id') identifiant: string) {
+  @ApiOperation({
+    summary: `Compare les données issues de l'API IGN directes avec le service Mutafriches`,
+    description: `
+Endpoint de test pour comparer les appels directs à l'API IGN Cadastre avec le service d'enrichissement Mutafriches.
+
+**Utilité :**
+- Valide la cohérence entre API IGN brute et service enrichi
+- Fournit les URLs IGN directes pour vérification manuelle
+- Compare les performances et la transformation des données
+
+**Données enrichies par Mutafriches :**
+- identifiant: IDU de la parcelle
+- commune: Nom officiel de la commune
+- surface: Surface en m² (depuis contenance IGN)
+- coordonnees: Centroïde lat/lng (depuis localisant IGN)
+  `,
+  })
+  @ApiQuery({
+    name: 'idu',
+    description:
+      'Identifiant de parcelle cadastrale (14 caractères : 5 chiffres INSEE + 3 chiffres + 2 caractères section + 4 chiffres numéro)',
+    example: '490007000ZE0153',
+    type: String,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Comparaison détaillée des données IGN vs Mutafriches',
+    schema: {
+      type: 'object',
+      properties: {
+        identifiant: {
+          type: 'string',
+          example: '490007000ZE0153',
+          description: 'IDU de la parcelle testée',
+        },
+        components: {
+          type: 'object',
+          properties: {
+            codeInsee: { type: 'string', example: '49007' },
+            codeComp: { type: 'string', example: '000' },
+            section: { type: 'string', example: 'ZE' },
+            numero: { type: 'string', example: '0153' },
+          },
+          description: "Composants extraits de l'IDU",
+        },
+        urlsIGNDirectes: {
+          type: 'object',
+          properties: {
+            parcelle: {
+              type: 'string',
+              example: 'https://apicarto.ign.fr/api/cadastre/parcelle?...',
+            },
+            commune: {
+              type: 'string',
+              example: 'https://apicarto.ign.fr/api/cadastre/commune?...',
+            },
+          },
+          description: "URLs pour tester directement l'API IGN",
+        },
+        mutafrichesResult: {
+          type: 'object',
+          properties: {
+            success: { type: 'boolean' },
+            data: {
+              type: 'object',
+              properties: {
+                identifiant: { type: 'string', example: '490007000ZE0153' },
+                commune: { type: 'string', example: 'Angers' },
+                surface: { type: 'number', example: 28320 },
+                coordonnees: {
+                  type: 'object',
+                  properties: {
+                    latitude: { type: 'number', example: 47.478419 },
+                    longitude: { type: 'number', example: -0.563166 },
+                  },
+                },
+              },
+            },
+            source: { type: 'string', example: 'IGN Cadastre' },
+            responseTimeMs: { type: 'number', example: 1250 },
+          },
+          description: 'Résultat du service Mutafriches',
+        },
+      },
+    },
+  })
+  async compareWithIGN(@Query('idu') identifiant: string) {
     const components = this.parseParcelIdForDebug(identifiant);
 
     return {
@@ -72,6 +165,7 @@ export class CadastreTestController {
    * GET /test/cadastre/samples
    */
   @Get('samples')
+  @ApiExcludeEndpoint()
   getSampleParcels() {
     return {
       description: 'Identifiants de parcelles pour tester le service',
