@@ -97,7 +97,7 @@ https://api.bdnb.io/v1/bdnb/donnees/batiment_groupe_complet/parcelle?parcelle_id
 - `annee_construction` → Année de construction
 - `hauteur_mean`, `nb_niveau` → Caractéristiques physiques
 - `mat_mur_txt`, `mat_toit_txt` → Matériaux de construction
-- `alea_argiles`, `alea_radon` → Risques naturels
+- `alea_argiles`, `alea_radon` → **Risques naturels (utilisés pour enrichissement Mutafriches)**
 - `libelle_commune_insee` → Localisation
 - `distance_batiment_historique_plus_proche` → Patrimoine
 
@@ -115,6 +115,7 @@ https://api.bdnb.io/v1/bdnb/donnees/batiment_groupe_complet/parcelle?parcelle_id
 | **Surface bâtie totale** | `surface_emprise_sol` | Somme de tous les bâtiments |
 | **État du bâtiment** | `annee_construction` | Calcul basé sur l'âge (Récent/Bon/Moyen/Ancien) |
 | **Risques naturels** | `alea_argiles`, `alea_radon`, `altitude_sol_mean` | Extraction directe |
+| **Risques naturels (présence)** | `alea_argiles` | Transformation vers enum Mutafriches (Fort/Moyen/Faible/Non/Ne sait pas) |
 | **Localisation** | `code_commune_insee`, `libelle_commune_insee` | Normalisation |
 | **Patrimoine** | `distance_batiment_historique_plus_proche` | Conversion en informations lisibles |
 | **Fiabilité** | `fiabilite_emprise_sol`, `fiabilite_hauteur` | Score calculé sur 10 |
@@ -131,6 +132,28 @@ private determinerEtatBatiment(batiment: BdnbBatimentGroupeComplet): string {
   return 'Ancien';
 }
 ```
+
+### Transformation des risques naturels pour Mutafriches
+
+```typescript
+private transformAleaArgilesToRisque(aleaArgiles: string): string {
+  const aleaNormalise = aleaArgiles.toLowerCase();
+  
+  if (aleaNormalise.includes('fort') || aleaNormalise.includes('élevé')) {
+    return 'Fort';
+  } else if (aleaNormalise.includes('moyen') || aleaNormalise.includes('modéré')) {
+    return 'Moyen';
+  } else if (aleaNormalise.includes('faible') || aleaNormalise.includes('bas')) {
+    return 'Faible';
+  } else if (aleaNormalise.includes('nul') || aleaNormalise.includes('inexistant')) {
+    return 'Non';
+  }
+  
+  return 'Ne sait pas'; // Valeur par défaut
+}
+```
+
+**Mapping** : L'aléa argiles BDNB est automatiquement transformé vers les valeurs attendues par l'algorithme de mutabilité Mutafriches.
 
 ### Calcul du score de fiabilité
 
@@ -185,6 +208,35 @@ interface BdnbServiceResponse {
   fiabiliteEmpriseSol?: string;
   fiabiliteHauteur?: string;
   fiabiliteCroisementAdresse?: string;
+}
+```
+
+### 3️⃣ Service `getRisquesNaturels()`
+
+**Utilisation** : Récupération spécifique des risques naturels pour l'enrichissement Mutafriches
+
+```typescript
+interface ApiResponse<BdnbRisquesNaturels> {
+  success: boolean;
+  data?: BdnbRisquesNaturels;
+  source: string;
+  responseTimeMs?: number;
+  error?: string;
+}
+```
+
+**Exemple** :
+
+```json
+{
+  "success": true,
+  "data": {
+    "aleaArgiles": "Moyen",
+    "aleaRadon": "Faible",
+    "altitudeMoyenne": 117
+  },
+  "source": "API BDNB - Risques naturels",
+  "responseTimeMs": 1250
 }
 ```
 
@@ -346,6 +398,7 @@ interface BdnbPatrimoine {
 ### Outils de debug
 
 - **Endpoint de comparaison** : `/test/bdnb/compare?parcelle=XXX`
+- **Test risques naturels** : `/test/bdnb/risques?parcelle=XXX`
 - **URLs BDNB directes** : Pour validation manuelle
 - **Health check** : `/test/bdnb/health`
 - **Logs détaillés** : Traçabilité complète des transformations
