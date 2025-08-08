@@ -111,9 +111,9 @@ Endpoint de test pour comparer les appels directs à l'API IGN Cadastre avec le 
               type: 'string',
               example: 'https://apicarto.ign.fr/api/cadastre/parcelle?...',
             },
-            commune: {
+            localisant: {
               type: 'string',
-              example: 'https://apicarto.ign.fr/api/cadastre/commune?...',
+              example: 'https://apicarto.ign.fr/api/cadastre/localisant?...',
             },
           },
           description: "URLs pour tester directement l'API IGN",
@@ -153,7 +153,7 @@ Endpoint de test pour comparer les appels directs à l'API IGN Cadastre avec le 
       components,
       urlsIGNDirectes: {
         parcelle: `https://apicarto.ign.fr/api/cadastre/parcelle?code_insee=${components?.codeInsee}&section=${components?.section}&numero=${components?.numero}&source_ign=PCI`,
-        commune: `https://apicarto.ign.fr/api/cadastre/commune?code_insee=${components?.codeInsee}&source_ign=PCI`,
+        localisant: `https://apicarto.ign.fr/api/cadastre/localisant?code_insee=${components?.codeInsee}&section=${components?.section}&numero=${components?.numero}&source_ign=PCI`,
       },
       mutafrichesResult:
         await this.cadastreService.getParcelleInfo(identifiant),
