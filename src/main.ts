@@ -29,6 +29,12 @@ async function bootstrap() {
     },
   });
 
+  // Trust proxy pour Scalingo et autres environnements
+  // Permet de gérer les requêtes derrière un proxy
+  if (process.env.NODE_ENV === 'production') {
+    app.set('trust proxy', 1);
+  }
+
   // Configuration de express-session
   app.use(
     session({
@@ -36,9 +42,9 @@ async function bootstrap() {
       resave: false,
       saveUninitialized: true,
       cookie: {
-        maxAge: 24 * 60 * 60 * 1000, // 24 heures
+        maxAge: 24 * 60 * 60 * 1000,
         httpOnly: true,
-        secure: false,
+        secure: process.env.NODE_ENV === 'production' ? 'auto' : false,
       },
     }),
   );
