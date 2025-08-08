@@ -4,17 +4,7 @@
   "sourceRoot": "src",
   "compilerOptions": {
     "deleteOutDir": true,
-    "assets": [
-      {
-        "include": "templates/**/*",
-        "outDir": "dist",
-        "watchAssets": true
-      },
-      {
-        "include": "../public/**/*",
-        "outDir": "dist/public",
-        "watchAssets": true
-      }
-    ]
+    "watchAssets": true,
+    "assets": ["ui/**/*.html", "ui/**/*.css", "ui/**/*.js"]
   }
 }
