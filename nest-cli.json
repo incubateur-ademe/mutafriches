@@ -5,6 +5,27 @@
   "compilerOptions": {
     "deleteOutDir": true,
     "watchAssets": true,
-    "assets": ["ui/**/*.html", "ui/**/*.css", "ui/**/*.js"]
+    "assets": [
+      {
+        "include": "../public/**/*",
+        "outDir": "dist/public"
+      },
+      {
+        "include": "ui/components/*.html",
+        "outDir": "dist/src"
+      },
+      {
+        "include": "ui/layouts/*.html",
+        "outDir": "dist/src"
+      },
+      {
+        "include": "ui/pages/*.html",
+        "outDir": "dist/src"
+      },
+      {
+        "include": "ui/**/*.css",
+        "outDir": "dist/src"
+      }
+    ]
   }
 }

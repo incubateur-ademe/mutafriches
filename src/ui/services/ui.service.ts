@@ -23,7 +23,8 @@ export class UiService {
     if (process.env.NODE_ENV !== 'production') {
       return join(process.cwd(), 'src', 'ui');
     }
-    return join(__dirname, '..', '..', 'ui');
+    // En production, les fichiers sont dans dist/src/ui/
+    return join(process.cwd(), 'dist', 'src', 'ui');
   }
 
   private loadLayout(layoutName: string): string {
