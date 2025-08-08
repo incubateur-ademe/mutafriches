@@ -31,40 +31,23 @@ export class FrichesController {
     en interrogeant plusieurs sources de données externes :
     
     **Sources utilisées :**
-    - DVF (Demandes de Valeurs Foncières) : prix, transactions
-    - Cadastre : surface, géométrie, zonage PLU  
-    - SIRENE : activités économiques, établissements
-    - Base ICPE : installations classées, risques industriels
-    - INPN : zones environnementales protégées, espèces
-    - IGN : topographie, occupation du sol
-    
+    - API IGN Cadastre : coordonnées, commune, géométrie, zonage PLU  
+    - API BDNB : surface, risqus, bâtiments
+    - API Enedis : raccordement électrique, distance réseau
+    - API Transports : accessibilité transports en commun
+
     Retourne une parcelle enrichie avec un indice de fiabilité selon la complétude des données.
     `,
   })
   @ApiBody({
     type: ParcelleInputDto,
     examples: {
-      trelazeManufacture: {
-        summary: 'Ancienne manufacture Les Allumettes - Trélazé',
+      atelierCoutances: {
+        summary: 'Atelier de conception - Coutances',
         description:
-          "Parcelle emblématique de l'exemple Excel fourni, située en centre-ville avec patrimoine industriel",
+          'Parcelle exemple du fichier Excel original, avec données complètes',
         value: {
-          identifiantParcelle: '25056000HZ0346',
-        },
-      },
-      angersEntrepot: {
-        summary: 'Entrepôt logistique - Angers',
-        description:
-          'Parcelle industrielle en périphérie avec risques technologiques',
-        value: {
-          identifiantParcelle: '490007000AB0001',
-        },
-      },
-      saumurAgricole: {
-        summary: 'Exploitation agricole - Saumur',
-        description: 'Ancienne exploitation en zone naturelle protégée',
-        value: {
-          identifiantParcelle: '490007000CD0042',
+          identifiantParcelle: '50147000AR0010',
         },
       },
     },
@@ -145,68 +128,39 @@ export class FrichesController {
     - Optionnel : coordonnees, sessionId, fiabilite
     `,
     examples: {
-      manufactureComplete: {
-        summary: 'Ancienne manufacture Les Allumettes - Données complètes',
+      atelierCoutances: {
+        summary: 'Atelier de conception - Coutances',
         description:
-          'Exemple complet basé sur le fichier Excel original avec tous les critères renseignés',
+          'Parcelle exemple du fichier Excel original, avec données complètes',
         value: {
-          identifiantParcelle: '490007000ZE0153',
-          commune: 'Trélazé',
-          surfaceSite: 42780,
-          surfaceBati: 6600,
+          identifiantParcelle: '50147000AR0010',
+          commune: 'Coutances',
+          surfaceSite: 1782,
+          surfaceBati: 1214,
           connectionReseauElectricite: true,
-          distanceRaccordementElectrique: 0.3,
-          siteEnCentreVille: true,
-          distanceAutoroute: 1.5,
-          distanceTransportCommun: 250,
-          proximiteCommercesServices: true,
-          tauxLogementsVacants: 4.9,
-          ancienneActivite: 'Manufacture textile - Les Allumettes',
+          distanceRaccordementElectrique: 140.50478998604967,
+          siteEnCentreVille: false,
+          distanceAutoroute: 0,
+          distanceTransportCommun: 800,
+          proximiteCommercesServices: false,
+          tauxLogementsVacants: 0,
           presenceRisquesTechnologiques: false,
-          presenceRisquesNaturels: 'FAIBLE',
-          zonageEnvironnemental: 'HORS_ZONE',
-          zonageReglementaire: 'Zone urbaine - U',
-          zonagePatrimonial: 'NON_CONCERNE',
-          trameVerteEtBleue: 'HORS_TRAME',
-          typeProprietaire: 'PRIVE',
+          presenceRisquesNaturels: 'faible',
+          zonageEnvironnemental: 'hors_zone',
+          zonageReglementaire: '',
+          zonagePatrimonial: 'non_concerne',
+          trameVerteEtBleue: 'hors_trame',
+          coordonnees: {
+            latitude: 49.0421992,
+            longitude: -1.45017951,
+          },
           etatBatiInfrastructure: 'BATIMENTS_HETEROGENES',
           presencePollution: 'NE_SAIT_PAS',
           qualiteVoieDesserte: 'ACCESSIBLE',
           qualitePaysage: 'BANAL_INFRA_ORDINAIRE',
           valeurArchitecturaleHistorique: 'EXCEPTIONNEL',
           reseauEaux: 'CONNECTE',
-          coordonnees: {
-            latitude: 47.4514,
-            longitude: -0.4619,
-          },
           fiabilite: 9.5,
-        },
-      },
-      siteIndustriel: {
-        summary: 'Site industriel - Données partielles',
-        description:
-          'Exemple avec certaines données manquantes, impactant la fiabilité',
-        value: {
-          identifiantParcelle: '490007000AB0001',
-          commune: 'Angers',
-          surfaceSite: 15000,
-          surfaceBati: 2500,
-          connectionReseauElectricite: true,
-          distanceRaccordementElectrique: 0.8,
-          siteEnCentreVille: false,
-          distanceAutoroute: 0.5,
-          distanceTransportCommun: 800,
-          proximiteCommercesServices: false,
-          tauxLogementsVacants: 7.2,
-          ancienneActivite: 'Entrepôt logistique',
-          presenceRisquesTechnologiques: true,
-          presenceRisquesNaturels: 'MOYEN',
-          zonageEnvironnemental: 'ZNIEFF_TYPE_2',
-          zonageReglementaire: "Zone d'activité - AUi",
-          zonagePatrimonial: 'NON_CONCERNE',
-          trameVerteEtBleue: 'CORRIDOR_ECOLOGIQUE',
-          typeProprietaire: 'PRIVE',
-          fiabilite: 6.8,
         },
       },
     },

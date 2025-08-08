@@ -127,7 +127,7 @@ Endpoint de test pour comparer les appels directs à l'API BDNB avec le service 
   @ApiQuery({
     name: 'parcelle',
     description: 'Identifiant de parcelle cadastrale (format: 14 caractères)',
-    example: '77085000YA0126',
+    example: '50147000AR0010',
     type: String,
   })
   @ApiResponse({

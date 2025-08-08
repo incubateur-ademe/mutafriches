@@ -76,8 +76,8 @@
           <div style="text-align: center; color: #18753c;">
             <div style="font-size: 3rem; margin-bottom: 1rem;">🗺️</div>
             <p style="margin: 0; font-weight: bold;">Carte interactive</p>
-            <p style="margin: 0; font-size: 0.9rem;">Cliquez pour sélectionner la parcelle "Ancienne manufacture Les
-              Allumettes"</p>
+            <p style="margin: 0; font-size: 0.9rem;">Cliquez pour sélectionner la parcelle "Atelier de conception -
+              Coutances"</p>
           </div>
 
           <!-- Point de parcelle fictif -->
@@ -110,7 +110,7 @@
             Identifiant de parcelle
             <span class="fr-hint-text">Saisissez l'identifiant de la parcelle à analyser</span>
           </label>
-          <input class="fr-input" type="text" id="parcel-id" name="parcel-id" placeholder="Ex: 25056000HZ0346"
+          <input class="fr-input" type="text" id="parcel-id" name="parcel-id" placeholder="Ex: 50147000AR0010"
             onkeypress="if(event.key==='Enter') searchParcelEnrichmentData()">
         </div>
       </div>
@@ -476,7 +476,7 @@
     if (event) event.stopPropagation();
 
     //TODO: Remplacer cette logique par une vraie sélection de parcelle sur la carte
-    const testParcelId = '25056000HZ0346';
+    const testParcelId = '50147000AR0010';
     document.getElementById('parcel-id').value = testParcelId;
 
     // Appeler la fonction de recherche des données enrichies avec l'ID de parcelle

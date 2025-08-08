@@ -79,9 +79,8 @@ Endpoint de test pour comparer les appels directs à l'API IGN Cadastre avec le 
   })
   @ApiQuery({
     name: 'idu',
-    description:
-      'Identifiant de parcelle cadastrale (14 caractères : 5 chiffres INSEE + 3 chiffres + 2 caractères section + 4 chiffres numéro)',
-    example: '25056000HZ0346',
+    description: 'Identifiant de parcelle cadastrale (format: 14 caractères)',
+    example: '50147000AR0010',
     type: String,
   })
   @ApiResponse({

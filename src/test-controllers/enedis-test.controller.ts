@@ -126,13 +126,13 @@ Endpoint de test pour l'analyse complète des possibilités de raccordement éle
   @ApiQuery({
     name: 'lat',
     description: "Latitude WGS84 (exemple: coordonnées d'une friche)",
-    example: '47.478419',
+    example: '49.0421992',
     type: Number,
   })
   @ApiQuery({
     name: 'lng',
     description: 'Longitude WGS84',
-    example: '-0.563166',
+    example: '-1.45017951',
     type: Number,
   })
   @ApiResponse({
@@ -288,7 +288,7 @@ Endpoint de test pour l'analyse complète des possibilités de raccordement éle
 
   /**
    * Comparaison avec URLs API Enedis directes
-   * GET /test/enedis/compare?lat=47.478419&lng=-0.563166
+   * GET /test/enedis/compare?lat=49.0421992&lng=-1.45017951
    */
   @Get('compare')
   @ApiOperation({
@@ -311,13 +311,13 @@ Fournit les URLs pour interroger directement l'API Enedis Open Data et compare a
   @ApiQuery({
     name: 'lat',
     description: 'Latitude WGS84',
-    example: '47.478419',
+    example: '49.0421992',
     type: Number,
   })
   @ApiQuery({
     name: 'lng',
     description: 'Longitude WGS84',
-    example: '-0.563166',
+    example: '-1.45017951',
     type: Number,
   })
   async compareWithEnedisAPI(
