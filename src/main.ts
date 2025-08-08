@@ -34,7 +34,7 @@ async function bootstrap() {
     session({
       secret: process.env.SESSION_SECRET || 'mutafriches-secret-key',
       resave: false,
-      saveUninitialized: false,
+      saveUninitialized: true,
       cookie: {
         maxAge: 24 * 60 * 60 * 1000, // 24 heures
         httpOnly: true,
