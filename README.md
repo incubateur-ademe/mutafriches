@@ -229,3 +229,16 @@ Le projet utilise GitHub Actions pour l'intégration continue :
 3. **Formulaire** : Saisie critères par étapes
 4. **Résultats** : Indices de mutabilité et recommandations
 5. **Contact** : Mise en relation avec porteurs de projets
+
+## 📚 Documentation
+
+### APIs et Sources de données externes
+
+Le projet s'appuie sur plusieurs APIs publiques pour enrichir les données des friches :
+
+- **[Vue d'ensemble des APIs externes](./docs/external-apis-overview.md)** - Architecture et cartographie des sources de données
+- **[IGN Cadastre](./docs/external-apis/ign-cadastre.md)** - Service d'enrichissement cadastral (surface, commune, coordonnées)
+- **BDNB** - Base de données bâtiment (à venir)
+- **ENEDIS** - API Enedis (à venir)
+- **Transport Data Gouv** - Accessibilité transports (à venir)
+- **Géorisques** - Risques et contraintes réglementaires (à venir)
