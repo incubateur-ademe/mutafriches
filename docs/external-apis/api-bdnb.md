@@ -331,7 +331,6 @@ interface BdnbPatrimoine {
   "751160001AB0001": "Paris 16e - Zone urbaine dense", 
   "691230001AC0001": "Lyon - Test métropole",
   "130010001AA0001": "Marseille - Test sud France",
-  "490007000ZE0153": "Angers - Parcelle transverse"
 }
 ```
 

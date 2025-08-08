@@ -460,6 +460,7 @@ try {
 ### Outils de debug
 
 - **Contrôleur de test** : `/test/enedis/*` (endpoints dédiés)
+  - `/test/enedis/connexion?parcelle=25056000HZ0346&lat=47.23662566&lng=6.00896827` (avec coordonnées)
 - **Comparaison directe** : URLs API Enedis brutes pour validation
 - **Analyse complète** : Swagger UI pour tests interactifs
 - **Collections Postman** : Scénarios de test automatisés
@@ -472,7 +473,10 @@ try {
 // Dans ParcelleEnrichmentService
 private async enrichWithEnedisData(parcelle: Parcelle, coordonnees: Coordinates) {
   // 1. Vérification connexion électrique  
-  const connexionResult = await this.enedisService.checkConnection(parcelle.id);
+  const connexionResult = await this.enedisService.checkConnection(
+  parcelle.id, 
+  coordonnees
+  );
   parcelle.connectionReseauElectricite = connexionResult.data?.isConnected;
 
   // 2. Calcul distance raccordement

@@ -14,7 +14,7 @@ import {
 export class EnrichmentResultDto implements ParcelleAutoData {
   @ApiProperty({
     description: 'Identifiant cadastral unique de la parcelle',
-    example: '490007000ZE0153',
+    example: '25056000HZ0346',
   })
   identifiantParcelle: string;
 

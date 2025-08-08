@@ -49,7 +49,7 @@ export class FrichesController {
         description:
           "Parcelle emblématique de l'exemple Excel fourni, située en centre-ville avec patrimoine industriel",
         value: {
-          identifiantParcelle: '490007000ZE0153',
+          identifiantParcelle: '25056000HZ0346',
         },
       },
       angersEntrepot: {
@@ -82,7 +82,7 @@ export class FrichesController {
         value: {
           statusCode: 400,
           message: [
-            "Format d'identifiant parcelle invalide (attendu: 490007000ZE0153)",
+            "Format d'identifiant parcelle invalide (attendu: 25056000HZ0346)",
           ],
           error: 'Bad Request',
         },

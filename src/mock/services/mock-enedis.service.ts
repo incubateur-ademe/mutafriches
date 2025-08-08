@@ -46,12 +46,45 @@ export class MockEnedisService implements IEnedisService {
 
   checkConnection(
     identifiantParcelle: string,
+
+    coordonnees?: { latitude: number; longitude: number },
   ): Promise<ApiResponse<EnedisConnexionStatus>> {
     console.log(
       `Mock - Vérification connexion parcelle: ${identifiantParcelle}`,
     );
 
-    const isConnected = Math.random() > 0.3; // 70% de chances d'être connecté
+    // Simulation plus réaliste basée sur les coordonnées si disponibles
+    const baseConnectivity = Math.random() > 0.3; // 70% de chances de base
+
+    // Si coordonnées disponibles, ajuster selon la "zone"
+    let isConnected = baseConnectivity;
+    if (coordonnees) {
+      // Simulation: zones urbaines (proche de grandes villes) = plus connectées
+      const distanceParis =
+        Math.abs(coordonnees.latitude - 48.8566) +
+        Math.abs(coordonnees.longitude - 2.3522);
+      const distanceLyon =
+        Math.abs(coordonnees.latitude - 45.764) +
+        Math.abs(coordonnees.longitude - 4.8357);
+      const distanceMarseille =
+        Math.abs(coordonnees.latitude - 43.2965) +
+        Math.abs(coordonnees.longitude - 5.3698);
+
+      const minDistance = Math.min(
+        distanceParis,
+        distanceLyon,
+        distanceMarseille,
+      );
+
+      // Plus proche des grandes villes = plus de chances d'être connecté
+      if (minDistance < 1) {
+        // Très proche d'une grande ville
+        isConnected = Math.random() > 0.1; // 90% de chances
+      } else if (minDistance < 3) {
+        // Proche d'une grande ville
+        isConnected = Math.random() > 0.2; // 80% de chances
+      } // Sinon garde la base (70%)
+    }
 
     const result: ApiResponse<EnedisConnexionStatus> = {
       success: true,
@@ -82,7 +115,10 @@ export class MockEnedisService implements IEnedisService {
         latitude,
         longitude,
       );
-      const connexionResult = await this.checkConnection('mock-parcelle');
+      const connexionResult = await this.checkConnection('mock-parcelle', {
+        latitude,
+        longitude,
+      });
 
       if (!raccordementResult.success || !connexionResult.success) {
         return {
@@ -157,13 +193,13 @@ export class MockEnedisService implements IEnedisService {
       commune: `Ville Test ${index + 1}`,
     }));
 
-    const lignesBT = Array.from({ length: nombreLignesBT }, () => ({
+    const lignesBT = Array.from({ length: nombreLignesBT }, (_, index) => ({
       distance: Math.round(50 + Math.random() * 500), // 50m à 550m
       type: Math.random() > 0.5 ? 'Souterrain' : 'Aérien',
       tension: 'BT',
     }));
 
-    const poteaux = Array.from({ length: nombrePoteaux }, () => ({
+    const poteaux = Array.from({ length: nombrePoteaux }, (_, index) => ({
       distance: Math.round(10 + Math.random() * 200), // 10m à 210m
       tension: Math.random() > 0.8 ? 'HTA' : 'BT',
     }));

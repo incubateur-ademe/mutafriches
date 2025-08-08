@@ -136,17 +136,24 @@ export class EnedisService implements IEnedisService {
 
   async checkConnection(
     identifiantParcelle: string,
+    coordonnees?: { latitude: number; longitude: number },
   ): Promise<ApiResponse<EnedisConnexionStatus>> {
     try {
       console.log(
         `Vérification connexion pour parcelle: ${identifiantParcelle}`,
       );
 
-      // Note: Pour une vraie implémentation, il faudrait d'abord récupérer
-      // les coordonnées de la parcelle via l'API cadastre/Etalab
-      // Pour cet exemple, on simule avec des coordonnées moyennes France
-      const latitude = 46.603354;
-      const longitude = 1.888334;
+      // Si pas de coordonnées fournies, impossible de faire la vérification
+      if (!coordonnees) {
+        return {
+          success: false,
+          source: 'enedis-api',
+          error:
+            'Coordonnées de la parcelle requises pour la vérification de connexion',
+        };
+      }
+
+      const { latitude, longitude } = coordonnees;
 
       // Recherche dans différents rayons pour évaluer la connectivité
       const [postesProches, lignesBT, poteaux] = await Promise.all([
@@ -213,7 +220,7 @@ export class EnedisService implements IEnedisService {
       // Exécution des analyses en parallèle
       const [raccordementResult, connexionResult] = await Promise.all([
         this.getDistanceRaccordement(latitude, longitude),
-        this.checkConnection('parcelle-temp'), // identifiant temporaire
+        this.checkConnection('parcelle-temp', { latitude, longitude }), // Passer les coordonnées
       ]);
 
       if (!raccordementResult.success || !connexionResult.success) {
@@ -318,8 +325,6 @@ export class EnedisService implements IEnedisService {
       };
     }
   }
-
-  // ========== Méthodes privées de recherche ==========
 
   private async rechercherPostes(
     latitude: number,

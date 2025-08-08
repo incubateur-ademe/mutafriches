@@ -7,6 +7,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { CadastreService } from '../friches/services/external-apis/cadastre/cadastre.service';
+import { parcelIdRegex } from 'src/friches/lib/friches.utils';
 
 @ApiTags('🧪 Tests - Cadastre')
 @Controller('test/cadastre')
@@ -15,7 +16,7 @@ export class CadastreTestController {
 
   /**
    * Test direct du service cadastre
-   * GET /test/cadastre/parcelle?id=490007000ZE0153
+   * GET /test/cadastre/parcelle?id=25056000HZ0346
    */
   @Get('parcelle')
   @ApiExcludeEndpoint()
@@ -33,7 +34,7 @@ export class CadastreTestController {
       resultat: result,
       // Informations de debug
       debug: {
-        formatValide: /^\d{8}[A-Z]{2}\d{4}$/.test(identifiant),
+        formatValide: parcelIdRegex.test(identifiant),
         composants: this.parseParcelIdForDebug(identifiant),
       },
     };
@@ -46,7 +47,7 @@ export class CadastreTestController {
   /**
    * Test avec POST (comme l'UI)
    * POST /test/cadastre/parcelle-post
-   * Body: { "identifiantParcelle": "490007000ZE0153" }
+   * Body: { "identifiantParcelle": "25056000HZ0346" }
    */
   @Post('parcelle-post')
   @ApiExcludeEndpoint()
@@ -56,7 +57,7 @@ export class CadastreTestController {
 
   /**
    * Test de comparaison détaillée
-   * GET /test/cadastre/compare?idu=490007000ZE0153
+   * GET /test/cadastre/compare?idu=25056000HZ0346
    */
   @Get('compare')
   @ApiOperation({
@@ -80,7 +81,7 @@ Endpoint de test pour comparer les appels directs à l'API IGN Cadastre avec le 
     name: 'idu',
     description:
       'Identifiant de parcelle cadastrale (14 caractères : 5 chiffres INSEE + 3 chiffres + 2 caractères section + 4 chiffres numéro)',
-    example: '490007000ZE0153',
+    example: '25056000HZ0346',
     type: String,
   })
   @ApiResponse({
@@ -91,7 +92,7 @@ Endpoint de test pour comparer les appels directs à l'API IGN Cadastre avec le 
       properties: {
         identifiant: {
           type: 'string',
-          example: '490007000ZE0153',
+          example: '25056000HZ0346',
           description: 'IDU de la parcelle testée',
         },
         components: {
@@ -125,7 +126,7 @@ Endpoint de test pour comparer les appels directs à l'API IGN Cadastre avec le 
             data: {
               type: 'object',
               properties: {
-                identifiant: { type: 'string', example: '490007000ZE0153' },
+                identifiant: { type: 'string', example: '25056000HZ0346' },
                 commune: { type: 'string', example: 'Angers' },
                 surface: { type: 'number', example: 28320 },
                 coordonnees: {
@@ -170,11 +171,6 @@ Endpoint de test pour comparer les appels directs à l'API IGN Cadastre avec le 
     return {
       description: 'Identifiants de parcelles pour tester le service',
       parcelles: [
-        {
-          id: '490007000ZE0153',
-          description: 'Angers - Parcelle de test standard',
-          commune: 'Angers',
-        },
         {
           id: '751160001AB0001',
           description: 'Paris 16e - Test zone urbaine dense',

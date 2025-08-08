@@ -12,6 +12,7 @@ import {
   EnedisConnexionStatus,
   EnedisAnalyseComplete,
 } from '../friches/services/external-apis/enedis/enedis.interface';
+import { parcelIdRegex } from 'src/friches/lib/friches.utils';
 
 @ApiTags('🧪 Tests - Enedis')
 @Controller('test/enedis')
@@ -53,25 +54,45 @@ export class EnedisTestController {
 
   /**
    * Test de vérification de connexion
-   * GET /test/enedis/connexion?parcelle=490007000ZE0153
+   * GET /test/enedis/connexion?parcelle=490007000ZE0153&lat=47.478419&lng=-0.563166
    */
   @Get('connexion')
   @ApiExcludeEndpoint()
-  async testConnexion(@Query('parcelle') identifiantParcelle: string) {
+  async testConnexion(
+    @Query('parcelle') identifiantParcelle: string,
+    @Query('lat') latitude?: string,
+    @Query('lng') longitude?: string,
+  ) {
     const startTime = Date.now();
 
     console.log(`Test Enedis - Connexion parcelle: ${identifiantParcelle}`);
 
-    const result =
-      await this.enedisService.checkConnection(identifiantParcelle);
+    // Parse des coordonnées si fournies
+    const coordonnees =
+      latitude && longitude
+        ? {
+            latitude: parseFloat(latitude),
+            longitude: parseFloat(longitude),
+          }
+        : undefined;
+
+    const result = await this.enedisService.checkConnection(
+      identifiantParcelle,
+      coordonnees,
+    );
 
     const response = {
       timestamp: new Date().toISOString(),
       parcelleTeste: identifiantParcelle,
+      coordonneesUtilisees: coordonnees,
       dureeMs: Date.now() - startTime,
       resultat: result,
       debug: {
-        formatParcelleValide: /^\d{8}[A-Z]{2}\d{4}$/.test(identifiantParcelle),
+        formatParcelleValide: parcelIdRegex.test(identifiantParcelle),
+        coordonneesFournies: !!coordonnees,
+        coordonneesValides: coordonnees
+          ? !isNaN(coordonnees.latitude) && !isNaN(coordonnees.longitude)
+          : false,
       },
     };
 
@@ -386,7 +407,7 @@ Fournit les URLs pour interroger directement l'API Enedis Open Data et compare a
     const connexion = data.connexion;
 
     return {
-      synthese: this.genererSynthese(raccordement),
+      synthese: this.genererSynthese(raccordement, connexion),
       categorieRaccordement: this.categoriserRaccordement(
         raccordement.distance,
       ),
@@ -395,7 +416,10 @@ Fournit les URLs pour interroger directement l'API Enedis Open Data et compare a
     };
   }
 
-  private genererSynthese(raccordement: EnedisRaccordement): string {
+  private genererSynthese(
+    raccordement: EnedisRaccordement,
+    connexion: EnedisConnexionStatus,
+  ): string {
     if (raccordement.distance < 0.1) {
       return 'Raccordement très favorable - Infrastructure immédiate';
     } else if (raccordement.distance < 0.5) {

@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsNotEmpty, Matches } from 'class-validator';
+import { parcelIdRegex } from '../lib/friches.utils';
 
 /**
  * DTO pour l'entrée des données de parcelle
@@ -8,16 +9,15 @@ export class ParcelleInputDto {
   @ApiProperty({
     description:
       'Identifiant cadastral unique de la parcelle (format standard français)',
-    example: '490007000ZE0153',
-    pattern: '^[0-9]{6}[0-9]{3}[A-Z]{2}[0-9]{4}$',
+    example: '25056000HZ0346',
+    pattern: '^\\d{8}[A-Z0-9]{2}\\d{4}$',
     minLength: 15,
     maxLength: 15,
   })
   @IsString()
   @IsNotEmpty({ message: "L'identifiant de parcelle est obligatoire" })
-  @Matches(/^[0-9]{6}[0-9]{3}[A-Z]{2}[0-9]{4}$/, {
-    message:
-      "Format d'identifiant parcelle invalide (attendu: 490007000ZE0153)",
+  @Matches(parcelIdRegex, {
+    message: "Format d'identifiant parcelle invalide (attendu: 25056000HZ0346)",
   })
   identifiantParcelle: string;
 }

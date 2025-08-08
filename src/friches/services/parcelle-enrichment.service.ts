@@ -196,9 +196,10 @@ export class ParcelleEnrichmentService implements IParcelleEnrichmentService {
     manquants: string[],
   ): Promise<void> {
     try {
-      // Connection électrique
+      // Connection électrique - Maintenant avec les vraies coordonnées
       const connectionResult = await this.enedisService.checkConnection(
         parcelle.identifiantParcelle,
+        coordonnees, // Passage des coordonnées réelles de la parcelle
       );
 
       if (connectionResult.success && connectionResult.data) {

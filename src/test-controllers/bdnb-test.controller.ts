@@ -225,11 +225,6 @@ Endpoint de test pour comparer les appels directs à l'API BDNB avec le service 
           description: 'Marseille - Test sud de la France',
           commune: 'Marseille',
         },
-        {
-          id: '490007000ZE0153',
-          description: 'Angers - Parcelle de test transverse',
-          commune: 'Angers',
-        },
       ],
       invalidSamples: [
         {

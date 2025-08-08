@@ -57,10 +57,12 @@ export interface IEnedisService {
   /**
    * Vérifie si une parcelle semble raccordable au réseau électrique
    * @param identifiantParcelle - Identifiant cadastral de la parcelle
+   * @param coordonnees - Coordonnées de la parcelle (latitude/longitude)
    * @returns Statut de connexion estimé
    */
   checkConnection(
     identifiantParcelle: string,
+    coordonnees?: { latitude: number; longitude: number },
   ): Promise<ApiResponse<EnedisConnexionStatus>>;
 
   /**
