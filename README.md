@@ -238,7 +238,7 @@ Le projet s'appuie sur plusieurs APIs publiques pour enrichir les données des f
 
 - **[Vue d'ensemble des APIs externes](./docs/external-apis-overview.md)** - Architecture et cartographie des sources de données
 - **[IGN Cadastre](./docs/external-apis/ign-cadastre.md)** - Service d'enrichissement cadastral (surface, commune, coordonnées)
-- **BDNB** - Base de données bâtiment (à venir)
-- **ENEDIS** - API Enedis (à venir)
+- **[BDNB](./docs/external-apis/api-bdnb.md)** - Base de données bâtiment
+- **[ENEDIS](./docs/external-apis/api-enedis.md)** - API Enedis
 - **Transport Data Gouv** - Accessibilité transports (à venir)
 - **Géorisques** - Risques et contraintes réglementaires (à venir)

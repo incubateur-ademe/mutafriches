@@ -23,7 +23,7 @@ Chaque étape fait appel à des APIs spécialisées pour récupérer, valider et
 | --- | --- | --- | --- |
 | [**IGN Cadastre**](./external-apis/ign-cadastre.md) | Service public gratuit | Géométrie, surface, commune | ✅ Implémenté |
 | [**API BDNB**](./external-apis/api-bdnb.md) | Base de données publique | Performance énergétique, caractéristiques bâti | ✅ Implémenté |
-| **ENEDIS** | Service public | Raccordement électrique | 📋 Planifié |
+| [**API ENEDIS**](./external-apis/api-enedis.md) | Service public | Raccordement électrique | ✅ Implémenté |
 | **Transport Data Gouv** | Open data transport | Accessibilité transports en commun | 📋 Planifié |
 | **Géorisques (BRGM)** | Service public | Risques naturels et technologiques | 📋 Planifié |
 
@@ -118,7 +118,7 @@ Chaque API dispose de sa propre documentation technique détaillée :
 
 [API BDNB](./external-apis/api-bdnb.md)
 
-[ENEDIS]()
+[API ENEDIS](./external-apis/api-enedis.md)
 
 ---
 

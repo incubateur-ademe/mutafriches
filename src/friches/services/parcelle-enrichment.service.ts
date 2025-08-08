@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Parcelle } from '../entities/parcelle.entity';
 import { EnrichmentResultDto } from '../dto/enrichment-result.dto';
-import { MockEnedisService } from '../../mock/services/mock-enedis.service';
 import { MockTransportService } from '../../mock/services/mock-transport.service';
 import { MockOverpassService } from '../../mock/services/mock-overpass.service';
 import { MockLovacService } from '../../mock/services/mock-lovac.service';
@@ -9,6 +8,7 @@ import { CadastreServiceResponse } from './external-apis/cadastre/cadastre.inter
 import { IParcelleEnrichmentService } from '../interfaces/parcelle-enrichment-service.interface';
 import { CadastreService } from './external-apis/cadastre/cadastre.service';
 import { BdnbService } from './external-apis/bdnb/bdnb.service';
+import { EnedisService } from './external-apis/enedis/enedis.service';
 
 @Injectable()
 export class ParcelleEnrichmentService implements IParcelleEnrichmentService {
@@ -16,7 +16,7 @@ export class ParcelleEnrichmentService implements IParcelleEnrichmentService {
     private readonly cadastreService: CadastreService,
     private readonly bdnbService: BdnbService,
     private readonly transportService: MockTransportService,
-    private readonly enedisService: MockEnedisService,
+    private readonly enedisService: EnedisService,
     private readonly overpassService: MockOverpassService,
     private readonly lovacService: MockLovacService,
   ) {}
