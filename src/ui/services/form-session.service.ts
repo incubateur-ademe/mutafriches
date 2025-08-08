@@ -262,32 +262,13 @@ export class FormSessionService {
     return session.formData || null;
   }
 
+  /**
+   * Vérifie si l'étape est accessible
+   */
   canAccessStep(session: SessionWithFormData, requestedStep: number): boolean {
-    console.log('=== DEBUG SESSION COMPLETE ===');
-    console.log('Session object exists:', !!session);
-    console.log('Session type:', typeof session);
-    console.log('Session constructor:', session?.constructor?.name);
-    console.log('Session ID:', session?.id);
-    console.log('Session keys:', Object.keys(session || {}));
-    console.log('Session full object:', JSON.stringify(session, null, 2));
-
-    // Test d'écriture direct dans la session
-    if (session) {
-      console.log("Tentative d'écriture test dans session...");
-      session.testProperty = 'test-value';
-      console.log('Après écriture - testProperty:', session.testProperty);
-    }
-
     const formData = this.getSessionData(session);
-    console.log('formData exists:', !!formData);
-    console.log('formData content:', formData);
-    console.log('=== FIN DEBUG SESSION ===');
-
-    if (!formData) {
-      console.log('No formData, allowing step 1 only');
-      return requestedStep === 1;
-    }
-
+    console.log('formData :>> ', formData);
+    if (!formData) return requestedStep === 1;
     return formData.currentStep >= requestedStep;
   }
 
