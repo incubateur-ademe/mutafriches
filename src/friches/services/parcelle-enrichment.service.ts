@@ -7,7 +7,7 @@ import { MockTransportService } from '../../mock/services/mock-transport.service
 import { MockOverpassService } from '../../mock/services/mock-overpass.service';
 import { MockLovacService } from '../../mock/services/mock-lovac.service';
 import { ApiResponse } from './external-apis/shared/api-response.interface';
-import { CadastreApiResponse } from './external-apis/cadastre/cadastre.interface';
+import { CadastreServiceResponse } from './external-apis/cadastre/cadastre.interface';
 import { EnedisRaccordement } from './external-apis/enedis/enedis.interface';
 import { IParcelleEnrichmentService } from '../interfaces/parcelle-enrichment-service.interface';
 import { CadastreService } from './external-apis/cadastre/cadastre.service';
@@ -146,7 +146,7 @@ export class ParcelleEnrichmentService implements IParcelleEnrichmentService {
    */
   private async getCadastreData(
     identifiant: string,
-  ): Promise<CadastreApiResponse | null> {
+  ): Promise<CadastreServiceResponse | null> {
     try {
       const result = await this.cadastreService.getParcelleInfo(identifiant);
       return result.success && result.data ? result.data : null;

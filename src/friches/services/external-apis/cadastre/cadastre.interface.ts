@@ -1,6 +1,6 @@
 import { ApiResponse } from '../shared/api-response.interface';
 
-export interface CadastreApiResponse {
+export interface CadastreServiceResponse {
   identifiant: string;
   commune: string;
   surface: number; // m²
@@ -13,5 +13,5 @@ export interface CadastreApiResponse {
 export interface CadastreApiService {
   getParcelleInfo(
     identifiant: string,
-  ): Promise<ApiResponse<CadastreApiResponse>>;
+  ): Promise<ApiResponse<CadastreServiceResponse>>;
 }

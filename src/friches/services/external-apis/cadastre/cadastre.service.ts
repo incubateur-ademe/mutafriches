@@ -2,7 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs'; // ← Import manquant !
 import { ApiResponse } from '../shared/api-response.interface';
-import { CadastreApiResponse, CadastreApiService } from './cadastre.interface';
+import {
+  CadastreServiceResponse,
+  CadastreApiService,
+} from './cadastre.interface';
 import {
   IGNLocalisantFeature,
   IGNLocalisantResponse,
@@ -22,7 +25,7 @@ export class CadastreService implements CadastreApiService {
    */
   async getParcelleInfo(
     identifiant: string,
-  ): Promise<ApiResponse<CadastreApiResponse>> {
+  ): Promise<ApiResponse<CadastreServiceResponse>> {
     const startTime = Date.now();
 
     try {

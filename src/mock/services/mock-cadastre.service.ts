@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ApiResponse } from '../../friches/services/external-apis/shared/api-response.interface';
 import {
   CadastreApiService,
-  CadastreApiResponse,
+  CadastreServiceResponse,
 } from '../../friches/services/external-apis/cadastre/cadastre.interface';
 import { MockParcellesHelper } from '../data/parcelles.mock';
 
@@ -11,7 +11,7 @@ export class MockCadastreService implements CadastreApiService {
   // Méthode requise par l'interface
   getParcelleInfo(
     identifiant: string,
-  ): Promise<ApiResponse<CadastreApiResponse>> {
+  ): Promise<ApiResponse<CadastreServiceResponse>> {
     const parcelle = MockParcellesHelper.findById(identifiant);
 
     if (!parcelle) {
