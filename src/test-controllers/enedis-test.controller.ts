@@ -407,7 +407,7 @@ Fournit les URLs pour interroger directement l'API Enedis Open Data et compare a
     const connexion = data.connexion;
 
     return {
-      synthese: this.genererSynthese(raccordement, connexion),
+      synthese: this.genererSynthese(raccordement),
       categorieRaccordement: this.categoriserRaccordement(
         raccordement.distance,
       ),
@@ -416,10 +416,7 @@ Fournit les URLs pour interroger directement l'API Enedis Open Data et compare a
     };
   }
 
-  private genererSynthese(
-    raccordement: EnedisRaccordement,
-    connexion: EnedisConnexionStatus,
-  ): string {
+  private genererSynthese(raccordement: EnedisRaccordement): string {
     if (raccordement.distance < 0.1) {
       return 'Raccordement très favorable - Infrastructure immédiate';
     } else if (raccordement.distance < 0.5) {

@@ -193,13 +193,13 @@ export class MockEnedisService implements IEnedisService {
       commune: `Ville Test ${index + 1}`,
     }));
 
-    const lignesBT = Array.from({ length: nombreLignesBT }, (_, index) => ({
+    const lignesBT = Array.from({ length: nombreLignesBT }, () => ({
       distance: Math.round(50 + Math.random() * 500), // 50m à 550m
       type: Math.random() > 0.5 ? 'Souterrain' : 'Aérien',
       tension: 'BT',
     }));
 
-    const poteaux = Array.from({ length: nombrePoteaux }, (_, index) => ({
+    const poteaux = Array.from({ length: nombrePoteaux }, () => ({
       distance: Math.round(10 + Math.random() * 200), // 10m à 210m
       tension: Math.random() > 0.8 ? 'HTA' : 'BT',
     }));
