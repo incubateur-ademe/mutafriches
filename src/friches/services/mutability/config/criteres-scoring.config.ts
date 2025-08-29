@@ -141,15 +141,6 @@ export const MATRICE_SCORING = {
       [UsageType.RENATURATION]: -2,
       [UsageType.PHOTOVOLTAIQUE]: -2,
     },
-    [EtatBati.BATIMENTS_HETEROGENES]: {
-      [UsageType.RESIDENTIEL]: 0.5,
-      [UsageType.EQUIPEMENTS]: 0.5,
-      [UsageType.CULTURE]: 0.5,
-      [UsageType.TERTIAIRE]: 0.5,
-      [UsageType.INDUSTRIE]: 0.5,
-      [UsageType.RENATURATION]: -1,
-      [UsageType.PHOTOVOLTAIQUE]: -1,
-    },
   },
 
   // 5. Présence de pollution

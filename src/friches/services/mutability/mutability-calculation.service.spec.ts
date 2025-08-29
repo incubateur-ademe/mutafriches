@@ -1,14 +1,21 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { MutabilityCalculationService } from './mutability-calculation.service';
-import { ScoreParUsage } from './config/criteres-scoring.config';
+import {
+  POIDS_CRITERES,
+  ScoreParUsage,
+} from './config/criteres-scoring.config';
 import { UsageType } from 'src/friches/enums/mutability.enums';
 import {
   EtatBati,
   PresencePollution,
   QualiteDesserte,
+  QualitePaysage,
   ReseauEaux,
   RisqueNaturel,
   TypeProprietaire,
+  ValeurArchitecturale,
+  ZonageEnvironnemental,
+  ZonagePatrimonial,
   ZonageReglementaire,
 } from 'src/friches/enums/parcelle.enums';
 import { MutabilityInputDto } from 'src/friches/dto/mutability-input.dto';
@@ -53,6 +60,205 @@ describe('MutabilityCalculationService', () => {
 
   beforeEach(() => {
     service = new MutabilityCalculationServiceForTest();
+  });
+
+  describe('calculateMutability - Cas réel friche de Renaison', () => {
+    it('devrait calculer correctement la mutabilité pour la friche de Renaison (Test Excel)', () => {
+      // Données issues du fichier Excel "Test 3 Renaison.xlsx"
+      const input = {
+        // État de la friche
+        typeProprietaire: TypeProprietaire.PUBLIC,
+        surfaceSite: 46333,
+        surfaceBati: 7000,
+        etatBatiInfrastructure: EtatBati.BATIMENTS_HETEROGENES,
+        presencePollution: PresencePollution.OUI_AUTRES_COMPOSES,
+
+        // Situation
+        siteEnCentreVille: false,
+        tauxLogementsVacants: 7.2,
+        reseauEaux: ReseauEaux.OUI,
+        qualiteVoieDesserte: QualiteDesserte.PEU_ACCESSIBLE,
+        distanceAutoroute: 6,
+        distanceTransportCommun: 600,
+        proximiteCommercesServices: false,
+        distanceRaccordementElectrique: 3,
+
+        // Réglementation
+        zonageReglementaire: ZonageReglementaire.ZONE_NATURELLE,
+        presenceRisquesNaturels: RisqueNaturel.FORT,
+        presenceRisquesTechnologiques: false,
+        zonagePatrimonial: ZonagePatrimonial.NON_CONCERNE,
+
+        // Patrimoine
+        qualitePaysage: QualitePaysage.INTERESSANT,
+        valeurArchitecturaleHistorique: ValeurArchitecturale.INTERET_FORT,
+
+        // Écosystème
+        zonageEnvironnemental: ZonageEnvironnemental.ZNIEFF_TYPE_1_2,
+
+        // Note: Ces critères ne sont pas mappés dans notre API actuelle
+        // terrainEnPente: true, // "Oui"
+        // voieEauProximite: "Oui et non navigable",
+        // couvertVegetal: "Végétation arbustive prédominante",
+        // trameVerteEtBleue: "Ne sait pas",
+        // zoneHumide: "Ne sait pas",
+        // presenceEspaceProtegee: "Ne sait pas",
+      } as MutabilityInputDto;
+
+      const result = service.calculateMutability(input);
+
+      // DEBUG : Afficher les résultats réels
+      console.log("\n=== RÉSULTATS CALCULÉS PAR L'API ===");
+      result.resultats.forEach((r, idx) => {
+        console.log(
+          `${idx + 1}. ${r.usage}: ${r.indiceMutabilite}% (avantages: ${r.avantages}, contraintes: ${r.contraintes})`,
+        );
+      });
+
+      console.log('\n=== RÉSULTATS ATTENDUS (EXCEL) ===');
+      console.log('1. Renaturation: 65.3%');
+      console.log('2. Culture: 48.1%');
+      console.log('3. Photovoltaïque: 41.2%');
+      console.log('4. Industrie: 36.7%');
+      console.log('5. Équipements: 35.3%');
+      console.log('6. Résidentiel: 34.2%');
+      console.log('7. Tertiaire: 27.7%');
+
+      // Vérifier qu'on a bien 7 résultats
+      expect(result.resultats).toHaveLength(7);
+
+      // Analyser les écarts
+      const culture = result.resultats.find(
+        (r) => r.usage === UsageType.CULTURE,
+      );
+      const renaturation = result.resultats.find(
+        (r) => r.usage === UsageType.RENATURATION,
+      );
+
+      console.log('\n=== ANALYSE DES ÉCARTS ===');
+      console.log(`Culture - API: ${culture?.indiceMutabilite}%, Excel: 48.1%`);
+      console.log(
+        `Renaturation - API: ${renaturation?.indiceMutabilite}%, Excel: 65.3%`,
+      );
+
+      // Résultats attendus selon l'Excel (arrondis)
+      const expectedResults = [
+        { usage: UsageType.RENATURATION, indiceMin: 64, indiceMax: 66 }, // Excel: 65.3%
+        { usage: UsageType.CULTURE, indiceMin: 47, indiceMax: 49 }, // Excel: 48.1%
+        { usage: UsageType.PHOTOVOLTAIQUE, indiceMin: 40, indiceMax: 42 }, // Excel: 41.2%
+        { usage: UsageType.INDUSTRIE, indiceMin: 35, indiceMax: 38 }, // Excel: 36.7%
+        { usage: UsageType.EQUIPEMENTS, indiceMin: 34, indiceMax: 36 }, // Excel: 35.3%
+        { usage: UsageType.RESIDENTIEL, indiceMin: 33, indiceMax: 35 }, // Excel: 34.2%
+        { usage: UsageType.TERTIAIRE, indiceMin: 26, indiceMax: 29 }, // Excel: 27.7%
+      ];
+
+      // Vérifier l'ordre (trié par indice décroissant)
+      expectedResults.forEach((expected, index) => {
+        const actual = result.resultats[index];
+
+        // Vérifier le type d'usage
+        expect(actual.usage).toBe(expected.usage);
+
+        // Vérifier que l'indice est dans la fourchette attendue (tolérance pour les différences de calcul)
+        expect(actual.indiceMutabilite).toBeGreaterThanOrEqual(
+          expected.indiceMin,
+        );
+        expect(actual.indiceMutabilite).toBeLessThanOrEqual(expected.indiceMax);
+
+        // Vérifier le rang
+        expect(actual.rang).toBe(index + 1);
+      });
+
+      // Vérifier la fiabilité (18 critères renseignés sur 21 mappés)
+      expect(result.fiabilite).toBeDefined();
+      expect(result.fiabilite.note).toBeGreaterThanOrEqual(8); // ~85% des critères
+      expect(result.fiabilite.text).toBe('Fiable');
+    });
+
+    it.only('DEBUG - Détail des scores par critère pour Renaison', () => {
+      const input = {
+        // État de la friche
+        typeProprietaire: TypeProprietaire.PUBLIC,
+        surfaceSite: 46333,
+        surfaceBati: 7000,
+        etatBatiInfrastructure: EtatBati.BATIMENTS_HETEROGENES,
+        presencePollution: PresencePollution.OUI_AUTRES_COMPOSES,
+
+        // Situation
+        siteEnCentreVille: false,
+        tauxLogementsVacants: 7.2,
+        reseauEaux: ReseauEaux.OUI,
+        qualiteVoieDesserte: QualiteDesserte.PEU_ACCESSIBLE,
+        distanceAutoroute: 6,
+        distanceTransportCommun: 600,
+        proximiteCommercesServices: false,
+        distanceRaccordementElectrique: 3,
+
+        // Réglementation
+        zonageReglementaire: ZonageReglementaire.ZONE_NATURELLE,
+        presenceRisquesNaturels: RisqueNaturel.FORT,
+        presenceRisquesTechnologiques: false,
+        zonagePatrimonial: ZonagePatrimonial.NON_CONCERNE,
+
+        // Patrimoine
+        qualitePaysage: QualitePaysage.INTERESSANT,
+        valeurArchitecturaleHistorique: ValeurArchitecturale.INTERET_FORT,
+
+        // Écosystème
+        zonageEnvironnemental: ZonageEnvironnemental.ZNIEFF_TYPE_1_2,
+
+        // Note: Ces critères ne sont pas mappés dans notre API actuelle
+        // terrainEnPente: true, // "Oui"
+        // voieEauProximite: "Oui et non navigable",
+        // couvertVegetal: "Végétation arbustive prédominante",
+        // trameVerteEtBleue: "Ne sait pas",
+        // zoneHumide: "Ne sait pas",
+        // presenceEspaceProtegee: "Ne sait pas",
+      } as MutabilityInputDto;
+
+      // Tester juste pour Culture
+      const usage = UsageType.CULTURE;
+
+      console.log(`\n=== DÉTAIL DES SCORES POUR ${usage} ===\n`);
+
+      let avantages = 0;
+      let contraintes = 0;
+
+      Object.entries(input).forEach(([critere, valeur]) => {
+        if (valeur === null || valeur === undefined) return;
+
+        const score = service.obtenirScoreCritereForTest(
+          critere,
+          valeur,
+          usage,
+        );
+
+        if (score !== null) {
+          const poids =
+            POIDS_CRITERES[critere as keyof typeof POIDS_CRITERES] ?? 1;
+          const pointsPonderes = score * poids;
+
+          if (pointsPonderes !== 0) {
+            console.log(
+              `${critere}: ${valeur} → score: ${score} × poids: ${poids} = ${pointsPonderes}`,
+            );
+
+            if (pointsPonderes > 0) {
+              avantages += pointsPonderes;
+            } else {
+              contraintes += Math.abs(pointsPonderes);
+            }
+          }
+        }
+      });
+
+      console.log(
+        `\nTOTAL: Avantages: ${avantages}, Contraintes: ${contraintes}`,
+      );
+      console.log(
+        `Indice: ${avantages + contraintes === 0 ? 0 : Math.round((avantages / (avantages + contraintes)) * 1000) / 10}%`,
+      );
+    });
   });
 
   describe('calculateMutability', () => {
