@@ -8,10 +8,10 @@ import {
   ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
 } from '@nestjs/swagger';
-import { ParcelleEnrichmentService } from '../services/parcelle-enrichment.service';
+import { ParcelleEnrichmentService } from '../services/parcelle-enrichment/parcelle-enrichment.service';
 import { ParcelleInputDto } from '../dto/parcelle-input.dto';
 import { EnrichmentResultDto } from '../dto/enrichment-result.dto';
-import { MutabilityCalculationService } from '../services/mutability-calculation.service';
+import { MutabilityCalculationService } from '../services/mutability/mutability-calculation.service';
 import { MutabilityInputDto } from '../dto/mutability-input.dto';
 import { MutabilityResultDto } from '../dto/mutability-result.dto';
 

@@ -398,9 +398,9 @@ export class UiService {
       resultats: mutabilityResult.resultats.map((result) => ({
         rang: result.rang,
         usage: result.usage,
-        explication: result.explication,
+        explication: 'result.explication', // À implémenter plus tard
         indiceMutabilite: result.indiceMutabilite,
-        potentiel: result.potentiel,
+        potentiel: 'result.potentiel', // À implémenter plus tard
       })),
     };
   }

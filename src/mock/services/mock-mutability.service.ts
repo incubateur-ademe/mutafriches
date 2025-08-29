@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { MutabilityInputDto } from 'src/friches/dto/mutability-input.dto';
 import { MutabilityResultDto } from 'src/friches/dto/mutability-result.dto';
+import { UsageType } from 'src/friches/enums/mutability.enums';
 import { PresencePollution } from 'src/friches/enums/parcelle.enums';
 import { IMutabilityService } from 'src/friches/interfaces/mutability-service.interface';
 
@@ -44,7 +45,6 @@ export class MockMutabilityService implements IMutabilityService {
       case '490007000ZE0153': // Trélazé
         return this.getTrelazeResults();
       case '490007000AB0001': // Angers
-        return this.getAngersResults();
       case '490007000CD0042': // Saumur
         return this.getSaumurResults();
       default:
@@ -83,58 +83,58 @@ export class MockMutabilityService implements IMutabilityService {
       resultats: [
         {
           rang: 1,
-          usage: 'Logement et commerces de proximité',
+          usage: UsageType.RESIDENTIEL,
           indiceMutabilite: finalScore,
-          potentiel: this.getPotentielFromScore(finalScore),
-          explication: this.getSimpleExplication(input, finalScore),
+          // potentiel: this.getPotentielFromScore(finalScore),
+          // explication: this.getSimpleExplication(input, finalScore),
         },
         {
           rang: 2,
-          usage: 'Équipements publics',
+          usage: UsageType.EQUIPEMENTS,
           indiceMutabilite: Math.max(20, finalScore - 5),
-          potentiel: this.getPotentielFromScore(finalScore - 5),
-          explication:
-            'Évaluation basée sur les données fournies (mode développement).',
+          // potentiel: this.getPotentielFromScore(finalScore - 5),
+          // explication:
+          //   'Évaluation basée sur les données fournies (mode développement).',
         },
         {
           rang: 3,
-          usage: 'Bureaux',
+          usage: UsageType.TERTIAIRE,
           indiceMutabilite: Math.max(20, finalScore - 10),
-          potentiel: this.getPotentielFromScore(finalScore - 10),
-          explication:
-            'Évaluation basée sur les données fournies (mode développement).',
+          // potentiel: this.getPotentielFromScore(finalScore - 10),
+          // explication:
+          //   'Évaluation basée sur les données fournies (mode développement).',
         },
         {
           rang: 4,
-          usage: 'Equipements culturels et touristiques',
+          usage: UsageType.CULTURE,
           indiceMutabilite: Math.max(20, finalScore - 15),
-          potentiel: this.getPotentielFromScore(finalScore - 15),
-          explication:
-            'Évaluation basée sur les données fournies (mode développement).',
+          // potentiel: this.getPotentielFromScore(finalScore - 15),
+          // explication:
+          //   'Évaluation basée sur les données fournies (mode développement).',
         },
         {
           rang: 5,
-          usage: 'Bâtiments industriels',
+          usage: UsageType.INDUSTRIE,
           indiceMutabilite: Math.max(20, finalScore - 20),
-          potentiel: this.getPotentielFromScore(finalScore - 20),
-          explication:
-            'Évaluation basée sur les données fournies (mode développement).',
+          // potentiel: this.getPotentielFromScore(finalScore - 20),
+          // explication:
+          //   'Évaluation basée sur les données fournies (mode développement).',
         },
         {
           rang: 6,
-          usage: 'Centrale photovoltaïque au sol',
+          usage: UsageType.PHOTOVOLTAIQUE,
           indiceMutabilite: Math.max(20, finalScore - 25),
-          potentiel: this.getPotentielFromScore(finalScore - 25),
-          explication:
-            'Évaluation basée sur les données fournies (mode développement).',
+          // potentiel: this.getPotentielFromScore(finalScore - 25),
+          // explication:
+          //   'Évaluation basée sur les données fournies (mode développement).',
         },
         {
           rang: 7,
-          usage: 'Espace renaturé',
+          usage: UsageType.RENATURATION,
           indiceMutabilite: Math.max(20, finalScore - 30),
-          potentiel: this.getPotentielFromScore(finalScore - 30),
-          explication:
-            'Évaluation basée sur les données fournies (mode développement).',
+          // potentiel: this.getPotentielFromScore(finalScore - 30),
+          // explication:
+          //   'Évaluation basée sur les données fournies (mode développement).',
         },
       ],
     };
@@ -209,125 +209,59 @@ export class MockMutabilityService implements IMutabilityService {
       resultats: [
         {
           rang: 1,
-          usage: 'Logement et commerces de proximité',
-          explication:
-            'Emplacement central, réseaux déjà en place et absence de pollution majeure font que ce site semble adapté pour un programme mixte logements-commerces.',
+          usage: UsageType.RESIDENTIEL,
+          // explication:
+          //   'Emplacement central, réseaux déjà en place et absence de pollution majeure font que ce site semble adapté pour un programme mixte logements-commerces.',
           indiceMutabilite: 68,
-          potentiel: 'Favorable',
+          // potentiel: 'Favorable',
         },
         {
           rang: 2,
-          usage: 'Équipements publics',
-          explication:
-            'Bonne accessibilité et services proches ; quelques travaux de dépollution ou de remise à niveau des bâtiments seront toutefois nécessaires.',
+          usage: UsageType.EQUIPEMENTS,
+          // explication:
+          //   'Bonne accessibilité et services proches ; quelques travaux de dépollution ou de remise à niveau des bâtiments seront toutefois nécessaires.',
           indiceMutabilite: 63,
-          potentiel: 'Favorable',
+          // potentiel: 'Favorable',
         },
         {
           rang: 3,
-          usage: 'Bureaux',
-          explication:
-            "Accessibilité routière moyenne et surfaces limitées pourraient restreindre l'attractivité pour des activités tertiaires.",
+          usage: UsageType.TERTIAIRE,
+          // explication:
+          //   "Accessibilité routière moyenne et surfaces limitées pourraient restreindre l'attractivité pour des activités tertiaires.",
           indiceMutabilite: 60,
-          potentiel: 'Modéré',
+          // potentiel: 'Modéré',
         },
         {
           rang: 4,
-          usage: 'Equipements culturels et touristiques',
-          explication:
-            'Localisation intéressante pour des activités culturelles mais nécessite des aménagements spécifiques.',
+          usage: UsageType.CULTURE,
+          // explication:
+          //   'Localisation intéressante pour des activités culturelles mais nécessite des aménagements spécifiques.',
           indiceMutabilite: 56,
-          potentiel: 'Modéré',
+          // potentiel: 'Modéré',
         },
         {
           rang: 5,
-          usage: 'Bâtiments industriels',
-          explication:
-            "Site adapté pour de l'industrie légère mais contraintes environnementales à considérer.",
+          usage: UsageType.INDUSTRIE,
+          // explication:
+          //   "Site adapté pour de l'industrie légère mais contraintes environnementales à considérer.",
           indiceMutabilite: 54,
-          potentiel: 'Modéré',
+          // potentiel: 'Modéré',
         },
         {
           rang: 6,
-          usage: 'Centrale photovoltaïque au sol',
-          explication:
-            "Surface disponible mais contraintes d'accès et de raccordement électrique.",
+          usage: UsageType.PHOTOVOLTAIQUE,
+          // explication:
+          //   "Surface disponible mais contraintes d'accès et de raccordement électrique.",
           indiceMutabilite: 47,
-          potentiel: 'Peu favorable',
+          // potentiel: 'Peu favorable',
         },
         {
           rang: 7,
-          usage: 'Espace renaturé',
-          explication:
-            'Renaturation possible mais nécessite des investissements importants de dépollution.',
+          usage: UsageType.RENATURATION,
+          // explication:
+          //   'Renaturation possible mais nécessite des investissements importants de dépollution.',
           indiceMutabilite: 41,
-          potentiel: 'Peu favorable',
-        },
-      ],
-    };
-  }
-
-  private getAngersResults(): MutabilityResultDto {
-    return {
-      fiabilite: {
-        note: 7.8,
-        text: 'Fiable',
-        description:
-          'Les données permettent une analyse correcte avec quelques incertitudes.',
-      },
-      resultats: [
-        {
-          rang: 1,
-          usage: 'Bâtiments industriels',
-          explication:
-            'Proche autoroute, surface importante, adapté pour industrie légère.',
-          indiceMutabilite: 72,
-          potentiel: 'Favorable',
-        },
-        {
-          rang: 2,
-          usage: 'Centrale photovoltaïque au sol',
-          explication:
-            'Grande surface disponible, bon raccordement électrique.',
-          indiceMutabilite: 65,
-          potentiel: 'Favorable',
-        },
-        {
-          rang: 3,
-          usage: 'Logement et commerces de proximité',
-          explication:
-            'Éloignement du centre mais potentiel de développement résidentiel.',
-          indiceMutabilite: 52,
-          potentiel: 'Modéré',
-        },
-        {
-          rang: 4,
-          usage: 'Équipements publics',
-          explication:
-            'Accessibilité correcte mais nécessite des aménagements.',
-          indiceMutabilite: 48,
-          potentiel: 'Peu favorable',
-        },
-        {
-          rang: 5,
-          usage: 'Bureaux',
-          explication: 'Localisation moins attractive pour le tertiaire.',
-          indiceMutabilite: 42,
-          potentiel: 'Peu favorable',
-        },
-        {
-          rang: 6,
-          usage: 'Equipements culturels et touristiques',
-          explication: 'Potentiel limité en raison de la localisation.',
-          indiceMutabilite: 35,
-          potentiel: 'Défavorable',
-        },
-        {
-          rang: 7,
-          usage: 'Espace renaturé',
-          explication: 'Pollution présente, coûts de dépollution élevés.',
-          indiceMutabilite: 28,
-          potentiel: 'Défavorable',
+          // potentiel: 'Peu favorable',
         },
       ],
     };
@@ -344,55 +278,38 @@ export class MockMutabilityService implements IMutabilityService {
       resultats: [
         {
           rang: 1,
-          usage: 'Espace renaturé',
-          explication:
-            'Zone Natura 2000, forte valeur écologique, idéal pour renaturation.',
+          usage: UsageType.RENATURATION,
           indiceMutabilite: 78,
-          potentiel: 'Très favorable',
         },
         {
           rang: 2,
-          usage: 'Equipements culturels et touristiques',
-          explication:
-            'Valeur architecturale remarquable, potentiel touristique élevé.',
+          usage: UsageType.CULTURE,
           indiceMutabilite: 71,
-          potentiel: 'Favorable',
         },
         {
           rang: 3,
-          usage: 'Centrale photovoltaïque au sol',
-          explication: 'Surface disponible mais contraintes patrimoniales.',
           indiceMutabilite: 45,
-          potentiel: 'Peu favorable',
+          usage: UsageType.PHOTOVOLTAIQUE,
         },
         {
           rang: 4,
-          usage: 'Équipements publics',
-          explication: "Éloignement des centres urbains limite l'attractivité.",
           indiceMutabilite: 38,
-          potentiel: 'Défavorable',
+          usage: UsageType.EQUIPEMENTS,
         },
         {
           rang: 5,
-          usage: 'Logement et commerces de proximité',
-          explication: 'Zone rurale, marché résidentiel limité.',
           indiceMutabilite: 32,
-          potentiel: 'Défavorable',
+          usage: UsageType.RESIDENTIEL,
         },
         {
           rang: 6,
-          usage: 'Bureaux',
-          explication: 'Accessibilité difficile, marché tertiaire inexistant.',
+          usage: UsageType.TERTIAIRE,
           indiceMutabilite: 25,
-          potentiel: 'Défavorable',
         },
         {
           rang: 7,
-          usage: 'Bâtiments industriels',
-          explication:
-            'Contraintes environnementales et patrimoniales majeures.',
+          usage: UsageType.INDUSTRIE,
           indiceMutabilite: 18,
-          potentiel: 'Défavorable',
         },
       ],
     };

@@ -10,6 +10,7 @@ import {
   ValeurArchitecturale,
   ZonageEnvironnemental,
   ZonagePatrimonial,
+  ZonageReglementaire,
 } from '../enums/parcelle.enums';
 import { ParcelleBase } from './shared/parcelle.base';
 
@@ -37,7 +38,7 @@ export class Parcelle implements ParcelleBase {
     this.presenceRisquesTechnologiques = false;
     this.presenceRisquesNaturels = RisqueNaturel.AUCUN;
     this.zonageEnvironnemental = ZonageEnvironnemental.HORS_ZONE;
-    this.zonageReglementaire = '';
+    this.zonageReglementaire = ZonageReglementaire.ZONE_ACTIVITES;
     this.zonagePatrimonial = ZonagePatrimonial.NON_CONCERNE;
     this.trameVerteEtBleue = TrameVerteEtBleue.HORS_TRAME;
 
@@ -65,7 +66,7 @@ export class Parcelle implements ParcelleBase {
   presenceRisquesTechnologiques: boolean;
   presenceRisquesNaturels: RisqueNaturel;
   zonageEnvironnemental: ZonageEnvironnemental;
-  zonageReglementaire: string;
+  zonageReglementaire: ZonageReglementaire;
   zonagePatrimonial: ZonagePatrimonial;
   trameVerteEtBleue: TrameVerteEtBleue;
   typeProprietaire?: TypeProprietaire | undefined;

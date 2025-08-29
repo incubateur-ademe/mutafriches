@@ -5,6 +5,7 @@ import {
   ZonageEnvironnemental,
   ZonagePatrimonial,
   TrameVerteEtBleue,
+  ZonageReglementaire,
 } from '../enums/parcelle.enums';
 
 /**
@@ -115,7 +116,7 @@ export class EnrichmentResultDto implements ParcelleAutoData {
     example: 'Zone urbaine - U',
     required: false,
   })
-  zonageReglementaire?: string;
+  zonageReglementaire?: ZonageReglementaire;
 
   @ApiProperty({
     description: 'Type de protection patrimoniale',

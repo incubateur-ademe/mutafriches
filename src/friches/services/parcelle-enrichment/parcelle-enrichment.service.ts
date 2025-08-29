@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { Parcelle } from '../entities/parcelle.entity';
-import { EnrichmentResultDto } from '../dto/enrichment-result.dto';
-import { MockTransportService } from '../../mock/services/mock-transport.service';
-import { MockOverpassService } from '../../mock/services/mock-overpass.service';
-import { MockLovacService } from '../../mock/services/mock-lovac.service';
-import { CadastreServiceResponse } from './external-apis/cadastre/cadastre.interface';
-import { IParcelleEnrichmentService } from '../interfaces/parcelle-enrichment-service.interface';
-import { CadastreService } from './external-apis/cadastre/cadastre.service';
-import { BdnbService } from './external-apis/bdnb/bdnb.service';
-import { EnedisService } from './external-apis/enedis/enedis.service';
-import { RisqueNaturel } from '../enums/parcelle.enums';
+import { Parcelle } from '../../entities/parcelle.entity';
+import { EnrichmentResultDto } from '../../dto/enrichment-result.dto';
+import { MockTransportService } from '../../../mock/services/mock-transport.service';
+import { MockOverpassService } from '../../../mock/services/mock-overpass.service';
+import { MockLovacService } from '../../../mock/services/mock-lovac.service';
+import { CadastreServiceResponse } from '../external-apis/cadastre/cadastre.interface';
+import { IParcelleEnrichmentService } from '../../interfaces/parcelle-enrichment-service.interface';
+import { CadastreService } from '../external-apis/cadastre/cadastre.service';
+import { BdnbService } from '../external-apis/bdnb/bdnb.service';
+import { EnedisService } from '../external-apis/enedis/enedis.service';
+import { RisqueNaturel } from '../../enums/parcelle.enums';
 
 @Injectable()
 export class ParcelleEnrichmentService implements IParcelleEnrichmentService {

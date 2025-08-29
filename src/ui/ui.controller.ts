@@ -10,8 +10,8 @@ import {
 } from '@nestjs/common';
 import { SimpleResponse } from '../shared/types/common.types';
 import { UiEnrichmentResultDto } from './dto/ui-enrichment-result.dto';
-import { ParcelleEnrichmentService } from 'src/friches/services/parcelle-enrichment.service';
-import { MutabilityCalculationService } from 'src/friches/services/mutability-calculation.service';
+import { ParcelleEnrichmentService } from 'src/friches/services/parcelle-enrichment/parcelle-enrichment.service';
+import { MutabilityCalculationService } from 'src/friches/services/mutability/mutability-calculation.service';
 import { SessionWithFormData } from './interfaces/form-session.interfaces';
 import { UiService } from './services/ui.service';
 import { FormSessionService } from './services/form-session.service';

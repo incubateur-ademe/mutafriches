@@ -4,6 +4,7 @@ import {
   ZonageEnvironnemental,
   ZonagePatrimonial,
   TrameVerteEtBleue,
+  ZonageReglementaire,
 } from '../../friches/enums/parcelle.enums';
 
 /**
@@ -36,7 +37,7 @@ export class MockParcellesHelper {
     trelazeParcel.presenceRisquesTechnologiques = false;
     trelazeParcel.presenceRisquesNaturels = RisqueNaturel.FAIBLE;
     trelazeParcel.zonageEnvironnemental = ZonageEnvironnemental.HORS_ZONE;
-    trelazeParcel.zonageReglementaire = 'Zone urbaine - U';
+    trelazeParcel.zonageReglementaire = ZonageReglementaire.ZONE_ACTIVITES;
     trelazeParcel.zonagePatrimonial = ZonagePatrimonial.NON_CONCERNE;
     trelazeParcel.trameVerteEtBleue = TrameVerteEtBleue.HORS_TRAME;
 
@@ -57,10 +58,10 @@ export class MockParcellesHelper {
     angersParcel.ancienneActivite = 'Entrepôt logistique';
     angersParcel.presenceRisquesTechnologiques = true;
     angersParcel.presenceRisquesNaturels = RisqueNaturel.MOYEN;
-    angersParcel.zonageEnvironnemental = ZonageEnvironnemental.ZNIEFF_TYPE_2;
-    angersParcel.zonageReglementaire = "Zone d'activité - AUi";
+    angersParcel.zonageEnvironnemental = ZonageEnvironnemental.ZNIEFF_TYPE_1_2;
+    angersParcel.zonageReglementaire = ZonageReglementaire.ZONE_A_URBANISER_AU;
     angersParcel.zonagePatrimonial = ZonagePatrimonial.NON_CONCERNE;
-    angersParcel.trameVerteEtBleue = TrameVerteEtBleue.CORRIDOR_ECOLOGIQUE;
+    angersParcel.trameVerteEtBleue = TrameVerteEtBleue.CORRIDOR_A_RESTAURER;
 
     MOCK_PARCELLES[angersParcel.identifiantParcelle] = angersParcel;
 
@@ -80,7 +81,7 @@ export class MockParcellesHelper {
     saumurParcel.presenceRisquesTechnologiques = false;
     saumurParcel.presenceRisquesNaturels = RisqueNaturel.AUCUN;
     saumurParcel.zonageEnvironnemental = ZonageEnvironnemental.NATURA_2000;
-    saumurParcel.zonageReglementaire = 'Zone agricole - A';
+    saumurParcel.zonageReglementaire = ZonageReglementaire.ZONE_NATURELLE;
     saumurParcel.zonagePatrimonial = ZonagePatrimonial.MONUMENT_HISTORIQUE;
     saumurParcel.trameVerteEtBleue = TrameVerteEtBleue.RESERVOIR_BIODIVERSITE;
 

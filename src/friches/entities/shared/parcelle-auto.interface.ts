@@ -3,6 +3,7 @@ import {
   ZonageEnvironnemental,
   ZonagePatrimonial,
   TrameVerteEtBleue,
+  ZonageReglementaire,
 } from '../../enums/parcelle.enums';
 
 /**
@@ -104,7 +105,7 @@ export interface ParcelleAutoData {
    * Zonage réglementaire selon le PLU/PLUi
    * Source: GPU
    */
-  zonageReglementaire?: string;
+  zonageReglementaire?: ZonageReglementaire;
 
   /**
    * Type de protection patrimoniale
