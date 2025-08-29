@@ -55,6 +55,111 @@ describe('MutabilityCalculationService', () => {
     service = new MutabilityCalculationServiceForTest();
   });
 
+  describe('calculateMutability', () => {
+    it("devrait retourner des résultats pour tous les types d'usage", () => {
+      const input = {
+        siteEnCentreVille: true,
+        surfaceSite: 5000,
+      } as MutabilityInputDto;
+
+      const result = service.calculateMutability(input);
+
+      expect(result.resultats).toHaveLength(7); // 7 types d'usage
+      expect(result.resultats.every((r) => r.usage)).toBeTruthy();
+      expect(
+        result.resultats.every((r) => typeof r.indiceMutabilite === 'number'),
+      ).toBeTruthy();
+    });
+
+    it('devrait trier les résultats par indice décroissant', () => {
+      const input = {
+        siteEnCentreVille: true, // Favorable au résidentiel, défavorable à l'industrie
+        presencePollution: PresencePollution.NON,
+      } as MutabilityInputDto;
+
+      const result = service.calculateMutability(input);
+
+      // Vérifier que c'est trié par indice décroissant
+      for (let i = 0; i < result.resultats.length - 1; i++) {
+        expect(result.resultats[i].indiceMutabilite).toBeGreaterThanOrEqual(
+          result.resultats[i + 1].indiceMutabilite,
+        );
+      }
+    });
+
+    it('devrait attribuer les rangs correctement de 1 à 7', () => {
+      const input = {
+        surfaceSite: 10000,
+        tauxLogementsVacants: 5,
+      } as MutabilityInputDto;
+
+      const result = service.calculateMutability(input);
+
+      // Vérifier les rangs
+      result.resultats.forEach((r, index) => {
+        expect(r.rang).toBe(index + 1);
+      });
+
+      // Vérifier qu'on a bien les rangs de 1 à 7
+      const rangs = result.resultats.map((r) => r.rang);
+      expect(rangs).toEqual([1, 2, 3, 4, 5, 6, 7]);
+    });
+
+    it('devrait inclure la fiabilité dans le résultat', () => {
+      const input = {
+        typeProprietaire: TypeProprietaire.PUBLIC,
+        surfaceSite: 15000,
+        presencePollution: PresencePollution.NON,
+      } as MutabilityInputDto;
+
+      const result = service.calculateMutability(input);
+
+      expect(result.fiabilite).toBeDefined();
+      expect(result.fiabilite.note).toBeDefined();
+      expect(typeof result.fiabilite.note).toBe('number');
+      expect(result.fiabilite.text).toBeDefined();
+      expect(result.fiabilite.description).toBeDefined();
+    });
+
+    it('devrait gérer un input vide', () => {
+      const input = {} as MutabilityInputDto;
+
+      const result = service.calculateMutability(input);
+
+      expect(result.resultats).toHaveLength(7);
+      // Avec un input vide, tous les indices devraient être 0
+      result.resultats.forEach((r) => {
+        expect(r.indiceMutabilite).toBe(0);
+      });
+      // Fiabilité très faible
+      expect(result.fiabilite.note).toBe(0);
+      expect(result.fiabilite.text).toBe('Très peu fiable');
+    });
+
+    it('devrait propager les avantages et contraintes de chaque usage', () => {
+      const input = {
+        siteEnCentreVille: true, // +2 résidentiel (poids 2), -2 industrie (poids 2)
+        proximiteCommercesServices: true, // +2 résidentiel (poids 1)
+      } as MutabilityInputDto;
+
+      const result = service.calculateMutability(input);
+
+      // Trouver le résultat pour résidentiel
+      const residentiel = result.resultats.find(
+        (r) => r.usage === UsageType.RESIDENTIEL,
+      );
+      expect(residentiel).toBeDefined();
+
+      // Trouver le résultat pour industrie
+      const industrie = result.resultats.find(
+        (r) => r.usage === UsageType.INDUSTRIE,
+      );
+      expect(industrie).toBeDefined();
+      expect(industrie?.avantages).toBe(0.5); // 0.5*1 pour proximiteCommercesServices
+      expect(industrie?.contraintes).toBe(4); // 2*2 pour siteEnCentreVille
+    });
+  });
+
   describe('calculerIndiceMutabilite', () => {
     it("devrait calculer un indice de 0 quand il n'y a ni avantages ni contraintes", () => {
       // Input vide ou avec des critères non mappés

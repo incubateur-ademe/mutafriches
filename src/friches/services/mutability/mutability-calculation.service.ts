@@ -169,7 +169,7 @@ export class MutabilityCalculationService {
   } {
     // Compter les critères non null/undefined
     const criteresRenseignes = Object.entries(input).filter(
-      ([_, valeur]) => valeur !== null && valeur !== undefined,
+      ([valeur]) => valeur !== null && valeur !== undefined,
     ).length;
 
     // Calculer le pourcentage sur le nombre de critères mappés

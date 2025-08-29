@@ -41,6 +41,20 @@ export class UsageResultDto {
   })
   indiceMutabilite: number;
 
+  @ApiProperty({
+    description: "Total des points d'avantages pour cet usage",
+    example: 15,
+    minimum: 0,
+  })
+  avantages: number;
+
+  @ApiProperty({
+    description: 'Total des points de contraintes pour cet usage',
+    example: 7,
+    minimum: 0,
+  })
+  contraintes: number;
+
   // @ApiProperty({
   //   description: 'Évaluation qualitative du potentiel',
   //   example: 'Favorable',
