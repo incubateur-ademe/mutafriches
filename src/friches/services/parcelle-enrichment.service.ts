@@ -127,19 +127,21 @@ export class ParcelleEnrichmentService implements IParcelleEnrichmentService {
       surfaceBati: parcelle.surfaceBati,
       connectionReseauElectricite: parcelle.connectionReseauElectricite,
       distanceRaccordementElectrique: parcelle.distanceRaccordementElectrique,
+      presenceRisquesNaturels: parcelle.presenceRisquesNaturels,
+      coordonnees: parcelle.coordonnees,
+
+      // Données non déductibles pour le moment
+      ancienneActivite: parcelle.ancienneActivite,
       siteEnCentreVille: parcelle.siteEnCentreVille,
       distanceAutoroute: parcelle.distanceAutoroute,
       distanceTransportCommun: parcelle.distanceTransportCommun,
       proximiteCommercesServices: parcelle.proximiteCommercesServices,
       tauxLogementsVacants: parcelle.tauxLogementsVacants,
-      ancienneActivite: parcelle.ancienneActivite,
       presenceRisquesTechnologiques: parcelle.presenceRisquesTechnologiques,
-      presenceRisquesNaturels: parcelle.presenceRisquesNaturels,
       zonageEnvironnemental: parcelle.zonageEnvironnemental,
       zonageReglementaire: parcelle.zonageReglementaire,
       zonagePatrimonial: parcelle.zonagePatrimonial,
       trameVerteEtBleue: parcelle.trameVerteEtBleue,
-      coordonnees: parcelle.coordonnees,
 
       // Métadonnées d'enrichissement
       sourcesUtilisees,

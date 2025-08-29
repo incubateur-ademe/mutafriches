@@ -288,50 +288,62 @@ export class UiService {
       // Données de base
       surfaceParcelle: `${enrichmentResult.surfaceSite?.toLocaleString('fr-FR') || 'Non renseigné'} m²`,
       surfaceBatie: `${enrichmentResult.surfaceBati?.toLocaleString('fr-FR') || 'Non renseigné'} m²`,
-      typeProprietaire: 'Non renseigné', // Plus dans enrichmentResult, sera dans les données manuelles
-      ancienneActivite: enrichmentResult.ancienneActivite || 'Non renseignée',
-
-      // Informations parcelle
       commune: enrichmentResult.commune || 'Non renseignée',
       identifiantParcelle:
         enrichmentResult.identifiantParcelle || 'Non renseigné',
       connectionElectricite: enrichmentResult.connectionReseauElectricite
         ? 'Oui'
         : 'Non',
-
-      // Environnement
-      centreVille: enrichmentResult.siteEnCentreVille ? 'Oui' : 'Non',
-      distanceAutoroute: this.formatDistance(
-        enrichmentResult.distanceAutoroute,
-        'km',
-      ),
-      distanceTrain: this.formatDistance(
-        enrichmentResult.distanceTransportCommun,
-        'm',
-      ),
-      proximiteCommerces: enrichmentResult.proximiteCommercesServices
-        ? 'Oui'
-        : 'Non',
       distanceRaccordement: this.formatDistance(
         enrichmentResult.distanceRaccordementElectrique,
         'm',
       ),
-      tauxLV: enrichmentResult.tauxLogementsVacants
-        ? `${enrichmentResult.tauxLogementsVacants}%`
-        : 'Non renseigné',
-
-      // Risques et zonage
-      risquesTechno: enrichmentResult.presenceRisquesTechnologiques
-        ? 'Oui'
-        : 'Non',
       risquesNaturels:
         enrichmentResult.presenceRisquesNaturels?.toString() || 'Non renseigné',
-      zonageEnviro:
-        enrichmentResult.zonageEnvironnemental?.toString() || 'Non renseigné',
-      zonageUrba: enrichmentResult.zonageReglementaire || 'Non renseigné',
-      zonagePatrimonial:
-        enrichmentResult.zonagePatrimonial?.toString() || 'Non renseigné',
-      tvb: enrichmentResult.trameVerteEtBleue?.toString() || 'Non renseigné',
+
+      // Données non accessibles pour le moment
+      ancienneActivite: 'Donnée non accessible',
+      typeProprietaire: 'Donnée non accessible',
+      centreVille: 'Donnée non accessible',
+      distanceAutoroute: 'Donnée non accessible',
+      distanceTrain: 'Donnée non accessible',
+      proximiteCommerces: 'Donnée non accessible',
+      tauxLV: 'Donnée non accessible',
+      risquesTechno: 'Donnée non accessible',
+      zonageEnviro: 'Donnée non accessible',
+      zonageUrba: 'Donnée non accessible',
+      zonagePatrimonial: 'Donnée non accessible',
+      tvb: 'Donnée non accessible',
+
+      // Données initiales (commentées car non disponibles dans enrichmentResult)
+      // ancienneActivite: enrichmentResult.ancienneActivite || 'Non renseignée',
+      // typeProprietaire: 'Non renseigné', // Plus dans enrichmentResult, sera dans les données manuelles
+      // centreVille: enrichmentResult.siteEnCentreVille ? 'Oui' : 'Non',
+      // distanceAutoroute: this.formatDistance(
+      //   enrichmentResult.distanceAutoroute,
+      //   'km',
+      // ),
+      // distanceTrain: this.formatDistance(
+      //   enrichmentResult.distanceTransportCommun,
+      //   'm',
+      // ),
+      // proximiteCommerces: enrichmentResult.proximiteCommercesServices
+      //   ? 'Oui'
+      //   : 'Non',
+
+      // tauxLV: enrichmentResult.tauxLogementsVacants
+      //   ? `${enrichmentResult.tauxLogementsVacants}%`
+      //   : 'Non renseigné',
+
+      // risquesTechno: enrichmentResult.presenceRisquesTechnologiques
+      //   ? 'Oui'
+      //   : 'Non',
+      // zonageEnviro:
+      //   enrichmentResult.zonageEnvironnemental?.toString() || 'Non renseigné',
+      // zonageUrba: enrichmentResult.zonageReglementaire || 'Non renseigné',
+      // zonagePatrimonial:
+      //   enrichmentResult.zonagePatrimonial?.toString() || 'Non renseigné',
+      // tvb: enrichmentResult.trameVerteEtBleue?.toString() || 'Non renseigné',
 
       // Données techniques
       potentielEcologique: 'À calculer',
