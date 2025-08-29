@@ -14,12 +14,14 @@ export interface ParcelleAutoData {
   /**
    * Identifiant unique de la parcelle (format cadastral)
    * Source: Cadastre
+   * Utilisé comme identifiant principal
    */
   identifiantParcelle: string;
 
   /**
    * Nom de la commune où se situe la parcelle
    * Source: Cadastre
+   * Utilisé pour le contexte géographique
    */
   commune: string;
 
@@ -122,6 +124,7 @@ export interface ParcelleAutoData {
   /**
    * Coordonnées géographiques de la parcelle
    * Source: Cadastre
+   * Non utilisé pour le calcul de mutabilité mais utile pour affichage cartographique
    */
   coordonnees?: {
     latitude: number;

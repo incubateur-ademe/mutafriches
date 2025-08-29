@@ -869,3 +869,32 @@ export const MATRICE_SCORING = {
 
 // Export du nombre de critères
 export const NOMBRE_CRITERES_MAPPES = 21; // Sur 26 au total
+
+// Configuration des niveaux de fiabilité
+export const NIVEAUX_FIABILITE = [
+  {
+    seuilMin: 9,
+    text: 'Très fiable',
+    description: 'Analyse complète avec toutes les données disponibles.',
+  },
+  {
+    seuilMin: 7,
+    text: 'Fiable',
+    description: 'Données analysées avec un niveau de confiance élevé.',
+  },
+  {
+    seuilMin: 5,
+    text: 'Moyennement fiable',
+    description: 'Analyse partielle, certaines données manquantes.',
+  },
+  {
+    seuilMin: 3,
+    text: 'Peu fiable',
+    description: 'Données insuffisantes pour une analyse complète.',
+  },
+  {
+    seuilMin: 0,
+    text: 'Très peu fiable',
+    description: 'Données très incomplètes, résultats indicatifs uniquement.',
+  },
+] as const;

@@ -4,6 +4,8 @@ import { MutabilityResultDto } from 'src/friches/dto/mutability-result.dto';
 import { UsageType } from 'src/friches/enums/mutability.enums';
 import {
   MATRICE_SCORING,
+  NIVEAUX_FIABILITE,
+  NOMBRE_CRITERES_MAPPES,
   POIDS_CRITERES,
   ScoreParUsage,
 } from './config/criteres-scoring.config';
@@ -23,33 +25,21 @@ export class MutabilityCalculationService {
    * @returns  Le résultat du calcul de mutabilité pour chaque type d'usage
    */
   calculateMutability(input: MutabilityInputDto): MutabilityResultDto {
-    const usages = Object.values(UsageType);
-
-    // Pour chaque usage, calculer son score
-    const resultats = usages.map((usage) =>
-      this.calculerIndiceMutabilite(input, usage),
-    );
-
-    // Trier par indice décroissant et transformer en UsageResultDto
-    const resultatsTries = resultats.sort((a, b) => b.indice - a.indice);
-
-    // Mapper vers UsageResultDto
-    const usageResultats = resultatsTries.map((r, index) => ({
-      usage: r.usage,
-      rang: index + 1,
-      indiceMutabilite: r.indice,
-      avantages: r.avantages,
-      contraintes: r.contraintes,
-    }));
+    // Calculer et trier les résultats par indice décroissant
+    const resultats = Object.values(UsageType)
+      .map((usage) => this.calculerIndiceMutabilite(input, usage))
+      .sort((a, b) => b.indice - a.indice)
+      .map((result, index) => ({
+        usage: result.usage,
+        rang: index + 1,
+        indiceMutabilite: result.indice,
+        avantages: result.avantages,
+        contraintes: result.contraintes,
+      }));
 
     return {
-      resultats: usageResultats,
-      // TODO: Calcul réel de la fiabilité
-      fiabilite: {
-        note: 8.5,
-        text: 'Fiable',
-        description: 'Données analysées avec un niveau de confiance élevé.',
-      },
+      resultats,
+      fiabilite: this.calculerFiabilite(input),
     };
   }
 
@@ -59,7 +49,7 @@ export class MutabilityCalculationService {
    * @param usage Le type d'usage pour lequel calculer l'indice
    * @returns Le résultat complet incluant l'indice, les avantages et contraintes
    */
-  private calculerIndiceMutabilite(
+  protected calculerIndiceMutabilite(
     input: MutabilityInputDto,
     usage: UsageType,
   ): ResultatMutabiliteUsage {
@@ -84,7 +74,7 @@ export class MutabilityCalculationService {
    * @param usage Le type d'usage pour lequel calculer le score
    * @returns Les totaux d'avantages et de contraintes pour cet usage
    */
-  private calculerScorePourUsage(
+  protected calculerScorePourUsage(
     input: MutabilityInputDto,
     usage: keyof ScoreParUsage,
   ): { avantages: number; contraintes: number } {
@@ -123,7 +113,7 @@ export class MutabilityCalculationService {
    * @param usage Le type d'usage
    * @returns Le score ou null si non trouvé
    */
-  private obtenirScoreCritere(
+  protected obtenirScoreCritere(
     champDTO: string,
     valeur: unknown,
     usage: keyof ScoreParUsage,
@@ -157,7 +147,7 @@ export class MutabilityCalculationService {
    * @param valeur La valeur à convertir
    * @returns La clé d'indexation
    */
-  private convertirEnCleIndex(valeur: unknown): string | number {
+  protected convertirEnCleIndex(valeur: unknown): string | number {
     if (typeof valeur === 'boolean') {
       return String(valeur); // "true" ou "false"
     }
@@ -165,5 +155,40 @@ export class MutabilityCalculationService {
       return valeur;
     }
     return String(valeur); // Pour les strings et autres
+  }
+
+  /**
+   * Calcule la fiabilité basée sur le nombre de critères renseignés
+   * @param input Les critères d'entrée
+   * @returns La fiabilité avec note, texte et description
+   */
+  protected calculerFiabilite(input: MutabilityInputDto): {
+    note: number;
+    text: string;
+    description: string;
+  } {
+    // Compter les critères non null/undefined
+    const criteresRenseignes = Object.entries(input).filter(
+      ([_, valeur]) => valeur !== null && valeur !== undefined,
+    ).length;
+
+    // Calculer le pourcentage sur le nombre de critères mappés
+    const pourcentage = (criteresRenseignes / NOMBRE_CRITERES_MAPPES) * 100;
+
+    // Note sur 10 arrondie à 0.5 près
+    const note = Math.round((pourcentage / 10) * 2) / 2;
+
+    // Déterminer le niveau de fiabilité
+    const niveau = NIVEAUX_FIABILITE.find((n) => note >= n.seuilMin);
+
+    // Retourner avec le niveau trouvé (toujours défini car on a un seuil à 0)
+    return {
+      note,
+      text:
+        niveau?.text || NIVEAUX_FIABILITE[NIVEAUX_FIABILITE.length - 1].text,
+      description:
+        niveau?.description ||
+        NIVEAUX_FIABILITE[NIVEAUX_FIABILITE.length - 1].description,
+    };
   }
 }
