@@ -38,12 +38,7 @@ export interface FricheTestCase {
     usages: ExpectedUsageResult[];
 
     /** Fiabilité attendue */
-    fiabilite: {
-      note: number;
-      noteMin?: number;
-      noteMax?: number;
-      text: string;
-    };
+    fiabilite: number;
 
     /** Métadonnées sur le calcul */
     metadata?: {

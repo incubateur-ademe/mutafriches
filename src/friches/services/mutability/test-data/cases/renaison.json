@@ -78,12 +78,7 @@
       }
     ],
 
-    "fiabilite": {
-      "note": 7.7,
-      "noteMin": 7.0,
-      "noteMax": 8.5,
-      "text": "Fiable"
-    },
+    "fiabilite": 7.7,
 
     "metadata": {
       "criteresRenseignes": 23,

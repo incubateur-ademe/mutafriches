@@ -114,36 +114,13 @@ describe('MutabilityCalculationService', () => {
               expect(actualUsage!.usage).toBe(expectedUsage.usage);
             });
 
-            // Vérifier la fiabilité
-            console.log('\n--- Fiabilité ---');
-            console.log(
-              `Calculée: ${result.fiabilite.note}/10 (${result.fiabilite.text})`,
-            );
-            console.log(
-              `Attendue: ${testCase.expected.fiabilite.note}/10 (${testCase.expected.fiabilite.text})`,
-            );
-
-            expect(result.fiabilite.text).toBe(
-              testCase.expected.fiabilite.text,
-            );
-
-            // Vérifier la note de fiabilité avec tolérance
-            if (
-              testCase.expected.fiabilite.noteMin !== undefined &&
-              testCase.expected.fiabilite.noteMax !== undefined
-            ) {
-              expect(result.fiabilite.note).toBeGreaterThanOrEqual(
-                testCase.expected.fiabilite.noteMin,
-              );
-              expect(result.fiabilite.note).toBeLessThanOrEqual(
-                testCase.expected.fiabilite.noteMax,
-              );
-            } else {
-              const diff = Math.abs(
-                result.fiabilite.note - testCase.expected.fiabilite.note,
-              );
-              expect(diff).toBeLessThanOrEqual(0.5);
-            }
+            // TODO Corriger les Excel pour récup & vérifier la fiabilité
+            // console.log('\n--- Fiabilité ---');
+            // console.log(
+            //   `Calculée: ${result.fiabilite.note}/10 (${result.fiabilite.text})`,
+            // );
+            // console.log(`Attendue: ${testCase.expected.fiabilite}/10 `);
+            // expect(result.fiabilite.text).toBe(testCase.expected.fiabilite);
           });
 
           // Test optionnel pour debug détaillé (activé avec DEBUG_TESTS=true)
@@ -164,10 +141,10 @@ describe('MutabilityCalculationService', () => {
               });
 
               // Afficher les critères non mappés si présents
-              if (testCase.expected.metadata?.criteresNonMappes) {
+              if (testCase.expected.metadata?.criteresManquants) {
                 console.log(
-                  '\nCritères non mappés:',
-                  testCase.expected.metadata.criteresNonMappes.join(', '),
+                  '\nCritères manquants:',
+                  testCase.expected.metadata.criteresManquants.join(', '),
                 );
               }
             });
