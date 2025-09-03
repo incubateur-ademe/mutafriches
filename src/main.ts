@@ -3,7 +3,7 @@ import { AppModule } from './app.module';
 import { join } from 'path';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-
+import { Request, Response, NextFunction } from 'express';
 import * as session from 'express-session';
 import { ValidationPipe } from '@nestjs/common';
 
@@ -49,6 +49,14 @@ async function bootstrap() {
     }),
   );
 
+  // Configuration CORS pour le développement
+  if (process.env.NODE_ENV !== 'production') {
+    app.enableCors({
+      origin: 'http://localhost:5173',
+      credentials: true,
+    });
+  }
+
   // Assets DSFR - chemin adaptatif selon l'environnement
   const isProduction = process.env.NODE_ENV === 'production';
   const dsfrPath = isProduction
@@ -66,12 +74,38 @@ async function bootstrap() {
 
   app.useStaticAssets(publicPath);
 
+  // Servir l'UI React en production
+  if (isProduction) {
+    const uiPath = join(__dirname, '..', 'dist-ui');
+
+    // Servir les fichiers statiques de l'UI
+    app.useStaticAssets(uiPath);
+
+    // Catch-all route pour le SPA React (doit être après toutes les routes API)
+    app.use('*', (req: Request, res: Response, next: NextFunction) => {
+      // Ne pas intercepter les routes API et les assets
+      if (
+        req.baseUrl.startsWith('/api') ||
+        req.baseUrl.startsWith('/friches') ||
+        req.baseUrl.startsWith('/health') ||
+        req.baseUrl.startsWith('/dsfr') ||
+        req.baseUrl.startsWith('/iframe')
+      ) {
+        return next();
+      }
+      res.sendFile(join(uiPath, 'index.html'));
+    });
+  }
+
   const port = process.env.PORT || 3000;
   const host = isProduction ? '0.0.0.0' : 'localhost';
 
   await app.listen(port, host);
   console.log(`Application lancée sur : http://${host}:${port}`);
   console.log(`Documentation swagger sur : http://${host}:${port}/api`);
+  if (!isProduction) {
+    console.log(`UI React en dev sur : http://localhost:5173`);
+  }
 }
 
 bootstrap().catch((err) => {
