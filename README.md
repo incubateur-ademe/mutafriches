@@ -2,25 +2,74 @@
 
 ## 📖 Description
 
-Mutafriches est une API NestJS qui remplace un fichier Excel pour analyser la mutabilité des friches urbaines. Elle calcule des indices de mutabilité sur 7 usages différents et fournit un indice de fiabilité selon la précision des critères d'entrée.
+Mutafriches est une application web qui remplace un fichier Excel pour analyser la mutabilité des friches urbaines. Elle calcule des indices de mutabilité sur 7 usages différents et fournit un indice de fiabilité selon la précision des critères d'entrée.
 
 ## 🏗️ Stack technique
 
+### Backend
+
 - **Framework** : NestJS (TypeScript)
 - **Base de données** : PostgreSQL 16 + Drizzle ORM
-- **Design System** : DSFR (Système de Design de l'État)
-- **UI System** : HTML/CSS/JS avec composants modulaires
+- **Documentation API** : Swagger/OpenAPI
+
+### Frontend
+
+- **Framework** : React 19 + TypeScript
+- **Build** : Vite
+- **Routing** : React Router
+- **Styles** : Tailwind CSS + DSFR (Système de Design de l'État)
+
+### Outils
+
 - **Tests** : Vitest
 - **Package Manager** : pnpm
 - **CI/CD** : GitHub Actions
-- **Documentation API** : Swagger/OpenAPI
+- **Déploiement** : Scalingo
+
+## 🏛️ Architecture
+
+Le projet suit une architecture **monolithique modulaire** :
+
+```
+mutafriches/
+├── src/                    # API NestJS
+│   ├── analytics/          # Analytics et métriques
+│   ├── form-sessions/      # Gestion des sessions
+│   ├── friches/            # Logique métier
+│   ├── shared/             # Services partagés
+│   └── main.ts             # Point d'entrée API
+├── ui/                     # Application React
+│   ├── src/
+│   │   ├── components/     # Composants React
+│   │   ├── pages/          # Pages de l'application
+│   │   ├── services/       # Services API
+│   │   └── App.tsx         # Composant racine
+│   └── vite.config.ts      # Configuration Vite
+└── dist/                   # Build de production
+    ├── src/                # API compilée
+    └── dist-ui/            # UI React compilée
+```
+
+### Modes de fonctionnement
+
+#### Développement
+
+- **API** : NestJS sur `http://localhost:3000`
+- **UI** : Vite dev server sur `http://localhost:5173`
+- Les deux serveurs tournent en parallèle avec hot-reload
+
+#### Production
+
+- **Serveur unique** : NestJS sert à la fois l'API et l'UI React compilée
+- Routes API : `/api/*`, `/friches/*`, `/health`
+- UI React : Toutes les autres routes servent le SPA
 
 ## 🚀 Installation
 
 ### Prérequis
 
 - Node.js `22.17.0`
-- pnpm `10.12.4`
+- pnpm `10.13.1`
 - Docker & Docker Compose
 
 ### Démarrage rapide
@@ -33,8 +82,8 @@ cd mutafriches
 # Configuration
 cp .env.example .env
 
-# Installer les dépendances
-pnpm install
+# Installer les dépendances (API + UI)
+pnpm install:all
 
 # Démarrer PostgreSQL
 pnpm db:start
@@ -45,21 +94,34 @@ pnpm db:push
 # Générer des données de test
 pnpm db:seed
 
-# Démarrer en mode développement
-pnpm start:dev
+# Démarrer en mode développement (API + UI)
+pnpm dev
 ```
 
-L'API sera disponible sur : **<http://localhost:3000>**
-Documentation Swagger : **<http://localhost:3000/api>**
+**Accès :**
+
+- UI React : **<http://localhost:5173>**
+- API : **<http://localhost:3000>**
+- Documentation Swagger : **<http://localhost:3000/api>**
+- Drizzle Studio : **<http://localhost:4983>** (après `pnpm db:studio`)
 
 ## 🛠️ Scripts disponibles
 
 ### Développement
 
 ```bash
-pnpm start:dev              # Mode développement avec watch
-pnpm start:debug            # Mode debug
-pnpm build                  # Compiler le projet
+# Stack complète
+pnpm dev                    # Lance API + UI en développement
+pnpm dev:api                # API uniquement (NestJS watch mode)
+pnpm dev:ui                 # UI uniquement (Vite dev server)
+
+# Build
+pnpm build:all              # Build API + UI pour production
+pnpm build:api              # Build API uniquement
+pnpm build:ui               # Build UI uniquement
+
+# Production
+pnpm start                  # Lance l'app en production (après build)
 ```
 
 ### Base de données
@@ -84,125 +146,92 @@ pnpm test:watch             # Tests en mode watch
 pnpm test:coverage          # Tests avec coverage
 ```
 
-## 🗄️ Base de données
-
-### Configuration
-
-Le projet utilise PostgreSQL avec Drizzle ORM. Configurez votre `.env` :
-
-```env
-DB_HOST=localhost
-DB_PORT=5432
-DB_USER=mutafriches_user
-DB_PASSWORD=mutafriches_password
-DB_NAME=mutafriches
-```
-
-### Tables principales
-
-- **integrators** : Organismes utilisateurs (collectivités, EPF, etc.)
-- **user_sessions** : Sessions utilisateur avec tracking
-- **user_actions** : Actions trackées (parcours, clics, conversions)
-- **mutability_results** : Résultats d'analyse de mutabilité
-
-### Interface graphique
-
-Drizzle Studio offre une interface web pour explorer les données :
-
-```bash
-pnpm db:studio
-# Ouvre http://localhost:4983
-```
-
 ## 🌐 API Routes disponibles
 
 | Route | Méthode | Description |
 |-------|---------|-------------|
-| `/` | GET | Message de base de l'API |
-| `/health` | GET | Healthcheck de l'API |
 | `/api` | GET | Documentation Swagger |
-| `/iframe` | GET | Interface utilisateur (step 1) |
+| `/api/health` | GET | Healthcheck de l'API |
 | `/api/form-sessions` | POST | Créer une session de formulaire |
 | `/api/form-sessions/{id}` | GET, PUT | Gérer une session |
 | `/api/friches/mutability` | POST | Calculer la mutabilité |
-
-### Documentation API
-
-L'API expose une documentation Swagger complète avec tous les DTO et schémas. Accédez à `/api` pour explorer les endpoints interactivement.
-
-## 🧩 Architecture
-
-### Structure du projet
-
-```
-src/
-├── app.controller.ts           # Routes principales
-├── app.module.ts              # Configuration NestJS
-├── main.ts                    # Bootstrap de l'application
-├── analytics/                 # Analytics et métriques
-├── form-sessions/             # Gestion des sessions de formulaire
-│   ├── dto/                  # Data Transfer Objects
-│   ├── form-sessions.controller.ts
-│   ├── form-sessions.service.ts
-│   └── form-sessions.types.ts
-├── friches/                   # Logique métier friches
-│   ├── dto/                  # DTO pour les analyses
-│   ├── friches.controller.ts
-│   ├── friches.service.ts
-│   └── friches.types.ts
-├── mocks/                     # Services et données de test
-├── shared/                    # Services partagés
-│   ├── database/
-│   └── types/
-└── ui/                        # Interface utilisateur
-    ├── components/           # Composants HTML DSFR
-    ├── layouts/              # Layouts de base
-    ├── pages/                # Pages par étapes
-    ├── ui.controller.ts
-    ├── ui.service.ts
-    └── ui.types.ts
-```
-
-### Système de sessions
-
-Le système de `form-sessions` permet de :
-
-- Suivre le parcours utilisateur étape par étape
-- Sauvegarder les données partielles
-- Gérer l'état des formulaires multi-étapes
-- Analyser les taux de conversion et d'abandon
-
-### DTOs et validation
-
-Tous les endpoints utilisent des DTO typés avec validation automatique :
-
-- `CreateFormSessionDto` : Création d'une session
-- `UpdateFormSessionDto` : Mise à jour des données
-- `MutabilityAnalysisDto` : Analyse de mutabilité
-- `EnrichmentResultDto` : Résultats enrichis
+| `/api/friches/enrich` | POST | Enrichir les données d'une parcelle |
 
 ## 🎨 Interface utilisateur
 
-L'UI utilise le DSFR avec un système modulaire :
+### Architecture React
 
-- **Layouts** : Structure HTML de base avec DSFR
-- **Pages** : Templates par étape du parcours
-- **Composants** : Éléments réutilisables (forms, callouts, etc.)
+L'UI React communique avec l'API NestJS via des services dédiés :
 
-Le rendu se fait côté serveur avec remplacement de variables `{{variable}}`.
+```typescript
+// ui/src/services/api.ts
+export const api = {
+  friches: {
+    calculateMutability: (data) => fetch('/api/friches/mutability', ...),
+    enrichParcel: (id) => fetch('/api/friches/enrich', ...)
+  },
+  sessions: {
+    create: () => fetch('/api/form-sessions', ...),
+    update: (id, data) => fetch(`/api/form-sessions/${id}`, ...)
+  }
+}
+```
 
-## 🗄️ Base de données
+### Parcours utilisateur
+
+1. **Landing** : Page d'accueil avec présentation du service
+2. **Géolocalisation** : Sélection parcelle via carte interactive
+3. **Formulaire** : Saisie des critères par étapes
+4. **Résultats** : Visualisation des indices de mutabilité
+5. **Contact** : Mise en relation avec les porteurs de projets
+
+### Design System
+
+L'application utilise deux systèmes de design complémentaires :
+
+- **DSFR** : Pour les composants institutionnels (formulaires, boutons)
+- **Tailwind CSS** : Pour les styles custom et la mise en page
+
+## 🚀 Déploiement sur Scalingo
 
 ### Configuration
 
-PostgreSQL avec Drizzle ORM. Tables principales :
+Le déploiement sur Scalingo utilise une architecture monolithique où NestJS sert l'API et l'UI :
 
-- **form_sessions** : Sessions utilisateur et données formulaires
-- **integrators** : Organismes utilisateurs
-- **user_actions** : Analytics et tracking
-- **mutability_results** : Résultats d'analyses
+```json
+// package.json
+{
+  "scripts": {
+    "heroku-postbuild": "pnpm run build:all",
+    "start": "node dist/src/main.js"
+  }
+}
+```
 
-Interface graphique : `pnpm db:studio` (<http://localhost:4983>)
+### Variables d'environnement
+
+```env
+NODE_ENV=production
+PORT=<fourni par Scalingo>
+DATABASE_URL=<fourni par addon PostgreSQL>
+SESSION_SECRET=<clé secrète forte>
+```
+
+### Build et déploiement
+
+1. **Build** : Scalingo exécute `pnpm run build:all`
+   - Compile l'API NestJS → `dist/`
+   - Compile l'UI React → `ui/dist/`
+   - Copie l'UI vers `dist-ui/`
+
+2. **Runtime** : NestJS sert :
+   - Routes API sur `/api/*`
+   - UI React sur toutes les autres routes
+
+```bash
+# Déployer sur Scalingo
+git push scalingo main
+```
 
 ## 📊 Analytics
 
@@ -213,32 +242,28 @@ Tracking automatique des métriques d'impact :
 - Demandes de contact
 - Utilisation des outils annexes
 
-## 🚀 CI/CD
+## 🧪 Tests
 
-Le projet utilise GitHub Actions pour l'intégration continue :
+```bash
+# Tests unitaires
+pnpm test
 
-- **Linting** et **formatting** automatique
-- **Tests** avec Vitest
-- **Type checking** TypeScript
-- **Build** de validation
+# Tests avec interface UI
+pnpm test:ui
 
-## Parcours utilisateur
-
-1. **Landing** : Page d'accueil avec iframe
-2. **Géolocalisation** : Sélection parcelle via carte
-3. **Formulaire** : Saisie critères par étapes
-4. **Résultats** : Indices de mutabilité et recommandations
-5. **Contact** : Mise en relation avec porteurs de projets
+# Tests E2E (à venir)
+pnpm test:e2e
+```
 
 ## 📚 Documentation
 
 ### APIs et Sources de données externes
 
-Le projet s'appuie sur plusieurs APIs publiques pour enrichir les données des friches :
+Le projet s'appuie sur plusieurs APIs publiques pour enrichir les données :
 
-- **[Vue d'ensemble des APIs externes](./docs/external-apis-overview.md)** - Architecture et cartographie des sources de données
-- **[IGN Cadastre](./docs/external-apis/ign-cadastre.md)** - Service d'enrichissement cadastral (surface, commune, coordonnées)
+- **[Vue d'ensemble des APIs externes](./docs/external-apis-overview.md)** - Architecture et cartographie
+- **[IGN Cadastre](./docs/external-apis/ign-cadastre.md)** - Enrichissement cadastral
 - **[BDNB](./docs/external-apis/api-bdnb.md)** - Base de données bâtiment
 - **[ENEDIS](./docs/external-apis/api-enedis.md)** - API Enedis
 - **Transport Data Gouv** - Accessibilité transports (à venir)
-- **Géorisques** - Risques et contraintes réglementaires (à venir)
+- **Géorisques** - Risques et contraintes (à venir)
