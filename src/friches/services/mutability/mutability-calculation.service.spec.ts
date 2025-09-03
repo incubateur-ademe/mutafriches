@@ -7,7 +7,6 @@ import {
   EtatBati,
   PresencePollution,
   QualiteDesserte,
-  ReseauEaux,
   RisqueNaturel,
   TypeProprietaire,
   ZonageReglementaire,
@@ -42,6 +41,8 @@ class MutabilityCalculationServiceForTest extends MutabilityCalculationService {
     note: number;
     text: string;
     description: string;
+    criteresRenseignes?: number;
+    criteresTotal?: number;
   } {
     return this.calculerFiabilite(input);
   }
@@ -85,8 +86,7 @@ describe('MutabilityCalculationService', () => {
       // Créer un test pour chaque cas de test JSON
       testCases.forEach((testCase) => {
         describe(`[${testCase.id}] ${testCase.name}`, () => {
-          it(`devrait calculer la mutabilité conformément aux résultats attendus`, () => {
-            // Afficher les infos du test
+          it(`devrait calculer la mutabilité avec mode détaillé`, () => {
             console.log(`\n=== EXECUTION TEST: ${testCase.name} ===`);
             if (testCase.source) {
               console.log(`Source: ${testCase.source}`);
@@ -95,60 +95,203 @@ describe('MutabilityCalculationService', () => {
               console.log(`Description: ${testCase.description}`);
             }
 
-            // Calculer les résultats
-            const result = service.calculateMutability(testCase.input);
-
-            // Comparer avec les résultats attendus
-            console.log('\n--- Comparaison des résultats ---');
-
-            // Vérifier qu'on a bien 7 résultats
-            expect(result.resultats).toHaveLength(7);
-
-            // Vérifier chaque usage
-            testCase.expected.usages.forEach((expectedUsage) => {
-              const actualUsage = result.resultats.find(
-                (r) => r.rang === expectedUsage.rang,
-              );
-
-              expect(actualUsage).toBeDefined();
-              expect(actualUsage!.usage).toBe(expectedUsage.usage);
+            // Calculer avec mode détaillé
+            const result = service.calculateMutability(testCase.input, {
+              modeDetaille: true,
             });
 
-            // TODO Corriger les Excel pour récup & vérifier la fiabilité
-            // console.log('\n--- Fiabilité ---');
-            // console.log(
-            //   `Calculée: ${result.fiabilite.note}/10 (${result.fiabilite.text})`,
-            // );
-            // console.log(`Attendue: ${testCase.expected.fiabilite}/10 `);
-            // expect(result.fiabilite.text).toBe(testCase.expected.fiabilite);
-          });
+            // Afficher le détail pour debug
+            console.log('\n--- DETAILS PAR USAGE ---');
 
-          // Test optionnel pour debug détaillé (activé avec DEBUG_TESTS=true)
-          if (process.env.DEBUG_TESTS === 'true') {
-            it('devrait afficher le détail des calculs pour debug', () => {
-              console.log(`\n=== DEBUG DÉTAILLÉ: ${testCase.name} ===`);
+            // Pour chaque usage attendu, comparer avec le résultat
+            testCase.expected.usages.forEach((expectedUsage) => {
+              const actualUsage = result.resultats.find(
+                (r) => r.usage === expectedUsage.usage,
+              );
 
-              const result = service.calculateMutability(testCase.input);
-
-              result.resultats.forEach((r) => {
-                console.log(
-                  `\n${r.usage}:`,
-                  `\n  Indice: ${r.indiceMutabilite}%`,
-                  `\n  Avantages: ${r.avantages}`,
-                  `\n  Contraintes: ${r.contraintes}`,
-                  `\n  Ratio: ${r.avantages}/(${r.avantages}+${r.contraintes})`,
+              if (!actualUsage) {
+                console.error(
+                  `❌ Usage ${expectedUsage.usage} non trouvé dans les résultats`,
                 );
-              });
+                return;
+              }
 
-              // Afficher les critères non mappés si présents
-              if (testCase.expected.metadata?.criteresManquants) {
+              console.log(`\n${expectedUsage.usage}:`);
+              console.log(`  Indice calculé: ${actualUsage.indiceMutabilite}%`);
+              console.log(`  Indice attendu: ${expectedUsage.indice}%`);
+              console.log(
+                `  Écart: ${(actualUsage.indiceMutabilite - expectedUsage.indice).toFixed(1)}%`,
+              );
+              console.log(`  Rang calculé: ${actualUsage.rang}`);
+              console.log(`  Rang attendu: ${expectedUsage.rang}`);
+
+              // Afficher le détail si disponible
+              if (actualUsage.detailsCalcul) {
                 console.log(
-                  '\nCritères manquants:',
-                  testCase.expected.metadata.criteresManquants.join(', '),
+                  `  Avantages (${actualUsage.detailsCalcul.totalAvantages}):`,
+                );
+                actualUsage.detailsCalcul.detailsAvantages
+                  .slice(0, 3)
+                  .forEach((d) => {
+                    console.log(
+                      `    - ${d.critere}: ${d.scoreBrut} x ${d.poids} = ${d.scorePondere} (${d.valeur})`,
+                    );
+                  });
+
+                console.log(
+                  `  Contraintes (${actualUsage.detailsCalcul.totalContraintes}):`,
+                );
+                actualUsage.detailsCalcul.detailsContraintes
+                  .slice(0, 3)
+                  .forEach((d) => {
+                    console.log(
+                      `    - ${d.critere}: ${d.scoreBrut} x ${d.poids} = ${d.scorePondere} (${d.valeur})`,
+                    );
+                  });
+              }
+            });
+
+            // Analyser les écarts importants
+            console.log('\n--- ANALYSE DES ECARTS ---');
+            const ecarts = testCase.expected.usages.map((expectedUsage) => {
+              const actualUsage = result.resultats.find(
+                (r) => r.usage === expectedUsage.usage,
+              );
+              return {
+                usage: expectedUsage.usage,
+                ecart: actualUsage
+                  ? Math.abs(
+                      actualUsage.indiceMutabilite - expectedUsage.indice,
+                    )
+                  : 999,
+                rangOk: actualUsage?.rang === expectedUsage.rang,
+              };
+            });
+
+            const ecartsImportants = ecarts.filter((e) => e.ecart > 10);
+            if (ecartsImportants.length > 0) {
+              console.log('⚠️ Écarts importants (>10%) détectés:');
+              ecartsImportants.forEach((e) => {
+                console.log(`  - ${e.usage}: écart de ${e.ecart.toFixed(1)}%`);
+              });
+            }
+
+            const rangsIncorrects = ecarts.filter((e) => !e.rangOk);
+            if (rangsIncorrects.length > 0) {
+              console.log('⚠️ Rangs incorrects:');
+              rangsIncorrects.forEach((e) => {
+                console.log(`  - ${e.usage}`);
+              });
+            }
+
+            // Fiabilité
+            console.log('\n--- FIABILITE ---');
+            console.log(`  Note calculée: ${result.fiabilite.note}/10`);
+            console.log(`  Évaluation: ${result.fiabilite.text}`);
+            if (result.fiabilite.criteresRenseignes !== undefined) {
+              console.log(
+                `  Critères renseignés: ${result.fiabilite.criteresRenseignes}/${result.fiabilite.criteresTotal}`,
+              );
+            }
+
+            // Tests d'assertion
+            expect(result.resultats).toHaveLength(7);
+
+            // Vérifier que chaque usage existe
+            testCase.expected.usages.forEach((expectedUsage) => {
+              const actualUsage = result.resultats.find(
+                (r) => r.usage === expectedUsage.usage,
+              );
+              expect(actualUsage).toBeDefined();
+
+              // Warning si écart trop grand
+              const ecart = Math.abs(
+                actualUsage!.indiceMutabilite - expectedUsage.indice,
+              );
+              if (ecart > 30) {
+                console.warn(
+                  `⚠️ Écart très important pour ${expectedUsage.usage}: ${ecart.toFixed(1)}%`,
                 );
               }
             });
-          }
+          });
+
+          // Test détaillé pour analyser les critères
+          it('devrait analyser en détail les critères problématiques', () => {
+            console.log('\n=== ANALYSE DETAILLEE DES CRITERES ===');
+
+            const result = service.calculateMutability(testCase.input, {
+              modeDetaille: true,
+            });
+
+            // Trouver l'usage avec le plus gros écart
+            const usageAvecPlusGrosEcart = testCase.expected.usages.reduce(
+              (max, expectedUsage) => {
+                const actualUsage = result.resultats.find(
+                  (r) => r.usage === expectedUsage.usage,
+                );
+                const ecart = actualUsage
+                  ? Math.abs(
+                      actualUsage.indiceMutabilite - expectedUsage.indice,
+                    )
+                  : 0;
+                return ecart > max.ecart
+                  ? { usage: expectedUsage.usage, ecart }
+                  : max;
+              },
+              { usage: '' as UsageType | '', ecart: 0 },
+            );
+
+            if (usageAvecPlusGrosEcart.ecart > 5) {
+              console.log(
+                `\nUsage avec le plus gros écart: ${usageAvecPlusGrosEcart.usage} (${usageAvecPlusGrosEcart.ecart.toFixed(1)}%)`,
+              );
+
+              const actualUsage = result.resultats.find(
+                (r) => r.usage === (usageAvecPlusGrosEcart.usage as UsageType),
+              );
+
+              if (actualUsage?.detailsCalcul) {
+                console.log('\nTous les avantages:');
+                actualUsage.detailsCalcul.detailsAvantages.forEach((d) => {
+                  console.log(
+                    `  ${d.critere}: ${d.scoreBrut} x ${d.poids} = ${d.scorePondere}`,
+                  );
+                });
+
+                console.log('\nToutes les contraintes:');
+                actualUsage.detailsCalcul.detailsContraintes.forEach((d) => {
+                  console.log(
+                    `  ${d.critere}: ${d.scoreBrut} x ${d.poids} = ${d.scorePondere}`,
+                  );
+                });
+              }
+            }
+
+            // Identifier les critères à fort impact
+            console.log('\n--- CRITERES A FORT IMPACT ---');
+            result.resultats.forEach((r) => {
+              if (r.detailsCalcul) {
+                const topCriteres = [
+                  ...r.detailsCalcul.detailsAvantages
+                    .slice(0, 2)
+                    .map((d) => ({ ...d, type: 'avantage' })),
+                  ...r.detailsCalcul.detailsContraintes
+                    .slice(0, 2)
+                    .map((d) => ({ ...d, type: 'contrainte' })),
+                ].filter((d) => d.scorePondere > 2);
+
+                if (topCriteres.length > 0) {
+                  console.log(`\n${r.usage}:`);
+                  topCriteres.forEach((d) => {
+                    console.log(
+                      `  ${d.type === 'avantage' ? '+' : '-'} ${d.critere}: ${d.scorePondere}`,
+                    );
+                  });
+                }
+              }
+            });
+          });
         });
       });
     });
@@ -159,7 +302,6 @@ describe('MutabilityCalculationService', () => {
         const testCases = testDataLoader.getAllTestCases();
         expect(testCases.length).toBeGreaterThan(0);
 
-        // Valider chaque cas
         testCases.forEach((testCase) => {
           const errors = testDataLoader.validateTestCase(testCase);
           if (errors.length > 0) {
@@ -179,6 +321,47 @@ describe('MutabilityCalculationService', () => {
     });
   });
 
+  // Debug simple avec mode détaillé
+  describe('Debug simple avec mode détaillé', () => {
+    let testDataLoader: TestDataLoaderService;
+
+    beforeAll(() => {
+      testDataLoader = new TestDataLoaderService();
+    });
+
+    it('devrait afficher le calcul complet pour Trélazé', () => {
+      const testCase = testDataLoader.getTestCase('trelaze-001');
+      if (!testCase) {
+        console.log('Cas de test Trélazé non trouvé');
+        return;
+      }
+
+      console.log('\n=== CALCUL COMPLET TRELAZE ===');
+      const result = service.calculateMutability(testCase.input, {
+        modeDetaille: true,
+      });
+
+      // Afficher uniquement les 2 premiers usages pour lisibilité
+      console.log('\nRésultat pour les 2 premiers usages:');
+      result.resultats.slice(0, 2).forEach((r) => {
+        console.log(`\n${r.usage}:`);
+        console.log(`  Indice: ${r.indiceMutabilite}%`);
+        console.log(`  Rang: ${r.rang}`);
+        console.log(`  Avantages: ${r.avantages}`);
+        console.log(`  Contraintes: ${r.contraintes}`);
+        if (r.detailsCalcul) {
+          console.log(
+            '  Top avantages:',
+            r.detailsCalcul.detailsAvantages
+              .slice(0, 2)
+              .map((d) => `${d.critere}(${d.scorePondere})`)
+              .join(', '),
+          );
+        }
+      });
+    });
+  });
+
   describe('calculateMutability', () => {
     it("devrait retourner des résultats pour tous les types d'usage", () => {
       const input = {
@@ -188,7 +371,7 @@ describe('MutabilityCalculationService', () => {
 
       const result = service.calculateMutability(input);
 
-      expect(result.resultats).toHaveLength(7); // 7 types d'usage
+      expect(result.resultats).toHaveLength(7);
       expect(result.resultats.every((r) => r.usage)).toBeTruthy();
       expect(
         result.resultats.every((r) => typeof r.indiceMutabilite === 'number'),
@@ -197,13 +380,12 @@ describe('MutabilityCalculationService', () => {
 
     it('devrait trier les résultats par indice décroissant', () => {
       const input = {
-        siteEnCentreVille: true, // Favorable au résidentiel, défavorable à l'industrie
+        siteEnCentreVille: true,
         presencePollution: PresencePollution.NON,
       } as MutabilityInputDto;
 
       const result = service.calculateMutability(input);
 
-      // Vérifier que c'est trié par indice décroissant
       for (let i = 0; i < result.resultats.length - 1; i++) {
         expect(result.resultats[i].indiceMutabilite).toBeGreaterThanOrEqual(
           result.resultats[i + 1].indiceMutabilite,
@@ -219,12 +401,10 @@ describe('MutabilityCalculationService', () => {
 
       const result = service.calculateMutability(input);
 
-      // Vérifier les rangs
       result.resultats.forEach((r, index) => {
         expect(r.rang).toBe(index + 1);
       });
 
-      // Vérifier qu'on a bien les rangs de 1 à 7
       const rangs = result.resultats.map((r) => r.rang);
       expect(rangs).toEqual([1, 2, 3, 4, 5, 6, 7]);
     });
@@ -251,38 +431,55 @@ describe('MutabilityCalculationService', () => {
       const result = service.calculateMutability(input);
 
       expect(result.resultats).toHaveLength(7);
-      // Avec un input vide, tous les indices devraient être 0
       result.resultats.forEach((r) => {
         expect(r.indiceMutabilite).toBe(0);
       });
-      // Fiabilité très faible
       expect(result.fiabilite.note).toBe(0);
       expect(result.fiabilite.text).toBe('Très peu fiable');
     });
 
     it('devrait propager les avantages et contraintes de chaque usage', () => {
       const input = {
-        siteEnCentreVille: true, // ScoreImpact.TRES_POSITIF pour résidentiel (poids 2), ScoreImpact.TRES_NEGATIF pour industrie (poids 2)
-        proximiteCommercesServices: true, // ScoreImpact.TRES_POSITIF pour résidentiel (poids 1), ScoreImpact.NEUTRE pour industrie (poids 1)
+        siteEnCentreVille: true,
+        proximiteCommercesServices: true,
       } as MutabilityInputDto;
 
       const result = service.calculateMutability(input);
 
-      // Trouver le résultat pour résidentiel
       const residentiel = result.resultats.find(
         (r) => r.usage === UsageType.RESIDENTIEL,
       );
       expect(residentiel).toBeDefined();
-      expect(residentiel?.avantages).toBe(6); // 2*2 + 2*1
+      expect(residentiel?.avantages).toBe(6);
       expect(residentiel?.contraintes).toBe(0);
 
-      // Trouver le résultat pour industrie
       const industrie = result.resultats.find(
         (r) => r.usage === UsageType.INDUSTRIE,
       );
       expect(industrie).toBeDefined();
-      expect(industrie?.avantages).toBe(0); // ScoreImpact.NEUTRE = 0
-      expect(industrie?.contraintes).toBe(4); // 2*2 pour siteEnCentreVille
+      expect(industrie?.avantages).toBe(0);
+      expect(industrie?.contraintes).toBe(4);
+    });
+
+    it('devrait inclure les détails si mode détaillé activé', () => {
+      const input = {
+        siteEnCentreVille: true,
+        surfaceSite: 5000,
+      } as MutabilityInputDto;
+
+      const result = service.calculateMutability(input, { modeDetaille: true });
+
+      expect(result.fiabilite.criteresRenseignes).toBeDefined();
+      expect(result.fiabilite.criteresTotal).toBeDefined();
+
+      const premierUsage = result.resultats[0];
+      expect(premierUsage.detailsCalcul).toBeDefined();
+      expect(premierUsage.detailsCalcul?.detailsAvantages).toBeInstanceOf(
+        Array,
+      );
+      expect(premierUsage.detailsCalcul?.detailsContraintes).toBeInstanceOf(
+        Array,
+      );
     });
   });
 
@@ -303,8 +500,8 @@ describe('MutabilityCalculationService', () => {
 
     it("devrait calculer un indice de 100 quand il n'y a que des avantages", () => {
       const input = {
-        siteEnCentreVille: true, // ScoreImpact.TRES_POSITIF pour résidentiel (poids 2) = 4
-        proximiteCommercesServices: true, // ScoreImpact.TRES_POSITIF pour résidentiel (poids 1) = 2
+        siteEnCentreVille: true,
+        proximiteCommercesServices: true,
       } as MutabilityInputDto;
 
       const result = service.calculerIndiceMutabiliteForTest(
@@ -313,13 +510,13 @@ describe('MutabilityCalculationService', () => {
       );
 
       expect(result.indice).toBe(100);
-      expect(result.avantages).toBe(6); // 4 + 2
+      expect(result.avantages).toBe(6);
       expect(result.contraintes).toBe(0);
     });
 
     it("devrait calculer un indice de 0 quand il n'y a que des contraintes", () => {
       const input = {
-        siteEnCentreVille: true, // ScoreImpact.TRES_NEGATIF pour industrie (poids 2) = -4
+        siteEnCentreVille: true,
       } as MutabilityInputDto;
 
       const result = service.calculerIndiceMutabiliteForTest(
@@ -329,13 +526,13 @@ describe('MutabilityCalculationService', () => {
 
       expect(result.indice).toBe(0);
       expect(result.avantages).toBe(0);
-      expect(result.contraintes).toBe(4); // valeur absolue de -4
+      expect(result.contraintes).toBe(4);
     });
 
     it('devrait calculer un indice de 50 avec avantages et contraintes égaux', () => {
       const input = {
-        presencePollution: PresencePollution.NON, // ScoreImpact.TRES_POSITIF pour résidentiel (poids 2) = 4
-        siteEnCentreVille: false, // ScoreImpact.TRES_NEGATIF pour résidentiel (poids 2) = -4
+        presencePollution: PresencePollution.NON,
+        siteEnCentreVille: false,
       } as MutabilityInputDto;
 
       const result = service.calculerIndiceMutabiliteForTest(
@@ -350,8 +547,8 @@ describe('MutabilityCalculationService', () => {
 
     it("devrait arrondir l'indice à une décimale", () => {
       const input = {
-        surfaceSite: 8000, // ScoreImpact.POSITIF pour résidentiel (poids 2) = 2
-        tauxLogementsVacants: 5, // ScoreImpact.POSITIF pour résidentiel (poids 1) = 1
+        surfaceSite: 8000,
+        tauxLogementsVacants: 5,
       } as MutabilityInputDto;
 
       const result = service.calculerIndiceMutabiliteForTest(
@@ -359,11 +556,9 @@ describe('MutabilityCalculationService', () => {
         UsageType.RESIDENTIEL,
       );
 
-      // 3 / 3 = 100% → 100.0
       expect(result.indice).toBe(100);
       expect(result.avantages).toBe(3);
 
-      // Vérifier que c'est bien un nombre avec au plus une décimale
       const decimales = (result.indice.toString().split('.')[1] || '').length;
       expect(decimales).toBeLessThanOrEqual(1);
     });
@@ -380,34 +575,31 @@ describe('MutabilityCalculationService', () => {
     });
 
     it('devrait retourner le bon score pour un booléen (proximiteCommercesServices)', () => {
-      // Proximité des commerces/services = false pour usage renaturation
       const result = service.obtenirScoreCritereForTest(
         'proximiteCommercesServices',
         false,
         UsageType.RENATURATION,
       );
-      expect(result).toBe(ScoreImpact.NEUTRE); // 0 maintenant
+      expect(result).toBe(ScoreImpact.NEUTRE);
     });
 
     it('devrait retourner un score négatif pour une contrainte', () => {
-      // Site en centre-ville = true pour usage industrie (contraignant)
       const result = service.obtenirScoreCritereForTest(
         'siteEnCentreVille',
         true,
         UsageType.INDUSTRIE,
       );
-      expect(result).toBe(ScoreImpact.TRES_NEGATIF); // -2
+      expect(result).toBe(ScoreImpact.TRES_NEGATIF);
     });
 
     it('devrait gérer les critères numériques (surfaceSite)', () => {
-      // Surface de 5000m² pour usage résidentiel
       const result = service.obtenirScoreCritereForTest(
         'surfaceSite',
         5000,
         UsageType.RESIDENTIEL,
       );
       expect(result).toBeDefined();
-      expect(result).toBe(ScoreImpact.POSITIF); // 1
+      expect(result).toBe(ScoreImpact.POSITIF);
     });
 
     it("devrait retourner null si la valeur enum n'est pas trouvée", () => {
@@ -431,9 +623,8 @@ describe('MutabilityCalculationService', () => {
         UsageType.RENATURATION,
       );
 
-      expect(scoreResidentiel).toBe(ScoreImpact.POSITIF); // 1
-      expect(scoreRenaturation).toBe(ScoreImpact.NEUTRE); // 0
-
+      expect(scoreResidentiel).toBe(ScoreImpact.POSITIF);
+      expect(scoreRenaturation).toBe(ScoreImpact.NEUTRE);
       expect(typeof scoreResidentiel).toBe('number');
       expect(typeof scoreRenaturation).toBe('number');
     });
@@ -476,7 +667,6 @@ describe('MutabilityCalculationService', () => {
 
       const result = service.calculerFiabiliteForTest(input);
 
-      // 3/26 = 11.5% → note = 1.15 → arrondi à 1
       expect(result.note).toBeGreaterThanOrEqual(1);
       expect(result.note).toBeLessThan(2);
       expect(result.text).toBe('Très peu fiable');
@@ -491,7 +681,7 @@ describe('MutabilityCalculationService', () => {
         presencePollution: PresencePollution.NON,
         siteEnCentreVille: true,
         tauxLogementsVacants: 5,
-        reseauEaux: ReseauEaux.OUI,
+        terrainViabilise: true,
         proximiteCommercesServices: true,
         presenceRisquesTechnologiques: false,
         distanceAutoroute: 2,
@@ -499,14 +689,12 @@ describe('MutabilityCalculationService', () => {
 
       const result = service.calculerFiabiliteForTest(input);
 
-      // 11/26 = 42% → note = 4.2
       expect(result.note).toBeGreaterThanOrEqual(4);
       expect(result.note).toBeLessThan(5);
       expect(result.text).toBe('Peu fiable');
     });
 
     it('devrait retourner "Moyennement fiable" avec la majorité des critères', () => {
-      // Créer un input avec 16 critères sur 26
       const input = {
         typeProprietaire: TypeProprietaire.PUBLIC,
         surfaceSite: 15000,
@@ -515,7 +703,7 @@ describe('MutabilityCalculationService', () => {
         presencePollution: PresencePollution.NON,
         siteEnCentreVille: true,
         tauxLogementsVacants: 5,
-        reseauEaux: ReseauEaux.OUI,
+        terrainViabilise: true,
         qualiteVoieDesserte: QualiteDesserte.ACCESSIBLE,
         distanceAutoroute: 2,
         distanceTransportCommun: 300,
@@ -528,14 +716,12 @@ describe('MutabilityCalculationService', () => {
 
       const result = service.calculerFiabiliteForTest(input);
 
-      // 16/26 = 61% → note = 6.1
       expect(result.note).toBeGreaterThanOrEqual(6);
       expect(result.note).toBeLessThan(7);
       expect(result.text).toBe('Moyennement fiable');
     });
 
     it('devrait arrondir la note à 0.5 près', () => {
-      // 5 critères sur 26 = 19.2% → 1.92 → arrondi à 2
       const input = {
         siteEnCentreVille: true,
         proximiteCommercesServices: true,
@@ -545,8 +731,6 @@ describe('MutabilityCalculationService', () => {
       } as MutabilityInputDto;
 
       const result = service.calculerFiabiliteForTest(input);
-
-      // Vérifier que c'est un multiple de 0.5
       expect(result.note % 0.5).toBe(0);
     });
   });

@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { MutabilityInputDto } from 'src/friches/dto/mutability-input.dto';
 import { MutabilityResultDto } from 'src/friches/dto/mutability-result.dto';
+import {
+  DetailCritereDto,
+  DetailCalculUsageDto,
+} from 'src/friches/dto/detail-calcul.dto';
 import { UsageType } from 'src/friches/enums/mutability.enums';
 import {
   MATRICE_SCORING,
@@ -15,6 +19,12 @@ interface ResultatMutabiliteUsage {
   indice: number;
   avantages: number;
   contraintes: number;
+  detailsCalcul?: DetailCalculUsageDto;
+}
+
+export interface MutabilityCalculationOptions {
+  /** Active le mode détaillé avec tous les calculs intermédiaires */
+  modeDetaille?: boolean;
 }
 
 @Injectable()
@@ -22,12 +32,18 @@ export class MutabilityCalculationService {
   /**
    * Calcule la mutabilité d'une parcelle pour différents types d'usage
    * @param input Les critères d'entrée pour le calcul de mutabilité
-   * @returns  Le résultat du calcul de mutabilité pour chaque type d'usage
+   * @param options Options pour le calcul (mode détaillé, etc.)
+   * @returns Le résultat du calcul de mutabilité pour chaque type d'usage
    */
-  calculateMutability(input: MutabilityInputDto): MutabilityResultDto {
+  calculateMutability(
+    input: MutabilityInputDto,
+    options: MutabilityCalculationOptions = {},
+  ): MutabilityResultDto {
+    const { modeDetaille = false } = options;
+
     // Calculer et trier les résultats par indice décroissant
     const resultats = Object.values(UsageType)
-      .map((usage) => this.calculerIndiceMutabilite(input, usage))
+      .map((usage) => this.calculerIndiceMutabilite(input, usage, options))
       .sort((a, b) => b.indice - a.indice)
       .map((result, index) => ({
         usage: result.usage,
@@ -35,11 +51,27 @@ export class MutabilityCalculationService {
         indiceMutabilite: result.indice,
         avantages: result.avantages,
         contraintes: result.contraintes,
+        ...(modeDetaille && result.detailsCalcul
+          ? { detailsCalcul: result.detailsCalcul }
+          : {}),
       }));
+
+    const fiabilite = this.calculerFiabilite(input);
+
+    // Ajouter le comptage des critères si mode détaillé
+    if (modeDetaille) {
+      const criteresRenseignes = Object.entries(input).filter(
+        ([valeur]) =>
+          valeur !== null && valeur !== undefined && valeur !== 'ne-sait-pas',
+      ).length;
+
+      fiabilite.criteresRenseignes = criteresRenseignes;
+      fiabilite.criteresTotal = NOMBRE_CRITERES_MAPPES;
+    }
 
     return {
       resultats,
-      fiabilite: this.calculerFiabilite(input),
+      fiabilite,
     };
   }
 
@@ -47,17 +79,22 @@ export class MutabilityCalculationService {
    * Calcule l'indice de mutabilité pour un usage spécifique
    * @param input Les critères d'entrée
    * @param usage Le type d'usage pour lequel calculer l'indice
+   * @param options Options de calcul
    * @returns Le résultat complet incluant l'indice, les avantages et contraintes
    */
   protected calculerIndiceMutabilite(
     input: MutabilityInputDto,
     usage: UsageType,
+    options: MutabilityCalculationOptions = {},
   ): ResultatMutabiliteUsage {
+    const { modeDetaille = false } = options;
+
     // Etape 1: Calculer avantages et contraintes
-    const { avantages, contraintes } = this.calculerScorePourUsage(
-      input,
-      usage,
-    );
+    const scoreData = modeDetaille
+      ? this.calculerScorePourUsageDetaille(input, usage)
+      : this.calculerScorePourUsage(input, usage);
+
+    const { avantages, contraintes } = scoreData;
 
     // Etape 2: Calculer l'indice de mutabilité
     const indice =
@@ -65,11 +102,29 @@ export class MutabilityCalculationService {
         ? 0
         : Math.round((avantages / (avantages + contraintes)) * 1000) / 10;
 
-    return { usage, indice, avantages, contraintes };
+    const resultat: ResultatMutabiliteUsage = {
+      usage,
+      indice,
+      avantages,
+      contraintes,
+    };
+
+    // Ajouter les détails si mode détaillé
+    if (modeDetaille && 'detailsAvantages' in scoreData) {
+      resultat.detailsCalcul = {
+        detailsAvantages: scoreData.detailsAvantages as DetailCritereDto[],
+        detailsContraintes: scoreData.detailsContraintes as DetailCritereDto[],
+        totalAvantages: avantages,
+        totalContraintes: contraintes,
+      };
+    }
+
+    return resultat;
   }
 
   /**
    * Calcule les scores d'avantages et de contraintes pour un usage donné
+   * Version simple sans détails
    * @param input Les critères d'entrée
    * @param usage Le type d'usage pour lequel calculer le score
    * @returns Les totaux d'avantages et de contraintes pour cet usage
@@ -84,10 +139,15 @@ export class MutabilityCalculationService {
     // Pour chaque critère dans l'input
     Object.entries(input).forEach(([champDTO, valeur]) => {
       // Ignorer si null/undefined
-      if (valeur === null || valeur === undefined) return;
+      if (valeur === null || valeur === undefined || valeur === 'ne-sait-pas')
+        return;
+
+      // TODO Debug a supprimer
+      if (champDTO === 'nombreBatiments') return;
 
       // Obtenir le score pour ce critère
       const score = this.obtenirScoreCritere(champDTO, valeur, usage);
+
       if (score === null) return;
 
       // Appliquer le poids
@@ -104,6 +164,63 @@ export class MutabilityCalculationService {
     });
 
     return { avantages, contraintes };
+  }
+
+  /**
+   * Calcule les scores avec détails pour un usage donné
+   * Version détaillée avec traçabilité de chaque critère
+   * @param input Les critères d'entrée
+   * @param usage Le type d'usage pour lequel calculer le score
+   * @returns Les totaux et le détail critère par critère
+   */
+  protected calculerScorePourUsageDetaille(
+    input: MutabilityInputDto,
+    usage: keyof ScoreParUsage,
+  ): {
+    avantages: number;
+    contraintes: number;
+    detailsAvantages: DetailCritereDto[];
+    detailsContraintes: DetailCritereDto[];
+  } {
+    let avantages = 0;
+    let contraintes = 0;
+    const detailsAvantages: DetailCritereDto[] = [];
+    const detailsContraintes: DetailCritereDto[] = [];
+
+    Object.entries(input).forEach(([champDTO, valeur]) => {
+      // Ignorer si null/undefined
+      if (valeur === null || valeur === undefined || valeur === 'ne-sait-pas')
+        return;
+
+      const scoreBrut = this.obtenirScoreCritere(champDTO, valeur, usage);
+      if (scoreBrut === null) return;
+
+      const poids =
+        POIDS_CRITERES[champDTO as keyof typeof POIDS_CRITERES] ?? 1;
+      const scorePondere = scoreBrut * poids;
+
+      const detail: DetailCritereDto = {
+        critere: champDTO,
+        valeur: valeur as string | number | boolean,
+        scoreBrut,
+        poids,
+        scorePondere: Math.abs(scorePondere), // Toujours positif pour l'affichage
+      };
+
+      if (scorePondere >= 0) {
+        avantages += scorePondere;
+        detailsAvantages.push(detail);
+      } else {
+        contraintes += Math.abs(scorePondere);
+        detailsContraintes.push(detail);
+      }
+    });
+
+    // Trier par impact décroissant
+    detailsAvantages.sort((a, b) => b.scorePondere - a.scorePondere);
+    detailsContraintes.sort((a, b) => b.scorePondere - a.scorePondere);
+
+    return { avantages, contraintes, detailsAvantages, detailsContraintes };
   }
 
   /**
@@ -166,10 +283,13 @@ export class MutabilityCalculationService {
     note: number;
     text: string;
     description: string;
+    criteresRenseignes?: number;
+    criteresTotal?: number;
   } {
     // Compter les critères non null/undefined
     const criteresRenseignes = Object.entries(input).filter(
-      ([valeur]) => valeur !== null && valeur !== undefined,
+      ([valeur]) =>
+        valeur !== null && valeur !== undefined && valeur !== 'ne-sait-pas',
     ).length;
 
     // Calculer le pourcentage sur le nombre de critères mappés

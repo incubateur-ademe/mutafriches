@@ -96,15 +96,6 @@ export enum TrameVerteEtBleue {
 }
 
 /**
- * Connexion aux réseaux d'eau
- */
-export enum ReseauEaux {
-  OUI = 'oui',
-  NON = 'non',
-  NE_SAIT_PAS = 'ne-sait-pas',
-}
-
-/**
  * Valeur architecturale et historique
  */
 export enum ValeurArchitecturale {

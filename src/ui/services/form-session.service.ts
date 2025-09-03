@@ -107,8 +107,8 @@ export class FormSessionService {
     );
     this.savePropertyIfExists(
       formData,
-      'reseauEaux',
-      manualData.reseauEaux,
+      'terrainViabilise',
+      manualData.terrainViabilise,
       DataSource.MANUAL,
     );
     this.savePropertyIfExists(
@@ -217,7 +217,7 @@ export class FormSessionService {
 
       // Données manuelles (de ManualDataInputDto)
       typeProprietaire: this.getPropertyValue(formData, 'typeProprietaire'),
-      reseauEaux: this.getPropertyValue(formData, 'reseauEaux'),
+      terrainViabilise: this.getPropertyValue(formData, 'terrainViabilise'),
       etatBatiInfrastructure: this.getPropertyValue(
         formData,
         'etatBatiInfrastructure',

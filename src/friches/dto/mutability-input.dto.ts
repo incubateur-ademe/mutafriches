@@ -8,7 +8,6 @@ import {
   PresencePollution,
   QualiteDesserte,
   QualitePaysage,
-  ReseauEaux,
   TypeProprietaire,
   ValeurArchitecturale,
   VoieEauProximite,
@@ -32,10 +31,9 @@ export class MutabilityInputDto
 
   @ApiPropertyOptional({
     description: "Site connecté aux réseaux d'eau (complément manuel)",
-    enum: ReseauEaux,
-    example: ReseauEaux.OUI,
+    example: true,
   })
-  reseauEaux?: ReseauEaux;
+  terrainViabilise?: boolean;
 
   @ApiPropertyOptional({
     description:

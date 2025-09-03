@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { UsageType } from '../enums/mutability.enums';
+import { DetailCalculUsageDto } from './detail-calcul.dto';
 
 export class UsageResultDto {
   @ApiProperty({
@@ -26,13 +27,6 @@ export class UsageResultDto {
   })
   usage: UsageType;
 
-  // @ApiProperty({
-  //   description: 'Explication détaillée des facteurs influençant le score',
-  //   example:
-  //     'Site favorable grâce à sa localisation en centre-ville, sa desserte et la proximité des services.',
-  // })
-  // explication: string;
-
   @ApiProperty({
     description: 'Indice de mutabilité calculé pour cet usage (0-100)',
     example: 68,
@@ -42,34 +36,23 @@ export class UsageResultDto {
   indiceMutabilite: number;
 
   @ApiProperty({
-    description: "Total des points d'avantages pour cet usage",
-    example: 15,
-    minimum: 0,
+    description: 'Score total des avantages pour cet usage',
+    example: 15.5,
+    required: false,
   })
-  avantages: number;
+  avantages?: number;
 
   @ApiProperty({
-    description: 'Total des points de contraintes pour cet usage',
-    example: 7,
-    minimum: 0,
+    description: 'Score total des contraintes pour cet usage',
+    example: 2,
+    required: false,
   })
-  contraintes: number;
+  contraintes?: number;
 
-  // @ApiProperty({
-  //   description: 'Évaluation qualitative du potentiel',
-  //   example: 'Favorable',
-  //   enum: [
-  //     'Très favorable',
-  //     'Favorable',
-  //     'Modéré',
-  //     'Peu favorable',
-  //     'Défavorable',
-  //   ],
-  // })
-  // potentiel:
-  //   | 'Très favorable'
-  //   | 'Favorable'
-  //   | 'Modéré'
-  //   | 'Peu favorable'
-  //   | 'Défavorable';
+  @ApiProperty({
+    description: 'Détails du calcul critère par critère',
+    type: DetailCalculUsageDto,
+    required: false,
+  })
+  detailsCalcul?: DetailCalculUsageDto;
 }

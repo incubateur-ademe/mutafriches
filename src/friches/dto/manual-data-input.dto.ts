@@ -7,7 +7,6 @@ import {
   QualiteDesserte,
   QualitePaysage,
   ValeurArchitecturale,
-  ReseauEaux,
 } from '../enums/parcelle.enums';
 
 /**
@@ -24,10 +23,9 @@ export class ManualDataInputDto implements ParcelleManualData {
 
   @ApiPropertyOptional({
     description: "Site connecté aux réseaux d'eau",
-    enum: ReseauEaux,
-    example: ReseauEaux.OUI,
+    example: true,
   })
-  reseauEaux?: ReseauEaux;
+  terrainViabilise?: boolean;
 
   @ApiPropertyOptional({
     description: 'État général du bâti et des infrastructures',

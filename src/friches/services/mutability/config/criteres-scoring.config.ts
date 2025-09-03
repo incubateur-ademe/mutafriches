@@ -4,7 +4,6 @@ import {
   TypeProprietaire,
   PresencePollution,
   EtatBati,
-  ReseauEaux,
   QualiteDesserte,
   RisqueNaturel,
   ZonagePatrimonial,
@@ -32,7 +31,7 @@ export const POIDS_CRITERES = {
   presencePollution: 2,
   siteEnCentreVille: 2,
   tauxLogementsVacants: 1,
-  reseauEaux: 1,
+  terrainViabilise: 1,
   qualiteVoieDesserte: 0.5,
   distanceAutoroute: 0.5,
   distanceTransportCommun: 0.5,
@@ -227,8 +226,8 @@ export const MATRICE_SCORING = {
   },
 
   // 9. Terrain viabilisé (réseau eaux)
-  reseauEaux: {
-    [ReseauEaux.OUI]: {
+  terrainViabilise: {
+    true: {
       [UsageType.RESIDENTIEL]: ScoreImpact.TRES_POSITIF,
       [UsageType.EQUIPEMENTS]: ScoreImpact.TRES_POSITIF,
       [UsageType.CULTURE]: ScoreImpact.TRES_POSITIF,
@@ -237,7 +236,7 @@ export const MATRICE_SCORING = {
       [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
       [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
     },
-    [ReseauEaux.NON]: {
+    false: {
       [UsageType.RESIDENTIEL]: ScoreImpact.TRES_NEGATIF,
       [UsageType.EQUIPEMENTS]: ScoreImpact.TRES_NEGATIF,
       [UsageType.CULTURE]: ScoreImpact.TRES_NEGATIF,

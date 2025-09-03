@@ -3,7 +3,6 @@ import {
   PresencePollution,
   QualiteDesserte,
   QualitePaysage,
-  ReseauEaux,
   RisqueNaturel,
   TrameVerteEtBleue,
   TypeProprietaire,
@@ -49,7 +48,7 @@ export class Parcelle implements ParcelleBase {
     this.qualiteVoieDesserte = undefined;
     this.qualitePaysage = undefined;
     this.valeurArchitecturaleHistorique = undefined;
-    this.reseauEaux = undefined;
+    this.terrainViabilise = undefined;
   }
   identifiantParcelle: string;
   commune: string;
@@ -75,7 +74,7 @@ export class Parcelle implements ParcelleBase {
   qualiteVoieDesserte?: QualiteDesserte | undefined;
   qualitePaysage?: QualitePaysage | undefined;
   valeurArchitecturaleHistorique?: ValeurArchitecturale | undefined;
-  reseauEaux?: ReseauEaux | undefined;
+  terrainViabilise?: boolean | undefined;
   sessionId?: string | undefined;
   coordonnees?: { latitude: number; longitude: number } | undefined;
 

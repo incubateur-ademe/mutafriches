@@ -35,7 +35,7 @@
           <label class="fr-label" for="reseau-eaux">
             Site connecté aux réseaux d'eaux <span class="fr-text--red">*</span>
           </label>
-          <select class="fr-select" id="reseau-eaux" name="reseauEaux" required>
+          <select class="fr-select" id="reseau-eaux" name="terrainViabilise" required>
             <option value="" selected>Sélectionner une option</option>
             <option value="oui">Oui</option>
             <option value="non">Non</option>
@@ -229,8 +229,8 @@
         case 'type-proprietaire':
           data.typeProprietaire = value;
           break;
-        case 'reseau-eaux':
-          data.reseauEaux = value;
+        case 'terrain-viabilise':
+          data.terrainViabilise = value;
           break;
         case 'etat-bati':
           data.etatBati = value;

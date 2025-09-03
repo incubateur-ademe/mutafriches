@@ -254,7 +254,7 @@ La fiabilité **ne modifie pas** le classement. C'est un indicateur séparé qui
 |---|---------|-------|-------------------|-----------|-----------|
 | 7 | **En centre-ville ou centre-bourg** | 2 | Oui / Non / Ne sait pas | `siteEnCentreVille` | ParcelleAutoData |
 | 8 | **Taux de logements vacants (%)** | 1 | ≤4 / 4-6 / 6-10 / 10-13 / >13 | `tauxLogementsVacants` | ParcelleAutoData |
-| 9 | **Terrain viabilisé** | 1 | Oui / Non / Ne sait pas | `reseauEaux` *(partiel)* | ParcelleManualData |
+| 9 | **Terrain viabilisé** | 1 | Oui / Non / Ne sait pas | `terrainViabilise` *(partiel)* | ParcelleManualData |
 | 10 | **Qualité de la voie de desserte** | 0.5 | Accessible / Dégradée / Peu accessible / Ne sait pas | `qualiteVoieDesserte` | ParcelleManualData |
 | 11 | **Distance d'une entrée d'autoroute (km)** | 0.5 | <1 / 1-2 / 2-5 / >5 / Ne sait pas | `distanceAutoroute` | ParcelleAutoData |
 | 12 | **Distance gare/transport en commun (m)** | 0.5 | <500 / >500 / Ne sait pas | `distanceTransportCommun` | ParcelleAutoData |
@@ -311,7 +311,7 @@ La fiabilité **ne modifie pas** le classement. C'est un indicateur séparé qui
 
 ### Notes importantes
 
-1. **Terrain viabilisé** : Le critère Excel est partiellement mappé sur `reseauEaux`, mais la viabilisation complète inclut aussi l'électricité (`connectionReseauElectricite` existe séparément), l'assainissement et la voirie.
+1. **Terrain viabilisé** : Le critère Excel est partiellement mappé sur `terrainViabilise`, mais la viabilisation complète inclut aussi l'électricité (`connectionReseauElectricite` existe séparément), l'assainissement et la voirie.
 
 2. **Types de données** :
    - **ParcelleAutoData** : Données récupérables automatiquement via APIs (Cadastre, INSEE, Géorisques, etc.)

@@ -124,7 +124,7 @@ export class FrichesController {
     - Contexte : tauxLogementsVacants, ancienneActivite
     - Risques : presenceRisquesTechnologiques, presenceRisquesNaturels
     - Zonages : zonageEnvironnemental, zonageReglementaire, zonagePatrimonial, trameVerteEtBleue
-    - Caractéristiques : typeProprietaire, etatBatiInfrastructure, presencePollution, qualiteVoieDesserte, qualitePaysage, valeurArchitecturaleHistorique, reseauEaux
+    - Caractéristiques : typeProprietaire, etatBatiInfrastructure, presencePollution, qualiteVoieDesserte, qualitePaysage, valeurArchitecturaleHistorique, terrainViabilise
     - Optionnel : coordonnees, sessionId, fiabilite
     `,
     examples: {
@@ -159,7 +159,7 @@ export class FrichesController {
           qualiteVoieDesserte: 'ACCESSIBLE',
           qualitePaysage: 'BANAL_INFRA_ORDINAIRE',
           valeurArchitecturaleHistorique: 'EXCEPTIONNEL',
-          reseauEaux: 'CONNECTE',
+          terrainViabilise: true,
           fiabilite: 9.5,
         },
       },

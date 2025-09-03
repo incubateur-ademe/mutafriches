@@ -24,7 +24,7 @@
     "voieEauProximite": "oui-non-navigable",
     "distanceRaccordementElectrique": "entre-1-et-5km",
 
-    "zonageReglementaire": "zone-naturelle-hors-zone-acceleration-enr",
+    "zonageReglementaire": "zone-naturelle",
     "presenceRisquesNaturels": "fort",
     "presenceRisquesTechnologiques": false,
     "zonagePatrimonial": "non-concerne",

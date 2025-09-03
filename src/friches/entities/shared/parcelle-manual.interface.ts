@@ -5,7 +5,6 @@ import {
   QualiteDesserte,
   QualitePaysage,
   ValeurArchitecturale,
-  ReseauEaux,
 } from '../../enums/parcelle.enums';
 
 /**
@@ -20,10 +19,10 @@ export interface ParcelleManualData {
   typeProprietaire?: TypeProprietaire;
 
   /**
-   * Site connecté aux réseaux d'eau
+   * État de viabilisation du terrain (connecté ou non aux réseaux)
    * Nécessite une vérification terrain
    */
-  reseauEaux?: ReseauEaux;
+  terrainViabilise?: boolean;
 
   /**
    * État général du bâti et des infrastructures

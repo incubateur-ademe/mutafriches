@@ -101,4 +101,18 @@ export class MutabilityResultDto {
     ],
   })
   resultats: UsageResultDto[];
+
+  @ApiProperty({
+    description: 'Nombre de critères renseignés',
+    example: 22,
+    required: false,
+  })
+  criteresRenseignes?: number;
+
+  @ApiProperty({
+    description: 'Nombre total de critères mappés',
+    example: 26,
+    required: false,
+  })
+  criteresTotal?: number;
 }
