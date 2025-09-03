@@ -28,6 +28,20 @@ class FiabiliteDto {
     example: 'Données complètes et vérifiées pour 95% des critères analysés.',
   })
   description: string;
+
+  @ApiProperty({
+    description: 'Nombre de critères renseignés',
+    example: 22,
+    required: false,
+  })
+  criteresRenseignes?: number;
+
+  @ApiProperty({
+    description: 'Nombre total de critères mappés',
+    example: 26,
+    required: false,
+  })
+  criteresTotal?: number;
 }
 
 export class MutabilityResultDto {
@@ -101,18 +115,4 @@ export class MutabilityResultDto {
     ],
   })
   resultats: UsageResultDto[];
-
-  @ApiProperty({
-    description: 'Nombre de critères renseignés',
-    example: 22,
-    required: false,
-  })
-  criteresRenseignes?: number;
-
-  @ApiProperty({
-    description: 'Nombre total de critères mappés',
-    example: 26,
-    required: false,
-  })
-  criteresTotal?: number;
 }

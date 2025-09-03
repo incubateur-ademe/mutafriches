@@ -111,9 +111,15 @@ export class MutabilityCalculationService {
 
     // Ajouter les détails si mode détaillé
     if (modeDetaille && 'detailsAvantages' in scoreData) {
+      const scoreDetaille = scoreData as {
+        avantages: number;
+        contraintes: number;
+        detailsAvantages: DetailCritereDto[];
+        detailsContraintes: DetailCritereDto[];
+      };
       resultat.detailsCalcul = {
-        detailsAvantages: scoreData.detailsAvantages as DetailCritereDto[],
-        detailsContraintes: scoreData.detailsContraintes as DetailCritereDto[],
+        detailsAvantages: scoreDetaille.detailsAvantages,
+        detailsContraintes: scoreDetaille.detailsContraintes,
         totalAvantages: avantages,
         totalContraintes: contraintes,
       };
@@ -141,9 +147,6 @@ export class MutabilityCalculationService {
       // Ignorer si null/undefined
       if (valeur === null || valeur === undefined || valeur === 'ne-sait-pas')
         return;
-
-      // TODO Debug a supprimer
-      if (champDTO === 'nombreBatiments') return;
 
       // Obtenir le score pour ce critère
       const score = this.obtenirScoreCritere(champDTO, valeur, usage);
@@ -188,7 +191,7 @@ export class MutabilityCalculationService {
     const detailsContraintes: DetailCritereDto[] = [];
 
     Object.entries(input).forEach(([champDTO, valeur]) => {
-      // Ignorer si null/undefined
+      // Ignorer si non renseigné
       if (valeur === null || valeur === undefined || valeur === 'ne-sait-pas')
         return;
 

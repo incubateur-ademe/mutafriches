@@ -60,7 +60,6 @@ describe('MutabilityCalculationService', () => {
 
   /**
    * Tests utilisant les données externalisées via TestDataLoaderService
-   * Ces tests remplacent progressivement les tests en dur
    */
   describe('Tests avec données externalisées (TestDataLoaderService)', () => {
     let testDataLoader: TestDataLoaderService;
@@ -70,294 +69,117 @@ describe('MutabilityCalculationService', () => {
     });
 
     describe('Cas de test depuis fichiers JSON', () => {
-      // Récupérer tous les cas de test disponibles
-      const loader = new TestDataLoaderService();
-      const testCases = loader.getAllTestCases();
+      it('devrait valider tous les cas de test', () => {
+        // Récupérer les cas de test dans le test lui-même
+        const testCases = testDataLoader.getAllTestCases();
 
-      if (testCases.length === 0) {
-        it.skip('Aucun cas de test trouvé dans test-data/cases/', () => {
-          console.warn(
-            'Aucun fichier de test JSON dans src/friches/services/mutability/test-data/cases/',
-          );
-        });
-        return;
-      }
+        if (testCases.length === 0) {
+          console.warn('Aucun cas de test trouvé');
+          return;
+        }
 
-      // Créer un test pour chaque cas de test JSON
-      testCases.forEach((testCase) => {
-        describe(`[${testCase.id}] ${testCase.name}`, () => {
-          it(`devrait calculer la mutabilité avec mode détaillé`, () => {
-            console.log(`\n=== EXECUTION TEST: ${testCase.name} ===`);
-            if (testCase.source) {
-              console.log(`Source: ${testCase.source}`);
-            }
-            if (testCase.description) {
-              console.log(`Description: ${testCase.description}`);
-            }
+        // Pour chaque cas de test
+        testCases.forEach((testCase) => {
+          // Calculer
+          const result = service.calculateMutability(testCase.input);
 
-            // Calculer avec mode détaillé
-            const result = service.calculateMutability(testCase.input, {
-              modeDetaille: true,
-            });
+          // Tableau de comparaison
+          console.log(`\n=== ${testCase.name} ===`);
+          console.log('Usage         | Algo  | Excel | Écart | Rang OK');
+          console.log('--------------|-------|-------|-------|--------');
 
-            // Afficher le détail pour debug
-            console.log('\n--- DETAILS PAR USAGE ---');
-
-            // Pour chaque usage attendu, comparer avec le résultat
-            testCase.expected.usages.forEach((expectedUsage) => {
-              const actualUsage = result.resultats.find(
-                (r) => r.usage === expectedUsage.usage,
-              );
-
-              if (!actualUsage) {
-                console.error(
-                  `❌ Usage ${expectedUsage.usage} non trouvé dans les résultats`,
-                );
-                return;
-              }
-
-              console.log(`\n${expectedUsage.usage}:`);
-              console.log(`  Indice calculé: ${actualUsage.indiceMutabilite}%`);
-              console.log(`  Indice attendu: ${expectedUsage.indice}%`);
-              console.log(
-                `  Écart: ${(actualUsage.indiceMutabilite - expectedUsage.indice).toFixed(1)}%`,
-              );
-              console.log(`  Rang calculé: ${actualUsage.rang}`);
-              console.log(`  Rang attendu: ${expectedUsage.rang}`);
-
-              // Afficher le détail si disponible
-              if (actualUsage.detailsCalcul) {
-                console.log(
-                  `  Avantages (${actualUsage.detailsCalcul.totalAvantages}):`,
-                );
-                actualUsage.detailsCalcul.detailsAvantages
-                  .slice(0, 3)
-                  .forEach((d) => {
-                    console.log(
-                      `    - ${d.critere}: ${d.scoreBrut} x ${d.poids} = ${d.scorePondere} (${d.valeur})`,
-                    );
-                  });
-
-                console.log(
-                  `  Contraintes (${actualUsage.detailsCalcul.totalContraintes}):`,
-                );
-                actualUsage.detailsCalcul.detailsContraintes
-                  .slice(0, 3)
-                  .forEach((d) => {
-                    console.log(
-                      `    - ${d.critere}: ${d.scoreBrut} x ${d.poids} = ${d.scorePondere} (${d.valeur})`,
-                    );
-                  });
-              }
-            });
-
-            // Analyser les écarts importants
-            console.log('\n--- ANALYSE DES ECARTS ---');
-            const ecarts = testCase.expected.usages.map((expectedUsage) => {
-              const actualUsage = result.resultats.find(
-                (r) => r.usage === expectedUsage.usage,
-              );
-              return {
-                usage: expectedUsage.usage,
-                ecart: actualUsage
-                  ? Math.abs(
-                      actualUsage.indiceMutabilite - expectedUsage.indice,
-                    )
-                  : 999,
-                rangOk: actualUsage?.rang === expectedUsage.rang,
-              };
-            });
-
-            const ecartsImportants = ecarts.filter((e) => e.ecart > 10);
-            if (ecartsImportants.length > 0) {
-              console.log('⚠️ Écarts importants (>10%) détectés:');
-              ecartsImportants.forEach((e) => {
-                console.log(`  - ${e.usage}: écart de ${e.ecart.toFixed(1)}%`);
-              });
-            }
-
-            const rangsIncorrects = ecarts.filter((e) => !e.rangOk);
-            if (rangsIncorrects.length > 0) {
-              console.log('⚠️ Rangs incorrects:');
-              rangsIncorrects.forEach((e) => {
-                console.log(`  - ${e.usage}`);
-              });
-            }
-
-            // Fiabilité
-            console.log('\n--- FIABILITE ---');
-            console.log(`  Note calculée: ${result.fiabilite.note}/10`);
-            console.log(`  Évaluation: ${result.fiabilite.text}`);
-            if (result.fiabilite.criteresRenseignes !== undefined) {
-              console.log(
-                `  Critères renseignés: ${result.fiabilite.criteresRenseignes}/${result.fiabilite.criteresTotal}`,
-              );
-            }
-
-            // Tests d'assertion
-            expect(result.resultats).toHaveLength(7);
-
-            // Vérifier que chaque usage existe
-            testCase.expected.usages.forEach((expectedUsage) => {
-              const actualUsage = result.resultats.find(
-                (r) => r.usage === expectedUsage.usage,
-              );
-              expect(actualUsage).toBeDefined();
-
-              // Warning si écart trop grand
-              const ecart = Math.abs(
-                actualUsage!.indiceMutabilite - expectedUsage.indice,
-              );
-              if (ecart > 30) {
-                console.warn(
-                  `⚠️ Écart très important pour ${expectedUsage.usage}: ${ecart.toFixed(1)}%`,
-                );
-              }
-            });
-          });
-
-          // Test détaillé pour analyser les critères
-          it('devrait analyser en détail les critères problématiques', () => {
-            console.log('\n=== ANALYSE DETAILLEE DES CRITERES ===');
-
-            const result = service.calculateMutability(testCase.input, {
-              modeDetaille: true,
-            });
-
-            // Trouver l'usage avec le plus gros écart
-            const usageAvecPlusGrosEcart = testCase.expected.usages.reduce(
-              (max, expectedUsage) => {
-                const actualUsage = result.resultats.find(
-                  (r) => r.usage === expectedUsage.usage,
-                );
-                const ecart = actualUsage
-                  ? Math.abs(
-                      actualUsage.indiceMutabilite - expectedUsage.indice,
-                    )
-                  : 0;
-                return ecart > max.ecart
-                  ? { usage: expectedUsage.usage, ecart }
-                  : max;
-              },
-              { usage: '' as UsageType | '', ecart: 0 },
+          testCase.expected.usages.forEach((expected) => {
+            const actual = result.resultats.find(
+              (r) => r.usage === expected.usage,
             );
 
-            if (usageAvecPlusGrosEcart.ecart > 5) {
+            if (actual) {
+              const ecart = actual.indiceMutabilite - expected.indiceMutabilite;
+              const ecartStr =
+                ecart > 0 ? `+${ecart.toFixed(0)}` : ecart.toFixed(0);
+              const rangOk =
+                actual.rang === expected.rang ? '✓' : `✗ (${actual.rang})`;
+
               console.log(
-                `\nUsage avec le plus gros écart: ${usageAvecPlusGrosEcart.usage} (${usageAvecPlusGrosEcart.ecart.toFixed(1)}%)`,
+                `${expected.usage.padEnd(13)} | ${actual.indiceMutabilite.toFixed(0).padStart(4)}% | ${expected.indiceMutabilite.toFixed(0).padStart(4)}% | ${ecartStr.padStart(5)}% | ${rangOk}`,
               );
 
-              const actualUsage = result.resultats.find(
-                (r) => r.usage === (usageAvecPlusGrosEcart.usage as UsageType),
+              // Assertions
+              expect(actual.indiceMutabilite).toBeCloseTo(
+                expected.indiceMutabilite,
+                0,
               );
-
-              if (actualUsage?.detailsCalcul) {
-                console.log('\nTous les avantages:');
-                actualUsage.detailsCalcul.detailsAvantages.forEach((d) => {
-                  console.log(
-                    `  ${d.critere}: ${d.scoreBrut} x ${d.poids} = ${d.scorePondere}`,
-                  );
-                });
-
-                console.log('\nToutes les contraintes:');
-                actualUsage.detailsCalcul.detailsContraintes.forEach((d) => {
-                  console.log(
-                    `  ${d.critere}: ${d.scoreBrut} x ${d.poids} = ${d.scorePondere}`,
-                  );
-                });
-              }
+              expect(actual.rang).toBe(expected.rang);
             }
-
-            // Identifier les critères à fort impact
-            console.log('\n--- CRITERES A FORT IMPACT ---');
-            result.resultats.forEach((r) => {
-              if (r.detailsCalcul) {
-                const topCriteres = [
-                  ...r.detailsCalcul.detailsAvantages
-                    .slice(0, 2)
-                    .map((d) => ({ ...d, type: 'avantage' })),
-                  ...r.detailsCalcul.detailsContraintes
-                    .slice(0, 2)
-                    .map((d) => ({ ...d, type: 'contrainte' })),
-                ].filter((d) => d.scorePondere > 2);
-
-                if (topCriteres.length > 0) {
-                  console.log(`\n${r.usage}:`);
-                  topCriteres.forEach((d) => {
-                    console.log(
-                      `  ${d.type === 'avantage' ? '+' : '-'} ${d.critere}: ${d.scorePondere}`,
-                    );
-                  });
-                }
-              }
-            });
           });
+
+          // Vérifier qu'on a 7 usages
+          expect(result.resultats).toHaveLength(7);
         });
       });
     });
 
-    // Test de validation des données
-    describe('Validation des cas de test', () => {
-      it('devrait avoir au moins un cas de test valide', () => {
+    describe('Validation des données', () => {
+      it('devrait avoir des cas de test valides', () => {
         const testCases = testDataLoader.getAllTestCases();
         expect(testCases.length).toBeGreaterThan(0);
 
         testCases.forEach((testCase) => {
-          const errors = testDataLoader.validateTestCase(testCase);
-          if (errors.length > 0) {
-            console.error(`Erreurs de validation pour ${testCase.id}:`, errors);
-          }
-          expect(errors).toHaveLength(0);
+          // Vérifications de base
+          expect(testCase.id).toBeDefined();
+          expect(testCase.input).toBeDefined();
+          expect(testCase.expected.usages).toHaveLength(7);
         });
       });
-
-      it('devrait pouvoir récupérer le cas de test Renaison', () => {
-        const renaison = testDataLoader.getTestCase('renaison-001');
-        expect(renaison).toBeDefined();
-        expect(renaison?.name).toContain('Renaison');
-        expect(renaison?.input).toBeDefined();
-        expect(renaison?.expected).toBeDefined();
-      });
-    });
-  });
-
-  // Debug simple avec mode détaillé
-  describe('Debug simple avec mode détaillé', () => {
-    let testDataLoader: TestDataLoaderService;
-
-    beforeAll(() => {
-      testDataLoader = new TestDataLoaderService();
     });
 
-    it('devrait afficher le calcul complet pour Trélazé', () => {
-      const testCase = testDataLoader.getTestCase('trelaze-001');
-      if (!testCase) {
-        console.log('Cas de test Trélazé non trouvé');
-        return;
-      }
+    describe('Synthèse', () => {
+      it('devrait afficher un récapitulatif des écarts', () => {
+        const testCases = testDataLoader.getAllTestCases();
 
-      console.log('\n=== CALCUL COMPLET TRELAZE ===');
-      const result = service.calculateMutability(testCase.input, {
-        modeDetaille: true,
-      });
+        console.log('\n=== SYNTHESE DES ECARTS ===');
 
-      // Afficher uniquement les 2 premiers usages pour lisibilité
-      console.log('\nRésultat pour les 2 premiers usages:');
-      result.resultats.slice(0, 2).forEach((r) => {
-        console.log(`\n${r.usage}:`);
-        console.log(`  Indice: ${r.indiceMutabilite}%`);
-        console.log(`  Rang: ${r.rang}`);
-        console.log(`  Avantages: ${r.avantages}`);
-        console.log(`  Contraintes: ${r.contraintes}`);
-        if (r.detailsCalcul) {
-          console.log(
-            '  Top avantages:',
-            r.detailsCalcul.detailsAvantages
-              .slice(0, 2)
-              .map((d) => `${d.critere}(${d.scorePondere})`)
-              .join(', '),
-          );
-        }
+        let totalEcart = 0;
+        let count = 0;
+        let maxEcart = 0;
+        let usageMaxEcart = '';
+
+        testCases.forEach((testCase) => {
+          const result = service.calculateMutability(testCase.input);
+          console.log(`\n${testCase.name}:`);
+
+          testCase.expected.usages.forEach((expected) => {
+            const actual = result.resultats.find(
+              (r) => r.usage === expected.usage,
+            );
+            if (actual) {
+              const ecart = Math.abs(
+                actual.indiceMutabilite - expected.indiceMutabilite,
+              );
+              totalEcart += ecart;
+              count++;
+
+              if (ecart > maxEcart) {
+                maxEcart = ecart;
+                usageMaxEcart = `${testCase.id}/${expected.usage}`;
+              }
+
+              // Afficher seulement les écarts > 5%
+              if (ecart > 5) {
+                console.log(`  ${expected.usage}: ${ecart.toFixed(1)}%`);
+              }
+            }
+          });
+        });
+
+        const ecartMoyen = count > 0 ? totalEcart / count : 0;
+
+        console.log('\n--- Statistiques ---');
+        console.log(`Écart moyen: ${ecartMoyen.toFixed(1)}%`);
+        console.log(`Écart max: ${maxEcart.toFixed(1)}% (${usageMaxEcart})`);
+
+        // Le test échoue si l'écart moyen est trop grand
+        expect(ecartMoyen).toBeLessThan(15);
       });
     });
   });
