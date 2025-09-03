@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, beforeAll } from 'vitest';
 import { MutabilityCalculationService } from './mutability-calculation.service';
 import { ScoreParUsage } from './config/criteres-scoring.config';
 import { UsageType } from 'src/friches/enums/mutability.enums';
+import { ScoreImpact } from 'src/friches/enums/score-impact.enum';
 import {
   EtatBati,
   PresencePollution,
@@ -55,8 +56,6 @@ describe('MutabilityCalculationService', () => {
   beforeEach(() => {
     service = new MutabilityCalculationServiceForTest();
   });
-
-  // À ajouter à la fin de mutability-calculation.service.spec.ts, juste avant la dernière accolade
 
   /**
    * Tests utilisant les données externalisées via TestDataLoaderService
@@ -203,9 +202,6 @@ describe('MutabilityCalculationService', () => {
     });
   });
 
-  // Ajouter également l'import en haut du fichier (après les autres imports) :
-  // import { TestDataLoaderService } from './test-data/test-data-loader.service';
-
   describe('calculateMutability', () => {
     it("devrait retourner des résultats pour tous les types d'usage", () => {
       const input = {
@@ -289,8 +285,8 @@ describe('MutabilityCalculationService', () => {
 
     it('devrait propager les avantages et contraintes de chaque usage', () => {
       const input = {
-        siteEnCentreVille: true, // +2 résidentiel (poids 2), -2 industrie (poids 2)
-        proximiteCommercesServices: true, // +2 résidentiel (poids 1)
+        siteEnCentreVille: true, // ScoreImpact.TRES_POSITIF pour résidentiel (poids 2), ScoreImpact.TRES_NEGATIF pour industrie (poids 2)
+        proximiteCommercesServices: true, // ScoreImpact.TRES_POSITIF pour résidentiel (poids 1), ScoreImpact.NEUTRE pour industrie (poids 1)
       } as MutabilityInputDto;
 
       const result = service.calculateMutability(input);
@@ -300,20 +296,21 @@ describe('MutabilityCalculationService', () => {
         (r) => r.usage === UsageType.RESIDENTIEL,
       );
       expect(residentiel).toBeDefined();
+      expect(residentiel?.avantages).toBe(6); // 2*2 + 2*1
+      expect(residentiel?.contraintes).toBe(0);
 
       // Trouver le résultat pour industrie
       const industrie = result.resultats.find(
         (r) => r.usage === UsageType.INDUSTRIE,
       );
       expect(industrie).toBeDefined();
-      expect(industrie?.avantages).toBe(0.5); // 0.5*1 pour proximiteCommercesServices
+      expect(industrie?.avantages).toBe(0); // ScoreImpact.NEUTRE = 0
       expect(industrie?.contraintes).toBe(4); // 2*2 pour siteEnCentreVille
     });
   });
 
   describe('calculerIndiceMutabilite', () => {
     it("devrait calculer un indice de 0 quand il n'y a ni avantages ni contraintes", () => {
-      // Input vide ou avec des critères non mappés
       const input = {} as MutabilityInputDto;
 
       const result = service.calculerIndiceMutabiliteForTest(
@@ -328,10 +325,9 @@ describe('MutabilityCalculationService', () => {
     });
 
     it("devrait calculer un indice de 100 quand il n'y a que des avantages", () => {
-      // Input avec seulement des critères favorables
       const input = {
-        siteEnCentreVille: true, // +2 pour résidentiel (poids 2) = 4
-        proximiteCommercesServices: true, // +2 pour résidentiel (poids 1) = 2
+        siteEnCentreVille: true, // ScoreImpact.TRES_POSITIF pour résidentiel (poids 2) = 4
+        proximiteCommercesServices: true, // ScoreImpact.TRES_POSITIF pour résidentiel (poids 1) = 2
       } as MutabilityInputDto;
 
       const result = service.calculerIndiceMutabiliteForTest(
@@ -345,9 +341,8 @@ describe('MutabilityCalculationService', () => {
     });
 
     it("devrait calculer un indice de 0 quand il n'y a que des contraintes", () => {
-      // Input avec seulement des critères défavorables pour l'industrie en centre-ville
       const input = {
-        siteEnCentreVille: true, // -2 pour industrie (poids 2) = -4
+        siteEnCentreVille: true, // ScoreImpact.TRES_NEGATIF pour industrie (poids 2) = -4
       } as MutabilityInputDto;
 
       const result = service.calculerIndiceMutabiliteForTest(
@@ -361,10 +356,9 @@ describe('MutabilityCalculationService', () => {
     });
 
     it('devrait calculer un indice de 50 avec avantages et contraintes égaux', () => {
-      // Input avec des scores équilibrés
       const input = {
-        presencePollution: PresencePollution.NON, // +2 pour résidentiel (poids 2) = 4
-        siteEnCentreVille: false, // -2 pour résidentiel (poids 2) = -4
+        presencePollution: PresencePollution.NON, // ScoreImpact.TRES_POSITIF pour résidentiel (poids 2) = 4
+        siteEnCentreVille: false, // ScoreImpact.TRES_NEGATIF pour résidentiel (poids 2) = -4
       } as MutabilityInputDto;
 
       const result = service.calculerIndiceMutabiliteForTest(
@@ -378,10 +372,9 @@ describe('MutabilityCalculationService', () => {
     });
 
     it("devrait arrondir l'indice à une décimale", () => {
-      // Cas qui génère un résultat avec plusieurs décimales
       const input = {
-        surfaceSite: 8000, // +1 pour résidentiel (poids 2) = 2
-        tauxLogementsVacants: 5, // +1 pour résidentiel (poids 1) = 1
+        surfaceSite: 8000, // ScoreImpact.POSITIF pour résidentiel (poids 2) = 2
+        tauxLogementsVacants: 5, // ScoreImpact.POSITIF pour résidentiel (poids 1) = 1
       } as MutabilityInputDto;
 
       const result = service.calculerIndiceMutabiliteForTest(
@@ -416,7 +409,7 @@ describe('MutabilityCalculationService', () => {
         false,
         UsageType.RENATURATION,
       );
-      expect(result).toBe(0.5);
+      expect(result).toBe(ScoreImpact.NEUTRE); // 0 maintenant
     });
 
     it('devrait retourner un score négatif pour une contrainte', () => {
@@ -426,10 +419,10 @@ describe('MutabilityCalculationService', () => {
         true,
         UsageType.INDUSTRIE,
       );
-      expect(result).toBeLessThan(0);
+      expect(result).toBe(ScoreImpact.TRES_NEGATIF); // -2
     });
 
-    it('devrait gérer les critères numériques (surfaceParcelle)', () => {
+    it('devrait gérer les critères numériques (surfaceSite)', () => {
       // Surface de 5000m² pour usage résidentiel
       const result = service.obtenirScoreCritereForTest(
         'surfaceSite',
@@ -437,11 +430,10 @@ describe('MutabilityCalculationService', () => {
         UsageType.RESIDENTIEL,
       );
       expect(result).toBeDefined();
-      expect(typeof result).toBe('number');
+      expect(result).toBe(ScoreImpact.POSITIF); // 1
     });
 
     it("devrait retourner null si la valeur enum n'est pas trouvée", () => {
-      // Valeur d'enum invalide
       const result = service.obtenirScoreCritereForTest(
         'zonageReglementaire',
         'zone_inexistante',
@@ -451,7 +443,6 @@ describe('MutabilityCalculationService', () => {
     });
 
     it("devrait gérer différents types d'usage pour le même critère", () => {
-      // Présence de pollution déjà gérée pour usage résidentiel
       const scoreResidentiel = service.obtenirScoreCritereForTest(
         'presencePollution',
         PresencePollution.DEJA_GEREE,
@@ -463,10 +454,9 @@ describe('MutabilityCalculationService', () => {
         UsageType.RENATURATION,
       );
 
-      expect(scoreResidentiel).toBeDefined();
-      expect(scoreRenaturation).toBeDefined();
+      expect(scoreResidentiel).toBe(ScoreImpact.POSITIF); // 1
+      expect(scoreRenaturation).toBe(ScoreImpact.NEUTRE); // 0
 
-      // Les scores peuvent être différents selon l'usage
       expect(typeof scoreResidentiel).toBe('number');
       expect(typeof scoreRenaturation).toBe('number');
     });
@@ -500,7 +490,7 @@ describe('MutabilityCalculationService', () => {
       expect(result.description).toContain('très incomplètes');
     });
 
-    it('devrait retourner "Peu fiable" avec peu de critères (3-4 sur 21)', () => {
+    it('devrait retourner "Très peu fiable" avec peu de critères (3 sur 26)', () => {
       const input = {
         siteEnCentreVille: true,
         proximiteCommercesServices: false,
@@ -509,13 +499,13 @@ describe('MutabilityCalculationService', () => {
 
       const result = service.calculerFiabiliteForTest(input);
 
-      // 3/21 = 14.3% → note = 1.5 arrondi
+      // 3/26 = 11.5% → note = 1.15 → arrondi à 1
       expect(result.note).toBeGreaterThanOrEqual(1);
-      expect(result.note).toBeLessThan(3);
+      expect(result.note).toBeLessThan(2);
       expect(result.text).toBe('Très peu fiable');
     });
 
-    it('devrait retourner "Moyennement fiable" avec environ la moitié des critères', () => {
+    it('devrait retourner "Peu fiable" avec environ un tiers des critères', () => {
       const input = {
         typeProprietaire: TypeProprietaire.PUBLIC,
         surfaceSite: 15000,
@@ -532,14 +522,14 @@ describe('MutabilityCalculationService', () => {
 
       const result = service.calculerFiabiliteForTest(input);
 
-      // 11/21 = 52% → note = 5.2
-      expect(result.note).toBeGreaterThanOrEqual(5);
-      expect(result.note).toBeLessThan(7);
-      expect(result.text).toBe('Moyennement fiable');
+      // 11/26 = 42% → note = 4.2
+      expect(result.note).toBeGreaterThanOrEqual(4);
+      expect(result.note).toBeLessThan(5);
+      expect(result.text).toBe('Peu fiable');
     });
 
-    it('devrait retourner "Fiable" avec la plupart des critères', () => {
-      // Créer un input avec 16-17 critères sur 21
+    it('devrait retourner "Moyennement fiable" avec la majorité des critères', () => {
+      // Créer un input avec 16 critères sur 26
       const input = {
         typeProprietaire: TypeProprietaire.PUBLIC,
         surfaceSite: 15000,
@@ -561,14 +551,14 @@ describe('MutabilityCalculationService', () => {
 
       const result = service.calculerFiabiliteForTest(input);
 
-      // 16/21 = 76% → note = 7.6
-      expect(result.note).toBeGreaterThanOrEqual(7);
-      expect(result.note).toBeLessThan(9);
-      expect(result.text).toBe('Fiable');
+      // 16/26 = 61% → note = 6.1
+      expect(result.note).toBeGreaterThanOrEqual(6);
+      expect(result.note).toBeLessThan(7);
+      expect(result.text).toBe('Moyennement fiable');
     });
 
     it('devrait arrondir la note à 0.5 près', () => {
-      // 5 critères sur 21 = 23.8% → 2.38 → arrondi à 2.5
+      // 5 critères sur 26 = 19.2% → 1.92 → arrondi à 2
       const input = {
         siteEnCentreVille: true,
         proximiteCommercesServices: true,
