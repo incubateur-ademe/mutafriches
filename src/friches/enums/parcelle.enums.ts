@@ -48,23 +48,23 @@ export enum RisqueNaturel {
  * Types de zonage environnemental
  */
 export enum ZonageEnvironnemental {
-  HORS_ZONE = 'hors_zone',
-  NATURA_2000 = 'natura_2000',
-  ZNIEFF_TYPE_1_2 = 'znieff_type_1',
-  PARC_NATUREL_REGIONAL = 'parc_naturel_regional',
-  PARC_NATUREL_NATIONAL = 'parc_naturel_national',
-  RESERVE_NATURELLE = 'reserve_naturelle',
-  PROXIMITE_ZONE = 'proximite_zone',
+  HORS_ZONE = 'hors-zone',
+  NATURA_2000 = 'natura-2000',
+  ZNIEFF_TYPE_1_2 = 'znieff-type-1-2',
+  PARC_NATUREL_REGIONAL = 'parc-naturel-regional',
+  PARC_NATUREL_NATIONAL = 'parc-naturel-national',
+  RESERVE_NATURELLE = 'reserve-naturelle',
+  PROXIMITE_ZONE = 'proximite-zone',
 }
 
 /**
  * Types de protection patrimoniale
  */
 export enum ZonagePatrimonial {
-  NON_CONCERNE = 'non_concerne',
-  MONUMENT_HISTORIQUE = 'monument_historique',
-  SITE_INSCRIT_CLASSE = 'site_inscrit_classe',
-  PERIMETRE_ABF = 'perimetre_abf',
+  NON_CONCERNE = 'non-concerne',
+  MONUMENT_HISTORIQUE = 'monument-historique',
+  SITE_INSCRIT_CLASSE = 'site-inscrit-classe',
+  PERIMETRE_ABF = 'perimetre-abf',
   ZPPAUP = 'zppaup',
   AVAP = 'avap',
   SPR = 'spr',
@@ -74,25 +74,25 @@ export enum ZonagePatrimonial {
  * Zonage réglementaire du PLU(I) ou de la carte communale
  */
 export enum ZonageReglementaire {
-  ZONE_URBAINE_U = 'zone_urbaine_u',
-  ZONE_A_URBANISER_AU = 'zone_a_urbaniser_au',
-  ZONE_ACTIVITES = 'zone_activites',
-  ZONE_NATURELLE = 'zone_naturelle',
-  ZONE_AGRICOLE = 'zone_agricole',
-  ZONE_ACCELERATION_ENR = 'zone_acceleration_enr',
-  ZONE_MIXTE_MULTIPLE = 'zone_mixte_multiple',
+  ZONE_URBAINE_U = 'zone-urbaine-u',
+  ZONE_A_URBANISER_AU = 'zone-a-urbaniser-au',
+  ZONE_ACTIVITES = 'zone-activites',
+  ZONE_NATURELLE = 'zone-naturelle',
+  ZONE_AGRICOLE = 'zone-agricole',
+  ZONE_ACCELERATION_ENR = 'zone-acceleration-enr',
+  ZONE_MIXTE_MULTIPLE = 'zone-mixte-multiple',
   CONSTRUCTIBLE = 'constructible',
-  NON_CONSTRUCTIBLE = 'non_constructible',
+  NON_CONSTRUCTIBLE = 'non-constructible',
 }
 
 /**
  * Position par rapport à la trame verte et bleue
  */
 export enum TrameVerteEtBleue {
-  HORS_TRAME = 'hors_trame',
-  RESERVOIR_BIODIVERSITE = 'reservoir_biodiversite',
-  CORRIDOR_A_RESTAURER = 'corridor_a_restaurer',
-  CORRIDOR_A_PRESERVER = 'corridor_a_preserver',
+  HORS_TRAME = 'hors-trame',
+  RESERVOIR_BIODIVERSITE = 'reservoir-biodiversite',
+  CORRIDOR_A_RESTAURER = 'corridor-a-restaurer',
+  CORRIDOR_A_PRESERVER = 'corridor-a-preserver',
 }
 
 /**
@@ -144,9 +144,9 @@ export enum QualiteDesserte {
 
 export enum CouvertVegetal {
   IMPERMEABILISE = 'impermeabilise',
-  SOL_NU_FAIBLEMENT_HERBACE = 'sol_nu_faiblement_herbace',
-  VEGETATION_ARBUSTIVE_FAIBLE = 'vegetation_arbustive_faible',
-  VEGETATION_ARBUSTIVE_PREDOMINANTE = 'vegetation_arbustive_predominante',
+  SOL_NU_FAIBLEMENT_HERBACE = 'sol-nu-faiblement-herbace',
+  VEGETATION_ARBUSTIVE_FAIBLE = 'vegetation-arbustive-faible',
+  VEGETATION_ARBUSTIVE_PREDOMINANTE = 'vegetation-arbustive-predominante',
 }
 
 export enum PresenceEspeceProtegee {
@@ -156,8 +156,8 @@ export enum PresenceEspeceProtegee {
 }
 
 export enum ZoneHumide {
-  PRESENCE_AVEREE = 'presence_averee',
-  PRESENCE_POTENTIELLE = 'presence_potentielle',
+  PRESENCE_AVEREE = 'presence-averee',
+  PRESENCE_POTENTIELLE = 'presence-potentielle',
   ABSENCE = 'absence',
 }
 
