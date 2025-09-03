@@ -2,13 +2,17 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 import { ParcelleBase } from '../entities/shared/parcelle.base';
 import { EnrichmentResultDto } from './enrichment-result.dto';
 import {
+  CouvertVegetal,
   EtatBati,
+  PresenceEspeceProtegee,
   PresencePollution,
   QualiteDesserte,
   QualitePaysage,
   ReseauEaux,
   TypeProprietaire,
   ValeurArchitecturale,
+  VoieEauProximite,
+  ZoneHumide,
 } from '../enums/parcelle.enums';
 
 /**
@@ -76,4 +80,43 @@ export class MutabilityInputDto
     example: 'session-uuid-12345',
   })
   sessionId?: string;
+
+  /* ----------------------------------------------- */
+  // Critères additionnels
+  // (utilisés uniquement en test pour l'instant et surement supprimés de la version finale car impossible à retrouver depuis le module d'enrichissement)
+  /* ----------------------------------------------- */
+
+  @ApiPropertyOptional({
+    description: 'Terrain en pente supérieure à 20°',
+    example: false,
+  })
+  terrainEnPente?: boolean;
+
+  @ApiPropertyOptional({
+    description: "Présence et type de voie d'eau à proximité",
+    enum: VoieEauProximite,
+    example: VoieEauProximite.NON,
+  })
+  voieEauProximite?: VoieEauProximite;
+
+  @ApiPropertyOptional({
+    description: 'Type de couverture végétale du terrain',
+    enum: CouvertVegetal,
+    example: CouvertVegetal.IMPERMEABILISE,
+  })
+  couvertVegetal?: CouvertVegetal;
+
+  @ApiPropertyOptional({
+    description: "Présence d'espèces protégées sur le site",
+    enum: PresenceEspeceProtegee,
+    example: PresenceEspeceProtegee.NON,
+  })
+  presenceEspeceProtegee?: PresenceEspeceProtegee;
+
+  @ApiPropertyOptional({
+    description: 'Présence de zones humides',
+    enum: ZoneHumide,
+    example: ZoneHumide.ABSENCE,
+  })
+  zoneHumide?: ZoneHumide;
 }

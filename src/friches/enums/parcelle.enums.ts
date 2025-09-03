@@ -79,6 +79,10 @@ export enum ZonageReglementaire {
   ZONE_ACTIVITES = 'zone_activites',
   ZONE_NATURELLE = 'zone_naturelle',
   ZONE_AGRICOLE = 'zone_agricole',
+  ZONE_ACCELERATION_ENR = 'zone_acceleration_enr',
+  ZONE_MIXTE_MULTIPLE = 'zone_mixte_multiple',
+  CONSTRUCTIBLE = 'constructible',
+  NON_CONSTRUCTIBLE = 'non_constructible',
 }
 
 /**
@@ -132,4 +136,33 @@ export enum QualiteDesserte {
   DEGRADEE = 'degradee',
   PEU_ACCESSIBLE = 'peu-accessible',
   NE_SAIT_PAS = 'ne-sait-pas',
+}
+
+/* ----------------------------------------------- */
+/* Critères non pris en compte dans la version web */
+/* ----------------------------------------------- */
+
+export enum CouvertVegetal {
+  IMPERMEABILISE = 'impermeabilise',
+  SOL_NU_FAIBLEMENT_HERBACE = 'sol_nu_faiblement_herbace',
+  VEGETATION_ARBUSTIVE_FAIBLE = 'vegetation_arbustive_faible',
+  VEGETATION_ARBUSTIVE_PREDOMINANTE = 'vegetation_arbustive_predominante',
+}
+
+export enum PresenceEspeceProtegee {
+  OUI = 'oui',
+  NON = 'non',
+  NE_SAIT_PAS = 'ne-sait-pas',
+}
+
+export enum ZoneHumide {
+  PRESENCE_AVEREE = 'presence_averee',
+  PRESENCE_POTENTIELLE = 'presence_potentielle',
+  ABSENCE = 'absence',
+}
+
+export enum VoieEauProximite {
+  OUI_NAVIGABLE = 'oui-navigable',
+  OUI_NON_NAVIGABLE = 'oui-non-navigable',
+  NON = 'non',
 }

@@ -31,7 +31,7 @@ export { originalConsole };
  * Helper pour forcer un log même en mode non-verbose
  * Utile pour les erreurs critiques
  */
-export const forceLog = (...args: any[]) => {
+export const forceLog = (...args: unknown[]) => {
   originalConsole.log(...args);
 };
 
@@ -39,7 +39,7 @@ export const forceLog = (...args: any[]) => {
  * Logger conditionnel pour les tests
  * Alternative à console.log qui respecte VERBOSE
  */
-export const testLog = (...args: any[]) => {
+export const testLog = (...args: unknown[]) => {
   if (process.env.VERBOSE) {
     originalConsole.log(...args);
   }

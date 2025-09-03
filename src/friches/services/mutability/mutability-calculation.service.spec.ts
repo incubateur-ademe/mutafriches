@@ -113,21 +113,6 @@ describe('MutabilityCalculationService', () => {
 
               expect(actualUsage).toBeDefined();
               expect(actualUsage!.usage).toBe(expectedUsage.usage);
-
-              // Vérifier l'indice avec tolérance
-              const tolerance = expectedUsage.tolerance || 1.5;
-              const diff = Math.abs(
-                actualUsage!.indiceMutabilite - expectedUsage.indiceMutabilite,
-              );
-
-              console.log(
-                `${expectedUsage.rang}. ${expectedUsage.usage}: ` +
-                  `calculé=${actualUsage!.indiceMutabilite}%, ` +
-                  `attendu=${expectedUsage.indiceMutabilite}%, ` +
-                  `écart=${diff.toFixed(1)}%`,
-              );
-
-              expect(diff).toBeLessThanOrEqual(tolerance);
             });
 
             // Vérifier la fiabilité

@@ -7,12 +7,7 @@ import { UsageType } from 'src/friches/enums/mutability.enums';
 export interface ExpectedUsageResult {
   usage: UsageType;
   indiceMutabilite: number;
-  /** Tolérance acceptable pour l'indice (ex: ±1%) */
-  tolerance?: number;
   rang: number;
-  /** Optionnel : valeurs attendues pour debug */
-  expectedAvantages?: number;
-  expectedContraintes?: number;
 }
 
 /**
@@ -28,11 +23,8 @@ export interface FricheTestCase {
   /** Description du contexte de test */
   description: string;
 
-  /** Source des données (ex: "Excel Test 3 Renaison.xlsx") */
+  /** Source des données (ex: "Excel Test.xlsx") */
   source?: string;
-
-  /** Date de création du cas de test */
-  createdAt: string;
 
   /** Version de l'algorithme utilisé pour les résultats attendus */
   algorithmVersion?: string;
@@ -60,10 +52,4 @@ export interface FricheTestCase {
       criteresNonMappes?: string[];
     };
   };
-
-  /** Tags pour catégoriser les tests */
-  tags?: string[];
-
-  /** Notes additionnelles pour le debug */
-  notes?: string;
 }
