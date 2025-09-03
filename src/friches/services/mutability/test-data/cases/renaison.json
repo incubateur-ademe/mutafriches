@@ -1,0 +1,106 @@
+{
+  "id": "renaison-001",
+  "name": "Ancienne friche industrielle de Renaison",
+  "description": "Friche industrielle avec bâtiments hétérogènes, pollution potentielle, en zone naturelle avec contraintes environnementales importantes",
+  "source": "Excel Test 3 Renaison.xlsx",
+  "createdAt": "2024-01-15",
+  "algorithmVersion": "1.0.0",
+
+  "input": {
+    "typeProprietaire": "PUBLIC",
+    "surfaceSite": 46333,
+    "surfaceBati": 7000,
+    "etatBatiInfrastructure": "BATIMENTS_HETEROGENES",
+    "presencePollution": "OUI_AUTRES_COMPOSES",
+
+    "siteEnCentreVille": false,
+    "tauxLogementsVacants": 7.2,
+    "reseauEaux": "OUI",
+    "qualiteVoieDesserte": "PEU_ACCESSIBLE",
+    "distanceAutoroute": 6,
+    "distanceTransportCommun": 600,
+    "proximiteCommercesServices": false,
+    "distanceRaccordementElectrique": 3,
+
+    "zonageReglementaire": "ZONE_NATURELLE",
+    "presenceRisquesNaturels": "FORT",
+    "presenceRisquesTechnologiques": false,
+    "zonagePatrimonial": "NON_CONCERNE",
+
+    "qualitePaysage": "INTERESSANT",
+    "valeurArchitecturaleHistorique": "INTERET_FORT",
+
+    "zonageEnvironnemental": "ZNIEFF_TYPE_1_2"
+  },
+
+  "expected": {
+    "usages": [
+      {
+        "usage": "renaturation",
+        "indiceMutabilite": 65.3,
+        "tolerance": 1.5,
+        "rang": 1
+      },
+      {
+        "usage": "culture",
+        "indiceMutabilite": 48.1,
+        "tolerance": 1.5,
+        "rang": 2
+      },
+      {
+        "usage": "photovoltaique",
+        "indiceMutabilite": 41.2,
+        "tolerance": 1.5,
+        "rang": 3
+      },
+      {
+        "usage": "industrie",
+        "indiceMutabilite": 36.7,
+        "tolerance": 1.5,
+        "rang": 4
+      },
+      {
+        "usage": "equipements",
+        "indiceMutabilite": 35.3,
+        "tolerance": 1.5,
+        "rang": 5
+      },
+      {
+        "usage": "residentiel",
+        "indiceMutabilite": 34.2,
+        "tolerance": 1.5,
+        "rang": 6
+      },
+      {
+        "usage": "tertiaire",
+        "indiceMutabilite": 27.7,
+        "tolerance": 1.5,
+        "rang": 7
+      }
+    ],
+
+    "fiabilite": {
+      "note": 8.5,
+      "noteMin": 8.0,
+      "noteMax": 9.0,
+      "text": "Fiable"
+    },
+
+    "metadata": {
+      "criteresRenseignes": 18,
+      "criteresTotal": 21,
+      "criteresNonMappes": [
+        "terrainEnPente",
+        "voieEauProximite",
+        "couvertVegetal",
+        "trameVerteEtBleue",
+        "zoneHumide",
+        "presenceEspaceProtegee"
+      ]
+    }
+  },
+
+  "tags": ["zone-naturelle", "pollution", "patrimoine-fort", "grande-surface"],
+
+  "notes": "Cas complexe avec de fortes contraintes environnementales (ZNIEFF) et patrimoniales. La renaturation ressort comme usage privilégié malgré la pollution présente. Les usages urbains (résidentiel, tertiaire) sont fortement contraints par le zonage naturel et les risques."
+}

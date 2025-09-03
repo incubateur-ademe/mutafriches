@@ -141,6 +141,15 @@ export const MATRICE_SCORING = {
       [UsageType.RENATURATION]: -2,
       [UsageType.PHOTOVOLTAIQUE]: -2,
     },
+    [EtatBati.BATIMENTS_HETEROGENES]: {
+      [UsageType.RESIDENTIEL]: 0, // Neutre
+      [UsageType.EQUIPEMENTS]: 0, // Neutre
+      [UsageType.CULTURE]: 0, // Neutre
+      [UsageType.TERTIAIRE]: 0, // Neutre
+      [UsageType.INDUSTRIE]: 0, // Neutre
+      [UsageType.RENATURATION]: -1, // Négatif
+      [UsageType.PHOTOVOLTAIQUE]: -1, // Négatif
+    },
   },
 
   // 5. Présence de pollution
@@ -858,9 +867,6 @@ export const MATRICE_SCORING = {
   },
 } as const;
 
-// Export du nombre de critères
-export const NOMBRE_CRITERES_MAPPES = 21; // Sur 26 au total
-
 // Configuration des niveaux de fiabilité
 export const NIVEAUX_FIABILITE = [
   {
@@ -889,3 +895,6 @@ export const NIVEAUX_FIABILITE = [
     description: 'Données très incomplètes, résultats indicatifs uniquement.',
   },
 ] as const;
+
+// Export du nombre de critères
+export const NOMBRE_CRITERES_MAPPES = 21; // Sur 26 au total

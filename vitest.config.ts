@@ -6,6 +6,9 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'node',
+    silent: !process.env.VERBOSE,
+    setupFiles: ['./test/setup.ts'],
+    reporters: process.env.VERBOSE ? 'verbose' : 'default',
     include: ['src/**/*.spec.ts', 'test/**/*.e2e-spec.ts'],
     coverage: {
       provider: 'v8',
