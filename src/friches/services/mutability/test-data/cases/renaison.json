@@ -1,93 +1,97 @@
 {
   "id": "renaison-001",
-  "name": "Ancienne friche industrielle de Renaison",
-  "description": "Friche industrielle avec bâtiments hétérogènes, pollution potentielle, en zone naturelle avec contraintes environnementales importantes",
+  "name": "Ancien site de Teintures et apprêts du centre (TAC) - Renaison",
+  "description": "Ancien site industriel de teintures situé à Renaison, avec bâtiments hétérogènes, pollution confirmée, en zone naturelle avec contraintes environnementales importantes",
   "source": "Test 3 - Renaison.xlsx",
   "algorithmVersion": "1.0.0",
 
   "input": {
-    "typeProprietaire": "PUBLIC",
+    "typeProprietaire": "public",
     "surfaceSite": 46333,
     "surfaceBati": 7000,
-    "etatBatiInfrastructure": "BATIMENTS_HETEROGENES",
-    "presencePollution": "OUI_AUTRES_COMPOSES",
+    "nombreBatiments": 2,
+    "etatBatiInfrastructure": "batiments-heterogenes",
+    "presencePollution": "oui-autres-composes",
+    "terrainEnPente": true,
 
     "siteEnCentreVille": false,
     "tauxLogementsVacants": 7.2,
-    "reseauEaux": "OUI",
-    "qualiteVoieDesserte": "PEU_ACCESSIBLE",
-    "distanceAutoroute": 6,
-    "distanceTransportCommun": 600,
+    "terrainViabilise": true,
+    "qualiteVoieDesserte": "peu-accessible",
+    "distanceAutoroute": "plus-de-5km",
+    "distanceTransportCommun": "plus-de-500m",
     "proximiteCommercesServices": false,
-    "distanceRaccordementElectrique": 3,
+    "voieEauProximite": "oui-non-navigable",
+    "distanceRaccordementElectrique": "entre-1-et-5km",
 
-    "zonageReglementaire": "ZONE_NATURELLE",
-    "presenceRisquesNaturels": "FORT",
+    "zonageReglementaire": "zone-naturelle-hors-zone-acceleration-enr",
+    "presenceRisquesNaturels": "fort",
     "presenceRisquesTechnologiques": false,
-    "zonagePatrimonial": "NON_CONCERNE",
+    "zonagePatrimonial": "non-concerne",
 
-    "qualitePaysage": "INTERESSANT",
-    "valeurArchitecturaleHistorique": "INTERET_FORT",
+    "qualitePaysage": "interessant",
+    "valeurArchitecturaleHistorique": "interet-fort",
 
-    "zonageEnvironnemental": "ZNIEFF_TYPE_1_2"
+    "couvertVegetal": "vegetation-arbustive-predominante",
+    "presenceEspeceProtegee": "ne-sait-pas",
+    "zonageEnvironnemental": "znieff-type-1-2",
+    "trameVerteEtBleue": "ne-sait-pas",
+    "zoneHumide": "ne-sait-pas"
   },
 
   "expected": {
     "usages": [
       {
         "usage": "renaturation",
-        "indiceMutabilite": 65.3,
+        "indiceMutabilite": 65,
         "rang": 1
       },
       {
         "usage": "culture",
-        "indiceMutabilite": 48.1,
+        "indiceMutabilite": 48,
         "rang": 2
       },
       {
         "usage": "photovoltaique",
-        "indiceMutabilite": 41.2,
+        "indiceMutabilite": 41,
         "rang": 3
       },
       {
         "usage": "industrie",
-        "indiceMutabilite": 36.7,
+        "indiceMutabilite": 37,
         "rang": 4
       },
       {
         "usage": "equipements",
-        "indiceMutabilite": 35.3,
+        "indiceMutabilite": 35,
         "rang": 5
       },
       {
         "usage": "residentiel",
-        "indiceMutabilite": 34.2,
+        "indiceMutabilite": 34,
         "rang": 6
       },
       {
         "usage": "tertiaire",
-        "indiceMutabilite": 27.7,
+        "indiceMutabilite": 28,
         "rang": 7
       }
     ],
 
     "fiabilite": {
-      "note": 8.5,
-      "noteMin": 8.0,
-      "noteMax": 9.0,
+      "note": 7.7,
+      "noteMin": 7.0,
+      "noteMax": 8.5,
       "text": "Fiable"
     },
 
     "metadata": {
-      "criteresRenseignes": 18,
-      "criteresTotal": 21,
-      "criteresNonMappes": [
-        "terrainEnPente",
-        "voieEauProximite",
-        "couvertVegetal",
+      "criteresRenseignes": 23,
+      "criteresTotal": 26,
+      "criteresManquants": [
+        "presenceEspeceProtegee",
         "trameVerteEtBleue",
-        "zoneHumide",
-        "presenceEspaceProtegee"
+        "zoneHumide"
       ]
     }
   }

@@ -49,7 +49,7 @@ export interface FricheTestCase {
     metadata?: {
       criteresRenseignes: number;
       criteresTotal: number;
-      criteresNonMappes?: string[];
+      criteresManquants?: string[];
     };
   };
 }
