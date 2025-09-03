@@ -23,7 +23,7 @@ export class MockLovacService {
 
     return Promise.resolve({
       success: true,
-      data: parcelles[0]!.tauxLogementsVacants,
+      data: parcelles[0].tauxLogementsVacants,
       source: 'Mock Lovac',
     });
   }
@@ -50,7 +50,7 @@ export class MockLovacService {
       });
     }
 
-    const parcelle = parcelles[0]!;
+    const parcelle = parcelles[0];
 
     return Promise.resolve({
       success: true,

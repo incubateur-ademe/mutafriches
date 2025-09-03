@@ -28,7 +28,7 @@ export class MockCadastreService implements ICadastreService {
         identifiant: parcelle.identifiantParcelle,
         commune: parcelle.commune,
         surface: parcelle.surfaceSite,
-        coordonnees: parcelle.coordonnees!,
+        coordonnees: parcelle.coordonnees,
       },
       source: 'Mock Cadastre',
       responseTimeMs: 150,

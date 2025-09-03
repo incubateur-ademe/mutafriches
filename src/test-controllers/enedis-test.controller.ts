@@ -210,7 +210,7 @@ Endpoint de test pour l'analyse complète des possibilités de raccordement éle
       dureeMs: Date.now() - startTime,
       resultatAnalyse: result,
       interpretation: result.success
-        ? this.interpreterResultat(result.data as EnedisAnalyseComplete)
+        ? this.interpreterResultat(result.data)
         : null,
     };
 

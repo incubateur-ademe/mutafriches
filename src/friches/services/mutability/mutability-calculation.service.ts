@@ -257,7 +257,7 @@ export class MutabilityCalculationService {
       string | number,
       ScoreParUsage
     >;
-    const scores = typedMatrice[cleIndex] as ScoreParUsage | undefined;
+    const scores = typedMatrice[cleIndex];
 
     return scores ? scores[usage] : null;
   }

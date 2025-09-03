@@ -128,8 +128,8 @@ export class MockEnedisService implements IEnedisService {
         };
       }
 
-      const raccordement = raccordementResult.data as EnedisRaccordement;
-      const connexion = connexionResult.data as EnedisConnexionStatus;
+      const raccordement = raccordementResult.data;
+      const connexion = connexionResult.data;
 
       const result: ApiResponse<EnedisAnalyseComplete> = {
         success: true,

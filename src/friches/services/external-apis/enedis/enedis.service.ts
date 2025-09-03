@@ -236,8 +236,8 @@ export class EnedisService implements IEnedisService {
         };
       }
 
-      const raccordement = raccordementResult.data as EnedisRaccordement;
-      const connexion = connexionResult.data as EnedisConnexionStatus;
+      const raccordement = raccordementResult.data;
+      const connexion = connexionResult.data;
 
       // Génération des recommandations
       const recommandations = this.genererRecommandations(
@@ -388,8 +388,8 @@ export class EnedisService implements IEnedisService {
           distance: this.calculerDistance(
             latitude,
             longitude,
-            record.geo_point_2d!.lat,
-            record.geo_point_2d!.lon,
+            record.geo_point_2d.lat,
+            record.geo_point_2d.lon,
           ),
           type: record.nature || 'BT',
           tension: record.tension || 'BT',
@@ -423,8 +423,8 @@ export class EnedisService implements IEnedisService {
           distance: this.calculerDistance(
             latitude,
             longitude,
-            record.geo_point_2d!.lat,
-            record.geo_point_2d!.lon,
+            record.geo_point_2d.lat,
+            record.geo_point_2d.lon,
           ),
           tension: record.tension || 'BT',
         }))

@@ -1,6 +1,6 @@
 // Fonction helper pour convertir les valeurs en string sécurisé
 export const safeString = (value: string | undefined): string => {
-  return (value as string) || '';
+  return value || '';
 };
 
 // Fonction helper pour extraire les chiffres d'une chaîne avec surface
