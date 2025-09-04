@@ -109,6 +109,14 @@ export default [
       "react/react-in-jsx-scope": "off",
       "react/prop-types": "off",
       "react-refresh/only-export-components": "warn",
+
+      // Ajout de la règle permissive pour les entités non échappées (french)
+      "react/no-unescaped-entities": [
+        "error",
+        {
+          forbid: [">", "}"],
+        },
+      ],
     },
   },
 
