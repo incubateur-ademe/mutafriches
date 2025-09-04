@@ -78,37 +78,37 @@ export const EnrichmentDisplay: React.FC<EnrichmentDisplayProps> = ({ data }) =>
               id="commune"
               label="Commune"
               value={data.commune}
-              tooltip="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+              tooltip="Récupéré depuis API IGN Cadastre : https://apicarto.ign.fr/api/doc/cadastre"
             />
             <InfoField
               id="identifiant-parcelle"
               label="Identifiant parcelle"
               value={data.identifiantParcelle}
-              tooltip="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+              tooltip="Récupéré depuis API IGN Cadastre : https://apicarto.ign.fr/api/doc/cadastre"
             />
             <InfoField
               id="surface-site"
               label="Surface du site"
               value={data.surfaceParcelle}
-              tooltip="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+              tooltip="Récupéré depuis API IGN Cadastre : https://apicarto.ign.fr/api/doc/cadastre"
             />
             <InfoField
               id="surface-batie"
               label="Surface bâtie"
               value={data.surfaceBatie}
-              tooltip="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+              tooltip="Récupéré depuis API BDNB : https://api.bdnb.io/v1/bdnb"
             />
             <InfoField
               id="connection-electricite"
               label="Connection au réseau d'électricité"
               value={data.connectionElectricite}
-              tooltip="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+              tooltip="Récupéré depuis API Enedis : https://data.enedis.fr/api/explore/v2.1/catalog/datasets"
             />
             <InfoField
               id="ancienne-activite"
               label="Ancienne activité"
               value={data.ancienneActivite}
-              tooltip="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+              tooltip="Donnée de test, pas de récupération réelle pour l'instant"
             />
           </div>
         </div>
@@ -126,37 +126,37 @@ export const EnrichmentDisplay: React.FC<EnrichmentDisplayProps> = ({ data }) =>
               id="site-centre-ville"
               label="Site en centre ville"
               value={data.centreVille}
-              tooltip="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+              tooltip="Donnée de test, pas de récupération réelle pour l'instant"
             />
             <InfoField
               id="distance-voie-grande-circulation"
               label="Distance voie à grande circulation"
               value={data.distanceAutoroute}
-              tooltip="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+              tooltip="Donnée de test, pas de récupération réelle pour l'instant"
             />
             <InfoField
               id="distance-transport-commun"
               label="Distance au transport en commun"
               value={data.distanceTrain}
-              tooltip="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+              tooltip="Donnée de test, pas de récupération réelle pour l'instant"
             />
             <InfoField
               id="proximite-commerces-services"
               label="Proximité des commerces et services"
               value={data.proximiteCommerces}
-              tooltip="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+              tooltip="Donnée de test, pas de récupération réelle pour l'instant"
             />
             <InfoField
               id="distance-raccordement-electrique"
               label="Distance au raccordement électrique"
               value={data.distanceRaccordement}
-              tooltip="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+              tooltip="Récupéré depuis API Enedis : https://data.enedis.fr/api/explore/v2.1/catalog/datasets"
             />
             <InfoField
               id="taux-logements-vacants"
               label="Taux de logements vacants"
               value={data.tauxLV}
-              tooltip="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+              tooltip="Donnée de test, pas de récupération réelle pour l'instant"
             />
           </div>
         </div>
@@ -174,38 +174,37 @@ export const EnrichmentDisplay: React.FC<EnrichmentDisplayProps> = ({ data }) =>
               id="presence-risques-technologiques"
               label="Présence de risques technologiques"
               value={data.risquesTechno}
-              tooltip="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+              tooltip="Donnée de test, pas de récupération réelle pour l'instant"
             />
             <InfoField
               id="presence-risques-naturels"
               label="Présence de risques naturels"
               value={data.risquesNaturels}
-              tooltip="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+              tooltip="Récupéré depuis API BDNB : https://api.bdnb.io/v1/bdnb"
             />
             <InfoField
               id="type-zonage-environnemental"
               label="Type de zonage environnemental"
               value={data.zonageEnviro}
-              tooltip="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+              tooltip="Donnée de test, pas de récupération réelle pour l'instant"
             />
-
             <InfoField
               id="zonage-reglementaire"
               label="Zonage réglementaire"
               value={data.zonageUrba}
-              tooltip="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+              tooltip="Donnée de test, pas de récupération réelle pour l'instant"
             />
             <InfoField
               id="type-zonage-patrimonial"
               label="Type de zonage patrimonial"
               value={data.zonagePatrimonial}
-              tooltip="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+              tooltip="Donnée de test, pas de récupération réelle pour l'instant"
             />
             <InfoField
               id="continuité-ecologique"
               label="Continuité écologique (trame verte et bleue)"
               value={data.tvb}
-              tooltip="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+              tooltip="Donnée de test, pas de récupération réelle pour l'instant"
             />
           </div>
         </div>
