@@ -1,14 +1,14 @@
-import { Controller, Get, Res } from '@nestjs/common';
-import { DatabaseService } from './shared/database/database.service';
-import { UiService } from './ui/services/ui.service';
-import { HealthResponse } from './shared/types/common.types';
-import { ApiExcludeEndpoint, ApiTags } from '@nestjs/swagger';
+import { Controller, Get, Res } from "@nestjs/common";
+import { DatabaseService } from "./shared/database/database.service";
+import { UiService } from "./ui/services/ui.service";
+import { HealthResponse } from "./shared/types/common.types";
+import { ApiExcludeEndpoint, ApiTags } from "@nestjs/swagger";
 
 interface SimpleResponse {
   setHeader(name: string, value: string): void;
   send(body: string): void;
 }
-@ApiTags('health')
+@ApiTags("health")
 @Controller()
 export class AppController {
   constructor(
@@ -16,32 +16,32 @@ export class AppController {
     private readonly uiService: UiService,
   ) {}
 
-  @Get('health')
+  @Get("health")
   async healthCheck(): Promise<HealthResponse> {
     const timestamp = new Date().toISOString();
 
     const health: HealthResponse = {
-      status: 'OK',
+      status: "OK",
       timestamp,
-      service: 'Mutafriches API',
+      service: "Mutafriches API",
       checks: {
-        api: 'OK',
-        database: 'OK',
+        api: "OK",
+        database: "OK",
       },
     };
 
     // Test de la connexion base de données
     try {
       if (this.databaseService.db) {
-        await this.databaseService.db.execute('SELECT 1 as test');
-        health.checks.database = 'OK';
+        await this.databaseService.db.execute("SELECT 1 as test");
+        health.checks.database = "OK";
       } else {
-        health.checks.database = 'DISCONNECTED';
-        health.status = 'DEGRADED';
+        health.checks.database = "DISCONNECTED";
+        health.status = "DEGRADED";
       }
     } catch {
-      health.checks.database = 'ERROR';
-      health.status = 'DEGRADED';
+      health.checks.database = "ERROR";
+      health.status = "DEGRADED";
     }
 
     return health;
@@ -53,7 +53,7 @@ export class AppController {
     // Page d'accueil du formulaire (étape 1) directement sur /
     const html = this.uiService.renderFormStep(1);
 
-    res.setHeader('Content-Type', 'text/html');
+    res.setHeader("Content-Type", "text/html");
     res.send(html);
   }
 }

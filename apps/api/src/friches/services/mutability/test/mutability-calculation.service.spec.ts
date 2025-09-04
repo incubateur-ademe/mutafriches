@@ -1,8 +1,8 @@
-import { describe, it, expect, beforeEach, beforeAll } from 'vitest';
-import { MutabilityCalculationService } from '../mutability-calculation.service';
-import { ScoreParUsage } from '../config/criteres-scoring.config';
-import { UsageType } from 'src/friches/enums/mutability.enums';
-import { ScoreImpact } from 'src/friches/enums/score-impact.enum';
+import { describe, it, expect, beforeEach, beforeAll } from "vitest";
+import { MutabilityCalculationService } from "../mutability-calculation.service";
+import { ScoreParUsage } from "../config/criteres-scoring.config";
+import { UsageType } from "src/friches/enums/mutability.enums";
+import { ScoreImpact } from "src/friches/enums/score-impact.enum";
 import {
   EtatBati,
   PresencePollution,
@@ -10,9 +10,9 @@ import {
   RisqueNaturel,
   TypeProprietaire,
   ZonageReglementaire,
-} from 'src/friches/enums/parcelle.enums';
-import { MutabilityInputDto } from 'src/friches/dto/mutability-input.dto';
-import { TestDataLoaderService } from './test-data-loader.service';
+} from "src/friches/enums/parcelle.enums";
+import { MutabilityInputDto } from "src/friches/dto/mutability-input.dto";
+import { TestDataLoaderService } from "./test-data-loader.service";
 
 /**
  * Classe dérivée pour exposer les méthodes protégées pour les tests
@@ -30,10 +30,7 @@ class MutabilityCalculationServiceForTest extends MutabilityCalculationService {
     return this.obtenirScoreCritere(champDTO, valeur, usage);
   }
 
-  public calculerIndiceMutabiliteForTest(
-    input: MutabilityInputDto,
-    usage: UsageType,
-  ) {
+  public calculerIndiceMutabiliteForTest(input: MutabilityInputDto, usage: UsageType) {
     return this.calculerIndiceMutabilite(input, usage);
   }
 
@@ -51,7 +48,7 @@ class MutabilityCalculationServiceForTest extends MutabilityCalculationService {
 /**
  * Tests unitaires pour le service de calcul de mutabilité
  */
-describe('MutabilityCalculationService', () => {
+describe("MutabilityCalculationService", () => {
   let service: MutabilityCalculationServiceForTest;
 
   beforeEach(() => {
@@ -61,20 +58,20 @@ describe('MutabilityCalculationService', () => {
   /**
    * Tests utilisant les données externalisées via TestDataLoaderService
    */
-  describe('Tests avec données externalisées (TestDataLoaderService)', () => {
+  describe("Tests avec données externalisées (TestDataLoaderService)", () => {
     let testDataLoader: TestDataLoaderService;
 
     beforeAll(() => {
       testDataLoader = new TestDataLoaderService();
     });
 
-    describe('Cas de test depuis fichiers JSON', () => {
-      it('devrait valider tous les cas de test', () => {
+    describe("Cas de test depuis fichiers JSON", () => {
+      it("devrait valider tous les cas de test", () => {
         // Récupérer les cas de test dans le test lui-même
         const testCases = testDataLoader.getAllTestCases();
 
         if (testCases.length === 0) {
-          console.warn('Aucun cas de test trouvé');
+          console.warn("Aucun cas de test trouvé");
           return;
         }
 
@@ -85,20 +82,16 @@ describe('MutabilityCalculationService', () => {
 
           // Tableau de comparaison
           console.log(`\n=== ${testCase.name} ===`);
-          console.log('Usage         | Algo  | Excel | Écart | Rang OK');
-          console.log('--------------|-------|-------|-------|--------');
+          console.log("Usage         | Algo  | Excel | Écart | Rang OK");
+          console.log("--------------|-------|-------|-------|--------");
 
           testCase.expected.usages.forEach((expected) => {
-            const actual = result.resultats.find(
-              (r) => r.usage === expected.usage,
-            );
+            const actual = result.resultats.find((r) => r.usage === expected.usage);
 
             if (actual) {
               const ecart = actual.indiceMutabilite - expected.indiceMutabilite;
-              const ecartStr =
-                ecart > 0 ? `+${ecart.toFixed(0)}` : ecart.toFixed(0);
-              const rangOk =
-                actual.rang === expected.rang ? '✓' : `✗ (${actual.rang})`;
+              const ecartStr = ecart > 0 ? `+${ecart.toFixed(0)}` : ecart.toFixed(0);
+              const rangOk = actual.rang === expected.rang ? "✓" : `✗ (${actual.rang})`;
 
               console.log(
                 `${expected.usage.padEnd(13)} | ${actual.indiceMutabilite.toFixed(0).padStart(4)}% | ${expected.indiceMutabilite.toFixed(0).padStart(4)}% | ${ecartStr.padStart(5)}% | ${rangOk}`,
@@ -107,9 +100,7 @@ describe('MutabilityCalculationService', () => {
               // Assertions avec tolérance plus large temporairement
               // TODO: Réduire la tolérance après calibration de l'algorithme
               const tolerance = 30; // Tolérance de ±30%
-              const ecartAbs = Math.abs(
-                actual.indiceMutabilite - expected.indiceMutabilite,
-              );
+              const ecartAbs = Math.abs(actual.indiceMutabilite - expected.indiceMutabilite);
 
               if (ecartAbs > tolerance) {
                 console.warn(
@@ -128,9 +119,7 @@ describe('MutabilityCalculationService', () => {
               }
               // On accepte une différence de rang de ±3 temporairement
               // TODO: Réduire la tolérance après calibration de l'algorithme
-              expect(Math.abs(actual.rang - expected.rang)).toBeLessThanOrEqual(
-                3,
-              );
+              expect(Math.abs(actual.rang - expected.rang)).toBeLessThanOrEqual(3);
             }
           });
 
@@ -140,8 +129,8 @@ describe('MutabilityCalculationService', () => {
       });
     });
 
-    describe('Validation des données', () => {
-      it('devrait avoir des cas de test valides', () => {
+    describe("Validation des données", () => {
+      it("devrait avoir des cas de test valides", () => {
         const testCases = testDataLoader.getAllTestCases();
         expect(testCases.length).toBeGreaterThan(0);
 
@@ -154,29 +143,25 @@ describe('MutabilityCalculationService', () => {
       });
     });
 
-    describe('Synthèse', () => {
-      it('devrait afficher un récapitulatif des écarts', () => {
+    describe("Synthèse", () => {
+      it("devrait afficher un récapitulatif des écarts", () => {
         const testCases = testDataLoader.getAllTestCases();
 
-        console.log('\n=== SYNTHESE DES ECARTS ===');
+        console.log("\n=== SYNTHESE DES ECARTS ===");
 
         let totalEcart = 0;
         let count = 0;
         let maxEcart = 0;
-        let usageMaxEcart = '';
+        let usageMaxEcart = "";
 
         testCases.forEach((testCase) => {
           const result = service.calculateMutability(testCase.input);
           console.log(`\n${testCase.name}:`);
 
           testCase.expected.usages.forEach((expected) => {
-            const actual = result.resultats.find(
-              (r) => r.usage === expected.usage,
-            );
+            const actual = result.resultats.find((r) => r.usage === expected.usage);
             if (actual) {
-              const ecart = Math.abs(
-                actual.indiceMutabilite - expected.indiceMutabilite,
-              );
+              const ecart = Math.abs(actual.indiceMutabilite - expected.indiceMutabilite);
               totalEcart += ecart;
               count++;
 
@@ -195,7 +180,7 @@ describe('MutabilityCalculationService', () => {
 
         const ecartMoyen = count > 0 ? totalEcart / count : 0;
 
-        console.log('\n--- Statistiques ---');
+        console.log("\n--- Statistiques ---");
         console.log(`Écart moyen: ${ecartMoyen.toFixed(1)}%`);
         console.log(`Écart max: ${maxEcart.toFixed(1)}% (${usageMaxEcart})`);
 
@@ -205,7 +190,7 @@ describe('MutabilityCalculationService', () => {
     });
   });
 
-  describe('calculateMutability', () => {
+  describe("calculateMutability", () => {
     it("devrait retourner des résultats pour tous les types d'usage", () => {
       const input = {
         siteEnCentreVille: true,
@@ -216,12 +201,10 @@ describe('MutabilityCalculationService', () => {
 
       expect(result.resultats).toHaveLength(7);
       expect(result.resultats.every((r) => r.usage)).toBeTruthy();
-      expect(
-        result.resultats.every((r) => typeof r.indiceMutabilite === 'number'),
-      ).toBeTruthy();
+      expect(result.resultats.every((r) => typeof r.indiceMutabilite === "number")).toBeTruthy();
     });
 
-    it('devrait trier les résultats par indice décroissant', () => {
+    it("devrait trier les résultats par indice décroissant", () => {
       const input = {
         siteEnCentreVille: true,
         presencePollution: PresencePollution.NON,
@@ -236,7 +219,7 @@ describe('MutabilityCalculationService', () => {
       }
     });
 
-    it('devrait attribuer les rangs correctement de 1 à 7', () => {
+    it("devrait attribuer les rangs correctement de 1 à 7", () => {
       const input = {
         surfaceSite: 10000,
         tauxLogementsVacants: 5,
@@ -252,7 +235,7 @@ describe('MutabilityCalculationService', () => {
       expect(rangs).toEqual([1, 2, 3, 4, 5, 6, 7]);
     });
 
-    it('devrait inclure la fiabilité dans le résultat', () => {
+    it("devrait inclure la fiabilité dans le résultat", () => {
       const input = {
         typeProprietaire: TypeProprietaire.PUBLIC,
         surfaceSite: 15000,
@@ -263,12 +246,12 @@ describe('MutabilityCalculationService', () => {
 
       expect(result.fiabilite).toBeDefined();
       expect(result.fiabilite.note).toBeDefined();
-      expect(typeof result.fiabilite.note).toBe('number');
+      expect(typeof result.fiabilite.note).toBe("number");
       expect(result.fiabilite.text).toBeDefined();
       expect(result.fiabilite.description).toBeDefined();
     });
 
-    it('devrait gérer un input vide', () => {
+    it("devrait gérer un input vide", () => {
       const input = {} as MutabilityInputDto;
 
       const result = service.calculateMutability(input);
@@ -278,10 +261,10 @@ describe('MutabilityCalculationService', () => {
         expect(r.indiceMutabilite).toBe(0);
       });
       expect(result.fiabilite.note).toBe(0);
-      expect(result.fiabilite.text).toBe('Très peu fiable');
+      expect(result.fiabilite.text).toBe("Très peu fiable");
     });
 
-    it('devrait propager les avantages et contraintes de chaque usage', () => {
+    it("devrait propager les avantages et contraintes de chaque usage", () => {
       const input = {
         siteEnCentreVille: true,
         proximiteCommercesServices: true,
@@ -289,22 +272,18 @@ describe('MutabilityCalculationService', () => {
 
       const result = service.calculateMutability(input);
 
-      const residentiel = result.resultats.find(
-        (r) => r.usage === UsageType.RESIDENTIEL,
-      );
+      const residentiel = result.resultats.find((r) => r.usage === UsageType.RESIDENTIEL);
       expect(residentiel).toBeDefined();
       expect(residentiel?.avantages).toBe(6);
       expect(residentiel?.contraintes).toBe(0);
 
-      const industrie = result.resultats.find(
-        (r) => r.usage === UsageType.INDUSTRIE,
-      );
+      const industrie = result.resultats.find((r) => r.usage === UsageType.INDUSTRIE);
       expect(industrie).toBeDefined();
       expect(industrie?.avantages).toBe(0);
       expect(industrie?.contraintes).toBe(4);
     });
 
-    it('devrait inclure les détails si mode détaillé activé', () => {
+    it("devrait inclure les détails si mode détaillé activé", () => {
       const input = {
         siteEnCentreVille: true,
         surfaceSite: 5000,
@@ -317,23 +296,16 @@ describe('MutabilityCalculationService', () => {
 
       const premierUsage = result.resultats[0];
       expect(premierUsage.detailsCalcul).toBeDefined();
-      expect(premierUsage.detailsCalcul?.detailsAvantages).toBeInstanceOf(
-        Array,
-      );
-      expect(premierUsage.detailsCalcul?.detailsContraintes).toBeInstanceOf(
-        Array,
-      );
+      expect(premierUsage.detailsCalcul?.detailsAvantages).toBeInstanceOf(Array);
+      expect(premierUsage.detailsCalcul?.detailsContraintes).toBeInstanceOf(Array);
     });
   });
 
-  describe('calculerIndiceMutabilite', () => {
+  describe("calculerIndiceMutabilite", () => {
     it("devrait calculer un indice de 0 quand il n'y a ni avantages ni contraintes", () => {
       const input = {} as MutabilityInputDto;
 
-      const result = service.calculerIndiceMutabiliteForTest(
-        input,
-        UsageType.RESIDENTIEL,
-      );
+      const result = service.calculerIndiceMutabiliteForTest(input, UsageType.RESIDENTIEL);
 
       expect(result.usage).toBe(UsageType.RESIDENTIEL);
       expect(result.indice).toBe(0);
@@ -347,10 +319,7 @@ describe('MutabilityCalculationService', () => {
         proximiteCommercesServices: true,
       } as MutabilityInputDto;
 
-      const result = service.calculerIndiceMutabiliteForTest(
-        input,
-        UsageType.RESIDENTIEL,
-      );
+      const result = service.calculerIndiceMutabiliteForTest(input, UsageType.RESIDENTIEL);
 
       expect(result.indice).toBe(100);
       expect(result.avantages).toBe(6);
@@ -362,26 +331,20 @@ describe('MutabilityCalculationService', () => {
         siteEnCentreVille: true,
       } as MutabilityInputDto;
 
-      const result = service.calculerIndiceMutabiliteForTest(
-        input,
-        UsageType.INDUSTRIE,
-      );
+      const result = service.calculerIndiceMutabiliteForTest(input, UsageType.INDUSTRIE);
 
       expect(result.indice).toBe(0);
       expect(result.avantages).toBe(0);
       expect(result.contraintes).toBe(4);
     });
 
-    it('devrait calculer un indice de 50 avec avantages et contraintes égaux', () => {
+    it("devrait calculer un indice de 50 avec avantages et contraintes égaux", () => {
       const input = {
         presencePollution: PresencePollution.NON,
         siteEnCentreVille: false,
       } as MutabilityInputDto;
 
-      const result = service.calculerIndiceMutabiliteForTest(
-        input,
-        UsageType.RESIDENTIEL,
-      );
+      const result = service.calculerIndiceMutabiliteForTest(input, UsageType.RESIDENTIEL);
 
       expect(result.indice).toBe(50);
       expect(result.avantages).toBe(4);
@@ -394,61 +357,54 @@ describe('MutabilityCalculationService', () => {
         tauxLogementsVacants: 5,
       } as MutabilityInputDto;
 
-      const result = service.calculerIndiceMutabiliteForTest(
-        input,
-        UsageType.RESIDENTIEL,
-      );
+      const result = service.calculerIndiceMutabiliteForTest(input, UsageType.RESIDENTIEL);
 
       expect(result.indice).toBe(100);
       expect(result.avantages).toBe(3);
 
-      const decimales = (result.indice.toString().split('.')[1] || '').length;
+      const decimales = (result.indice.toString().split(".")[1] || "").length;
       expect(decimales).toBeLessThanOrEqual(1);
     });
   });
 
-  describe('obtenirScoreCritere', () => {
-    it('devrait retourner null pour un critère non mappé', () => {
+  describe("obtenirScoreCritere", () => {
+    it("devrait retourner null pour un critère non mappé", () => {
       const result = service.obtenirScoreCritereForTest(
-        'critereInexistant',
-        'valeur',
+        "critereInexistant",
+        "valeur",
         UsageType.RESIDENTIEL,
       );
       expect(result).toBeNull();
     });
 
-    it('devrait retourner le bon score pour un booléen (proximiteCommercesServices)', () => {
+    it("devrait retourner le bon score pour un booléen (proximiteCommercesServices)", () => {
       const result = service.obtenirScoreCritereForTest(
-        'proximiteCommercesServices',
+        "proximiteCommercesServices",
         false,
         UsageType.RENATURATION,
       );
       expect(result).toBe(ScoreImpact.NEUTRE);
     });
 
-    it('devrait retourner un score négatif pour une contrainte', () => {
+    it("devrait retourner un score négatif pour une contrainte", () => {
       const result = service.obtenirScoreCritereForTest(
-        'siteEnCentreVille',
+        "siteEnCentreVille",
         true,
         UsageType.INDUSTRIE,
       );
       expect(result).toBe(ScoreImpact.TRES_NEGATIF);
     });
 
-    it('devrait gérer les critères numériques (surfaceSite)', () => {
-      const result = service.obtenirScoreCritereForTest(
-        'surfaceSite',
-        5000,
-        UsageType.RESIDENTIEL,
-      );
+    it("devrait gérer les critères numériques (surfaceSite)", () => {
+      const result = service.obtenirScoreCritereForTest("surfaceSite", 5000, UsageType.RESIDENTIEL);
       expect(result).toBeDefined();
       expect(result).toBe(ScoreImpact.POSITIF);
     });
 
     it("devrait retourner null si la valeur enum n'est pas trouvée", () => {
       const result = service.obtenirScoreCritereForTest(
-        'zonageReglementaire',
-        'zone_inexistante',
+        "zonageReglementaire",
+        "zone_inexistante",
         UsageType.RESIDENTIEL,
       );
       expect(result).toBeNull();
@@ -456,49 +412,49 @@ describe('MutabilityCalculationService', () => {
 
     it("devrait gérer différents types d'usage pour le même critère", () => {
       const scoreResidentiel = service.obtenirScoreCritereForTest(
-        'presencePollution',
+        "presencePollution",
         PresencePollution.DEJA_GEREE,
         UsageType.RESIDENTIEL,
       );
       const scoreRenaturation = service.obtenirScoreCritereForTest(
-        'presencePollution',
+        "presencePollution",
         PresencePollution.OUI_AUTRES_COMPOSES,
         UsageType.RENATURATION,
       );
 
       expect(scoreResidentiel).toBe(ScoreImpact.POSITIF);
       expect(scoreRenaturation).toBe(ScoreImpact.NEUTRE);
-      expect(typeof scoreResidentiel).toBe('number');
-      expect(typeof scoreRenaturation).toBe('number');
+      expect(typeof scoreResidentiel).toBe("number");
+      expect(typeof scoreRenaturation).toBe("number");
     });
   });
 
-  describe('convertirEnCleIndex', () => {
+  describe("convertirEnCleIndex", () => {
     it('devrait convertir un booléen true en string "true"', () => {
       const result = service.convertirEnCleIndexForTest(true);
-      expect(result).toBe('true');
+      expect(result).toBe("true");
     });
 
     it('devrait convertir un booléen false en string "false"', () => {
       const result = service.convertirEnCleIndexForTest(false);
-      expect(result).toBe('false');
+      expect(result).toBe("false");
     });
 
-    it('devrait garder un nombre tel quel', () => {
+    it("devrait garder un nombre tel quel", () => {
       const result = service.convertirEnCleIndexForTest(42);
       expect(result).toBe(42);
     });
   });
 
-  describe('calculerFiabilite', () => {
+  describe("calculerFiabilite", () => {
     it('devrait retourner "Très peu fiable" avec aucun critère', () => {
       const input = {} as MutabilityInputDto;
 
       const result = service.calculerFiabiliteForTest(input);
 
       expect(result.note).toBe(0);
-      expect(result.text).toBe('Très peu fiable');
-      expect(result.description).toContain('très incomplètes');
+      expect(result.text).toBe("Très peu fiable");
+      expect(result.description).toContain("très incomplètes");
     });
 
     it('devrait retourner "Très peu fiable" avec peu de critères (3 sur 26)', () => {
@@ -512,7 +468,7 @@ describe('MutabilityCalculationService', () => {
 
       expect(result.note).toBeGreaterThanOrEqual(1);
       expect(result.note).toBeLessThan(2);
-      expect(result.text).toBe('Très peu fiable');
+      expect(result.text).toBe("Très peu fiable");
     });
 
     it('devrait retourner "Peu fiable" avec environ un tiers des critères', () => {
@@ -534,7 +490,7 @@ describe('MutabilityCalculationService', () => {
 
       expect(result.note).toBeGreaterThanOrEqual(4);
       expect(result.note).toBeLessThan(5);
-      expect(result.text).toBe('Peu fiable');
+      expect(result.text).toBe("Peu fiable");
     });
 
     it('devrait retourner "Moyennement fiable" avec la majorité des critères', () => {
@@ -561,10 +517,10 @@ describe('MutabilityCalculationService', () => {
 
       expect(result.note).toBeGreaterThanOrEqual(6);
       expect(result.note).toBeLessThan(7);
-      expect(result.text).toBe('Moyennement fiable');
+      expect(result.text).toBe("Moyennement fiable");
     });
 
-    it('devrait arrondir la note à 0.5 près', () => {
+    it("devrait arrondir la note à 0.5 près", () => {
       const input = {
         siteEnCentreVille: true,
         proximiteCommercesServices: true,

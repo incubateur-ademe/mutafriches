@@ -33,15 +33,15 @@ export function excelToScoreImpact(value: string): ScoreImpact | null {
   const normalized = value.toLowerCase().trim();
 
   switch (normalized) {
-    case 'très négatif':
+    case "très négatif":
       return ScoreImpact.TRES_NEGATIF;
-    case 'négatif':
+    case "négatif":
       return ScoreImpact.NEGATIF;
-    case 'neutre':
+    case "neutre":
       return ScoreImpact.NEUTRE;
-    case 'positif':
+    case "positif":
       return ScoreImpact.POSITIF;
-    case 'très positif':
+    case "très positif":
       return ScoreImpact.TRES_POSITIF;
     default:
       return null;
@@ -56,16 +56,16 @@ export function excelToScoreImpact(value: string): ScoreImpact | null {
 export function scoreImpactToLabel(score: ScoreImpact): string {
   switch (score) {
     case ScoreImpact.TRES_NEGATIF:
-      return 'très négatif';
+      return "très négatif";
     case ScoreImpact.NEGATIF:
-      return 'négatif';
+      return "négatif";
     case ScoreImpact.NEUTRE:
-      return 'neutre';
+      return "neutre";
     case ScoreImpact.POSITIF:
-      return 'positif';
+      return "positif";
     case ScoreImpact.TRES_POSITIF:
-      return 'très positif';
+      return "très positif";
     default:
-      return 'inconnu';
+      return "inconnu";
   }
 }

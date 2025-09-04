@@ -1,5 +1,5 @@
-import { ParcelleAutoData } from './parcelle-auto.interface';
-import { ParcelleManualData } from './parcelle-manual.interface';
+import { ParcelleAutoData } from "./parcelle-auto.interface";
+import { ParcelleManualData } from "./parcelle-manual.interface";
 
 /**
  * Interface complète représentant une parcelle avec toutes ses caractéristiques

@@ -1,5 +1,5 @@
-import { MutabilityInputDto } from '../dto/mutability-input.dto';
-import { MutabilityResultDto } from '../dto/mutability-result.dto';
+import { MutabilityInputDto } from "../dto/mutability-input.dto";
+import { MutabilityResultDto } from "../dto/mutability-result.dto";
 
 export interface IMutabilityService {
   /**
@@ -8,8 +8,5 @@ export interface IMutabilityService {
    * @param fiabilite Score de fiabilité optionnel
    * @returns MutabilityResultDto
    */
-  calculateMutability(
-    input: MutabilityInputDto,
-    fiabilite?: number,
-  ): MutabilityResultDto;
+  calculateMutability(input: MutabilityInputDto, fiabilite?: number): MutabilityResultDto;
 }

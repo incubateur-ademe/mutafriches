@@ -1,21 +1,15 @@
-import { Controller, Get, Query, Post, Body } from '@nestjs/common';
-import {
-  ApiExcludeEndpoint,
-  ApiOperation,
-  ApiQuery,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
-import { EnedisService } from '../friches/services/external-apis/enedis/enedis.service';
+import { Controller, Get, Query, Post, Body } from "@nestjs/common";
+import { ApiExcludeEndpoint, ApiOperation, ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { EnedisService } from "../friches/services/external-apis/enedis/enedis.service";
 import {
   EnedisRaccordement,
   EnedisConnexionStatus,
   EnedisAnalyseComplete,
-} from '../friches/services/external-apis/enedis/enedis.interface';
-import { parcelIdRegex } from 'src/friches/lib/friches.utils';
+} from "../friches/services/external-apis/enedis/enedis.interface";
+import { parcelIdRegex } from "src/friches/lib/friches.utils";
 
-@ApiTags('🧪 Tests - Enedis')
-@Controller('test/enedis')
+@ApiTags("🧪 Tests - Enedis")
+@Controller("test/enedis")
 export class EnedisTestController {
   constructor(private readonly enedisService: EnedisService) {}
 
@@ -23,12 +17,9 @@ export class EnedisTestController {
    * Test de distance de raccordement
    * GET /test/enedis/distance?lat=47.478419&lng=-0.563166
    */
-  @Get('distance')
+  @Get("distance")
   @ApiExcludeEndpoint()
-  async testDistanceRaccordement(
-    @Query('lat') latitude: string,
-    @Query('lng') longitude: string,
-  ) {
+  async testDistanceRaccordement(@Query("lat") latitude: string, @Query("lng") longitude: string) {
     const lat = parseFloat(latitude);
     const lng = parseFloat(longitude);
     const startTime = Date.now();
@@ -56,12 +47,12 @@ export class EnedisTestController {
    * Test de vérification de connexion
    * GET /test/enedis/connexion?parcelle=490007000ZE0153&lat=47.478419&lng=-0.563166
    */
-  @Get('connexion')
+  @Get("connexion")
   @ApiExcludeEndpoint()
   async testConnexion(
-    @Query('parcelle') identifiantParcelle: string,
-    @Query('lat') latitude?: string,
-    @Query('lng') longitude?: string,
+    @Query("parcelle") identifiantParcelle: string,
+    @Query("lat") latitude?: string,
+    @Query("lng") longitude?: string,
   ) {
     const startTime = Date.now();
 
@@ -76,10 +67,7 @@ export class EnedisTestController {
           }
         : undefined;
 
-    const result = await this.enedisService.checkConnection(
-      identifiantParcelle,
-      coordonnees,
-    );
+    const result = await this.enedisService.checkConnection(identifiantParcelle, coordonnees);
 
     const response = {
       timestamp: new Date().toISOString(),
@@ -104,10 +92,9 @@ export class EnedisTestController {
    * Test d'analyse complète
    * GET /test/enedis/analyse?lat=47.478419&lng=-0.563166
    */
-  @Get('analyse')
+  @Get("analyse")
   @ApiOperation({
-    summary:
-      "Test de l'analyse complète Enedis (raccordement + connexion + recommandations)",
+    summary: "Test de l'analyse complète Enedis (raccordement + connexion + recommandations)",
     description: `
 Endpoint de test pour l'analyse complète des possibilités de raccordement électrique.
 
@@ -124,65 +111,65 @@ Endpoint de test pour l'analyse complète des possibilités de raccordement éle
     `,
   })
   @ApiQuery({
-    name: 'lat',
+    name: "lat",
     description: "Latitude WGS84 (exemple: coordonnées d'une friche)",
-    example: '49.0421992',
+    example: "49.0421992",
     type: Number,
   })
   @ApiQuery({
-    name: 'lng',
-    description: 'Longitude WGS84',
-    example: '-1.45017951',
+    name: "lng",
+    description: "Longitude WGS84",
+    example: "-1.45017951",
     type: Number,
   })
   @ApiResponse({
     status: 200,
-    description: 'Analyse complète des possibilités de raccordement électrique',
+    description: "Analyse complète des possibilités de raccordement électrique",
     schema: {
-      type: 'object',
+      type: "object",
       properties: {
         coordonnees: {
-          type: 'object',
+          type: "object",
           properties: {
-            latitude: { type: 'number' },
-            longitude: { type: 'number' },
+            latitude: { type: "number" },
+            longitude: { type: "number" },
           },
         },
         resultatAnalyse: {
-          type: 'object',
+          type: "object",
           properties: {
-            success: { type: 'boolean' },
+            success: { type: "boolean" },
             data: {
-              type: 'object',
+              type: "object",
               properties: {
                 raccordement: {
-                  type: 'object',
+                  type: "object",
                   properties: {
-                    distance: { type: 'number', description: 'Distance en km' },
-                    type: { type: 'string', enum: ['BT', 'HTA'] },
-                    capaciteDisponible: { type: 'boolean' },
+                    distance: { type: "number", description: "Distance en km" },
+                    type: { type: "string", enum: ["BT", "HTA"] },
+                    capaciteDisponible: { type: "boolean" },
                   },
                 },
                 connexion: {
-                  type: 'object',
+                  type: "object",
                   properties: {
-                    isConnected: { type: 'boolean' },
+                    isConnected: { type: "boolean" },
                     confidence: {
-                      type: 'string',
-                      enum: ['high', 'medium', 'low'],
+                      type: "string",
+                      enum: ["high", "medium", "low"],
                     },
                   },
                 },
                 recommandations: {
-                  type: 'array',
-                  items: { type: 'string' },
+                  type: "array",
+                  items: { type: "string" },
                 },
                 coutEstime: {
-                  type: 'object',
+                  type: "object",
                   properties: {
-                    min: { type: 'number' },
-                    max: { type: 'number' },
-                    devise: { type: 'string' },
+                    min: { type: "number" },
+                    max: { type: "number" },
+                    devise: { type: "string" },
                   },
                 },
               },
@@ -192,10 +179,7 @@ Endpoint de test pour l'analyse complète des possibilités de raccordement éle
       },
     },
   })
-  async testAnalyseComplete(
-    @Query('lat') latitude: string,
-    @Query('lng') longitude: string,
-  ) {
+  async testAnalyseComplete(@Query("lat") latitude: string, @Query("lng") longitude: string) {
     const lat = parseFloat(latitude);
     const lng = parseFloat(longitude);
     const startTime = Date.now();
@@ -209,15 +193,10 @@ Endpoint de test pour l'analyse complète des possibilités de raccordement éle
       coordonnees: { latitude: lat, longitude: lng },
       dureeMs: Date.now() - startTime,
       resultatAnalyse: result,
-      interpretation: result.success
-        ? this.interpreterResultat(result.data)
-        : null,
+      interpretation: result.success ? this.interpreterResultat(result.data) : null,
     };
 
-    console.log(
-      `Résultat analyse complète:`,
-      JSON.stringify(response, null, 2),
-    );
+    console.log(`Résultat analyse complète:`, JSON.stringify(response, null, 2));
     return response;
   }
 
@@ -225,27 +204,21 @@ Endpoint de test pour l'analyse complète des possibilités de raccordement éle
    * Test de recherche d'infrastructures
    * GET /test/enedis/infrastructures?lat=47.478419&lng=-0.563166&rayon=1000
    */
-  @Get('infrastructures')
+  @Get("infrastructures")
   @ApiExcludeEndpoint()
   async testRechercherInfrastructures(
-    @Query('lat') latitude: string,
-    @Query('lng') longitude: string,
-    @Query('rayon') rayon?: string,
+    @Query("lat") latitude: string,
+    @Query("lng") longitude: string,
+    @Query("rayon") rayon?: string,
   ) {
     const lat = parseFloat(latitude);
     const lng = parseFloat(longitude);
     const rayonMetres = rayon ? parseInt(rayon) : 1000;
     const startTime = Date.now();
 
-    console.log(
-      `Test Enedis - Infrastructures: ${lat}, ${lng}, rayon ${rayonMetres}m`,
-    );
+    console.log(`Test Enedis - Infrastructures: ${lat}, ${lng}, rayon ${rayonMetres}m`);
 
-    const result = await this.enedisService.rechercherInfrastructures(
-      lat,
-      lng,
-      rayonMetres,
-    );
+    const result = await this.enedisService.rechercherInfrastructures(lat, lng, rayonMetres);
 
     const response = {
       timestamp: new Date().toISOString(),
@@ -261,9 +234,7 @@ Endpoint de test pour l'analyse complète des possibilités de raccordement éle
             nombrePostes: result.data?.postes.length || 0,
             nombreLignesBT: result.data?.lignesBT.length || 0,
             nombrePoteaux: result.data?.poteaux.length || 0,
-            infrastructurePlusProche: this.trouverInfrastructurePlusProche(
-              result.data,
-            ),
+            infrastructurePlusProche: this.trouverInfrastructurePlusProche(result.data),
           }
         : null,
     };
@@ -277,12 +248,9 @@ Endpoint de test pour l'analyse complète des possibilités de raccordement éle
    * POST /test/enedis/analyse-post
    * Body: { "latitude": 47.478419, "longitude": -0.563166 }
    */
-  @Post('analyse-post')
+  @Post("analyse-post")
   @ApiExcludeEndpoint()
-  async testAnalysePost(
-    @Body('latitude') latitude: number,
-    @Body('longitude') longitude: number,
-  ) {
+  async testAnalysePost(@Body("latitude") latitude: number, @Body("longitude") longitude: number) {
     return this.testAnalyseComplete(latitude.toString(), longitude.toString());
   }
 
@@ -290,10 +258,9 @@ Endpoint de test pour l'analyse complète des possibilités de raccordement éle
    * Comparaison avec URLs API Enedis directes
    * GET /test/enedis/compare?lat=49.0421992&lng=-1.45017951
    */
-  @Get('compare')
+  @Get("compare")
   @ApiOperation({
-    summary:
-      'Compare les données Mutafriches avec les URLs API Enedis directes',
+    summary: "Compare les données Mutafriches avec les URLs API Enedis directes",
     description: `
 Fournit les URLs pour interroger directement l'API Enedis Open Data et compare avec les résultats Mutafriches.
 
@@ -309,21 +276,18 @@ Fournit les URLs pour interroger directement l'API Enedis Open Data et compare a
     `,
   })
   @ApiQuery({
-    name: 'lat',
-    description: 'Latitude WGS84',
-    example: '49.0421992',
+    name: "lat",
+    description: "Latitude WGS84",
+    example: "49.0421992",
     type: Number,
   })
   @ApiQuery({
-    name: 'lng',
-    description: 'Longitude WGS84',
-    example: '-1.45017951',
+    name: "lng",
+    description: "Longitude WGS84",
+    example: "-1.45017951",
     type: Number,
   })
-  async compareWithEnedisAPI(
-    @Query('lat') latitude: string,
-    @Query('lng') longitude: string,
-  ) {
+  async compareWithEnedisAPI(@Query("lat") latitude: string, @Query("lng") longitude: string) {
     const lat = parseFloat(latitude);
     const lng = parseFloat(longitude);
     const rayon = 2000; // 2km par défaut
@@ -338,8 +302,8 @@ Fournit les URLs pour interroger directement l'API Enedis Open Data et compare a
       mutafrichesResult: await this.enedisService.analyseComplete(lat, lng),
       parametresRecherche: {
         rayonPostes: `${rayon}m`,
-        rayonLignesBT: '500m',
-        rayonPoteaux: '200m',
+        rayonLignesBT: "500m",
+        rayonPoteaux: "200m",
       },
     };
   }
@@ -348,52 +312,52 @@ Fournit les URLs pour interroger directement l'API Enedis Open Data et compare a
    * Coordonnées de test disponibles
    * GET /test/enedis/samples
    */
-  @Get('samples')
+  @Get("samples")
   @ApiExcludeEndpoint()
   getSampleCoordinates() {
     return {
-      description: 'Coordonnées de test pour le service Enedis',
+      description: "Coordonnées de test pour le service Enedis",
       coordonnees: [
         {
-          nom: 'Angers - Centre-ville',
+          nom: "Angers - Centre-ville",
           latitude: 47.478419,
           longitude: -0.563166,
-          description: 'Zone urbaine dense avec infrastructures',
+          description: "Zone urbaine dense avec infrastructures",
         },
         {
-          nom: 'Paris - La Défense',
+          nom: "Paris - La Défense",
           latitude: 48.8905,
           longitude: 2.2385,
-          description: 'Zone très dense, nombreuses infrastructures',
+          description: "Zone très dense, nombreuses infrastructures",
         },
         {
-          nom: 'Lyon - Part-Dieu',
+          nom: "Lyon - Part-Dieu",
           latitude: 45.7596,
           longitude: 4.859,
           description: "Centre d'affaires, raccordements HTA",
         },
         {
-          nom: 'Marseille - Vieux-Port',
+          nom: "Marseille - Vieux-Port",
           latitude: 43.2956,
           longitude: 5.3708,
-          description: 'Zone historique, mix BT/HTA',
+          description: "Zone historique, mix BT/HTA",
         },
         {
-          nom: 'Zone rurale - Mayenne',
+          nom: "Zone rurale - Mayenne",
           latitude: 48.1234,
           longitude: -0.789,
-          description: 'Zone peu dense, infrastructures limitées',
+          description: "Zone peu dense, infrastructures limitées",
         },
       ],
       coordonneesLimites: [
         {
-          nom: 'Hors zone France métropolitaine',
+          nom: "Hors zone France métropolitaine",
           latitude: 55.0,
           longitude: 10.0,
-          description: 'Test hors couverture',
+          description: "Test hors couverture",
         },
         {
-          nom: 'Coordonnées invalides',
+          nom: "Coordonnées invalides",
           latitude: 999,
           longitude: 999,
           description: "Test gestion d'erreur",
@@ -408,9 +372,7 @@ Fournit les URLs pour interroger directement l'API Enedis Open Data et compare a
 
     return {
       synthese: this.genererSynthese(raccordement),
-      categorieRaccordement: this.categoriserRaccordement(
-        raccordement.distance,
-      ),
+      categorieRaccordement: this.categoriserRaccordement(raccordement.distance),
       niveauComplexite: this.evaluerComplexite(raccordement, connexion),
       prochainEtape: this.suggererProchainEtape(raccordement, connexion),
     };
@@ -418,45 +380,45 @@ Fournit les URLs pour interroger directement l'API Enedis Open Data et compare a
 
   private genererSynthese(raccordement: EnedisRaccordement): string {
     if (raccordement.distance < 0.1) {
-      return 'Raccordement très favorable - Infrastructure immédiate';
+      return "Raccordement très favorable - Infrastructure immédiate";
     } else if (raccordement.distance < 0.5) {
-      return 'Raccordement favorable - Extension courte';
+      return "Raccordement favorable - Extension courte";
     } else if (raccordement.distance < 2) {
-      return 'Raccordement modéré - Extension moyenne nécessaire';
+      return "Raccordement modéré - Extension moyenne nécessaire";
     } else {
-      return 'Raccordement complexe - Extension importante requise';
+      return "Raccordement complexe - Extension importante requise";
     }
   }
 
   private categoriserRaccordement(distance: number): string {
-    if (distance < 0.05) return 'IMMEDIAT';
-    if (distance < 0.2) return 'PROCHE';
-    if (distance < 1) return 'MOYEN';
-    return 'ELOIGNE';
+    if (distance < 0.05) return "IMMEDIAT";
+    if (distance < 0.2) return "PROCHE";
+    if (distance < 1) return "MOYEN";
+    return "ELOIGNE";
   }
 
   private evaluerComplexite(
     raccordement: EnedisRaccordement,
     connexion: EnedisConnexionStatus,
   ): string {
-    if (raccordement.type === 'BT' && connexion.confidence === 'high') {
-      return 'SIMPLE';
-    } else if (raccordement.type === 'HTA' || connexion.confidence === 'low') {
-      return 'COMPLEXE';
+    if (raccordement.type === "BT" && connexion.confidence === "high") {
+      return "SIMPLE";
+    } else if (raccordement.type === "HTA" || connexion.confidence === "low") {
+      return "COMPLEXE";
     }
-    return 'MOYEN';
+    return "MOYEN";
   }
 
   private suggererProchainEtape(
     raccordement: EnedisRaccordement,
     connexion: EnedisConnexionStatus,
   ): string {
-    if (connexion.confidence === 'low') {
-      return 'Contacter Enedis pour pré-étude officielle';
+    if (connexion.confidence === "low") {
+      return "Contacter Enedis pour pré-étude officielle";
     } else if (raccordement.distance > 1) {
-      return 'Étude de faisabilité technique et financière recommandée';
+      return "Étude de faisabilité technique et financière recommandée";
     } else {
-      return 'Demander un devis de raccordement à Enedis';
+      return "Demander un devis de raccordement à Enedis";
     }
   }
 
@@ -478,9 +440,9 @@ Fournit les URLs pour interroger directement l'API Enedis Open Data et compare a
     }
 
     const infrastructures: InfrastructureAvecType[] = [
-      ...data.postes.map((p) => ({ ...p, type: 'poste' })),
-      ...data.lignesBT.map((l) => ({ ...l, type: 'ligneBT' })),
-      ...data.poteaux.map((p) => ({ ...p, type: 'poteau' })),
+      ...data.postes.map((p) => ({ ...p, type: "poste" })),
+      ...data.lignesBT.map((l) => ({ ...l, type: "ligneBT" })),
+      ...data.poteaux.map((p) => ({ ...p, type: "poteau" })),
     ];
 
     if (infrastructures.length === 0) return null;

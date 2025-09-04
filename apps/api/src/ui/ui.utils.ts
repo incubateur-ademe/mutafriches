@@ -13,7 +13,7 @@ type FlattenedObject = Record<string, PrimitiveValue>;
  * Vérifie si une valeur est un objet (pas null, pas array)
  */
 function isObject(value: unknown): value is NestedObject {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
+  return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
 /**
@@ -29,7 +29,7 @@ function isArray(value: unknown): value is Array<any> {
  * @param prefix Le préfixe pour les clés (utilisé en récursion)
  * @returns Un objet aplati avec des clés comme 'fiabilite.note' ou 'resultats.0.usage'
  */
-export function flattenObject(obj: NestedObject, prefix = ''): FlattenedObject {
+export function flattenObject(obj: NestedObject, prefix = ""): FlattenedObject {
   const flattened: FlattenedObject = {};
 
   for (const key in obj) {
@@ -69,10 +69,7 @@ export function flattenObject(obj: NestedObject, prefix = ''): FlattenedObject {
  * @param data Les données à injecter
  * @returns Le HTML avec les variables remplacées
  */
-export function replaceVariables(
-  html: string,
-  data: Record<string, unknown>,
-): string {
+export function replaceVariables(html: string, data: Record<string, unknown>): string {
   // Filtrer les données pour garder seulement les objets, tableaux et primitives
   const cleanData: NestedObject = {};
 
@@ -80,9 +77,9 @@ export function replaceVariables(
     if (Object.prototype.hasOwnProperty.call(data, key)) {
       const value = data[key];
       if (
-        typeof value === 'string' ||
-        typeof value === 'number' ||
-        typeof value === 'boolean' ||
+        typeof value === "string" ||
+        typeof value === "number" ||
+        typeof value === "boolean" ||
         value === null ||
         value === undefined ||
         isObject(value) ||
@@ -99,11 +96,8 @@ export function replaceVariables(
   // Remplacer les variables dans le template
   Object.keys(flattenedData).forEach((key) => {
     const value = flattenedData[key];
-    const regex = new RegExp(
-      `\\{\\{${key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\}\\}`,
-      'g',
-    );
-    html = html.replace(regex, String(value ?? ''));
+    const regex = new RegExp(`\\{\\{${key.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\}\\}`, "g");
+    html = html.replace(regex, String(value ?? ""));
   });
 
   return html;

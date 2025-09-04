@@ -1,9 +1,9 @@
-import { ApiResponse } from '../shared/api-response.interface';
+import { ApiResponse } from "../shared/api-response.interface";
 
 export interface TransportArret {
   id: string;
   nom: string;
-  type: 'bus' | 'tram' | 'metro' | 'train';
+  type: "bus" | "tram" | "metro" | "train";
   distance: number; // en mètres
   coordonnees: {
     latitude: number;
@@ -17,10 +17,7 @@ export interface TransportApiResponse {
 }
 
 export interface TransportApiService {
-  getDistanceTransportCommun(
-    latitude: number,
-    longitude: number,
-  ): Promise<ApiResponse<number>>;
+  getDistanceTransportCommun(latitude: number, longitude: number): Promise<ApiResponse<number>>;
   getArretsProches(
     latitude: number,
     longitude: number,

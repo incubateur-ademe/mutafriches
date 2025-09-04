@@ -10,8 +10,8 @@ import {
   ZonageEnvironnemental,
   ZonagePatrimonial,
   ZonageReglementaire,
-} from '../enums/parcelle.enums';
-import { ParcelleBase } from './shared/parcelle.base';
+} from "../enums/parcelle.enums";
+import { ParcelleBase } from "./shared/parcelle.base";
 
 /**
  * Classe représentant une parcelle avec toutes ses caractéristiques
@@ -98,12 +98,12 @@ export class Parcelle implements ParcelleBase {
   getMissingFields(): string[] {
     const missing: string[] = [];
 
-    if (!this.identifiantParcelle) missing.push('identifiantParcelle');
-    if (!this.commune) missing.push('commune');
-    if (!this.surfaceSite || this.surfaceSite <= 0) missing.push('surfaceSite');
-    if (!this.zonageReglementaire) missing.push('zonageReglementaire');
-    if (this.surfaceBati === undefined) missing.push('surfaceBati');
-    if (!this.ancienneActivite) missing.push('ancienneActivite');
+    if (!this.identifiantParcelle) missing.push("identifiantParcelle");
+    if (!this.commune) missing.push("commune");
+    if (!this.surfaceSite || this.surfaceSite <= 0) missing.push("surfaceSite");
+    if (!this.zonageReglementaire) missing.push("zonageReglementaire");
+    if (this.surfaceBati === undefined) missing.push("surfaceBati");
+    if (!this.ancienneActivite) missing.push("ancienneActivite");
 
     return missing;
   }
@@ -123,6 +123,6 @@ export class Parcelle implements ParcelleBase {
    * @returns Description courte de la parcelle
    */
   getDescription(): string {
-    return `Parcelle ${this.identifiantParcelle} à ${this.commune} - ${this.surfaceSite}m² - ${this.siteEnCentreVille ? 'Centre-ville' : 'Périphérie'}`;
+    return `Parcelle ${this.identifiantParcelle} à ${this.commune} - ${this.surfaceSite}m² - ${this.siteEnCentreVille ? "Centre-ville" : "Périphérie"}`;
   }
 }

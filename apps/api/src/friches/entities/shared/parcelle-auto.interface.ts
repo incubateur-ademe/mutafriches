@@ -4,7 +4,7 @@ import {
   ZonagePatrimonial,
   TrameVerteEtBleue,
   ZonageReglementaire,
-} from '../../enums/parcelle.enums';
+} from "../../enums/parcelle.enums";
 
 /**
  * Interface pour les données extraites automatiquement depuis des sources externes

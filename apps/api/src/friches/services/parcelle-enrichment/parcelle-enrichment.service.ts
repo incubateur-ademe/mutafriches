@@ -1,15 +1,15 @@
-import { Injectable } from '@nestjs/common';
-import { Parcelle } from '../../entities/parcelle.entity';
-import { EnrichmentResultDto } from '../../dto/enrichment-result.dto';
-import { MockTransportService } from '../../../mock/services/mock-transport.service';
-import { MockOverpassService } from '../../../mock/services/mock-overpass.service';
-import { MockLovacService } from '../../../mock/services/mock-lovac.service';
-import { CadastreServiceResponse } from '../external-apis/cadastre/cadastre.interface';
-import { IParcelleEnrichmentService } from '../../interfaces/parcelle-enrichment-service.interface';
-import { CadastreService } from '../external-apis/cadastre/cadastre.service';
-import { BdnbService } from '../external-apis/bdnb/bdnb.service';
-import { EnedisService } from '../external-apis/enedis/enedis.service';
-import { RisqueNaturel } from '../../enums/parcelle.enums';
+import { Injectable } from "@nestjs/common";
+import { Parcelle } from "../../entities/parcelle.entity";
+import { EnrichmentResultDto } from "../../dto/enrichment-result.dto";
+import { MockTransportService } from "../../../mock/services/mock-transport.service";
+import { MockOverpassService } from "../../../mock/services/mock-overpass.service";
+import { MockLovacService } from "../../../mock/services/mock-lovac.service";
+import { CadastreServiceResponse } from "../external-apis/cadastre/cadastre.interface";
+import { IParcelleEnrichmentService } from "../../interfaces/parcelle-enrichment-service.interface";
+import { CadastreService } from "../external-apis/cadastre/cadastre.service";
+import { BdnbService } from "../external-apis/bdnb/bdnb.service";
+import { EnedisService } from "../external-apis/enedis/enedis.service";
+import { RisqueNaturel } from "../../enums/parcelle.enums";
 
 @Injectable()
 export class ParcelleEnrichmentService implements IParcelleEnrichmentService {
@@ -25,9 +25,7 @@ export class ParcelleEnrichmentService implements IParcelleEnrichmentService {
   /**
    * Enrichit une parcelle depuis toutes les sources externes disponibles
    */
-  async enrichFromDataSources(
-    identifiantParcelle: string,
-  ): Promise<EnrichmentResultDto> {
+  async enrichFromDataSources(identifiantParcelle: string): Promise<EnrichmentResultDto> {
     console.log(`Enrichissement parcelle: ${identifiantParcelle}`);
 
     const sourcesUtilisees: string[] = [];
@@ -36,36 +34,31 @@ export class ParcelleEnrichmentService implements IParcelleEnrichmentService {
     // 1. Données cadastrales (obligatoires)
     const cadastreData = await this.getCadastreData(identifiantParcelle);
     if (!cadastreData) {
-      throw new Error('Données cadastrales introuvables');
+      throw new Error("Données cadastrales introuvables");
     }
 
-    const parcelle = new Parcelle(
-      cadastreData.identifiant,
-      cadastreData.commune,
-    );
+    const parcelle = new Parcelle(cadastreData.identifiant, cadastreData.commune);
     parcelle.surfaceSite = cadastreData.surface;
     parcelle.coordonnees = cadastreData.coordonnees;
-    sourcesUtilisees.push('Cadastre');
+    sourcesUtilisees.push("Cadastre");
 
     // 2. Surface bâtie (BDNB)
     const surfaceBatie = await this.getSurfaceBatie(identifiantParcelle);
     if (surfaceBatie !== null) {
       parcelle.surfaceBati = surfaceBatie;
-      sourcesUtilisees.push('BDNB');
+      sourcesUtilisees.push("BDNB");
     } else {
-      champsManquants.push('surfaceBati');
+      champsManquants.push("surfaceBati");
     }
 
     // 3. Distance transport
     if (parcelle.coordonnees) {
-      const distanceTransport = await this.getDistanceTransport(
-        parcelle.coordonnees,
-      );
+      const distanceTransport = await this.getDistanceTransport(parcelle.coordonnees);
       if (distanceTransport !== null) {
         parcelle.distanceTransportCommun = distanceTransport;
-        sourcesUtilisees.push('Transport');
+        sourcesUtilisees.push("Transport");
       } else {
-        champsManquants.push('distanceTransportCommun');
+        champsManquants.push("distanceTransportCommun");
       }
 
       // 4. Données Enedis
@@ -110,10 +103,7 @@ export class ParcelleEnrichmentService implements IParcelleEnrichmentService {
       champsManquants,
     );
 
-    const fiabilite = this.calculateFiabilite(
-      sourcesUtilisees.length,
-      champsManquants.length,
-    );
+    const fiabilite = this.calculateFiabilite(sourcesUtilisees.length, champsManquants.length);
 
     console.log(
       `Enrichissement terminé - Sources: ${sourcesUtilisees.length}, Manquants: ${champsManquants.length}`,
@@ -153,14 +143,12 @@ export class ParcelleEnrichmentService implements IParcelleEnrichmentService {
   /**
    * Récupère les données cadastrales
    */
-  private async getCadastreData(
-    identifiant: string,
-  ): Promise<CadastreServiceResponse | null> {
+  private async getCadastreData(identifiant: string): Promise<CadastreServiceResponse | null> {
     try {
       const result = await this.cadastreService.getParcelleInfo(identifiant);
       return result.success && result.data ? result.data : null;
     } catch (error) {
-      console.error('Erreur cadastre:', error);
+      console.error("Erreur cadastre:", error);
       return null;
     }
   }
@@ -173,7 +161,7 @@ export class ParcelleEnrichmentService implements IParcelleEnrichmentService {
       const result = await this.bdnbService.getSurfaceBatie(identifiant);
       return result.success && result.data !== undefined ? result.data : null;
     } catch (error) {
-      console.error('Erreur BDNB:', error);
+      console.error("Erreur BDNB:", error);
       return null;
     }
   }
@@ -192,7 +180,7 @@ export class ParcelleEnrichmentService implements IParcelleEnrichmentService {
       );
       return result.success && result.data !== undefined ? result.data : null;
     } catch (error) {
-      console.error('Erreur Transport:', error);
+      console.error("Erreur Transport:", error);
       return null;
     }
   }
@@ -217,9 +205,9 @@ export class ParcelleEnrichmentService implements IParcelleEnrichmentService {
         const connexionStatus = connectionResult.data;
         // Extraction du boolean depuis l'objet EnedisConnexionStatus
         parcelle.connectionReseauElectricite = connexionStatus.isConnected;
-        sources.push('Enedis-Connection');
+        sources.push("Enedis-Connection");
       } else {
-        manquants.push('connectionReseauElectricite');
+        manquants.push("connectionReseauElectricite");
       }
 
       // Distance raccordement
@@ -231,16 +219,13 @@ export class ParcelleEnrichmentService implements IParcelleEnrichmentService {
       if (distanceResult.success && distanceResult.data) {
         const raccordementData = distanceResult.data;
         parcelle.distanceRaccordementElectrique = raccordementData.distance;
-        sources.push('Enedis-Raccordement');
+        sources.push("Enedis-Raccordement");
       } else {
-        manquants.push('distanceRaccordementElectrique');
+        manquants.push("distanceRaccordementElectrique");
       }
     } catch (error) {
-      console.error('Erreur Enedis:', error);
-      manquants.push(
-        'connectionReseauElectricite',
-        'distanceRaccordementElectrique',
-      );
+      console.error("Erreur Enedis:", error);
+      manquants.push("connectionReseauElectricite", "distanceRaccordementElectrique");
     }
   }
 
@@ -292,8 +277,7 @@ export class ParcelleEnrichmentService implements IParcelleEnrichmentService {
     manquants: string[],
   ): Promise<void> {
     try {
-      const risquesResult =
-        await this.bdnbService.getRisquesNaturels(identifiantParcelle);
+      const risquesResult = await this.bdnbService.getRisquesNaturels(identifiantParcelle);
 
       if (risquesResult.success && risquesResult.data) {
         const risquesData = risquesResult.data;
@@ -303,18 +287,17 @@ export class ParcelleEnrichmentService implements IParcelleEnrichmentService {
           parcelle.presenceRisquesNaturels = this.transformAleaArgilesToRisque(
             risquesData.aleaArgiles,
           );
-          sources.push('BDNB-Risques');
+          sources.push("BDNB-Risques");
         } else {
-          manquants.push('presenceRisquesNaturels');
+          manquants.push("presenceRisquesNaturels");
         }
       } else {
-        manquants.push('presenceRisquesNaturels');
+        manquants.push("presenceRisquesNaturels");
       }
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Erreur inconnue';
-      console.error('Erreur récupération risques naturels BDNB:', errorMessage);
-      manquants.push('presenceRisquesNaturels');
+      const errorMessage = error instanceof Error ? error.message : "Erreur inconnue";
+      console.error("Erreur récupération risques naturels BDNB:", errorMessage);
+      manquants.push("presenceRisquesNaturels");
     }
   }
 
@@ -324,22 +307,13 @@ export class ParcelleEnrichmentService implements IParcelleEnrichmentService {
   private transformAleaArgilesToRisque(aleaArgiles: string): RisqueNaturel {
     const aleaNormalise = aleaArgiles.toLowerCase();
 
-    if (aleaNormalise.includes('fort') || aleaNormalise.includes('élevé')) {
+    if (aleaNormalise.includes("fort") || aleaNormalise.includes("élevé")) {
       return RisqueNaturel.FORT;
-    } else if (
-      aleaNormalise.includes('moyen') ||
-      aleaNormalise.includes('modéré')
-    ) {
+    } else if (aleaNormalise.includes("moyen") || aleaNormalise.includes("modéré")) {
       return RisqueNaturel.MOYEN;
-    } else if (
-      aleaNormalise.includes('faible') ||
-      aleaNormalise.includes('bas')
-    ) {
+    } else if (aleaNormalise.includes("faible") || aleaNormalise.includes("bas")) {
       return RisqueNaturel.FAIBLE;
-    } else if (
-      aleaNormalise.includes('nul') ||
-      aleaNormalise.includes('inexistant')
-    ) {
+    } else if (aleaNormalise.includes("nul") || aleaNormalise.includes("inexistant")) {
       return RisqueNaturel.AUCUN;
     }
 
@@ -370,10 +344,7 @@ export class ParcelleEnrichmentService implements IParcelleEnrichmentService {
   /**
    * Calcule l'indice de fiabilité
    */
-  private calculateFiabilite(
-    sourcesCount: number,
-    manquantsCount: number,
-  ): number {
+  private calculateFiabilite(sourcesCount: number, manquantsCount: number): number {
     let fiabilite = 10;
     fiabilite -= manquantsCount * 0.3;
     fiabilite -= sourcesCount > 2 ? 0 : 2; // Bonus si plusieurs sources

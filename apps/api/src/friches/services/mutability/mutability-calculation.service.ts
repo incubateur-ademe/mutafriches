@@ -1,18 +1,15 @@
-import { Injectable } from '@nestjs/common';
-import { MutabilityInputDto } from 'src/friches/dto/mutability-input.dto';
-import { MutabilityResultDto } from 'src/friches/dto/mutability-result.dto';
-import {
-  DetailCritereDto,
-  DetailCalculUsageDto,
-} from 'src/friches/dto/detail-calcul.dto';
-import { UsageType } from 'src/friches/enums/mutability.enums';
+import { Injectable } from "@nestjs/common";
+import { MutabilityInputDto } from "src/friches/dto/mutability-input.dto";
+import { MutabilityResultDto } from "src/friches/dto/mutability-result.dto";
+import { DetailCritereDto, DetailCalculUsageDto } from "src/friches/dto/detail-calcul.dto";
+import { UsageType } from "src/friches/enums/mutability.enums";
 import {
   MATRICE_SCORING,
   NIVEAUX_FIABILITE,
   NOMBRE_CRITERES_MAPPES,
   POIDS_CRITERES,
   ScoreParUsage,
-} from './config/criteres-scoring.config';
+} from "./config/criteres-scoring.config";
 
 interface ResultatMutabiliteUsage {
   usage: UsageType;
@@ -51,9 +48,7 @@ export class MutabilityCalculationService {
         indiceMutabilite: result.indice,
         avantages: result.avantages,
         contraintes: result.contraintes,
-        ...(modeDetaille && result.detailsCalcul
-          ? { detailsCalcul: result.detailsCalcul }
-          : {}),
+        ...(modeDetaille && result.detailsCalcul ? { detailsCalcul: result.detailsCalcul } : {}),
       }));
 
     const fiabilite = this.calculerFiabilite(input);
@@ -61,8 +56,7 @@ export class MutabilityCalculationService {
     // Ajouter le comptage des critères si mode détaillé
     if (modeDetaille) {
       const criteresRenseignes = Object.entries(input).filter(
-        ([valeur]) =>
-          valeur !== null && valeur !== undefined && valeur !== 'ne-sait-pas',
+        ([valeur]) => valeur !== null && valeur !== undefined && valeur !== "ne-sait-pas",
       ).length;
 
       fiabilite.criteresRenseignes = criteresRenseignes;
@@ -110,7 +104,7 @@ export class MutabilityCalculationService {
     };
 
     // Ajouter les détails si mode détaillé
-    if (modeDetaille && 'detailsAvantages' in scoreData) {
+    if (modeDetaille && "detailsAvantages" in scoreData) {
       const scoreDetaille = scoreData as {
         avantages: number;
         contraintes: number;
@@ -145,8 +139,7 @@ export class MutabilityCalculationService {
     // Pour chaque critère dans l'input
     Object.entries(input).forEach(([champDTO, valeur]) => {
       // Ignorer si null/undefined
-      if (valeur === null || valeur === undefined || valeur === 'ne-sait-pas')
-        return;
+      if (valeur === null || valeur === undefined || valeur === "ne-sait-pas") return;
 
       // Obtenir le score pour ce critère
       const score = this.obtenirScoreCritere(champDTO, valeur, usage);
@@ -154,8 +147,7 @@ export class MutabilityCalculationService {
       if (score === null) return;
 
       // Appliquer le poids
-      const poids =
-        POIDS_CRITERES[champDTO as keyof typeof POIDS_CRITERES] ?? 1;
+      const poids = POIDS_CRITERES[champDTO as keyof typeof POIDS_CRITERES] ?? 1;
       const pointsPonderes = score * poids;
 
       // Séparer avantages et contraintes
@@ -192,14 +184,12 @@ export class MutabilityCalculationService {
 
     Object.entries(input).forEach(([champDTO, valeur]) => {
       // Ignorer si non renseigné
-      if (valeur === null || valeur === undefined || valeur === 'ne-sait-pas')
-        return;
+      if (valeur === null || valeur === undefined || valeur === "ne-sait-pas") return;
 
       const scoreBrut = this.obtenirScoreCritere(champDTO, valeur, usage);
       if (scoreBrut === null) return;
 
-      const poids =
-        POIDS_CRITERES[champDTO as keyof typeof POIDS_CRITERES] ?? 1;
+      const poids = POIDS_CRITERES[champDTO as keyof typeof POIDS_CRITERES] ?? 1;
       const scorePondere = scoreBrut * poids;
 
       const detail: DetailCritereDto = {
@@ -238,14 +228,13 @@ export class MutabilityCalculationService {
     valeur: unknown,
     usage: keyof ScoreParUsage,
   ): number | null {
-    const matriceCritere =
-      MATRICE_SCORING[champDTO as keyof typeof MATRICE_SCORING];
+    const matriceCritere = MATRICE_SCORING[champDTO as keyof typeof MATRICE_SCORING];
 
     // Critère non mappé
     if (!matriceCritere) return null;
 
     // Si c'est une fonction (critères numériques)
-    if (typeof matriceCritere === 'function') {
+    if (typeof matriceCritere === "function") {
       const scoreResult = matriceCritere(valeur as number);
       return scoreResult[usage];
     }
@@ -253,10 +242,7 @@ export class MutabilityCalculationService {
     // Si c'est un objet (enums ou booléens)
     // Convertir la valeur en clé d'indexation appropriée
     const cleIndex = this.convertirEnCleIndex(valeur);
-    const typedMatrice = matriceCritere as Record<
-      string | number,
-      ScoreParUsage
-    >;
+    const typedMatrice = matriceCritere as Record<string | number, ScoreParUsage>;
     const scores = typedMatrice[cleIndex];
 
     return scores ? scores[usage] : null;
@@ -268,10 +254,10 @@ export class MutabilityCalculationService {
    * @returns La clé d'indexation
    */
   protected convertirEnCleIndex(valeur: unknown): string | number {
-    if (typeof valeur === 'boolean') {
+    if (typeof valeur === "boolean") {
       return String(valeur); // "true" ou "false"
     }
-    if (typeof valeur === 'number') {
+    if (typeof valeur === "number") {
       return valeur;
     }
     return String(valeur); // Pour les strings et autres
@@ -291,8 +277,7 @@ export class MutabilityCalculationService {
   } {
     // Compter les critères non null/undefined
     const criteresRenseignes = Object.entries(input).filter(
-      ([valeur]) =>
-        valeur !== null && valeur !== undefined && valeur !== 'ne-sait-pas',
+      ([valeur]) => valeur !== null && valeur !== undefined && valeur !== "ne-sait-pas",
     ).length;
 
     // Calculer le pourcentage sur le nombre de critères mappés
@@ -307,11 +292,9 @@ export class MutabilityCalculationService {
     // Retourner avec le niveau trouvé (toujours défini car on a un seuil à 0)
     return {
       note,
-      text:
-        niveau?.text || NIVEAUX_FIABILITE[NIVEAUX_FIABILITE.length - 1].text,
+      text: niveau?.text || NIVEAUX_FIABILITE[NIVEAUX_FIABILITE.length - 1].text,
       description:
-        niveau?.description ||
-        NIVEAUX_FIABILITE[NIVEAUX_FIABILITE.length - 1].description,
+        niveau?.description || NIVEAUX_FIABILITE[NIVEAUX_FIABILITE.length - 1].description,
     };
   }
 }

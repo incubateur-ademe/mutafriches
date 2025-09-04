@@ -1,4 +1,4 @@
-import { EnrichmentResultDto } from '../dto/enrichment-result.dto';
+import { EnrichmentResultDto } from "../dto/enrichment-result.dto";
 
 export interface IParcelleEnrichmentService {
   /**
@@ -6,7 +6,5 @@ export interface IParcelleEnrichmentService {
    * @param identifiantParcelle Identifiant de la parcelle à enrichir
    * @returns Promise<EnrichmentResultDto> Résultat de l'enrichissement avec parcelle enrichie, sources utilisées, champs manquants et indice de fiabilité
    */
-  enrichFromDataSources(
-    identifiantParcelle: string,
-  ): Promise<EnrichmentResultDto>;
+  enrichFromDataSources(identifiantParcelle: string): Promise<EnrichmentResultDto>;
 }

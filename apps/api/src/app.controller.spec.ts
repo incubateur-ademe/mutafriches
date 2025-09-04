@@ -1,10 +1,10 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { AppController } from './app.controller';
-import { DatabaseService } from './shared/database/database.service';
-import { UiService } from './ui/services/ui.service';
+import { Test, TestingModule } from "@nestjs/testing";
+import { describe, it, expect, beforeEach, vi } from "vitest";
+import { AppController } from "./app.controller";
+import { DatabaseService } from "./shared/database/database.service";
+import { UiService } from "./ui/services/ui.service";
 
-describe('AppController', () => {
+describe("AppController", () => {
   let appController: AppController;
   let databaseService: DatabaseService;
 
@@ -16,7 +16,7 @@ describe('AppController', () => {
     };
 
     const mockUiService = {
-      renderFormStep: vi.fn().mockReturnValue('<html>Mock HTML</html>'),
+      renderFormStep: vi.fn().mockReturnValue("<html>Mock HTML</html>"),
     };
 
     const app: TestingModule = await Test.createTestingModule({
@@ -37,38 +37,36 @@ describe('AppController', () => {
     databaseService = app.get<DatabaseService>(DatabaseService);
   });
 
-  describe('healthCheck', () => {
-    it('should return health status with OK database', async () => {
+  describe("healthCheck", () => {
+    it("should return health status with OK database", async () => {
       const result = await appController.healthCheck();
 
-      expect(result).toHaveProperty('status', 'OK');
-      expect(result).toHaveProperty('timestamp');
-      expect(result).toHaveProperty('service', 'Mutafriches API');
-      expect(result.checks).toHaveProperty('api', 'OK');
-      expect(result.checks).toHaveProperty('database', 'OK');
+      expect(result).toHaveProperty("status", "OK");
+      expect(result).toHaveProperty("timestamp");
+      expect(result).toHaveProperty("service", "Mutafriches API");
+      expect(result.checks).toHaveProperty("api", "OK");
+      expect(result.checks).toHaveProperty("database", "OK");
     });
 
-    it('should return DEGRADED status when database is disconnected', async () => {
+    it("should return DEGRADED status when database is disconnected", async () => {
       // Mock database as null
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       (databaseService as any).db = null;
 
       const result = await appController.healthCheck();
 
-      expect(result.status).toBe('DEGRADED');
-      expect(result.checks.database).toBe('DISCONNECTED');
+      expect(result.status).toBe("DEGRADED");
+      expect(result.checks.database).toBe("DISCONNECTED");
     });
 
-    it('should return DEGRADED status when database throws error', async () => {
+    it("should return DEGRADED status when database throws error", async () => {
       // Mock database execute to throw
-      vi.spyOn(databaseService.db, 'execute').mockRejectedValue(
-        new Error('DB Error'),
-      );
+      vi.spyOn(databaseService.db, "execute").mockRejectedValue(new Error("DB Error"));
 
       const result = await appController.healthCheck();
 
-      expect(result.status).toBe('DEGRADED');
-      expect(result.checks.database).toBe('ERROR');
+      expect(result.status).toBe("DEGRADED");
+      expect(result.checks.database).toBe("ERROR");
     });
   });
 });

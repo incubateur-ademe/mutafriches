@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
-import { eq, desc, count, isNotNull } from 'drizzle-orm';
-import { userSessions, userActions, integrators } from './analytics.schema';
-import { mutabilityResults } from '../friches/schemas/mutability.schema';
+import { Injectable } from "@nestjs/common";
+import { eq, desc, count, isNotNull } from "drizzle-orm";
+import { userSessions, userActions, integrators } from "./analytics.schema";
+import { mutabilityResults } from "../friches/schemas/mutability.schema";
 import {
   type NewUserSession,
   type NewUserAction,
@@ -14,11 +14,11 @@ import {
   type ConversionRates,
   type PertinenceStats,
   ActionTypes,
-} from './analytics.types';
+} from "./analytics.types";
 
-import { DatabaseService } from '../shared/database/database.service';
-import { NewMutabilityResult } from 'src/friches/entities/mutability.entity';
-import { PertinenceReponse } from 'src/friches/enums/mutability.enums';
+import { DatabaseService } from "../shared/database/database.service";
+import { NewMutabilityResult } from "src/friches/entities/mutability.entity";
+import { PertinenceReponse } from "src/friches/enums/mutability.enums";
 
 @Injectable()
 export class AnalyticsService {
@@ -116,18 +116,12 @@ export class AnalyticsService {
       .where(isNotNull(mutabilityResults.pertinenceReponse));
 
     // Compter le total de sessions terminées
-    const totalCompletedSessions = await this.db
-      .select()
-      .from(mutabilityResults);
+    const totalCompletedSessions = await this.db.select().from(mutabilityResults);
 
     const totalResponses = results.length;
     const totalCompleted = totalCompletedSessions.length;
-    const ouiCount = results.filter(
-      (r) => r.pertinenceReponse === 'OUI',
-    ).length;
-    const nonCount = results.filter(
-      (r) => r.pertinenceReponse === 'NON',
-    ).length;
+    const ouiCount = results.filter((r) => r.pertinenceReponse === "OUI").length;
+    const nonCount = results.filter((r) => r.pertinenceReponse === "NON").length;
 
     return {
       totalResponses,
@@ -135,16 +129,13 @@ export class AnalyticsService {
       nonCount,
       ouiPercentage: totalResponses > 0 ? (ouiCount / totalResponses) * 100 : 0,
       nonPercentage: totalResponses > 0 ? (nonCount / totalResponses) * 100 : 0,
-      responseRate:
-        totalCompleted > 0 ? (totalResponses / totalCompleted) * 100 : 0,
+      responseRate: totalCompleted > 0 ? (totalResponses / totalCompleted) * 100 : 0,
     };
   }
 
   // Méthodes d'analytics
   async getAnalyticsMetrics(): Promise<AnalyticsMetrics> {
-    const totalSessionsResult = await this.db
-      .select({ count: count() })
-      .from(userSessions);
+    const totalSessionsResult = await this.db.select({ count: count() }).from(userSessions);
 
     const completedSessionsResult = await this.db
       .select({ count: count() })
@@ -211,18 +202,12 @@ export class AnalyticsService {
     } = metrics;
 
     return {
-      completionRate:
-        totalSessions > 0 ? (completedSessions / totalSessions) * 100 : 0,
-      detailsClickRate:
-        completedSessions > 0 ? (detailsClicked / completedSessions) * 100 : 0,
-      contactClickRate:
-        completedSessions > 0 ? (contactClicked / completedSessions) * 100 : 0,
-      toolClickRate:
-        completedSessions > 0 ? (toolLinkClicked / completedSessions) * 100 : 0,
+      completionRate: totalSessions > 0 ? (completedSessions / totalSessions) * 100 : 0,
+      detailsClickRate: completedSessions > 0 ? (detailsClicked / completedSessions) * 100 : 0,
+      contactClickRate: completedSessions > 0 ? (contactClicked / completedSessions) * 100 : 0,
+      toolClickRate: completedSessions > 0 ? (toolLinkClicked / completedSessions) * 100 : 0,
       pertinenceResponseRate:
-        completedSessions > 0
-          ? (pertinenceAnswered / completedSessions) * 100
-          : 0,
+        completedSessions > 0 ? (pertinenceAnswered / completedSessions) * 100 : 0,
     };
   }
 

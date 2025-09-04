@@ -1,32 +1,27 @@
-import { Injectable } from '@nestjs/common';
-import { HttpService } from '@nestjs/axios';
-import { firstValueFrom } from 'rxjs'; // ← Import manquant !
-import { ApiResponse } from '../shared/api-response.interface';
-import {
-  CadastreServiceResponse,
-  ICadastreService,
-} from './cadastre.interface';
+import { Injectable } from "@nestjs/common";
+import { HttpService } from "@nestjs/axios";
+import { firstValueFrom } from "rxjs"; // ← Import manquant !
+import { ApiResponse } from "../shared/api-response.interface";
+import { CadastreServiceResponse, ICadastreService } from "./cadastre.interface";
 import {
   IGNLocalisantFeature,
   IGNLocalisantResponse,
   IGNParcelleFeature,
   IGNParcelleResponse,
-} from './ign-api.interfaces';
-import { isValidParcelId } from 'src/friches/lib/friches.utils';
+} from "./ign-api.interfaces";
+import { isValidParcelId } from "src/friches/lib/friches.utils";
 
 @Injectable()
 export class CadastreService implements ICadastreService {
   private readonly baseUrl =
-    process.env.IGN_CADASTRE_API_URL || 'https://apicarto.ign.fr/api/cadastre';
+    process.env.IGN_CADASTRE_API_URL || "https://apicarto.ign.fr/api/cadastre";
 
   constructor(private readonly httpService: HttpService) {}
 
   /**
    * Récupère les informations d'une parcelle par son identifiant
    */
-  async getParcelleInfo(
-    identifiant: string,
-  ): Promise<ApiResponse<CadastreServiceResponse>> {
+  async getParcelleInfo(identifiant: string): Promise<ApiResponse<CadastreServiceResponse>> {
     const startTime = Date.now();
 
     try {
@@ -37,7 +32,7 @@ export class CadastreService implements ICadastreService {
         return {
           success: false,
           error: `Format d'identifiant parcellaire invalide: ${identifiant}`,
-          source: 'IGN Cadastre',
+          source: "IGN Cadastre",
           responseTimeMs: Date.now() - startTime,
         };
       }
@@ -48,7 +43,7 @@ export class CadastreService implements ICadastreService {
         return {
           success: false,
           error: `Impossible de parser l'identifiant: ${identifiant}`,
-          source: 'IGN Cadastre',
+          source: "IGN Cadastre",
           responseTimeMs: Date.now() - startTime,
         };
       }
@@ -63,8 +58,8 @@ export class CadastreService implements ICadastreService {
       if (!parcelleResult.success || !parcelleResult.data) {
         return {
           success: false,
-          error: parcelleResult.error || 'Parcelle non trouvée',
-          source: 'IGN Cadastre',
+          error: parcelleResult.error || "Parcelle non trouvée",
+          source: "IGN Cadastre",
           responseTimeMs: Date.now() - startTime,
         };
       }
@@ -73,9 +68,7 @@ export class CadastreService implements ICadastreService {
 
       // Validation de l'IDU (sécurité)
       if (parcelle.properties.idu !== identifiant) {
-        console.warn(
-          `IDU mismatch: demandé ${identifiant}, reçu ${parcelle.properties.idu}`,
-        );
+        console.warn(`IDU mismatch: demandé ${identifiant}, reçu ${parcelle.properties.idu}`);
       }
 
       // Coordonnées depuis localisant ou fallback
@@ -91,20 +84,17 @@ export class CadastreService implements ICadastreService {
           surface: Math.round(parcelle.properties.contenance),
           coordonnees,
         },
-        source: 'IGN Cadastre',
+        source: "IGN Cadastre",
         responseTimeMs,
       };
     } catch (error) {
       const responseTimeMs = Date.now() - startTime;
-      console.error(
-        `Erreur lors de la récupération de la parcelle ${identifiant}:`,
-        error,
-      );
+      console.error(`Erreur lors de la récupération de la parcelle ${identifiant}:`, error);
 
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Erreur inconnue',
-        source: 'IGN Cadastre',
+        error: error instanceof Error ? error.message : "Erreur inconnue",
+        source: "IGN Cadastre",
         responseTimeMs,
       };
     }
@@ -143,7 +133,7 @@ export class CadastreService implements ICadastreService {
         code_insee: components.codeInsee,
         section: components.section,
         numero: components.numero,
-        source_ign: 'PCI',
+        source_ign: "PCI",
       };
 
       console.log(`Appel API IGN parcelle: ${url}`, params);
@@ -157,22 +147,22 @@ export class CadastreService implements ICadastreService {
       if (!data.features || data.features.length === 0) {
         return {
           success: false,
-          error: 'Parcelle non trouvée dans le cadastre',
-          source: 'IGN Cadastre',
+          error: "Parcelle non trouvée dans le cadastre",
+          source: "IGN Cadastre",
         };
       }
 
       return {
         success: true,
         data: data.features[0],
-        source: 'IGN Cadastre',
+        source: "IGN Cadastre",
       };
     } catch (error) {
-      console.error('Erreur lors de la récupération de la parcelle:', error);
+      console.error("Erreur lors de la récupération de la parcelle:", error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Erreur API IGN',
-        source: 'IGN Cadastre',
+        error: error instanceof Error ? error.message : "Erreur API IGN",
+        source: "IGN Cadastre",
       };
     }
   }
@@ -191,7 +181,7 @@ export class CadastreService implements ICadastreService {
         code_insee: components.codeInsee,
         section: components.section,
         numero: components.numero,
-        source_ign: 'PCI',
+        source_ign: "PCI",
       };
 
       console.log(`Appel API IGN localisant: ${url}`, params);
@@ -205,22 +195,22 @@ export class CadastreService implements ICadastreService {
       if (!data.features || data.features.length === 0) {
         return {
           success: false,
-          error: 'Localisant non trouvé',
-          source: 'IGN Cadastre',
+          error: "Localisant non trouvé",
+          source: "IGN Cadastre",
         };
       }
 
       return {
         success: true,
         data: data.features[0],
-        source: 'IGN Cadastre',
+        source: "IGN Cadastre",
       };
     } catch (error) {
-      console.error('Erreur lors de la récupération du localisant:', error);
+      console.error("Erreur lors de la récupération du localisant:", error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Erreur API IGN',
-        source: 'IGN Cadastre',
+        error: error instanceof Error ? error.message : "Erreur API IGN",
+        source: "IGN Cadastre",
       };
     }
   }
@@ -235,15 +225,12 @@ export class CadastreService implements ICadastreService {
     // Priorité 1: Utiliser le localisant si disponible
     if (localisantResult.success && localisantResult.data) {
       // Format: coordinates: [[longitude, latitude]]
-      const [longitude, latitude] =
-        localisantResult.data.geometry.coordinates[0];
+      const [longitude, latitude] = localisantResult.data.geometry.coordinates[0];
       return { latitude, longitude };
     }
 
     // Fallback: Calculer depuis la géométrie de la parcelle
-    console.warn(
-      'Localisant non disponible, calcul centroïde depuis géométrie',
-    );
+    console.warn("Localisant non disponible, calcul centroïde depuis géométrie");
     return this.calculateCentroid(parcelle.geometry);
   }
 
@@ -251,13 +238,11 @@ export class CadastreService implements ICadastreService {
    * Calcule le centroïde d'un polygone (fallback)
    */
   private calculateCentroid(geometry: {
-    type: 'MultiPolygon' | 'Polygon';
+    type: "MultiPolygon" | "Polygon";
     coordinates: number[][][];
   }): { latitude: number; longitude: number } {
     const coords =
-      geometry.type === 'MultiPolygon'
-        ? geometry.coordinates[0]
-        : geometry.coordinates;
+      geometry.type === "MultiPolygon" ? geometry.coordinates[0] : geometry.coordinates;
 
     if (!coords || coords.length === 0) {
       return { latitude: 0, longitude: 0 };

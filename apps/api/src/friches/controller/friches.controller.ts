@@ -1,4 +1,4 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body } from "@nestjs/common";
 import {
   ApiTags,
   ApiOperation,
@@ -7,23 +7,23 @@ import {
   ApiBadRequestResponse,
   ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
-} from '@nestjs/swagger';
-import { ParcelleEnrichmentService } from '../services/parcelle-enrichment/parcelle-enrichment.service';
-import { ParcelleInputDto } from '../dto/parcelle-input.dto';
-import { EnrichmentResultDto } from '../dto/enrichment-result.dto';
-import { MutabilityCalculationService } from '../services/mutability/mutability-calculation.service';
-import { MutabilityInputDto } from '../dto/mutability-input.dto';
-import { MutabilityResultDto } from '../dto/mutability-result.dto';
+} from "@nestjs/swagger";
+import { ParcelleEnrichmentService } from "../services/parcelle-enrichment/parcelle-enrichment.service";
+import { ParcelleInputDto } from "../dto/parcelle-input.dto";
+import { EnrichmentResultDto } from "../dto/enrichment-result.dto";
+import { MutabilityCalculationService } from "../services/mutability/mutability-calculation.service";
+import { MutabilityInputDto } from "../dto/mutability-input.dto";
+import { MutabilityResultDto } from "../dto/mutability-result.dto";
 
-@ApiTags('friches')
-@Controller('friches')
+@ApiTags("friches")
+@Controller("friches")
 export class FrichesController {
   constructor(
     private readonly parcelleEnrichmentService: ParcelleEnrichmentService,
     private readonly mutabilityCalculationService: MutabilityCalculationService,
   ) {}
 
-  @Post('parcelle/enrichir')
+  @Post("parcelle/enrichir")
   @ApiOperation({
     summary: "Enrichir les données d'une parcelle",
     description: `
@@ -43,51 +43,44 @@ export class FrichesController {
     type: ParcelleInputDto,
     examples: {
       atelierCoutances: {
-        summary: 'Atelier de conception - Coutances',
-        description:
-          'Parcelle exemple du fichier Excel original, avec données complètes',
+        summary: "Atelier de conception - Coutances",
+        description: "Parcelle exemple du fichier Excel original, avec données complètes",
         value: {
-          identifiantParcelle: '50147000AR0010',
+          identifiantParcelle: "50147000AR0010",
         },
       },
     },
   })
   @ApiResponse({
     status: 201,
-    description: 'Enrichissement réussi avec données complètes',
+    description: "Enrichissement réussi avec données complètes",
     type: EnrichmentResultDto,
   })
   @ApiBadRequestResponse({
     description: "Format d'identifiant parcelle invalide",
     examples: {
       invalidFormat: {
-        summary: 'Format invalide',
+        summary: "Format invalide",
         value: {
           statusCode: 400,
-          message: [
-            "Format d'identifiant parcelle invalide (attendu: 25056000HZ0346)",
-          ],
-          error: 'Bad Request',
+          message: ["Format d'identifiant parcelle invalide (attendu: 25056000HZ0346)"],
+          error: "Bad Request",
         },
       },
     },
   })
   @ApiNotFoundResponse({
-    description: 'Parcelle introuvable dans les sources de données',
+    description: "Parcelle introuvable dans les sources de données",
   })
   @ApiInternalServerErrorResponse({
     description: "Erreur lors de l'accès aux sources de données externes",
   })
-  async enrichParcelle(
-    @Body() input: ParcelleInputDto,
-  ): Promise<EnrichmentResultDto> {
+  async enrichParcelle(@Body() input: ParcelleInputDto): Promise<EnrichmentResultDto> {
     console.log(`API: Enrichissement parcelle ${input.identifiantParcelle}`);
-    return await this.parcelleEnrichmentService.enrichFromDataSources(
-      input.identifiantParcelle,
-    );
+    return await this.parcelleEnrichmentService.enrichFromDataSources(input.identifiantParcelle);
   }
 
-  @Post('parcelle/mutabilite')
+  @Post("parcelle/mutabilite")
   @ApiOperation({
     summary: "Calculer les indices de mutabilité d'une friche",
     description: `
@@ -129,12 +122,11 @@ export class FrichesController {
     `,
     examples: {
       atelierCoutances: {
-        summary: 'Atelier de conception - Coutances',
-        description:
-          'Parcelle exemple du fichier Excel original, avec données complètes',
+        summary: "Atelier de conception - Coutances",
+        description: "Parcelle exemple du fichier Excel original, avec données complètes",
         value: {
-          identifiantParcelle: '50147000AR0010',
-          commune: 'Coutances',
+          identifiantParcelle: "50147000AR0010",
+          commune: "Coutances",
           surfaceSite: 1782,
           surfaceBati: 1214,
           connectionReseauElectricite: true,
@@ -145,20 +137,20 @@ export class FrichesController {
           proximiteCommercesServices: false,
           tauxLogementsVacants: 0,
           presenceRisquesTechnologiques: false,
-          presenceRisquesNaturels: 'faible',
-          zonageEnvironnemental: 'hors_zone',
-          zonageReglementaire: '',
-          zonagePatrimonial: 'non_concerne',
-          trameVerteEtBleue: 'hors_trame',
+          presenceRisquesNaturels: "faible",
+          zonageEnvironnemental: "hors_zone",
+          zonageReglementaire: "",
+          zonagePatrimonial: "non_concerne",
+          trameVerteEtBleue: "hors_trame",
           coordonnees: {
             latitude: 49.0421992,
             longitude: -1.45017951,
           },
-          etatBatiInfrastructure: 'BATIMENTS_HETEROGENES',
-          presencePollution: 'NE_SAIT_PAS',
-          qualiteVoieDesserte: 'ACCESSIBLE',
-          qualitePaysage: 'BANAL_INFRA_ORDINAIRE',
-          valeurArchitecturaleHistorique: 'EXCEPTIONNEL',
+          etatBatiInfrastructure: "BATIMENTS_HETEROGENES",
+          presencePollution: "NE_SAIT_PAS",
+          qualiteVoieDesserte: "ACCESSIBLE",
+          qualitePaysage: "BANAL_INFRA_ORDINAIRE",
+          valeurArchitecturaleHistorique: "EXCEPTIONNEL",
           terrainViabilise: true,
           fiabilite: 9.5,
         },
@@ -167,28 +159,28 @@ export class FrichesController {
   })
   @ApiResponse({
     status: 201,
-    description: 'Calcul de mutabilité réussi avec indices détaillés',
+    description: "Calcul de mutabilité réussi avec indices détaillés",
     type: MutabilityResultDto,
   })
   @ApiBadRequestResponse({
     description: "Données d'entrée invalides ou incomplètes",
     examples: {
       donneesManquantes: {
-        summary: 'Champs obligatoires manquants',
+        summary: "Champs obligatoires manquants",
         value: {
           statusCode: 400,
           message: [
-            'identifiantParcelle should not be empty',
-            'commune should not be empty',
-            'surfaceSite must be a positive number',
+            "identifiantParcelle should not be empty",
+            "commune should not be empty",
+            "surfaceSite must be a positive number",
           ],
-          error: 'Bad Request',
+          error: "Bad Request",
         },
       },
     },
   })
   @ApiInternalServerErrorResponse({
-    description: 'Erreur lors du calcul des indices de mutabilité',
+    description: "Erreur lors du calcul des indices de mutabilité",
   })
   calculateMutability(@Body() input: MutabilityInputDto): MutabilityResultDto {
     console.log(`API: Calcul mutabilité ${input.identifiantParcelle}`);

@@ -1,4 +1,4 @@
-import { ApiResponse } from '../shared/api-response.interface';
+import { ApiResponse } from "../shared/api-response.interface";
 
 /**
  * Bâtiment enrichi pour les réponses de service
@@ -76,10 +76,6 @@ export interface BdnbServiceResponse {
  */
 export interface IBdnbService {
   getSurfaceBatie(identifiantParcelle: string): Promise<ApiResponse<number>>;
-  getBatiments(
-    identifiantParcelle: string,
-  ): Promise<ApiResponse<BdnbServiceResponse>>;
-  getRisquesNaturels(
-    identifiantParcelle: string,
-  ): Promise<ApiResponse<BdnbRisquesNaturels>>;
+  getBatiments(identifiantParcelle: string): Promise<ApiResponse<BdnbServiceResponse>>;
+  getRisquesNaturels(identifiantParcelle: string): Promise<ApiResponse<BdnbRisquesNaturels>>;
 }

@@ -1,8 +1,8 @@
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from '../../app.module';
-import { AnalyticsService } from '../analytics.service';
-import { ActionTypes, type Integrator } from '../analytics.types';
-import { PertinenceReponse } from 'src/friches/enums/mutability.enums';
+import { NestFactory } from "@nestjs/core";
+import { AppModule } from "../../app.module";
+import { AnalyticsService } from "../analytics.service";
+import { ActionTypes, type Integrator } from "../analytics.types";
+import { PertinenceReponse } from "src/friches/enums/mutability.enums";
 
 async function bootstrap() {
   const app = await NestFactory.createApplicationContext(AppModule);
@@ -13,15 +13,15 @@ async function bootstrap() {
   try {
     // Nettoyer les données existantes
     await analyticsService.clearAllData();
-    console.log('Données existantes supprimées');
+    console.log("Données existantes supprimées");
 
     // 1. Création d'intégrateurs
     const integrators = [
-      { name: 'Bénéfriches', domain: 'https://benefriches.beta.gouv.fr' },
-      { name: 'UrbanVitaliz', domain: 'https://urbanvitaliz.beta.gouv.fr' },
-      { name: 'Cartofriches', domain: 'https://cartofriches.cerema.fr/' },
-      { name: 'Total Energies', domain: 'https://www.totalenergies.fr/' },
-      { name: 'Groupe François 1er', domain: 'https://francois1er.com/' },
+      { name: "Bénéfriches", domain: "https://benefriches.beta.gouv.fr" },
+      { name: "UrbanVitaliz", domain: "https://urbanvitaliz.beta.gouv.fr" },
+      { name: "Cartofriches", domain: "https://cartofriches.cerema.fr/" },
+      { name: "Total Energies", domain: "https://www.totalenergies.fr/" },
+      { name: "Groupe François 1er", domain: "https://francois1er.com/" },
     ];
 
     const createdIntegrators: Integrator[] = [];
@@ -34,11 +34,9 @@ async function bootstrap() {
     }
 
     // 2. Génération de données sur une période d'1 semaine
-    const startDate = new Date('2025-07-01');
-    const endDate = new Date('2025-07-08');
-    const totalDays = Math.ceil(
-      (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24),
-    );
+    const startDate = new Date("2025-07-01");
+    const endDate = new Date("2025-07-08");
+    const totalDays = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
 
     let totalSessions = 0;
     let completedSessions = 0;
@@ -49,9 +47,7 @@ async function bootstrap() {
 
     // Générer 10-30 sessions par jour
     for (let day = 0; day < totalDays; day++) {
-      const currentDate = new Date(
-        startDate.getTime() + day * 24 * 60 * 60 * 1000,
-      );
+      const currentDate = new Date(startDate.getTime() + day * 24 * 60 * 60 * 1000);
 
       // Variation selon le jour de la semaine
       const dayOfWeek = currentDate.getDay();
@@ -60,15 +56,11 @@ async function bootstrap() {
       if (dayOfWeek === 2 || dayOfWeek === 3) baseSessions = 25; // Mardi/Mercredi plus actifs
 
       // Variation aléatoire ±30%
-      const dailySessions = Math.floor(
-        baseSessions * (0.7 + Math.random() * 0.6),
-      );
+      const dailySessions = Math.floor(baseSessions * (0.7 + Math.random() * 0.6));
 
       for (let sessionIndex = 0; sessionIndex < dailySessions; sessionIndex++) {
         const integrator =
-          createdIntegrators[
-            Math.floor(Math.random() * createdIntegrators.length)
-          ];
+          createdIntegrators[Math.floor(Math.random() * createdIntegrators.length)];
 
         // Générer un timestamp aléatoire dans la journée
         const hour =
@@ -105,9 +97,7 @@ async function bootstrap() {
         // 2. 68% terminent le parcours
         const completeParcours = Math.random() < 0.68;
         if (completeParcours) {
-          const completionTime = new Date(
-            sessionDate.getTime() + (2 + Math.random() * 8) * 60000,
-          ); // 2-10 min plus tard
+          const completionTime = new Date(sessionDate.getTime() + (2 + Math.random() * 8) * 60000); // 2-10 min plus tard
 
           await analyticsService.trackUserAction({
             sessionId,
@@ -143,10 +133,7 @@ async function bootstrap() {
             );
 
             // 72% répondent OUI, 28% répondent NON
-            const reponse =
-              Math.random() < 0.72
-                ? PertinenceReponse.OUI
-                : PertinenceReponse.NON;
+            const reponse = Math.random() < 0.72 ? PertinenceReponse.OUI : PertinenceReponse.NON;
 
             // Mettre à jour le résultat avec la réponse de pertinence
             await analyticsService.updatePertinenceReponse(sessionId, reponse);
@@ -164,9 +151,7 @@ async function bootstrap() {
 
           // 4. 45% de ceux qui terminent cliquent sur "voir tous les résultats détaillés"
           if (Math.random() < 0.45) {
-            const detailsTime = new Date(
-              completionTime.getTime() + Math.random() * 120000,
-            );
+            const detailsTime = new Date(completionTime.getTime() + Math.random() * 120000);
             await analyticsService.trackUserAction({
               sessionId,
               actionType: ActionTypes.DETAILS_CLICKED,
@@ -177,9 +162,7 @@ async function bootstrap() {
 
           // 5. 28% de ceux qui terminent cliquent sur "je souhaite être contacté"
           if (Math.random() < 0.28) {
-            const contactTime = new Date(
-              completionTime.getTime() + Math.random() * 300000,
-            );
+            const contactTime = new Date(completionTime.getTime() + Math.random() * 300000);
             await analyticsService.trackUserAction({
               sessionId,
               actionType: ActionTypes.CONTACT_CLICKED,
@@ -190,16 +173,9 @@ async function bootstrap() {
 
           // 6. 22% de ceux qui terminent cliquent sur un lien d'outil annexe
           if (Math.random() < 0.22) {
-            const toolTime = new Date(
-              completionTime.getTime() + Math.random() * 240000,
-            );
-            const tools = [
-              'outil-cartographie',
-              'simulateur-couts',
-              'guide-reglementation',
-            ];
-            const selectedTool =
-              tools[Math.floor(Math.random() * tools.length)];
+            const toolTime = new Date(completionTime.getTime() + Math.random() * 240000);
+            const tools = ["outil-cartographie", "simulateur-couts", "guide-reglementation"];
+            const selectedTool = tools[Math.floor(Math.random() * tools.length)];
 
             await analyticsService.trackUserAction({
               sessionId,
@@ -212,16 +188,14 @@ async function bootstrap() {
         }
       }
 
-      console.log(
-        `Jour ${day + 1}/${totalDays} traité (${dailySessions} sessions)`,
-      );
+      console.log(`Jour ${day + 1}/${totalDays} traité (${dailySessions} sessions)`);
     }
 
     // Récupérer les stats de pertinence pour l'affichage final
     const pertinenceStats = await analyticsService.getPertinenceStats();
 
     // Afficher les statistiques finales
-    console.log('\nSTATISTIQUES GÉNÉRÉES:');
+    console.log("\nSTATISTIQUES GÉNÉRÉES:");
     console.log(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
     console.log(`Total sessions créées: ${totalSessions.toLocaleString()}`);
     console.log(
@@ -249,7 +223,7 @@ async function bootstrap() {
 
     console.log("\nSeed des métriques d'impact terminé avec succès !");
   } catch (error) {
-    console.error('Erreur lors du seed:', error);
+    console.error("Erreur lors du seed:", error);
   } finally {
     await app.close();
   }
@@ -258,15 +232,15 @@ async function bootstrap() {
 // Fonctions utilitaires pour générer des données réalistes
 function generateRandomUserAgent(): string {
   const userAgents = [
-    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-    'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0',
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0",
   ];
   return userAgents[Math.floor(Math.random() * userAgents.length)];
 }
 
 function generateRandomIP(): string {
-  const ranges = ['77.192', '78.192', '90.2', '92.184'];
+  const ranges = ["77.192", "78.192", "90.2", "92.184"];
   const range = ranges[Math.floor(Math.random() * ranges.length)];
   const third = Math.floor(Math.random() * 255);
   const fourth = Math.floor(Math.random() * 255);
@@ -274,6 +248,6 @@ function generateRandomIP(): string {
 }
 
 bootstrap().catch((err) => {
-  console.error('Erreur lors du seed:', err);
+  console.error("Erreur lors du seed:", err);
   process.exit(1);
 });

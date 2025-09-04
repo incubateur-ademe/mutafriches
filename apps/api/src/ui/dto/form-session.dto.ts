@@ -1,7 +1,7 @@
-import { MutabilityInputDto } from 'src/friches/dto/mutability-input.dto';
-import { UiMutabilityResultDto } from './ui-mutability-result.dto';
-import { DataSource } from '../enums/form-session.enums';
-import { ParcelleBase } from 'src/friches/entities/shared/parcelle.base';
+import { MutabilityInputDto } from "src/friches/dto/mutability-input.dto";
+import { UiMutabilityResultDto } from "./ui-mutability-result.dto";
+import { DataSource } from "../enums/form-session.enums";
+import { ParcelleBase } from "src/friches/entities/shared/parcelle.base";
 
 /**
  * Interface pour tracer l'origine des données

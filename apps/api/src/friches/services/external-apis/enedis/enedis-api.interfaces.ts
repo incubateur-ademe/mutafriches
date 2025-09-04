@@ -14,10 +14,10 @@ export interface EnedisGeoPoint {
 }
 
 export interface EnedisGeoShape {
-  type: 'Feature';
+  type: "Feature";
   geometry: {
     coordinates: [number, number];
-    type: 'Point';
+    type: "Point";
   };
   properties: Record<string, unknown>;
 }
@@ -67,22 +67,22 @@ export type EnedisDatasetRecord =
 
 export interface EnedisApiParams {
   dataset:
-    | 'poste-electrique'
-    | 'reseau-bt'
-    | 'reseau-souterrain-bt'
-    | 'position-geographique-des-poteaux-hta-et-bt';
+    | "poste-electrique"
+    | "reseau-bt"
+    | "reseau-souterrain-bt"
+    | "position-geographique-des-poteaux-hta-et-bt";
   rows?: number; // limite de résultats (défaut: 10)
   start?: number; // offset
   select?: string; // champs à sélectionner
   where?: string; // clause WHERE
   order_by?: string; // tri
   group_by?: string; // groupement
-  'geofilter.distance'?: string; // "lat,lon,distance_in_meters"
-  'geofilter.polygon'?: string; // WKT polygon
-  'geofilter.bbox'?: string; // "lat1,lon1,lat2,lon2"
+  "geofilter.distance"?: string; // "lat,lon,distance_in_meters"
+  "geofilter.polygon"?: string; // WKT polygon
+  "geofilter.bbox"?: string; // "lat1,lon1,lat2,lon2"
   refine?: Record<string, string>; // filtres par facette
   exclude?: Record<string, string>; // exclusions par facette
-  lang?: 'fr' | 'en';
+  lang?: "fr" | "en";
   timezone?: string;
 }
 

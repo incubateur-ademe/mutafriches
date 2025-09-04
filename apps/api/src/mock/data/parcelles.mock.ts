@@ -1,11 +1,11 @@
-import { Parcelle } from '../../friches/entities/parcelle.entity';
+import { Parcelle } from "../../friches/entities/parcelle.entity";
 import {
   RisqueNaturel,
   ZonageEnvironnemental,
   ZonagePatrimonial,
   TrameVerteEtBleue,
   ZonageReglementaire,
-} from '../../friches/enums/parcelle.enums';
+} from "../../friches/enums/parcelle.enums";
 
 /**
  * Base de données mockée utilisant l'entité Parcelle
@@ -22,7 +22,7 @@ export class MockParcellesHelper {
    */
   static initializeDefaultParcelles(): void {
     // Parcelle principale - Exemple Excel Trélazé
-    const trelazeParcel = new Parcelle('490007000ZE0153', 'Trélazé');
+    const trelazeParcel = new Parcelle("490007000ZE0153", "Trélazé");
     trelazeParcel.surfaceSite = 42780;
     trelazeParcel.surfaceBati = 6600;
     trelazeParcel.coordonnees = { latitude: 47.4514, longitude: -0.4619 };
@@ -33,7 +33,7 @@ export class MockParcellesHelper {
     trelazeParcel.distanceTransportCommun = 250;
     trelazeParcel.proximiteCommercesServices = true;
     trelazeParcel.tauxLogementsVacants = 4.9;
-    trelazeParcel.ancienneActivite = 'Manufacture textile - Les Allumettes';
+    trelazeParcel.ancienneActivite = "Manufacture textile - Les Allumettes";
     trelazeParcel.presenceRisquesTechnologiques = false;
     trelazeParcel.presenceRisquesNaturels = RisqueNaturel.FAIBLE;
     trelazeParcel.zonageEnvironnemental = ZonageEnvironnemental.HORS_ZONE;
@@ -44,7 +44,7 @@ export class MockParcellesHelper {
     MOCK_PARCELLES[trelazeParcel.identifiantParcelle] = trelazeParcel;
 
     // Parcelle secondaire - Angers
-    const angersParcel = new Parcelle('490007000AB0001', 'Angers');
+    const angersParcel = new Parcelle("490007000AB0001", "Angers");
     angersParcel.surfaceSite = 15000;
     angersParcel.surfaceBati = 2500;
     angersParcel.coordonnees = { latitude: 47.4784, longitude: -0.5632 };
@@ -55,7 +55,7 @@ export class MockParcellesHelper {
     angersParcel.distanceTransportCommun = 800;
     angersParcel.proximiteCommercesServices = false;
     angersParcel.tauxLogementsVacants = 7.2;
-    angersParcel.ancienneActivite = 'Entrepôt logistique';
+    angersParcel.ancienneActivite = "Entrepôt logistique";
     angersParcel.presenceRisquesTechnologiques = true;
     angersParcel.presenceRisquesNaturels = RisqueNaturel.MOYEN;
     angersParcel.zonageEnvironnemental = ZonageEnvironnemental.ZNIEFF_TYPE_1_2;
@@ -66,7 +66,7 @@ export class MockParcellesHelper {
     MOCK_PARCELLES[angersParcel.identifiantParcelle] = angersParcel;
 
     // Parcelle tertiaire - Saumur
-    const saumurParcel = new Parcelle('490007000CD0042', 'Saumur');
+    const saumurParcel = new Parcelle("490007000CD0042", "Saumur");
     saumurParcel.surfaceSite = 8500;
     saumurParcel.surfaceBati = 1200;
     saumurParcel.coordonnees = { latitude: 47.2692, longitude: -0.0737 };
@@ -77,7 +77,7 @@ export class MockParcellesHelper {
     saumurParcel.distanceTransportCommun = 1500;
     saumurParcel.proximiteCommercesServices = false;
     saumurParcel.tauxLogementsVacants = 12.1;
-    saumurParcel.ancienneActivite = 'Exploitation agricole';
+    saumurParcel.ancienneActivite = "Exploitation agricole";
     saumurParcel.presenceRisquesTechnologiques = false;
     saumurParcel.presenceRisquesNaturels = RisqueNaturel.AUCUN;
     saumurParcel.zonageEnvironnemental = ZonageEnvironnemental.NATURA_2000;
@@ -105,11 +105,7 @@ export class MockParcellesHelper {
   /**
    * Trouve une parcelle par coordonnées (approximatif)
    */
-  static findByCoordinates(
-    latitude: number,
-    longitude: number,
-    tolerance = 0.01,
-  ): Parcelle | null {
+  static findByCoordinates(latitude: number, longitude: number, tolerance = 0.01): Parcelle | null {
     return (
       Object.values(MOCK_PARCELLES).find(
         (p) =>
@@ -138,11 +134,7 @@ export class MockParcellesHelper {
    * Reset aux données par défaut
    */
   static reset(): void {
-    const defaultIds = [
-      '490007000ZE0153',
-      '490007000AB0001',
-      '490007000CD0042',
-    ];
+    const defaultIds = ["490007000ZE0153", "490007000AB0001", "490007000CD0042"];
 
     Object.keys(MOCK_PARCELLES).forEach((id) => {
       if (!defaultIds.includes(id)) {

@@ -1,16 +1,10 @@
-import { Controller, Get, Query, Post, Body } from '@nestjs/common';
-import {
-  ApiExcludeEndpoint,
-  ApiOperation,
-  ApiQuery,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
-import { CadastreService } from '../friches/services/external-apis/cadastre/cadastre.service';
-import { parcelIdRegex } from 'src/friches/lib/friches.utils';
+import { Controller, Get, Query, Post, Body } from "@nestjs/common";
+import { ApiExcludeEndpoint, ApiOperation, ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { CadastreService } from "../friches/services/external-apis/cadastre/cadastre.service";
+import { parcelIdRegex } from "src/friches/lib/friches.utils";
 
-@ApiTags('🧪 Tests - Cadastre')
-@Controller('test/cadastre')
+@ApiTags("🧪 Tests - Cadastre")
+@Controller("test/cadastre")
 export class CadastreTestController {
   constructor(private readonly cadastreService: CadastreService) {}
 
@@ -18,9 +12,9 @@ export class CadastreTestController {
    * Test direct du service cadastre
    * GET /test/cadastre/parcelle?id=25056000HZ0346
    */
-  @Get('parcelle')
+  @Get("parcelle")
   @ApiExcludeEndpoint()
-  async testParcelle(@Query('id') identifiant: string) {
+  async testParcelle(@Query("id") identifiant: string) {
     const startTime = Date.now();
 
     console.log(`🧪 Test Cadastre - ID: ${identifiant}`);
@@ -49,9 +43,9 @@ export class CadastreTestController {
    * POST /test/cadastre/parcelle-post
    * Body: { "identifiantParcelle": "25056000HZ0346" }
    */
-  @Post('parcelle-post')
+  @Post("parcelle-post")
   @ApiExcludeEndpoint()
-  async testParcellePost(@Body('identifiantParcelle') identifiant: string) {
+  async testParcellePost(@Body("identifiantParcelle") identifiant: string) {
     return this.testParcelle(identifiant);
   }
 
@@ -59,7 +53,7 @@ export class CadastreTestController {
    * Test de comparaison détaillée
    * GET /test/cadastre/compare?idu=25056000HZ0346
    */
-  @Get('compare')
+  @Get("compare")
   @ApiOperation({
     summary: `Compare les données issues de l'API IGN directes avec le service Mutafriches`,
     description: `
@@ -78,74 +72,74 @@ Endpoint de test pour comparer les appels directs à l'API IGN Cadastre avec le 
   `,
   })
   @ApiQuery({
-    name: 'idu',
-    description: 'Identifiant de parcelle cadastrale (format: 14 caractères)',
-    example: '50147000AR0010',
+    name: "idu",
+    description: "Identifiant de parcelle cadastrale (format: 14 caractères)",
+    example: "50147000AR0010",
     type: String,
   })
   @ApiResponse({
     status: 200,
-    description: 'Comparaison détaillée des données IGN vs Mutafriches',
+    description: "Comparaison détaillée des données IGN vs Mutafriches",
     schema: {
-      type: 'object',
+      type: "object",
       properties: {
         identifiant: {
-          type: 'string',
-          example: '25056000HZ0346',
-          description: 'IDU de la parcelle testée',
+          type: "string",
+          example: "25056000HZ0346",
+          description: "IDU de la parcelle testée",
         },
         components: {
-          type: 'object',
+          type: "object",
           properties: {
-            codeInsee: { type: 'string', example: '49007' },
-            codeComp: { type: 'string', example: '000' },
-            section: { type: 'string', example: 'ZE' },
-            numero: { type: 'string', example: '0153' },
+            codeInsee: { type: "string", example: "49007" },
+            codeComp: { type: "string", example: "000" },
+            section: { type: "string", example: "ZE" },
+            numero: { type: "string", example: "0153" },
           },
           description: "Composants extraits de l'IDU",
         },
         urlsIGNDirectes: {
-          type: 'object',
+          type: "object",
           properties: {
             parcelle: {
-              type: 'string',
-              example: 'https://apicarto.ign.fr/api/cadastre/parcelle?...',
+              type: "string",
+              example: "https://apicarto.ign.fr/api/cadastre/parcelle?...",
             },
             localisant: {
-              type: 'string',
-              example: 'https://apicarto.ign.fr/api/cadastre/localisant?...',
+              type: "string",
+              example: "https://apicarto.ign.fr/api/cadastre/localisant?...",
             },
           },
           description: "URLs pour tester directement l'API IGN",
         },
         mutafrichesResult: {
-          type: 'object',
+          type: "object",
           properties: {
-            success: { type: 'boolean' },
+            success: { type: "boolean" },
             data: {
-              type: 'object',
+              type: "object",
               properties: {
-                identifiant: { type: 'string', example: '25056000HZ0346' },
-                commune: { type: 'string', example: 'Angers' },
-                surface: { type: 'number', example: 28320 },
+                identifiant: { type: "string", example: "25056000HZ0346" },
+                commune: { type: "string", example: "Angers" },
+                surface: { type: "number", example: 28320 },
                 coordonnees: {
-                  type: 'object',
+                  type: "object",
                   properties: {
-                    latitude: { type: 'number', example: 47.478419 },
-                    longitude: { type: 'number', example: -0.563166 },
+                    latitude: { type: "number", example: 47.478419 },
+                    longitude: { type: "number", example: -0.563166 },
                   },
                 },
               },
             },
-            source: { type: 'string', example: 'IGN Cadastre' },
-            responseTimeMs: { type: 'number', example: 1250 },
+            source: { type: "string", example: "IGN Cadastre" },
+            responseTimeMs: { type: "number", example: 1250 },
           },
-          description: 'Résultat du service Mutafriches',
+          description: "Résultat du service Mutafriches",
         },
       },
     },
   })
-  async compareWithIGN(@Query('idu') identifiant: string) {
+  async compareWithIGN(@Query("idu") identifiant: string) {
     const components = this.parseParcelIdForDebug(identifiant);
 
     return {
@@ -155,8 +149,7 @@ Endpoint de test pour comparer les appels directs à l'API IGN Cadastre avec le 
         parcelle: `https://apicarto.ign.fr/api/cadastre/parcelle?code_insee=${components?.codeInsee}&section=${components?.section}&numero=${components?.numero}&source_ign=PCI`,
         localisant: `https://apicarto.ign.fr/api/cadastre/localisant?code_insee=${components?.codeInsee}&section=${components?.section}&numero=${components?.numero}&source_ign=PCI`,
       },
-      mutafrichesResult:
-        await this.cadastreService.getParcelleInfo(identifiant),
+      mutafrichesResult: await this.cadastreService.getParcelleInfo(identifiant),
     };
   }
 
@@ -164,36 +157,36 @@ Endpoint de test pour comparer les appels directs à l'API IGN Cadastre avec le 
    * Liste des parcelles de test disponibles
    * GET /test/cadastre/samples
    */
-  @Get('samples')
+  @Get("samples")
   @ApiExcludeEndpoint()
   getSampleParcels() {
     return {
-      description: 'Identifiants de parcelles pour tester le service',
+      description: "Identifiants de parcelles pour tester le service",
       parcelles: [
         {
-          id: '751160001AB0001',
-          description: 'Paris 16e - Test zone urbaine dense',
-          commune: 'Paris',
+          id: "751160001AB0001",
+          description: "Paris 16e - Test zone urbaine dense",
+          commune: "Paris",
         },
         {
-          id: '691230001AC0001',
-          description: 'Lyon - Test métropole',
-          commune: 'Lyon',
+          id: "691230001AC0001",
+          description: "Lyon - Test métropole",
+          commune: "Lyon",
         },
         {
-          id: '130010001AA0001',
-          description: 'Marseille - Test sud de la France',
-          commune: 'Marseille',
+          id: "130010001AA0001",
+          description: "Marseille - Test sud de la France",
+          commune: "Marseille",
         },
       ],
       invalidSamples: [
         {
-          id: 'INVALID_FORMAT',
-          description: 'Format invalide',
+          id: "INVALID_FORMAT",
+          description: "Format invalide",
         },
         {
-          id: '999990000XX9999',
-          description: 'Parcelle inexistante',
+          id: "999990000XX9999",
+          description: "Parcelle inexistante",
         },
       ],
     };

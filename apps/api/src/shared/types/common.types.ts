@@ -6,11 +6,11 @@ export interface SimpleResponse {
 
 // Types pour l'API Health
 export interface HealthResponse {
-  status: 'OK' | 'DEGRADED' | 'ERROR';
+  status: "OK" | "DEGRADED" | "ERROR";
   timestamp: string;
   service: string;
   checks: {
-    api: 'OK' | 'ERROR';
-    database: 'OK' | 'DISCONNECTED' | 'ERROR';
+    api: "OK" | "ERROR";
+    database: "OK" | "DISCONNECTED" | "ERROR";
   };
 }

@@ -1,16 +1,10 @@
-import { Controller, Get, Query, Post, Body } from '@nestjs/common';
-import {
-  ApiExcludeEndpoint,
-  ApiOperation,
-  ApiQuery,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
-import { BdnbService } from '../friches/services/external-apis/bdnb/bdnb.service';
-import { isValidParcelId } from 'src/friches/lib/friches.utils';
+import { Controller, Get, Query, Post, Body } from "@nestjs/common";
+import { ApiExcludeEndpoint, ApiOperation, ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { BdnbService } from "../friches/services/external-apis/bdnb/bdnb.service";
+import { isValidParcelId } from "src/friches/lib/friches.utils";
 
-@ApiTags('🧪 Tests - BDNB')
-@Controller('test/bdnb')
+@ApiTags("🧪 Tests - BDNB")
+@Controller("test/bdnb")
 export class BdnbTestController {
   constructor(private readonly bdnbService: BdnbService) {}
 
@@ -18,9 +12,9 @@ export class BdnbTestController {
    * Test surface bâtie uniquement
    * GET /test/bdnb/surface?parcelle=77085000YA0126
    */
-  @Get('surface')
+  @Get("surface")
   @ApiExcludeEndpoint()
-  async testSurfaceBatie(@Query('parcelle') identifiantParcelle: string) {
+  async testSurfaceBatie(@Query("parcelle") identifiantParcelle: string) {
     const startTime = Date.now();
 
     console.log(`🧪 Test BDNB Surface - Parcelle: ${identifiantParcelle}`);
@@ -46,9 +40,9 @@ export class BdnbTestController {
    * Test données complètes bâtiments
    * GET /test/bdnb/batiments?parcelle=77085000YA0126
    */
-  @Get('batiments')
+  @Get("batiments")
   @ApiExcludeEndpoint()
-  async testBatiments(@Query('parcelle') identifiantParcelle: string) {
+  async testBatiments(@Query("parcelle") identifiantParcelle: string) {
     const startTime = Date.now();
 
     console.log(`🧪 Test BDNB Bâtiments - Parcelle: ${identifiantParcelle}`);
@@ -77,11 +71,9 @@ export class BdnbTestController {
    * POST /test/bdnb/surface-post
    * Body: { "identifiantParcelle": "77085000YA0126" }
    */
-  @Post('surface-post')
+  @Post("surface-post")
   @ApiExcludeEndpoint()
-  async testSurfacePost(
-    @Body('identifiantParcelle') identifiantParcelle: string,
-  ) {
+  async testSurfacePost(@Body("identifiantParcelle") identifiantParcelle: string) {
     return this.testSurfaceBatie(identifiantParcelle);
   }
 
@@ -90,11 +82,9 @@ export class BdnbTestController {
    * POST /test/bdnb/batiments-post
    * Body: { "identifiantParcelle": "77085000YA0126" }
    */
-  @Post('batiments-post')
+  @Post("batiments-post")
   @ApiExcludeEndpoint()
-  async testBatimentsPost(
-    @Body('identifiantParcelle') identifiantParcelle: string,
-  ) {
+  async testBatimentsPost(@Body("identifiantParcelle") identifiantParcelle: string) {
     return this.testBatiments(identifiantParcelle);
   }
 
@@ -102,7 +92,7 @@ export class BdnbTestController {
    * Test de comparaison détaillée
    * GET /test/bdnb/compare?parcelle=77085000YA0126
    */
-  @Get('compare')
+  @Get("compare")
   @ApiOperation({
     summary: `Compare les données issues de l'API BDNB directes avec le service Mutafriches`,
     description: `
@@ -125,56 +115,56 @@ Endpoint de test pour comparer les appels directs à l'API BDNB avec le service 
   `,
   })
   @ApiQuery({
-    name: 'parcelle',
-    description: 'Identifiant de parcelle cadastrale (format: 14 caractères)',
-    example: '50147000AR0010',
+    name: "parcelle",
+    description: "Identifiant de parcelle cadastrale (format: 14 caractères)",
+    example: "50147000AR0010",
     type: String,
   })
   @ApiResponse({
     status: 200,
-    description: 'Comparaison détaillée des données BDNB vs Mutafriches',
+    description: "Comparaison détaillée des données BDNB vs Mutafriches",
     schema: {
-      type: 'object',
+      type: "object",
       properties: {
         identifiant: {
-          type: 'string',
-          example: '77085000YA0126',
-          description: 'Identifiant de la parcelle testée',
+          type: "string",
+          example: "77085000YA0126",
+          description: "Identifiant de la parcelle testée",
         },
         urlsBDNBDirectes: {
-          type: 'object',
+          type: "object",
           properties: {
             batimentGroupe: {
-              type: 'string',
+              type: "string",
               example:
-                'https://api.bdnb.io/v1/bdnb/donnees/batiment_groupe_complet/parcelle?parcelle_id=eq.77085000YA0126&limit=10',
+                "https://api.bdnb.io/v1/bdnb/donnees/batiment_groupe_complet/parcelle?parcelle_id=eq.77085000YA0126&limit=10",
             },
             documentation: {
-              type: 'string',
+              type: "string",
               example:
-                'https://api-portail.bdnb.io/catalog/api/f4905edc-db58-3a3b-a8e5-c5dfc6692ee5',
+                "https://api-portail.bdnb.io/catalog/api/f4905edc-db58-3a3b-a8e5-c5dfc6692ee5",
             },
           },
           description: "URLs pour tester directement l'API BDNB",
         },
         mutafrichesResults: {
-          type: 'object',
+          type: "object",
           properties: {
             surface: {
-              type: 'object',
-              description: 'Résultat getSurfaceBatie()',
+              type: "object",
+              description: "Résultat getSurfaceBatie()",
             },
             batiments: {
-              type: 'object',
-              description: 'Résultat getBatiments()',
+              type: "object",
+              description: "Résultat getBatiments()",
             },
           },
-          description: 'Résultats des services Mutafriches',
+          description: "Résultats des services Mutafriches",
         },
       },
     },
   })
-  async compareWithBDNB(@Query('parcelle') identifiantParcelle: string) {
+  async compareWithBDNB(@Query("parcelle") identifiantParcelle: string) {
     // Par :
     const [surfaceResult, batimentsResult, risquesResult] = await Promise.all([
       this.bdnbService.getSurfaceBatie(identifiantParcelle),
@@ -187,7 +177,7 @@ Endpoint de test pour comparer les appels directs à l'API BDNB avec le service 
       urlsBDNBDirectes: {
         batimentGroupe: `https://api.bdnb.io/v1/bdnb/donnees/batiment_groupe_complet/parcelle?parcelle_id=eq.${identifiantParcelle}&limit=10`,
         documentation:
-          'https://api-portail.bdnb.io/catalog/api/f4905edc-db58-3a3b-a8e5-c5dfc6692ee5',
+          "https://api-portail.bdnb.io/catalog/api/f4905edc-db58-3a3b-a8e5-c5dfc6692ee5",
       },
       mutafrichesResults: {
         surface: surfaceResult,
@@ -201,17 +191,14 @@ Endpoint de test pour comparer les appels directs à l'API BDNB avec le service 
    * Test risques naturels uniquement
    * GET /test/bdnb/risques?parcelle=77085000YA0126
    */
-  @Get('risques')
+  @Get("risques")
   @ApiExcludeEndpoint()
-  async testRisquesNaturels(@Query('parcelle') identifiantParcelle: string) {
+  async testRisquesNaturels(@Query("parcelle") identifiantParcelle: string) {
     const startTime = Date.now();
 
-    console.log(
-      `Test BDNB Risques Naturels - Parcelle: ${identifiantParcelle}`,
-    );
+    console.log(`Test BDNB Risques Naturels - Parcelle: ${identifiantParcelle}`);
 
-    const result =
-      await this.bdnbService.getRisquesNaturels(identifiantParcelle);
+    const result = await this.bdnbService.getRisquesNaturels(identifiantParcelle);
 
     const response = {
       timestamp: new Date().toISOString(),
@@ -236,11 +223,9 @@ Endpoint de test pour comparer les appels directs à l'API BDNB avec le service 
    * POST /test/bdnb/risques-post
    * Body: { "identifiantParcelle": "77085000YA0126" }
    */
-  @Post('risques-post')
+  @Post("risques-post")
   @ApiExcludeEndpoint()
-  async testRisquesPost(
-    @Body('identifiantParcelle') identifiantParcelle: string,
-  ) {
+  async testRisquesPost(@Body("identifiantParcelle") identifiantParcelle: string) {
     return this.testRisquesNaturels(identifiantParcelle);
   }
 
@@ -248,52 +233,52 @@ Endpoint de test pour comparer les appels directs à l'API BDNB avec le service 
    * Liste des parcelles de test disponibles
    * GET /test/bdnb/samples
    */
-  @Get('samples')
+  @Get("samples")
   @ApiExcludeEndpoint()
   getSampleParcels() {
     return {
-      description: 'Identifiants de parcelles pour tester le service BDNB',
+      description: "Identifiants de parcelles pour tester le service BDNB",
       parcelles: [
         {
-          id: '77085000YA0126',
-          description: 'Chanteloup-en-Brie - Exemple de la doc BDNB',
-          commune: 'Chanteloup-en-Brie',
-          details: 'Maison individuelle récente (2009), 91m² emprise',
+          id: "77085000YA0126",
+          description: "Chanteloup-en-Brie - Exemple de la doc BDNB",
+          commune: "Chanteloup-en-Brie",
+          details: "Maison individuelle récente (2009), 91m² emprise",
         },
         {
-          id: '751160001AB0001',
-          description: 'Paris 16e - Test zone urbaine dense',
-          commune: 'Paris',
+          id: "751160001AB0001",
+          description: "Paris 16e - Test zone urbaine dense",
+          commune: "Paris",
         },
         {
-          id: '691230001AC0001',
-          description: 'Lyon - Test métropole',
-          commune: 'Lyon',
+          id: "691230001AC0001",
+          description: "Lyon - Test métropole",
+          commune: "Lyon",
         },
         {
-          id: '130010001AA0001',
-          description: 'Marseille - Test sud de la France',
-          commune: 'Marseille',
+          id: "130010001AA0001",
+          description: "Marseille - Test sud de la France",
+          commune: "Marseille",
         },
       ],
       invalidSamples: [
         {
-          id: 'INVALID_FORMAT',
-          description: 'Format invalide',
+          id: "INVALID_FORMAT",
+          description: "Format invalide",
         },
         {
-          id: '999990000XX9999',
-          description: 'Parcelle inexistante',
+          id: "999990000XX9999",
+          description: "Parcelle inexistante",
         },
         {
-          id: '000000000AA0000',
-          description: 'Parcelle sans bâtiment',
+          id: "000000000AA0000",
+          description: "Parcelle sans bâtiment",
         },
       ],
       notes: {
-        formatAttendu: '14 caractères (ex: 77085000YA0126)',
-        sourceAPI: 'https://api.bdnb.io/v1/bdnb',
-        limitesAPI: 'API publique avec limites de taux (120 req/min)',
+        formatAttendu: "14 caractères (ex: 77085000YA0126)",
+        sourceAPI: "https://api.bdnb.io/v1/bdnb",
+        limitesAPI: "API publique avec limites de taux (120 req/min)",
       },
     };
   }

@@ -1,10 +1,10 @@
-import { Injectable } from '@nestjs/common';
-import { DataWithSource, FormSessionData } from '../dto/form-session.dto';
-import { ParcelleBase } from 'src/friches/entities/shared/parcelle.base';
-import { DataSource } from '../enums/form-session.enums';
-import { MutabilityInputDto } from 'src/friches/dto/mutability-input.dto';
-import { UiMutabilityResultDto } from '../dto/ui-mutability-result.dto';
-import { SessionWithFormData } from '../interfaces/form-session.interfaces';
+import { Injectable } from "@nestjs/common";
+import { DataWithSource, FormSessionData } from "../dto/form-session.dto";
+import { ParcelleBase } from "src/friches/entities/shared/parcelle.base";
+import { DataSource } from "../enums/form-session.enums";
+import { MutabilityInputDto } from "src/friches/dto/mutability-input.dto";
+import { UiMutabilityResultDto } from "../dto/ui-mutability-result.dto";
+import { SessionWithFormData } from "../interfaces/form-session.interfaces";
 
 @Injectable()
 export class FormSessionService {
@@ -39,45 +39,40 @@ export class FormSessionService {
     formData.identifiantParcelle = identifiantParcelle;
 
     // Mapping direct des données d'enrichissement
+    this.savePropertyIfExists(formData, "commune", enrichmentData.commune, DataSource.ENRICHMENT);
     this.savePropertyIfExists(
       formData,
-      'commune',
-      enrichmentData.commune,
-      DataSource.ENRICHMENT,
-    );
-    this.savePropertyIfExists(
-      formData,
-      'surfaceSite',
+      "surfaceSite",
       this.parseNumber(enrichmentData.surfaceParcelle),
       DataSource.ENRICHMENT,
     );
     this.savePropertyIfExists(
       formData,
-      'surfaceBati',
+      "surfaceBati",
       this.parseNumber(enrichmentData.surfaceBatie),
       DataSource.ENRICHMENT,
     );
     this.savePropertyIfExists(
       formData,
-      'connectionReseauElectricite',
+      "connectionReseauElectricite",
       this.parseBoolean(enrichmentData.connectionElectricite),
       DataSource.ENRICHMENT,
     );
     this.savePropertyIfExists(
       formData,
-      'siteEnCentreVille',
+      "siteEnCentreVille",
       this.parseBoolean(enrichmentData.centreVille),
       DataSource.ENRICHMENT,
     );
     this.savePropertyIfExists(
       formData,
-      'proximiteCommercesServices',
+      "proximiteCommercesServices",
       this.parseBoolean(enrichmentData.proximiteCommerces),
       DataSource.ENRICHMENT,
     );
     this.savePropertyIfExists(
       formData,
-      'presenceRisquesTechnologiques',
+      "presenceRisquesTechnologiques",
       this.parseBoolean(enrichmentData.risquesTechno),
       DataSource.ENRICHMENT,
     );
@@ -89,78 +84,73 @@ export class FormSessionService {
   /**
    * Sauvegarde les données manuelles (étape 2)
    */
-  saveManualData(
-    session: SessionWithFormData,
-    manualData: Record<string, string>,
-  ): void {
-    console.log('=== DEBUG SAVE MANUAL DATA ===');
+  saveManualData(session: SessionWithFormData, manualData: Record<string, string>): void {
+    console.log("=== DEBUG SAVE MANUAL DATA ===");
 
     const formData = this.initializeSession(session);
-    console.log('Current step avant:', formData.currentStep);
+    console.log("Current step avant:", formData.currentStep);
 
     // Stockage direct des valeurs string pour éviter les problèmes de typage enum
     this.savePropertyIfExists(
       formData,
-      'typeProprietaire',
+      "typeProprietaire",
       manualData.typeProprietaire,
       DataSource.MANUAL,
     );
     this.savePropertyIfExists(
       formData,
-      'terrainViabilise',
+      "terrainViabilise",
       manualData.terrainViabilise,
       DataSource.MANUAL,
     );
     this.savePropertyIfExists(
       formData,
-      'etatBatiInfrastructure',
+      "etatBatiInfrastructure",
       manualData.etatBati,
       DataSource.MANUAL,
     );
     this.savePropertyIfExists(
       formData,
-      'presencePollution',
+      "presencePollution",
       manualData.presencePollution,
       DataSource.MANUAL,
     );
     this.savePropertyIfExists(
       formData,
-      'valeurArchitecturaleHistorique',
+      "valeurArchitecturaleHistorique",
       manualData.valeurArchitecturale,
       DataSource.MANUAL,
     );
     this.savePropertyIfExists(
       formData,
-      'qualitePaysage',
+      "qualitePaysage",
       manualData.qualitePaysagere,
       DataSource.MANUAL,
     );
     this.savePropertyIfExists(
       formData,
-      'qualiteVoieDesserte',
+      "qualiteVoieDesserte",
       manualData.qualiteDesserte,
       DataSource.MANUAL,
     );
 
     formData.currentStep = 3;
-    console.log('Current step après:', formData.currentStep);
+    console.log("Current step après:", formData.currentStep);
 
     this.updateMetadata(formData);
-    console.log('Metadata updated');
+    console.log("Metadata updated");
   }
 
   /**
    * Compile les données pour l'API de mutabilité
    */
-  compileMutabilityInput(
-    session: SessionWithFormData,
-  ): MutabilityInputDto | null {
+  compileMutabilityInput(session: SessionWithFormData): MutabilityInputDto | null {
     const formData = this.getSessionData(session);
     if (!formData) return null;
 
     const identifiant = formData.identifiantParcelle;
-    const commune = this.getPropertyValue(formData, 'commune');
-    const surfaceSite = this.getPropertyValue(formData, 'surfaceSite');
+    const commune = this.getPropertyValue(formData, "commune");
+    const surfaceSite = this.getPropertyValue(formData, "surfaceSite");
 
     // Validation des champs obligatoires
     if (!identifiant || !commune || !surfaceSite) {
@@ -172,70 +162,46 @@ export class FormSessionService {
       identifiantParcelle: identifiant,
       commune,
       surfaceSite,
-      surfaceBati: this.getPropertyValue(formData, 'surfaceBati'),
+      surfaceBati: this.getPropertyValue(formData, "surfaceBati"),
       connectionReseauElectricite:
-        this.getPropertyValue(formData, 'connectionReseauElectricite') || false,
+        this.getPropertyValue(formData, "connectionReseauElectricite") || false,
       distanceRaccordementElectrique:
-        this.getPropertyValue(formData, 'distanceRaccordementElectrique') || 0,
-      siteEnCentreVille:
-        this.getPropertyValue(formData, 'siteEnCentreVille') || false,
-      distanceAutoroute:
-        this.getPropertyValue(formData, 'distanceAutoroute') || 0,
-      distanceTransportCommun:
-        this.getPropertyValue(formData, 'distanceTransportCommun') || 0,
+        this.getPropertyValue(formData, "distanceRaccordementElectrique") || 0,
+      siteEnCentreVille: this.getPropertyValue(formData, "siteEnCentreVille") || false,
+      distanceAutoroute: this.getPropertyValue(formData, "distanceAutoroute") || 0,
+      distanceTransportCommun: this.getPropertyValue(formData, "distanceTransportCommun") || 0,
       proximiteCommercesServices:
-        this.getPropertyValue(formData, 'proximiteCommercesServices') || false,
-      tauxLogementsVacants:
-        this.getPropertyValue(formData, 'tauxLogementsVacants') || 0,
-      ancienneActivite: this.getPropertyValueAsString(
-        formData,
-        'ancienneActivite',
-      ),
+        this.getPropertyValue(formData, "proximiteCommercesServices") || false,
+      tauxLogementsVacants: this.getPropertyValue(formData, "tauxLogementsVacants") || 0,
+      ancienneActivite: this.getPropertyValueAsString(formData, "ancienneActivite"),
       presenceRisquesTechnologiques:
-        this.getPropertyValue(formData, 'presenceRisquesTechnologiques') ||
-        false,
-      presenceRisquesNaturels: this.getPropertyValue(
-        formData,
-        'presenceRisquesNaturels',
-      ),
-      zonageEnvironnemental: this.getPropertyValue(
-        formData,
-        'zonageEnvironnemental',
-      ),
-      zonageReglementaire: this.getPropertyValue(
-        formData,
-        'zonageReglementaire',
-      ),
-      zonagePatrimonial: this.getPropertyValue(formData, 'zonagePatrimonial'),
-      trameVerteEtBleue: this.getPropertyValue(formData, 'trameVerteEtBleue'),
-      coordonnees: this.getPropertyValue(formData, 'coordonnees'),
+        this.getPropertyValue(formData, "presenceRisquesTechnologiques") || false,
+      presenceRisquesNaturels: this.getPropertyValue(formData, "presenceRisquesNaturels"),
+      zonageEnvironnemental: this.getPropertyValue(formData, "zonageEnvironnemental"),
+      zonageReglementaire: this.getPropertyValue(formData, "zonageReglementaire"),
+      zonagePatrimonial: this.getPropertyValue(formData, "zonagePatrimonial"),
+      trameVerteEtBleue: this.getPropertyValue(formData, "trameVerteEtBleue"),
+      coordonnees: this.getPropertyValue(formData, "coordonnees"),
 
       // Métadonnées requises pour EnrichmentResultDto
-      sourcesUtilisees: ['Session utilisateur'], // Sources par défaut
+      sourcesUtilisees: ["Session utilisateur"], // Sources par défaut
       champsManquants: [], // À calculer si nécessaire
       fiabilite: Math.round(formData.metadata.dataQualityScore / 10),
 
       // Données manuelles (de ManualDataInputDto)
-      typeProprietaire: this.getPropertyValue(formData, 'typeProprietaire'),
-      terrainViabilise: this.getPropertyValue(formData, 'terrainViabilise'),
-      etatBatiInfrastructure: this.getPropertyValue(
-        formData,
-        'etatBatiInfrastructure',
-      ),
-      presencePollution: this.getPropertyValue(formData, 'presencePollution'),
+      typeProprietaire: this.getPropertyValue(formData, "typeProprietaire"),
+      terrainViabilise: this.getPropertyValue(formData, "terrainViabilise"),
+      etatBatiInfrastructure: this.getPropertyValue(formData, "etatBatiInfrastructure"),
+      presencePollution: this.getPropertyValue(formData, "presencePollution"),
       valeurArchitecturaleHistorique: this.getPropertyValue(
         formData,
-        'valeurArchitecturaleHistorique',
+        "valeurArchitecturaleHistorique",
       ),
-      qualitePaysage: this.getPropertyValue(formData, 'qualitePaysage'),
-      qualiteVoieDesserte: this.getPropertyValue(
-        formData,
-        'qualiteVoieDesserte',
-      ),
+      qualitePaysage: this.getPropertyValue(formData, "qualitePaysage"),
+      qualiteVoieDesserte: this.getPropertyValue(formData, "qualiteVoieDesserte"),
 
       // Session ID
-      sessionId:
-        typeof session.id === 'string' ? session.id : String(session.id),
+      sessionId: typeof session.id === "string" ? session.id : String(session.id),
     };
 
     // Sauvegarder l'input compilé
@@ -247,10 +213,7 @@ export class FormSessionService {
   /**
    * Sauvegarde les résultats de mutabilité (étape 3)
    */
-  saveMutabilityResult(
-    session: SessionWithFormData,
-    result: UiMutabilityResultDto,
-  ): void {
+  saveMutabilityResult(session: SessionWithFormData, result: UiMutabilityResultDto): void {
     const formData = this.initializeSession(session);
     formData.mutabilityResult = result;
   }
@@ -267,7 +230,7 @@ export class FormSessionService {
    */
   canAccessStep(session: SessionWithFormData, requestedStep: number): boolean {
     const formData = this.getSessionData(session);
-    console.log('formData :>> ', formData);
+    console.log("formData :>> ", formData);
     if (!formData) return requestedStep === 1;
     return formData.currentStep >= requestedStep;
   }
@@ -318,10 +281,7 @@ export class FormSessionService {
       };
 
       // Cast contrôlé car on maîtrise les noms de propriétés
-      const parcelleDataRecord = formData.parcelleData as Record<
-        string,
-        DataWithSource<unknown>
-      >;
+      const parcelleDataRecord = formData.parcelleData as Record<string, DataWithSource<unknown>>;
       parcelleDataRecord[propertyName] = propertyData;
     }
   }
@@ -330,7 +290,7 @@ export class FormSessionService {
    * Vérifie si une valeur est valide (non null, non undefined, non vide)
    */
   private isValidValue(value: unknown): boolean {
-    return value !== undefined && value !== null && value !== '';
+    return value !== undefined && value !== null && value !== "";
   }
 
   /**
@@ -340,10 +300,7 @@ export class FormSessionService {
     formData: FormSessionData,
     property: K,
   ): ParcelleBase[K] | undefined {
-    const parcelleDataRecord = formData.parcelleData as Record<
-      string,
-      DataWithSource<unknown>
-    >;
+    const parcelleDataRecord = formData.parcelleData as Record<string, DataWithSource<unknown>>;
     const propertyData = parcelleDataRecord[property as string];
     return propertyData?.value as ParcelleBase[K] | undefined;
   }
@@ -360,7 +317,7 @@ export class FormSessionService {
       return undefined;
     }
     // Conversion vers string
-    if (typeof value === 'object' && value !== null) {
+    if (typeof value === "object" && value !== null) {
       return JSON.stringify(value);
     }
     return String(value);
@@ -370,8 +327,8 @@ export class FormSessionService {
    * Parse un nombre depuis une chaîne
    */
   private parseNumber(value: string | undefined): number | undefined {
-    if (!value || value === 'Non renseigné' || value === '') return undefined;
-    const cleaned = value.replace(/[^\d.,]/g, '').replace(',', '.');
+    if (!value || value === "Non renseigné" || value === "") return undefined;
+    const cleaned = value.replace(/[^\d.,]/g, "").replace(",", ".");
     const parsed = parseFloat(cleaned);
     return isNaN(parsed) ? undefined : parsed;
   }
@@ -381,7 +338,7 @@ export class FormSessionService {
    */
   private parseBoolean(value: string | undefined): boolean {
     if (!value) return false;
-    return value.toLowerCase() === 'oui' || value.toLowerCase() === 'true';
+    return value.toLowerCase() === "oui" || value.toLowerCase() === "true";
   }
 
   /**
@@ -398,10 +355,10 @@ export class FormSessionService {
    */
   private calculateCompletion(formData: FormSessionData): number {
     const requiredFields: Array<keyof ParcelleBase> = [
-      'commune',
-      'surfaceSite',
-      'connectionReseauElectricite',
-      'siteEnCentreVille',
+      "commune",
+      "surfaceSite",
+      "connectionReseauElectricite",
+      "siteEnCentreVille",
     ];
 
     const filledCount = requiredFields.filter(

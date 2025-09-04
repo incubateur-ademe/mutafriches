@@ -1,32 +1,28 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
-import { HttpService } from '@nestjs/axios';
-import { firstValueFrom } from 'rxjs';
-import { catchError, timeout } from 'rxjs/operators';
+import { Injectable, HttpException, HttpStatus } from "@nestjs/common";
+import { HttpService } from "@nestjs/axios";
+import { firstValueFrom } from "rxjs";
+import { catchError, timeout } from "rxjs/operators";
 import {
   IEnedisService,
   EnedisRaccordement,
   EnedisConnexionStatus,
   EnedisAnalyseComplete,
-} from './enedis.interface';
+} from "./enedis.interface";
 import {
   EnedisApiResponse,
   EnedisPosteElectriqueRecord,
   EnedisLigneBTRecord,
   EnedisPoteauRecord,
   EnedisApiParams,
-} from './enedis-api.interfaces';
-import { ApiResponse } from '../shared/api-response.interface';
+} from "./enedis-api.interfaces";
+import { ApiResponse } from "../shared/api-response.interface";
 
 @Injectable()
 export class EnedisService implements IEnedisService {
   private readonly baseUrl =
-    process.env.ENEDIS_API_URL ||
-    'https://data.enedis.fr/api/explore/v2.1/catalog/datasets';
+    process.env.ENEDIS_API_URL || "https://data.enedis.fr/api/explore/v2.1/catalog/datasets";
 
-  private readonly timeout = parseInt(
-    process.env.ENEDIS_API_TIMEOUT || '10000',
-    10,
-  );
+  private readonly timeout = parseInt(process.env.ENEDIS_API_TIMEOUT || "10000", 10);
 
   constructor(private readonly httpService: HttpService) {}
 
@@ -35,31 +31,21 @@ export class EnedisService implements IEnedisService {
     longitude: number,
   ): Promise<ApiResponse<EnedisRaccordement>> {
     try {
-      console.log(
-        `Calcul distance raccordement pour: ${latitude}, ${longitude}`,
-      );
+      console.log(`Calcul distance raccordement pour: ${latitude}, ${longitude}`);
 
       // Recherche des postes dans un rayon de 5km
-      const postesProches = await this.rechercherPostes(
-        latitude,
-        longitude,
-        5000,
-      );
+      const postesProches = await this.rechercherPostes(latitude, longitude, 5000);
 
       // Recherche des lignes BT dans un rayon de 500m
-      const lignesBTProches = await this.rechercherLignesBT(
-        latitude,
-        longitude,
-        500,
-      );
+      const lignesBTProches = await this.rechercherLignesBT(latitude, longitude, 500);
 
       if (postesProches.length === 0 && lignesBTProches.length === 0) {
         return {
           success: true,
-          source: 'enedis-api',
+          source: "enedis-api",
           data: {
             distance: 999, // Distance très élevée pour indiquer l'absence d'infrastructure
-            type: 'HTA',
+            type: "HTA",
             capaciteDisponible: false,
           },
         };
@@ -75,19 +61,19 @@ export class EnedisService implements IEnedisService {
         // Raccordement BT possible (moins de 100m d'une ligne BT)
         raccordementOptimal = {
           distance: ligneBTProche.distance / 1000, // conversion en km
-          type: 'BT',
+          type: "BT",
           capaciteDisponible: true,
           infrastructureProche: {
-            type: 'ligne_bt',
+            type: "ligne_bt",
             distance: ligneBTProche.distance,
-            tension: 'BT',
+            tension: "BT",
           },
         };
       } else if (posteProche) {
         // Raccordement HTA/BT depuis le poste
         raccordementOptimal = {
           distance: posteProche.distance / 1000, // conversion en km
-          type: posteProche.distance < 200 ? 'BT' : 'HTA',
+          type: posteProche.distance < 200 ? "BT" : "HTA",
           capaciteDisponible: posteProche.distance < 1000, // Estimation capacité
           posteProche: {
             nom: `Poste ${posteProche.commune}`,
@@ -98,43 +84,39 @@ export class EnedisService implements IEnedisService {
             },
           },
           infrastructureProche: {
-            type: 'poste',
+            type: "poste",
             distance: posteProche.distance,
-            tension: posteProche.distance < 200 ? 'BT' : 'HTA',
+            tension: posteProche.distance < 200 ? "BT" : "HTA",
           },
         };
       } else {
         // Fallback - utilisation de la ligne BT la plus proche
         raccordementOptimal = {
           distance: ligneBTProche.distance / 1000,
-          type: 'HTA', // Extension de réseau nécessaire
+          type: "HTA", // Extension de réseau nécessaire
           capaciteDisponible: false,
           infrastructureProche: {
-            type: 'ligne_bt',
+            type: "ligne_bt",
             distance: ligneBTProche.distance,
-            tension: 'BT',
+            tension: "BT",
           },
         };
       }
 
       return {
         success: true,
-        source: 'enedis-api',
+        source: "enedis-api",
         data: raccordementOptimal,
       };
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Erreur inconnue';
+      const errorMessage = error instanceof Error ? error.message : "Erreur inconnue";
       const errorStack = error instanceof Error ? error.stack : undefined;
 
-      console.error(
-        `Erreur calcul distance raccordement: ${errorMessage}`,
-        errorStack,
-      );
+      console.error(`Erreur calcul distance raccordement: ${errorMessage}`, errorStack);
       return {
         success: false,
-        source: 'enedis-api',
-        error: 'Erreur lors du calcul de la distance de raccordement',
+        source: "enedis-api",
+        error: "Erreur lors du calcul de la distance de raccordement",
       };
     }
   }
@@ -144,17 +126,14 @@ export class EnedisService implements IEnedisService {
     coordonnees?: { latitude: number; longitude: number },
   ): Promise<ApiResponse<EnedisConnexionStatus>> {
     try {
-      console.log(
-        `Vérification connexion pour parcelle: ${identifiantParcelle}`,
-      );
+      console.log(`Vérification connexion pour parcelle: ${identifiantParcelle}`);
 
       // Si pas de coordonnées fournies, impossible de faire la vérification
       if (!coordonnees) {
         return {
           success: false,
-          source: 'enedis-api',
-          error:
-            'Coordonnées de la parcelle requises pour la vérification de connexion',
+          source: "enedis-api",
+          error: "Coordonnées de la parcelle requises pour la vérification de connexion",
         };
       }
 
@@ -167,20 +146,19 @@ export class EnedisService implements IEnedisService {
         this.rechercherPoteaux(latitude, longitude, 50),
       ]);
 
-      const isConnected =
-        postesProches.length > 0 || lignesBT.length > 0 || poteaux.length > 0;
+      const isConnected = postesProches.length > 0 || lignesBT.length > 0 || poteaux.length > 0;
 
-      let confidence: 'high' | 'medium' | 'low' = 'low';
+      let confidence: "high" | "medium" | "low" = "low";
       if (lignesBT.length > 0 || poteaux.length > 0) {
-        confidence = 'high';
+        confidence = "high";
       } else if (postesProches.length > 0) {
-        confidence = 'medium';
+        confidence = "medium";
       }
 
       const sources: string[] = [];
-      if (postesProches.length > 0) sources.push('postes-electriques');
-      if (lignesBT.length > 0) sources.push('reseau-bt');
-      if (poteaux.length > 0) sources.push('poteaux-hta-bt');
+      if (postesProches.length > 0) sources.push("postes-electriques");
+      if (lignesBT.length > 0) sources.push("reseau-bt");
+      if (poteaux.length > 0) sources.push("poteaux-hta-bt");
 
       const connexionStatus: EnedisConnexionStatus = {
         isConnected,
@@ -195,22 +173,18 @@ export class EnedisService implements IEnedisService {
 
       return {
         success: true,
-        source: 'enedis-api',
+        source: "enedis-api",
         data: connexionStatus,
       };
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Erreur inconnue';
+      const errorMessage = error instanceof Error ? error.message : "Erreur inconnue";
       const errorStack = error instanceof Error ? error.stack : undefined;
 
-      console.error(
-        `Erreur vérification connexion: ${errorMessage}`,
-        errorStack,
-      );
+      console.error(`Erreur vérification connexion: ${errorMessage}`, errorStack);
       return {
         success: false,
-        source: 'enedis-api',
-        error: 'Erreur lors de la vérification de connexion',
+        source: "enedis-api",
+        error: "Erreur lors de la vérification de connexion",
       };
     }
   }
@@ -225,13 +199,13 @@ export class EnedisService implements IEnedisService {
       // Exécution des analyses en parallèle
       const [raccordementResult, connexionResult] = await Promise.all([
         this.getDistanceRaccordement(latitude, longitude),
-        this.checkConnection('parcelle-temp', { latitude, longitude }), // Passer les coordonnées
+        this.checkConnection("parcelle-temp", { latitude, longitude }), // Passer les coordonnées
       ]);
 
       if (!raccordementResult.success || !connexionResult.success) {
         return {
           success: false,
-          source: 'enedis-api',
+          source: "enedis-api",
           error: "Erreur lors de l'analyse complète",
         };
       }
@@ -240,10 +214,7 @@ export class EnedisService implements IEnedisService {
       const connexion = connexionResult.data;
 
       // Génération des recommandations
-      const recommandations = this.genererRecommandations(
-        raccordement,
-        connexion,
-      );
+      const recommandations = this.genererRecommandations(raccordement, connexion);
 
       // Estimation des coûts (basée sur les distances et types)
       const coutEstime = this.estimerCouts(raccordement);
@@ -257,18 +228,17 @@ export class EnedisService implements IEnedisService {
 
       return {
         success: true,
-        source: 'enedis-api',
+        source: "enedis-api",
         data: analyseComplete,
       };
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Erreur inconnue';
+      const errorMessage = error instanceof Error ? error.message : "Erreur inconnue";
       const errorStack = error instanceof Error ? error.stack : undefined;
 
       console.error(`Erreur analyse complète: ${errorMessage}`, errorStack);
       return {
         success: false,
-        source: 'enedis-api',
+        source: "enedis-api",
         error: "Erreur lors de l'analyse complète",
       };
     }
@@ -296,7 +266,7 @@ export class EnedisService implements IEnedisService {
 
       return {
         success: true,
-        source: 'enedis-api',
+        source: "enedis-api",
         data: {
           postes: postesData.map((p) => ({
             distance: p.distance,
@@ -305,27 +275,23 @@ export class EnedisService implements IEnedisService {
           })),
           lignesBT: lignesData.map((l) => ({
             distance: l.distance,
-            type: l.type || 'BT',
-            tension: l.tension || 'BT',
+            type: l.type || "BT",
+            tension: l.tension || "BT",
           })),
           poteaux: poteauxData.map((p) => ({
             distance: p.distance,
-            tension: p.tension || 'BT',
+            tension: p.tension || "BT",
           })),
         },
       };
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Erreur inconnue';
+      const errorMessage = error instanceof Error ? error.message : "Erreur inconnue";
       const errorStack = error instanceof Error ? error.stack : undefined;
 
-      console.error(
-        `Erreur recherche infrastructures: ${errorMessage}`,
-        errorStack,
-      );
+      console.error(`Erreur recherche infrastructures: ${errorMessage}`, errorStack);
       return {
         success: false,
-        source: 'enedis-api',
+        source: "enedis-api",
         error: "Erreur lors de la recherche d'infrastructures",
       };
     }
@@ -343,13 +309,12 @@ export class EnedisService implements IEnedisService {
     }>
   > {
     const params: EnedisApiParams = {
-      dataset: 'poste-electrique',
+      dataset: "poste-electrique",
       rows: 50,
-      'geofilter.distance': `${latitude},${longitude},${rayonMetres}`,
+      "geofilter.distance": `${latitude},${longitude},${rayonMetres}`,
     };
 
-    const response =
-      await this.callEnedisApi<EnedisPosteElectriqueRecord>(params);
+    const response = await this.callEnedisApi<EnedisPosteElectriqueRecord>(params);
 
     return response.results
       .map((record) => ({
@@ -374,9 +339,9 @@ export class EnedisService implements IEnedisService {
     rayonMetres: number,
   ): Promise<Array<{ distance: number; type: string; tension: string }>> {
     const params: EnedisApiParams = {
-      dataset: 'reseau-bt',
+      dataset: "reseau-bt",
       rows: 100,
-      'geofilter.distance': `${latitude},${longitude},${rayonMetres}`,
+      "geofilter.distance": `${latitude},${longitude},${rayonMetres}`,
     };
 
     try {
@@ -391,13 +356,12 @@ export class EnedisService implements IEnedisService {
             record.geo_point_2d.lat,
             record.geo_point_2d.lon,
           ),
-          type: record.nature || 'BT',
-          tension: record.tension || 'BT',
+          type: record.nature || "BT",
+          tension: record.tension || "BT",
         }))
         .sort((a, b) => a.distance - b.distance);
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Erreur inconnue';
+      const errorMessage = error instanceof Error ? error.message : "Erreur inconnue";
       console.warn(`Dataset reseau-bt non disponible: ${errorMessage}`);
       return [];
     }
@@ -409,9 +373,9 @@ export class EnedisService implements IEnedisService {
     rayonMetres: number,
   ): Promise<Array<{ distance: number; tension: string }>> {
     const params: EnedisApiParams = {
-      dataset: 'position-geographique-des-poteaux-hta-et-bt',
+      dataset: "position-geographique-des-poteaux-hta-et-bt",
       rows: 50,
-      'geofilter.distance': `${latitude},${longitude},${rayonMetres}`,
+      "geofilter.distance": `${latitude},${longitude},${rayonMetres}`,
     };
 
     try {
@@ -426,20 +390,17 @@ export class EnedisService implements IEnedisService {
             record.geo_point_2d.lat,
             record.geo_point_2d.lon,
           ),
-          tension: record.tension || 'BT',
+          tension: record.tension || "BT",
         }))
         .sort((a, b) => a.distance - b.distance);
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Erreur inconnue';
+      const errorMessage = error instanceof Error ? error.message : "Erreur inconnue";
       console.warn(`Dataset poteaux non disponible: ${errorMessage}`);
       return [];
     }
   }
 
-  private async callEnedisApi<T>(
-    params: EnedisApiParams,
-  ): Promise<EnedisApiResponse<T>> {
+  private async callEnedisApi<T>(params: EnedisApiParams): Promise<EnedisApiResponse<T>> {
     const { dataset, ...queryParams } = params;
     const url = `${this.baseUrl}/${dataset}/records`;
 
@@ -448,8 +409,7 @@ export class EnedisService implements IEnedisService {
         this.httpService.get(url, { params: queryParams }).pipe(
           timeout(this.timeout),
           catchError((error) => {
-            const errorMessage =
-              error instanceof Error ? error.message : 'Erreur API inconnue';
+            const errorMessage = error instanceof Error ? error.message : "Erreur API inconnue";
             throw new HttpException(
               `Erreur API Enedis: ${errorMessage}`,
               HttpStatus.SERVICE_UNAVAILABLE,
@@ -460,19 +420,13 @@ export class EnedisService implements IEnedisService {
 
       return response.data as EnedisApiResponse<T>;
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Erreur inconnue';
+      const errorMessage = error instanceof Error ? error.message : "Erreur inconnue";
       console.error(`Erreur appel API Enedis: ${errorMessage}`);
       throw error;
     }
   }
 
-  private calculerDistance(
-    lat1: number,
-    lon1: number,
-    lat2: number,
-    lon2: number,
-  ): number {
+  private calculerDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
     const R = 6371e3; // Rayon de la Terre en mètres
     const φ1 = (lat1 * Math.PI) / 180;
     const φ2 = (lat2 * Math.PI) / 180;
@@ -495,42 +449,28 @@ export class EnedisService implements IEnedisService {
 
     if (raccordement.distance < 0.05) {
       // Moins de 50m
-      recommandations.push(
-        'Raccordement très favorable - Infrastructure à proximité immédiate',
-      );
+      recommandations.push("Raccordement très favorable - Infrastructure à proximité immédiate");
     } else if (raccordement.distance < 0.2) {
       // Moins de 200m
-      recommandations.push(
-        'Raccordement favorable - Extension courte nécessaire',
-      );
+      recommandations.push("Raccordement favorable - Extension courte nécessaire");
     } else if (raccordement.distance < 1) {
       // Moins de 1km
-      recommandations.push(
-        'Raccordement modéré - Extension moyenne du réseau nécessaire',
-      );
+      recommandations.push("Raccordement modéré - Extension moyenne du réseau nécessaire");
     } else {
-      recommandations.push(
-        'Raccordement coûteux - Extension importante du réseau requise',
-      );
+      recommandations.push("Raccordement coûteux - Extension importante du réseau requise");
     }
 
-    if (raccordement.type === 'BT' && raccordement.capaciteDisponible) {
-      recommandations.push('Raccordement BT possible - Procédure simplifiée');
+    if (raccordement.type === "BT" && raccordement.capaciteDisponible) {
+      recommandations.push("Raccordement BT possible - Procédure simplifiée");
     } else {
-      recommandations.push(
-        'Raccordement HTA nécessaire - Étude technique approfondie requise',
-      );
+      recommandations.push("Raccordement HTA nécessaire - Étude technique approfondie requise");
     }
 
-    if (connexion.confidence === 'low') {
-      recommandations.push(
-        'Données limitées - Contacter Enedis pour une pré-étude officielle',
-      );
+    if (connexion.confidence === "low") {
+      recommandations.push("Données limitées - Contacter Enedis pour une pré-étude officielle");
     }
 
-    recommandations.push(
-      'Respecter la réglementation DT-DICT avant tous travaux',
-    );
+    recommandations.push("Respecter la réglementation DT-DICT avant tous travaux");
 
     return recommandations;
   }
@@ -538,7 +478,7 @@ export class EnedisService implements IEnedisService {
   private estimerCouts(raccordement: EnedisRaccordement): {
     min: number;
     max: number;
-    devise: 'EUR';
+    devise: "EUR";
     commentaire: string;
   } {
     let coutMin = 1000; // Coût minimum de raccordement
@@ -546,14 +486,13 @@ export class EnedisService implements IEnedisService {
 
     // Ajustement selon la distance
     if (raccordement.distance > 0.1) {
-      const coutExtension =
-        raccordement.distance * (raccordement.type === 'BT' ? 100 : 200) * 1000;
+      const coutExtension = raccordement.distance * (raccordement.type === "BT" ? 100 : 200) * 1000;
       coutMin += coutExtension * 0.8;
       coutMax += coutExtension * 1.5;
     }
 
     // Ajustement selon le type
-    if (raccordement.type === 'HTA') {
+    if (raccordement.type === "HTA") {
       coutMin += 2000;
       coutMax += 8000;
     }
@@ -561,8 +500,8 @@ export class EnedisService implements IEnedisService {
     return {
       min: Math.round(coutMin),
       max: Math.round(coutMax),
-      devise: 'EUR',
-      commentaire: 'Estimation indicative - Devis officiel Enedis requis',
+      devise: "EUR",
+      commentaire: "Estimation indicative - Devis officiel Enedis requis",
     };
   }
 }

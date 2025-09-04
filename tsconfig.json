@@ -18,8 +18,5 @@
     "esModuleInterop": true,
     "resolveJsonModule": true
   },
-  "references": [
-    { "path": "./apps/api" },
-    { "path": "./apps/ui" }
-  ]
+  "references": [{ "path": "./apps/api" }, { "path": "./apps/ui" }]
 }

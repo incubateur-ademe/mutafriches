@@ -1,24 +1,19 @@
-import { Injectable } from '@nestjs/common';
-import { MutabilityInputDto } from 'src/friches/dto/mutability-input.dto';
-import { MutabilityResultDto } from 'src/friches/dto/mutability-result.dto';
-import { UsageType } from 'src/friches/enums/mutability.enums';
-import { PresencePollution } from 'src/friches/enums/parcelle.enums';
-import { IMutabilityService } from 'src/friches/interfaces/mutability-service.interface';
+import { Injectable } from "@nestjs/common";
+import { MutabilityInputDto } from "src/friches/dto/mutability-input.dto";
+import { MutabilityResultDto } from "src/friches/dto/mutability-result.dto";
+import { UsageType } from "src/friches/enums/mutability.enums";
+import { PresencePollution } from "src/friches/enums/parcelle.enums";
+import { IMutabilityService } from "src/friches/interfaces/mutability-service.interface";
 
 @Injectable()
 export class MockMutabilityService implements IMutabilityService {
   /**
    * Calcule les indices de mutabilité à partir d'un DTO (implémentation mock)
    */
-  calculateMutability(
-    input: MutabilityInputDto,
-    fiabilite?: number,
-  ): MutabilityResultDto {
+  calculateMutability(input: MutabilityInputDto, fiabilite?: number): MutabilityResultDto {
     // Si on reconnaît un identifiant de parcelle spécifique, on retourne des données prédéfinies
     if (input.identifiantParcelle) {
-      const mockResult = this.getMockResultByParcelle(
-        input.identifiantParcelle,
-      );
+      const mockResult = this.getMockResultByParcelle(input.identifiantParcelle);
       if (mockResult) {
         // Si une fiabilité est fournie, on l'utilise à la place de celle du mock
         if (fiabilite !== undefined) {
@@ -38,14 +33,12 @@ export class MockMutabilityService implements IMutabilityService {
   /**
    * Retourne des résultats mockés basés sur l'identifiant de parcelle
    */
-  private getMockResultByParcelle(
-    identifiantParcelle: string,
-  ): MutabilityResultDto | null {
+  private getMockResultByParcelle(identifiantParcelle: string): MutabilityResultDto | null {
     switch (identifiantParcelle) {
-      case '490007000ZE0153': // Trélazé
+      case "490007000ZE0153": // Trélazé
         return this.getTrelazeResults();
-      case '490007000AB0001': // Angers
-      case '490007000CD0042': // Saumur
+      case "490007000AB0001": // Angers
+      case "490007000CD0042": // Saumur
         return this.getSaumurResults();
       default:
         return null;
@@ -55,10 +48,7 @@ export class MockMutabilityService implements IMutabilityService {
   /**
    * Calcul simplifié basé sur les données d'entrée
    */
-  private calculateFromInput(
-    input: MutabilityInputDto,
-    fiabilite?: number,
-  ): MutabilityResultDto {
+  private calculateFromInput(input: MutabilityInputDto, fiabilite?: number): MutabilityResultDto {
     const calculatedFiabilite = fiabilite ?? input.fiabilite ?? 7;
 
     // Calcul simplifié pour les mocks
@@ -68,12 +58,10 @@ export class MockMutabilityService implements IMutabilityService {
     if (input.siteEnCentreVille) baseScore += 10;
     if (input.proximiteCommercesServices) baseScore += 8;
     if (input.connectionReseauElectricite) baseScore += 5;
-    if (input.distanceTransportCommun && input.distanceTransportCommun < 500)
-      baseScore += 8;
+    if (input.distanceTransportCommun && input.distanceTransportCommun < 500) baseScore += 8;
 
     // Facteurs négatifs simples
-    if (input.presencePollution === PresencePollution.OUI_AUTRES_COMPOSES)
-      baseScore -= 15;
+    if (input.presencePollution === PresencePollution.OUI_AUTRES_COMPOSES) baseScore -= 15;
     if (input.presenceRisquesTechnologiques) baseScore -= 12;
 
     const finalScore = Math.max(20, Math.min(100, baseScore));
@@ -154,59 +142,48 @@ export class MockMutabilityService implements IMutabilityService {
     };
   }
 
-  private getSimpleExplication(
-    input: MutabilityInputDto,
-    score: number,
-  ): string {
+  private getSimpleExplication(input: MutabilityInputDto, score: number): string {
     const facteurs: string[] = [];
 
-    if (input.siteEnCentreVille) facteurs.push('emplacement central');
-    if (input.proximiteCommercesServices) facteurs.push('commerces proches');
-    if (input.connectionReseauElectricite) facteurs.push('réseaux en place');
+    if (input.siteEnCentreVille) facteurs.push("emplacement central");
+    if (input.proximiteCommercesServices) facteurs.push("commerces proches");
+    if (input.connectionReseauElectricite) facteurs.push("réseaux en place");
     if (input.presencePollution !== PresencePollution.OUI_AUTRES_COMPOSES)
-      facteurs.push('absence de pollution majeure');
+      facteurs.push("absence de pollution majeure");
 
     if (score >= 60) {
-      return `${facteurs.length > 0 ? facteurs.join(', ') + ' font que ce' : 'Ce'} site semble adapté pour un programme mixte logements-commerces (évaluation simplifiée).`;
+      return `${facteurs.length > 0 ? facteurs.join(", ") + " font que ce" : "Ce"} site semble adapté pour un programme mixte logements-commerces (évaluation simplifiée).`;
     } else {
-      return 'Site présentant quelques contraintes pour un usage résidentiel (évaluation simplifiée).';
+      return "Site présentant quelques contraintes pour un usage résidentiel (évaluation simplifiée).";
     }
   }
 
   private getPotentielFromScore(
     score: number,
-  ):
-    | 'Très favorable'
-    | 'Favorable'
-    | 'Modéré'
-    | 'Peu favorable'
-    | 'Défavorable' {
-    if (score >= 75) return 'Très favorable';
-    if (score >= 60) return 'Favorable';
-    if (score >= 40) return 'Modéré';
-    if (score >= 20) return 'Peu favorable';
-    return 'Défavorable';
+  ): "Très favorable" | "Favorable" | "Modéré" | "Peu favorable" | "Défavorable" {
+    if (score >= 75) return "Très favorable";
+    if (score >= 60) return "Favorable";
+    if (score >= 40) return "Modéré";
+    if (score >= 20) return "Peu favorable";
+    return "Défavorable";
   }
 
-  private formatFiabilite(note: number): MutabilityResultDto['fiabilite'] {
+  private formatFiabilite(note: number): MutabilityResultDto["fiabilite"] {
     let text: string;
     let description: string;
 
     if (note >= 9) {
-      text = 'Très fiable';
-      description =
-        'Les données sont suffisamment précises pour une analyse robuste.';
+      text = "Très fiable";
+      description = "Les données sont suffisamment précises pour une analyse robuste.";
     } else if (note >= 7) {
-      text = 'Fiable';
-      description =
-        'Les données permettent une analyse correcte avec quelques incertitudes.';
+      text = "Fiable";
+      description = "Les données permettent une analyse correcte avec quelques incertitudes.";
     } else if (note >= 5) {
-      text = 'Modérément fiable';
-      description =
-        'Certaines données manquent, les résultats sont à interpréter avec prudence.';
+      text = "Modérément fiable";
+      description = "Certaines données manquent, les résultats sont à interpréter avec prudence.";
     } else {
-      text = 'Peu fiable';
-      description = 'Données insuffisantes, analyse approximative uniquement.';
+      text = "Peu fiable";
+      description = "Données insuffisantes, analyse approximative uniquement.";
     }
 
     return { note, text, description };
@@ -216,9 +193,8 @@ export class MockMutabilityService implements IMutabilityService {
     return {
       fiabilite: {
         note: 9.5,
-        text: 'Très fiable',
-        description:
-          'Les données sont suffisamment précises pour une analyse robuste.',
+        text: "Très fiable",
+        description: "Les données sont suffisamment précises pour une analyse robuste.",
       },
       resultats: [
         {
@@ -299,9 +275,8 @@ export class MockMutabilityService implements IMutabilityService {
     return {
       fiabilite: {
         note: 6.2,
-        text: 'Modérément fiable',
-        description:
-          'Certaines données manquent, les résultats sont à interpréter avec prudence.',
+        text: "Modérément fiable",
+        description: "Certaines données manquent, les résultats sont à interpréter avec prudence.",
       },
       resultats: [
         {

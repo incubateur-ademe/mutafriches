@@ -1,14 +1,14 @@
 <div class="fr-mb-4w">
   <h3>Renseignez des données complémentaires</h3>
-  <p class="fr-text--sm">Complétez les champs suivants pour améliorer la fiabilité des résultats qui vont suivre</p>
+  <p class="fr-text--sm">
+    Complétez les champs suivants pour améliorer la fiabilité des résultats qui vont suivre
+  </p>
 
   <form id="manual-form">
-
     <!-- Infos du site -->
     <h5>Informations du site</h5>
 
     <div class="fr-grid-row fr-grid-row--gutters fr-mb-4w">
-
       <!-- Type de propriétaire -->
       <div class="fr-col-12 fr-col-md-6">
         <div class="fr-select-group">
@@ -23,7 +23,7 @@
             <option value="copro-indivision">Copropriété / Indivision</option>
             <option value="ne-sait-pas">Ne sait pas</option>
           </select>
-          <div class="fr-error-text" id="type-proprietaire-error" style="display: none;">
+          <div class="fr-error-text" id="type-proprietaire-error" style="display: none">
             Obligatoire
           </div>
         </div>
@@ -41,9 +41,7 @@
             <option value="non">Non</option>
             <option value="ne-sait-pas">Ne sait pas</option>
           </select>
-          <div class="fr-error-text" id="reseau-eaux-error" style="display: none;">
-            Obligatoire
-          </div>
+          <div class="fr-error-text" id="reseau-eaux-error" style="display: none">Obligatoire</div>
         </div>
       </div>
 
@@ -61,9 +59,7 @@
             <option value="degradation-heterogene">Dégradation hétérogène</option>
             <option value="ne-sait-pas">Ne sait pas</option>
           </select>
-          <div class="fr-error-text" id="etat-bati-error" style="display: none;">
-            Obligatoire
-          </div>
+          <div class="fr-error-text" id="etat-bati-error" style="display: none">Obligatoire</div>
         </div>
       </div>
 
@@ -81,7 +77,7 @@
             <option value="oui-autres-composes">Oui - autres composés</option>
             <option value="ne-sait-pas">Ne sait pas</option>
           </select>
-          <div class="fr-error-text" id="presence-pollution-error" style="display: none;">
+          <div class="fr-error-text" id="presence-pollution-error" style="display: none">
             Obligatoire
           </div>
         </div>
@@ -91,7 +87,8 @@
       <div class="fr-col-12 fr-col-md-6">
         <div class="fr-select-group">
           <label class="fr-label" for="valeur-architecturale">
-            Intérêt architectural et historique des constructions <span class="fr-text--red">*</span>
+            Intérêt architectural et historique des constructions
+            <span class="fr-text--red">*</span>
           </label>
           <select class="fr-select" id="valeur-architecturale" name="valeurArchitecturale" required>
             <option value="" selected>Sélectionner une option</option>
@@ -100,7 +97,7 @@
             <option value="interet-remarquable">Intérêt remarquable</option>
             <option value="ne-sait-pas">Ne sait pas</option>
           </select>
-          <div class="fr-error-text" id="valeur-architecturale-error" style="display: none;">
+          <div class="fr-error-text" id="valeur-architecturale-error" style="display: none">
             Obligatoire
           </div>
         </div>
@@ -113,7 +110,6 @@
     <h5>Environnement du site</h5>
 
     <div class="fr-grid-row fr-grid-row--gutters">
-
       <div class="fr-col-12 fr-col-md-6">
         <div class="fr-select-group">
           <label class="fr-label" for="qualite-paysagere">
@@ -126,7 +122,7 @@
             <option value="interet-remarquable">Intérêt Remarquable</option>
             <option value="ne-sait-pas">Ne sait pas</option>
           </select>
-          <div class="fr-error-text" id="qualite-paysagere-error" style="display: none;">
+          <div class="fr-error-text" id="qualite-paysagere-error" style="display: none">
             Obligatoire
           </div>
         </div>
@@ -144,18 +140,16 @@
             <option value="peu-accessible">Peu accessible</option>
             <option value="ne-sait-pas">Ne sait pas</option>
           </select>
-          <div class="fr-error-text" id="qualite-desserte-error" style="display: none;">
+          <div class="fr-error-text" id="qualite-desserte-error" style="display: none">
             Obligatoire
           </div>
         </div>
       </div>
     </div>
-
   </form>
-
 </div>
 
-<div class="fr-mt-4w" style="text-align: center;">
+<div class="fr-mt-4w" style="text-align: center">
   <a href="{{previousUrl}}" class="fr-btn fr-btn--secondary">
     <span class="fr-icon-arrow-left-s-line fr-icon--sm" aria-hidden="true"></span>
     Précédent
@@ -168,83 +162,83 @@
 
 <script>
   function submitAndGoToResult() {
-    const form = document.getElementById('manual-form');
+    const form = document.getElementById("manual-form");
     const formData = new FormData(form);
 
     // Liste des champs obligatoires
     const requiredFields = [
-      'type-proprietaire',
-      'reseau-eaux',
-      'etat-bati',
-      'presence-pollution',
-      'valeur-architecturale',
-      'qualite-paysagere',
-      'qualite-desserte'
+      "type-proprietaire",
+      "reseau-eaux",
+      "etat-bati",
+      "presence-pollution",
+      "valeur-architecturale",
+      "qualite-paysagere",
+      "qualite-desserte",
     ];
 
     let isValid = true;
 
     // Validation de chaque champ
-    requiredFields.forEach(fieldId => {
+    requiredFields.forEach((fieldId) => {
       const element = document.getElementById(fieldId);
-      const errorElement = document.getElementById(fieldId + '-error');
+      const errorElement = document.getElementById(fieldId + "-error");
 
-      if (!element.value || element.value === '') {
+      if (!element.value || element.value === "") {
         // Afficher l'erreur
-        element.classList.add('fr-select--error');
-        errorElement.style.display = 'block';
+        element.classList.add("fr-select--error");
+        errorElement.style.display = "block";
         isValid = false;
       } else {
         // Masquer l'erreur
-        element.classList.remove('fr-select--error');
-        errorElement.style.display = 'none';
+        element.classList.remove("fr-select--error");
+        errorElement.style.display = "none";
       }
     });
 
     if (!isValid) {
       // Faire défiler vers le premier champ en erreur
-      const firstError = document.querySelector('.fr-select--error');
+      const firstError = document.querySelector(".fr-select--error");
       if (firstError) {
         firstError.scrollIntoView({
-          behavior: 'smooth',
-          block: 'center'
+          behavior: "smooth",
+          block: "center",
         });
       }
       return;
     }
 
     // Désactiver le bouton
-    const submitBtn = document.getElementById('submit-btn');
+    const submitBtn = document.getElementById("submit-btn");
     submitBtn.disabled = true;
-    submitBtn.innerHTML = 'Sauvegarde en cours...';
+    submitBtn.innerHTML = "Sauvegarde en cours...";
 
     // Convertir FormData en objet JSON
     const data = {};
     for (let [key, value] of formData.entries()) {
       // Mapper les noms d'attributs HTML vers les noms attendus par l'API
-      const apiFieldName = key.replace(/-/g, ''); // Supprimer les tirets
+      const apiFieldName = key.replace(/-/g, ""); // Supprimer les tirets
 
       // Mapping spécifique si nécessaire
       switch (key) {
-        case 'type-proprietaire':
+        case "type-proprietaire":
           data.typeProprietaire = value;
           break;
-        case 'terrain-viabilise':
+        case "terrain-viabilise":
           data.terrainViabilise = value;
           break;
-        case 'etat-bati':
+        case "etat-bati":
           data.etatBati = value;
           break;
-        case 'presence-pollution':
+        case "presence-pollution":
           data.presencePollution = value;
           break;
-        case 'valeur-architecturale':
+        case "valeur-architecturale":
           data.valeurArchitecturale = value;
           break;
-        case 'qualite-paysagere':
+        case "qualite-paysagere":
           data.qualitePaysagere = value;
           break;
-        case 'qualite-desserte':
+        case "qualite-desserte":
           data.qualiteDesserte = value;
           break;
         default:
@@ -252,40 +246,42 @@
       }
     }
 
-    console.log('Données à envoyer:', data);
+    console.log("Données à envoyer:", data);
 
     // Appel à l'API pour sauvegarder
-    fetch('/analyse/sauvegarder-donnees', {
-      method: 'POST',
+    fetch("/analyse/sauvegarder-donnees", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      credentials: 'include', // Important pour les cookies de session
-      body: JSON.stringify(data)
+      credentials: "include", // Important pour les cookies de session
+      body: JSON.stringify(data),
     })
-      .then(response => response.json())
-      .then(result => {
-        console.log('Réponse API:', result);
+      .then((response) => response.json())
+      .then((result) => {
+        console.log("Réponse API:", result);
 
         if (result.success) {
           // Redirection vers l'étape suivante
-          window.location.href = '/analyse/resultats';
+          window.location.href = "/analyse/resultats";
         } else {
           // Afficher l'erreur
-          alert('Erreur lors de la sauvegarde: ' + (result.message || 'Erreur inconnue'));
+          alert("Erreur lors de la sauvegarde: " + (result.message || "Erreur inconnue"));
 
           // Réactiver le bouton
           submitBtn.disabled = false;
-          submitBtn.innerHTML = 'Calculer les résultats <span class="fr-icon-arrow-right-s-line fr-icon--sm" aria-hidden="true"></span>';
+          submitBtn.innerHTML =
+            'Calculer les résultats <span class="fr-icon-arrow-right-s-line fr-icon--sm" aria-hidden="true"></span>';
         }
       })
-      .catch(error => {
-        console.error('Erreur:', error);
-        alert('Erreur de communication avec le serveur');
+      .catch((error) => {
+        console.error("Erreur:", error);
+        alert("Erreur de communication avec le serveur");
 
         // Réactiver le bouton
         submitBtn.disabled = false;
-        submitBtn.innerHTML = 'Calculer les résultats <span class="fr-icon-arrow-right-s-line fr-icon--sm" aria-hidden="true"></span>';
+        submitBtn.innerHTML =
+          'Calculer les résultats <span class="fr-icon-arrow-right-s-line fr-icon--sm" aria-hidden="true"></span>';
       });
   }
 </script>

@@ -3,7 +3,9 @@
     height: 0;
     overflow: hidden;
     opacity: 0;
-    transition: height 0.3s ease, opacity 0.3s ease;
+    transition:
+      height 0.3s ease,
+      opacity 0.3s ease;
   }
 
   .collapsed.expanded {
@@ -30,13 +32,26 @@
       <fieldset class="fr-segmented fr-mb-4w">
         <div class="fr-segmented__elements">
           <div class="fr-segmented__element">
-            <input value="id" type="radio" id="mode-id" name="selection-mode" checked onchange="switchMode('id')">
+            <input
+              value="id"
+              type="radio"
+              id="mode-id"
+              name="selection-mode"
+              checked
+              onchange="switchMode('id')"
+            />
             <label class="fr-icon-edit-line fr-label" for="mode-id">
               Par identifiant de parcelle
             </label>
           </div>
           <div class="fr-segmented__element">
-            <input value="carte" type="radio" id="mode-carte" name="selection-mode" onchange="switchMode('carte')">
+            <input
+              value="carte"
+              type="radio"
+              id="mode-carte"
+              name="selection-mode"
+              onchange="switchMode('carte')"
+            />
             <label class="fr-icon-map-pin-2-line fr-label" for="mode-carte">
               Depuis la carte
             </label>
@@ -50,14 +65,29 @@
       <fieldset class="fr-segmented fr-segmented--sm fr-mb-4w">
         <div class="fr-segmented__elements">
           <div class="fr-segmented__element">
-            <input value="1" checked type="radio" id="multiparcelle-map-simple" name="multiparcelle-map"
-              onchange="handleMultiParcelleChange(event)">
-            <label class="fr-icon-home-4-fill fr-label" for="multiparcelle-map-simple">Une parcelle</label>
+            <input
+              value="1"
+              checked
+              type="radio"
+              id="multiparcelle-map-simple"
+              name="multiparcelle-map"
+              onchange="handleMultiParcelleChange(event)"
+            />
+            <label class="fr-icon-home-4-fill fr-label" for="multiparcelle-map-simple"
+              >Une parcelle</label
+            >
           </div>
           <div class="fr-segmented__element">
-            <input value="2" type="radio" id="multiparcelle-map-multi" name="multiparcelle-map"
-              onchange="handleMultiParcelleChange(event)">
-            <label class="fr-icon-community-fill fr-label" for="multiparcelle-map-multi">Plusieurs parcelles</label>
+            <input
+              value="2"
+              type="radio"
+              id="multiparcelle-map-multi"
+              name="multiparcelle-map"
+              onchange="handleMultiParcelleChange(event)"
+            />
+            <label class="fr-icon-community-fill fr-label" for="multiparcelle-map-multi"
+              >Plusieurs parcelles</label
+            >
           </div>
         </div>
       </fieldset>
@@ -65,25 +95,53 @@
   </div>
 
   <!-- Mode carte -->
-  <div id="carte-mode" class="input-mode ">
-    <p class="fr-text--sm">Cliquez sur la carte pour sélectionner la (les) parcelle(s) à analyser</p>
+  <div id="carte-mode" class="input-mode">
+    <p class="fr-text--sm">
+      Cliquez sur la carte pour sélectionner la (les) parcelle(s) à analyser
+    </p>
     <div class="fr-grid-row fr-grid-row--gutters">
       <div id="map-col" class="fr-col-12">
         <!-- Carte fictive -->
-        <div id="map-container"
-          style="height: 400px; background: linear-gradient(135deg, #e8f5e8 0%, #f0f8f0 100%); border: 2px solid #18753c; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative;"
-          onclick="selectParcel()">
-          <div style="text-align: center; color: #18753c;">
-            <div style="font-size: 3rem; margin-bottom: 1rem;">🗺️</div>
-            <p style="margin: 0; font-weight: bold;">Carte interactive</p>
-            <p style="margin: 0; font-size: 0.9rem;">Cliquez pour sélectionner la parcelle "Atelier de conception -
-              Coutances"</p>
+        <div
+          id="map-container"
+          style="
+            height: 400px;
+            background: linear-gradient(135deg, #e8f5e8 0%, #f0f8f0 100%);
+            border: 2px solid #18753c;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: relative;
+          "
+          onclick="selectParcel()"
+        >
+          <div style="text-align: center; color: #18753c">
+            <div style="font-size: 3rem; margin-bottom: 1rem">🗺️</div>
+            <p style="margin: 0; font-weight: bold">Carte interactive</p>
+            <p style="margin: 0; font-size: 0.9rem">
+              Cliquez pour sélectionner la parcelle "Atelier de conception - Coutances"
+            </p>
           </div>
 
           <!-- Point de parcelle fictif -->
-          <div id="parcel-point"
-            style="position: absolute; top: 60%; left: 45%; width: 20px; height: 20px; background: #000091; border: 3px solid white; border-radius: 50%; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.3);"
-            onclick="selectParcel(event)"></div>
+          <div
+            id="parcel-point"
+            style="
+              position: absolute;
+              top: 60%;
+              left: 45%;
+              width: 20px;
+              height: 20px;
+              background: #000091;
+              border: 3px solid white;
+              border-radius: 50%;
+              cursor: pointer;
+              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            "
+            onclick="selectParcel(event)"
+          ></div>
         </div>
       </div>
     </div>
@@ -96,10 +154,15 @@
       <!-- Message d'info pour l'ID -->
       <div class="fr-callout fr-callout--green-emeraude fr-mt-2w">
         <p class="fr-callout__text">
-          L'Identifiant de parcelle peut être trouvé sur le cadastre ou les documents officiels de la propriété.
+          L'Identifiant de parcelle peut être trouvé sur le cadastre ou les documents officiels de
+          la propriété.
         </p>
-        <a href="https://www.cadastre.gouv.fr" target="_blank" rel="noopener noreferrer"
-          class="fr-btn fr-btn--secondary fr-btn--icon-left">
+        <a
+          href="https://www.cadastre.gouv.fr"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="fr-btn fr-btn--secondary fr-btn--icon-left"
+        >
           Consulter le cadastre
         </a>
       </div>
@@ -110,22 +173,34 @@
             Identifiant de parcelle
             <span class="fr-hint-text">Saisissez l'identifiant de la parcelle à analyser</span>
           </label>
-          <input class="fr-input" type="text" id="parcel-id" name="parcel-id" placeholder="Ex: 50147000AR0010"
-            onkeypress="if(event.key==='Enter') searchParcelEnrichmentData()">
+          <input
+            class="fr-input"
+            type="text"
+            id="parcel-id"
+            name="parcel-id"
+            placeholder="Ex: 50147000AR0010"
+            onkeypress="if(event.key==='Enter') searchParcelEnrichmentData()"
+          />
         </div>
       </div>
-      <div class="fr-col-12 fr-col-md-6" style="display: flex; align-items: end;">
-        <button class="fr-btn fr-btn--icon-left fr-icon-search-line" type="button"
-          onclick="searchParcelEnrichmentData()">
+      <div class="fr-col-12 fr-col-md-6" style="display: flex; align-items: end">
+        <button
+          class="fr-btn fr-btn--icon-left fr-icon-search-line"
+          type="button"
+          onclick="searchParcelEnrichmentData()"
+        >
           Rechercher la parcelle
         </button>
       </div>
     </div>
   </div>
 
-
   <!-- Loader -->
-  <div id="info-loader" class="fr-callout fr-callout--blue-france fr-mt-4w" style="display: none; margin-bottom: 1rem;">
+  <div
+    id="info-loader"
+    class="fr-callout fr-callout--blue-france fr-mt-4w"
+    style="display: none; margin-bottom: 1rem"
+  >
     <h3 class="fr-callout__title">
       <span class="fr-icon-refresh-fill animate-spin mr-2" aria-hidden="true"></span>
       Enrichissement en cours
@@ -134,290 +209,407 @@
   </div>
 
   <!-- Zone d'erreur séparée -->
-  <div id="error-zone" class="fr-alert fr-alert--error fr-mt-4w" style="display: none; margin-bottom: 1rem;">
+  <div
+    id="error-zone"
+    class="fr-alert fr-alert--error fr-mt-4w"
+    style="display: none; margin-bottom: 1rem"
+  >
     <h3 class="fr-alert__title">Erreur</h3>
     <p id="error-message">Une erreur s'est produite</p>
   </div>
 
   <!-- Zone informations déduites -->
   <div id="info-col" class="fr-col-12 collapsed fr-mt-4w">
-
     <hr />
     <h3>Données publiques sourcées</h3>
-    <p class="fr-text--sm">Ces informations ont été collectées automatiquement depuis les bases de données publiques,
-      assurez-vous qu'elles soient correctes.</p>
+    <p class="fr-text--sm">
+      Ces informations ont été collectées automatiquement depuis les bases de données publiques,
+      assurez-vous qu'elles soient correctes.
+    </p>
 
     <!-- Onglets -->
     <div class="fr-tabs fr-mt-4w">
       <ul class="fr-tabs__list" role="tablist" aria-label="Données récupérées automatiquement">
         <li role="presentation">
-          <button type="button" id="tab-infos" class="fr-tabs__tab" tabindex="0" role="tab" aria-selected="true"
-            aria-controls="tab-infos-panel">
+          <button
+            type="button"
+            id="tab-infos"
+            class="fr-tabs__tab"
+            tabindex="0"
+            role="tab"
+            aria-selected="true"
+            aria-controls="tab-infos-panel"
+          >
             Informations du site
           </button>
         </li>
         <li role="presentation">
-          <button type="button" id="tab-env" class="fr-tabs__tab" tabindex="-1" role="tab" aria-selected="false"
-            aria-controls="tab-env-panel">
+          <button
+            type="button"
+            id="tab-env"
+            class="fr-tabs__tab"
+            tabindex="-1"
+            role="tab"
+            aria-selected="false"
+            aria-controls="tab-env-panel"
+          >
             Environnement du site
           </button>
         </li>
         <li role="presentation">
-          <button type="button" id="tab-risques" class="fr-tabs__tab" tabindex="-1" role="tab" aria-selected="false"
-            aria-controls="tab-risques-panel">
+          <button
+            type="button"
+            id="tab-risques"
+            class="fr-tabs__tab"
+            tabindex="-1"
+            role="tab"
+            aria-selected="false"
+            aria-controls="tab-risques-panel"
+          >
             Risques & zonage
           </button>
         </li>
       </ul>
 
       <!-- Panneau Infos parcelle -->
-      <div id="tab-infos-panel" class="fr-tabs__panel fr-tabs__panel--selected" role="tabpanel"
-        aria-labelledby="tab-infos" tabindex="0">
+      <div
+        id="tab-infos-panel"
+        class="fr-tabs__panel fr-tabs__panel--selected"
+        role="tabpanel"
+        aria-labelledby="tab-infos"
+        tabindex="0"
+      >
         <div class="fr-grid-row fr-grid-row--gutters">
           <div class="fr-col-6">
             <div class="fr-text fr-text--lg">
               <strong>Commune</strong>
-              <button class="fr-btn--tooltip fr-btn fr-btn--sm" type="button" aria-describedby="tooltip-commune">
+              <button
+                class="fr-btn--tooltip fr-btn fr-btn--sm"
+                type="button"
+                aria-describedby="tooltip-commune"
+              >
                 <span class="fr-icon-information-line" aria-hidden="true"></span>
               </button>
               <span class="fr-tooltip fr-placement" id="tooltip-commune" role="tooltip">
                 Récupéré depuis API IGN Cadastre : https://apicarto.ign.fr/api/doc/cadastre
               </span>
-              <br>
+              <br />
               <span class="fr-badge fr-badge--blue-france">{{commune}}</span>
             </div>
           </div>
           <div class="fr-col-6">
             <div class="fr-text fr-text--lg">
               <strong>Identifiant parcelle</strong>
-              <button class="fr-btn--tooltip fr-btn fr-btn--sm" type="button" aria-describedby="tooltip-surface">
+              <button
+                class="fr-btn--tooltip fr-btn fr-btn--sm"
+                type="button"
+                aria-describedby="tooltip-surface"
+              >
                 <span class="fr-icon-information-line" aria-hidden="true"></span>
               </button>
               <span class="fr-tooltip fr-placement" id="tooltip-surface" role="tooltip">
                 Récupéré depuis API IGN Cadastre : https://apicarto.ign.fr/api/doc/cadastre
               </span>
-              <br>
+              <br />
               <span class="fr-badge fr-badge--blue-france">{{identifiantParcelle}}</span>
             </div>
           </div>
           <div class="fr-col-6">
             <div class="fr-text fr-text--lg">
               <strong>Surface du site</strong>
-              <button class="fr-btn--tooltip fr-btn fr-btn--sm" type="button" aria-describedby="tooltip-surface">
+              <button
+                class="fr-btn--tooltip fr-btn fr-btn--sm"
+                type="button"
+                aria-describedby="tooltip-surface"
+              >
                 <span class="fr-icon-information-line" aria-hidden="true"></span>
               </button>
               <span class="fr-tooltip fr-placement" id="tooltip-surface" role="tooltip">
                 Récupéré depuis API IGN Cadastre : https://apicarto.ign.fr/api/doc/cadastre
               </span>
-              <br>
+              <br />
               <span class="fr-badge fr-badge--blue-france">{{surfaceParcelle}}</span>
             </div>
           </div>
           <div class="fr-col-6">
             <div class="fr-text fr-text--lg">
               <strong>Surface bâtie</strong>
-              <button class="fr-btn--tooltip fr-btn fr-btn--sm" type="button" aria-describedby="tooltip-batie">
+              <button
+                class="fr-btn--tooltip fr-btn fr-btn--sm"
+                type="button"
+                aria-describedby="tooltip-batie"
+              >
                 <span class="fr-icon-information-line" aria-hidden="true"></span>
               </button>
               <span class="fr-tooltip fr-placement" id="tooltip-batie" role="tooltip">
                 Récupéré depuis API BDNB : https://api.bdnb.io/v1/bdnb
               </span>
-              <br>
+              <br />
               <span class="fr-badge fr-badge--blue-france">{{surfaceBatie}}</span>
             </div>
           </div>
           <div class="fr-col-6">
             <div class="fr-text fr-text--lg">
               <strong>Connection au réseau d'électricité</strong>
-              <button class="fr-btn--tooltip fr-btn fr-btn--sm" type="button" aria-describedby="tooltip-proprietaire">
+              <button
+                class="fr-btn--tooltip fr-btn fr-btn--sm"
+                type="button"
+                aria-describedby="tooltip-proprietaire"
+              >
                 <span class="fr-icon-information-line" aria-hidden="true"></span>
               </button>
               <span class="fr-tooltip fr-placement" id="tooltip-proprietaire" role="tooltip">
-                Récupéré depuis API Enedis : https://data.enedis.fr/api/explore/v2.1/catalog/datasets
+                Récupéré depuis API Enedis :
+                https://data.enedis.fr/api/explore/v2.1/catalog/datasets
               </span>
-              <br>
+              <br />
               <span class="fr-badge fr-badge--blue-france">{{connectionElectricite}}</span>
             </div>
           </div>
           <div class="fr-col-6">
             <div class="fr-text fr-text--lg">
               <strong>Ancienne activité</strong>
-              <button class="fr-btn--tooltip fr-btn fr-btn--sm" type="button" aria-describedby="tooltip-activite">
+              <button
+                class="fr-btn--tooltip fr-btn fr-btn--sm"
+                type="button"
+                aria-describedby="tooltip-activite"
+              >
                 <span class="fr-icon-information-line" aria-hidden="true"></span>
               </button>
               <span class="fr-tooltip fr-placement" id="tooltip-activite" role="tooltip">
                 Donnée de test, pas de récupération réelle pour l'instant
               </span>
-              <br>
-              <span class="fr-badge  fr-badge--no-icon">{{ancienneActivite}}</span>
+              <br />
+              <span class="fr-badge fr-badge--no-icon">{{ancienneActivite}}</span>
             </div>
           </div>
         </div>
       </div>
 
       <!-- Panneau Environnement & alentours -->
-      <div id="tab-env-panel" class="fr-tabs__panel" role="tabpanel" aria-labelledby="tab-env" tabindex="0">
+      <div
+        id="tab-env-panel"
+        class="fr-tabs__panel"
+        role="tabpanel"
+        aria-labelledby="tab-env"
+        tabindex="0"
+      >
         <div class="fr-grid-row fr-grid-row--gutters">
           <div class="fr-col-6">
             <div class="fr-text fr-text--lg">
               <strong>Site en centre ville</strong>
-              <button class="fr-btn--tooltip fr-btn fr-btn--sm" type="button" aria-describedby="tooltip-centre">
+              <button
+                class="fr-btn--tooltip fr-btn fr-btn--sm"
+                type="button"
+                aria-describedby="tooltip-centre"
+              >
                 <span class="fr-icon-information-line" aria-hidden="true"></span>
               </button>
               <span class="fr-tooltip fr-placement" id="tooltip-centre" role="tooltip">
                 Donnée de test, pas de récupération réelle pour l'instant
               </span>
-              <br>
-              <span class="fr-badge  fr-badge--no-icon">{{centreVille}}</span>
+              <br />
+              <span class="fr-badge fr-badge--no-icon">{{centreVille}}</span>
             </div>
           </div>
           <div class="fr-col-6">
             <div class="fr-text fr-text--lg">
               <strong>Distance voie à grande circulation</strong>
-              <button class="fr-btn--tooltip fr-btn fr-btn--sm" type="button" aria-describedby="tooltip-autoroute">
+              <button
+                class="fr-btn--tooltip fr-btn fr-btn--sm"
+                type="button"
+                aria-describedby="tooltip-autoroute"
+              >
                 <span class="fr-icon-information-line" aria-hidden="true"></span>
               </button>
               <span class="fr-tooltip fr-placement" id="tooltip-autoroute" role="tooltip">
                 Donnée de test, pas de récupération réelle pour l'instant
               </span>
-              <br>
-              <span class="fr-badge  fr-badge--no-icon">{{distanceAutoroute}}</span>
+              <br />
+              <span class="fr-badge fr-badge--no-icon">{{distanceAutoroute}}</span>
             </div>
           </div>
           <div class="fr-col-6">
             <div class="fr-text fr-text--lg">
               <strong>Distance au transport en commun</strong>
-              <button class="fr-btn--tooltip fr-btn fr-btn--sm" type="button" aria-describedby="tooltip-transport">
+              <button
+                class="fr-btn--tooltip fr-btn fr-btn--sm"
+                type="button"
+                aria-describedby="tooltip-transport"
+              >
                 <span class="fr-icon-information-line" aria-hidden="true"></span>
               </button>
               <span class="fr-tooltip fr-placement" id="tooltip-transport" role="tooltip">
                 Donnée de test, pas de récupération réelle pour l'instant
               </span>
-              <br>
-              <span class="fr-badge  fr-badge--no-icon">{{distanceTrain}}</span>
+              <br />
+              <span class="fr-badge fr-badge--no-icon">{{distanceTrain}}</span>
             </div>
           </div>
           <div class="fr-col-6">
             <div class="fr-text fr-text--lg">
               <strong>Proximité des commerces et services</strong>
-              <button class="fr-btn--tooltip fr-btn fr-btn--sm" type="button" aria-describedby="tooltip-commerces">
+              <button
+                class="fr-btn--tooltip fr-btn fr-btn--sm"
+                type="button"
+                aria-describedby="tooltip-commerces"
+              >
                 <span class="fr-icon-information-line" aria-hidden="true"></span>
               </button>
               <span class="fr-tooltip fr-placement" id="tooltip-commerces" role="tooltip">
                 Donnée de test, pas de récupération réelle pour l'instant
               </span>
-              <br>
-              <span class="fr-badge  fr-badge--no-icon">{{proximiteCommerces}}</span>
+              <br />
+              <span class="fr-badge fr-badge--no-icon">{{proximiteCommerces}}</span>
             </div>
           </div>
           <div class="fr-col-6">
             <div class="fr-text fr-text--lg">
               <strong>Distance au raccordement électrique</strong>
-              <button class="fr-btn--tooltip fr-btn fr-btn--sm" type="button" aria-describedby="tooltip-raccordement">
+              <button
+                class="fr-btn--tooltip fr-btn fr-btn--sm"
+                type="button"
+                aria-describedby="tooltip-raccordement"
+              >
                 <span class="fr-icon-information-line" aria-hidden="true"></span>
               </button>
               <span class="fr-tooltip fr-placement" id="tooltip-raccordement" role="tooltip">
-                Récupéré depuis API Enedis : https://data.enedis.fr/api/explore/v2.1/catalog/datasets
+                Récupéré depuis API Enedis :
+                https://data.enedis.fr/api/explore/v2.1/catalog/datasets
               </span>
-              <br>
+              <br />
               <span class="fr-badge fr-badge--blue-france">{{distanceRaccordement}}</span>
             </div>
           </div>
           <div class="fr-col-6">
             <div class="fr-text fr-text--lg">
               <strong>Taux de logements vacants</strong>
-              <button class="fr-btn--tooltip fr-btn fr-btn--sm" type="button" aria-describedby="tooltip-vacants">
+              <button
+                class="fr-btn--tooltip fr-btn fr-btn--sm"
+                type="button"
+                aria-describedby="tooltip-vacants"
+              >
                 <span class="fr-icon-information-line" aria-hidden="true"></span>
               </button>
               <span class="fr-tooltip fr-placement" id="tooltip-vacants" role="tooltip">
                 Donnée de test, pas de récupération réelle pour l'instant
               </span>
-              <br>
-              <span class="fr-badge  fr-badge--no-icon">{{tauxLV}}</span>
+              <br />
+              <span class="fr-badge fr-badge--no-icon">{{tauxLV}}</span>
             </div>
           </div>
         </div>
       </div>
 
       <!-- Panneau Risques & Zones -->
-      <div id="tab-risques-panel" class="fr-tabs__panel" role="tabpanel" aria-labelledby="tab-risques" tabindex="0">
+      <div
+        id="tab-risques-panel"
+        class="fr-tabs__panel"
+        role="tabpanel"
+        aria-labelledby="tab-risques"
+        tabindex="0"
+      >
         <div class="fr-grid-row fr-grid-row--gutters">
           <div class="fr-col-6">
             <div class="fr-text fr-text--lg">
               <strong>Présence de risques technologiques</strong>
-              <button class="fr-btn--tooltip fr-btn fr-btn--sm" type="button" aria-describedby="tooltip-techno">
+              <button
+                class="fr-btn--tooltip fr-btn fr-btn--sm"
+                type="button"
+                aria-describedby="tooltip-techno"
+              >
                 <span class="fr-icon-information-line" aria-hidden="true"></span>
               </button>
               <span class="fr-tooltip fr-placement" id="tooltip-techno" role="tooltip">
                 Donnée de test, pas de récupération réelle pour l'instant
               </span>
-              <br>
-              <span class="fr-badge  fr-badge--no-icon">{{risquesTechno}}</span>
+              <br />
+              <span class="fr-badge fr-badge--no-icon">{{risquesTechno}}</span>
             </div>
           </div>
           <div class="fr-col-6">
             <div class="fr-text fr-text--lg">
               <strong>Présence de risques naturels</strong>
-              <button class="fr-btn--tooltip fr-btn fr-btn--sm" type="button" aria-describedby="tooltip-naturels">
+              <button
+                class="fr-btn--tooltip fr-btn fr-btn--sm"
+                type="button"
+                aria-describedby="tooltip-naturels"
+              >
                 <span class="fr-icon-information-line" aria-hidden="true"></span>
               </button>
               <span class="fr-tooltip fr-placement" id="tooltip-naturels" role="tooltip">
                 Récupéré depuis API BDNB : https://api.bdnb.io/v1/bdnb
               </span>
-              <br>
+              <br />
               <span class="fr-badge fr-badge--blue-france">{{risquesNaturels}}</span>
             </div>
           </div>
           <div class="fr-col-6">
             <div class="fr-text fr-text--lg">
               <strong>Type de zonage environnemental</strong>
-              <button class="fr-btn--tooltip fr-btn fr-btn--sm" type="button" aria-describedby="tooltip-zonage-env">
+              <button
+                class="fr-btn--tooltip fr-btn fr-btn--sm"
+                type="button"
+                aria-describedby="tooltip-zonage-env"
+              >
                 <span class="fr-icon-information-line" aria-hidden="true"></span>
               </button>
               <span class="fr-tooltip fr-placement" id="tooltip-zonage-env" role="tooltip">
                 Donnée de test, pas de récupération réelle pour l'instant
               </span>
-              <br>
-              <span class="fr-badge  fr-badge--no-icon">{{zonageEnviro}}</span>
+              <br />
+              <span class="fr-badge fr-badge--no-icon">{{zonageEnviro}}</span>
             </div>
           </div>
           <div class="fr-col-6">
             <div class="fr-text fr-text--lg">
               <strong>Zonage réglementaire</strong>
-              <button class="fr-btn--tooltip fr-btn fr-btn--sm" type="button" aria-describedby="tooltip-zonage-urb">
+              <button
+                class="fr-btn--tooltip fr-btn fr-btn--sm"
+                type="button"
+                aria-describedby="tooltip-zonage-urb"
+              >
                 <span class="fr-icon-information-line" aria-hidden="true"></span>
               </button>
               <span class="fr-tooltip fr-placement" id="tooltip-zonage-urb" role="tooltip">
                 Donnée de test, pas de récupération réelle pour l'instant
               </span>
-              <br>
-              <span class="fr-badge  fr-badge--no-icon">{{zonageUrba}}</span>
+              <br />
+              <span class="fr-badge fr-badge--no-icon">{{zonageUrba}}</span>
             </div>
           </div>
           <div class="fr-col-6">
             <div class="fr-text fr-text--lg">
               <strong>Type de zonage patrimonial</strong>
-              <button class="fr-btn--tooltip fr-btn fr-btn--sm" type="button" aria-describedby="tooltip-patrimoine">
+              <button
+                class="fr-btn--tooltip fr-btn fr-btn--sm"
+                type="button"
+                aria-describedby="tooltip-patrimoine"
+              >
                 <span class="fr-icon-information-line" aria-hidden="true"></span>
               </button>
               <span class="fr-tooltip fr-placement" id="tooltip-patrimoine" role="tooltip">
                 Donnée de test, pas de récupération réelle pour l'instant
               </span>
-              <br>
-              <span class="fr-badge  fr-badge--no-icon">{{zonagePatrimonial}}</span>
+              <br />
+              <span class="fr-badge fr-badge--no-icon">{{zonagePatrimonial}}</span>
             </div>
           </div>
           <div class="fr-col-6">
             <div class="fr-text fr-text--lg">
               <strong>Continuité écologique (trame verte et bleue)</strong>
-              <button class="fr-btn--tooltip fr-btn fr-btn--sm" type="button" aria-describedby="tooltip-trame">
+              <button
+                class="fr-btn--tooltip fr-btn fr-btn--sm"
+                type="button"
+                aria-describedby="tooltip-trame"
+              >
                 <span class="fr-icon-information-line" aria-hidden="true"></span>
               </button>
               <span class="fr-tooltip fr-placement" id="tooltip-trame" role="tooltip">
                 Donnée de test, pas de récupération réelle pour l'instant
               </span>
-              <br>
-              <span class="fr-badge  fr-badge--no-icon">{{tvb}}</span>
+              <br />
+              <span class="fr-badge fr-badge--no-icon">{{tvb}}</span>
             </div>
           </div>
         </div>
@@ -425,37 +617,35 @@
     </div>
   </div>
 
-
   <!-- Navigation buttons -->
-  <div id="navigation-buttons" class="fr-mt-4w" style="text-align: right;">
+  <div id="navigation-buttons" class="fr-mt-4w" style="text-align: right">
     <a href="{{nextUrl}}" class="fr-btn" id="next-btn">
       Suivant
       <span class="fr-icon-arrow-right-s-line fr-icon--sm" aria-hidden="true"></span>
     </a>
   </div>
-
 </div>
 
 <script>
   // Fonction pour basculer entre les modes Carte et ID
   function switchMode(mode) {
-    const carteMode = document.getElementById('carte-mode');
-    const idMode = document.getElementById('id-mode');
+    const carteMode = document.getElementById("carte-mode");
+    const idMode = document.getElementById("id-mode");
 
     // Masquer tous les modes
-    carteMode.classList.remove('active');
-    idMode.classList.remove('active');
+    carteMode.classList.remove("active");
+    idMode.classList.remove("active");
 
     // Afficher le mode sélectionné
-    if (mode === 'carte') {
-      carteMode.classList.add('active');
-    } else if (mode === 'id') {
-      idMode.classList.add('active');
+    if (mode === "carte") {
+      carteMode.classList.add("active");
+    } else if (mode === "id") {
+      idMode.classList.add("active");
     }
 
     // Réinitialiser l'affichage des infos si nécessaire
-    const infoCol = document.getElementById('info-col');
-    const navigationButtons = document.getElementById('navigation-buttons');
+    const infoCol = document.getElementById("info-col");
+    const navigationButtons = document.getElementById("navigation-buttons");
   }
 
   // Fonction pour gérer le changement de sélection multi-parcelle
@@ -466,7 +656,7 @@
       alert("La gestion multi-parcelles n'est pas encore disponible mais le sera bientôt !");
 
       // Remettre automatiquement la sélection sur "Une parcelle"
-      document.getElementById('multiparcelle-map-simple').checked = true;
+      document.getElementById("multiparcelle-map-simple").checked = true;
       event.target.checked = false;
     }
   }
@@ -476,8 +666,8 @@
     if (event) event.stopPropagation();
 
     //TODO: Remplacer cette logique par une vraie sélection de parcelle sur la carte
-    const testParcelId = '50147000AR0010';
-    document.getElementById('parcel-id').value = testParcelId;
+    const testParcelId = "50147000AR0010";
+    document.getElementById("parcel-id").value = testParcelId;
 
     // Appeler la fonction de recherche des données enrichies avec l'ID de parcelle
     searchParcelEnrichmentData(testParcelId.trim());
@@ -485,70 +675,70 @@
 
   // Fonction pour afficher une erreur
   function showError(message) {
-    const errorZone = document.getElementById('error-zone');
-    const errorMessage = document.getElementById('error-message');
-    const infoCol = document.getElementById('info-col');
+    const errorZone = document.getElementById("error-zone");
+    const errorMessage = document.getElementById("error-message");
+    const infoCol = document.getElementById("info-col");
 
     // Afficher le message d'erreur
     errorMessage.textContent = message;
-    errorZone.style.display = 'block';
+    errorZone.style.display = "block";
 
     // Masquer les données (sans détruire la structure HTML)
-    infoCol.classList.remove('expanded');
-    infoCol.classList.add('collapsed');
+    infoCol.classList.remove("expanded");
+    infoCol.classList.add("collapsed");
   }
 
   // Fonction pour masquer l'erreur
   function hideError() {
-    const errorZone = document.getElementById('error-zone');
-    errorZone.style.display = 'none';
+    const errorZone = document.getElementById("error-zone");
+    errorZone.style.display = "none";
   }
 
   // Fonction pour afficher les données avec succès
   function showSuccess(data) {
-    const infoCol = document.getElementById('info-col');
+    const infoCol = document.getElementById("info-col");
 
     // Masquer l'erreur
     hideError();
 
     // Injecter les données et afficher
     replacePlaceholders(infoCol, data);
-    infoCol.classList.remove('collapsed');
-    infoCol.classList.add('expanded');
+    infoCol.classList.remove("collapsed");
+    infoCol.classList.add("expanded");
   }
 
   // Fonction pour récupérer les données enrichies d'une parcelle par son identifiant
   // Appel à l'API pour enrichir les données de la parcelle
   // Fonction pour récupérer les données enrichies d'une parcelle par son identifiant
   async function searchParcelEnrichmentData(parcelId = null) {
-    const loader = document.getElementById('info-loader');
+    const loader = document.getElementById("info-loader");
 
     // Si pas d'ID fourni, récupérer la valeur de l'input
     if (!parcelId) {
-      const inputElement = document.getElementById('parcel-id');
+      const inputElement = document.getElementById("parcel-id");
       parcelId = inputElement?.value?.trim();
     }
 
     if (!parcelId) {
-      showError('Veuillez saisir un identifiant de parcelle');
+      showError("Veuillez saisir un identifiant de parcelle");
       return;
     }
 
     // Masquer les erreurs précédentes et afficher le loader
     hideError();
-    if (loader) loader.style.display = 'block';
+    if (loader) loader.style.display = "block";
 
     try {
-      const response = await fetch('/analyse/enrichir-parcelle', {
-        method: 'POST',
+      const response = await fetch("/analyse/enrichir-parcelle", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ identifiantParcelle: parcelId })
+        body: JSON.stringify({ identifiantParcelle: parcelId }),
       });
 
       const result = await response.json();
-      console.log('[DEBUG] API response :', result);
+      console.log("[DEBUG] API response :", result);
 
       if (result.success) {
         // Succès : afficher les données
@@ -558,21 +748,22 @@
         showError(`Impossible de trouver les données pour cette parcelle : ${result.error}`);
       }
     } catch (error) {
-      console.error('[DEBUG] Erreur fetch enrichissement :', error);
+      console.error("[DEBUG] Erreur fetch enrichissement :", error);
       // Erreur technique : afficher le message d'erreur
-      showError('Une erreur technique s\'est produite lors de la récupération des données.');
+      showError("Une erreur technique s'est produite lors de la récupération des données.");
     } finally {
       // Toujours masquer le loader
-      if (loader) loader.style.display = 'none';
+      if (loader) loader.style.display = "none";
     }
 
     // Scroll vers la zone de résultat (erreur ou succès)
     setTimeout(() => {
-      const targetElement = document.getElementById('error-zone').style.display !== 'none'
-        ? document.getElementById('error-zone')
-        : document.getElementById('info-col');
+      const targetElement =
+        document.getElementById("error-zone").style.display !== "none"
+          ? document.getElementById("error-zone")
+          : document.getElementById("info-col");
 
-      targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      targetElement.scrollIntoView({ behavior: "smooth", block: "start" });
     }, 100);
   }
 
@@ -580,6 +771,4 @@
   function injectParcelDataInDom(data) {
     showSuccess(data);
   }
-
-
 </script>

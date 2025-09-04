@@ -1,7 +1,12 @@
 <div class="fr-grid-row fr-grid-row--right fr-mb-4w">
   <div class="fr-col-auto">
-    <button aria-controls="fr-theme-modal" data-fr-opened="false" title="Paramètres d'affichage" type="button"
-      class="fr-btn fr-btn--tertiary fr-btn--sm">
+    <button
+      aria-controls="fr-theme-modal"
+      data-fr-opened="false"
+      title="Paramètres d'affichage"
+      type="button"
+      class="fr-btn fr-btn--tertiary fr-btn--sm"
+    >
       Paramètres d'affichage
     </button>
   </div>
@@ -13,7 +18,12 @@
     <h1>Mutafriches</h1>
   </div>
   <div class="fr-col-auto">
-    <img src="/images/logo-ademe.svg" alt="Logo ADEME" class="fr-responsive-img" style="max-height: 6rem;">
+    <img
+      src="/images/logo-ademe.svg"
+      alt="Logo ADEME"
+      class="fr-responsive-img"
+      style="max-height: 6rem"
+    />
   </div>
 </div>
 
@@ -24,7 +34,11 @@
     {{currentStepTitle}}
     <span class="fr-stepper__state">Étape {{currentStep}} sur {{totalSteps}}</span>
   </h2>
-  <div class="fr-stepper__steps" data-fr-current-step="{{currentStep}}" data-fr-steps="{{totalSteps}}"></div>
+  <div
+    class="fr-stepper__steps"
+    data-fr-current-step="{{currentStep}}"
+    data-fr-steps="{{totalSteps}}"
+  ></div>
   <p class="fr-stepper__details">
     <span class="fr-text--bold">Étape suivante :</span> {{nextStepTitle}}
   </p>

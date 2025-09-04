@@ -1,5 +1,5 @@
-import { PertinenceReponse, UsageType } from '../enums/mutability.enums';
-import { mutabilityResults } from '../schemas/mutability.schema';
+import { PertinenceReponse, UsageType } from "../enums/mutability.enums";
+import { mutabilityResults } from "../schemas/mutability.schema";
 
 // Types inférés depuis le schéma
 export type MutabilityResult = typeof mutabilityResults.$inferSelect;

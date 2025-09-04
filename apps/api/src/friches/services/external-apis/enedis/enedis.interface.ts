@@ -1,8 +1,8 @@
-import { ApiResponse } from '../shared/api-response.interface';
+import { ApiResponse } from "../shared/api-response.interface";
 
 export interface EnedisRaccordement {
   distance: number; // distance en kilomètres jusqu'au plus proche point de raccordement
-  type: 'BT' | 'HTA'; // Basse Tension / Haute Tension
+  type: "BT" | "HTA"; // Basse Tension / Haute Tension
   capaciteDisponible: boolean; // estimation de la capacité disponible
   posteProche?: {
     nom: string;
@@ -13,15 +13,15 @@ export interface EnedisRaccordement {
     };
   };
   infrastructureProche?: {
-    type: 'poste' | 'ligne_bt' | 'poteau';
+    type: "poste" | "ligne_bt" | "poteau";
     distance: number; // en mètres
-    tension: 'BT' | 'HTA';
+    tension: "BT" | "HTA";
   };
 }
 
 export interface EnedisConnexionStatus {
   isConnected: boolean; // true si des infrastructures électriques sont détectées à proximité
-  confidence: 'high' | 'medium' | 'low'; // niveau de confiance de l'estimation
+  confidence: "high" | "medium" | "low"; // niveau de confiance de l'estimation
   sources: string[]; // sources de données utilisées
   details: {
     postesProches: number; // nombre de postes dans un rayon de 2km
@@ -37,7 +37,7 @@ export interface EnedisAnalyseComplete {
   coutEstime?: {
     min: number;
     max: number;
-    devise: 'EUR';
+    devise: "EUR";
     commentaire: string;
   };
 }
@@ -71,10 +71,7 @@ export interface IEnedisService {
    * @param longitude - Longitude WGS84
    * @returns Analyse détaillée avec recommandations
    */
-  analyseComplete(
-    latitude: number,
-    longitude: number,
-  ): Promise<ApiResponse<EnedisAnalyseComplete>>;
+  analyseComplete(latitude: number, longitude: number): Promise<ApiResponse<EnedisAnalyseComplete>>;
 
   /**
    * Recherche les infrastructures électriques dans un rayon donné
@@ -96,7 +93,7 @@ export interface IEnedisService {
   >;
 }
 
-export type TypeInfrastructure = 'poste' | 'ligne_bt' | 'ligne_hta' | 'poteau';
+export type TypeInfrastructure = "poste" | "ligne_bt" | "ligne_hta" | "poteau";
 
 export interface InfrastructureProche {
   type: TypeInfrastructure;

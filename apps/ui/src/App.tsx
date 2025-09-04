@@ -1,5 +1,5 @@
-import { Routes, Route } from 'react-router-dom';
-import { TestDsfr } from './pages/Home';
+import { Routes, Route } from "react-router-dom";
+import { TestDsfr } from "./pages/Home";
 
 function App() {
   return (

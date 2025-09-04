@@ -1,8 +1,8 @@
-import { Module } from '@nestjs/common';
-import { MockTransportService } from './services/mock-transport.service';
-import { MockOverpassService } from './services/mock-overpass.service';
-import { MockLovacService } from './services/mock-lovac.service';
-import { MockMutabilityService } from './services/mock-mutability.service';
+import { Module } from "@nestjs/common";
+import { MockTransportService } from "./services/mock-transport.service";
+import { MockOverpassService } from "./services/mock-overpass.service";
+import { MockLovacService } from "./services/mock-lovac.service";
+import { MockMutabilityService } from "./services/mock-mutability.service";
 
 /**
  * Module contenant tous les services mock pour les APIs externes

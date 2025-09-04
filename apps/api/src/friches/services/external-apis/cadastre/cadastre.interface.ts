@@ -1,4 +1,4 @@
-import { ApiResponse } from '../shared/api-response.interface';
+import { ApiResponse } from "../shared/api-response.interface";
 
 export interface CadastreServiceResponse {
   identifiant: string;
@@ -11,7 +11,5 @@ export interface CadastreServiceResponse {
 }
 
 export interface ICadastreService {
-  getParcelleInfo(
-    identifiant: string,
-  ): Promise<ApiResponse<CadastreServiceResponse>>;
+  getParcelleInfo(identifiant: string): Promise<ApiResponse<CadastreServiceResponse>>;
 }

@@ -83,11 +83,7 @@
     "metadata": {
       "criteresRenseignes": 23,
       "criteresTotal": 26,
-      "criteresManquants": [
-        "presenceEspeceProtegee",
-        "trameVerteEtBleue",
-        "zoneHumide"
-      ]
+      "criteresManquants": ["presenceEspeceProtegee", "trameVerteEtBleue", "zoneHumide"]
     }
   }
 }

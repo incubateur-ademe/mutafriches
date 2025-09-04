@@ -5,7 +5,7 @@ import {
   QualiteDesserte,
   QualitePaysage,
   ValeurArchitecturale,
-} from '../../enums/parcelle.enums';
+} from "../../enums/parcelle.enums";
 
 /**
  * Interface pour les données demandées manuellement à l'utilisateur

@@ -1,8 +1,8 @@
 export interface IGNParcelleFeature {
-  type: 'Feature';
+  type: "Feature";
   id: string;
   geometry: {
-    type: 'MultiPolygon' | 'Polygon';
+    type: "MultiPolygon" | "Polygon";
     coordinates: number[][][];
   };
   properties: {
@@ -22,16 +22,16 @@ export interface IGNParcelleFeature {
 }
 
 export interface IGNParcelleResponse {
-  type: 'FeatureCollection';
+  type: "FeatureCollection";
   features: IGNParcelleFeature[];
   totalFeatures: number;
 }
 
 export interface IGNLocalisantFeature {
-  type: 'Feature';
+  type: "Feature";
   id: string;
   geometry: {
-    type: 'MultiPoint';
+    type: "MultiPoint";
     coordinates: [[number, number]];
   };
   properties: {
@@ -50,7 +50,7 @@ export interface IGNLocalisantFeature {
 }
 
 export interface IGNLocalisantResponse {
-  type: 'FeatureCollection';
+  type: "FeatureCollection";
   features: IGNLocalisantFeature[];
   totalFeatures: number;
 }

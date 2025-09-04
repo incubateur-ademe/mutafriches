@@ -1,4 +1,4 @@
-import { UiParcelleDto } from './ui-parcelle.dto';
+import { UiParcelleDto } from "./ui-parcelle.dto";
 
 export interface UiEnrichmentResultDto {
   success: boolean;
