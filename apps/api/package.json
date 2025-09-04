@@ -33,6 +33,7 @@
     "test:e2e": "vitest run --config vitest.config.ts test/"
   },
   "dependencies": {
+    "@mutafriches/shared-types": "workspace:*",
     "@gouvfr/dsfr": "^1.14.0",
     "@nestjs/axios": "^4.0.1",
     "@nestjs/common": "^11.0.1",

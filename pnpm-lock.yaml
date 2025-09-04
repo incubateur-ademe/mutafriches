@@ -53,6 +53,9 @@ importers:
       '@gouvfr/dsfr':
         specifier: ^1.14.0
         version: 1.14.1
+      '@mutafriches/shared-types':
+        specifier: workspace:*
+        version: link:../../packages/shared-types
       '@nestjs/axios':
         specifier: ^4.0.1
         version: 4.0.1(@nestjs/common@11.1.6(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.2.2)(rxjs@7.8.2))(axios@1.11.0)(rxjs@7.8.2)
@@ -156,6 +159,9 @@ importers:
       '@gouvfr/dsfr':
         specifier: ^1.14.1
         version: 1.14.1
+      '@mutafriches/shared-types':
+        specifier: workspace:*
+        version: link:../../packages/shared-types
       axios:
         specifier: ^1.11.0
         version: 1.11.0
@@ -202,6 +208,12 @@ importers:
       vite:
         specifier: ^7.1.2
         version: 7.1.4(@types/node@22.18.0)(terser@5.44.0)
+
+  packages/shared-types:
+    devDependencies:
+      typescript:
+        specifier: ^5.3.3
+        version: 5.9.2
 
 packages:
 

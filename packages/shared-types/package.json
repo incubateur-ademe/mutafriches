@@ -1,0 +1,15 @@
+{
+  "name": "@mutafriches/shared-types",
+  "version": "1.0.0",
+  "description": "Types partagés entre l'API et l'UI de Mutafriches",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+}
