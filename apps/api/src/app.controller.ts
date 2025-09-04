@@ -1,9 +1,8 @@
 import { Controller, Get, Res } from "@nestjs/common";
 import { DatabaseService } from "./shared/database/database.service";
 import { UiService } from "./ui/services/ui.service";
-import { HealthResponse } from "./shared/types/common.types";
+import { HealthResponse, SimpleResponse } from "./shared/types/common.types";
 import { ApiExcludeEndpoint, ApiTags } from "@nestjs/swagger";
-import { Response } from "express";
 
 @ApiTags("health")
 @Controller()
@@ -46,7 +45,7 @@ export class AppController {
 
   @Get()
   @ApiExcludeEndpoint()
-  getHome(@Res() res: Response): void {
+  getHome(@Res() res: SimpleResponse): void {
     // Page d'accueil du formulaire (étape 1) directement sur /
     const html = this.uiService.renderFormStep(1);
 
