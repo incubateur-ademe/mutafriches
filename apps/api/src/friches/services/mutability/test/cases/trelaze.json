@@ -1,0 +1,94 @@
+{
+  "id": "trelaze-001",
+  "name": "Ancienne manufacture Les Allumettes - Trélazé",
+  "description": "Ancienne manufacture située à Trélazé, propriétaire privé (bailleur social), en centre-ville avec valeur architecturale exceptionnelle",
+  "source": "Test Trélazé.xlsx",
+  "algorithmVersion": "1.0.0",
+
+  "input": {
+    "typeProprietaire": "prive",
+    "surfaceSite": 42780,
+    "surfaceBati": 6600,
+    "nombreBatiments": 8,
+    "etatBatiInfrastructure": "batiments-heterogenes",
+    "presencePollution": "ne-sait-pas",
+    "terrainEnPente": false,
+
+    "siteEnCentreVille": true,
+    "tauxLogementsVacants": 4.9,
+    "terrainViabilise": true,
+    "qualiteVoieDesserte": "accessible",
+    "distanceAutoroute": "entre-1-et-2km",
+    "distanceTransportCommun": "moins-de-500m",
+    "proximiteCommercesServices": true,
+    "voieEauProximite": "non",
+    "distanceRaccordementElectrique": "moins-de-1km",
+
+    "zonageReglementaire": "zone-urbaine-u",
+    "presenceRisquesNaturels": "faible",
+    "presenceRisquesTechnologiques": false,
+    "zonagePatrimonial": "non-concerne",
+
+    "qualitePaysage": "banal-infra-ordinaire",
+    "valeurArchitecturaleHistorique": "exceptionnel",
+
+    "couvertVegetal": "impermeabilise",
+    "presenceEspeceProtegee": "non",
+    "zonageEnvironnemental": "hors-zone",
+    "trameVerteEtBleue": "hors-trame",
+    "zoneHumide": "absence"
+  },
+
+  "expected": {
+    "usages": [
+      {
+        "usage": "residentiel",
+        "indiceMutabilite": 68,
+        "rang": 1
+      },
+      {
+        "usage": "equipements",
+        "indiceMutabilite": 63,
+        "rang": 2
+      },
+      {
+        "usage": "tertiaire",
+        "indiceMutabilite": 60,
+        "rang": 3
+      },
+      {
+        "usage": "culture",
+        "indiceMutabilite": 56,
+        "rang": 4
+      },
+      {
+        "usage": "industrie",
+        "indiceMutabilite": 54,
+        "rang": 5
+      },
+      {
+        "usage": "photovoltaique",
+        "indiceMutabilite": 47,
+        "rang": 6
+      },
+      {
+        "usage": "renaturation",
+        "indiceMutabilite": 41,
+        "rang": 7
+      }
+    ],
+
+    "fiabilite": {
+      "note": 8.5,
+      "noteMin": 8.0,
+      "noteMax": 9.0,
+      "text": "Très fiable"
+    },
+
+    "metadata": {
+      "criteresRenseignes": 25,
+      "criteresTotal": 26,
+      "criteresManquants": ["presencePollution"]
+    }
+  }
+}

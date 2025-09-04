@@ -1,0 +1,93 @@
+{
+  "id": "renaison-001",
+  "name": "Ancien site de Teintures et apprêts du centre (TAC) - Renaison",
+  "description": "Ancien site industriel de teintures situé à Renaison, avec bâtiments hétérogènes, pollution confirmée, en zone naturelle avec contraintes environnementales importantes",
+  "source": "Test 3 - Renaison.xlsx",
+  "algorithmVersion": "1.0.0",
+
+  "input": {
+    "typeProprietaire": "public",
+    "surfaceSite": 46333,
+    "surfaceBati": 7000,
+    "nombreBatiments": 2,
+    "etatBatiInfrastructure": "batiments-heterogenes",
+    "presencePollution": "oui-autres-composes",
+    "terrainEnPente": true,
+
+    "siteEnCentreVille": false,
+    "tauxLogementsVacants": 7.2,
+    "terrainViabilise": true,
+    "qualiteVoieDesserte": "peu-accessible",
+    "distanceAutoroute": "plus-de-5km",
+    "distanceTransportCommun": "plus-de-500m",
+    "proximiteCommercesServices": false,
+    "voieEauProximite": "oui-non-navigable",
+    "distanceRaccordementElectrique": "entre-1-et-5km",
+
+    "zonageReglementaire": "zone-naturelle",
+    "presenceRisquesNaturels": "fort",
+    "presenceRisquesTechnologiques": false,
+    "zonagePatrimonial": "non-concerne",
+
+    "qualitePaysage": "interessant",
+    "valeurArchitecturaleHistorique": "interet-fort",
+
+    "couvertVegetal": "vegetation-arbustive-predominante",
+    "presenceEspeceProtegee": "ne-sait-pas",
+    "zonageEnvironnemental": "znieff-type-1-2",
+    "trameVerteEtBleue": "ne-sait-pas",
+    "zoneHumide": "ne-sait-pas"
+  },
+
+  "expected": {
+    "usages": [
+      {
+        "usage": "renaturation",
+        "indiceMutabilite": 65,
+        "rang": 1
+      },
+      {
+        "usage": "culture",
+        "indiceMutabilite": 48,
+        "rang": 2
+      },
+      {
+        "usage": "photovoltaique",
+        "indiceMutabilite": 41,
+        "rang": 3
+      },
+      {
+        "usage": "industrie",
+        "indiceMutabilite": 37,
+        "rang": 4
+      },
+      {
+        "usage": "equipements",
+        "indiceMutabilite": 35,
+        "rang": 5
+      },
+      {
+        "usage": "residentiel",
+        "indiceMutabilite": 34,
+        "rang": 6
+      },
+      {
+        "usage": "tertiaire",
+        "indiceMutabilite": 28,
+        "rang": 7
+      }
+    ],
+
+    "fiabilite": 7.7,
+
+    "metadata": {
+      "criteresRenseignes": 23,
+      "criteresTotal": 26,
+      "criteresManquants": [
+        "presenceEspeceProtegee",
+        "trameVerteEtBleue",
+        "zoneHumide"
+      ]
+    }
+  }
+}
