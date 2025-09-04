@@ -1,3 +1,5 @@
+// TODO remove console logs or replace by proper logger
+/* eslint-disable no-console */
 import { Controller, Get, Query, Post, Body } from "@nestjs/common";
 import { ApiExcludeEndpoint, ApiOperation, ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { BdnbService } from "../friches/services/external-apis/bdnb/bdnb.service";

@@ -1,3 +1,5 @@
+// TODO remove console logs or replace by proper logger
+/* eslint-disable no-console */
 import {
   Body,
   Controller,
@@ -217,9 +219,9 @@ export class UiController {
     } catch (error) {
       return {
         success: false,
-         
+
         error: error.message,
-         
+
         stack: error.stack,
       };
     }

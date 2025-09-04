@@ -1,3 +1,5 @@
+// TODO remove console logs or replace by proper logger
+/* eslint-disable no-console */
 import { Injectable } from "@nestjs/common";
 import { DataWithSource, FormSessionData } from "../dto/form-session.dto";
 import { ParcelleBase } from "src/friches/entities/shared/parcelle.base";

@@ -3,11 +3,8 @@ import { DatabaseService } from "./shared/database/database.service";
 import { UiService } from "./ui/services/ui.service";
 import { HealthResponse } from "./shared/types/common.types";
 import { ApiExcludeEndpoint, ApiTags } from "@nestjs/swagger";
+import { Response } from "express";
 
-interface SimpleResponse {
-  setHeader(name: string, value: string): void;
-  send(body: string): void;
-}
 @ApiTags("health")
 @Controller()
 export class AppController {
@@ -49,7 +46,7 @@ export class AppController {
 
   @Get()
   @ApiExcludeEndpoint()
-  getHome(@Res() res: SimpleResponse): void {
+  getHome(@Res() res: Response): void {
     // Page d'accueil du formulaire (étape 1) directement sur /
     const html = this.uiService.renderFormStep(1);
 

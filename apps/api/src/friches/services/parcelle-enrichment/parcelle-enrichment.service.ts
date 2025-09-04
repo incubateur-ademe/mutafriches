@@ -1,3 +1,5 @@
+// TODO remove console logs or replace by proper logger
+/* eslint-disable no-console */
 import { Injectable } from "@nestjs/common";
 import { Parcelle } from "../../entities/parcelle.entity";
 import { EnrichmentResultDto } from "../../dto/enrichment-result.dto";

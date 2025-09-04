@@ -14,12 +14,18 @@ import "@gouvfr/dsfr/dist/dsfr.module.min.js";
 import "../styles/index.css";
 import { DsfrProvider } from "./providers/dsfr/DsfrProvider";
 
-ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
-    <BrowserRouter>
-      <DsfrProvider>
-        <App />
-      </DsfrProvider>
-    </BrowserRouter>
-  </React.StrictMode>,
-);
+const rootElement = document.getElementById("root");
+
+if (rootElement) {
+  ReactDOM.createRoot(rootElement).render(
+    <React.StrictMode>
+      <BrowserRouter>
+        <DsfrProvider>
+          <App />
+        </DsfrProvider>
+      </BrowserRouter>
+    </React.StrictMode>,
+  );
+} else {
+  console.error("L'élément root n'a pas été trouvé dans le DOM");
+}

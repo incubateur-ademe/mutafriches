@@ -1,4 +1,6 @@
- 
+// TODO remove console logs or replace by proper logger
+/* eslint-disable no-console */
+
 import { Injectable, OnModuleInit, OnModuleDestroy } from "@nestjs/common";
 import { drizzle } from "drizzle-orm/postgres-js";
 import * as postgres from "postgres";

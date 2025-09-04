@@ -1,3 +1,5 @@
+// TODO remove console logs or replace by proper logger
+/* eslint-disable no-console */
 import { Controller, Post, Body } from "@nestjs/common";
 import {
   ApiTags,

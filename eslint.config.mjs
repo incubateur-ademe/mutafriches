@@ -27,6 +27,12 @@ export default [
   // Configuration de base JavaScript
   js.configs.recommended,
 
+  {
+    rules: {
+      "no-unused-vars": "off", // Désactiver la règle JS de base
+    },
+  },
+
   // Configuration globale
   {
     languageOptions: {
@@ -110,6 +116,9 @@ export default [
   {
     files: ["apps/api/**/*.ts"],
     rules: {
+      // Désactiver la règle JS de base pour NestJS
+      "no-unused-vars": "off",
+
       // NestJS utilise beaucoup de décorateurs et any
       "@typescript-eslint/no-explicit-any": "off",
       "@typescript-eslint/interface-name-prefix": "off",
@@ -118,8 +127,10 @@ export default [
         {
           argsIgnorePattern: "^_",
           varsIgnorePattern: "^_",
-          // Ignore les décorateurs NestJS
+          caughtErrorsIgnorePattern: "^_",
+          // Ignore les décorateurs NestJS et les paramètres de constructeur
           ignoreRestSiblings: true,
+          args: "after-used", // Important pour NestJS
         },
       ],
     },

@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { useEffect, useState, ReactNode } from "react";
 import { DsfrContext } from "./DsfrContext";
 

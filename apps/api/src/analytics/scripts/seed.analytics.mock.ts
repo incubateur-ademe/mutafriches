@@ -1,3 +1,5 @@
+// TODO remove console logs or replace by proper logger
+/* eslint-disable no-console */
 import { NestFactory } from "@nestjs/core";
 import { AppModule } from "../../app.module";
 import { AnalyticsService } from "../analytics.service";
