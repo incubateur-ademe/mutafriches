@@ -1,23 +1,18 @@
+import React from "react";
+
 interface LoadingCalloutProps {
-  title?: string;
+  title: string;
   message?: string;
 }
 
-export function LoadingCallout({
-  title = "Enrichissement en cours",
-  message = "Récupération des informations de la parcelle...",
-}: LoadingCalloutProps) {
+export const LoadingCallout: React.FC<LoadingCalloutProps> = ({ title, message }) => {
   return (
-    <div className="fr-callout fr-callout--blue-france fr-mt-4w" style={{ marginBottom: "1rem" }}>
+    <div className="fr-callout fr-callout--blue-france fr-mt-4w">
       <h3 className="fr-callout__title">
-        <span
-          className="fr-icon-refresh-fill"
-          aria-hidden="true"
-          style={{ marginRight: "0.5rem" }}
-        />
+        <span className="fr-icon-refresh-fill" aria-hidden="true"></span>
         {title}
       </h3>
-      <p className="fr-callout__text">{message}</p>
+      {message && <p className="fr-callout__text">{message}</p>}
     </div>
   );
-}
+};

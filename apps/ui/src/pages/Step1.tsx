@@ -1,120 +1,110 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { BaseLayout } from "../layouts/BaseLayout";
-import { Header } from "../components/common/Header";
 import { Stepper } from "../components/common/Stepper";
-import { SelectionMode } from "../components/parcelle/SelectionMode";
-import { MultiParcelleToggle } from "../components/parcelle/MultiParcelleToggle";
 import { IdMode } from "../components/parcelle/IdMode";
 import { MapMode } from "../components/parcelle/MapMode";
-import { ErrorAlert } from "../components/ui/ErrorAlert";
+import { SelectionMode } from "../components/parcelle/SelectionMode";
+import { MultiParcelleToggle } from "../components/parcelle/MultiParcelleToggle";
+import { EnrichmentDisplay } from "../components/parcelle/EnrichmentDisplay";
 import { LoadingCallout } from "../components/ui/LoadingCallout";
+import { ErrorAlert } from "../components/ui/ErrorAlert";
 import { useParcelles } from "../hooks/useParcelles";
-import { EnrichmentResultDto } from "@mutafriches/shared-types";
+import { Header } from "../components/common/Header";
 
-export function Step1() {
+export const Step1: React.FC = () => {
   const navigate = useNavigate();
-  const parcelles = useParcelles();
-
-  // États locaux
   const [selectionMode, setSelectionMode] = useState<"id" | "carte">("id");
   const [isMultiParcelle, setIsMultiParcelle] = useState(false);
-  const [identifiant, setIdentifiant] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [enrichmentData, setEnrichmentData] = useState<EnrichmentResultDto | null>(null);
 
-  // Fonction de recherche/enrichissement
-  const handleSearch = async (parcelId?: string) => {
-    const idToSearch = parcelId || identifiant.trim();
+  // Utilisation du hook amélioré
+  const { enrichmentData, enrichmentError, isLoading, enrichir, uiData } = useParcelles();
 
-    if (!idToSearch) {
-      setError("Veuillez saisir un identifiant de parcelle");
+  // Fonction pour gérer la recherche par ID
+  const handleSearchById = (identifiant: string) => {
+    enrichir(identifiant);
+  };
+
+  // Fonction pour gérer la sélection depuis la carte
+  const handleMapSelection = () => {
+    // Simulation avec un ID fixe pour le moment
+    // TODO: Récupérer le vrai ID depuis la carte
+    const testParcelId = "50147000AR0010";
+    enrichir(testParcelId);
+  };
+
+  // Navigation vers l'étape suivante
+  const handleNext = () => {
+    if (!enrichmentData) {
       return;
     }
 
-    setError(null);
-    setIsLoading(true);
-
-    try {
-      const result = await parcelles.enrichir(idToSearch);
-      setEnrichmentData(result);
-
-      // TODO: Sauvegarder en session ou contexte
-      // Naviguer vers l'étape suivante après succès
-      setTimeout(() => {
-        navigate("/step2", { state: { enrichmentData: result } });
-      }, 1500);
-    } catch (err) {
-      const errorMessage =
-        err instanceof Error
-          ? err.message
-          : "Une erreur technique s'est produite lors de la récupération des données.";
-      setError(`Impossible de trouver les données pour cette parcelle : ${errorMessage}`);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Handler pour la sélection depuis la carte
-  const handleMapSelect = (parcelId: string) => {
-    setIdentifiant(parcelId);
-    handleSearch(parcelId);
+    // Passer les données à l'étape suivante
+    navigate("/step2", {
+      state: {
+        enrichmentData,
+        identifiantParcelle: enrichmentData.identifiantParcelle,
+      },
+    });
   };
 
   return (
     <BaseLayout>
       <Header />
+      <div className="fr-container fr-py-4w">
+        <Stepper
+          currentStep={1}
+          totalSteps={3}
+          currentStepTitle="Sélection de la parcelle"
+          nextStepTitle="Compléter les données"
+        />
 
-      <Stepper
-        currentStep={1}
-        totalSteps={3}
-        currentStepTitle="Sélection de la parcelle"
-        nextStepTitle="Données complémentaires"
-      />
+        <div className="fr-mb-4w">
+          <h3>Sélectionnez la (les) parcelle(s) concernée(s)</h3>
 
-      <div className="fr-mb-4w">
-        <h3>Sélectionnez la (les) parcelle(s) concernée(s)</h3>
-
-        {/* Choix du mode de sélection */}
-        <div className="fr-grid-row fr-grid-row--gutters">
-          <div className="fr-col-12 fr-col-md-8">
-            <SelectionMode mode={selectionMode} onModeChange={setSelectionMode} />
+          {/* Choix du mode de sélection et multi-parcelle */}
+          <div className="fr-grid-row fr-grid-row--gutters">
+            <div className="fr-col-12 fr-col-md-8">
+              <SelectionMode mode={selectionMode} onChange={setSelectionMode} />
+            </div>
+            <div className="fr-col-12 fr-col-md-4">
+              <MultiParcelleToggle isMulti={isMultiParcelle} onChange={setIsMultiParcelle} />
+            </div>
           </div>
 
-          <div className="fr-col-12 fr-col-md-4">
-            <MultiParcelleToggle isMulti={isMultiParcelle} onToggle={setIsMultiParcelle} />
+          {/* Mode de sélection actif */}
+          {selectionMode === "id" ? (
+            <IdMode onSearch={handleSearchById} />
+          ) : (
+            <MapMode onSelect={handleMapSelection} />
+          )}
+
+          {/* États de chargement et erreur */}
+          {isLoading && (
+            <LoadingCallout
+              title="Enrichissement en cours"
+              message="Récupération des informations de la parcelle..."
+            />
+          )}
+
+          {enrichmentError && !isLoading && <ErrorAlert message={enrichmentError} />}
+
+          {/* Affichage des données enrichies */}
+          <EnrichmentDisplay
+            data={uiData}
+            sources={enrichmentData?.sourcesUtilisees}
+            fiabilite={enrichmentData?.fiabilite}
+          />
+
+          {/* Boutons de navigation */}
+          <div className="fr-mt-4w" style={{ textAlign: "right" }}>
+            <button className="fr-btn" onClick={handleNext} disabled={!enrichmentData || isLoading}>
+              Suivant
+              <span className="fr-icon-arrow-right-s-line fr-icon--sm" aria-hidden="true"></span>
+            </button>
           </div>
         </div>
-
-        {/* Mode de sélection actif */}
-        {selectionMode === "carte" ? (
-          <MapMode onSelectParcel={handleMapSelect} />
-        ) : (
-          <IdMode
-            identifiant={identifiant}
-            onIdentifiantChange={setIdentifiant}
-            onSearch={() => handleSearch()}
-            isLoading={isLoading}
-          />
-        )}
-
-        {/* États de chargement et erreurs */}
-        {isLoading && <LoadingCallout />}
-        {error && <ErrorAlert message={error} onClose={() => setError(null)} />}
-
-        {/* Affichage temporaire des données enrichies (sera dans un composant séparé) */}
-        {enrichmentData && !isLoading && (
-          <div className="fr-callout fr-callout--green-emeraude fr-mt-4w">
-            <h3 className="fr-callout__title">Données récupérées avec succès</h3>
-            <p className="fr-callout__text">
-              Parcelle {enrichmentData.identifiantParcelle} à {enrichmentData.commune}
-              <br />
-              Surface : {enrichmentData.surfaceSite} m²
-            </p>
-          </div>
-        )}
       </div>
     </BaseLayout>
   );
-}
+};

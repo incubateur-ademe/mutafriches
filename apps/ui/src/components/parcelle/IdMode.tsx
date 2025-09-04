@@ -1,16 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
 
 interface IdModeProps {
-  identifiant: string;
-  onIdentifiantChange: (value: string) => void;
-  onSearch: () => void;
-  isLoading?: boolean;
+  onSearch: (identifiant: string) => void;
 }
 
-export function IdMode({ identifiant, onIdentifiantChange, onSearch, isLoading }: IdModeProps) {
+export const IdMode: React.FC<IdModeProps> = ({ onSearch }) => {
+  const [parcelId, setParcelId] = useState("");
+
+  const handleSearch = () => {
+    onSearch(parcelId);
+  };
+
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
-      onSearch();
+      handleSearch();
     }
   };
 
@@ -20,23 +23,22 @@ export function IdMode({ identifiant, onIdentifiantChange, onSearch, isLoading }
         Saisissez l'identifiant ou les identifiants des parcelles à analyser
       </p>
 
-      <div className="fr-grid-row fr-grid-row--gutters">
-        {/* Message d'info pour l'ID */}
-        <div className="fr-callout fr-callout--green-emeraude fr-mt-2w">
-          <p className="fr-callout__text">
-            L'Identifiant de parcelle peut être trouvé sur le cadastre ou les documents officiels de
-            la propriété.
-          </p>
-          <a
-            href="https://www.cadastre.gouv.fr"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="fr-btn fr-btn--secondary fr-btn--icon-left"
-          >
-            Consulter le cadastre
-          </a>
-        </div>
+      <div className="fr-callout fr-callout--green-emeraude fr-mt-2w">
+        <p className="fr-callout__text">
+          L'Identifiant de parcelle peut être trouvé sur le cadastre ou les documents officiels de
+          la propriété.
+        </p>
+        <a
+          href="https://www.cadastre.gouv.fr"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="fr-btn fr-btn--secondary fr-btn--icon-left"
+        >
+          Consulter le cadastre
+        </a>
+      </div>
 
+      <div className="fr-grid-row fr-grid-row--gutters">
         <div className="fr-col-12 fr-col-md-6">
           <div className="fr-input-group">
             <label className="fr-label" htmlFor="parcel-id">
@@ -51,25 +53,22 @@ export function IdMode({ identifiant, onIdentifiantChange, onSearch, isLoading }
               id="parcel-id"
               name="parcel-id"
               placeholder="Ex: 50147000AR0010"
-              value={identifiant}
-              onChange={(e) => onIdentifiantChange(e.target.value)}
+              value={parcelId}
+              onChange={(e) => setParcelId(e.target.value)}
               onKeyPress={handleKeyPress}
-              disabled={isLoading}
             />
           </div>
         </div>
-
         <div className="fr-col-12 fr-col-md-6" style={{ display: "flex", alignItems: "end" }}>
           <button
             className="fr-btn fr-btn--icon-left fr-icon-search-line"
             type="button"
-            onClick={onSearch}
-            disabled={isLoading}
+            onClick={handleSearch}
           >
-            {isLoading ? "Recherche..." : "Rechercher la parcelle"}
+            Rechercher la parcelle
           </button>
         </div>
       </div>
     </div>
   );
-}
+};

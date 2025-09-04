@@ -1,12 +1,15 @@
+import React from "react";
+
 interface MapModeProps {
-  onSelectParcel: (identifiant: string) => void;
+  onSelect: () => void;
 }
 
-export function MapMode({ onSelectParcel }: MapModeProps) {
-  const handleMapClick = () => {
-    // TODO: Remplacer par une vraie sélection sur carte
-    const testParcelId = "50147000AR0010";
-    onSelectParcel(testParcelId);
+export const MapMode: React.FC<MapModeProps> = ({ onSelect }) => {
+  const handleMapClick = (e?: React.MouseEvent) => {
+    if (e) {
+      e.stopPropagation();
+    }
+    onSelect();
   };
 
   return (
@@ -16,7 +19,6 @@ export function MapMode({ onSelectParcel }: MapModeProps) {
       </p>
       <div className="fr-grid-row fr-grid-row--gutters">
         <div className="fr-col-12">
-          {/* Carte fictive */}
           <div
             style={{
               height: "400px",
@@ -39,7 +41,6 @@ export function MapMode({ onSelectParcel }: MapModeProps) {
               </p>
             </div>
 
-            {/* Point de parcelle fictif */}
             <div
               style={{
                 position: "absolute",
@@ -53,14 +54,11 @@ export function MapMode({ onSelectParcel }: MapModeProps) {
                 cursor: "pointer",
                 boxShadow: "0 2px 8px rgba(0, 0, 0, 0.3)",
               }}
-              onClick={(e) => {
-                e.stopPropagation();
-                handleMapClick();
-              }}
+              onClick={handleMapClick}
             />
           </div>
         </div>
       </div>
     </div>
   );
-}
+};

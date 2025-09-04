@@ -1,9 +1,11 @@
+import React from "react";
+
 interface SelectionModeProps {
   mode: "id" | "carte";
-  onModeChange: (mode: "id" | "carte") => void;
+  onChange: (mode: "id" | "carte") => void;
 }
 
-export function SelectionMode({ mode, onModeChange }: SelectionModeProps) {
+export const SelectionMode: React.FC<SelectionModeProps> = ({ mode, onChange }) => {
   return (
     <fieldset className="fr-segmented fr-mb-4w">
       <div className="fr-segmented__elements">
@@ -14,7 +16,7 @@ export function SelectionMode({ mode, onModeChange }: SelectionModeProps) {
             id="mode-id"
             name="selection-mode"
             checked={mode === "id"}
-            onChange={() => onModeChange("id")}
+            onChange={() => onChange("id")}
           />
           <label className="fr-icon-edit-line fr-label" htmlFor="mode-id">
             Par identifiant de parcelle
@@ -27,7 +29,7 @@ export function SelectionMode({ mode, onModeChange }: SelectionModeProps) {
             id="mode-carte"
             name="selection-mode"
             checked={mode === "carte"}
-            onChange={() => onModeChange("carte")}
+            onChange={() => onChange("carte")}
           />
           <label className="fr-icon-map-pin-2-line fr-label" htmlFor="mode-carte">
             Depuis la carte
@@ -36,4 +38,4 @@ export function SelectionMode({ mode, onModeChange }: SelectionModeProps) {
       </div>
     </fieldset>
   );
-}
+};
