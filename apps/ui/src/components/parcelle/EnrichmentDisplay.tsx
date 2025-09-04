@@ -1,19 +1,11 @@
-import React, { useState } from "react";
+import React from "react";
 import { UiParcelleDto } from "@mutafriches/shared-types";
 
 interface EnrichmentDisplayProps {
   data: UiParcelleDto | null;
-  sources?: string[];
-  fiabilite?: number;
 }
 
-export const EnrichmentDisplay: React.FC<EnrichmentDisplayProps> = ({
-  data,
-  sources,
-  fiabilite,
-}) => {
-  const [activeTab, setActiveTab] = useState<"infos" | "env" | "risques">("infos");
-
+export const EnrichmentDisplay: React.FC<EnrichmentDisplayProps> = ({ data }) => {
   if (!data) return null;
 
   return (
@@ -25,12 +17,6 @@ export const EnrichmentDisplay: React.FC<EnrichmentDisplayProps> = ({
         assurez-vous qu'elles soient correctes.
       </p>
 
-      {fiabilite && (
-        <div className="fr-mb-2w">
-          <span className="fr-badge fr-badge--info">Fiabilité: {fiabilite}/10</span>
-        </div>
-      )}
-
       {/* Onglets */}
       <div className="fr-tabs fr-mt-4w">
         <ul
@@ -41,12 +27,12 @@ export const EnrichmentDisplay: React.FC<EnrichmentDisplayProps> = ({
           <li role="presentation">
             <button
               type="button"
-              className={`fr-tabs__tab ${activeTab === "infos" ? "fr-tabs__tab--selected" : ""}`}
-              tabIndex={activeTab === "infos" ? 0 : -1}
+              id="tab-infos"
+              className="fr-tabs__tab"
+              tabIndex={0}
               role="tab"
-              aria-selected={activeTab === "infos"}
+              aria-selected="true"
               aria-controls="tab-infos-panel"
-              onClick={() => setActiveTab("infos")}
             >
               Informations du site
             </button>
@@ -54,12 +40,12 @@ export const EnrichmentDisplay: React.FC<EnrichmentDisplayProps> = ({
           <li role="presentation">
             <button
               type="button"
-              className={`fr-tabs__tab ${activeTab === "env" ? "fr-tabs__tab--selected" : ""}`}
-              tabIndex={activeTab === "env" ? 0 : -1}
+              id="tab-env"
+              className="fr-tabs__tab"
+              tabIndex={-1}
               role="tab"
-              aria-selected={activeTab === "env"}
+              aria-selected="false"
               aria-controls="tab-env-panel"
-              onClick={() => setActiveTab("env")}
             >
               Environnement du site
             </button>
@@ -67,12 +53,12 @@ export const EnrichmentDisplay: React.FC<EnrichmentDisplayProps> = ({
           <li role="presentation">
             <button
               type="button"
-              className={`fr-tabs__tab ${activeTab === "risques" ? "fr-tabs__tab--selected" : ""}`}
-              tabIndex={activeTab === "risques" ? 0 : -1}
+              id="tab-risques"
+              className="fr-tabs__tab"
+              tabIndex={-1}
               role="tab"
-              aria-selected={activeTab === "risques"}
+              aria-selected="false"
               aria-controls="tab-risques-panel"
-              onClick={() => setActiveTab("risques")}
             >
               Risques & zonage
             </button>
@@ -80,83 +66,173 @@ export const EnrichmentDisplay: React.FC<EnrichmentDisplayProps> = ({
         </ul>
 
         {/* Panneau Infos parcelle */}
-        {activeTab === "infos" && (
-          <div className="fr-tabs__panel fr-tabs__panel--selected" role="tabpanel">
-            <div className="fr-grid-row fr-grid-row--gutters">
-              <InfoField label="Commune" value={data.commune} />
-              <InfoField label="Identifiant parcelle" value={data.identifiantParcelle} />
-              <InfoField label="Surface du site" value={data.surfaceParcelle} />
-              <InfoField label="Surface bâtie" value={data.surfaceBatie} />
-              <InfoField
-                label="Connection au réseau d'électricité"
-                value={data.connectionElectricite}
-              />
-              <InfoField label="Ancienne activité" value={data.ancienneActivite} />
-            </div>
+        <div
+          id="tab-infos-panel"
+          className="fr-tabs__panel fr-tabs__panel--selected"
+          role="tabpanel"
+          aria-labelledby="tab-infos"
+          tabIndex={0}
+        >
+          <div className="fr-grid-row fr-grid-row--gutters">
+            <InfoField
+              id="commune"
+              label="Commune"
+              value={data.commune}
+              tooltip="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+            />
+            <InfoField
+              id="identifiant-parcelle"
+              label="Identifiant parcelle"
+              value={data.identifiantParcelle}
+              tooltip="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+            />
+            <InfoField
+              id="surface-site"
+              label="Surface du site"
+              value={data.surfaceParcelle}
+              tooltip="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+            />
+            <InfoField
+              id="surface-batie"
+              label="Surface bâtie"
+              value={data.surfaceBatie}
+              tooltip="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+            />
+            <InfoField
+              id="connection-electricite"
+              label="Connection au réseau d'électricité"
+              value={data.connectionElectricite}
+              tooltip="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+            />
+            <InfoField
+              id="ancienne-activite"
+              label="Ancienne activité"
+              value={data.ancienneActivite}
+              tooltip="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+            />
           </div>
-        )}
+        </div>
 
         {/* Panneau Environnement */}
-        {activeTab === "env" && (
-          <div className="fr-tabs__panel fr-tabs__panel--selected" role="tabpanel">
-            <div className="fr-grid-row fr-grid-row--gutters">
-              <InfoField label="Site en centre ville" value={data.centreVille} />
-              <InfoField
-                label="Distance voie à grande circulation"
-                value={data.distanceAutoroute}
-              />
-              <InfoField label="Distance au transport en commun" value={data.distanceTrain} />
-              <InfoField
-                label="Proximité des commerces et services"
-                value={data.proximiteCommerces}
-              />
-              <InfoField
-                label="Distance au raccordement électrique"
-                value={data.distanceRaccordement}
-              />
-              <InfoField label="Taux de logements vacants" value={data.tauxLV} />
-            </div>
+        <div
+          id="tab-env-panel"
+          className="fr-tabs__panel"
+          role="tabpanel"
+          aria-labelledby="tab-env"
+          tabIndex={0}
+        >
+          <div className="fr-grid-row fr-grid-row--gutters">
+            <InfoField
+              id="site-centre-ville"
+              label="Site en centre ville"
+              value={data.centreVille}
+              tooltip="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+            />
+            <InfoField
+              id="distance-voie-grande-circulation"
+              label="Distance voie à grande circulation"
+              value={data.distanceAutoroute}
+              tooltip="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+            />
+            <InfoField
+              id="distance-transport-commun"
+              label="Distance au transport en commun"
+              value={data.distanceTrain}
+              tooltip="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+            />
+            <InfoField
+              id="proximite-commerces-services"
+              label="Proximité des commerces et services"
+              value={data.proximiteCommerces}
+              tooltip="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+            />
+            <InfoField
+              id="distance-raccordement-electrique"
+              label="Distance au raccordement électrique"
+              value={data.distanceRaccordement}
+              tooltip="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+            />
+            <InfoField
+              id="taux-logements-vacants"
+              label="Taux de logements vacants"
+              value={data.tauxLV}
+              tooltip="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+            />
           </div>
-        )}
+        </div>
 
         {/* Panneau Risques */}
-        {activeTab === "risques" && (
-          <div className="fr-tabs__panel fr-tabs__panel--selected" role="tabpanel">
-            <div className="fr-grid-row fr-grid-row--gutters">
-              <InfoField label="Présence de risques technologiques" value={data.risquesTechno} />
-              <InfoField label="Présence de risques naturels" value={data.risquesNaturels} />
-              <InfoField label="Type de zonage environnemental" value={data.zonageEnviro} />
-              <InfoField label="Zonage réglementaire" value={data.zonageUrba} />
-              <InfoField label="Type de zonage patrimonial" value={data.zonagePatrimonial} />
-              <InfoField label="Continuité écologique (trame verte et bleue)" value={data.tvb} />
-            </div>
-          </div>
-        )}
-      </div>
+        <div
+          id="tab-risques-panel"
+          className="fr-tabs__panel"
+          role="tabpanel"
+          aria-labelledby="tab-risques"
+          tabIndex={0}
+        >
+          <div className="fr-grid-row fr-grid-row--gutters">
+            <InfoField
+              id="presence-risques-technologiques"
+              label="Présence de risques technologiques"
+              value={data.risquesTechno}
+              tooltip="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+            />
+            <InfoField
+              id="presence-risques-naturels"
+              label="Présence de risques naturels"
+              value={data.risquesNaturels}
+              tooltip="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+            />
+            <InfoField
+              id="type-zonage-environnemental"
+              label="Type de zonage environnemental"
+              value={data.zonageEnviro}
+              tooltip="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+            />
 
-      {/* Sources utilisées */}
-      {sources && sources.length > 0 && (
-        <div className="fr-mt-3w">
-          <h6>Sources utilisées :</h6>
-          <ul className="fr-text--sm">
-            {sources.map((source, index) => (
-              <li key={index}>{source}</li>
-            ))}
-          </ul>
+            <InfoField
+              id="zonage-reglementaire"
+              label="Zonage réglementaire"
+              value={data.zonageUrba}
+              tooltip="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+            />
+            <InfoField
+              id="type-zonage-patrimonial"
+              label="Type de zonage patrimonial"
+              value={data.zonagePatrimonial}
+              tooltip="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+            />
+            <InfoField
+              id="continuité-ecologique"
+              label="Continuité écologique (trame verte et bleue)"
+              value={data.tvb}
+              tooltip="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+            />
+          </div>
         </div>
-      )}
+      </div>
     </div>
   );
 };
 
 // Composant pour afficher un champ d'information
-const InfoField: React.FC<{ label: string; value: string }> = ({ label, value }) => {
+const InfoField: React.FC<{ id: string; label: string; value: string; tooltip: string }> = ({
+  id,
+  label,
+  value,
+  tooltip,
+}) => {
   const isVerified = value !== "Non renseigné";
 
   return (
     <div className="fr-col-6">
       <div className="fr-text fr-text--lg">
         <strong>{label}</strong>
+        <button aria-describedby={`tooltip-${id}`} type="button" className="fr-btn--tooltip fr-btn">
+          <span className="fr-icon-information-line" aria-hidden="true"></span>
+        </button>
+        <span className="fr-tooltip fr-placement" id={`tooltip-${id}`} role="tooltip">
+          {tooltip}
+        </span>
         <br />
         <span
           className={isVerified ? "fr-badge fr-badge--blue-france" : "fr-badge fr-badge--no-icon"}
