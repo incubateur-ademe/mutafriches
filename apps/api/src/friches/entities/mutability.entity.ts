@@ -1,4 +1,4 @@
-import { PertinenceReponse, UsageType } from "../enums/mutability.enums";
+import { PertinenceReponse, UsageType } from "@mutafriches/shared-types";
 import { mutabilityResults } from "../schemas/mutability.schema";
 
 // Types inférés depuis le schéma

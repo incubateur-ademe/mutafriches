@@ -1,71 +1,75 @@
 import { ApiPropertyOptional } from "@nestjs/swagger";
-import { ParcelleBase } from "../entities/shared/parcelle.base";
-import { EnrichmentResultDto } from "./enrichment-result.dto";
 import {
-  CouvertVegetal,
-  EtatBati,
-  PresenceEspeceProtegee,
-  PresencePollution,
-  QualiteDesserte,
-  QualitePaysage,
+  MutabilityInputDto as IMutabilityInputDto,
   TypeProprietaire,
+  EtatBati,
+  PresencePollution,
+  QualiteVoieDesserte,
+  QualitePaysage,
   ValeurArchitecturale,
+  CouvertVegetal,
+  PresenceEspeceProtegee,
   VoieEauProximite,
   ZoneHumide,
-} from "../enums/parcelle.enums";
+} from "@mutafriches/shared-types";
+import { EnrichmentResultDto } from "./enrichment-result.dto";
+import { ParcelleBase } from "../entities/shared/parcelle.base";
 
 /**
  * DTO pour les données complètes d'une parcelle pour le calcul de mutabilité
  * Combine les données automatiques enrichies et les données manuelles saisies
  */
-export class MutabilityInputDto extends EnrichmentResultDto implements ParcelleBase {
+export class MutabilityInputDto
+  extends EnrichmentResultDto
+  implements IMutabilityInputDto, ParcelleBase
+{
   @ApiPropertyOptional({
     description: "Type de propriétaire (complément manuel)",
     enum: TypeProprietaire,
     example: TypeProprietaire.PRIVE,
   })
-  typeProprietaire?: TypeProprietaire;
+  typeProprietaire?: string;
 
   @ApiPropertyOptional({
     description: "Site connecté aux réseaux d'eau (complément manuel)",
     example: true,
   })
-  terrainViabilise?: boolean;
+  terrainViabilise?: string;
 
   @ApiPropertyOptional({
     description: "État général du bâti et des infrastructures (complément manuel)",
     enum: EtatBati,
     example: EtatBati.BATIMENTS_HETEROGENES,
   })
-  etatBatiInfrastructure?: EtatBati;
+  etatBatiInfrastructure?: string;
 
   @ApiPropertyOptional({
     description: "Présence de pollution connue ou suspectée (complément manuel)",
     enum: PresencePollution,
     example: PresencePollution.NE_SAIT_PAS,
   })
-  presencePollution?: PresencePollution;
+  presencePollution?: string;
 
   @ApiPropertyOptional({
     description: "Valeur architecturale et/ou historique du site (complément manuel)",
     enum: ValeurArchitecturale,
-    example: ValeurArchitecturale.EXCEPTIONNEL,
+    example: ValeurArchitecturale.ORDINAIRE,
   })
-  valeurArchitecturaleHistorique?: ValeurArchitecturale;
+  valeurArchitecturaleHistorique?: string;
 
   @ApiPropertyOptional({
     description: "Qualité du paysage environnant (complément manuel)",
     enum: QualitePaysage,
-    example: QualitePaysage.BANAL_INFRA_ORDINAIRE,
+    example: QualitePaysage.INTERESSANT,
   })
-  qualitePaysage?: QualitePaysage;
+  qualitePaysage?: string;
 
   @ApiPropertyOptional({
     description: "Qualité de la voie de desserte (complément manuel)",
-    enum: QualiteDesserte,
-    example: QualiteDesserte.ACCESSIBLE,
+    enum: QualiteVoieDesserte,
+    example: QualiteVoieDesserte.ACCESSIBLE,
   })
-  qualiteVoieDesserte?: QualiteDesserte;
+  qualiteVoieDesserte?: string;
 
   @ApiPropertyOptional({
     description: "Identifiant de session pour lier avec les résultats",
@@ -89,26 +93,26 @@ export class MutabilityInputDto extends EnrichmentResultDto implements ParcelleB
     enum: VoieEauProximite,
     example: VoieEauProximite.NON,
   })
-  voieEauProximite?: VoieEauProximite;
+  voieEauProximite?: string;
 
   @ApiPropertyOptional({
     description: "Type de couverture végétale du terrain",
     enum: CouvertVegetal,
     example: CouvertVegetal.IMPERMEABILISE,
   })
-  couvertVegetal?: CouvertVegetal;
+  couvertVegetal?: string;
 
   @ApiPropertyOptional({
     description: "Présence d'espèces protégées sur le site",
     enum: PresenceEspeceProtegee,
     example: PresenceEspeceProtegee.NON,
   })
-  presenceEspeceProtegee?: PresenceEspeceProtegee;
+  presenceEspeceProtegee?: string;
 
   @ApiPropertyOptional({
     description: "Présence de zones humides",
     enum: ZoneHumide,
     example: ZoneHumide.ABSENCE,
   })
-  zoneHumide?: ZoneHumide;
+  zoneHumide?: string;
 }

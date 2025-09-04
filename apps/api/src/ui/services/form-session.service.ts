@@ -192,7 +192,7 @@ export class FormSessionService {
 
       // Données manuelles (de ManualDataInputDto)
       typeProprietaire: this.getPropertyValue(formData, "typeProprietaire"),
-      terrainViabilise: this.getPropertyValue(formData, "terrainViabilise"),
+      terrainViabilise: "test", // TODO supprimer
       etatBatiInfrastructure: this.getPropertyValue(formData, "etatBatiInfrastructure"),
       presencePollution: this.getPropertyValue(formData, "presencePollution"),
       valeurArchitecturaleHistorique: this.getPropertyValue(

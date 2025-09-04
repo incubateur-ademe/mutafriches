@@ -1,22 +1,22 @@
-import { UsageType } from "../../../enums/mutability.enums";
-import { ScoreImpact } from "../../../enums/score-impact.enum";
+import { UsageType } from "@mutafriches/shared-types";
 import {
   TypeProprietaire,
-  PresencePollution,
   EtatBati,
-  QualiteDesserte,
-  RisqueNaturel,
-  ZonagePatrimonial,
+  PresencePollution,
+  QualiteVoieDesserte,
   QualitePaysage,
   ValeurArchitecturale,
+  RisqueNaturel,
   ZonageEnvironnemental,
+  ZonagePatrimonial,
   TrameVerteEtBleue,
   ZonageReglementaire,
   CouvertVegetal,
   PresenceEspeceProtegee,
   ZoneHumide,
   VoieEauProximite,
-} from "../../../enums/parcelle.enums";
+} from "@mutafriches/shared-types";
+import { ScoreImpact } from "../../../enums/score-impact.enum";
 
 export type ScoreParUsage = {
   [key in UsageType]: number;
@@ -249,7 +249,7 @@ export const MATRICE_SCORING = {
 
   // 10. Qualité voie desserte
   qualiteVoieDesserte: {
-    [QualiteDesserte.ACCESSIBLE]: {
+    [QualiteVoieDesserte.ACCESSIBLE]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.POSITIF,
       [UsageType.EQUIPEMENTS]: ScoreImpact.POSITIF,
       [UsageType.CULTURE]: ScoreImpact.NEUTRE,
@@ -258,7 +258,7 @@ export const MATRICE_SCORING = {
       [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
       [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
     },
-    [QualiteDesserte.DEGRADEE]: {
+    [QualiteVoieDesserte.DEGRADEE]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
       [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
       [UsageType.CULTURE]: ScoreImpact.NEUTRE,
@@ -267,7 +267,7 @@ export const MATRICE_SCORING = {
       [UsageType.RENATURATION]: ScoreImpact.POSITIF,
       [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
     },
-    [QualiteDesserte.PEU_ACCESSIBLE]: {
+    [QualiteVoieDesserte.PEU_ACCESSIBLE]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.NEGATIF,
       [UsageType.EQUIPEMENTS]: ScoreImpact.NEGATIF,
       [UsageType.CULTURE]: ScoreImpact.NEUTRE,

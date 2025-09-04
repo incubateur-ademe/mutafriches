@@ -18,7 +18,7 @@ import {
 
 import { DatabaseService } from "../shared/database/database.service";
 import { NewMutabilityResult } from "src/friches/entities/mutability.entity";
-import { PertinenceReponse } from "src/friches/enums/mutability.enums";
+import { PertinenceReponse } from "@mutafriches/shared-types";
 
 @Injectable()
 export class AnalyticsService {

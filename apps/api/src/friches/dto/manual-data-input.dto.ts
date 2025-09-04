@@ -1,64 +1,64 @@
 import { ApiPropertyOptional } from "@nestjs/swagger";
-import { ParcelleManualData } from "../entities/shared/parcelle-manual.interface";
 import {
+  ManualFormDataDto,
   TypeProprietaire,
   EtatBati,
   PresencePollution,
-  QualiteDesserte,
+  QualiteVoieDesserte,
   QualitePaysage,
   ValeurArchitecturale,
-} from "../enums/parcelle.enums";
+} from "@mutafriches/shared-types";
 
 /**
  * DTO pour les données manuelles saisies par l'utilisateur
  * Utilisé pour compléter les données automatiques avant le calcul de mutabilité
  */
-export class ManualDataInputDto implements ParcelleManualData {
+export class ManualDataInputDto implements ManualFormDataDto {
   @ApiPropertyOptional({
     description: "Type de propriétaire",
     enum: TypeProprietaire,
     example: TypeProprietaire.PRIVE,
   })
-  typeProprietaire?: TypeProprietaire;
+  typeProprietaire?: string;
 
   @ApiPropertyOptional({
     description: "Site connecté aux réseaux d'eau",
-    example: true,
+    example: "oui",
   })
-  terrainViabilise?: boolean;
+  terrainViabilise?: string;
 
   @ApiPropertyOptional({
     description: "État général du bâti et des infrastructures",
     enum: EtatBati,
     example: EtatBati.BATIMENTS_HETEROGENES,
   })
-  etatBatiInfrastructure?: EtatBati;
+  etatBatiInfrastructure?: string;
 
   @ApiPropertyOptional({
     description: "Présence de pollution connue ou suspectée",
     enum: PresencePollution,
     example: PresencePollution.NE_SAIT_PAS,
   })
-  presencePollution?: PresencePollution;
+  presencePollution?: string;
 
   @ApiPropertyOptional({
     description: "Valeur architecturale et/ou historique du site",
     enum: ValeurArchitecturale,
-    example: ValeurArchitecturale.EXCEPTIONNEL,
+    example: ValeurArchitecturale.BANAL_INFRA_ORDINAIRE,
   })
-  valeurArchitecturaleHistorique?: ValeurArchitecturale;
+  valeurArchitecturaleHistorique?: string;
 
   @ApiPropertyOptional({
     description: "Qualité du paysage environnant",
     enum: QualitePaysage,
     example: QualitePaysage.BANAL_INFRA_ORDINAIRE,
   })
-  qualitePaysage?: QualitePaysage;
+  qualitePaysage?: string;
 
   @ApiPropertyOptional({
     description: "Qualité de la voie de desserte",
-    enum: QualiteDesserte,
-    example: QualiteDesserte.ACCESSIBLE,
+    enum: QualiteVoieDesserte,
+    example: QualiteVoieDesserte.ACCESSIBLE,
   })
-  qualiteVoieDesserte?: QualiteDesserte;
+  qualiteVoieDesserte?: string;
 }

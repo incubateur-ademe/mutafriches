@@ -2,10 +2,10 @@ import {
   TypeProprietaire,
   EtatBati,
   PresencePollution,
-  QualiteDesserte,
+  QualiteVoieDesserte,
   QualitePaysage,
   ValeurArchitecturale,
-} from "../../enums/parcelle.enums";
+} from "@mutafriches/shared-types";
 
 /**
  * Interface pour les données demandées manuellement à l'utilisateur
@@ -16,41 +16,41 @@ export interface ParcelleManualData {
    * Type de propriétaire
    * Nécessite une vérification manuelle car les données cadastrales peuvent être obsolètes
    */
-  typeProprietaire?: TypeProprietaire;
+  typeProprietaire?: TypeProprietaire | string;
 
   /**
    * État de viabilisation du terrain (connecté ou non aux réseaux)
    * Nécessite une vérification terrain
    */
-  terrainViabilise?: boolean;
+  terrainViabilise?: boolean | string;
 
   /**
    * État général du bâti et des infrastructures
    * Nécessite une évaluation visuelle sur site
    */
-  etatBatiInfrastructure?: EtatBati;
+  etatBatiInfrastructure?: EtatBati | string;
 
   /**
    * Présence de pollution connue ou suspectée
    * Nécessite une expertise environnementale
    */
-  presencePollution?: PresencePollution;
+  presencePollution?: PresencePollution | string;
 
   /**
    * Valeur architecturale et/ou historique du site
    * Nécessite une expertise patrimoniale
    */
-  valeurArchitecturaleHistorique?: ValeurArchitecturale;
+  valeurArchitecturaleHistorique?: ValeurArchitecturale | string;
 
   /**
    * Qualité du paysage environnant
    * Nécessite une évaluation subjective sur site
    */
-  qualitePaysage?: QualitePaysage;
+  qualitePaysage?: QualitePaysage | string;
 
   /**
    * Qualité de la voie de desserte
    * Nécessite une évaluation terrain de l'accessibilité
    */
-  qualiteVoieDesserte?: QualiteDesserte;
+  qualiteVoieDesserte?: QualiteVoieDesserte | string;
 }

@@ -4,7 +4,7 @@ import { NestFactory } from "@nestjs/core";
 import { AppModule } from "../../app.module";
 import { AnalyticsService } from "../analytics.service";
 import { ActionTypes, type Integrator } from "../analytics.types";
-import { PertinenceReponse } from "src/friches/enums/mutability.enums";
+import { PertinenceReponse } from "@mutafriches/shared-types";
 
 async function bootstrap() {
   const app = await NestFactory.createApplicationContext(AppModule);

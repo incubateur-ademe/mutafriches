@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { MutabilityInputDto } from "src/friches/dto/mutability-input.dto";
 import { MutabilityResultDto } from "src/friches/dto/mutability-result.dto";
 import { DetailCritereDto, DetailCalculUsageDto } from "src/friches/dto/detail-calcul.dto";
-import { UsageType } from "src/friches/enums/mutability.enums";
+import { UsageType } from "@mutafriches/shared-types";
 import {
   MATRICE_SCORING,
   NIVEAUX_FIABILITE,

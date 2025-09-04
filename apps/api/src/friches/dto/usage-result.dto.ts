@@ -1,33 +1,30 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { UsageType } from "../enums/mutability.enums";
-import { DetailCalculUsageDto } from "./detail-calcul.dto";
+import { UsageResultDto as IUsageResultDto, TypeUsage } from "@mutafriches/shared-types";
 
-export class UsageResultDto {
+export class UsageResultDto implements IUsageResultDto {
   @ApiProperty({
-    description: "Rang de classement de l'usage (1 = moins favorable, 7 = plus favorable)",
-    example: 7,
+    description: "Rang dans le classement (1 = meilleur usage)",
+    example: 1,
     minimum: 1,
     maximum: 7,
   })
   rang: number;
 
   @ApiProperty({
-    description: "Type d'usage analysé",
-    example: "residentiel",
-    enum: [
-      "residentiel",
-      "equipements",
-      "culture",
-      "tertiaire",
-      "industrie",
-      "renaturation",
-      "photovoltaique",
-    ],
+    description: "Type d'usage évalué",
+    enum: TypeUsage,
+    example: TypeUsage.RESIDENTIEL_MIXTE,
   })
-  usage: UsageType;
+  usage: string;
 
   @ApiProperty({
-    description: "Indice de mutabilité calculé pour cet usage (0-100)",
+    description: "Explication du score",
+    example: "Site favorable grâce à sa localisation en centre-ville",
+  })
+  explication?: string;
+
+  @ApiProperty({
+    description: "Indice de mutabilité en pourcentage",
     example: 68,
     minimum: 0,
     maximum: 100,
@@ -35,23 +32,8 @@ export class UsageResultDto {
   indiceMutabilite: number;
 
   @ApiProperty({
-    description: "Score total des avantages pour cet usage",
-    example: 15.5,
-    required: false,
+    description: "Niveau de potentiel",
+    example: "Favorable",
   })
-  avantages?: number;
-
-  @ApiProperty({
-    description: "Score total des contraintes pour cet usage",
-    example: 2,
-    required: false,
-  })
-  contraintes?: number;
-
-  @ApiProperty({
-    description: "Détails du calcul critère par critère",
-    type: DetailCalculUsageDto,
-    required: false,
-  })
-  detailsCalcul?: DetailCalculUsageDto;
+  potentiel?: string;
 }

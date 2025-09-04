@@ -1,11 +1,12 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsString, IsNotEmpty, Matches } from "class-validator";
+import { ParcelleInputDto as IParcelleInputDto } from "@mutafriches/shared-types";
 import { parcelIdRegex } from "../lib/friches.utils";
 
 /**
  * DTO pour l'entrée des données de parcelle
  */
-export class ParcelleInputDto {
+export class ParcelleInputDto implements IParcelleInputDto {
   @ApiProperty({
     description: "Identifiant cadastral unique de la parcelle (format standard français)",
     example: "25056000HZ0346",

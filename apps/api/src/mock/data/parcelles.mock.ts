@@ -5,7 +5,7 @@ import {
   ZonagePatrimonial,
   TrameVerteEtBleue,
   ZonageReglementaire,
-} from "../../friches/enums/parcelle.enums";
+} from "@mutafriches/shared-types";
 
 /**
  * Base de données mockée utilisant l'entité Parcelle

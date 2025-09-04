@@ -1,18 +1,19 @@
+// apps/api/src/friches/dto/enrichment-result.dto.ts
+
 import { ApiProperty } from "@nestjs/swagger";
-import { ParcelleAutoData } from "../entities/shared/parcelle-auto.interface";
 import {
+  EnrichmentResultDto as IEnrichmentResultDto,
   RisqueNaturel,
   ZonageEnvironnemental,
   ZonagePatrimonial,
   TrameVerteEtBleue,
-  ZonageReglementaire,
-} from "../enums/parcelle.enums";
+} from "@mutafriches/shared-types";
 
 /**
  * DTO pour le résultat de l'enrichissement automatique des données de parcelle
  * Contient uniquement les données extraites automatiquement depuis des sources externes
  */
-export class EnrichmentResultDto implements ParcelleAutoData {
+export class EnrichmentResultDto implements IEnrichmentResultDto {
   @ApiProperty({
     description: "Identifiant cadastral unique de la parcelle",
     example: "25056000HZ0346",
@@ -99,7 +100,7 @@ export class EnrichmentResultDto implements ParcelleAutoData {
     example: RisqueNaturel.FAIBLE,
     required: false,
   })
-  presenceRisquesNaturels?: RisqueNaturel;
+  presenceRisquesNaturels?: string;
 
   @ApiProperty({
     description: "Type de zonage environnemental applicable",
@@ -107,14 +108,14 @@ export class EnrichmentResultDto implements ParcelleAutoData {
     example: ZonageEnvironnemental.HORS_ZONE,
     required: false,
   })
-  zonageEnvironnemental?: ZonageEnvironnemental;
+  zonageEnvironnemental?: string;
 
   @ApiProperty({
     description: "Zonage réglementaire selon le PLU/PLUi",
     example: "Zone urbaine - U",
     required: false,
   })
-  zonageReglementaire?: ZonageReglementaire;
+  zonageReglementaire?: string;
 
   @ApiProperty({
     description: "Type de protection patrimoniale",
@@ -122,7 +123,7 @@ export class EnrichmentResultDto implements ParcelleAutoData {
     example: ZonagePatrimonial.NON_CONCERNE,
     required: false,
   })
-  zonagePatrimonial?: ZonagePatrimonial;
+  zonagePatrimonial?: string;
 
   @ApiProperty({
     description: "Position par rapport à la trame verte et bleue",
@@ -130,7 +131,7 @@ export class EnrichmentResultDto implements ParcelleAutoData {
     example: TrameVerteEtBleue.HORS_TRAME,
     required: false,
   })
-  trameVerteEtBleue?: TrameVerteEtBleue;
+  trameVerteEtBleue?: string;
 
   @ApiProperty({
     description: "Coordonnées géographiques de la parcelle",

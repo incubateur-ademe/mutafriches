@@ -8,7 +8,20 @@ export {
   QualiteVoieDesserte,
   TerrainViabilise,
   TypeUsage,
+  UsageType, // Pour compatibilité
+  PertinenceReponse,
   NiveauPotentiel,
+  // Enums additionnels de l'API
+  EtatBati,
+  RisqueNaturel,
+  ZonageEnvironnemental,
+  ZonagePatrimonial,
+  ZonageReglementaire,
+  TrameVerteEtBleue,
+  CouvertVegetal,
+  PresenceEspeceProtegee,
+  ZoneHumide,
+  VoieEauProximite,
 } from "./enums";
 
 // Export des types de base

@@ -4,7 +4,7 @@ import {
   ZonagePatrimonial,
   TrameVerteEtBleue,
   ZonageReglementaire,
-} from "../../enums/parcelle.enums";
+} from "@mutafriches/shared-types";
 
 /**
  * Interface pour les données extraites automatiquement depuis des sources externes
@@ -95,31 +95,31 @@ export interface ParcelleAutoData {
    * Niveau de risques naturels (inondations, argiles, etc.)
    * Source: Géorisques
    */
-  presenceRisquesNaturels?: RisqueNaturel;
+  presenceRisquesNaturels?: RisqueNaturel | string;
 
   /**
    * Type de zonage environnemental applicable
    * Source: INPN
    */
-  zonageEnvironnemental?: ZonageEnvironnemental;
+  zonageEnvironnemental?: ZonageEnvironnemental | string;
 
   /**
    * Zonage réglementaire selon le PLU/PLUi
    * Source: GPU
    */
-  zonageReglementaire?: ZonageReglementaire;
+  zonageReglementaire?: ZonageReglementaire | string;
 
   /**
    * Type de protection patrimoniale
    * Source: Mérimée, Atlas des patrimoines
    */
-  zonagePatrimonial?: ZonagePatrimonial;
+  zonagePatrimonial?: ZonagePatrimonial | string;
 
   /**
    * Position par rapport à la trame verte et bleue
    * Source: INPN, données TVB régionales
    */
-  trameVerteEtBleue?: TrameVerteEtBleue;
+  trameVerteEtBleue?: TrameVerteEtBleue | string;
 
   /**
    * Coordonnées géographiques de la parcelle

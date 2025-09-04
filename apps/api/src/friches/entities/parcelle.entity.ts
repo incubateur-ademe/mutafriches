@@ -1,16 +1,16 @@
 import {
+  TypeProprietaire,
   EtatBati,
   PresencePollution,
-  QualiteDesserte,
   QualitePaysage,
-  RisqueNaturel,
-  TrameVerteEtBleue,
-  TypeProprietaire,
   ValeurArchitecturale,
+  RisqueNaturel,
   ZonageEnvironnemental,
   ZonagePatrimonial,
+  TrameVerteEtBleue,
   ZonageReglementaire,
-} from "../enums/parcelle.enums";
+  QualiteVoieDesserte,
+} from "@mutafriches/shared-types";
 import { ParcelleBase } from "./shared/parcelle.base";
 
 /**
@@ -71,7 +71,7 @@ export class Parcelle implements ParcelleBase {
   typeProprietaire?: TypeProprietaire | undefined;
   etatBatiInfrastructure?: EtatBati | undefined;
   presencePollution?: PresencePollution | undefined;
-  qualiteVoieDesserte?: QualiteDesserte | undefined;
+  qualiteVoieDesserte?: QualiteVoieDesserte | undefined;
   qualitePaysage?: QualitePaysage | undefined;
   valeurArchitecturaleHistorique?: ValeurArchitecturale | undefined;
   terrainViabilise?: boolean | undefined;

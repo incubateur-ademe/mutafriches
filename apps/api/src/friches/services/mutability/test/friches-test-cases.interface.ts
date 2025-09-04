@@ -1,5 +1,5 @@
 import { MutabilityInputDto } from "src/friches/dto/mutability-input.dto";
-import { UsageType } from "src/friches/enums/mutability.enums";
+import { UsageType } from "@mutafriches/shared-types";
 
 /**
  * Interface pour définir les résultats attendus d'un test de mutabilité

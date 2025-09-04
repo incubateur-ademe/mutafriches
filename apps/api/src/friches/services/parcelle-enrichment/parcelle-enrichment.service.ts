@@ -11,7 +11,7 @@ import { IParcelleEnrichmentService } from "../../interfaces/parcelle-enrichment
 import { CadastreService } from "../external-apis/cadastre/cadastre.service";
 import { BdnbService } from "../external-apis/bdnb/bdnb.service";
 import { EnedisService } from "../external-apis/enedis/enedis.service";
-import { RisqueNaturel } from "../../enums/parcelle.enums";
+import { RisqueNaturel } from "@mutafriches/shared-types";
 
 @Injectable()
 export class ParcelleEnrichmentService implements IParcelleEnrichmentService {
