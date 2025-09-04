@@ -1,15 +1,18 @@
 import { Routes, Route } from "react-router-dom";
-import { TestDsfr } from "./pages/Home";
+import { DsfrProvider } from "./providers/dsfr/DsfrProvider";
+import { Step1 } from "./pages/Step1";
+import { TestDsfr } from "./pages/Home"; // On garde pour les tests
 
 function App() {
   return (
-    <div className="min-h-screen bg-gray-50">
-      <main className="max-w-7xl mx-auto px-4 py-8">
-        <Routes>
-          <Route path="/" element={<TestDsfr />} />
-        </Routes>
-      </main>
-    </div>
+    <DsfrProvider>
+      <Routes>
+        <Route path="/" element={<Step1 />} />
+        <Route path="/step1" element={<Step1 />} />
+        <Route path="/test" element={<TestDsfr />} />
+        {/* TODO: Ajouter les routes step2 et step3 */}
+      </Routes>
+    </DsfrProvider>
   );
 }
 

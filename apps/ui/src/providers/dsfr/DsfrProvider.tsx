@@ -6,19 +6,6 @@ interface DsfrProviderProps {
   children: ReactNode;
 }
 
-// Déclaration globale avec types optionnels pour la configuration
-declare global {
-  interface Window {
-    dsfr?: {
-      start?: () => void;
-      stop?: () => void;
-      verbose?: boolean;
-      mode?: string;
-      production?: boolean;
-    };
-  }
-}
-
 export function DsfrProvider({ children }: DsfrProviderProps) {
   const [isReady, setIsReady] = useState(false);
 
