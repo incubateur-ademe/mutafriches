@@ -5,7 +5,6 @@ import { join } from "path";
 import { NestExpressApplication } from "@nestjs/platform-express";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { Request, Response, NextFunction } from "express";
-import * as session from "express-session";
 import { ValidationPipe } from "@nestjs/common";
 
 async function bootstrap() {
@@ -31,24 +30,9 @@ async function bootstrap() {
   });
 
   // Trust proxy pour Scalingo et autres environnements
-  // Permet de gérer les requêtes derrière un proxy
   if (process.env.NODE_ENV === "production") {
     app.set("trust proxy", 1);
   }
-
-  // Configuration de express-session
-  app.use(
-    session({
-      secret: process.env.SESSION_SECRET || "mutafriches-secret-key",
-      resave: false,
-      saveUninitialized: true,
-      cookie: {
-        maxAge: 24 * 60 * 60 * 1000,
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production" ? "auto" : false,
-      },
-    }),
-  );
 
   // Configuration CORS pour le développement
   if (process.env.NODE_ENV !== "production") {
@@ -58,28 +42,12 @@ async function bootstrap() {
     });
   }
 
-  // Assets DSFR - chemin adaptatif selon l'environnement
-  const isProduction = process.env.NODE_ENV === "production";
-  const dsfrPath = isProduction
-    ? join(__dirname, "..", "..", "node_modules/@gouvfr/dsfr/dist") // Production
-    : join(process.cwd(), "node_modules/@gouvfr/dsfr/dist"); // Développement
-
-  app.useStaticAssets(dsfrPath, {
-    prefix: "/dsfr/",
-  });
-
-  // Assets publics (images, etc.) - chemin adaptatif selon l'environnement
-  const publicPath = isProduction
-    ? join(__dirname, "..", "public") // Production (dist/public)
-    : join(process.cwd(), "public"); // Développement (public)
-
-  app.useStaticAssets(publicPath);
-
   // Servir l'UI React en production
+  const isProduction = process.env.NODE_ENV === "production";
   if (isProduction) {
-    const uiPath = join(__dirname, "..", "..", "..", "dist-ui");
+    const uiPath = join(__dirname, "..", "..", "dist-ui");
 
-    // Servir les fichiers statiques de l'UI
+    // Servir les fichiers statiques de l'UI React
     app.useStaticAssets(uiPath);
 
     // Catch-all route pour le SPA React (doit être après toutes les routes API)
@@ -89,8 +57,6 @@ async function bootstrap() {
         req.path.startsWith("/api") ||
         req.path.startsWith("/friches") ||
         req.path.startsWith("/health") ||
-        req.path.startsWith("/dsfr") ||
-        req.path.startsWith("/iframe") ||
         req.path.includes(".") // Pour les fichiers statiques (.js, .css, etc.)
       ) {
         return next();

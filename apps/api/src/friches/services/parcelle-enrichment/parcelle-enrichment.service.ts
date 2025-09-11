@@ -3,9 +3,6 @@
 import { Injectable } from "@nestjs/common";
 import { Parcelle } from "../../entities/parcelle.entity";
 import { EnrichmentResultDto } from "../../dto/enrichment-result.dto";
-import { MockTransportService } from "../../../mock/services/mock-transport.service";
-import { MockOverpassService } from "../../../mock/services/mock-overpass.service";
-import { MockLovacService } from "../../../mock/services/mock-lovac.service";
 import { CadastreServiceResponse } from "../external-apis/cadastre/cadastre.interface";
 import { IParcelleEnrichmentService } from "../../interfaces/parcelle-enrichment-service.interface";
 import { CadastreService } from "../external-apis/cadastre/cadastre.service";
@@ -18,10 +15,7 @@ export class ParcelleEnrichmentService implements IParcelleEnrichmentService {
   constructor(
     private readonly cadastreService: CadastreService,
     private readonly bdnbService: BdnbService,
-    private readonly transportService: MockTransportService,
     private readonly enedisService: EnedisService,
-    private readonly overpassService: MockOverpassService,
-    private readonly lovacService: MockLovacService,
   ) {}
 
   /**
@@ -96,9 +90,8 @@ export class ParcelleEnrichmentService implements IParcelleEnrichmentService {
       champsManquants,
     );
 
-    // 8. Données complémentaires (en attendant les vrais services)
-    // TODO: Remplacer par de vrais services
-    await this.enrichWithRemainingMockData(
+    // 8. Données complémentaires temporaires
+    await this.enrichWithTemporaryMockData(
       parcelle,
       identifiantParcelle,
       sourcesUtilisees,
@@ -170,17 +163,21 @@ export class ParcelleEnrichmentService implements IParcelleEnrichmentService {
 
   /**
    * Récupère la distance au transport en commun
+   * TODO: Implémenter le service de transport manquant
    */
   private async getDistanceTransport(coordonnees: {
     latitude: number;
     longitude: number;
   }): Promise<number | null> {
     try {
-      const result = await this.transportService.getDistanceTransportCommun(
-        coordonnees.latitude,
-        coordonnees.longitude,
+      // TODO: Remplacer par le vrai service de transport
+      console.log(
+        `Transport temporaire pour coordonnées: ${coordonnees.latitude}, ${coordonnees.longitude}`,
       );
-      return result.success && result.data !== undefined ? result.data : null;
+
+      // Données temporaires - distance aléatoire entre 100m et 2km
+      const distanceTemporaire = Math.floor(Math.random() * 1900) + 100;
+      return distanceTemporaire;
     } catch (error) {
       console.error("Erreur Transport:", error);
       return null;
@@ -233,40 +230,52 @@ export class ParcelleEnrichmentService implements IParcelleEnrichmentService {
 
   /**
    * Enrichit avec les données Overpass
+   * TODO: Implémenter les services Overpass pour commerces/services à proximité
    */
   private async enrichWithOverpassData(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     parcelle: Parcelle,
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     coordonnees: { latitude: number; longitude: number },
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     sources: string[],
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     manquants: string[],
   ): Promise<void> {
-    // TODO: Implémenter les appels aux services Overpass pour récupérer les données
+    try {
+      // TODO: Implémenter les appels aux services Overpass pour récupérer les données
+      console.log(
+        `Overpass temporaire pour coordonnées: ${coordonnees.latitude}, ${coordonnees.longitude}`,
+      );
+
+      // Données temporaires - présence aléatoire de commerces/services
+      const hasCommercesServices = Math.random() > 0.5;
+      parcelle.proximiteCommercesServices = hasCommercesServices;
+      sources.push("Overpass-Temporaire");
+    } catch (error) {
+      console.error("Erreur Overpass:", error);
+      manquants.push("proximiteCommercesServices");
+    }
   }
 
   /**
    * Enrichit avec les données Lovac
+   * TODO: Implémenter le service Lovac pour les taux de logements vacants
    */
   private async enrichWithLovacData(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     parcelle: Parcelle,
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     commune: string,
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     sources: string[],
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     manquants: string[],
   ): Promise<void> {
-    // TODO: Implémenter l'appel au service Lovac pour récupérer les données
+    try {
+      // TODO: Implémenter l'appel au service Lovac pour récupérer les données
+      console.log(`Lovac temporaire pour commune: ${commune}`);
+
+      // Données temporaires - taux de logements vacants aléatoire entre 2% et 15%
+      const tauxTemporaire = Math.floor(Math.random() * 13) + 2;
+      parcelle.tauxLogementsVacants = tauxTemporaire;
+      sources.push("Lovac-Temporaire");
+    } catch (error) {
+      console.error("Erreur Lovac:", error);
+      manquants.push("tauxLogementsVacants");
+    }
   }
 
   /**
@@ -324,23 +333,37 @@ export class ParcelleEnrichmentService implements IParcelleEnrichmentService {
   }
 
   /**
-   * Enrichit avec les données mockées restantes
+   * Enrichit avec les données temporaires restantes
    * TODO: Remplacer par de vrais services quand disponibles
    */
-  private async enrichWithRemainingMockData(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  private async enrichWithTemporaryMockData(
     parcelle: Parcelle,
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     identifiant: string,
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     sources: string[],
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     manquants: string[],
   ): Promise<void> {
     // TODO: Ces champs seront enrichis par de vrais services plus tard
+    console.log(`Données temporaires pour parcelle: ${identifiant}`);
+
+    try {
+      // Données temporaires pour les champs manquants
+      if (!parcelle.siteEnCentreVille) {
+        parcelle.siteEnCentreVille = Math.random() > 0.6; // 40% de chance d'être en centre-ville
+      }
+
+      if (!parcelle.distanceAutoroute) {
+        parcelle.distanceAutoroute = Math.floor(Math.random() * 20) + 1; // Entre 1 et 20 km
+      }
+
+      if (!parcelle.presenceRisquesTechnologiques) {
+        parcelle.presenceRisquesTechnologiques = Math.random() > 0.8; // 20% de chance de risques technologiques
+      }
+
+      sources.push("Données-Temporaires");
+    } catch (error) {
+      console.error("Erreur données temporaires:", error);
+      manquants.push("données-temporaires");
+    }
   }
 
   /**

@@ -1,16 +1,36 @@
-import { Controller, Get, Res } from "@nestjs/common";
+import { Controller, Get } from "@nestjs/common";
 import { DatabaseService } from "./shared/database/database.service";
-import { UiService } from "./ui/services/ui.service";
-import { HealthResponse, SimpleResponse } from "./shared/types/common.types";
-import { ApiExcludeEndpoint, ApiTags } from "@nestjs/swagger";
+import { HealthResponse } from "./shared/types/common.types";
+import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
 @ApiTags("health")
 @Controller()
 export class AppController {
-  constructor(
-    private readonly databaseService: DatabaseService,
-    private readonly uiService: UiService,
-  ) {}
+  constructor(private readonly databaseService: DatabaseService) {}
+
+  @Get()
+  @ApiOperation({ summary: "Page d'accueil de l'API" })
+  @ApiResponse({ status: 200, description: "Informations générales sur l'API" })
+  getRoot(): {
+    name: string;
+    version: string;
+    description: string;
+    documentation: string;
+    endpoints: string[];
+  } {
+    return {
+      name: "Mutafriches API",
+      version: "1.0.0",
+      description: "API pour analyser la mutabilité des friches urbaines",
+      documentation: "/api",
+      endpoints: [
+        "GET /health - Health check",
+        "GET /version - Version de l'API",
+        "POST /friches/enrich - Enrichissement de parcelle",
+        "POST /friches/mutability - Calcul de mutabilité",
+      ],
+    };
+  }
 
   @Get("health")
   async healthCheck(): Promise<HealthResponse> {
@@ -41,15 +61,5 @@ export class AppController {
     }
 
     return health;
-  }
-
-  @Get()
-  @ApiExcludeEndpoint()
-  getHome(@Res() res: SimpleResponse): void {
-    // Page d'accueil du formulaire (étape 1) directement sur /
-    const html = this.uiService.renderFormStep(1);
-
-    res.setHeader("Content-Type", "text/html");
-    res.send(html);
   }
 }
