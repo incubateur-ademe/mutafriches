@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { BaseLayout } from "../layouts/BaseLayout";
 import { useFormContext } from "../context/useFormContext";
 import { apiService } from "../services/api/api.service";
-import { ROUTES } from "../config/routes/routes.config";
+import { getStepRoute, ROUTES } from "../config/routes/routes.config";
 import { Header } from "../components/layout/Header";
 import { Stepper } from "../components/layout/Stepper";
 import { SelectParcelleByMap } from "../components/step1/parcelle-selection/SelectParcelleByMap";
@@ -17,7 +17,7 @@ import { transformEnrichmentToUiData } from "../utils/mappers/enrichissment.mapp
 
 export const Step1: React.FC = () => {
   const navigate = useNavigate();
-  const { state, setEnrichmentData, setCurrentStep } = useFormContext();
+  const { state, setEnrichmentData, setCurrentStep, resetForm } = useFormContext();
 
   const [selectionMode, setSelectionMode] = useState<"id" | "carte">("id");
   const [isMultiParcelle, setIsMultiParcelle] = useState(false);
@@ -38,6 +38,9 @@ export const Step1: React.FC = () => {
       const enrichmentResult = await apiService.enrichirParcelle(identifiant);
       const uiData = transformEnrichmentToUiData(enrichmentResult);
       setEnrichmentData(enrichmentResult, uiData, identifiant);
+
+      // Scroll vers les résultats après succès
+      scrollToEnrichmentZone();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Une erreur est survenue");
     } finally {
@@ -64,9 +67,52 @@ export const Step1: React.FC = () => {
     navigate(ROUTES.STEP2);
   };
 
+  // Scroll vers la zone d'affichage des données enrichies
+  const scrollToEnrichmentZone = () => {
+    setTimeout(() => {
+      const element = document.getElementById("enrichment-display-zone");
+      if (element) {
+        element.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+          inline: "nearest",
+        });
+      }
+    }, 100); // Petit délai pour laisser le DOM se mettre à jour
+  };
+
   return (
     <BaseLayout>
       <Header />
+
+      {/* Si des données existent, proposer de continuer ou recommencer */}
+      {state.completedSteps.length > 0 && (
+        <div className="fr-alert fr-alert--info fr-mb-3w">
+          <h3 className="fr-alert__title">Analyse en cours</h3>
+          <p>Vous avez une analyse en cours. Voulez-vous continuer ou recommencer ?</p>
+          <div className="fr-mt-2w">
+            <button
+              className="fr-btn"
+              onClick={() => {
+                const nextStep = Math.min(state.currentStep + 1, 3);
+                navigate(getStepRoute(nextStep as 1 | 2 | 3));
+              }}
+            >
+              Continuer l'analyse
+            </button>
+            <button
+              className="fr-btn fr-btn--secondary fr-ml-2w"
+              onClick={() => {
+                resetForm();
+                window.location.reload();
+              }}
+            >
+              Recommencer
+            </button>
+          </div>
+        </div>
+      )}
+
       <Stepper
         currentStep={1}
         totalSteps={3}

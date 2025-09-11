@@ -10,7 +10,7 @@ export const EnrichmentDisplayZone: React.FC<EnrichmentDisplayZoneProps> = ({ da
   if (!data) return null;
 
   return (
-    <div className="fr-mt-4w">
+    <div id="enrichment-display-zone" className="fr-mt-4w">
       <hr />
       <h3>Données publiques sourcées</h3>
       <p className="fr-text--sm">

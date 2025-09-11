@@ -3,16 +3,19 @@ import { FormContext } from "./FormContext";
 import { FormState, FormContextType, STORAGE_KEY, initialState } from "./FormContext.types";
 import { EnrichmentResultDto, MutabilityResultDto, UiParcelleDto } from "@mutafriches/shared-types";
 
+const SESSION_DURATION = 30 * 60 * 1000; // 30 minutes
+
 export const FormProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [state, setState] = useState<FormState>(() => {
-    // Charger depuis localStorage au montage
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {
-      try {
-        return JSON.parse(stored) as FormState;
-      } catch (e) {
-        console.error("Erreur lors du chargement du localStorage:", e);
+      const data = JSON.parse(stored);
+      // Vérifier si la session n'est pas expirée
+      if (data.timestamp && Date.now() - data.timestamp < SESSION_DURATION) {
+        return data;
       }
+      // Session expirée, nettoyer
+      localStorage.removeItem(STORAGE_KEY);
     }
     return initialState;
   });
@@ -21,12 +24,19 @@ export const FormProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const isFirstRender = useRef(true);
 
   // Sauvegarder dans localStorage à chaque changement SAUF au premier render
+  // On ajoute un timestamp pour gérer l'expiration
   useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false;
       return;
     }
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({
+        ...state,
+        timestamp: Date.now(),
+      }),
+    );
   }, [state]);
 
   const setEnrichmentData = (
