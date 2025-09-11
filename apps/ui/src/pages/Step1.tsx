@@ -89,11 +89,7 @@ export const Step1: React.FC = () => {
         {enrichmentError && !isLoading && <ErrorAlert message={enrichmentError} />}
 
         {/* Affichage des données enrichies */}
-        <EnrichmentDisplay
-          data={uiData}
-          sources={enrichmentData?.sourcesUtilisees}
-          fiabilite={enrichmentData?.fiabilite}
-        />
+        <EnrichmentDisplay data={uiData} />
 
         {/* Boutons de navigation */}
         <div className="fr-mt-4w" style={{ textAlign: "right" }}>
