@@ -35,14 +35,15 @@ jobs:
       - name: Run linting
         run: pnpm lint
 
+      # Shared types must be built first as other packages depend on it
+      - name: Build shared types first
+        run: pnpm --filter @mutafriches/shared-types build
+
       - name: Run type checking
         run: pnpm typecheck
 
       - name: Run tests
         run: pnpm test
-
-      - name: Build shared types first
-        run: pnpm --filter @mutafriches/shared-types build
 
       - name: Build applications
         run: pnpm build
