@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ReactNode } from "react";
+import React, { useState, useEffect, ReactNode, useRef } from "react";
 import { FormContext } from "./FormContext";
 import { FormState, FormContextType, STORAGE_KEY, initialState } from "./FormContext.types";
 import { EnrichmentResultDto, MutabilityResultDto, UiParcelleDto } from "@mutafriches/shared-types";
@@ -17,8 +17,15 @@ export const FormProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     return initialState;
   });
 
-  // Sauvegarder dans localStorage à chaque changement
+  // Utiliser useRef pour éviter la sauvegarde au premier render
+  const isFirstRender = useRef(true);
+
+  // Sauvegarder dans localStorage à chaque changement SAUF au premier render
   useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   }, [state]);
 
@@ -53,10 +60,16 @@ export const FormProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const setCurrentStep = (step: number) => {
-    setState((prev) => ({
-      ...prev,
-      currentStep: step,
-    }));
+    setState((prev) => {
+      // Ne mettre à jour que si l'étape a changé
+      if (prev.currentStep === step) {
+        return prev;
+      }
+      return {
+        ...prev,
+        currentStep: step,
+      };
+    });
   };
 
   const canAccessStep = (step: number): boolean => {

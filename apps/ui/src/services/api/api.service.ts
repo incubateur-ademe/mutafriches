@@ -4,7 +4,7 @@ import {
   MutabilityResultDto,
 } from "@mutafriches/shared-types";
 import { API_CONFIG } from "./api.config";
-import { buildMutabilityInput } from "./mutability.mapper";
+import { buildMutabilityInput } from "../mappers/mutability.mapper";
 
 class ApiService {
   private baseUrl: string;
