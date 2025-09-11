@@ -3,7 +3,7 @@ import { EnrichmentResultDto, UiParcelleDto } from "@mutafriches/shared-types";
 /**
  * Transforme les données d'enrichissement brutes en format UI
  */
-export const transformToUiData = (enrichmentData: EnrichmentResultDto): UiParcelleDto => {
+export const transformEnrichmentToUiData = (enrichmentData: EnrichmentResultDto): UiParcelleDto => {
   return {
     identifiantParcelle: enrichmentData.identifiantParcelle,
     commune: enrichmentData.commune || "Non renseignée",

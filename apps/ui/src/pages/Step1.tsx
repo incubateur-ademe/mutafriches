@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { BaseLayout } from "../layouts/BaseLayout";
 import { useFormContext } from "../context/useFormContext";
 import { apiService } from "../services/api/api.service";
-import { transformToUiData } from "../services/mappers/ui.transformer";
 import { ROUTES } from "../config/routes/routes.config";
 import { Header } from "../components/layout/Header";
 import { Stepper } from "../components/layout/Stepper";
@@ -14,6 +13,7 @@ import { SelectionParcelleMode } from "../components/step1/parcelle-selection/Se
 import { MultiParcelleToggle } from "../components/step1/parcelle-selection/MultiParcelleToggle";
 import { ErrorAlert } from "../components/common/ErrorAlert";
 import { EnrichmentDisplayZone } from "../components/step1/enrichment-display/EnrichmentDisplayZone";
+import { transformEnrichmentToUiData } from "../utils/mappers/enrichissment.mapper";
 
 export const Step1: React.FC = () => {
   const navigate = useNavigate();
@@ -36,7 +36,7 @@ export const Step1: React.FC = () => {
 
     try {
       const enrichmentResult = await apiService.enrichirParcelle(identifiant);
-      const uiData = transformToUiData(enrichmentResult);
+      const uiData = transformEnrichmentToUiData(enrichmentResult);
       setEnrichmentData(enrichmentResult, uiData, identifiant);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Une erreur est survenue");
