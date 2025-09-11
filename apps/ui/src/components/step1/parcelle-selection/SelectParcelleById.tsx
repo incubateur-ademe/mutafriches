@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 
-interface IdModeProps {
+interface SelectParcelleByIdProps {
   onSearch: (identifiant: string) => void;
 }
 
-export const IdMode: React.FC<IdModeProps> = ({ onSearch }) => {
+export const SelectParcelleById: React.FC<SelectParcelleByIdProps> = ({ onSearch }) => {
   const [parcelId, setParcelId] = useState("");
 
   const handleSearch = () => {

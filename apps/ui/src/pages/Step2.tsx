@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { BaseLayout } from "../layouts/BaseLayout";
-import { Stepper } from "../components/common/Stepper";
-import { Header } from "../components/common/Header";
 import { ManualDataForm } from "../components/step2/ManualDataForm";
 import { useFormContext } from "../context/useFormContext";
 import { ManualFormValues } from "../config/form";
 import { ROUTES } from "../config/routes/routes.config";
+import { Header } from "../components/layout/Header";
+import { Stepper } from "../components/layout/Stepper";
 
 export const Step2: React.FC = () => {
   const navigate = useNavigate();

@@ -1,11 +1,11 @@
 import React from "react";
 
-interface SelectionModeProps {
+interface SelectionParcelleModeProps {
   mode: "id" | "carte";
   onChange: (mode: "id" | "carte") => void;
 }
 
-export const SelectionMode: React.FC<SelectionModeProps> = ({ mode, onChange }) => {
+export const SelectionParcelleMode: React.FC<SelectionParcelleModeProps> = ({ mode, onChange }) => {
   return (
     <fieldset className="fr-segmented fr-mb-4w">
       <div className="fr-segmented__elements">

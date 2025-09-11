@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { BaseLayout } from "../layouts/BaseLayout";
-import { Stepper } from "../components/common/Stepper";
-import { IdMode } from "../components/parcelle/IdMode";
-import { MapMode } from "../components/parcelle/MapMode";
-import { SelectionMode } from "../components/parcelle/SelectionMode";
-import { MultiParcelleToggle } from "../components/parcelle/MultiParcelleToggle";
-import { EnrichmentDisplay } from "../components/parcelle/EnrichmentDisplay";
-import { LoadingCallout } from "../components/ui/LoadingCallout";
-import { ErrorAlert } from "../components/ui/ErrorAlert";
-import { Header } from "../components/common/Header";
 import { useFormContext } from "../context/useFormContext";
 import { apiService } from "../services/api/api.service";
 import { transformToUiData } from "../services/mappers/ui.transformer";
 import { ROUTES } from "../config/routes/routes.config";
+import { Header } from "../components/layout/Header";
+import { Stepper } from "../components/layout/Stepper";
+import { SelectParcelleByMap } from "../components/step1/parcelle-selection/SelectParcelleByMap";
+import { LoadingCallout } from "../components/common/LoadingCallout";
+import { SelectParcelleById } from "../components/step1/parcelle-selection/SelectParcelleById";
+import { SelectionParcelleMode } from "../components/step1/parcelle-selection/SelectionParcelleMode";
+import { MultiParcelleToggle } from "../components/step1/parcelle-selection/MultiParcelleToggle";
+import { ErrorAlert } from "../components/common/ErrorAlert";
+import { EnrichmentDisplayZone } from "../components/step1/enrichment-display/EnrichmentDisplayZone";
 
 export const Step1: React.FC = () => {
   const navigate = useNavigate();
@@ -80,7 +80,7 @@ export const Step1: React.FC = () => {
         {/* Contrôles de sélection */}
         <div className="fr-grid-row fr-grid-row--gutters">
           <div className="fr-col-12 fr-col-md-8">
-            <SelectionMode mode={selectionMode} onChange={setSelectionMode} />
+            <SelectionParcelleMode mode={selectionMode} onChange={setSelectionMode} />
           </div>
           <div className="fr-col-12 fr-col-md-4">
             <MultiParcelleToggle isMulti={isMultiParcelle} onChange={setIsMultiParcelle} />
@@ -89,9 +89,9 @@ export const Step1: React.FC = () => {
 
         {/* Mode de sélection actif */}
         {selectionMode === "id" ? (
-          <IdMode onSearch={handleSearchById} />
+          <SelectParcelleById onSearch={handleSearchById} />
         ) : (
-          <MapMode onSelect={handleMapSelection} />
+          <SelectParcelleByMap onSelect={handleMapSelection} />
         )}
 
         {/* États de l'interface */}
@@ -105,7 +105,7 @@ export const Step1: React.FC = () => {
         {error && !isLoading && <ErrorAlert message={error} />}
 
         {/* Affichage des données enrichies */}
-        {state.uiData && <EnrichmentDisplay data={state.uiData} />}
+        {state.uiData && <EnrichmentDisplayZone data={state.uiData} />}
 
         {/* Navigation */}
         <div className="fr-mt-4w" style={{ textAlign: "right" }}>

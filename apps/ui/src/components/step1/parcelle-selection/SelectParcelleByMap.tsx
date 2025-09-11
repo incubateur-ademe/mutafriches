@@ -1,10 +1,10 @@
 import React from "react";
 
-interface MapModeProps {
+interface SelectParcelleByMapProps {
   onSelect: () => void;
 }
 
-export const MapMode: React.FC<MapModeProps> = ({ onSelect }) => {
+export const SelectParcelleByMap: React.FC<SelectParcelleByMapProps> = ({ onSelect }) => {
   const handleMapClick = (e?: React.MouseEvent) => {
     if (e) {
       e.stopPropagation();
