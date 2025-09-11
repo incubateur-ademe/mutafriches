@@ -13,6 +13,7 @@ import { Header } from "../components/common/Header";
 import { useFormContext } from "../context/useFormContext";
 import { apiService } from "../services/api/api.service";
 import { transformToUiData } from "../services/mappers/ui.transformer";
+import { ROUTES } from "../config/routes/routes.config";
 
 export const Step1: React.FC = () => {
   const navigate = useNavigate();
@@ -60,7 +61,7 @@ export const Step1: React.FC = () => {
       setError("Veuillez d'abord enrichir une parcelle");
       return;
     }
-    navigate("/step2");
+    navigate(ROUTES.STEP2);
   };
 
   return (

@@ -10,6 +10,7 @@ build/
 **/build/
 *.tsbuildinfo
 **/*.tsbuildinfo
+apps/dist-ui/
 
 # Testing
 coverage/

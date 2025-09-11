@@ -1,17 +1,20 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { DsfrProvider } from "./providers/dsfr/DsfrProvider";
 import { Step1 } from "./pages/Step1";
 import { TestDsfr } from "./pages/Debug";
 import { FormProvider } from "./context/FormProvider";
+import { Step2 } from "./pages/Step2";
+import { ROUTES } from "./config/routes/routes.config";
 
 function App() {
   return (
     <DsfrProvider>
       <FormProvider>
         <Routes>
-          <Route path="/" element={<Step1 />} />
-          <Route path="/debug" element={<TestDsfr />} />
-          {/* TODO: Ajouter les routes step2 et step3 */}
+          <Route path={ROUTES.HOME} element={<Navigate to={ROUTES.STEP1} replace />} />
+          <Route path={ROUTES.STEP1} element={<Step1 />} />
+          <Route path={ROUTES.STEP2} element={<Step2 />} />
+          <Route path={ROUTES.DEBUG} element={<TestDsfr />} />
         </Routes>
       </FormProvider>
     </DsfrProvider>

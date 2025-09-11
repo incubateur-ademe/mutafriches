@@ -8,10 +8,9 @@ export {
   QualiteVoieDesserte,
   TerrainViabilise,
   TypeUsage,
-  UsageType, // Pour compatibilité
+  UsageType,
   PertinenceReponse,
   NiveauPotentiel,
-  // Enums additionnels de l'API
   EtatBati,
   RisqueNaturel,
   ZonageEnvironnemental,
