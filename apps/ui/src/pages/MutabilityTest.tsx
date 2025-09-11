@@ -16,12 +16,7 @@ export default function MutabilityTest() {
     setMutabilityResult(null);
 
     try {
-      console.log("Données à envoyer à l'API:", formData);
-
-      // Appel à ton API existante
       const result = await apiService.calculerMutabilite(formData);
-
-      console.log("Résultat du calcul:", result);
       setMutabilityResult(result);
     } catch (error) {
       console.error("Erreur lors du calcul:", error);
