@@ -41,6 +41,9 @@ jobs:
       - name: Run tests
         run: pnpm test
 
+      - name: Build shared types first
+        run: pnpm --filter @mutafriches/shared-types build
+
       - name: Build applications
         run: pnpm build
         env:
