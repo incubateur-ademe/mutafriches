@@ -8,6 +8,7 @@ import { ROUTES } from "./config/routes/routes.config";
 import { Step3 } from "./pages/Step3";
 import { useEffect } from "react";
 import { STORAGE_KEY } from "./context/FormContext.types";
+import MutabilityTest from "./pages/MutabilityTest";
 
 function App() {
   // Gestion du reset du formulaire si on arrive sur la home
@@ -34,6 +35,7 @@ function App() {
           <Route path={ROUTES.STEP2} element={<Step2 />} />
           <Route path={ROUTES.STEP3} element={<Step3 />} />
           <Route path={ROUTES.DEBUG} element={<TestDsfr />} />
+          <Route path={ROUTES.TEST_MUTABILITE} element={<MutabilityTest />} />
         </Routes>
       </FormProvider>
     </DsfrProvider>

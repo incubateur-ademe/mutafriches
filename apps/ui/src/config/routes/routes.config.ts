@@ -7,6 +7,7 @@ export const ROUTES = {
   STEP2: "/donnees-complementaires",
   STEP3: "/resultats",
   DEBUG: "/debug",
+  TEST_MUTABILITE: "/test/mutabilite",
 } as const;
 
 /**
