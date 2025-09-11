@@ -8,7 +8,12 @@
     "node": "22.x"
   },
   "scripts": {
-    "build": "nest build",
+    "build": "pnpm run build:nest && pnpm run build:ui",
+    "build:nest": "nest build",
+    "build:ui": "cd ../ui && pnpm run build",
+    "start:prod": "NODE_ENV=production node dist/src/main",
+    "start:dev": "nest start --watch",
+    "start:debug": "nest start --debug --watch",
     "clean": "rm -rf dist coverage node_modules",
     "db:start": "docker-compose up -d postgres",
     "db:stop": "docker-compose down",
@@ -19,9 +24,6 @@
     "db:seed:mock:analytics": "node dist/src/shared/scripts/seed.analytics.js",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "node dist/src/main.js",
-    "dev:api": "nest start --watch",
-    "start:dev": "nest start --watch",
-    "start:debug": "nest start --debug --watch",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:verbose": "cross-env VERBOSE=true vitest run",

@@ -8,11 +8,12 @@
     "node": "22.x"
   },
   "scripts": {
+    "start": "node apps/api/dist/src/main",
+    "build": "pnpm --filter api build",
+    "scalingo-postbuild": "pnpm install --frozen-lockfile && pnpm build",
     "start:dev": "concurrently --kill-others --names \"API,UI\" --prefix-colors \"cyan,magenta\" \"pnpm:dev:api\" \"pnpm:dev:ui\"",
     "dev:api": "pnpm --filter api start:dev",
     "dev:ui": "pnpm --filter ui dev",
-    "build": "pnpm -r build",
-    "start": "pnpm --filter api start:prod",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",

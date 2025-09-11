@@ -77,23 +77,26 @@ async function bootstrap() {
 
   // Servir l'UI React en production
   if (isProduction) {
-    const uiPath = join(__dirname, "..", "dist-ui");
+    const uiPath = join(__dirname, "..", "..", "..", "dist-ui");
 
     // Servir les fichiers statiques de l'UI
     app.useStaticAssets(uiPath);
 
     // Catch-all route pour le SPA React (doit être après toutes les routes API)
-    app.use("*", (req: Request, res: Response, next: NextFunction) => {
+    app.use((req: Request, res: Response, next: NextFunction) => {
       // Ne pas intercepter les routes API et les assets
       if (
-        req.baseUrl.startsWith("/api") ||
-        req.baseUrl.startsWith("/friches") ||
-        req.baseUrl.startsWith("/health") ||
-        req.baseUrl.startsWith("/dsfr") ||
-        req.baseUrl.startsWith("/iframe")
+        req.path.startsWith("/api") ||
+        req.path.startsWith("/friches") ||
+        req.path.startsWith("/health") ||
+        req.path.startsWith("/dsfr") ||
+        req.path.startsWith("/iframe") ||
+        req.path.includes(".") // Pour les fichiers statiques (.js, .css, etc.)
       ) {
         return next();
       }
+
+      // Servir index.html pour toutes les autres routes (SPA)
       res.sendFile(join(uiPath, "index.html"));
     });
   }
