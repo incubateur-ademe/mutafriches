@@ -1,11 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { BaseLayout } from "../layouts/BaseLayout";
 import { useFormContext } from "../context/useFormContext";
 import { apiService } from "../services/api/api.service";
 import { getStepRoute, ROUTES } from "../config/routes/routes.config";
-import { Header } from "../components/layout/Header";
-import { Stepper } from "../components/layout/Stepper";
 import { SelectParcelleByMap } from "../components/step1/parcelle-selection/SelectParcelleByMap";
 import { LoadingCallout } from "../components/common/LoadingCallout";
 import { SelectParcelleById } from "../components/step1/parcelle-selection/SelectParcelleById";
@@ -14,6 +11,8 @@ import { MultiParcelleToggle } from "../components/step1/parcelle-selection/Mult
 import { ErrorAlert } from "../components/common/ErrorAlert";
 import { EnrichmentDisplayZone } from "../components/step1/enrichment-display/EnrichmentDisplayZone";
 import { transformEnrichmentToUiData } from "../utils/mappers/enrichissment.mapper";
+import { SimpleIframeLayout } from "../layouts";
+import { SimpleHeader, Stepper } from "../components/layout";
 
 export const Step1: React.FC = () => {
   const navigate = useNavigate();
@@ -82,8 +81,8 @@ export const Step1: React.FC = () => {
   };
 
   return (
-    <BaseLayout>
-      <Header />
+    <SimpleIframeLayout>
+      <SimpleHeader />
 
       {/* Si des données existent, proposer de continuer ou recommencer */}
       {state.completedSteps.length > 0 && (
@@ -165,6 +164,6 @@ export const Step1: React.FC = () => {
           </button>
         </div>
       </div>
-    </BaseLayout>
+    </SimpleIframeLayout>
   );
 };

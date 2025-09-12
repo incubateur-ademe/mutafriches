@@ -7,7 +7,10 @@ export const ROUTES = {
   STEP2: "/donnees-complementaires",
   STEP3: "/resultats",
   DEBUG: "/debug",
-  TEST_MUTABILITE: "/test/mutabilite",
+  TESTS: "/tests",
+  TEST_DSFR: "/test/dsfr",
+  TEST_ENRICHISSEMENT: "/test/enrichissement-parcelle",
+  TEST_MUTABILITE: "/test/algorithme",
 } as const;
 
 /**

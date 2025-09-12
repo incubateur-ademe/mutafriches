@@ -1,14 +1,16 @@
 import { Routes, Route } from "react-router-dom";
 import { DsfrProvider } from "./providers/dsfr/DsfrProvider";
 import { Step1 } from "./pages/Step1";
-import { TestDsfr } from "./pages/Debug";
 import { FormProvider } from "./context/FormProvider";
 import { Step2 } from "./pages/Step2";
 import { ROUTES } from "./config/routes/routes.config";
 import { Step3 } from "./pages/Step3";
 import { useEffect } from "react";
 import { STORAGE_KEY } from "./context/FormContext.types";
-import MutabilityTest from "./pages/MutabilityTest";
+import { Tests } from "./pages/Tests";
+import { TestDsfr } from "./pages/tests/TestDsfr";
+import TestMutability from "./pages/tests/TestMutability";
+import { TestEnrichment } from "./pages/tests/TestEnrichment";
 
 function App() {
   // Gestion du reset du formulaire si on arrive sur la home
@@ -34,8 +36,12 @@ function App() {
           <Route path={ROUTES.STEP1} element={<Step1 />} />
           <Route path={ROUTES.STEP2} element={<Step2 />} />
           <Route path={ROUTES.STEP3} element={<Step3 />} />
-          <Route path={ROUTES.DEBUG} element={<TestDsfr />} />
-          <Route path={ROUTES.TEST_MUTABILITE} element={<MutabilityTest />} />
+
+          {/* Routes pour les tests */}
+          <Route path={ROUTES.TESTS} element={<Tests />} />
+          <Route path={ROUTES.TEST_DSFR} element={<TestDsfr />} />
+          <Route path={ROUTES.TEST_ENRICHISSEMENT} element={<TestEnrichment />} />
+          <Route path={ROUTES.TEST_MUTABILITE} element={<TestMutability />} />
         </Routes>
       </FormProvider>
     </DsfrProvider>

@@ -1,10 +1,10 @@
 import { ReactNode } from "react";
 
-interface BaseLayoutProps {
+interface SimpleIframeLayoutProps {
   children: ReactNode;
 }
 
-export function BaseLayout({ children }: BaseLayoutProps) {
+export function SimpleIframeLayout({ children }: SimpleIframeLayoutProps) {
   return (
     <div className="fr-container fr-py-4w">
       <div className="fr-grid-row fr-grid-row--center">

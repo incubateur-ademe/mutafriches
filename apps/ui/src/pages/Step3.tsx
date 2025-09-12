@@ -1,19 +1,18 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { BaseLayout } from "../layouts/BaseLayout";
 import { PodiumCard } from "../components/step3/PodiumCard";
 import { ReliabilityScore } from "../components/step3/ReliabilityScore";
 import { useFormContext } from "../context/useFormContext";
 import { apiService } from "../services/api/api.service";
 import { ROUTES } from "../config/routes/routes.config";
 import { MutabilityResultDto } from "@mutafriches/shared-types";
-import { Header } from "../components/layout/Header";
-import { Stepper } from "../components/layout/Stepper";
 import { LoadingCallout } from "../components/common/LoadingCallout";
 import { ErrorAlert } from "../components/common/ErrorAlert";
 import { ResultsTable } from "../components/step3/ResultTable";
 import { PartnerCard } from "../components/step3/PartnerCard";
 import { buildMutabilityInput } from "../utils/mappers/mutability.mapper";
+import { SimpleIframeLayout } from "../layouts";
+import { SimpleHeader, Stepper } from "../components/layout";
 
 export const Step3: React.FC = () => {
   const navigate = useNavigate();
@@ -91,8 +90,8 @@ export const Step3: React.FC = () => {
   }
 
   return (
-    <BaseLayout>
-      <Header />
+    <SimpleIframeLayout>
+      <SimpleHeader />
       <Stepper
         currentStep={3}
         totalSteps={3}
@@ -242,6 +241,6 @@ export const Step3: React.FC = () => {
           </button>
         </div>
       </div>
-    </BaseLayout>
+    </SimpleIframeLayout>
   );
 };
