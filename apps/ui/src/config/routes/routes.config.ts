@@ -11,6 +11,7 @@ export const ROUTES = {
   TEST_DSFR: "/test/dsfr",
   TEST_ENRICHISSEMENT: "/test/enrichissement-parcelle",
   TEST_MUTABILITE: "/test/algorithme",
+  TEST_IFRAME: "/test/iframe",
 } as const;
 
 /**

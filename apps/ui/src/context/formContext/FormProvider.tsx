@@ -2,7 +2,7 @@ import React, { useState, useEffect, ReactNode, useRef } from "react";
 import { FormContext } from "./FormContext";
 import { FormState, FormContextType, STORAGE_KEY, initialState } from "./FormContext.types";
 import { EnrichmentResultDto, MutabilityResultDto, UiParcelleDto } from "@mutafriches/shared-types";
-import { ROUTES } from "../config/routes/routes.config";
+import { ROUTES } from "../../config/routes/routes.config";
 
 const SESSION_DURATION = 30 * 60 * 1000; // 30 minutes
 

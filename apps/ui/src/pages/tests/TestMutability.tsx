@@ -6,10 +6,12 @@ import {
 } from "@mutafriches/shared-types";
 import { apiService } from "../../services/api/api.service";
 import { Layout } from "../../layouts";
-import { ModeSelector } from "../../components/tests/mutabilityTest/ModeSelector";
-import { TestCasePanel } from "../../components/tests/mutabilityTest/TestCasePanel";
-import { InputDataPanel } from "../../components/tests/mutabilityTest/InputDataPanel";
-import { ResultsPanel } from "../../components/tests/mutabilityTest/ResultPanel";
+import {
+  InputDataPanel,
+  ModeSelector,
+  ResultsPanel,
+  TestCasePanel,
+} from "../../components/tests/mutabilityTest";
 
 type Mode = "test-case" | "manual";
 type InputMode = "locked" | "editable";

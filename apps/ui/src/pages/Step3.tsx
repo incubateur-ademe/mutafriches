@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { PodiumCard } from "../components/step3/PodiumCard";
 import { ReliabilityScore } from "../components/step3/ReliabilityScore";
-import { useFormContext } from "../context/useFormContext";
+import { useFormContext, useIframeCallback, useIsIframeMode, useIframe } from "../context";
 import { apiService } from "../services/api/api.service";
 import { ROUTES } from "../config/routes/routes.config";
 import { MutabilityResultDto } from "@mutafriches/shared-types";
@@ -13,16 +13,57 @@ import { PartnerCard } from "../components/step3/PartnerCard";
 import { buildMutabilityInput } from "../utils/mappers/mutability.mapper";
 import { SimpleIframeLayout } from "../layouts";
 import { SimpleHeader, Stepper } from "../components/layout";
+import { createIframeCommunicator } from "../utils/iframe/iframeCommunication";
 
 export const Step3: React.FC = () => {
   const navigate = useNavigate();
   const { state, setMutabilityResult, setCurrentStep, canAccessStep, resetForm } = useFormContext();
 
+  // Hooks iframe
+  const isIframeMode = useIsIframeMode();
+  const { hasCallback, callbackUrl, callbackLabel } = useIframeCallback();
+  const { parentOrigin, integrator } = useIframe();
+
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [mutabilityData, setMutabilityData] = useState<MutabilityResultDto | null>(null);
 
-  // Fonction pour calculer la mutabilité (dans un useCallback pour éviter les boucles)
+  // Un seul ref pour tracker si on a déjà initialisé
+  const hasInitializedRef = React.useRef(false);
+
+  // Créer le communicator une seule fois
+  const iframeCommunicator = React.useMemo(() => {
+    if (isIframeMode && parentOrigin) {
+      return createIframeCommunicator(parentOrigin);
+    }
+    return null;
+  }, [isIframeMode, parentOrigin]);
+
+  // Fonction pour envoyer les messages iframe
+  const sendIframeMessages = useCallback(
+    (results: MutabilityResultDto) => {
+      if (!isIframeMode || !iframeCommunicator) return;
+
+      const formData = {
+        enrichmentData: state.enrichmentData,
+        manualData: state.manualData,
+        identifiantParcelle: state.identifiantParcelle,
+        uiData: state.uiData,
+      };
+
+      iframeCommunicator.sendCompleted(results, formData);
+    },
+    [
+      isIframeMode,
+      iframeCommunicator,
+      state.enrichmentData,
+      state.manualData,
+      state.identifiantParcelle,
+      state.uiData,
+    ],
+  );
+
+  // Fonction pour calculer la mutabilité
   const calculateMutability = useCallback(async () => {
     if (!state.enrichmentData || !state.manualData) {
       setError("Données manquantes pour le calcul");
@@ -35,35 +76,64 @@ export const Step3: React.FC = () => {
     try {
       const mutabilityInput = buildMutabilityInput(state.enrichmentData, state.manualData);
       const result = await apiService.calculerMutabilite(mutabilityInput);
-      setMutabilityResult(result); // Mettre à jour le contexte global
-      setMutabilityData(result); // Mettre à jour l'état local
+      setMutabilityResult(result);
+      setMutabilityData(result);
+      sendIframeMessages(result);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erreur lors du calcul de mutabilité");
+      const errorMessage =
+        err instanceof Error ? err.message : "Erreur lors du calcul de mutabilité";
+      setError(errorMessage);
+
+      if (isIframeMode && iframeCommunicator) {
+        iframeCommunicator.sendError(errorMessage, "MUTABILITY_CALCULATION_ERROR");
+      }
     } finally {
       setIsLoading(false);
     }
-  }, [state.enrichmentData, state.manualData, setMutabilityResult]);
+  }, [
+    state.enrichmentData,
+    state.manualData,
+    setMutabilityResult,
+    sendIframeMessages,
+    isIframeMode,
+    iframeCommunicator,
+  ]);
 
-  // Vérifier l'accès et calculer la mutabilité au montage
+  // useEffect principal pour l'initialisation
   useEffect(() => {
+    // Protection contre les réexécutions
+    if (hasInitializedRef.current) return;
+
     if (!canAccessStep(3)) {
       navigate(ROUTES.STEP2);
       return;
     }
 
+    hasInitializedRef.current = true;
     setCurrentStep(3);
 
-    // Si on n'a pas encore les résultats, les calculer
-    if (!state.mutabilityResult) {
-      calculateMutability();
-    } else {
-      setMutabilityData(state.mutabilityResult);
+    // Messages iframe au montage
+    if (isIframeMode && iframeCommunicator) {
+      if (integrator) {
+        iframeCommunicator.sendReady(integrator);
+      }
+      iframeCommunicator.sendStepChanged(3, 3);
     }
-  }, [canAccessStep, navigate, setCurrentStep, state.mutabilityResult, calculateMutability]);
+
+    // Gestion des données
+    if (state.mutabilityResult) {
+      // On a déjà les résultats
+      setMutabilityData(state.mutabilityResult);
+      sendIframeMessages(state.mutabilityResult);
+    } else {
+      // On doit calculer
+      calculateMutability();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Vide volontairement - on utilise hasInitializedRef pour la protection
 
   // Handler pour exporter les résultats
   const handleExport = () => {
-    // TODO: Implémenter l'export PDF/Excel
     alert("Fonctionnalité d'export à venir ! Les résultats seront exportés en PDF.");
   };
 
@@ -82,6 +152,13 @@ export const Step3: React.FC = () => {
   // Handler pour modifier les données
   const handleModifyData = () => {
     navigate(ROUTES.STEP2);
+  };
+
+  // Handler pour le bouton callback
+  const handleCallback = () => {
+    if (callbackUrl) {
+      window.open(callbackUrl, "_blank", "noopener,noreferrer");
+    }
   };
 
   // Si pas d'accès, ne rien afficher
@@ -128,7 +205,7 @@ export const Step3: React.FC = () => {
                 marginBottom: "1rem",
               }}
             >
-              <h4 className="fr-mb-0 fr-mt-4w">🏆 Podium des usages recommandés</h4>
+              <h4 className="fr-mb-0 fr-mt-4w">Podium des usages recommandés</h4>
               <button
                 className="fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-download-line fr-btn--sm"
                 onClick={handleExport}
@@ -235,10 +312,24 @@ export const Step3: React.FC = () => {
             Modifier les données
           </button>
 
-          <button className="fr-btn fr-ml-4w" onClick={handleNewAnalysis} disabled={isLoading}>
-            Nouvelle analyse
-            <span className="fr-icon-add-line fr-icon--sm fr-ml-1v" aria-hidden="true"></span>
-          </button>
+          {/* Bouton Nouvelle analyse - uniquement si pas de callback */}
+          {!hasCallback && (
+            <button className="fr-btn fr-ml-4w" onClick={handleNewAnalysis} disabled={isLoading}>
+              Nouvelle analyse
+              <span className="fr-icon-add-line fr-icon--sm fr-ml-1v" aria-hidden="true"></span>
+            </button>
+          )}
+
+          {/* Bouton callback en mode iframe */}
+          {isIframeMode && hasCallback && callbackLabel && (
+            <button
+              className="fr-btn fr-ml-4w fr-btn--icon-right fr-icon-external-link-line"
+              onClick={handleCallback}
+              disabled={isLoading}
+            >
+              {callbackLabel}
+            </button>
+          )}
         </div>
       </div>
     </SimpleIframeLayout>

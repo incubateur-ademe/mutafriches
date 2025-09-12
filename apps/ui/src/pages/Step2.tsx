@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { SimpleIframeLayout } from "../layouts/SimpleIframeLayout";
 import { ManualDataForm } from "../components/step2/ManualDataForm";
-import { useFormContext } from "../context/useFormContext";
+import { useFormContext } from "../context";
 import { ManualFormValues } from "../config/form";
 import { ROUTES } from "../config/routes/routes.config";
 import { SimpleHeader, Stepper } from "../components/layout";

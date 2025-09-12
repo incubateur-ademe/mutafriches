@@ -4,6 +4,20 @@ import { Link } from "react-router-dom";
 export function Tests() {
   const testPages = [
     {
+      id: "test-iframe",
+      title: "Test IFrame",
+      description: "Tester l'intégration en IFrame et la communication entre l'iframe et le parent",
+      href: "/test/iframe",
+      image: "/illustrations/undraw_personal-site_z6pl.svg",
+    },
+    {
+      id: "test-algorithme",
+      title: "Test Algorithme",
+      description: "Tester l'algorithme de calcul de mutabilité et les indices de fiabilité",
+      href: "/test/algorithme",
+      image: "/illustrations/undraw_file-search_cbur.svg",
+    },
+    {
       id: "test-dsfr",
       title: "Test DSFR",
       description: "Vérifier que le Design System de l'État est bien chargé et fonctionnel",
@@ -16,13 +30,6 @@ export function Tests() {
       description: "Tester l'API d'enrichissement des parcelles et la récupération des données",
       href: "/test/enrichissement-parcelle",
       image: "/illustrations/undraw_map-dark_g9xq.svg",
-    },
-    {
-      id: "test-algorithme",
-      title: "Test Algorithme",
-      description: "Tester l'algorithme de calcul de mutabilité et les indices de fiabilité",
-      href: "/test/algorithme",
-      image: "/illustrations/undraw_file-search_cbur.svg",
     },
   ];
 
@@ -64,7 +71,7 @@ export function Tests() {
 
             <div className="fr-grid-row fr-grid-row--gutters fr-mb-12v">
               {testPages.map((test) => (
-                <div key={test.id} className="fr-col-12 fr-col-sm-6 fr-col-lg-4">
+                <div key={test.id} className="fr-col-12 fr-col-sm-6 fr-col-lg-3">
                   <div className="fr-card fr-enlarge-link">
                     <div className="fr-card__body">
                       <div className="fr-card__content">
@@ -77,9 +84,9 @@ export function Tests() {
                     <div className="fr-card__header">
                       <div className="fr-card__img">
                         <img
-                          alt=""
+                          alt="Test illustration"
                           src={test.image}
-                          className="fr-responsive-img "
+                          className="fr-responsive-img"
                           onError={(e) => {
                             // Image de fallback si l'image n'existe pas
                             const target = e.target as HTMLImageElement;
