@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="fr" data-fr-theme="light">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Intégration Mutafriches - Exemple DSFR</title>
+
+  <!-- DSFR CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@gouvfr/dsfr@1.14.1/dist/dsfr.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@gouvfr/dsfr@1.14.1/dist/utility/icons/icons.min.css">
+
+  <style>
+    /* Styles minimaux pour la console uniquement */
+    .console-messages {
+      background: #f6f6f6;
+      border: 1px solid var(--border-default-grey);
+      border-radius: 0.25rem;
+      padding: 1rem;
+      font-family: monospace;
+      font-size: 0.875rem;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .console-message {
+      margin: 0.5rem 0;
+      padding: 0.5rem;
+      background: white;
+      border-left: 3px solid var(--border-plain-blue-france);
+      border-radius: 0.25rem;
+    }
+
+    .console-message--ready {
+      border-left-color: var(--info-425-625);
+    }
+
+    .console-message--completed {
+      border-left-color: var(--success-425-625);
+    }
+
+    .console-message--error {
+      border-left-color: var(--error-425-625);
+    }
+
+    .console-message pre {
+      margin: 0.5rem 0;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Header DSFR -->
+  <header role="banner" class="fr-header">
+    <div class="fr-header__body">
+      <div class="fr-container">
+        <div class="fr-header__body-row">
+          <div class="fr-header__brand fr-enlarge-link">
+            <div class="fr-header__brand-top">
+              <div class="fr-header__logo">
+                <p class="fr-logo">
+                  République<br>Française
+                </p>
+              </div>
+            </div>
+            <div class="fr-header__service">
+              <a href="/" title="Accueil - Intégration Mutafriches">
+                <p class="fr-header__service-title">
+                  Intégration Mutafriches
+                </p>
+              </a>
+              <p class="fr-header__service-tagline">Exemple d'intégration avec le DSFR</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Contenu principal -->
+  <main id="main" role="main">
+    <div class="fr-container fr-py-6w">
+      <h1>Intégration du formulaire Mutafriches</h1>
+
+      <!-- Notice d'information -->
+      <div class="fr-notice fr-notice--info fr-mb-4w">
+        <div class="fr-notice__body">
+          <p class="fr-notice__title">
+            Cette page démontre l'intégration du formulaire Mutafriches avec le Système de Design de l'État (DSFR).
+          </p>
+        </div>
+      </div>
+
+      <!-- Configuration -->
+      <div class="fr-card fr-mb-4w">
+        <div class="fr-card__body">
+          <h3 class="fr-card__title">Configuration de l'intégration</h3>
+          <div class="fr-card__desc">
+            <p class="fr-text--sm">Modifiez ces valeurs dans le code JavaScript pour personnaliser l'intégration :</p>
+            <ul class="fr-badge-group fr-mt-2w">
+              <li>
+                <p class="fr-badge fr-badge--blue-ecume">
+                  Intégrateur : <strong id="config-integrator">test</strong>
+                </p>
+              </li>
+              <li>
+                <p class="fr-badge fr-badge--blue-ecume">
+                  URL callback : <strong id="config-callback">http://localhost:3000</strong>
+                </p>
+              </li>
+              <li>
+                <p class="fr-badge fr-badge--blue-ecume">
+                  Label bouton : <strong id="config-label">Retour</strong>
+                </p>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Formulaire Mutafriches -->
+      <div class="fr-card fr-mb-4w">
+        <div class="fr-card__body">
+          <h3 class="fr-card__title">
+            <span class="fr-icon-edit-line fr-icon--sm fr-mr-1v" aria-hidden="true"></span>
+            Formulaire d'analyse
+          </h3>
+          <div class="fr-card__desc">
+            <div class="fr-callout fr-callout--blue-ecume">
+              <iframe id="mutafriches-iframe" title="Formulaire Mutafriches" src=""
+                style="width: 100%; height: 900px; border: 1px solid var(--border-default-grey); border-radius: 0.25rem;"></iframe>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Console des messages -->
+      <div class="fr-card fr-mb-4w">
+        <div class="fr-card__body">
+          <h3 class="fr-card__title">
+            <span class="fr-icon-terminal-box-line fr-icon--sm fr-mr-1v" aria-hidden="true"></span>
+            Console des messages
+          </h3>
+          <div class="fr-card__desc">
+            <div class="console-messages" id="message-log">
+              <p class="fr-text--sm">En attente de messages...</p>
+            </div>
+          </div>
+          <div class="fr-card__end fr-mt-2w">
+            <button class="fr-btn fr-btn--secondary fr-btn--sm" onclick="clearMessages()">
+              Effacer la console
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Guide d'utilisation -->
+      <div class="fr-accordions-group">
+        <section class="fr-accordion">
+          <h3 class="fr-accordion__title">
+            <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-guide">
+              Guide d'utilisation
+            </button>
+          </h3>
+          <div class="fr-collapse" id="accordion-guide">
+            <div class="fr-grid-row fr-grid-row--gutters fr-p-3w">
+              <div class="fr-col-12 fr-col-md-6">
+                <h4>Comment intégrer ?</h4>
+                <ol>
+                  <li>Téléchargez ce fichier HTML</li>
+                  <li>Modifiez les 3 variables de configuration</li>
+                  <li>Hébergez le fichier sur votre serveur</li>
+                  <li>C'est prêt !</li>
+                </ol>
+              </div>
+              <div class="fr-col-12 fr-col-md-6">
+                <h4>Messages disponibles</h4>
+                <ul>
+                  <li><strong>ready</strong> : Iframe chargée</li>
+                  <li><strong>step_changed</strong> : Changement d'étape</li>
+                  <li><strong>completed</strong> : Formulaire terminé</li>
+                  <li><strong>error</strong> : Erreur survenue</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Alerte de succès (cachée par défaut) -->
+      <div id="success-alert" class="fr-alert fr-alert--success fr-mt-4w" style="display: none;">
+        <h3 class="fr-alert__title">Analyse terminée avec succès</h3>
+        <p>Les résultats ont été reçus. Consultez la console pour voir les détails.</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer DSFR -->
+  <footer class="fr-footer" role="contentinfo">
+    <div class="fr-container">
+      <div class="fr-footer__body">
+        <div class="fr-footer__brand fr-enlarge-link">
+          <p class="fr-logo">
+            République<br>Française
+          </p>
+        </div>
+        <div class="fr-footer__content">
+          <p class="fr-footer__content-desc">
+            Exemple d'intégration du formulaire Mutafriches avec le DSFR.
+          </p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts DSFR -->
+  <script src="https://cdn.jsdelivr.net/npm/@gouvfr/dsfr@1.14.1/dist/dsfr.min.js"></script>
+
+  <!-- Script d'intégration Mutafriches -->
+  <script>
+    // ========================================
+    // CONFIGURATION - MODIFIEZ CES 3 LIGNES
+    // ========================================
+    const INTEGRATOR = 'test';                                         // Votre identifiant d'intégrateur
+    const CALLBACK_URL = 'https://localhost';          // Votre URL de retour
+    const CALLBACK_LABEL = 'Aller sur mon site';                           // Texte du bouton de retour
+
+    // URL de base de Mutafriches
+    const MUTAFRICHES_BASE_URL = 'https://mutafriches.beta.gouv.fr';
+
+    // ========================================
+    // INITIALISATION
+    // ========================================
+
+    const messageLog = [];
+
+    // Construire l'URL avec les paramètres
+    function buildIframeUrl() {
+      const params = new URLSearchParams({
+        integrator: INTEGRATOR,
+        callbackUrl: CALLBACK_URL,
+        callbackLabel: CALLBACK_LABEL
+      });
+      return `${MUTAFRICHES_BASE_URL}?${params.toString()}`;
+    }
+
+    // Initialisation au chargement
+    window.addEventListener('DOMContentLoaded', () => {
+      // Afficher la configuration
+      document.getElementById('config-integrator').textContent = INTEGRATOR;
+      document.getElementById('config-callback').textContent = CALLBACK_URL;
+      document.getElementById('config-label').textContent = CALLBACK_LABEL;
+
+      // Charger l'iframe
+      const iframe = document.getElementById('mutafriches-iframe');
+      iframe.src = buildIframeUrl();
+    });
+
+    // ========================================
+    // GESTION DES MESSAGES
+    // ========================================
+
+    // Écouter les messages
+    window.addEventListener('message', (event) => {
+
+      console.log('Message reçu de:', event.origin);
+      console.log('Type de message:', event.data?.type);
+      console.log('Données complètes:', event.data);
+
+
+      // Vérifier l'origine - Accepter localhost:5173 pour le dev
+      const allowedOrigins = [
+        'http://localhost:5173',
+        'http://localhost:3000',
+        'https://mutafriches.beta.gouv.fr',
+        'https://mutafriches.incubateur.ademe.dev'
+      ];
+
+      if (!allowedOrigins.includes(event.origin)) {
+        console.warn('Message d\'origine non autorisée:', event.origin);
+        return;
+      }
+
+      // Traiter les messages Mutafriches
+      if (event.data && event.data.type && event.data.type.startsWith('mutafriches:')) {
+        console.log('Message reçu:', event.data); // Debug
+        handleMutafrichesMessage(event.data);
+      }
+    });
+
+    // Traiter un message
+    function handleMutafrichesMessage(message) {
+      const timestamp = new Date().toLocaleTimeString('fr-FR');
+
+      console.log('Message Mutafriches:', message);
+
+      // Ajouter au log
+      messageLog.push({
+        time: timestamp,
+        type: message.type,
+        data: message.data
+      });
+
+      updateMessageDisplay();
+
+      // Actions spécifiques
+      if (message.type === 'mutafriches:completed') {
+        document.getElementById('success-alert').style.display = 'block';
+        handleFormCompletion(message.data);
+      }
+    }
+
+    // Mettre à jour l'affichage
+    function updateMessageDisplay() {
+      const logElement = document.getElementById('message-log');
+
+      if (messageLog.length === 0) {
+        logElement.innerHTML = '<p class="fr-text--sm">En attente de messages...</p>';
+        return;
+      }
+
+      const html = messageLog.map(msg => {
+        const typeClass = 'console-message--' + msg.type.replace('mutafriches:', '');
+        const dataStr = JSON.stringify(msg.data, null, 2);
+        return `
+          <div class="console-message ${typeClass}">
+            <strong>[${msg.time}] ${msg.type}</strong>
+            <pre>${dataStr}</pre>
+          </div>
+        `;
+      }).join('');
+
+      logElement.innerHTML = html;
+      logElement.scrollTop = logElement.scrollHeight;
+    }
+
+    // Effacer les messages
+    function clearMessages() {
+      messageLog.length = 0;
+      updateMessageDisplay();
+      document.getElementById('success-alert').style.display = 'none';
+    }
+
+    // Traiter les résultats
+    function handleFormCompletion(data) {
+      console.log('Résultats complets:', data);
+
+      // Exemple d'envoi à votre backend
+      // fetch('/api/save-results', {
+      //     method: 'POST',
+      //     headers: { 'Content-Type': 'application/json' },
+      //     body: JSON.stringify(data)
+      // });
+    }
+  </script>
+</body>
+
+</html>
