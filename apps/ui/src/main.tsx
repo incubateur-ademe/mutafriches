@@ -12,7 +12,6 @@ import "@gouvfr/dsfr/dist/dsfr.module.min.js";
 
 // Import styles custom
 import "../styles/index.css";
-import { DsfrProvider } from "./providers/dsfr/DsfrProvider";
 
 const rootElement = document.getElementById("root");
 
@@ -20,9 +19,7 @@ if (rootElement) {
   ReactDOM.createRoot(rootElement).render(
     <React.StrictMode>
       <BrowserRouter>
-        <DsfrProvider>
-          <App />
-        </DsfrProvider>
+        <App />
       </BrowserRouter>
     </React.StrictMode>,
   );

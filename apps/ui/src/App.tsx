@@ -1,5 +1,4 @@
 import { Routes, Route } from "react-router-dom";
-import { DsfrProvider } from "./providers/dsfr/DsfrProvider";
 import { Step1 } from "./pages/Step1";
 import { FormProvider } from "./context/FormProvider";
 import { Step2 } from "./pages/Step2";
@@ -29,22 +28,20 @@ function App() {
   }, []);
 
   return (
-    <DsfrProvider>
-      <FormProvider>
-        <Routes>
-          <Route path={ROUTES.HOME} element={<Step1 />} />
-          <Route path={ROUTES.STEP1} element={<Step1 />} />
-          <Route path={ROUTES.STEP2} element={<Step2 />} />
-          <Route path={ROUTES.STEP3} element={<Step3 />} />
+    <FormProvider>
+      <Routes>
+        <Route path={ROUTES.HOME} element={<Step1 />} />
+        <Route path={ROUTES.STEP1} element={<Step1 />} />
+        <Route path={ROUTES.STEP2} element={<Step2 />} />
+        <Route path={ROUTES.STEP3} element={<Step3 />} />
 
-          {/* Routes pour les tests */}
-          <Route path={ROUTES.TESTS} element={<Tests />} />
-          <Route path={ROUTES.TEST_DSFR} element={<TestDsfr />} />
-          <Route path={ROUTES.TEST_ENRICHISSEMENT} element={<TestEnrichment />} />
-          <Route path={ROUTES.TEST_MUTABILITE} element={<TestMutability />} />
-        </Routes>
-      </FormProvider>
-    </DsfrProvider>
+        {/* Routes pour les tests */}
+        <Route path={ROUTES.TESTS} element={<Tests />} />
+        <Route path={ROUTES.TEST_DSFR} element={<TestDsfr />} />
+        <Route path={ROUTES.TEST_ENRICHISSEMENT} element={<TestEnrichment />} />
+        <Route path={ROUTES.TEST_MUTABILITE} element={<TestMutability />} />
+      </Routes>
+    </FormProvider>
   );
 }
 
