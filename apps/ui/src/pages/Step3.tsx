@@ -34,7 +34,9 @@ export const Step3: React.FC = () => {
   // Créer le communicator une seule fois
   const iframeCommunicator = React.useMemo(() => {
     if (isIframeMode && parentOrigin) {
-      return createIframeCommunicator(parentOrigin);
+      // Pour demo, permettre toutes les origines
+      const target = integrator === "demo" ? "*" : parentOrigin;
+      return createIframeCommunicator(target);
     }
     return null;
   }, [isIframeMode, parentOrigin]);
