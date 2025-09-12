@@ -8,10 +8,9 @@
     "node": "22.x"
   },
   "scripts": {
-    "build": "pnpm run build:nest && pnpm run copy:ui",
+    "build": "pnpm run build:nest && pnpm run build:ui",
     "build:nest": "nest build",
     "build:ui": "cd ../ui && pnpm run build",
-    "copy:ui": "mkdir -p dist-ui && cp -r ../ui/dist/* ./dist-ui/ 2>/dev/null || echo 'UI not built yet'",
     "start:prod": "NODE_ENV=production node dist/src/main",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",

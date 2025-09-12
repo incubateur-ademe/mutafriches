@@ -9,7 +9,7 @@
   },
   "scripts": {
     "start": "node apps/api/dist/src/main",
-    "scalingo-postbuild": "pnpm install --frozen-lockfile && pnpm --filter shared-types build && pnpm --filter ui build && pnpm --filter api build",
+    "scalingo-postbuild": "pnpm install --frozen-lockfile && pnpm --filter shared-types build && pnpm --filter api build",
     "build": "pnpm --filter shared-types build && pnpm --filter api build",
     "build:shared": "pnpm --filter shared-types build",
     "start:dev": "concurrently --kill-others --names \"API,UI\" --prefix-colors \"cyan,magenta\" \"pnpm:dev:api\" \"pnpm:dev:ui\"",
