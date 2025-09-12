@@ -27,6 +27,27 @@ export interface MutabilityInputDto extends ParcelleComplete {
 }
 
 /**
+ * Détail d'un critère pour le mode détaillé
+ */
+export interface DetailCritereDto {
+  critere: string;
+  valeur: string | number | boolean;
+  scoreBrut: number;
+  poids: number;
+  scorePondere: number;
+}
+
+/**
+ * Détails du calcul pour un usage
+ */
+export interface DetailCalculUsageDto {
+  detailsAvantages: DetailCritereDto[];
+  detailsContraintes: DetailCritereDto[];
+  totalAvantages: number;
+  totalContraintes: number;
+}
+
+/**
  * Résultat d'un usage spécifique
  */
 export interface UsageResultDto {
@@ -35,8 +56,10 @@ export interface UsageResultDto {
   indiceMutabilite: number;
   explication?: string;
   potentiel?: string;
+  avantages?: number;
+  contraintes?: number;
+  detailsCalcul?: DetailCalculUsageDto;
 }
-
 /**
  * Résultat complet du calcul de mutabilité
  */
@@ -45,6 +68,8 @@ export interface MutabilityResultDto {
     note: number;
     text: string;
     description: string;
+    criteresRenseignes?: number;
+    criteresTotal?: number;
   };
   resultats: UsageResultDto[];
 }

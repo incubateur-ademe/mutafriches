@@ -64,7 +64,7 @@ export default function TestMutability() {
     setMutabilityResult(null);
 
     try {
-      const result = await apiService.calculerMutabilite(formData);
+      const result = await apiService.calculerMutabilite(formData, { modeDetaille: true }); // Toujours en mode détaillé pour les tests
       setMutabilityResult(result);
     } catch (error) {
       console.error("Erreur lors du calcul:", error);
@@ -76,7 +76,7 @@ export default function TestMutability() {
 
   return (
     <Layout>
-      <div className="fr-container-fluid fr-py-4w">
+      <div className="fr-container-fluid fr-background-alt--grey fr-py-4w">
         {/* En-tête */}
         <div className="fr-container">
           <div className="fr-grid-row">
@@ -100,7 +100,7 @@ export default function TestMutability() {
           <div className="fr-grid-row fr-grid-row--gutters">
             {/* Colonne gauche : Sélection et données d'entrée */}
             <div className="fr-col-12 fr-col-lg-6">
-              <div className="fr-background-alt--grey fr-p-3w" style={{ minHeight: "600px" }}>
+              <div className="fr-p-3w" style={{ minHeight: "600px" }}>
                 {/* Panneau de sélection du cas de test (uniquement en mode test-case) */}
                 {mode === "test-case" && (
                   <div className="fr-mb-3w">
@@ -127,7 +127,7 @@ export default function TestMutability() {
 
             {/* Colonne droite : Résultats */}
             <div className="fr-col-12 fr-col-lg-6">
-              <div className="fr-background-alt--grey fr-p-3w" style={{ minHeight: "600px" }}>
+              <div className="fr-p-3w" style={{ minHeight: "600px" }}>
                 <ResultsPanel
                   result={mutabilityResult}
                   error={error}

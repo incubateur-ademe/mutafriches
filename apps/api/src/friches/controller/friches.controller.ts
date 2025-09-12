@@ -1,6 +1,6 @@
 // TODO remove console logs or replace by proper logger
 /* eslint-disable no-console */
-import { Controller, Post, Body } from "@nestjs/common";
+import { Controller, Post, Body, Query } from "@nestjs/common";
 import {
   ApiTags,
   ApiOperation,
@@ -184,8 +184,16 @@ export class FrichesController {
   @ApiInternalServerErrorResponse({
     description: "Erreur lors du calcul des indices de mutabilité",
   })
-  calculateMutability(@Body() input: MutabilityInputDto): MutabilityResultDto {
-    console.log(`API: Calcul mutabilité ${input.identifiantParcelle}`);
-    return this.mutabilityCalculationService.calculateMutability(input);
+  calculateMutability(
+    @Body() input: MutabilityInputDto,
+    @Query("modeDetaille") modeDetaille?: boolean,
+  ): MutabilityResultDto {
+    console.log(
+      `API: Calcul mutabilité ${input.identifiantParcelle} - Mode détaillé: ${modeDetaille || false}`,
+    );
+
+    return this.mutabilityCalculationService.calculateMutability(input, {
+      modeDetaille: modeDetaille || false,
+    });
   }
 }

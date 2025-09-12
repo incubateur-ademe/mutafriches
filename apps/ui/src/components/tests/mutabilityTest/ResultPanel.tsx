@@ -1,4 +1,5 @@
 import { MutabilityResultDto } from "@mutafriches/shared-types";
+import { useState } from "react";
 
 interface ResultsPanelProps {
   result: MutabilityResultDto | null;
@@ -8,6 +9,12 @@ interface ResultsPanelProps {
 }
 
 export function ResultsPanel({ result, error, isCalculating, expectedResults }: ResultsPanelProps) {
+  const [expandedUsage, setExpandedUsage] = useState<string | null>(null);
+
+  const toggleUsageDetails = (usage: string) => {
+    setExpandedUsage(expandedUsage === usage ? null : usage);
+  };
+
   return (
     <div className="fr-card fr-py-4w">
       <div className="fr-card__body">
@@ -46,6 +53,9 @@ export function ResultsPanel({ result, error, isCalculating, expectedResults }: 
               {expectedResults && (
                 <span className="fr-badge fr-badge--info fr-ml-1w">Avec comparaison</span>
               )}
+              {result.resultats?.[0]?.detailsCalcul && (
+                <span className="fr-badge fr-badge--new fr-ml-1w">Mode détaillé activé</span>
+              )}
             </div>
 
             {/* Indice de fiabilité global */}
@@ -53,8 +63,15 @@ export function ResultsPanel({ result, error, isCalculating, expectedResults }: 
               <div className="fr-callout fr-mb-3w">
                 <h3 className="fr-callout__title">Indice de fiabilité</h3>
                 <p className="fr-callout__text">
-                  <strong>{result.fiabilite.note}/10</strong>
+                  <strong>{result.fiabilite.note}/10</strong> - {result.fiabilite.text}
                 </p>
+                <p className="fr-text--sm">{result.fiabilite.description}</p>
+                {result.fiabilite.criteresRenseignes !== undefined && (
+                  <p className="fr-text--sm fr-mt-1w">
+                    Critères renseignés : {result.fiabilite.criteresRenseignes}/
+                    {result.fiabilite.criteresTotal}
+                  </p>
+                )}
               </div>
             )}
 
@@ -67,8 +84,11 @@ export function ResultsPanel({ result, error, isCalculating, expectedResults }: 
                     <th scope="col">Rang</th>
                     <th scope="col">Usage</th>
                     <th scope="col">Indice</th>
+                    <th scope="col">Avantages</th>
+                    <th scope="col">Contraintes</th>
                     {expectedResults && <th scope="col">Attendu</th>}
                     {expectedResults && <th scope="col">Écart</th>}
+                    {result.resultats?.[0]?.detailsCalcul && <th scope="col">Détails</th>}
                   </tr>
                 </thead>
                 <tbody>
@@ -81,31 +101,191 @@ export function ResultsPanel({ result, error, isCalculating, expectedResults }: 
                       const ecart = expected
                         ? usage.indiceMutabilite - expected.indiceMutabilite
                         : null;
+                      const isExpanded = expandedUsage === usage.usage;
 
                       return (
-                        <tr key={usage.usage}>
-                          <td>
-                            <span className="fr-badge fr-badge--sm">{usage.rang}</span>
-                          </td>
-                          <td>{usage.usage}</td>
-                          <td>
-                            <strong>{usage.indiceMutabilite}%</strong>
-                          </td>
-                          {expectedResults && <td>{expected?.indiceMutabilite || "-"}%</td>}
-                          {expectedResults && (
-                            <td
-                              className={
-                                ecart !== null && Math.abs(ecart) > 5
-                                  ? "fr-text--error"
-                                  : ecart !== null && Math.abs(ecart) > 2
-                                    ? "fr-text--warning"
-                                    : ""
-                              }
-                            >
-                              {ecart !== null ? `${ecart > 0 ? "+" : ""}${ecart.toFixed(1)}%` : "-"}
+                        <>
+                          <tr key={usage.usage}>
+                            <td>
+                              <span className="fr-badge fr-badge--sm">{usage.rang}</span>
                             </td>
+                            <td>{usage.usage}</td>
+                            <td>
+                              <strong>{usage.indiceMutabilite}%</strong>
+                            </td>
+                            <td className="fr-text--success">+{usage.avantages}</td>
+                            <td className="fr-text--error">-{usage.contraintes}</td>
+                            {expectedResults && <td>{expected?.indiceMutabilite || "-"}%</td>}
+                            {expectedResults && (
+                              <td
+                                className={
+                                  ecart !== null && Math.abs(ecart) > 5
+                                    ? "fr-text--error"
+                                    : ecart !== null && Math.abs(ecart) > 2
+                                      ? "fr-text--warning"
+                                      : ""
+                                }
+                              >
+                                {ecart !== null
+                                  ? `${ecart > 0 ? "+" : ""}${ecart.toFixed(1)}%`
+                                  : "-"}
+                              </td>
+                            )}
+                            {usage.detailsCalcul && (
+                              <td>
+                                <button
+                                  className="fr-btn fr-btn--tertiary-no-outline fr-btn--sm fr-btn--icon-left fr-icon-arrow-down-s-line"
+                                  onClick={() => toggleUsageDetails(usage.usage)}
+                                  aria-expanded={isExpanded}
+                                  aria-controls={`details-${usage.usage}`}
+                                >
+                                  {isExpanded ? "Masquer" : "Voir"}
+                                </button>
+                              </td>
+                            )}
+                          </tr>
+
+                          {/* Ligne de détails extensible */}
+                          {usage.detailsCalcul && isExpanded && (
+                            <tr id={`details-${usage.usage}`}>
+                              <td colSpan={expectedResults ? 9 : 7}>
+                                <div className="fr-p-2w fr-background-alt--grey">
+                                  <h4 className="fr-h6 fr-mb-2w">
+                                    Détails du calcul pour {usage.usage}
+                                  </h4>
+
+                                  <div className="fr-grid-row fr-grid-row--gutters">
+                                    {/* Colonne Avantages */}
+                                    <div className="fr-col-12 fr-col-md-6">
+                                      <div className="fr-card fr-card--no-border">
+                                        <div className="fr-card__body">
+                                          <h5 className="fr-text--md fr-text--bold fr-text--success fr-mb-2w">
+                                            Avantages (Total: {usage.detailsCalcul.totalAvantages})
+                                          </h5>
+                                          {usage.detailsCalcul.detailsAvantages.length > 0 ? (
+                                            <div className="fr-table fr-table--sm">
+                                              <table>
+                                                <thead>
+                                                  <tr>
+                                                    <th>Critère</th>
+                                                    <th>Valeur</th>
+                                                    <th>Score</th>
+                                                    <th>Poids</th>
+                                                    <th>Total</th>
+                                                  </tr>
+                                                </thead>
+                                                <tbody>
+                                                  {usage.detailsCalcul.detailsAvantages.map(
+                                                    (detail, idx) => (
+                                                      <tr key={idx}>
+                                                        <td className="fr-text--sm">
+                                                          {detail.critere}
+                                                        </td>
+                                                        <td className="fr-text--sm">
+                                                          {typeof detail.valeur === "boolean"
+                                                            ? detail.valeur
+                                                              ? "Oui"
+                                                              : "Non"
+                                                            : String(detail.valeur)}
+                                                        </td>
+                                                        <td className="fr-text--sm">
+                                                          {detail.scoreBrut}
+                                                        </td>
+                                                        <td className="fr-text--sm">
+                                                          ×{detail.poids}
+                                                        </td>
+                                                        <td className="fr-text--sm fr-text--bold">
+                                                          {detail.scorePondere}
+                                                        </td>
+                                                      </tr>
+                                                    ),
+                                                  )}
+                                                </tbody>
+                                              </table>
+                                            </div>
+                                          ) : (
+                                            <p className="fr-text--sm">Aucun avantage identifié</p>
+                                          )}
+                                        </div>
+                                      </div>
+                                    </div>
+
+                                    {/* Colonne Contraintes */}
+                                    <div className="fr-col-12 fr-col-md-6">
+                                      <div className="fr-card fr-card--no-border">
+                                        <div className="fr-card__body">
+                                          <h5 className="fr-text--md fr-text--bold fr-text--error fr-mb-2w">
+                                            Contraintes (Total:{" "}
+                                            {usage.detailsCalcul.totalContraintes})
+                                          </h5>
+                                          {usage.detailsCalcul.detailsContraintes.length > 0 ? (
+                                            <div className="fr-table fr-table--sm">
+                                              <table>
+                                                <thead>
+                                                  <tr>
+                                                    <th>Critère</th>
+                                                    <th>Valeur</th>
+                                                    <th>Score</th>
+                                                    <th>Poids</th>
+                                                    <th>Total</th>
+                                                  </tr>
+                                                </thead>
+                                                <tbody>
+                                                  {usage.detailsCalcul.detailsContraintes.map(
+                                                    (detail, idx) => (
+                                                      <tr key={idx}>
+                                                        <td className="fr-text--sm">
+                                                          {detail.critere}
+                                                        </td>
+                                                        <td className="fr-text--sm">
+                                                          {typeof detail.valeur === "boolean"
+                                                            ? detail.valeur
+                                                              ? "Oui"
+                                                              : "Non"
+                                                            : String(detail.valeur)}
+                                                        </td>
+                                                        <td className="fr-text--sm">
+                                                          {detail.scoreBrut}
+                                                        </td>
+                                                        <td className="fr-text--sm">
+                                                          ×{detail.poids}
+                                                        </td>
+                                                        <td className="fr-text--sm fr-text--bold">
+                                                          {detail.scorePondere}
+                                                        </td>
+                                                      </tr>
+                                                    ),
+                                                  )}
+                                                </tbody>
+                                              </table>
+                                            </div>
+                                          ) : (
+                                            <p className="fr-text--sm">
+                                              Aucune contrainte identifiée
+                                            </p>
+                                          )}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  {/* Formule de calcul */}
+                                  <div className="fr-alert fr-alert--info fr-mt-2w">
+                                    <p className="fr-text--sm fr-mb-0">
+                                      <strong>Formule :</strong> Indice = Avantages / (Avantages +
+                                      Contraintes) × 100
+                                      <br />
+                                      <strong>Calcul :</strong> {usage.detailsCalcul.totalAvantages}{" "}
+                                      / ({usage.detailsCalcul.totalAvantages} +{" "}
+                                      {usage.detailsCalcul.totalContraintes}) × 100 ={" "}
+                                      {usage.indiceMutabilite}%
+                                    </p>
+                                  </div>
+                                </div>
+                              </td>
+                            </tr>
                           )}
-                        </tr>
+                        </>
                       );
                     })}
                 </tbody>

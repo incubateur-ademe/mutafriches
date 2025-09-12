@@ -42,6 +42,8 @@ export type {
   UiEnrichmentResultDto,
   ManualFormDataDto,
   SaveDataResponseDto,
+  DetailCritereDto,
+  DetailCalculUsageDto,
 } from "./dto.types";
 
 export * from "./test-cases";

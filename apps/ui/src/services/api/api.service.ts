@@ -35,15 +35,23 @@ class ApiService {
 
   /**
    * Calculer la mutabilité d'une parcelle
+   * @param input Les données d'entrée pour le calcul
+   * @param options Options de calcul (mode détaillé, etc.)
    */
-  async calculerMutabilite(input: MutabilityInputDto): Promise<MutabilityResultDto> {
-    const response = await fetch(`${this.baseUrl}${API_CONFIG.endpoints.calculerMutabilite}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+  async calculerMutabilite(
+    input: MutabilityInputDto,
+    options?: { modeDetaille?: boolean },
+  ): Promise<MutabilityResultDto> {
+    const queryParams = options?.modeDetaille ? "?modeDetaille=true" : "";
+
+    const response = await fetch(
+      `${this.baseUrl}${API_CONFIG.endpoints.calculerMutabilite}${queryParams}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(input),
       },
-      body: JSON.stringify(input),
-    });
+    );
 
     if (!response.ok) {
       const error = await response.text();
