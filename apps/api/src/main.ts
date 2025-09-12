@@ -45,7 +45,8 @@ async function bootstrap() {
   // Servir l'UI React en production
   const isProduction = process.env.NODE_ENV === "production";
   if (isProduction) {
-    const uiPath = join(__dirname, "..", "..", "dist-ui");
+    // Chemin vers le dossier dist-ui qui est dans /apps/dist-ui après build - spécifique à Scalingo
+    const uiPath = "/app/apps/dist-ui";
 
     // Servir les fichiers statiques de l'UI React
     app.useStaticAssets(uiPath);
