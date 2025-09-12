@@ -4,29 +4,12 @@ import { FormProvider } from "./context/FormProvider";
 import { Step2 } from "./pages/Step2";
 import { ROUTES } from "./config/routes/routes.config";
 import { Step3 } from "./pages/Step3";
-import { useEffect } from "react";
-import { STORAGE_KEY } from "./context/FormContext.types";
 import { Tests } from "./pages/Tests";
 import { TestDsfr } from "./pages/tests/TestDsfr";
 import TestMutability from "./pages/tests/TestMutability";
 import { TestEnrichment } from "./pages/tests/TestEnrichment";
 
 function App() {
-  // Gestion du reset du formulaire si on arrive sur la home
-  useEffect(() => {
-    const currentPath = window.location.pathname;
-    if (currentPath === "/" || currentPath === ROUTES.HOME) {
-      const hasData = localStorage.getItem(STORAGE_KEY);
-      if (hasData) {
-        const stored = JSON.parse(hasData);
-        if (stored.completedSteps?.length > 0) {
-          // Il y a des données en cours, ne pas reset automatiquement
-          return;
-        }
-      }
-    }
-  }, []);
-
   return (
     <FormProvider>
       <Routes>

@@ -2,6 +2,7 @@ import React, { useState, useEffect, ReactNode, useRef } from "react";
 import { FormContext } from "./FormContext";
 import { FormState, FormContextType, STORAGE_KEY, initialState } from "./FormContext.types";
 import { EnrichmentResultDto, MutabilityResultDto, UiParcelleDto } from "@mutafriches/shared-types";
+import { ROUTES } from "../config/routes/routes.config";
 
 const SESSION_DURATION = 30 * 60 * 1000; // 30 minutes
 
@@ -38,6 +39,21 @@ export const FormProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }),
     );
   }, [state]);
+
+  // Gestion du reset du formulaire si on arrive sur la home
+  useEffect(() => {
+    const currentPath = window.location.pathname;
+    if (currentPath === ROUTES.HOME || currentPath === ROUTES.STEP1) {
+      const hasData = localStorage.getItem(STORAGE_KEY);
+      if (hasData) {
+        const stored = JSON.parse(hasData) as { completedSteps?: number[]; timestamp?: number };
+        if (stored.completedSteps && stored.completedSteps.length > 0) {
+          // Il y a des données en cours, ne pas reset automatiquement
+          return;
+        }
+      }
+    }
+  }, []);
 
   const setEnrichmentData = (
     data: EnrichmentResultDto,
