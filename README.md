@@ -257,6 +257,40 @@ pnpm test:e2e
 
 ## 📚 Documentation
 
+### 🔌 Intégration dans vos applications
+
+Mutafriches peut être intégré facilement dans vos applications existantes via iframe. Deux modes d'intégration sont disponibles :
+
+#### Intégration simple (HTML/JavaScript)
+
+Pour une intégration rapide dans n'importe quel site web :
+
+```html
+<iframe 
+  src="https://mutafriches.beta.gouv.fr?integrator=demo" 
+  width="100%" 
+  height="800">
+</iframe>
+```
+
+#### Intégration avancée (React, Vue, etc.)
+
+Pour une intégration avec communication bidirectionnelle via PostMessage, permettant de récupérer les résultats d'analyse dans votre application.
+
+#### 📖 Documentation complète et exemples
+
+- **[Guide d'intégration](./docs/integration/)** - Vue d'ensemble des méthodes d'intégration
+- **[Exemple HTML/JavaScript](./docs/integration/html/)** - Intégration simple avec vanilla JS
+- **[Exemple React](./docs/integration/react/)** - Composant React avec hook personnalisé
+
+#### Paramètres d'intégration
+
+| Paramètre | Description | Requis |
+|-----------|-------------|---------|
+| `integrator` | Identifiant unique de votre organisation | ✅ |
+| `callbackUrl` | URL de retour après analyse | ❌ |
+| `callbackLabel` | Texte personnalisé du bouton de retour | ❌ |
+
 ### APIs et Sources de données externes
 
 Le projet s'appuie sur plusieurs APIs publiques pour enrichir les données :
