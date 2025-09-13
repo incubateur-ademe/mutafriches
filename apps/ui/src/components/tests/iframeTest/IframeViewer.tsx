@@ -32,10 +32,6 @@ export function IframeViewer({ iframeRef, iframeUrl, showIframe }: IframeViewerP
                 L'iframe est chargée et prête
               </li>
               <li>
-                <span className="fr-badge fr-badge--new fr-badge--sm">step_changed</span>
-                Changement d'étape du formulaire
-              </li>
-              <li>
                 <span className="fr-badge fr-badge--success fr-badge--sm">completed</span>
                 Formulaire terminé avec les résultats
               </li>

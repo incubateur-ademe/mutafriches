@@ -73,20 +73,6 @@ Envoyé quand l'iframe est chargée et prête.
 }
 ```
 
-### Message `step_changed`
-
-Envoyé à chaque changement d'étape du formulaire.
-
-```javascript
-{
-  type: "mutafriches:step_changed",
-  data: {
-    currentStep: 2,
-    totalSteps: 3
-  }
-}
-```
-
 ### Message `completed`
 
 Envoyé quand l'analyse est terminée avec les résultats complets.

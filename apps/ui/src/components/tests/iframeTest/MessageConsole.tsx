@@ -22,8 +22,6 @@ export function MessageConsole({ messages, isListening, onClear }: MessageConsol
         return "success";
       case IframeMessageType.ERROR:
         return "error";
-      case IframeMessageType.STEP_CHANGED:
-        return "new";
       default:
         return "new";
     }

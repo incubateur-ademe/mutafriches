@@ -5,7 +5,6 @@ export enum IframeMessageType {
   READY = "mutafriches:ready",
   COMPLETED = "mutafriches:completed",
   ERROR = "mutafriches:error",
-  STEP_CHANGED = "mutafriches:step_changed",
 }
 
 export interface IframeMessage {
@@ -35,14 +34,6 @@ export interface ErrorMessage extends IframeMessage {
   data: {
     error: string;
     code?: string;
-  };
-}
-
-export interface StepChangedMessage extends IframeMessage {
-  type: IframeMessageType.STEP_CHANGED;
-  data: {
-    currentStep: number;
-    totalSteps: number;
   };
 }
 
@@ -109,19 +100,6 @@ export class IframeCommunicator {
       data: {
         error,
         code,
-      },
-      timestamp: Date.now(),
-    };
-    this.postMessage(message);
-  }
-
-  // Notifier un changement d'étape
-  sendStepChanged(currentStep: number, totalSteps = 3): void {
-    const message: StepChangedMessage = {
-      type: IframeMessageType.STEP_CHANGED,
-      data: {
-        currentStep,
-        totalSteps,
       },
       timestamp: Date.now(),
     };

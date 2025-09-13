@@ -39,7 +39,7 @@ export const Step3: React.FC = () => {
       return createIframeCommunicator(target);
     }
     return null;
-  }, [isIframeMode, parentOrigin]);
+  }, [isIframeMode, parentOrigin, integrator]);
 
   // Fonction pour envoyer les messages iframe
   const sendIframeMessages = useCallback(
@@ -119,7 +119,6 @@ export const Step3: React.FC = () => {
       if (integrator) {
         iframeCommunicator.sendReady(integrator);
       }
-      iframeCommunicator.sendStepChanged(3, 3);
     }
 
     // Gestion des données
