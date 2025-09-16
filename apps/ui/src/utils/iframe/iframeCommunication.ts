@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { MutabilityResultDto } from "@mutafriches/shared-types";
 
 // Types des messages échangés

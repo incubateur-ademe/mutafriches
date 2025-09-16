@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useFormContext, useIsIframeMode } from "../context";
+import { useFormContext } from "../context";
 import { apiService } from "../services/api/api.service";
 import { getStepRoute, ROUTES } from "../config/routes/routes.config";
 import { SelectParcelleByMap } from "../components/step1/parcelle-selection/SelectParcelleByMap";
@@ -11,8 +11,8 @@ import { MultiParcelleToggle } from "../components/step1/parcelle-selection/Mult
 import { ErrorAlert } from "../components/common/ErrorAlert";
 import { EnrichmentDisplayZone } from "../components/step1/enrichment-display/EnrichmentDisplayZone";
 import { transformEnrichmentToUiData } from "../utils/mappers/enrichissment.mapper";
-import { SimpleIframeLayout } from "../layouts";
-import { SimpleHeader, Stepper } from "../components/layout";
+import { IFrameableLayout } from "../layouts";
+import { Stepper } from "../components/layout";
 
 export const Step1: React.FC = () => {
   const navigate = useNavigate();
@@ -22,7 +22,6 @@ export const Step1: React.FC = () => {
   const [isMultiParcelle, setIsMultiParcelle] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const isInIframe = useIsIframeMode();
 
   // Mettre à jour l'étape courante au montage
   useEffect(() => {
@@ -82,9 +81,7 @@ export const Step1: React.FC = () => {
   };
 
   return (
-    <SimpleIframeLayout>
-      {!isInIframe && <SimpleHeader />}
-
+    <IFrameableLayout>
       {/* Si des données existent, proposer de continuer ou recommencer */}
       {state.completedSteps.length > 0 && (
         <div className="fr-alert fr-alert--info fr-mb-3w">
@@ -165,6 +162,6 @@ export const Step1: React.FC = () => {
           </button>
         </div>
       </div>
-    </SimpleIframeLayout>
+    </IFrameableLayout>
   );
 };

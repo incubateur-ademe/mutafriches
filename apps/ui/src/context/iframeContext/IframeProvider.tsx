@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import React, { useMemo } from "react";
 import { DEFAULT_IFRAME_CONTEXT, INTEGRATORS } from "./IframeContext.constants";
 import { IframeContext } from "./IframeContext";

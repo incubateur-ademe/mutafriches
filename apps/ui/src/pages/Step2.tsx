@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { SimpleIframeLayout } from "../layouts/SimpleIframeLayout";
+import { IFrameableLayout } from "../layouts/IFrameableLayout";
 import { ManualDataForm } from "../components/step2/ManualDataForm";
 import { useFormContext } from "../context";
 import { ManualFormValues } from "../config/form";
 import { ROUTES } from "../config/routes/routes.config";
-import { SimpleHeader, Stepper } from "../components/layout";
+import { Stepper } from "../components/layout";
 
 export const Step2: React.FC = () => {
   const navigate = useNavigate();
@@ -56,8 +56,7 @@ export const Step2: React.FC = () => {
   }
 
   return (
-    <SimpleIframeLayout>
-      <SimpleHeader />
+    <IFrameableLayout>
       <Stepper
         currentStep={2}
         totalSteps={3}
@@ -110,6 +109,6 @@ export const Step2: React.FC = () => {
           </button>
         </div>
       </div>
-    </SimpleIframeLayout>
+    </IFrameableLayout>
   );
 };
