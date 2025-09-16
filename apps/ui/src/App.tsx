@@ -9,6 +9,7 @@ import { TestDsfr } from "./pages/tests/TestDsfr";
 import TestMutability from "./pages/tests/TestMutability";
 import { TestEnrichment } from "./pages/tests/TestEnrichment";
 import { TestIframe } from "./pages/tests/TestIframe";
+import { TestCallback } from "./pages/tests/TestCallback";
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
           <Route path={ROUTES.TEST_ENRICHISSEMENT} element={<TestEnrichment />} />
           <Route path={ROUTES.TEST_MUTABILITE} element={<TestMutability />} />
           <Route path={ROUTES.TEST_IFRAME} element={<TestIframe />} />
+          <Route path={ROUTES.TEST_CALLBACK} element={<TestCallback />} />
         </Routes>
       </FormProvider>
     </IframeProvider>

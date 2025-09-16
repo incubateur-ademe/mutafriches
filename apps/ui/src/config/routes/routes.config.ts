@@ -12,6 +12,7 @@ export const ROUTES = {
   TEST_ENRICHISSEMENT: "/test/enrichissement-parcelle",
   TEST_MUTABILITE: "/test/algorithme",
   TEST_IFRAME: "/test/iframe",
+  TEST_CALLBACK: "/test/callback",
 } as const;
 
 /**

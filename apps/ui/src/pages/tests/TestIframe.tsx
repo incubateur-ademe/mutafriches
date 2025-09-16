@@ -14,9 +14,11 @@ interface MessageLog {
 
 export function TestIframe() {
   // États pour la configuration
-  const [integrator, setIntegrator] = useState<string>("test");
-  const [callbackUrl, setCallbackUrl] = useState<string>("http://localhost:5173/tests");
-  const [callbackLabel, setCallbackLabel] = useState<string>("Retour vers le site test");
+  const [integrator, setIntegrator] = useState<string>("Mutafriches");
+  const [callbackUrl, setCallbackUrl] = useState<string>(
+    "https://mutafriches.beta.gouv.fr/test/callback",
+  );
+  const [callbackLabel, setCallbackLabel] = useState<string>("Aller vers la page de callback");
   const [iframeUrl, setIframeUrl] = useState<string>("");
   const [showIframe, setShowIframe] = useState<boolean>(false);
 
