@@ -59,20 +59,6 @@ Pour la production, contactez-nous à `contact@mutafriches.beta.gouv.fr` pour ob
 
 Le formulaire communique avec votre page via des messages JavaScript. Voici les messages que vous recevrez :
 
-### Message `ready`
-
-Envoyé quand l'iframe est chargée et prête.
-
-```javascript
-{
-  type: "mutafriches:ready",
-  data: {
-    version: "1.0.0",
-    integrator: "demo"
-  }
-}
-```
-
 ### Message `completed`
 
 Envoyé quand l'analyse est terminée avec les résultats complets.

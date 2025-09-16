@@ -19,17 +19,15 @@ const CONFIG = {
 // TYPES D'ÉVÉNEMENTS MUTAFRICHES
 // ============================================
 const EVENTS = {
-  READY: "mutafriches:ready", // L'iframe est prête
   COMPLETED: "mutafriches:completed", // Analyse terminée
   ERROR: "mutafriches:error", // Erreur dans le formulaire
-  RESIZE: "mutafriches:resize", // Demande de redimensionnement
 };
 
 // ============================================
 // HOOK PERSONNALISÉ POUR MUTAFRICHES
 // ============================================
 function useMutafriches(config) {
-  const [status, setStatus] = useState("loading"); // loading, ready, completed, error
+  const [status, setStatus] = useState("loading"); // loading, completed, error
   const [results, setResults] = useState(null);
   const [error, setError] = useState(null);
 
@@ -41,11 +39,6 @@ function useMutafriches(config) {
       const { type, data } = event.data || {};
 
       switch (type) {
-        case EVENTS.READY:
-          setStatus("ready");
-          console.log("Mutafriches prêt");
-          break;
-
         case EVENTS.COMPLETED:
           setStatus("completed");
           setResults(data?.results || data);

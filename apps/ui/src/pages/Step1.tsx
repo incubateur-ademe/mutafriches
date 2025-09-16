@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useFormContext } from "../context";
+import { useFormContext, useIsIframeMode } from "../context";
 import { apiService } from "../services/api/api.service";
 import { getStepRoute, ROUTES } from "../config/routes/routes.config";
 import { SelectParcelleByMap } from "../components/step1/parcelle-selection/SelectParcelleByMap";
@@ -22,6 +22,7 @@ export const Step1: React.FC = () => {
   const [isMultiParcelle, setIsMultiParcelle] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const isInIframe = useIsIframeMode();
 
   // Mettre à jour l'étape courante au montage
   useEffect(() => {
@@ -82,7 +83,7 @@ export const Step1: React.FC = () => {
 
   return (
     <SimpleIframeLayout>
-      <SimpleHeader />
+      {!isInIframe && <SimpleHeader />}
 
       {/* Si des données existent, proposer de continuer ou recommencer */}
       {state.completedSteps.length > 0 && (

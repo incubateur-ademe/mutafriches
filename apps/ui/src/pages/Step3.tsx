@@ -114,13 +114,6 @@ export const Step3: React.FC = () => {
     hasInitializedRef.current = true;
     setCurrentStep(3);
 
-    // Messages iframe au montage
-    if (isIframeMode && iframeCommunicator) {
-      if (integrator) {
-        iframeCommunicator.sendReady(integrator);
-      }
-    }
-
     // Gestion des données
     if (state.mutabilityResult) {
       // On a déjà les résultats

@@ -13,14 +13,6 @@ export interface IframeMessage {
   timestamp: number;
 }
 
-export interface ReadyMessage extends IframeMessage {
-  type: IframeMessageType.READY;
-  data: {
-    version: string;
-    integrator: string;
-  };
-}
-
 export interface CompletedMessage extends IframeMessage {
   type: IframeMessageType.COMPLETED;
   data: {
@@ -65,19 +57,6 @@ export class IframeCommunicator {
     } catch (error) {
       console.error("Failed to send message to parent:", error);
     }
-  }
-
-  // Notifier que l'iframe est prête
-  sendReady(integrator: string): void {
-    const message: ReadyMessage = {
-      type: IframeMessageType.READY,
-      data: {
-        version: "1.0.0",
-        integrator,
-      },
-      timestamp: Date.now(),
-    };
-    this.postMessage(message);
   }
 
   // Notifier que le formulaire est complété

@@ -16,8 +16,6 @@ interface MessageConsoleProps {
 export function MessageConsole({ messages, isListening, onClear }: MessageConsoleProps) {
   const getMessageBadgeClass = (type: string) => {
     switch (type) {
-      case IframeMessageType.READY:
-        return "info";
       case IframeMessageType.COMPLETED:
         return "success";
       case IframeMessageType.ERROR:

@@ -21,6 +21,8 @@ export function IframeProvider({ children }: IframeProviderProps) {
     const callbackUrl = params.get("callbackUrl");
     const callbackLabel = params.get("callbackLabel");
 
+    const inIframe = window.self !== window.top;
+
     // Si pas d'intégrateur, on est en mode standalone
     if (!integratorParam) {
       return DEFAULT_IFRAME_CONTEXT;
@@ -31,7 +33,13 @@ export function IframeProvider({ children }: IframeProviderProps) {
 
     if (!integratorConfig) {
       console.error(`Intégrateur non reconnu: ${integratorParam}`);
-      return DEFAULT_IFRAME_CONTEXT;
+      return {
+        ...DEFAULT_IFRAME_CONTEXT,
+        isIframeMode: true,
+        integrator: integratorParam,
+        callbackLabel,
+        callbackUrl,
+      };
     }
 
     // Validation de l'URL de callback
@@ -68,6 +76,12 @@ export function IframeProvider({ children }: IframeProviderProps) {
           console.error("L'URL de callback doit utiliser HTTPS en production");
           return DEFAULT_IFRAME_CONTEXT;
         }
+
+        if (process.env.NODE_ENV === "development") {
+          console.warn("Mode développement: validation du domaine ignorée");
+        } else {
+          return DEFAULT_IFRAME_CONTEXT;
+        }
       } catch (error) {
         console.error("URL de callback invalide:", callbackUrl, error);
         return DEFAULT_IFRAME_CONTEXT;
@@ -88,7 +102,11 @@ export function IframeProvider({ children }: IframeProviderProps) {
 
     // Log en développement
     if (process.env.NODE_ENV === "development") {
-      console.log("IframeContext initialized:", result);
+      console.log("IframeContext initialized:", {
+        ...result,
+        inActualIframe: inIframe,
+        urlParams: params.toString(),
+      });
     }
 
     return result;

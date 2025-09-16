@@ -110,7 +110,6 @@ export function TestIframe() {
   const handleCopyUrl = async () => {
     try {
       await navigator.clipboard.writeText(iframeUrl);
-      // Vous pourriez ajouter une notification toast ici
       alert("URL copiée dans le presse-papier !");
     } catch (err) {
       console.error("Erreur lors de la copie:", err);
