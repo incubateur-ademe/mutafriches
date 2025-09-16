@@ -7,7 +7,6 @@ interface IframeProviderProps {
 }
 
 export function IframeProvider({ children }: IframeProviderProps) {
-  // Extraction et validation des paramètres de l'URL
   const contextValue = useMemo(() => {
     // Si on n'est pas dans le browser, retourner les valeurs par défaut
     if (typeof window === "undefined") {
@@ -33,13 +32,7 @@ export function IframeProvider({ children }: IframeProviderProps) {
 
     if (!integratorConfig) {
       console.error(`Intégrateur non reconnu: ${integratorParam}`);
-      return {
-        ...DEFAULT_IFRAME_CONTEXT,
-        isIframeMode: true,
-        integrator: integratorParam,
-        callbackLabel,
-        callbackUrl,
-      };
+      return DEFAULT_IFRAME_CONTEXT; // Rejeter les intégrateurs non reconnus
     }
 
     // Validation de l'URL de callback
@@ -52,34 +45,38 @@ export function IframeProvider({ children }: IframeProviderProps) {
         parentOrigin = url.origin;
         validCallbackUrl = callbackUrl;
 
-        // Validation du domaine
-        const hostname = url.hostname;
-        const isAllowedDomain = integratorConfig.allowedDomains.some((domain) => {
-          // Support des wildcards simples
-          if (domain.startsWith("*.")) {
-            const baseDomain = domain.slice(2);
-            return hostname.endsWith(baseDomain);
-          }
-          return hostname === domain;
-        });
-
-        if (!isAllowedDomain) {
-          console.error(
-            `Domaine non autorisé pour ${integratorParam}: ${hostname}`,
-            `Domaines autorisés: ${integratorConfig.allowedDomains.join(", ")}`,
-          );
-          return DEFAULT_IFRAME_CONTEXT;
-        }
-
-        // Vérification HTTPS en production
-        if (process.env.NODE_ENV === "production" && url.protocol !== "https:") {
-          console.error("L'URL de callback doit utiliser HTTPS en production");
-          return DEFAULT_IFRAME_CONTEXT;
-        }
-
-        if (process.env.NODE_ENV === "development") {
-          console.warn("Mode développement: validation du domaine ignorée");
+        // Pour "demo", ignorer la validation du domaine
+        if (integratorParam === "demo") {
+          console.log("Intégrateur demo: validation du domaine ignorée");
+          parentOrigin = "*"; // Accepter toutes les origines pour demo
         } else {
+          // Validation du domaine pour les autres intégrateurs
+          const hostname = url.hostname;
+          const isAllowedDomain = integratorConfig.allowedDomains.some((domain) => {
+            // Support des wildcards simples
+            if (domain.startsWith("*.")) {
+              const baseDomain = domain.slice(2);
+              return hostname.endsWith(baseDomain);
+            }
+            return hostname === domain;
+          });
+
+          if (!isAllowedDomain) {
+            console.error(
+              `Domaine non autorisé pour ${integratorParam}: ${hostname}`,
+              `Domaines autorisés: ${integratorConfig.allowedDomains.join(", ")}`,
+            );
+            return DEFAULT_IFRAME_CONTEXT;
+          }
+        }
+
+        // Vérification HTTPS en production (sauf pour demo)
+        if (
+          process.env.NODE_ENV === "production" &&
+          url.protocol !== "https:" &&
+          integratorParam !== "demo"
+        ) {
+          console.error("L'URL de callback doit utiliser HTTPS en production");
           return DEFAULT_IFRAME_CONTEXT;
         }
       } catch (error) {
