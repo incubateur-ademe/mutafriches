@@ -31,4 +31,7 @@ export interface MutabiliteOutputDto {
 
   // Résultats pour les 7 usages, triés par potentiel décroissant
   resultats: UsageResultat[];
+
+  // ID de l'évaluation sauvegardée (optionnel)
+  evaluationId?: string;
 }

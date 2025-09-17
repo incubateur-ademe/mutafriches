@@ -55,4 +55,11 @@ export class MutabiliteSwaggerDto implements IMutabiliteOutput {
     ],
   })
   resultats: UsageResultat[];
+
+  @ApiProperty({
+    description: "ID de l'évaluation sauvegardée (optionnel)",
+    example: "eval_1234567890abcdef",
+    required: false,
+  })
+  evaluationId?: string;
 }

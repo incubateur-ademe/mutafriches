@@ -180,67 +180,6 @@ export class FrichesController {
     return await this.orchestrateurService.calculerMutabilite(input);
   }
 
-  @Post("evaluer")
-  @ApiOperation({
-    summary: "Évaluer complètement une parcelle",
-    description: `
-    Effectue l'enrichissement ET le calcul de mutabilité en une seule opération.
-    Cette route combine les deux étapes et sauvegarde le résultat pour consultation ultérieure.
-    
-    **Processus :**
-    1. Enrichissement automatique depuis les APIs externes
-    2. Calcul de mutabilité avec les données complémentaires
-    3. Sauvegarde de l'évaluation (TODO: pas encore implémenté)
-    
-    **Retour :**
-    - Les données enrichies complètes
-    - Les résultats de mutabilité
-    - Un ID d'évaluation pour récupération ultérieure
-    `,
-  })
-  @ApiBody({
-    type: EvaluerParcelleInputDto,
-    examples: {
-      trelaze: {
-        summary: "Évaluation complète Trélazé",
-        value: {
-          identifiant: "25056000HZ0346",
-          donneesComplementaires: {
-            typeProprietaire: TypeProprietaire.PRIVE,
-            terrainViabilise: TerrainViabilise.OUI,
-            etatBatiInfrastructure: EtatBatiInfrastructure.DEGRADATION_HETEROGENE,
-            presencePollution: PresencePollution.NE_SAIT_PAS,
-            valeurArchitecturaleHistorique: ValeurArchitecturale.EXCEPTIONNEL,
-            qualitePaysage: QualitePaysage.BANAL_INFRA_ORDINAIRE,
-            qualiteVoieDesserte: QualiteVoieDesserte.ACCESSIBLE,
-          },
-        },
-      },
-    },
-  })
-  @ApiResponse({
-    status: 201,
-    description: "Évaluation complète réussie",
-    schema: {
-      type: "object",
-      properties: {
-        enrichissement: { type: "object" },
-        mutabilite: { type: "object" },
-        evaluationId: { type: "string" },
-      },
-    },
-  })
-  async evaluerParcelle(@Body() body: EvaluerParcelleInputDto): Promise<{
-    enrichissement: EnrichissementOutputDto;
-    mutabilite: MutabiliteOutputDto;
-    evaluationId?: string;
-  }> {
-    return await this.orchestrateurService.evaluerParcelle(
-      body.identifiant,
-      body.donneesComplementaires,
-    );
-  }
-
   @Get("evaluation/:id")
   @ApiOperation({
     summary: "Récupérer une évaluation sauvegardée",

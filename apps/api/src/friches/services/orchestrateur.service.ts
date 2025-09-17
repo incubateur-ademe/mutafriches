@@ -50,7 +50,21 @@ export class OrchestrateurService {
     // Lance le calcul
     const resultats = await this.calculService.calculer(parcelle);
 
-    return resultats;
+    // Création d'une évaluation de mutabilité
+    const evaluation = new Evaluation(
+      parcelle.identifiantParcelle,
+      input.donneesEnrichies,
+      input.donneesComplementaires,
+      resultats,
+    );
+
+    // Sauvegarde l'évaluation et retourne l'ID
+    const evaluationId = await this.evaluationRepository.save(evaluation);
+
+    return {
+      ...resultats,
+      evaluationId,
+    };
   }
 
   /**
