@@ -6,6 +6,7 @@ import {
   Fiabilite,
   DetailCalculUsage,
   DetailCritere,
+  UsageResultatDetaille,
 } from "@mutafriches/shared-types";
 import { Parcelle } from "../domain/entities/parcelle.entity";
 import {
@@ -36,25 +37,43 @@ export class CalculService {
    * Calcule la mutabilité d'une parcelle pour différents types d'usage
    */
   async calculer(parcelle: Parcelle, options: CalculOptions = {}): Promise<MutabiliteOutputDto> {
+    const { modeDetaille = false } = options;
+
     // Calculer et trier les résultats par indice décroissant
     const resultatsCalcules = Object.values(UsageType)
       .map((usage) => this.calculerIndiceMutabilite(parcelle, usage, options))
       .sort((a, b) => b.indice - a.indice);
 
     // Transformer en format de sortie avec rang
-    const resultats: UsageResultat[] = resultatsCalcules.map((result, index) => ({
-      usage: result.usage,
-      rang: resultatsCalcules.length - index, // 7 pour le meilleur, 1 pour le pire
-      indiceMutabilite: result.indice,
-      potentiel: this.determinerPotentiel(result.indice),
-      explication: this.genererExplication(result.usage, result.indice),
-    }));
+    const resultats: UsageResultat[] | UsageResultatDetaille[] = resultatsCalcules.map(
+      (result, index) => {
+        const base = {
+          usage: result.usage,
+          rang: resultatsCalcules.length - index,
+          indiceMutabilite: result.indice,
+          potentiel: this.determinerPotentiel(result.indice),
+          explication: this.genererExplication(result.usage, result.indice),
+        };
+
+        // Si mode détaillé, ajouter les champs supplémentaires
+        if (modeDetaille) {
+          return {
+            ...base,
+            avantages: result.avantages,
+            contraintes: result.contraintes,
+            detailsCalcul: result.detailsCalcul,
+          } as UsageResultatDetaille;
+        }
+
+        return base as UsageResultat;
+      },
+    );
 
     const fiabilite = this.calculerFiabilite(parcelle);
 
     return {
       fiabilite,
-      resultats,
+      resultats: resultats as UsageResultat[],
     };
   }
 

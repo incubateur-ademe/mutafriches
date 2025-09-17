@@ -1,4 +1,5 @@
 import { UsageType } from "../../enums";
+import { DetailCalculUsage } from "./detail-calcul-output.dto";
 
 /**
  * Résultat pour un usage spécifique
@@ -9,6 +10,16 @@ export interface UsageResultat {
   indiceMutabilite: number; // 0-100
   potentiel?: string; // "Favorable", "Modéré", etc.
   explication?: string; // Explication du score
+}
+
+/**
+ * Type étendu pour le mode détaillé avec calculs intermédiaires
+ * Utilisé principalement dans les tests et le mode debug
+ */
+export interface UsageResultatDetaille extends UsageResultat {
+  avantages?: number;
+  contraintes?: number;
+  detailsCalcul?: DetailCalculUsage;
 }
 
 /**

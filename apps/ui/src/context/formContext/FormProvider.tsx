@@ -1,8 +1,9 @@
 import React, { useState, useEffect, ReactNode, useRef } from "react";
 import { FormContext } from "./FormContext";
 import { FormState, FormContextType, STORAGE_KEY, initialState } from "./FormContext.types";
-import { EnrichmentResultDto, MutabilityResultDto, UiParcelleDto } from "@mutafriches/shared-types";
 import { ROUTES } from "../../config/routes/routes.config";
+import { EnrichissementOutputDto, MutabiliteOutputDto } from "@mutafriches/shared-types";
+import { UiParcelleDto } from "../../types/ui-types";
 
 const SESSION_DURATION = 30 * 60 * 1000; // 30 minutes
 
@@ -56,7 +57,7 @@ export const FormProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, []);
 
   const setEnrichmentData = (
-    data: EnrichmentResultDto,
+    data: EnrichissementOutputDto,
     uiData: UiParcelleDto,
     identifiant: string,
   ) => {
@@ -77,7 +78,7 @@ export const FormProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }));
   };
 
-  const setMutabilityResult = (result: MutabilityResultDto) => {
+  const setMutabilityResult = (result: MutabiliteOutputDto) => {
     setState((prev) => ({
       ...prev,
       mutabilityResult: result,

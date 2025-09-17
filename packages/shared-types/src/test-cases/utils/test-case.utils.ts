@@ -1,5 +1,5 @@
-import { TestCase } from "./types";
-import { testCases } from "./data";
+import { TestCase } from "../types/test-case.types";
+import { testCases } from "../data";
 
 /**
  * Récupère tous les noms de cas de test pour l'affichage dans les sélecteurs

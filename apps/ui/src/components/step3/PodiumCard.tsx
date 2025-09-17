@@ -1,9 +1,9 @@
 import React from "react";
-import { UsageResultDto } from "@mutafriches/shared-types";
 import { getUsageInfo } from "../../utils/mappers/usages.mapper";
+import { UsageResultat } from "@mutafriches/shared-types";
 
 interface PodiumCardProps {
-  result: UsageResultDto;
+  result: UsageResultat;
   position: 1 | 2 | 3;
 }
 

@@ -36,6 +36,16 @@ export class OrchestrateurService {
    * Calcule la mutabilité d'une parcelle
    */
   async calculerMutabilite(input: CalculerMutabiliteInputDto): Promise<MutabiliteOutputDto> {
+    // TODO Remove debug logs
+    console.log("Input reçu:", JSON.stringify(input, null, 2));
+    console.log("donneesEnrichies:", input.donneesEnrichies);
+    console.log("donneesComplementaires:", input.donneesComplementaires);
+
+    // Vérification des données
+    if (!input.donneesEnrichies) {
+      throw new Error("Données enrichies manquantes dans la requête");
+    }
+
     // Crée l'entité Parcelle
     const parcelle = Parcelle.fromEnrichissement(
       input.donneesEnrichies,

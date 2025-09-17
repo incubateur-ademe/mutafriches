@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
-import { MutabilityResultDto } from "@mutafriches/shared-types";
+
+import { MutabiliteOutputDto } from "@mutafriches/shared-types";
 
 // Types des messages échangés
 export enum IframeMessageType {
@@ -17,7 +18,7 @@ export interface IframeMessage {
 export interface CompletedMessage extends IframeMessage {
   type: IframeMessageType.COMPLETED;
   data: {
-    results: MutabilityResultDto;
+    results: MutabiliteOutputDto;
     formData: Record<string, unknown>;
   };
 }
@@ -61,7 +62,7 @@ export class IframeCommunicator {
   }
 
   // Notifier que le formulaire est complété
-  sendCompleted(results: MutabilityResultDto, formData: Record<string, unknown>): void {
+  sendCompleted(results: MutabiliteOutputDto, formData: Record<string, unknown>): void {
     const message: CompletedMessage = {
       type: IframeMessageType.COMPLETED,
       data: {

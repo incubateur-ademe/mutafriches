@@ -15,17 +15,3 @@ export enum UsageType {
   RENATURATION = "renaturation",
   PHOTOVOLTAIQUE = "photovoltaique",
 }
-
-/**
- * Labels d'affichage pour les usages (UI uniquement)
- * TODO: À déplacer dans le code front
- */
-export const UsageLabels: Record<UsageType, string> = {
-  [UsageType.RESIDENTIEL]: "Résidentiel ou mixte",
-  [UsageType.EQUIPEMENTS]: "Équipements publics",
-  [UsageType.CULTURE]: "Culture, tourisme",
-  [UsageType.TERTIAIRE]: "Tertiaire",
-  [UsageType.INDUSTRIE]: "Industrie",
-  [UsageType.RENATURATION]: "Renaturation",
-  [UsageType.PHOTOVOLTAIQUE]: "Photovoltaïque au sol",
-};

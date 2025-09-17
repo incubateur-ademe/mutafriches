@@ -23,4 +23,4 @@ export {
 } from "./saisie.enums";
 
 // Enums pour les résultats de calcul
-export { UsageType, UsageLabels } from "./usage.enums";
+export { UsageType } from "./usage.enums";

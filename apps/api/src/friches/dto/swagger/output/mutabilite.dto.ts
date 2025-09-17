@@ -4,6 +4,7 @@ import {
   UsageResultat,
   Fiabilite,
   UsageType,
+  DetailCalculUsage,
 } from "@mutafriches/shared-types";
 
 /**
@@ -62,4 +63,33 @@ export class MutabiliteSwaggerDto implements IMutabiliteOutput {
     required: false,
   })
   evaluationId?: string;
+}
+
+/**
+ * DTO Swagger pour un résultat détaillé avec calculs
+ */
+export class UsageResultatDetailleSwaggerDto {
+  @ApiProperty({ example: 7, minimum: 1, maximum: 7 })
+  rang: number;
+
+  @ApiProperty({ enum: UsageType })
+  usage: string;
+
+  @ApiProperty({ example: 68, minimum: 0, maximum: 100 })
+  indiceMutabilite: number;
+
+  @ApiProperty({ example: "Favorable" })
+  potentiel?: string;
+
+  @ApiProperty({ example: "Site favorable grâce à sa localisation" })
+  explication?: string;
+
+  @ApiProperty({ example: 45, required: false })
+  avantages?: number;
+
+  @ApiProperty({ example: 20, required: false })
+  contraintes?: number;
+
+  @ApiProperty({ type: Object, required: false })
+  detailsCalcul?: DetailCalculUsage;
 }

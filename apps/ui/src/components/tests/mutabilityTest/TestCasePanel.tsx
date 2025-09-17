@@ -8,6 +8,8 @@ interface TestCasePanelProps {
 export function TestCasePanel({ selectedTestCase, onTestCaseSelect }: TestCasePanelProps) {
   const testCaseOptions = getTestCaseNames();
 
+  console.log("Test case options:", testCaseOptions);
+
   const handleTestCaseSelect = (testCaseId: string) => {
     if (testCaseId === "") {
       onTestCaseSelect(null);

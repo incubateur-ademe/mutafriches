@@ -1,16 +1,17 @@
-import { EnrichmentResultDto, UiParcelleDto, MutabilityResultDto } from "@mutafriches/shared-types";
+import { EnrichissementOutputDto, MutabiliteOutputDto } from "@mutafriches/shared-types";
+import { UiParcelleDto } from "../../types/ui-types";
 
 export interface FormState {
   // Étape 1 - Données d'enrichissement
   identifiantParcelle?: string;
-  enrichmentData?: EnrichmentResultDto;
+  enrichmentData?: EnrichissementOutputDto;
   uiData?: UiParcelleDto;
 
   // Étape 2 - Données manuelles
   manualData?: Record<string, string>;
 
   // Étape 3 - Résultats de mutabilité
-  mutabilityResult?: MutabilityResultDto;
+  mutabilityResult?: MutabiliteOutputDto;
 
   // Métadonnées
   currentStep: number;
@@ -22,7 +23,7 @@ export interface FormContextType {
 
   // Actions pour l'étape 1
   setEnrichmentData: (
-    data: EnrichmentResultDto,
+    data: EnrichissementOutputDto,
     uiData: UiParcelleDto,
     identifiant: string,
   ) => void;
@@ -31,7 +32,7 @@ export interface FormContextType {
   setManualData: (data: Record<string, string>) => void;
 
   // Actions pour l'étape 3
-  setMutabilityResult: (result: MutabilityResultDto) => void;
+  setMutabilityResult: (result: MutabiliteOutputDto) => void;
 
   // Actions globales
   setCurrentStep: (step: number) => void;

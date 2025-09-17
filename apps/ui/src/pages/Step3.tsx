@@ -5,7 +5,6 @@ import { ReliabilityScore } from "../components/step3/ReliabilityScore";
 import { useFormContext, useIframeCallback, useIsIframeMode, useIframe } from "../context";
 import { apiService } from "../services/api/api.service";
 import { ROUTES } from "../config/routes/routes.config";
-import { MutabilityResultDto } from "@mutafriches/shared-types";
 import { LoadingCallout } from "../components/common/LoadingCallout";
 import { ErrorAlert } from "../components/common/ErrorAlert";
 import { ResultsTable } from "../components/step3/ResultTable";
@@ -14,6 +13,7 @@ import { buildMutabilityInput } from "../utils/mappers/mutability.mapper";
 import { Stepper } from "../components/layout";
 import { createIframeCommunicator } from "../utils/iframe/iframeCommunication";
 import { IFrameableLayout } from "../layouts";
+import { MutabiliteOutputDto } from "@mutafriches/shared-types";
 
 export const Step3: React.FC = () => {
   const navigate = useNavigate();
@@ -26,7 +26,7 @@ export const Step3: React.FC = () => {
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [mutabilityData, setMutabilityData] = useState<MutabilityResultDto | null>(null);
+  const [mutabilityData, setMutabilityData] = useState<MutabiliteOutputDto | null>(null);
 
   // Un seul ref pour tracker si on a déjà initialisé
   const hasInitializedRef = React.useRef(false);
@@ -43,7 +43,7 @@ export const Step3: React.FC = () => {
 
   // Fonction pour envoyer les messages iframe
   const sendIframeMessages = useCallback(
-    (results: MutabilityResultDto) => {
+    (results: MutabiliteOutputDto) => {
       if (!isIframeMode || !iframeCommunicator) return;
 
       const formData = {

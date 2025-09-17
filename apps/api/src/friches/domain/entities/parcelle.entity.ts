@@ -69,14 +69,30 @@ export class Parcelle {
   ): Parcelle {
     const parcelle = new Parcelle();
 
-    // Copie des données enrichies avec cast des enums
+    // Vérifier que enrichissement existe
+    if (!enrichissement) {
+      throw new Error("Données d'enrichissement manquantes");
+    }
+
+    // Copie sécurisée des données enrichies
     Object.assign(parcelle, {
       ...enrichissement,
-      presenceRisquesNaturels: enrichissement.presenceRisquesNaturels as RisqueNaturel,
-      zonageEnvironnemental: enrichissement.zonageEnvironnemental as ZonageEnvironnemental,
-      zonagePatrimonial: enrichissement.zonagePatrimonial as ZonagePatrimonial,
-      zonageReglementaire: enrichissement.zonageReglementaire as ZonageReglementaire,
-      trameVerteEtBleue: enrichissement.trameVerteEtBleue as TrameVerteEtBleue,
+      // Cast sécurisé des enums avec vérification
+      presenceRisquesNaturels: enrichissement.presenceRisquesNaturels
+        ? (enrichissement.presenceRisquesNaturels as RisqueNaturel)
+        : undefined,
+      zonageEnvironnemental: enrichissement.zonageEnvironnemental
+        ? (enrichissement.zonageEnvironnemental as ZonageEnvironnemental)
+        : undefined,
+      zonagePatrimonial: enrichissement.zonagePatrimonial
+        ? (enrichissement.zonagePatrimonial as ZonagePatrimonial)
+        : undefined,
+      zonageReglementaire: enrichissement.zonageReglementaire
+        ? (enrichissement.zonageReglementaire as ZonageReglementaire)
+        : undefined,
+      trameVerteEtBleue: enrichissement.trameVerteEtBleue
+        ? (enrichissement.trameVerteEtBleue as TrameVerteEtBleue)
+        : undefined,
     });
 
     // Ajout des données complémentaires si fournies

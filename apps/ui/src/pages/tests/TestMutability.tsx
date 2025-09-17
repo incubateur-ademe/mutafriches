@@ -1,7 +1,7 @@
 import { useState } from "react";
 import {
+  MutabiliteOutputDto,
   TestCase,
-  MutabilityResultDto,
   convertTestCaseToMutabilityInput,
 } from "@mutafriches/shared-types";
 import { apiService } from "../../services/api/api.service";
@@ -12,6 +12,7 @@ import {
   ResultsPanel,
   TestCasePanel,
 } from "../../components/tests/mutabilityTest";
+import { buildCalculerMutabiliteFromFormData } from "../../utils/mappers/form-to-dto.mapper";
 
 type Mode = "test-case" | "manual";
 type InputMode = "locked" | "editable";
@@ -22,7 +23,7 @@ export default function TestMutability() {
   const [selectedTestCase, setSelectedTestCase] = useState<TestCase | null>(null);
   const [formData, setFormData] = useState<any>({});
   const [isCalculating, setIsCalculating] = useState(false);
-  const [mutabilityResult, setMutabilityResult] = useState<MutabilityResultDto | null>(null);
+  const [mutabilityResult, setMutabilityResult] = useState<MutabiliteOutputDto | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const handleModeChange = (newMode: Mode) => {
@@ -43,7 +44,14 @@ export default function TestMutability() {
     if (testCase) {
       // Convertir les données du cas de test en données de formulaire
       const convertedData = convertTestCaseToMutabilityInput(testCase);
-      setFormData(convertedData);
+
+      // Fusionner les deux parties des données en une seule structure aplatie
+      const flatFormData = {
+        ...convertedData.donneesEnrichies,
+        ...convertedData.donneesComplementaires,
+      };
+
+      setFormData(flatFormData);
       setInputMode("locked");
     } else {
       setFormData({});
@@ -66,7 +74,14 @@ export default function TestMutability() {
     setMutabilityResult(null);
 
     try {
-      const result = await apiService.calculerMutabilite(formData, { modeDetaille: true }); // Toujours en mode détaillé pour les tests
+      // Préparer les données à envoyer en fonction du mode
+      const dataToSend =
+        selectedTestCase && inputMode === "locked"
+          ? convertTestCaseToMutabilityInput(selectedTestCase) // Toujours envoyer les données converties du cas de test
+          : buildCalculerMutabiliteFromFormData(formData); // Construire à partir des données du formulaire
+
+      const result = await apiService.calculerMutabilite(dataToSend, { modeDetaille: true }); // Toujours en mode détaillé pour les tests
+
       setMutabilityResult(result);
     } catch (error) {
       console.error("Erreur lors du calcul:", error);

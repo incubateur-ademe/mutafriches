@@ -21,7 +21,7 @@ const getApiUrl = (): string => {
 export const API_CONFIG = {
   baseUrl: getApiUrl(),
   endpoints: {
-    enrichirParcelle: "/friches/parcelle/enrichir",
-    calculerMutabilite: "/friches/parcelle/mutabilite",
+    enrichirParcelle: "/friches/enrichir",
+    calculerMutabilite: "/friches/calculer",
   },
 };
