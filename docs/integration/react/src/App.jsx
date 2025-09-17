@@ -307,12 +307,13 @@ function App() {
         <div className="fr-container">
           <div className="fr-footer__body">
             <div className="fr-footer__brand fr-enlarge-link">
-              id="brand-link" title="Retour à l'accueil du site - Intégration Mutafriches -
-              République Française" href="/" >
-              <p className="fr-logo">
-                Intégration <br />
-                Mutafriches
-              </p>
+              <a id="brand-link" title="Retour à l'accueil du site - République Française" href="/">
+                <p className="fr-logo">
+                  {" "}
+                  Intégration <br />
+                  Mutafriches{" "}
+                </p>
+              </a>
             </div>
             <div className="fr-footer__content">
               <p className="fr-footer__content-desc">
@@ -323,27 +324,27 @@ function App() {
           <div className="fr-footer__bottom">
             <ul className="fr-footer__bottom-list">
               <li className="fr-footer__bottom-item">
-                <a href="#" className="fr-footer__bottom-link">
+                <a id="footer__bottom-link-4" href="#" className="fr-footer__bottom-link">
                   Plan du site
                 </a>
               </li>
               <li className="fr-footer__bottom-item">
-                <a href="#" className="fr-footer__bottom-link">
-                  Accessibilité : non conforme
+                <a id="footer__bottom-link-5" href="#" className="fr-footer__bottom-link">
+                  Accessibilité : non/partiellement/totalement conforme
                 </a>
               </li>
               <li className="fr-footer__bottom-item">
-                <a href="#" className="fr-footer__bottom-link">
+                <a id="footer__bottom-link-6" href="#" className="fr-footer__bottom-link">
                   Mentions légales
                 </a>
               </li>
               <li className="fr-footer__bottom-item">
-                <a href="#" className="fr-footer__bottom-link">
+                <a id="footer__bottom-link-7" href="#" className="fr-footer__bottom-link">
                   Données personnelles
                 </a>
               </li>
               <li className="fr-footer__bottom-item">
-                <a href="#" className="fr-footer__bottom-link">
+                <a id="footer__bottom-link-8" href="#" className="fr-footer__bottom-link">
                   Gestion des cookies
                 </a>
               </li>
@@ -352,9 +353,14 @@ function App() {
               <p>
                 Sauf mention explicite de propriété intellectuelle détenue par des tiers, les
                 contenus de ce site sont proposés sous{" "}
-                href="https://github.com/etalab/licence-ouverte/blob/master/LO.md" target="_blank"
-                rel="noopener noreferrer" title="Licence etalab - nouvelle fenêtre" > licence
-                etalab-2.0
+                <a
+                  href="https://github.com/etalab/licence-ouverte/blob/master/LO.md"
+                  target="_blank"
+                  rel="noopener external"
+                  title="Licence etalab - nouvelle fenêtre"
+                >
+                  licence etalab-2.0
+                </a>
               </p>
             </div>
           </div>
