@@ -1,10 +1,8 @@
 /* eslint-disable no-console */
-
-import { MutabiliteOutputDto } from "@mutafriches/shared-types";
+import { IframeEvaluationSummaryDto } from "../../types/iframe.types";
 
 // Types des messages échangés
 export enum IframeMessageType {
-  READY = "mutafriches:ready",
   COMPLETED = "mutafriches:completed",
   ERROR = "mutafriches:error",
 }
@@ -17,10 +15,7 @@ export interface IframeMessage {
 
 export interface CompletedMessage extends IframeMessage {
   type: IframeMessageType.COMPLETED;
-  data: {
-    results: MutabiliteOutputDto;
-    formData: Record<string, unknown>;
-  };
+  data: IframeEvaluationSummaryDto;
 }
 
 export interface ErrorMessage extends IframeMessage {
@@ -62,13 +57,10 @@ export class IframeCommunicator {
   }
 
   // Notifier que le formulaire est complété
-  sendCompleted(results: MutabiliteOutputDto, formData: Record<string, unknown>): void {
+  sendCompleted(evaluationSummary: IframeEvaluationSummaryDto): void {
     const message: CompletedMessage = {
       type: IframeMessageType.COMPLETED,
-      data: {
-        results,
-        formData,
-      },
+      data: evaluationSummary,
       timestamp: Date.now(),
     };
     this.postMessage(message);

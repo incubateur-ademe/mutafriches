@@ -1,7 +1,5 @@
 import { pgTable, varchar, jsonb, timestamp, numeric } from "drizzle-orm/pg-core";
 
-// TODO: Ajouter des tables pour les utilisateurs, les parcelles, etc.
-
 // Table pour les évaluations
 export const evaluations = pgTable("evaluations", {
   id: varchar("id", { length: 50 }).primaryKey(),

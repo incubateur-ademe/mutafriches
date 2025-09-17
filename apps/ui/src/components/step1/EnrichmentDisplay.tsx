@@ -1,5 +1,5 @@
 import React from "react";
-import { UiParcelleDto } from "../../types/ui-types";
+import { UiParcelleDto } from "../../types/ui.types";
 
 interface EnrichmentDisplayProps {
   data: UiParcelleDto | null;

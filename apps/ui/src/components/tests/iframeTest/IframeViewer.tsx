@@ -28,10 +28,6 @@ export function IframeViewer({ iframeRef, iframeUrl, showIframe }: IframeViewerP
             <h4 className="fr-h6">Messages attendus</h4>
             <ul className="fr-text--sm">
               <li>
-                <span className="fr-badge fr-badge--info fr-badge--sm">ready</span>
-                L'iframe est chargée et prête
-              </li>
-              <li>
                 <span className="fr-badge fr-badge--success fr-badge--sm">completed</span>
                 Formulaire terminé avec les résultats
               </li>

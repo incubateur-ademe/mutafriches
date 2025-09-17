@@ -28,7 +28,7 @@ const EVENTS = {
 // ============================================
 function useMutafriches(config) {
   const [status, setStatus] = useState("loading"); // loading, completed, error
-  const [results, setResults] = useState(null);
+  const [evaluationSummary, setEvaluationSummary] = useState(null);
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -41,7 +41,7 @@ function useMutafriches(config) {
       switch (type) {
         case EVENTS.COMPLETED:
           setStatus("completed");
-          setResults(data?.results || data);
+          setEvaluationSummary(data);
           console.log("Analyse terminée", data);
           break;
 
@@ -60,7 +60,7 @@ function useMutafriches(config) {
     return () => window.removeEventListener("message", handleMessage);
   }, [config.expectedOrigin]);
 
-  return { status, results, error };
+  return { status, evaluationSummary, error };
 }
 
 // ============================================
@@ -68,7 +68,7 @@ function useMutafriches(config) {
 // ============================================
 function App() {
   // Utilisation du hook Mutafriches
-  const { status, results, error } = useMutafriches(CONFIG);
+  const { status, evaluationSummary, error } = useMutafriches(CONFIG);
 
   // Construction de l'URL avec les paramètres
   const buildIframeUrl = () => {
@@ -81,7 +81,7 @@ function App() {
 
   // Scroll automatique vers les résultats
   useEffect(() => {
-    if (results) {
+    if (evaluationSummary) {
       setTimeout(() => {
         document.getElementById("results")?.scrollIntoView({
           behavior: "smooth",
@@ -89,7 +89,7 @@ function App() {
         });
       }, 100);
     }
-  }, [results]);
+  }, [evaluationSummary]);
 
   return (
     <>
@@ -125,7 +125,7 @@ function App() {
               </p>
               <p className="fr-callout__text">
                 <strong>Intégrateur :</strong> {CONFIG.params.integrator}
-              </p>{" "}
+              </p>
               <p className="fr-callout__text">
                 <strong>Label du bouton de callback :</strong> {CONFIG.params.callbackLabel}
               </p>
@@ -177,15 +177,125 @@ function App() {
             </div>
 
             {/* Résultats */}
-            {results && (
+            {evaluationSummary && (
               <div id="results" className="fr-mb-3w">
                 <div className="fr-alert fr-alert--success fr-mb-3w">
                   <p className="fr-alert__title">Analyse terminée avec succès</p>
                 </div>
 
-                <h2>Résultats de l'analyse (format JSON)</h2>
+                <h2>Résultats de l'analyse</h2>
 
-                <pre>{JSON.stringify(results, null, 2)}</pre>
+                {/* Carte résumé principal */}
+                <div className="fr-card fr-mb-3w">
+                  <div className="fr-card__body">
+                    <h4 className="fr-card__title">Informations de l'évaluation</h4>
+                    <div className="fr-card__desc">
+                      <p>
+                        <strong>ID de l'évaluation :</strong> {evaluationSummary.evaluationId}
+                      </p>
+                      <p>
+                        <strong>Parcelle analysée :</strong> {evaluationSummary.identifiantParcelle}
+                      </p>
+                      <p>
+                        <strong>Date d'analyse :</strong>{" "}
+                        {new Date(evaluationSummary.metadata?.dateAnalyse).toLocaleDateString(
+                          "fr-FR",
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Fiabilité */}
+                <div className="fr-card fr-mb-3w">
+                  <div className="fr-card__body">
+                    <h4 className="fr-card__title">Fiabilité de l'analyse</h4>
+                    <div className="fr-card__desc">
+                      <p className="fr-text--lg">
+                        <strong>{evaluationSummary.fiabilite.note}/10</strong> -{" "}
+                        {evaluationSummary.fiabilite.text}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Usage principal */}
+                <div className="fr-highlight">
+                  <h3>Usage principal recommandé</h3>
+                  <p className="fr-text--lg">
+                    <strong>{evaluationSummary.usagePrincipal.usage}</strong>
+                  </p>
+                  <p>
+                    Indice de mutabilité :{" "}
+                    <strong>{evaluationSummary.usagePrincipal.indiceMutabilite}%</strong>
+                    <br />
+                    Potentiel :{" "}
+                    <span className="fr-badge fr-badge--success">
+                      {evaluationSummary.usagePrincipal.potentiel}
+                    </span>
+                  </p>
+                </div>
+
+                {/* Top 3 des usages */}
+                <div className="fr-mt-3w">
+                  <h3>Top 3 des usages recommandés</h3>
+                  <div className="fr-grid-row fr-grid-row--gutters">
+                    {evaluationSummary.top3Usages.map((usage, index) => (
+                      <div key={usage.usage} className="fr-col-12 fr-col-md-4">
+                        <div className="fr-card">
+                          <div className="fr-card__body">
+                            <h5 className="fr-card__title">
+                              #{usage.rang} - {usage.usage}
+                            </h5>
+                            <p className="fr-card__desc">
+                              Indice : <strong>{usage.indiceMutabilite}%</strong>
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Récupération de l'évaluation complète */}
+                <div className="fr-callout fr-callout--blue-ecume fr-mt-3w">
+                  <h3 className="fr-callout__title">Pour aller plus loin</h3>
+                  <p className="fr-callout__text">
+                    Vous pouvez récupérer l'évaluation complète via l'API :
+                  </p>
+                  <code className="fr-text--sm">
+                    GET https://api.mutafriches.beta.gouv.fr/api/friches/evaluations/
+                    {evaluationSummary.evaluationId}
+                  </code>
+                  <button
+                    className="fr-btn fr-btn--sm fr-mt-2w"
+                    onClick={() => {
+                      fetch(
+                        `https://api.mutafriches.beta.gouv.fr/api/friches/evaluations/${evaluationSummary.evaluationId}`,
+                      )
+                        .then((res) => res.json())
+                        .then((data) => console.log("Évaluation complète:", data))
+                        .catch((err) => console.error("Erreur:", err));
+                    }}
+                  >
+                    Récupérer l'évaluation complète (voir console)
+                  </button>
+                </div>
+
+                {/* Données brutes pour debug */}
+                <details className="fr-mt-3w">
+                  <summary>Voir les données brutes (JSON)</summary>
+                  <pre
+                    style={{
+                      backgroundColor: "#f6f6f6",
+                      padding: "1rem",
+                      borderRadius: "4px",
+                      overflow: "auto",
+                    }}
+                  >
+                    {JSON.stringify(evaluationSummary, null, 2)}
+                  </pre>
+                </details>
               </div>
             )}
           </div>
@@ -197,17 +307,12 @@ function App() {
         <div className="fr-container">
           <div className="fr-footer__body">
             <div className="fr-footer__brand fr-enlarge-link">
-              <a
-                id="brand-link"
-                title="Retour à l'accueil du site - [À MODIFIER - texte alternatif de l'image : nom de l'opérateur ou du site serviciel] - République Française"
-                href="/"
-              >
-                <p className="fr-logo">
-                  {" "}
-                  Intégration <br />
-                  Mutafriches{" "}
-                </p>
-              </a>
+              id="brand-link" title="Retour à l'accueil du site - Intégration Mutafriches -
+              République Française" href="/" >
+              <p className="fr-logo">
+                Intégration <br />
+                Mutafriches
+              </p>
             </div>
             <div className="fr-footer__content">
               <p className="fr-footer__content-desc">
@@ -218,27 +323,27 @@ function App() {
           <div className="fr-footer__bottom">
             <ul className="fr-footer__bottom-list">
               <li className="fr-footer__bottom-item">
-                <a id="footer__bottom-link-4" href="#" className="fr-footer__bottom-link">
+                <a href="#" className="fr-footer__bottom-link">
                   Plan du site
                 </a>
               </li>
               <li className="fr-footer__bottom-item">
-                <a id="footer__bottom-link-5" href="#" className="fr-footer__bottom-link">
-                  Accessibilité : non/partiellement/totalement conforme
+                <a href="#" className="fr-footer__bottom-link">
+                  Accessibilité : non conforme
                 </a>
               </li>
               <li className="fr-footer__bottom-item">
-                <a id="footer__bottom-link-6" href="#" className="fr-footer__bottom-link">
+                <a href="#" className="fr-footer__bottom-link">
                   Mentions légales
                 </a>
               </li>
               <li className="fr-footer__bottom-item">
-                <a id="footer__bottom-link-7" href="#" className="fr-footer__bottom-link">
+                <a href="#" className="fr-footer__bottom-link">
                   Données personnelles
                 </a>
               </li>
               <li className="fr-footer__bottom-item">
-                <a id="footer__bottom-link-8" href="#" className="fr-footer__bottom-link">
+                <a href="#" className="fr-footer__bottom-link">
                   Gestion des cookies
                 </a>
               </li>
@@ -247,14 +352,9 @@ function App() {
               <p>
                 Sauf mention explicite de propriété intellectuelle détenue par des tiers, les
                 contenus de ce site sont proposés sous{" "}
-                <a
-                  href="https://github.com/etalab/licence-ouverte/blob/master/LO.md"
-                  target="_blank"
-                  rel="noopener external"
-                  title="Licence etalab - nouvelle fenêtre"
-                >
-                  licence etalab-2.0
-                </a>
+                href="https://github.com/etalab/licence-ouverte/blob/master/LO.md" target="_blank"
+                rel="noopener noreferrer" title="Licence etalab - nouvelle fenêtre" > licence
+                etalab-2.0
               </p>
             </div>
           </div>

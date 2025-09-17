@@ -14,6 +14,7 @@ import { Stepper } from "../components/layout";
 import { createIframeCommunicator } from "../utils/iframe/iframeCommunication";
 import { IFrameableLayout } from "../layouts";
 import { MutabiliteOutputDto } from "@mutafriches/shared-types";
+import { IframeEvaluationSummaryDto } from "../types/iframe.types";
 
 export const Step3: React.FC = () => {
   const navigate = useNavigate();
@@ -34,8 +35,8 @@ export const Step3: React.FC = () => {
   // Créer le communicator une seule fois
   const iframeCommunicator = React.useMemo(() => {
     if (isIframeMode && parentOrigin) {
-      // Pour demo, permettre toutes les origines
-      const target = integrator === "demo" ? "*" : parentOrigin;
+      // Pour demo ou test local permettre toutes les origines
+      const target = integrator === "demo" || integrator === "test" ? "*" : parentOrigin;
       return createIframeCommunicator(target);
     }
     return null;
@@ -47,18 +48,34 @@ export const Step3: React.FC = () => {
       if (!isIframeMode || !iframeCommunicator) return;
 
       // Données détaillées renvoyées vers l'intégrateur
-      const evaluationSummary = {
-        evaluationId: results.evaluationId, // ID de l'évaluation - récupérable via API
-        identifiantParcelle: state.identifiantParcelle, // Identifiant de la parcelle
-        fiabilite: results.fiabilite, // Score de fiabilité
-        usagePrincipal: results.resultats[0], // Usage le plus adapté
-        top3Usages: results.resultats.slice(0, 3), // Top 3 des usages
+      const evaluationSummary: IframeEvaluationSummaryDto = {
+        evaluationId: results.evaluationId || "",
+        identifiantParcelle: state.identifiantParcelle || "",
+        retrieveUrl: `/api/friches/evaluations/${results.evaluationId}`,
+        fiabilite: {
+          note: results.fiabilite.note,
+          text: results.fiabilite.text,
+        },
+        usagePrincipal: {
+          usage: results.resultats[0].usage,
+          indiceMutabilite: results.resultats[0].indiceMutabilite,
+          potentiel: results.resultats[0].potentiel || "",
+        },
+        top3Usages: results.resultats.slice(0, 3).map((r) => ({
+          usage: r.usage,
+          indiceMutabilite: r.indiceMutabilite,
+          rang: r.rang,
+        })),
+        metadata: {
+          dateAnalyse: new Date().toISOString(),
+          versionAlgorithme: "1.0.0", // À mettre à jour avec la vraie version si besoin
+        },
       };
 
       // (à discuter avec les intégrateurs)
       // si besoin, envoyer aussi les données d'enrichissement et d'autres métadonnées
 
-      iframeCommunicator.sendCompleted(results, evaluationSummary);
+      iframeCommunicator.sendCompleted(evaluationSummary);
     },
     [isIframeMode, iframeCommunicator, state.identifiantParcelle],
   );

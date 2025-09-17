@@ -108,7 +108,7 @@
                 <div class="fr-col-12 fr-col-md-6">
                   <h4>Messages disponibles</h4>
                   <ul>
-                    <li><strong>completed</strong> : Formulaire terminé</li>
+                    <li><strong>completed</strong> : Formulaire terminé avec résultats</li>
                     <li><strong>error</strong> : Erreur survenue</li>
                   </ul>
                 </div>
@@ -153,8 +153,11 @@
           style="display: none"
         >
           <h3 class="fr-alert__title">Analyse terminée avec succès</h3>
-          <p>Les résultats ont été reçus. Consultez la console pour voir les détails.</p>
+          <p>Les résultats ont été reçus. Consultez les détails ci-dessous.</p>
         </div>
+
+        <!-- Container pour les résultats détaillés -->
+        <div id="result-container"></div>
 
         <!-- Formulaire Mutafriches -->
         <div class="fr-card fr-mb-4w">
@@ -228,9 +231,9 @@
       // ========================================
       // CONFIGURATION - MODIFIEZ CES 3 LIGNES
       // ========================================
-      const INTEGRATOR = "demo"; // Votre identifiant d'intégrateur - exemple ici "demo"
-      const CALLBACK_URL = "https://localhost"; // Votre URL de retour - exemple ici localhost
-      const CALLBACK_LABEL = "Aller sur mon site"; // Texte du bouton de retour
+      const INTEGRATOR = "demo"; // Votre identifiant d'intégrateur
+      const CALLBACK_URL = "https://localhost"; // Votre URL de retour
+      const CALLBACK_LABEL = "Retour vers mon site"; // Texte du bouton de retour
 
       // URL de base de Mutafriches
       const MUTAFRICHES_BASE_URL = "https://mutafriches.beta.gouv.fr";
@@ -284,7 +287,7 @@
 
         // Traiter les messages Mutafriches
         if (event.data && event.data.type && event.data.type.startsWith("mutafriches:")) {
-          console.log("Message reçu:", event.data); // Debug
+          console.log("Message reçu:", event.data);
           handleMutafrichesMessage(event.data);
         }
       });
@@ -304,14 +307,16 @@
 
         updateMessageDisplay();
 
-        // Actions spécifiques
+        // Actions spécifiques selon le type de message
         if (message.type === "mutafriches:completed") {
           document.getElementById("success-alert").style.display = "block";
           handleFormCompletion(message.data);
+        } else if (message.type === "mutafriches:error") {
+          handleFormError(message.data);
         }
       }
 
-      // Mettre à jour l'affichage
+      // Mettre à jour l'affichage de la console
       function updateMessageDisplay() {
         const logElement = document.getElementById("message-log");
 
@@ -325,11 +330,11 @@
             const typeClass = "console-message--" + msg.type.replace("mutafriches:", "");
             const dataStr = JSON.stringify(msg.data, null, 2);
             return `
-          <div class="console-message ${typeClass}">
-            <strong>[${msg.time}] ${msg.type}</strong>
-            <pre>${dataStr}</pre>
-          </div>
-        `;
+              <div class="console-message ${typeClass}">
+                <strong>[${msg.time}] ${msg.type}</strong>
+                <pre>${dataStr}</pre>
+              </div>
+            `;
           })
           .join("");
 
@@ -342,18 +347,98 @@
         messageLog.length = 0;
         updateMessageDisplay();
         document.getElementById("success-alert").style.display = "none";
+        document.getElementById("result-container").innerHTML = "";
       }
 
-      // Traiter les résultats
+      // Traiter les résultats de l'analyse
       function handleFormCompletion(data) {
-        console.log("Résultats complets:", data);
+        console.log("Analyse terminée !", data);
 
-        // Exemple d'envoi à votre backend
-        // fetch('/api/save-results', {
-        //     method: 'POST',
-        //     headers: { 'Content-Type': 'application/json' },
-        //     body: JSON.stringify(data)
-        // });
+        const resultContainer = document.getElementById("result-container");
+
+        const resultHtml = `
+          <div class="fr-callout fr-callout--green-tilleul-verveine fr-mb-4w">
+            <h3 class="fr-callout__title">Résultats de l'analyse</h3>
+            <div class="fr-callout__text">
+              <div class="fr-grid-row fr-grid-row--gutters">
+                <div class="fr-col-12 fr-col-md-6">
+                  <h4>Informations générales</h4>
+                  <p><strong>ID de l'évaluation :</strong><br><code>${data.evaluationId || "Non disponible"}</code></p>
+                  <p><strong>Parcelle analysée :</strong><br>${data.identifiantParcelle || "Non renseigné"}</p>
+                  <p><strong>Fiabilité de l'analyse :</strong><br>
+                    <span class="fr-badge fr-badge--info">${data.fiabilite?.note || 0}/10</span>
+                    ${data.fiabilite?.text || ""}
+                  </p>
+                </div>
+                <div class="fr-col-12 fr-col-md-6">
+                  <h4>Usage principal recommandé</h4>
+                  <div class="fr-highlight">
+                    <p>
+                      <strong>${data.usagePrincipal?.usage || "Non déterminé"}</strong><br>
+                      Indice de mutabilité : <strong>${data.usagePrincipal?.indiceMutabilite || 0}%</strong><br>
+                      Potentiel : <span class="fr-badge fr-badge--success">${data.usagePrincipal?.potentiel || "Non évalué"}</span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              ${
+                data.top3Usages && data.top3Usages.length > 0
+                  ? `
+                <hr class="fr-mt-3w fr-mb-3w">
+                <h4>Top 3 des usages recommandés</h4>
+                <ol>
+                  ${data.top3Usages
+                    .map(
+                      (u) => `
+                    <li>
+                      <strong>${u.usage}</strong> - 
+                      Indice: ${u.indiceMutabilite}% 
+                      (Rang #${u.rang})
+                    </li>
+                  `,
+                    )
+                    .join("")}
+                </ol>
+              `
+                  : ""
+              }
+              
+              ${
+                data.retrieveUrl
+                  ? `
+                <hr class="fr-mt-3w fr-mb-3w">
+                <p class="fr-text--sm">
+                  <strong>Pour récupérer l'évaluation complète via l'API :</strong><br>
+                  <code>GET https://api.mutafriches.beta.gouv.fr${data.retrieveUrl}</code>
+                </p>
+              `
+                  : ""
+              }
+            </div>
+          </div>
+        `;
+
+        resultContainer.innerHTML = resultHtml;
+
+        // Scroll vers les résultats
+        resultContainer.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+
+      // Traiter les erreurs
+      function handleFormError(data) {
+        console.error("Erreur Mutafriches:", data);
+
+        const resultContainer = document.getElementById("result-container");
+        const errorHtml = `
+          <div class="fr-alert fr-alert--error fr-mb-4w">
+            <h3 class="fr-alert__title">Une erreur est survenue</h3>
+            <p>${data.error || "Erreur inconnue"}</p>
+            ${data.code ? `<p class="fr-text--sm">Code d'erreur : <code>${data.code}</code></p>` : ""}
+          </div>
+        `;
+
+        resultContainer.innerHTML = errorHtml;
       }
     </script>
   </body>

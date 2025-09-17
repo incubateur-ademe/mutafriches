@@ -67,11 +67,27 @@ Envoyé quand l'analyse est terminée avec les résultats complets.
 {
   type: "mutafriches:completed",
   data: {
-    results: {
-      resultats: [...],     // Tableau des 7 usages analysés
-      fiabilite: {...}      // Indice de fiabilité
+    evaluationId: "uuid-de-l-evaluation",
+    identifiantParcelle: "490055000AI0001",
+    retrieveUrl: "/api/friches/evaluations/uuid-de-l-evaluation",
+    fiabilite: {
+      note: 8.5,
+      text: "Bonne"
     },
-    formData: {...}         // Données du formulaire
+    usagePrincipal: {
+      usage: "RESIDENTIEL_MIXTE",
+      indiceMutabilite: 75.5,
+      potentiel: "Excellent"
+    },
+    top3Usages: [
+      { usage: "RESIDENTIEL_MIXTE", indiceMutabilite: 75.5, rang: 1 },
+      { usage: "EQUIPEMENTS_PUBLICS", indiceMutabilite: 68.2, rang: 2 },
+      { usage: "TERTIAIRE", indiceMutabilite: 62.1, rang: 3 }
+    ],
+    metadata: {
+      dateAnalyse: "2025-01-15T10:30:00Z",
+      versionAlgorithme: "1.0.0"
+    }
   }
 }
 ```
@@ -106,22 +122,19 @@ Dans la fonction `handleFormCompletion`, vous pouvez :
 
 ```javascript
 function handleFormCompletion(data) {
-  // Extraire les résultats
-  const topUsage = data.results.resultats[0];
-  const fiabilite = data.results.fiabilite;
+  // Extraire les résultats simplifiés
+  const { evaluationId, usagePrincipal, fiabilite } = data;
   
-  // Envoyer à votre backend
-  fetch('/api/save-analysis', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data)
-  });
+  // Sauvegarder l'ID pour récupération ultérieure
+  localStorage.setItem('lastEvaluationId', evaluationId);
   
   // Afficher un récapitulatif
-  alert(`Meilleur usage: ${topUsage.libelle} (${topUsage.score}%)`);
+  alert(`Meilleur usage: ${usagePrincipal.usage} (${usagePrincipal.indiceMutabilite}%)`);
   
-  // Rediriger l'utilisateur
-  window.location.href = '/resultats';
+  // Option : Récupérer l'évaluation complète via API
+  fetch(`https://mutafriches.beta.gouv.fr${data.retrieveUrl}`)
+    .then(res => res.json())
+    .then(evaluation => console.log('Évaluation complète:', evaluation));
 }
 ```
 

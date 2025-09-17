@@ -3,7 +3,7 @@ import { FormContext } from "./FormContext";
 import { FormState, FormContextType, STORAGE_KEY, initialState } from "./FormContext.types";
 import { ROUTES } from "../../config/routes/routes.config";
 import { EnrichissementOutputDto, MutabiliteOutputDto } from "@mutafriches/shared-types";
-import { UiParcelleDto } from "../../types/ui-types";
+import { UiParcelleDto } from "../../types/ui.types";
 
 const SESSION_DURATION = 30 * 60 * 1000; // 30 minutes
 

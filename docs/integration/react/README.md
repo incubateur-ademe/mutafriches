@@ -79,7 +79,6 @@ const CONFIG = {
 
 ```typescript
 const EVENTS = {
-  READY: "mutafriches:ready",       // L'iframe est prête
   COMPLETED: "mutafriches:completed", // Analyse terminée
   ERROR: "mutafriches:error",        // Erreur dans le formulaire
 };

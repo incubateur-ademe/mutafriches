@@ -1,7 +1,7 @@
 import { IntegratorConfig } from "./IframeContext.types";
 
 // Configuration des intégrateurs autorisés
-// TODO: ajouter ici les intégrateurs au fur et à mesure
+// Ajouter ici les nouveaux intégrateurs si besoin
 export const INTEGRATORS: Record<string, IntegratorConfig> = {
   mutafriches: {
     name: "Mutafriches",
