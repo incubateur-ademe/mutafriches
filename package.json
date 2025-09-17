@@ -26,6 +26,7 @@
     "db:stop": "cd apps/api && docker-compose down",
     "db:reset": "cd apps/api && docker-compose down -v && docker-compose up -d postgres",
     "db:push": "cd apps/api && pnpm drizzle-kit push",
+    "db:push:force": "cd apps/api && pnpm drizzle-kit push --force",
     "db:studio": "cd apps/api && pnpm drizzle-kit studio",
     "db:generate": "cd apps/api && pnpm drizzle-kit generate",
     "db:migrate": "cd apps/api && pnpm drizzle-kit migrate",
