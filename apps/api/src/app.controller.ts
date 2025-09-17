@@ -28,6 +28,7 @@ export class AppController {
         "POST /friches/enrichir - Enrichissement de parcelle",
         "POST /friches/calculer - Calcul de mutabilité",
         "GET /friches/evaluation/:id - Récupérer une évaluation de friche par son ID",
+        "GET /friches/metadata - Récupérer les métadonnées (énums, versions, etc.)",
       ],
     };
   }

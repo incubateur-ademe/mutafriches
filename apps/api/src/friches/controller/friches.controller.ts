@@ -25,11 +25,13 @@ import {
   ZonagePatrimonial,
   TrameVerteEtBleue,
   UsageType,
+  ZonageReglementaire,
 } from "@mutafriches/shared-types";
 
 import { OrchestrateurService } from "../services/orchestrateur.service";
 import { CalculerMutabiliteSwaggerDto, EnrichirParcelleSwaggerDto } from "../dto/swagger/input";
 import { EnrichissementSwaggerDto, MutabiliteSwaggerDto } from "../dto/swagger/output";
+import { MetadataOutputDto } from "../dto/swagger/output/metadata.dto";
 
 @ApiTags("friches")
 @Controller("friches")
@@ -174,8 +176,9 @@ export class FrichesController {
     @Body() input: CalculerMutabiliteInputDto,
     @Query("modeDetaille") modeDetaille?: boolean,
   ): Promise<MutabiliteOutputDto> {
-    // TODO: Passer modeDetaille à l'orchestrateur quand il sera supporté
-    return await this.orchestrateurService.calculerMutabilite(input);
+    return await this.orchestrateurService.calculerMutabilite(input, {
+      modeDetaille: modeDetaille || false,
+    });
   }
 
   @Get("evaluation/:id")
@@ -197,5 +200,43 @@ export class FrichesController {
       throw new Error("Évaluation non trouvée");
     }
     return evaluation;
+  }
+
+  @Get("metadata")
+  @ApiOperation({
+    summary: "Récupérer les métadonnées",
+    description: "Retourne tous les enums et labels disponibles",
+  })
+  @ApiResponse({
+    status: 200,
+    description: "Métadonnées récupérées avec succès",
+    type: MetadataOutputDto,
+  })
+  getMetadata(): MetadataOutputDto {
+    return {
+      enums: {
+        enrichissement: {
+          risqueNaturel: Object.values(RisqueNaturel),
+          zonageEnvironnemental: Object.values(ZonageEnvironnemental),
+          zonageReglementaire: Object.values(ZonageReglementaire),
+          zonagePatrimonial: Object.values(ZonagePatrimonial),
+          trameVerteEtBleue: Object.values(TrameVerteEtBleue),
+        },
+        saisie: {
+          typeProprietaire: Object.values(TypeProprietaire),
+          terrainViabilise: Object.values(TerrainViabilise),
+          etatBatiInfrastructure: Object.values(EtatBatiInfrastructure),
+          presencePollution: Object.values(PresencePollution),
+          valeurArchitecturaleHistorique: Object.values(ValeurArchitecturale),
+          qualitePaysage: Object.values(QualitePaysage),
+          qualiteVoieDesserte: Object.values(QualiteVoieDesserte),
+        },
+        usages: Object.values(UsageType),
+      },
+      version: {
+        api: "1.0.0",
+        algorithme: "1.0.0",
+      },
+    };
   }
 }

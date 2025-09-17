@@ -5,7 +5,7 @@ import {
   DonneesComplementairesInputDto,
 } from "@mutafriches/shared-types";
 import { EnrichissementSwaggerDto } from "../output/enrichissement.dto";
-import { DonneesComplementairesDto } from "../../api-inputs";
+import { DonneesComplementairesSwaggerDto } from "./donnees-complementaires.dto";
 
 /**
  * DTO Swagger pour le calcul de mutabilité
@@ -20,7 +20,7 @@ export class CalculerMutabiliteSwaggerDto implements ICalculerMutabiliteInput {
 
   @ApiProperty({
     description: "Données complémentaires saisies par l'utilisateur",
-    type: DonneesComplementairesDto,
+    type: DonneesComplementairesSwaggerDto,
   })
   donneesComplementaires: DonneesComplementairesInputDto;
 }

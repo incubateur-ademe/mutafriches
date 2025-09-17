@@ -1,4 +1,3 @@
-import { ApiProperty } from "@nestjs/swagger";
 import {
   DonneesComplementairesInputDto as IDonneesComplementaires,
   TypeProprietaire,
@@ -9,9 +8,9 @@ import {
   QualitePaysage,
   QualiteVoieDesserte,
 } from "@mutafriches/shared-types";
+import { ApiProperty } from "@nestjs/swagger";
 
-// Duplication nécessaire pour Swagger
-export class DonneesComplementairesDto implements IDonneesComplementaires {
+export class DonneesComplementairesSwaggerDto implements IDonneesComplementaires {
   @ApiProperty({
     enum: TypeProprietaire,
     description: "Type de propriétaire de la parcelle",
@@ -60,18 +59,4 @@ export class DonneesComplementairesDto implements IDonneesComplementaires {
     example: QualiteVoieDesserte.ACCESSIBLE,
   })
   qualiteVoieDesserte: QualiteVoieDesserte;
-}
-
-export class EvaluerParcelleInputDto {
-  @ApiProperty({
-    description: "Identifiant cadastral de la parcelle",
-    example: "25056000HZ0346",
-  })
-  identifiant: string;
-
-  @ApiProperty({
-    description: "Données complémentaires saisies par l'utilisateur",
-    type: DonneesComplementairesDto,
-  })
-  donneesComplementaires: DonneesComplementairesDto;
 }
