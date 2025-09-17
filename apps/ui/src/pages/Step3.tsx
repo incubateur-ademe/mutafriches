@@ -46,23 +46,21 @@ export const Step3: React.FC = () => {
     (results: MutabiliteOutputDto) => {
       if (!isIframeMode || !iframeCommunicator) return;
 
-      const formData = {
-        enrichmentData: state.enrichmentData,
-        manualData: state.manualData,
-        identifiantParcelle: state.identifiantParcelle,
-        uiData: state.uiData,
+      // Données détaillées renvoyées vers l'intégrateur
+      const evaluationSummary = {
+        evaluationId: results.evaluationId, // ID de l'évaluation - récupérable via API
+        identifiantParcelle: state.identifiantParcelle, // Identifiant de la parcelle
+        fiabilite: results.fiabilite, // Score de fiabilité
+        usagePrincipal: results.resultats[0], // Usage le plus adapté
+        top3Usages: results.resultats.slice(0, 3), // Top 3 des usages
       };
 
-      iframeCommunicator.sendCompleted(results, formData);
+      // (à discuter avec les intégrateurs)
+      // si besoin, envoyer aussi les données d'enrichissement et d'autres métadonnées
+
+      iframeCommunicator.sendCompleted(results, evaluationSummary);
     },
-    [
-      isIframeMode,
-      iframeCommunicator,
-      state.enrichmentData,
-      state.manualData,
-      state.identifiantParcelle,
-      state.uiData,
-    ],
+    [isIframeMode, iframeCommunicator, state.identifiantParcelle],
   );
 
   // Fonction pour calculer la mutabilité
