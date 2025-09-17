@@ -216,19 +216,21 @@ export class FrichesController {
    * Mappe l'entité Evaluation vers le DTO Swagger
    */
   private mapEvaluationToDto(evaluation: Evaluation): EvaluationSwaggerDto {
+    if (!evaluation.id) {
+      throw new Error("Evaluation Identifier is missing");
+    }
+
     return {
-      id: evaluation.id || "non-défini",
+      id: evaluation.id,
       identifiantParcelle: evaluation.parcelleId,
       dateCreation: evaluation.dateCalcul,
-      dateModification: evaluation.dateCalcul, // Pas de dateModification dans l'entité
+      dateModification: evaluation.dateCalcul,
       enrichissement: evaluation.donneesEnrichissement,
       donneesComplementaires: evaluation.donneesComplementaires,
       mutabilite: evaluation.resultats,
       metadata: {
         versionAlgorithme: evaluation.versionAlgorithme,
         source: "api",
-        integrator: undefined, // Pas dans l'entité actuelle
-        dureeCalculMs: undefined, // Pas dans l'entité actuelle
       },
     };
   }

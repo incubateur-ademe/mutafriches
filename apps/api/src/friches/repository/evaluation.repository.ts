@@ -1,4 +1,5 @@
 import { Injectable } from "@nestjs/common";
+import { v4 as uuidv4 } from "uuid";
 import { DatabaseService } from "../../shared/database/database.service";
 import { evaluations } from "../../shared/database/schema";
 import { Evaluation } from "../domain/entities/evaluation.entity";
@@ -17,10 +18,12 @@ export class EvaluationRepository {
    * Sauvegarde une évaluation en base
    */
   async save(evaluation: Evaluation): Promise<string> {
-    const id = evaluation.id || `eval_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+    if (!evaluation.id) {
+      evaluation.id = uuidv4();
+    }
 
     await this.database.db.insert(evaluations).values({
-      id,
+      id: evaluation.id,
       parcelleId: evaluation.parcelleId,
       dateCalcul: evaluation.dateCalcul,
       donneesEnrichissement: evaluation.donneesEnrichissement as any,
@@ -30,7 +33,7 @@ export class EvaluationRepository {
       versionAlgorithme: evaluation.versionAlgorithme,
     });
 
-    return id;
+    return evaluation.id;
   }
 
   /**
