@@ -1,0 +1,144 @@
+import {
+  EnrichissementOutputDto,
+  DonneesComplementairesInputDto,
+  TypeProprietaire,
+  TerrainViabilise,
+  EtatBatiInfrastructure,
+  PresencePollution,
+  ValeurArchitecturale,
+  QualitePaysage,
+  QualiteVoieDesserte,
+  RisqueNaturel,
+  ZonageEnvironnemental,
+  ZonagePatrimonial,
+  ZonageReglementaire,
+  TrameVerteEtBleue,
+  Coordonnees,
+} from "@mutafriches/shared-types";
+
+/**
+ * Entité métier Parcelle
+ * Représente une friche avec toutes ses données
+ */
+export class Parcelle {
+  // Identification
+  identifiantParcelle: string;
+  commune: string;
+  coordonnees?: Coordonnees;
+
+  // Données physiques
+  surfaceSite: number;
+  surfaceBati?: number;
+  ancienneActivite?: string;
+
+  // Données enrichies automatiquement
+  siteEnCentreVille: boolean;
+  distanceAutoroute: number;
+  distanceTransportCommun: number;
+  proximiteCommercesServices: boolean;
+  connectionReseauElectricite: boolean;
+  distanceRaccordementElectrique: number;
+  tauxLogementsVacants: number;
+  presenceRisquesTechnologiques: boolean;
+  presenceRisquesNaturels?: RisqueNaturel;
+  zonageReglementaire?: ZonageReglementaire;
+  zonageEnvironnemental?: ZonageEnvironnemental;
+  zonagePatrimonial?: ZonagePatrimonial;
+  trameVerteEtBleue?: TrameVerteEtBleue;
+
+  // Données saisies manuellement
+  typeProprietaire?: TypeProprietaire;
+  terrainViabilise?: TerrainViabilise;
+  etatBatiInfrastructure?: EtatBatiInfrastructure;
+  presencePollution?: PresencePollution;
+  valeurArchitecturaleHistorique?: ValeurArchitecturale;
+  qualitePaysage?: QualitePaysage;
+  qualiteVoieDesserte?: QualiteVoieDesserte;
+
+  // Métadonnées
+  sourcesUtilisees: string[] = [];
+  champsManquants: string[] = [];
+  fiabilite: number = 0;
+
+  /**
+   * Constructeur à partir des données enrichies et complémentaires
+   */
+  static fromEnrichissement(
+    enrichissement: EnrichissementOutputDto,
+    donneesComplementaires?: DonneesComplementairesInputDto,
+  ): Parcelle {
+    const parcelle = new Parcelle();
+
+    // Vérifier que enrichissement existe
+    if (!enrichissement) {
+      throw new Error("Données d'enrichissement manquantes");
+    }
+
+    // Copie sécurisée des données enrichies
+    Object.assign(parcelle, {
+      ...enrichissement,
+      // Cast sécurisé des enums avec vérification
+      presenceRisquesNaturels: enrichissement.presenceRisquesNaturels
+        ? (enrichissement.presenceRisquesNaturels as RisqueNaturel)
+        : undefined,
+      zonageEnvironnemental: enrichissement.zonageEnvironnemental
+        ? (enrichissement.zonageEnvironnemental as ZonageEnvironnemental)
+        : undefined,
+      zonagePatrimonial: enrichissement.zonagePatrimonial
+        ? (enrichissement.zonagePatrimonial as ZonagePatrimonial)
+        : undefined,
+      zonageReglementaire: enrichissement.zonageReglementaire
+        ? (enrichissement.zonageReglementaire as ZonageReglementaire)
+        : undefined,
+      trameVerteEtBleue: enrichissement.trameVerteEtBleue
+        ? (enrichissement.trameVerteEtBleue as TrameVerteEtBleue)
+        : undefined,
+    });
+
+    // Ajout des données complémentaires si fournies
+    if (donneesComplementaires) {
+      Object.assign(parcelle, donneesComplementaires);
+    }
+
+    return parcelle;
+  }
+
+  /**
+   * Calcule le taux de remplissage des données
+   */
+  calculerTauxCompletude(): number {
+    const champsTotal = 30;
+    const champsRemplis = Object.values(this).filter(
+      (v) =>
+        v !== undefined &&
+        v !== null &&
+        v !== TypeProprietaire.NE_SAIT_PAS &&
+        v !== TerrainViabilise.NE_SAIT_PAS &&
+        v !== EtatBatiInfrastructure.NE_SAIT_PAS &&
+        v !== PresencePollution.NE_SAIT_PAS &&
+        v !== ValeurArchitecturale.NE_SAIT_PAS &&
+        v !== QualitePaysage.NE_SAIT_PAS &&
+        v !== QualiteVoieDesserte.NE_SAIT_PAS,
+    ).length;
+
+    return Math.round((champsRemplis / champsTotal) * 100);
+  }
+
+  /**
+   * Vérifie si toutes les données obligatoires sont présentes
+   */
+  estComplete(): boolean {
+    return !!(
+      this.identifiantParcelle &&
+      this.commune &&
+      this.surfaceSite &&
+      this.typeProprietaire &&
+      this.terrainViabilise &&
+      this.etatBatiInfrastructure &&
+      this.presencePollution &&
+      this.valeurArchitecturaleHistorique &&
+      this.qualitePaysage &&
+      this.qualiteVoieDesserte
+    );
+  }
+}

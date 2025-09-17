@@ -1,9 +1,12 @@
-import { EnrichmentResultDto, UiParcelleDto } from "@mutafriches/shared-types";
+import { EnrichissementOutputDto } from "@mutafriches/shared-types";
+import { UiParcelleDto } from "../../types/ui-types";
 
 /**
  * Transforme les données d'enrichissement brutes en format UI
  */
-export const transformEnrichmentToUiData = (enrichmentData: EnrichmentResultDto): UiParcelleDto => {
+export const transformEnrichmentToUiData = (
+  enrichmentData: EnrichissementOutputDto,
+): UiParcelleDto => {
   const nonAccessibleVersion = "Donnée non accessible";
 
   return {

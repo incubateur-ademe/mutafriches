@@ -25,9 +25,10 @@ export class AppController {
       documentation: "/api",
       endpoints: [
         "GET /health - Health check",
-        "GET /version - Version de l'API",
-        "POST /friches/enrich - Enrichissement de parcelle",
-        "POST /friches/mutability - Calcul de mutabilité",
+        "POST /friches/enrichir - Enrichissement de parcelle",
+        "POST /friches/calculer - Calcul de mutabilité",
+        "GET /friches/evaluation/:id - Récupérer une évaluation de friche par son ID",
+        "GET /friches/metadata - Récupérer les métadonnées (énums, versions, etc.)",
       ],
     };
   }

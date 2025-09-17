@@ -1,8 +1,8 @@
+import { UsageResultat } from "@mutafriches/shared-types";
 import React from "react";
-import { UsageResultDto } from "@mutafriches/shared-types";
 
 interface ResultsTableProps {
-  results: UsageResultDto[];
+  results: UsageResultat[];
 }
 
 /**

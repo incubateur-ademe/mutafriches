@@ -5,7 +5,6 @@ import { ReliabilityScore } from "../components/step3/ReliabilityScore";
 import { useFormContext, useIframeCallback, useIsIframeMode, useIframe } from "../context";
 import { apiService } from "../services/api/api.service";
 import { ROUTES } from "../config/routes/routes.config";
-import { MutabilityResultDto } from "@mutafriches/shared-types";
 import { LoadingCallout } from "../components/common/LoadingCallout";
 import { ErrorAlert } from "../components/common/ErrorAlert";
 import { ResultsTable } from "../components/step3/ResultTable";
@@ -14,6 +13,7 @@ import { buildMutabilityInput } from "../utils/mappers/mutability.mapper";
 import { Stepper } from "../components/layout";
 import { createIframeCommunicator } from "../utils/iframe/iframeCommunication";
 import { IFrameableLayout } from "../layouts";
+import { MutabiliteOutputDto } from "@mutafriches/shared-types";
 
 export const Step3: React.FC = () => {
   const navigate = useNavigate();
@@ -26,7 +26,7 @@ export const Step3: React.FC = () => {
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [mutabilityData, setMutabilityData] = useState<MutabilityResultDto | null>(null);
+  const [mutabilityData, setMutabilityData] = useState<MutabiliteOutputDto | null>(null);
 
   // Un seul ref pour tracker si on a déjà initialisé
   const hasInitializedRef = React.useRef(false);
@@ -43,26 +43,24 @@ export const Step3: React.FC = () => {
 
   // Fonction pour envoyer les messages iframe
   const sendIframeMessages = useCallback(
-    (results: MutabilityResultDto) => {
+    (results: MutabiliteOutputDto) => {
       if (!isIframeMode || !iframeCommunicator) return;
 
-      const formData = {
-        enrichmentData: state.enrichmentData,
-        manualData: state.manualData,
-        identifiantParcelle: state.identifiantParcelle,
-        uiData: state.uiData,
+      // Données détaillées renvoyées vers l'intégrateur
+      const evaluationSummary = {
+        evaluationId: results.evaluationId, // ID de l'évaluation - récupérable via API
+        identifiantParcelle: state.identifiantParcelle, // Identifiant de la parcelle
+        fiabilite: results.fiabilite, // Score de fiabilité
+        usagePrincipal: results.resultats[0], // Usage le plus adapté
+        top3Usages: results.resultats.slice(0, 3), // Top 3 des usages
       };
 
-      iframeCommunicator.sendCompleted(results, formData);
+      // (à discuter avec les intégrateurs)
+      // si besoin, envoyer aussi les données d'enrichissement et d'autres métadonnées
+
+      iframeCommunicator.sendCompleted(results, evaluationSummary);
     },
-    [
-      isIframeMode,
-      iframeCommunicator,
-      state.enrichmentData,
-      state.manualData,
-      state.identifiantParcelle,
-      state.uiData,
-    ],
+    [isIframeMode, iframeCommunicator, state.identifiantParcelle],
   );
 
   // Fonction pour calculer la mutabilité

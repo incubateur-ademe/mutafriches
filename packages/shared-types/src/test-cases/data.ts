@@ -1,6 +1,6 @@
-import renaisonData from "./renaison.json";
-import trelazeData from "./trelaze.json";
-import { TestCase } from "./types";
+import renaisonData from "./fixtures/renaison.json";
+import trelazeData from "./fixtures/trelaze.json";
+import { TestCase } from "./types/test-case.types";
 
 // Cast des données JSON vers le type TestCase
 export const testCases: TestCase[] = [renaisonData as TestCase, trelazeData as TestCase];

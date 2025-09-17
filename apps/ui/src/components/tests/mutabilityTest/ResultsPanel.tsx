@@ -1,8 +1,12 @@
-import { MutabilityResultDto } from "@mutafriches/shared-types";
+import {
+  MutabiliteOutputDto,
+  UsageResultatDetaille,
+  DetailCritere,
+} from "@mutafriches/shared-types";
 import { useState } from "react";
 
 interface ResultsPanelProps {
-  result: MutabilityResultDto | null;
+  result: MutabiliteOutputDto | null;
   error: string | null;
   isCalculating: boolean;
   expectedResults: any | null;
@@ -53,7 +57,7 @@ export function ResultsPanel({ result, error, isCalculating, expectedResults }: 
               {expectedResults && (
                 <span className="fr-badge fr-badge--info fr-ml-1w">Avec comparaison</span>
               )}
-              {result.resultats?.[0]?.detailsCalcul && (
+              {(result.resultats as UsageResultatDetaille[])?.[0]?.detailsCalcul && (
                 <span className="fr-badge fr-badge--new fr-ml-1w">Mode détaillé activé</span>
               )}
             </div>
@@ -88,11 +92,13 @@ export function ResultsPanel({ result, error, isCalculating, expectedResults }: 
                     <th scope="col">Contraintes</th>
                     {expectedResults && <th scope="col">Attendu</th>}
                     {expectedResults && <th scope="col">Écart</th>}
-                    {result.resultats?.[0]?.detailsCalcul && <th scope="col">Détails</th>}
+                    {(result.resultats as UsageResultatDetaille[])?.[0]?.detailsCalcul && (
+                      <th scope="col">Détails</th>
+                    )}
                   </tr>
                 </thead>
                 <tbody>
-                  {result.resultats
+                  {(result.resultats as UsageResultatDetaille[])
                     ?.sort((a, b) => a.rang - b.rang)
                     .map((usage) => {
                       const expected = expectedResults?.usages?.find(
@@ -176,7 +182,7 @@ export function ResultsPanel({ result, error, isCalculating, expectedResults }: 
                                                 </thead>
                                                 <tbody>
                                                   {usage.detailsCalcul.detailsAvantages.map(
-                                                    (detail, idx) => (
+                                                    (detail: DetailCritere, idx: number) => (
                                                       <tr key={idx}>
                                                         <td className="fr-text--sm">
                                                           {detail.critere}
@@ -232,7 +238,7 @@ export function ResultsPanel({ result, error, isCalculating, expectedResults }: 
                                                 </thead>
                                                 <tbody>
                                                   {usage.detailsCalcul.detailsContraintes.map(
-                                                    (detail, idx) => (
+                                                    (detail: DetailCritere, idx: number) => (
                                                       <tr key={idx}>
                                                         <td className="fr-text--sm">
                                                           {detail.critere}
@@ -298,7 +304,7 @@ export function ResultsPanel({ result, error, isCalculating, expectedResults }: 
                 <h4 className="fr-alert__title">Analyse de la comparaison</h4>
                 <p>
                   {(() => {
-                    const ecarts = result.resultats.map((r) => {
+                    const ecarts = (result.resultats as UsageResultatDetaille[]).map((r) => {
                       const expected = expectedResults.usages?.find(
                         (e: any) => e.usage === r.usage,
                       );
