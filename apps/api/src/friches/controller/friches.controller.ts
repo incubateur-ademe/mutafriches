@@ -1,199 +1,264 @@
-// TODO remove console logs or replace by proper logger
-/* eslint-disable no-console */
-import { Controller, Post, Body, Query } from "@nestjs/common";
+import { Controller, Post, Body, Query, Get, Param } from "@nestjs/common";
 import {
   ApiTags,
   ApiOperation,
   ApiResponse,
   ApiBody,
   ApiBadRequestResponse,
-  ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
+  ApiQuery,
 } from "@nestjs/swagger";
-import { ParcelleEnrichmentService } from "../services/parcelle-enrichment/parcelle-enrichment.service";
-import { ParcelleInputDto } from "../dto/parcelle-input.dto";
-import { EnrichmentResultDto } from "../dto/enrichment-result.dto";
-import { MutabilityCalculationService } from "../services/mutability/mutability-calculation.service";
-import { MutabilityInputDto } from "../dto/mutability-input.dto";
-import { MutabilityResultDto } from "../dto/mutability-result.dto";
+import {
+  EnrichirParcelleInputDto,
+  EnrichissementOutputDto,
+  CalculerMutabiliteInputDto,
+  MutabiliteOutputDto,
+  TypeProprietaire,
+  TerrainViabilise,
+  EtatBatiInfrastructure,
+  PresencePollution,
+  ValeurArchitecturale,
+  QualitePaysage,
+  QualiteVoieDesserte,
+  RisqueNaturel,
+  ZonageEnvironnemental,
+  ZonagePatrimonial,
+  TrameVerteEtBleue,
+  UsageType,
+} from "@mutafriches/shared-types";
+
+import { EvaluerParcelleInputDto } from "../dto/api-inputs";
+
+import { OrchestrateurService } from "../services/orchestrateur.service";
+import { CalculerMutabiliteSwaggerDto, EnrichirParcelleSwaggerDto } from "../dto/swagger/input";
+import { EnrichissementSwaggerDto, MutabiliteSwaggerDto } from "../dto/swagger/output";
 
 @ApiTags("friches")
 @Controller("friches")
 export class FrichesController {
-  constructor(
-    private readonly parcelleEnrichmentService: ParcelleEnrichmentService,
-    private readonly mutabilityCalculationService: MutabilityCalculationService,
-  ) {}
+  constructor(private readonly orchestrateurService: OrchestrateurService) {}
 
-  @Post("parcelle/enrichir")
+  @Post("enrichir")
   @ApiOperation({
     summary: "Enrichir les données d'une parcelle",
     description: `
     Enrichit automatiquement les données d'une parcelle à partir de son identifiant cadastral 
-    en interrogeant plusieurs sources de données externes :
+    en interrogeant plusieurs sources de données externes.
     
     **Sources utilisées :**
-    - API IGN Cadastre : coordonnées, commune, géométrie, zonage PLU  
-    - API BDNB : surface, risqus, bâtiments
+    - API IGN Cadastre : coordonnées, commune, géométrie, surface
+    - API BDNB : surface bâtie, risques naturels
     - API Enedis : raccordement électrique, distance réseau
-    - API Transports : accessibilité transports en commun
+    - API Transport : distance aux transports en commun
+    - API Overpass : commerces et services à proximité
+    - API Lovac : taux de logements vacants
 
     Retourne une parcelle enrichie avec un indice de fiabilité selon la complétude des données.
     `,
   })
   @ApiBody({
-    type: ParcelleInputDto,
+    type: EnrichirParcelleSwaggerDto,
     examples: {
-      atelierCoutances: {
-        summary: "Atelier de conception - Coutances",
-        description: "Parcelle exemple du fichier Excel original, avec données complètes",
+      trelaze: {
+        summary: "Parcelle Trélazé (cas de test)",
+        description: "Ancienne manufacture Les Allumettes",
         value: {
-          identifiantParcelle: "50147000AR0010",
+          identifiant: "25056000HZ0346",
+        },
+      },
+      renaison: {
+        summary: "Parcelle Renaison (cas de test)",
+        description: "Site industriel",
+        value: {
+          identifiant: "42182000AB0123",
         },
       },
     },
   })
   @ApiResponse({
     status: 201,
-    description: "Enrichissement réussi avec données complètes",
-    type: EnrichmentResultDto,
+    description: "Enrichissement réussi",
+    type: EnrichissementSwaggerDto,
   })
   @ApiBadRequestResponse({
-    description: "Format d'identifiant parcelle invalide",
-    examples: {
-      invalidFormat: {
-        summary: "Format invalide",
-        value: {
-          statusCode: 400,
-          message: ["Format d'identifiant parcelle invalide (attendu: 25056000HZ0346)"],
-          error: "Bad Request",
-        },
-      },
-    },
+    description: "Format d'identifiant invalide",
   })
   @ApiNotFoundResponse({
     description: "Parcelle introuvable dans les sources de données",
   })
-  @ApiInternalServerErrorResponse({
-    description: "Erreur lors de l'accès aux sources de données externes",
-  })
-  async enrichParcelle(@Body() input: ParcelleInputDto): Promise<EnrichmentResultDto> {
-    console.log(`API: Enrichissement parcelle ${input.identifiantParcelle}`);
-    return await this.parcelleEnrichmentService.enrichFromDataSources(input.identifiantParcelle);
+  async enrichirParcelle(
+    @Body() input: EnrichirParcelleInputDto,
+  ): Promise<EnrichissementOutputDto> {
+    return await this.orchestrateurService.enrichirParcelle(input);
   }
 
-  @Post("parcelle/mutabilite")
+  @Post("calculer")
   @ApiOperation({
-    summary: "Calculer les indices de mutabilité d'une friche",
+    summary: "Calculer les indices de mutabilité",
     description: `
-    Calcule les indices de mutabilité pour 7 usages différents d'une friche urbaine 
-    selon la méthodologie développée pour remplacer le fichier Excel original.
+    Calcule les indices de mutabilité pour 7 usages différents d'une friche urbaine.
     
     **Algorithme :**
     - Analyse de 25+ critères techniques, réglementaires et contextuels
-    - Pondération spécifique par usage (résidentiel, industrie, renaturation, etc.)
+    - Pondération spécifique par usage
     - Calcul d'un indice de 0 à 100% pour chaque usage
-    - Classement des usages par potentiel (rang 1 à 7)
+    - Classement des usages par potentiel (rang 1 à 7, 7 étant le meilleur)
     - Évaluation de la fiabilité globale selon la complétude des données
     
     **7 usages analysés :**
-    1. Résidentiel ou mixte
-    2. Équipements publics  
-    3. Culture, tourisme
-    4. Tertiaire
-    5. Industrie
-    6. Renaturation
-    7. Photovoltaïque au sol
+    - ${UsageType.RESIDENTIEL} : Résidentiel ou mixte
+    - ${UsageType.EQUIPEMENTS} : Équipements publics  
+    - ${UsageType.CULTURE} : Culture, tourisme
+    - ${UsageType.TERTIAIRE} : Tertiaire
+    - ${UsageType.INDUSTRIE} : Industrie
+    - ${UsageType.RENATURATION} : Renaturation
+    - ${UsageType.PHOTOVOLTAIQUE} : Photovoltaïque au sol
     `,
   })
   @ApiBody({
-    type: MutabilityInputDto,
-    description: `
-    Données complètes de la parcelle pour le calcul de mutabilité. 
-    Peut être obtenu via l'endpoint /parcelle/enrichir ou saisi manuellement.
-    
-    **Structure complète attendue :**
-    - identifiantParcelle, commune, surfaceSite (obligatoires)
-    - Données physiques : surfaceBati, connectionReseauElectricite, distanceRaccordementElectrique
-    - Localisation : siteEnCentreVille, distanceAutoroute, distanceTransportCommun, proximiteCommercesServices
-    - Contexte : tauxLogementsVacants, ancienneActivite
-    - Risques : presenceRisquesTechnologiques, presenceRisquesNaturels
-    - Zonages : zonageEnvironnemental, zonageReglementaire, zonagePatrimonial, trameVerteEtBleue
-    - Caractéristiques : typeProprietaire, etatBatiInfrastructure, presencePollution, qualiteVoieDesserte, qualitePaysage, valeurArchitecturaleHistorique, terrainViabilise
-    - Optionnel : coordonnees, sessionId, fiabilite
-    `,
+    type: CalculerMutabiliteSwaggerDto,
+    description: "Données enrichies + données complémentaires",
     examples: {
-      atelierCoutances: {
-        summary: "Atelier de conception - Coutances",
-        description: "Parcelle exemple du fichier Excel original, avec données complètes",
+      exempleComplet: {
+        summary: "Exemple avec toutes les données",
         value: {
-          identifiantParcelle: "50147000AR0010",
-          commune: "Coutances",
-          surfaceSite: 1782,
-          surfaceBati: 1214,
-          connectionReseauElectricite: true,
-          distanceRaccordementElectrique: 140.50478998604967,
-          siteEnCentreVille: false,
-          distanceAutoroute: 0,
-          distanceTransportCommun: 800,
-          proximiteCommercesServices: false,
-          tauxLogementsVacants: 0,
-          presenceRisquesTechnologiques: false,
-          presenceRisquesNaturels: "faible",
-          zonageEnvironnemental: "hors_zone",
-          zonageReglementaire: "",
-          zonagePatrimonial: "non_concerne",
-          trameVerteEtBleue: "hors_trame",
-          coordonnees: {
-            latitude: 49.0421992,
-            longitude: -1.45017951,
+          donneesEnrichies: {
+            identifiantParcelle: "25056000HZ0346",
+            commune: "Trélazé",
+            surfaceSite: 42780,
+            surfaceBati: 6600,
+            siteEnCentreVille: true,
+            distanceAutoroute: 1.5,
+            distanceTransportCommun: 250,
+            proximiteCommercesServices: true,
+            connectionReseauElectricite: true,
+            distanceRaccordementElectrique: 0.3,
+            tauxLogementsVacants: 4.9,
+            presenceRisquesTechnologiques: false,
+            presenceRisquesNaturels: RisqueNaturel.FAIBLE,
+            zonageEnvironnemental: ZonageEnvironnemental.HORS_ZONE,
+            zonageReglementaire: "Zone urbaine - U",
+            zonagePatrimonial: ZonagePatrimonial.NON_CONCERNE,
+            trameVerteEtBleue: TrameVerteEtBleue.HORS_TRAME,
+            coordonnees: { latitude: 47.4514, longitude: -0.4619 },
+            sourcesUtilisees: ["Cadastre", "BDNB", "Enedis"],
+            champsManquants: [],
+            fiabilite: 9.5,
           },
-          etatBatiInfrastructure: "BATIMENTS_HETEROGENES",
-          presencePollution: "NE_SAIT_PAS",
-          qualiteVoieDesserte: "ACCESSIBLE",
-          qualitePaysage: "BANAL_INFRA_ORDINAIRE",
-          valeurArchitecturaleHistorique: "EXCEPTIONNEL",
-          terrainViabilise: true,
-          fiabilite: 9.5,
+          donneesComplementaires: {
+            typeProprietaire: TypeProprietaire.PRIVE,
+            terrainViabilise: TerrainViabilise.OUI,
+            etatBatiInfrastructure: EtatBatiInfrastructure.DEGRADATION_HETEROGENE,
+            presencePollution: PresencePollution.NE_SAIT_PAS,
+            valeurArchitecturaleHistorique: ValeurArchitecturale.EXCEPTIONNEL,
+            qualitePaysage: QualitePaysage.BANAL_INFRA_ORDINAIRE,
+            qualiteVoieDesserte: QualiteVoieDesserte.ACCESSIBLE,
+          },
+        },
+      },
+    },
+  })
+  @ApiQuery({
+    name: "modeDetaille",
+    required: false,
+    type: Boolean,
+    description: "Active le mode détaillé avec le détail des calculs",
+  })
+  @ApiResponse({
+    status: 201,
+    description: "Calcul réussi",
+    type: MutabiliteSwaggerDto,
+  })
+  @ApiBadRequestResponse({
+    description: "Données incomplètes",
+  })
+  async calculerMutabilite(
+    @Body() input: CalculerMutabiliteInputDto,
+    @Query("modeDetaille") modeDetaille?: boolean,
+  ): Promise<MutabiliteOutputDto> {
+    // TODO: Passer modeDetaille à l'orchestrateur quand il sera supporté
+    return await this.orchestrateurService.calculerMutabilite(input);
+  }
+
+  @Post("evaluer")
+  @ApiOperation({
+    summary: "Évaluer complètement une parcelle",
+    description: `
+    Effectue l'enrichissement ET le calcul de mutabilité en une seule opération.
+    Cette route combine les deux étapes et sauvegarde le résultat pour consultation ultérieure.
+    
+    **Processus :**
+    1. Enrichissement automatique depuis les APIs externes
+    2. Calcul de mutabilité avec les données complémentaires
+    3. Sauvegarde de l'évaluation (TODO: pas encore implémenté)
+    
+    **Retour :**
+    - Les données enrichies complètes
+    - Les résultats de mutabilité
+    - Un ID d'évaluation pour récupération ultérieure
+    `,
+  })
+  @ApiBody({
+    type: EvaluerParcelleInputDto,
+    examples: {
+      trelaze: {
+        summary: "Évaluation complète Trélazé",
+        value: {
+          identifiant: "25056000HZ0346",
+          donneesComplementaires: {
+            typeProprietaire: TypeProprietaire.PRIVE,
+            terrainViabilise: TerrainViabilise.OUI,
+            etatBatiInfrastructure: EtatBatiInfrastructure.DEGRADATION_HETEROGENE,
+            presencePollution: PresencePollution.NE_SAIT_PAS,
+            valeurArchitecturaleHistorique: ValeurArchitecturale.EXCEPTIONNEL,
+            qualitePaysage: QualitePaysage.BANAL_INFRA_ORDINAIRE,
+            qualiteVoieDesserte: QualiteVoieDesserte.ACCESSIBLE,
+          },
         },
       },
     },
   })
   @ApiResponse({
     status: 201,
-    description: "Calcul de mutabilité réussi avec indices détaillés",
-    type: MutabilityResultDto,
-  })
-  @ApiBadRequestResponse({
-    description: "Données d'entrée invalides ou incomplètes",
-    examples: {
-      donneesManquantes: {
-        summary: "Champs obligatoires manquants",
-        value: {
-          statusCode: 400,
-          message: [
-            "identifiantParcelle should not be empty",
-            "commune should not be empty",
-            "surfaceSite must be a positive number",
-          ],
-          error: "Bad Request",
-        },
+    description: "Évaluation complète réussie",
+    schema: {
+      type: "object",
+      properties: {
+        enrichissement: { type: "object" },
+        mutabilite: { type: "object" },
+        evaluationId: { type: "string" },
       },
     },
   })
-  @ApiInternalServerErrorResponse({
-    description: "Erreur lors du calcul des indices de mutabilité",
-  })
-  calculateMutability(
-    @Body() input: MutabilityInputDto,
-    @Query("modeDetaille") modeDetaille?: boolean,
-  ): MutabilityResultDto {
-    console.log(
-      `API: Calcul mutabilité ${input.identifiantParcelle} - Mode détaillé: ${modeDetaille || false}`,
+  async evaluerParcelle(@Body() body: EvaluerParcelleInputDto): Promise<{
+    enrichissement: EnrichissementOutputDto;
+    mutabilite: MutabiliteOutputDto;
+    evaluationId?: string;
+  }> {
+    return await this.orchestrateurService.evaluerParcelle(
+      body.identifiant,
+      body.donneesComplementaires,
     );
+  }
 
-    return this.mutabilityCalculationService.calculateMutability(input, {
-      modeDetaille: modeDetaille || false,
-    });
+  @Get("evaluation/:id")
+  @ApiOperation({
+    summary: "Récupérer une évaluation sauvegardée",
+    description:
+      "Récupère une évaluation précédemment calculée par son ID (TODO: pas encore implémenté)",
+  })
+  @ApiResponse({
+    status: 200,
+    description: "Évaluation trouvée",
+  })
+  @ApiNotFoundResponse({
+    description: "Évaluation non trouvée",
+  })
+  async recupererEvaluation(@Param("id") id: string) {
+    const evaluation = await this.orchestrateurService.recupererEvaluation(id);
+    if (!evaluation) {
+      throw new Error("Évaluation non trouvée");
+    }
+    return evaluation;
   }
 }

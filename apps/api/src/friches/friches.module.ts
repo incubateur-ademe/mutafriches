@@ -1,28 +1,31 @@
 import { Module } from "@nestjs/common";
 import { HttpModule } from "@nestjs/axios";
-import { ParcelleEnrichmentService } from "./services/parcelle-enrichment/parcelle-enrichment.service";
-import { MutabilityCalculationService } from "./services/mutability/mutability-calculation.service";
 import { FrichesController } from "./controller/friches.controller";
-import { CadastreService } from "./services/external-apis/cadastre/cadastre.service";
-import { BdnbService } from "./services/external-apis/bdnb/bdnb.service";
-import { EnedisService } from "./services/external-apis/enedis/enedis.service";
+import { OrchestrateurService } from "./services/orchestrateur.service";
+import { EnrichissementService } from "./services/enrichissement.service";
+import { CalculService } from "./services/calcul.service";
+import { CadastreService } from "./services/external/cadastre/cadastre.service";
+import { BdnbService } from "./services/external/bdnb/bdnb.service";
+import { EnedisService } from "./services/external/enedis/enedis.service";
+import { DatabaseService } from "../shared/database/database.service";
+import { EvaluationRepository } from "./repository/evaluation.repository";
 
 @Module({
   imports: [HttpModule],
   controllers: [FrichesController],
   providers: [
+    // Database
+    DatabaseService,
+    EvaluationRepository,
+    // Services principaux
+    OrchestrateurService,
+    EnrichissementService,
+    CalculService,
+    // Services externes
     CadastreService,
     BdnbService,
     EnedisService,
-    ParcelleEnrichmentService,
-    MutabilityCalculationService,
   ],
-  exports: [
-    CadastreService,
-    BdnbService,
-    EnedisService,
-    ParcelleEnrichmentService,
-    MutabilityCalculationService,
-  ],
+  exports: [OrchestrateurService],
 })
 export class FrichesModule {}
