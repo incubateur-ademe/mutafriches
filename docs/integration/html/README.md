@@ -65,8 +65,6 @@ Envoyé quand l'analyse est terminée avec les résultats complets.
 
 ```javascript
 {
-  type: "mutafriches:completed",
-  data: {
     evaluationId: "uuid-de-l-evaluation",
     identifiantParcelle: "490055000AI0001",
     retrieveUrl: "/friches/evaluations/uuid-de-l-evaluation",
@@ -88,7 +86,6 @@ Envoyé quand l'analyse est terminée avec les résultats complets.
       dateAnalyse: "2025-01-15T10:30:00Z",
       versionAlgorithme: "1.0.0"
     }
-  }
 }
 ```
 
