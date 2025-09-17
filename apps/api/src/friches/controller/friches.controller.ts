@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Query, Get, Param } from "@nestjs/common";
+import { Controller, Post, Body, Query, Get, Param, NotFoundException } from "@nestjs/common";
 import {
   ApiTags,
   ApiOperation,
@@ -7,6 +7,7 @@ import {
   ApiBadRequestResponse,
   ApiNotFoundResponse,
   ApiQuery,
+  ApiParam,
 } from "@nestjs/swagger";
 import {
   EnrichirParcelleInputDto,
@@ -31,7 +32,9 @@ import {
 import { OrchestrateurService } from "../services/orchestrateur.service";
 import { CalculerMutabiliteSwaggerDto, EnrichirParcelleSwaggerDto } from "../dto/swagger/input";
 import { EnrichissementSwaggerDto, MutabiliteSwaggerDto } from "../dto/swagger/output";
-import { MetadataOutputDto } from "../dto/swagger/output/metadata.dto";
+import { MetadataSwaggerDto } from "../dto/swagger/output/metadata.dto";
+import { EvaluationSwaggerDto } from "../dto/swagger/output/evaluation.dto";
+import { Evaluation } from "../domain/entities/evaluation.entity";
 
 @ApiTags("friches")
 @Controller("friches")
@@ -181,25 +184,53 @@ export class FrichesController {
     });
   }
 
-  @Get("evaluation/:id")
+  @Get("evaluations/:id")
   @ApiOperation({
-    summary: "Récupérer une évaluation sauvegardée",
-    description:
-      "Récupère une évaluation précédemment calculée par son ID (TODO: pas encore implémenté)",
+    summary: "Récupérer une évaluation complète",
+    description: `...`,
+  })
+  @ApiParam({
+    name: "id",
+    description: "Identifiant unique de l'évaluation",
+    example: "eval-550e8400-e29b-41d4-a716-446655440000",
   })
   @ApiResponse({
     status: 200,
     description: "Évaluation trouvée",
+    type: EvaluationSwaggerDto,
   })
   @ApiNotFoundResponse({
     description: "Évaluation non trouvée",
   })
-  async recupererEvaluation(@Param("id") id: string) {
+  async recupererEvaluation(@Param("id") id: string): Promise<EvaluationSwaggerDto> {
     const evaluation = await this.orchestrateurService.recupererEvaluation(id);
+
     if (!evaluation) {
-      throw new Error("Évaluation non trouvée");
+      throw new NotFoundException(`Évaluation ${id} non trouvée`);
     }
-    return evaluation;
+
+    return this.mapEvaluationToDto(evaluation);
+  }
+
+  /**
+   * Mappe l'entité Evaluation vers le DTO Swagger
+   */
+  private mapEvaluationToDto(evaluation: Evaluation): EvaluationSwaggerDto {
+    return {
+      id: evaluation.id || "non-défini",
+      identifiantParcelle: evaluation.parcelleId,
+      dateCreation: evaluation.dateCalcul,
+      dateModification: evaluation.dateCalcul, // Pas de dateModification dans l'entité
+      enrichissement: evaluation.donneesEnrichissement,
+      donneesComplementaires: evaluation.donneesComplementaires,
+      mutabilite: evaluation.resultats,
+      metadata: {
+        versionAlgorithme: evaluation.versionAlgorithme,
+        source: "api",
+        integrator: undefined, // Pas dans l'entité actuelle
+        dureeCalculMs: undefined, // Pas dans l'entité actuelle
+      },
+    };
   }
 
   @Get("metadata")
@@ -210,9 +241,9 @@ export class FrichesController {
   @ApiResponse({
     status: 200,
     description: "Métadonnées récupérées avec succès",
-    type: MetadataOutputDto,
+    type: MetadataSwaggerDto,
   })
-  getMetadata(): MetadataOutputDto {
+  getMetadata(): MetadataSwaggerDto {
     return {
       enums: {
         enrichissement: {

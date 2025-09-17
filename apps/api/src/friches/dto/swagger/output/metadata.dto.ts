@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 
-export class MetadataOutputDto {
+export class MetadataSwaggerDto {
   @ApiProperty({
     description: "Enums groupés par catégorie",
     example: {
