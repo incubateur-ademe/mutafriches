@@ -1,7 +1,6 @@
-import { UsageType } from "@mutafriches/shared-types";
+import { EtatBatiInfrastructure, UsageType } from "@mutafriches/shared-types";
 import {
   TypeProprietaire,
-  EtatBati,
   PresencePollution,
   QualiteVoieDesserte,
   QualitePaysage,
@@ -11,10 +10,6 @@ import {
   ZonagePatrimonial,
   TrameVerteEtBleue,
   ZonageReglementaire,
-  CouvertVegetal,
-  PresenceEspeceProtegee,
-  ZoneHumide,
-  VoieEauProximite,
 } from "@mutafriches/shared-types";
 import { ScoreImpact } from "../../enums/score-impact.enum";
 
@@ -97,8 +92,9 @@ export const MATRICE_SCORING = {
   },
 
   // 4. État du bâti
+  // TODO : À confirmer avec Anna car incohérence entre doc et tableau excel
   etatBatiInfrastructure: {
-    [EtatBati.PAS_DE_BATI]: {
+    [EtatBatiInfrastructure.DEGRADATION_INEXISTANTE]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
       [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
       [UsageType.CULTURE]: ScoreImpact.NEUTRE,
@@ -107,7 +103,7 @@ export const MATRICE_SCORING = {
       [UsageType.RENATURATION]: ScoreImpact.TRES_POSITIF,
       [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.TRES_POSITIF,
     },
-    [EtatBati.EN_RUINE_DANGEREUX]: {
+    [EtatBatiInfrastructure.DEGRADATION_TRES_IMPORTANTE]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.TRES_NEGATIF,
       [UsageType.EQUIPEMENTS]: ScoreImpact.TRES_NEGATIF,
       [UsageType.CULTURE]: ScoreImpact.TRES_NEGATIF,
@@ -116,16 +112,8 @@ export const MATRICE_SCORING = {
       [UsageType.RENATURATION]: ScoreImpact.POSITIF,
       [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.POSITIF,
     },
-    [EtatBati.FORTE_DEGRADATION]: {
-      [UsageType.RESIDENTIEL]: ScoreImpact.NEGATIF,
-      [UsageType.EQUIPEMENTS]: ScoreImpact.NEGATIF,
-      [UsageType.CULTURE]: ScoreImpact.NEGATIF,
-      [UsageType.TERTIAIRE]: ScoreImpact.NEGATIF,
-      [UsageType.INDUSTRIE]: ScoreImpact.NEGATIF,
-      [UsageType.RENATURATION]: ScoreImpact.POSITIF,
-      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.POSITIF,
-    },
-    [EtatBati.ETAT_MOYEN]: {
+
+    [EtatBatiInfrastructure.DEGRADATION_MOYENNE]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
       [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
       [UsageType.CULTURE]: ScoreImpact.NEUTRE,
@@ -134,25 +122,7 @@ export const MATRICE_SCORING = {
       [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
       [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
     },
-    [EtatBati.BON_ETAT_APPARENT]: {
-      [UsageType.RESIDENTIEL]: ScoreImpact.POSITIF,
-      [UsageType.EQUIPEMENTS]: ScoreImpact.POSITIF,
-      [UsageType.CULTURE]: ScoreImpact.POSITIF,
-      [UsageType.TERTIAIRE]: ScoreImpact.POSITIF,
-      [UsageType.INDUSTRIE]: ScoreImpact.POSITIF,
-      [UsageType.RENATURATION]: ScoreImpact.NEGATIF,
-      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEGATIF,
-    },
-    [EtatBati.ETAT_REMARQUABLE]: {
-      [UsageType.RESIDENTIEL]: ScoreImpact.TRES_POSITIF,
-      [UsageType.EQUIPEMENTS]: ScoreImpact.TRES_POSITIF,
-      [UsageType.CULTURE]: ScoreImpact.TRES_POSITIF,
-      [UsageType.TERTIAIRE]: ScoreImpact.TRES_POSITIF,
-      [UsageType.INDUSTRIE]: ScoreImpact.TRES_POSITIF,
-      [UsageType.RENATURATION]: ScoreImpact.TRES_NEGATIF,
-      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.TRES_NEGATIF,
-    },
-    [EtatBati.BATIMENTS_HETEROGENES]: {
+    [EtatBatiInfrastructure.DEGRADATION_HETEROGENE]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
       [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
       [UsageType.CULTURE]: ScoreImpact.NEUTRE,
@@ -688,133 +658,137 @@ export const MATRICE_SCORING = {
     },
   },
 
+  // TODO : vérifier avec Anna
   // Critère non pris en compte dans la version web
   // 14. Voie d'eau à proximité
-  voieEauProximite: {
-    [VoieEauProximite.OUI_NAVIGABLE]: {
-      [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
-      [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
-      [UsageType.CULTURE]: ScoreImpact.NEUTRE,
-      [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
-      [UsageType.INDUSTRIE]: ScoreImpact.POSITIF,
-      [UsageType.RENATURATION]: ScoreImpact.POSITIF,
-      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
-    },
-    [VoieEauProximite.OUI_NON_NAVIGABLE]: {
-      [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
-      [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
-      [UsageType.CULTURE]: ScoreImpact.NEUTRE,
-      [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
-      [UsageType.INDUSTRIE]: ScoreImpact.NEUTRE,
-      [UsageType.RENATURATION]: ScoreImpact.POSITIF,
-      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
-    },
-    [VoieEauProximite.NON]: {
-      [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
-      [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
-      [UsageType.CULTURE]: ScoreImpact.NEUTRE,
-      [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
-      [UsageType.INDUSTRIE]: ScoreImpact.NEUTRE,
-      [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
-      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
-    },
-  },
+  // voieEauProximite: {
+  //   [VoieEauProximite.OUI_NAVIGABLE]: {
+  //     [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
+  //     [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
+  //     [UsageType.CULTURE]: ScoreImpact.NEUTRE,
+  //     [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
+  //     [UsageType.INDUSTRIE]: ScoreImpact.POSITIF,
+  //     [UsageType.RENATURATION]: ScoreImpact.POSITIF,
+  //     [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
+  //   },
+  //   [VoieEauProximite.OUI_NON_NAVIGABLE]: {
+  //     [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
+  //     [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
+  //     [UsageType.CULTURE]: ScoreImpact.NEUTRE,
+  //     [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
+  //     [UsageType.INDUSTRIE]: ScoreImpact.NEUTRE,
+  //     [UsageType.RENATURATION]: ScoreImpact.POSITIF,
+  //     [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
+  //   },
+  //   [VoieEauProximite.NON]: {
+  //     [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
+  //     [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
+  //     [UsageType.CULTURE]: ScoreImpact.NEUTRE,
+  //     [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
+  //     [UsageType.INDUSTRIE]: ScoreImpact.NEUTRE,
+  //     [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
+  //     [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
+  //   },
+  // },
 
+  // TODO : vérifier avec Anna
   // Critère non pris en compte dans la version web
   // 22. Couvert végétal
-  couvertVegetal: {
-    [CouvertVegetal.IMPERMEABILISE]: {
-      [UsageType.RESIDENTIEL]: ScoreImpact.POSITIF,
-      [UsageType.EQUIPEMENTS]: ScoreImpact.POSITIF,
-      [UsageType.CULTURE]: ScoreImpact.NEUTRE,
-      [UsageType.TERTIAIRE]: ScoreImpact.POSITIF,
-      [UsageType.INDUSTRIE]: ScoreImpact.POSITIF,
-      [UsageType.RENATURATION]: ScoreImpact.NEGATIF,
-      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
-    },
-    [CouvertVegetal.SOL_NU_FAIBLEMENT_HERBACE]: {
-      [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
-      [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
-      [UsageType.CULTURE]: ScoreImpact.NEUTRE,
-      [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
-      [UsageType.INDUSTRIE]: ScoreImpact.NEUTRE,
-      [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
-      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
-    },
-    [CouvertVegetal.VEGETATION_ARBUSTIVE_FAIBLE]: {
-      [UsageType.RESIDENTIEL]: ScoreImpact.NEGATIF,
-      [UsageType.EQUIPEMENTS]: ScoreImpact.NEGATIF,
-      [UsageType.CULTURE]: ScoreImpact.NEUTRE,
-      [UsageType.TERTIAIRE]: ScoreImpact.NEGATIF,
-      [UsageType.INDUSTRIE]: ScoreImpact.NEGATIF,
-      [UsageType.RENATURATION]: ScoreImpact.POSITIF,
-      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEGATIF,
-    },
-    [CouvertVegetal.VEGETATION_ARBUSTIVE_PREDOMINANTE]: {
-      [UsageType.RESIDENTIEL]: ScoreImpact.TRES_NEGATIF,
-      [UsageType.EQUIPEMENTS]: ScoreImpact.TRES_NEGATIF,
-      [UsageType.CULTURE]: ScoreImpact.NEGATIF,
-      [UsageType.TERTIAIRE]: ScoreImpact.TRES_NEGATIF,
-      [UsageType.INDUSTRIE]: ScoreImpact.TRES_NEGATIF,
-      [UsageType.RENATURATION]: ScoreImpact.TRES_POSITIF,
-      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.TRES_NEGATIF,
-    },
-  },
+  // couvertVegetal: {
+  //   [CouvertVegetal.IMPERMEABILISE]: {
+  //     [UsageType.RESIDENTIEL]: ScoreImpact.POSITIF,
+  //     [UsageType.EQUIPEMENTS]: ScoreImpact.POSITIF,
+  //     [UsageType.CULTURE]: ScoreImpact.NEUTRE,
+  //     [UsageType.TERTIAIRE]: ScoreImpact.POSITIF,
+  //     [UsageType.INDUSTRIE]: ScoreImpact.POSITIF,
+  //     [UsageType.RENATURATION]: ScoreImpact.NEGATIF,
+  //     [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
+  //   },
+  //   [CouvertVegetal.SOL_NU_FAIBLEMENT_HERBACE]: {
+  //     [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
+  //     [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
+  //     [UsageType.CULTURE]: ScoreImpact.NEUTRE,
+  //     [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
+  //     [UsageType.INDUSTRIE]: ScoreImpact.NEUTRE,
+  //     [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
+  //     [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
+  //   },
+  //   [CouvertVegetal.VEGETATION_ARBUSTIVE_FAIBLE]: {
+  //     [UsageType.RESIDENTIEL]: ScoreImpact.NEGATIF,
+  //     [UsageType.EQUIPEMENTS]: ScoreImpact.NEGATIF,
+  //     [UsageType.CULTURE]: ScoreImpact.NEUTRE,
+  //     [UsageType.TERTIAIRE]: ScoreImpact.NEGATIF,
+  //     [UsageType.INDUSTRIE]: ScoreImpact.NEGATIF,
+  //     [UsageType.RENATURATION]: ScoreImpact.POSITIF,
+  //     [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEGATIF,
+  //   },
+  //   [CouvertVegetal.VEGETATION_ARBUSTIVE_PREDOMINANTE]: {
+  //     [UsageType.RESIDENTIEL]: ScoreImpact.TRES_NEGATIF,
+  //     [UsageType.EQUIPEMENTS]: ScoreImpact.TRES_NEGATIF,
+  //     [UsageType.CULTURE]: ScoreImpact.NEGATIF,
+  //     [UsageType.TERTIAIRE]: ScoreImpact.TRES_NEGATIF,
+  //     [UsageType.INDUSTRIE]: ScoreImpact.TRES_NEGATIF,
+  //     [UsageType.RENATURATION]: ScoreImpact.TRES_POSITIF,
+  //     [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.TRES_NEGATIF,
+  //   },
+  // },
 
+  // TODO : vérifier avec Anna
   // Critère non pris en compte dans la version web
   // 23. Présence d'une espèce protégée
-  presenceEspeceProtegee: {
-    [PresenceEspeceProtegee.OUI]: {
-      [UsageType.RESIDENTIEL]: ScoreImpact.TRES_NEGATIF,
-      [UsageType.EQUIPEMENTS]: ScoreImpact.TRES_NEGATIF,
-      [UsageType.CULTURE]: ScoreImpact.TRES_NEGATIF,
-      [UsageType.TERTIAIRE]: ScoreImpact.TRES_NEGATIF,
-      [UsageType.INDUSTRIE]: ScoreImpact.TRES_NEGATIF,
-      [UsageType.RENATURATION]: ScoreImpact.TRES_POSITIF,
-      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.TRES_NEGATIF,
-    },
-    [PresenceEspeceProtegee.NON]: {
-      [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
-      [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
-      [UsageType.CULTURE]: ScoreImpact.NEUTRE,
-      [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
-      [UsageType.INDUSTRIE]: ScoreImpact.NEUTRE,
-      [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
-      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
-    },
-  },
+  // presenceEspeceProtegee: {
+  //   [PresenceEspeceProtegee.OUI]: {
+  //     [UsageType.RESIDENTIEL]: ScoreImpact.TRES_NEGATIF,
+  //     [UsageType.EQUIPEMENTS]: ScoreImpact.TRES_NEGATIF,
+  //     [UsageType.CULTURE]: ScoreImpact.TRES_NEGATIF,
+  //     [UsageType.TERTIAIRE]: ScoreImpact.TRES_NEGATIF,
+  //     [UsageType.INDUSTRIE]: ScoreImpact.TRES_NEGATIF,
+  //     [UsageType.RENATURATION]: ScoreImpact.TRES_POSITIF,
+  //     [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.TRES_NEGATIF,
+  //   },
+  //   [PresenceEspeceProtegee.NON]: {
+  //     [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
+  //     [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
+  //     [UsageType.CULTURE]: ScoreImpact.NEUTRE,
+  //     [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
+  //     [UsageType.INDUSTRIE]: ScoreImpact.NEUTRE,
+  //     [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
+  //     [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
+  //   },
+  // },
 
+  // TODO : vérifier avec Anna
   // Critère non pris en compte dans la version web
   // 26. Zones humides
-  zoneHumide: {
-    [ZoneHumide.PRESENCE_AVEREE]: {
-      [UsageType.RESIDENTIEL]: ScoreImpact.TRES_NEGATIF,
-      [UsageType.EQUIPEMENTS]: ScoreImpact.TRES_NEGATIF,
-      [UsageType.CULTURE]: ScoreImpact.TRES_NEGATIF,
-      [UsageType.TERTIAIRE]: ScoreImpact.TRES_NEGATIF,
-      [UsageType.INDUSTRIE]: ScoreImpact.TRES_NEGATIF,
-      [UsageType.RENATURATION]: ScoreImpact.TRES_POSITIF,
-      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.TRES_NEGATIF,
-    },
-    [ZoneHumide.PRESENCE_POTENTIELLE]: {
-      [UsageType.RESIDENTIEL]: ScoreImpact.NEGATIF,
-      [UsageType.EQUIPEMENTS]: ScoreImpact.NEGATIF,
-      [UsageType.CULTURE]: ScoreImpact.NEGATIF,
-      [UsageType.TERTIAIRE]: ScoreImpact.NEGATIF,
-      [UsageType.INDUSTRIE]: ScoreImpact.NEGATIF,
-      [UsageType.RENATURATION]: ScoreImpact.POSITIF,
-      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEGATIF,
-    },
-    [ZoneHumide.ABSENCE]: {
-      [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
-      [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
-      [UsageType.CULTURE]: ScoreImpact.NEUTRE,
-      [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
-      [UsageType.INDUSTRIE]: ScoreImpact.NEUTRE,
-      [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
-      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
-    },
-  },
+  // zoneHumide: {
+  //   [ZoneHumide.PRESENCE_AVEREE]: {
+  //     [UsageType.RESIDENTIEL]: ScoreImpact.TRES_NEGATIF,
+  //     [UsageType.EQUIPEMENTS]: ScoreImpact.TRES_NEGATIF,
+  //     [UsageType.CULTURE]: ScoreImpact.TRES_NEGATIF,
+  //     [UsageType.TERTIAIRE]: ScoreImpact.TRES_NEGATIF,
+  //     [UsageType.INDUSTRIE]: ScoreImpact.TRES_NEGATIF,
+  //     [UsageType.RENATURATION]: ScoreImpact.TRES_POSITIF,
+  //     [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.TRES_NEGATIF,
+  //   },
+  //   [ZoneHumide.PRESENCE_POTENTIELLE]: {
+  //     [UsageType.RESIDENTIEL]: ScoreImpact.NEGATIF,
+  //     [UsageType.EQUIPEMENTS]: ScoreImpact.NEGATIF,
+  //     [UsageType.CULTURE]: ScoreImpact.NEGATIF,
+  //     [UsageType.TERTIAIRE]: ScoreImpact.NEGATIF,
+  //     [UsageType.INDUSTRIE]: ScoreImpact.NEGATIF,
+  //     [UsageType.RENATURATION]: ScoreImpact.POSITIF,
+  //     [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEGATIF,
+  //   },
+  //   [ZoneHumide.ABSENCE]: {
+  //     [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
+  //     [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
+  //     [UsageType.CULTURE]: ScoreImpact.NEUTRE,
+  //     [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
+  //     [UsageType.INDUSTRIE]: ScoreImpact.NEUTRE,
+  //     [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
+  //     [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
+  //   },
+  // },
 
   // Fonctions pour valeurs numériques
   surfaceSite: (value: number): ScoreParUsage => {
