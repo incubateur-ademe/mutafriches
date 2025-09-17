@@ -49,7 +49,7 @@ export class CalculService {
       (result, index) => {
         const base = {
           usage: result.usage,
-          rang: resultatsCalcules.length - index,
+          rang: index + 1,
           indiceMutabilite: result.indice,
           potentiel: this.determinerPotentiel(result.indice),
           explication: this.genererExplication(result.usage, result.indice),
