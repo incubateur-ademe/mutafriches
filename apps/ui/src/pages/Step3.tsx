@@ -51,7 +51,7 @@ export const Step3: React.FC = () => {
       const evaluationSummary: IframeEvaluationSummaryDto = {
         evaluationId: results.evaluationId || "",
         identifiantParcelle: state.identifiantParcelle || "",
-        retrieveUrl: `/api/friches/evaluations/${results.evaluationId}`,
+        retrieveUrl: `/friches/evaluations/${results.evaluationId}`,
         fiabilite: {
           note: results.fiabilite.note,
           text: results.fiabilite.text,

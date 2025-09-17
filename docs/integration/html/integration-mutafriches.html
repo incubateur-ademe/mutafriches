@@ -232,11 +232,11 @@
       // CONFIGURATION - MODIFIEZ CES 3 LIGNES
       // ========================================
       const INTEGRATOR = "demo"; // Votre identifiant d'intégrateur
-      const CALLBACK_URL = "https://localhost"; // Votre URL de retour
+      const CALLBACK_URL = "https://mutafriches.incubateur.ademe.dev/tests/callback"; // Votre URL de retour
       const CALLBACK_LABEL = "Retour vers mon site"; // Texte du bouton de retour
 
       // URL de base de Mutafriches
-      const MUTAFRICHES_BASE_URL = "https://mutafriches.beta.gouv.fr";
+      const MUTAFRICHES_BASE_URL = "https://mutafriches.incubateur.ademe.dev/";
 
       // ========================================
       // INITIALISATION
@@ -410,7 +410,7 @@
                 <hr class="fr-mt-3w fr-mb-3w">
                 <p class="fr-text--sm">
                   <strong>Pour récupérer l'évaluation complète via l'API :</strong><br>
-                  <code>GET https://api.mutafriches.beta.gouv.fr${data.retrieveUrl}</code>
+                  <code>GET https://mutafriches.beta.gouv.fr${data.retrieveUrl}</code>
                 </p>
               `
                   : ""

@@ -264,14 +264,14 @@ function App() {
                     Vous pouvez récupérer l'évaluation complète via l'API :
                   </p>
                   <code className="fr-text--sm">
-                    GET https://api.mutafriches.beta.gouv.fr/api/friches/evaluations/
+                    GET https://mutafriches.beta.gouv.fr/friches/evaluations/
                     {evaluationSummary.evaluationId}
                   </code>
                   <button
                     className="fr-btn fr-btn--sm fr-mt-2w"
                     onClick={() => {
                       fetch(
-                        `https://api.mutafriches.beta.gouv.fr/api/friches/evaluations/${evaluationSummary.evaluationId}`,
+                        `https://mutafriches.beta.gouv.fr/friches/evaluations/${evaluationSummary.evaluationId}`,
                       )
                         .then((res) => res.json())
                         .then((data) => console.log("Évaluation complète:", data))

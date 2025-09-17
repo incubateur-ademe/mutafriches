@@ -69,7 +69,7 @@ Envoyé quand l'analyse est terminée avec les résultats complets.
   data: {
     evaluationId: "uuid-de-l-evaluation",
     identifiantParcelle: "490055000AI0001",
-    retrieveUrl: "/api/friches/evaluations/uuid-de-l-evaluation",
+    retrieveUrl: "/friches/evaluations/uuid-de-l-evaluation",
     fiabilite: {
       note: 8.5,
       text: "Bonne"
