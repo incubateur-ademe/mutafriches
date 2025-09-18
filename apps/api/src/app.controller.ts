@@ -8,32 +8,9 @@ import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 export class AppController {
   constructor(private readonly databaseService: DatabaseService) {}
 
-  @Get()
-  @ApiOperation({ summary: "Page d'accueil de l'API" })
-  @ApiResponse({ status: 200, description: "Informations générales sur l'API" })
-  getRoot(): {
-    name: string;
-    version: string;
-    description: string;
-    documentation: string;
-    endpoints: string[];
-  } {
-    return {
-      name: "Mutafriches API",
-      version: "1.0.0",
-      description: "API pour analyser la mutabilité des friches urbaines",
-      documentation: "/api",
-      endpoints: [
-        "GET /health - Health check",
-        "POST /friches/enrichir - Enrichissement de parcelle",
-        "POST /friches/calculer - Calcul de mutabilité",
-        "GET /friches/evaluation/:id - Récupérer une évaluation de friche par son ID",
-        "GET /friches/metadata - Récupérer les métadonnées (énums, versions, etc.)",
-      ],
-    };
-  }
-
   @Get("health")
+  @ApiOperation({ summary: "Vérification de l'état de santé de l'API" })
+  @ApiResponse({ status: 200, description: "État de santé de l'API" })
   async healthCheck(): Promise<HealthResponse> {
     const timestamp = new Date().toISOString();
 
@@ -41,6 +18,7 @@ export class AppController {
       status: "OK",
       timestamp,
       service: "Mutafriches API",
+      version: "1.0.0", // À synchroniser avec la version dans package.json
       checks: {
         api: "OK",
         database: "OK",

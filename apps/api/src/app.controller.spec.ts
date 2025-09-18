@@ -34,6 +34,7 @@ describe("AppController", () => {
 
       expect(result).toHaveProperty("status", "OK");
       expect(result).toHaveProperty("timestamp");
+      expect(result).toHaveProperty("version", "1.0.0");
       expect(result).toHaveProperty("service", "Mutafriches API");
       expect(result.checks).toHaveProperty("api", "OK");
       expect(result.checks).toHaveProperty("database", "OK");
