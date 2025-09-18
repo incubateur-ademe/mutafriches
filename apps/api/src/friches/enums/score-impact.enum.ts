@@ -9,8 +9,9 @@ export enum ScoreImpact {
   /** Négatif - Impact défavorable */
   NEGATIF = -1,
 
-  /** Neutre - Pas d'impact significatif */
-  NEUTRE = 0,
+  /** Neutre - Impact minimal */
+  // Vu avec Anna, permet d'éviter le déclassement total d'un usage au regard du critère en question
+  NEUTRE = 0.5,
 
   /** Positif - Impact favorable */
   POSITIF = 1,

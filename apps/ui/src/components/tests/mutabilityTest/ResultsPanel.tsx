@@ -81,7 +81,14 @@ export function ResultsPanel({ result, error, isCalculating, expectedResults }: 
 
             {/* Tableau des résultats */}
             <div className="fr-table fr-mb-3w">
-              <table>
+              <table
+                style={{
+                  width: "100%",
+                  maxWidth: "100%",
+                  tableLayout: "auto",
+                  display: "table",
+                }}
+              >
                 <caption className="fr-h6">Classement des usages par mutabilité</caption>
                 <thead>
                   <tr>
@@ -161,11 +168,27 @@ export function ResultsPanel({ result, error, isCalculating, expectedResults }: 
                                   </h4>
 
                                   <div className="fr-grid-row fr-grid-row--gutters">
+                                    {/* Formule de calcul */}
+                                    <div className="fr-col-12">
+                                      <div className="fr-alert fr-alert--info fr-mt-2w">
+                                        <p className="fr-text--sm fr-mb-0">
+                                          <strong>Formule :</strong> Indice = Avantages / (Avantages
+                                          + Contraintes) × 100
+                                          <br />
+                                          <strong>Calcul :</strong>{" "}
+                                          {usage.detailsCalcul.totalAvantages} / (
+                                          {usage.detailsCalcul.totalAvantages} +{" "}
+                                          {usage.detailsCalcul.totalContraintes}) × 100 ={" "}
+                                          {usage.indiceMutabilite}%
+                                        </p>
+                                      </div>
+                                    </div>
+
                                     {/* Colonne Avantages */}
-                                    <div className="fr-col-12 fr-col-md-6">
-                                      <div className="fr-card fr-card--no-border">
+                                    <div className="fr-col-12">
+                                      <div className="fr-card fr-card--no-border fr-background-contrast--info">
                                         <div className="fr-card__body">
-                                          <h5 className="fr-text--md fr-text--bold fr-text--success fr-mb-2w">
+                                          <h5 className="fr-text--md fr-mt-4w fr-text--bold fr-text--success fr-mb-2w">
                                             Avantages (Total: {usage.detailsCalcul.totalAvantages})
                                           </h5>
                                           {usage.detailsCalcul.detailsAvantages.length > 0 ? (
@@ -217,10 +240,10 @@ export function ResultsPanel({ result, error, isCalculating, expectedResults }: 
                                     </div>
 
                                     {/* Colonne Contraintes */}
-                                    <div className="fr-col-12 fr-col-md-6">
-                                      <div className="fr-card fr-card--no-border">
+                                    <div className="fr-col-12">
+                                      <div className="fr-card fr-card--no-border fr-background-contrast--warning">
                                         <div className="fr-card__body">
-                                          <h5 className="fr-text--md fr-text--bold fr-text--error fr-mb-2w">
+                                          <h5 className="fr-text--md fr-mt-4w fr-text--bold fr-text--error fr-mb-2w">
                                             Contraintes (Total:{" "}
                                             {usage.detailsCalcul.totalContraintes})
                                           </h5>
@@ -274,19 +297,6 @@ export function ResultsPanel({ result, error, isCalculating, expectedResults }: 
                                       </div>
                                     </div>
                                   </div>
-
-                                  {/* Formule de calcul */}
-                                  <div className="fr-alert fr-alert--info fr-mt-2w">
-                                    <p className="fr-text--sm fr-mb-0">
-                                      <strong>Formule :</strong> Indice = Avantages / (Avantages +
-                                      Contraintes) × 100
-                                      <br />
-                                      <strong>Calcul :</strong> {usage.detailsCalcul.totalAvantages}{" "}
-                                      / ({usage.detailsCalcul.totalAvantages} +{" "}
-                                      {usage.detailsCalcul.totalContraintes}) × 100 ={" "}
-                                      {usage.indiceMutabilite}%
-                                    </p>
-                                  </div>
                                 </div>
                               </td>
                             </tr>
@@ -333,7 +343,7 @@ export function ResultsPanel({ result, error, isCalculating, expectedResults }: 
               <pre
                 className="fr-text--xs fr-mt-2w"
                 style={{
-                  maxHeight: "200px",
+                  maxHeight: "800px",
                   overflow: "auto",
                   backgroundColor: "#f6f6f6",
                   padding: "1rem",

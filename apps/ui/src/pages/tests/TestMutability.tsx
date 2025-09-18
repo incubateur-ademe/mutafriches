@@ -113,11 +113,11 @@ export default function TestMutability() {
         </div>
 
         {/* Contenu principal avec layout en 2 colonnes */}
-        <div className="fr-container-fluid">
+        <div className="fr-container">
           <div className="fr-grid-row fr-grid-row--gutters">
-            {/* Colonne gauche : Sélection et données d'entrée */}
-            <div className="fr-col-12 fr-col-lg-6">
-              <div className="fr-p-3w" style={{ minHeight: "600px" }}>
+            {/* Sélection et données d'entrée */}
+            <div className="fr-col-12">
+              <div style={{ minHeight: "600px" }}>
                 {/* Panneau de sélection du cas de test (uniquement en mode test-case) */}
                 {mode === "test-case" && (
                   <div className="fr-mb-3w">
@@ -129,28 +129,28 @@ export default function TestMutability() {
                 )}
 
                 {/* Panneau des données d'entrée */}
-                <InputDataPanel
-                  mode={mode}
-                  inputMode={inputMode}
-                  formData={formData}
-                  onFormDataChange={handleFormDataChange}
-                  onInputModeChange={handleInputModeChange}
-                  onCalculate={handleCalculate}
-                  isCalculating={isCalculating}
-                  hasData={mode === "manual" || selectedTestCase !== null}
-                />
-              </div>
-            </div>
+                <div className="fr-mb-3w">
+                  <InputDataPanel
+                    mode={mode}
+                    inputMode={inputMode}
+                    formData={formData}
+                    onFormDataChange={handleFormDataChange}
+                    onInputModeChange={handleInputModeChange}
+                    onCalculate={handleCalculate}
+                    isCalculating={isCalculating}
+                    hasData={mode === "manual" || selectedTestCase !== null}
+                  />
+                </div>
 
-            {/* Colonne droite : Résultats */}
-            <div className="fr-col-12 fr-col-lg-6">
-              <div className="fr-p-3w" style={{ minHeight: "600px" }}>
-                <ResultsPanel
-                  result={mutabilityResult}
-                  error={error}
-                  isCalculating={isCalculating}
-                  expectedResults={selectedTestCase?.expected || null}
-                />
+                {/* Colonne Résultats */}
+                <div style={{ minHeight: "600px" }}>
+                  <ResultsPanel
+                    result={mutabilityResult}
+                    error={error}
+                    isCalculating={isCalculating}
+                    expectedResults={selectedTestCase?.expected || null}
+                  />
+                </div>
               </div>
             </div>
           </div>
