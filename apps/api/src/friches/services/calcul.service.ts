@@ -39,6 +39,10 @@ export class CalculService {
   async calculer(parcelle: Parcelle, options: CalculOptions = {}): Promise<MutabiliteOutputDto> {
     const { modeDetaille = false } = options;
 
+    // TODO : log a supprimer
+    // eslint-disable-next-line no-console
+    console.log("Calcul de la mutabilité pour la parcelle :", JSON.stringify(parcelle, null, 2));
+
     // Calculer et trier les résultats par indice décroissant
     const resultatsCalcules = Object.values(UsageType)
       .map((usage) => this.calculerIndiceMutabilite(parcelle, usage, options))

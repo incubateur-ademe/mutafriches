@@ -42,13 +42,46 @@ export default function TestMutability() {
   const handleTestCaseSelect = (testCase: TestCase | null) => {
     setSelectedTestCase(testCase);
     if (testCase) {
-      // Convertir les données du cas de test en données de formulaire
+      // Convertir les données du cas de test pour obtenir les données enrichies
       const convertedData = convertTestCaseToMutabilityInput(testCase);
 
-      // Fusionner les deux parties des données en une seule structure aplatie
+      // Pour le formulaire, on utilise directement les données du test case
+      // car elles sont déjà au bon format (kebab-case comme nos enums)
       const flatFormData = {
-        ...convertedData.donneesEnrichies,
-        ...convertedData.donneesComplementaires,
+        // Données enrichies issues de la conversion
+        identifiantParcelle: convertedData.donneesEnrichies.identifiantParcelle,
+        commune: convertedData.donneesEnrichies.commune,
+        surfaceSite: convertedData.donneesEnrichies.surfaceSite,
+        surfaceBati: convertedData.donneesEnrichies.surfaceBati,
+        siteEnCentreVille: convertedData.donneesEnrichies.siteEnCentreVille,
+        distanceAutoroute: convertedData.donneesEnrichies.distanceAutoroute,
+        distanceTransportCommun: convertedData.donneesEnrichies.distanceTransportCommun,
+        distanceRaccordementElectrique:
+          convertedData.donneesEnrichies.distanceRaccordementElectrique,
+        proximiteCommercesServices: convertedData.donneesEnrichies.proximiteCommercesServices,
+        connectionReseauElectricite: convertedData.donneesEnrichies.connectionReseauElectricite,
+        tauxLogementsVacants: convertedData.donneesEnrichies.tauxLogementsVacants,
+        presenceRisquesTechnologiques: convertedData.donneesEnrichies.presenceRisquesTechnologiques,
+        presenceRisquesNaturels: testCase.input.presenceRisquesNaturels,
+        zonageEnvironnemental: testCase.input.zonageEnvironnemental,
+        zonageReglementaire: testCase.input.zonageReglementaire,
+        zonagePatrimonial: testCase.input.zonagePatrimonial,
+        trameVerteEtBleue: testCase.input.trameVerteEtBleue,
+
+        // Données complémentaires directement du test case
+        // car elles sont déjà au format kebab-case comme nos enums
+        typeProprietaire: testCase.input.typeProprietaire,
+        terrainViabilise:
+          testCase.input.terrainViabilise === true
+            ? "oui"
+            : testCase.input.terrainViabilise === false
+              ? "non"
+              : testCase.input.terrainViabilise,
+        etatBatiInfrastructure: mapEtatBati(testCase.input.etatBatiInfrastructure),
+        presencePollution: testCase.input.presencePollution,
+        valeurArchitecturaleHistorique: testCase.input.valeurArchitecturaleHistorique,
+        qualitePaysage: testCase.input.qualitePaysage,
+        qualiteVoieDesserte: testCase.input.qualiteVoieDesserte,
       };
 
       setFormData(flatFormData);
@@ -80,7 +113,19 @@ export default function TestMutability() {
           ? convertTestCaseToMutabilityInput(selectedTestCase) // Toujours envoyer les données converties du cas de test
           : buildCalculerMutabiliteFromFormData(formData); // Construire à partir des données du formulaire
 
-      const result = await apiService.calculerMutabilite(dataToSend, { modeDetaille: true }); // Toujours en mode détaillé pour les tests
+      // Pour les tests, on désactive l'enrichissement automatique
+      // car on fournit déjà toutes les données
+
+      // TODO : log a supprimer
+      console.log(
+        "Données envoyées pour le calcul de mutabilité :",
+        JSON.stringify(dataToSend, null, 2),
+      );
+
+      const result = await apiService.calculerMutabilite(dataToSend, {
+        modeDetaille: true,
+        sansEnrichissement: true, // Pas d'enrichissement pour les tests
+      });
 
       setMutabilityResult(result);
     } catch (error) {
@@ -158,4 +203,16 @@ export default function TestMutability() {
       </div>
     </Layout>
   );
+}
+
+/**
+ * Mappe les valeurs spéciales de etatBatiInfrastructure
+ */
+function mapEtatBati(value: string): string {
+  const mapping: Record<string, string> = {
+    "batiments-heterogenes": "degradation-heterogene",
+    "batiments-homogenes": "degradation-moyenne",
+    "absence-batiments": "degradation-inexistante",
+  };
+  return mapping[value] || value;
 }

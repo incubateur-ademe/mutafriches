@@ -14,6 +14,7 @@ import {
   ZonageReglementaire,
   TrameVerteEtBleue,
   Coordonnees,
+  CalculerMutabiliteInputDto,
 } from "@mutafriches/shared-types";
 
 /**
@@ -98,6 +99,74 @@ export class Parcelle {
     // Ajout des données complémentaires si fournies
     if (donneesComplementaires) {
       Object.assign(parcelle, donneesComplementaires);
+    }
+
+    return parcelle;
+  }
+
+  /**
+   * Constructeur direct à partir de l'input complet (sans enrichissement)
+   * Utilisé pour les tests ou quand toutes les données sont déjà disponibles
+   */
+  static fromInput(input: CalculerMutabiliteInputDto): Parcelle {
+    const parcelle = new Parcelle();
+
+    // Vérifier que les données sont présentes
+    if (!input.donneesEnrichies) {
+      throw new Error("Données enrichies manquantes dans l'input");
+    }
+
+    // Fusionner toutes les données de l'input
+    const { donneesEnrichies, donneesComplementaires } = input;
+
+    // Copier les données enrichies
+    parcelle.identifiantParcelle = donneesEnrichies.identifiantParcelle;
+    parcelle.commune = donneesEnrichies.commune;
+    parcelle.coordonnees = donneesEnrichies.coordonnees;
+    parcelle.surfaceSite = donneesEnrichies.surfaceSite;
+    parcelle.surfaceBati = donneesEnrichies.surfaceBati;
+    parcelle.ancienneActivite = donneesEnrichies.ancienneActivite;
+    parcelle.siteEnCentreVille = donneesEnrichies.siteEnCentreVille;
+    parcelle.distanceAutoroute = donneesEnrichies.distanceAutoroute;
+    parcelle.distanceTransportCommun = donneesEnrichies.distanceTransportCommun;
+    parcelle.proximiteCommercesServices = donneesEnrichies.proximiteCommercesServices;
+    parcelle.connectionReseauElectricite = donneesEnrichies.connectionReseauElectricite;
+    parcelle.distanceRaccordementElectrique = donneesEnrichies.distanceRaccordementElectrique;
+    parcelle.tauxLogementsVacants = donneesEnrichies.tauxLogementsVacants;
+    parcelle.presenceRisquesTechnologiques = donneesEnrichies.presenceRisquesTechnologiques;
+
+    // Cast sécurisé des enums
+    parcelle.presenceRisquesNaturels = donneesEnrichies.presenceRisquesNaturels
+      ? (donneesEnrichies.presenceRisquesNaturels as RisqueNaturel)
+      : undefined;
+    parcelle.zonageEnvironnemental = donneesEnrichies.zonageEnvironnemental
+      ? (donneesEnrichies.zonageEnvironnemental as ZonageEnvironnemental)
+      : undefined;
+    parcelle.zonagePatrimonial = donneesEnrichies.zonagePatrimonial
+      ? (donneesEnrichies.zonagePatrimonial as ZonagePatrimonial)
+      : undefined;
+    parcelle.zonageReglementaire = donneesEnrichies.zonageReglementaire
+      ? (donneesEnrichies.zonageReglementaire as ZonageReglementaire)
+      : undefined;
+    parcelle.trameVerteEtBleue = donneesEnrichies.trameVerteEtBleue
+      ? (donneesEnrichies.trameVerteEtBleue as TrameVerteEtBleue)
+      : undefined;
+
+    // Métadonnées
+    parcelle.sourcesUtilisees = donneesEnrichies.sourcesUtilisees || [];
+    parcelle.champsManquants = donneesEnrichies.champsManquants || [];
+    parcelle.fiabilite = donneesEnrichies.fiabilite || 0;
+
+    // Copier les données complémentaires si présentes
+    if (donneesComplementaires) {
+      parcelle.typeProprietaire = donneesComplementaires.typeProprietaire;
+      parcelle.terrainViabilise = donneesComplementaires.terrainViabilise;
+      parcelle.etatBatiInfrastructure = donneesComplementaires.etatBatiInfrastructure;
+      parcelle.presencePollution = donneesComplementaires.presencePollution;
+      parcelle.valeurArchitecturaleHistorique =
+        donneesComplementaires.valeurArchitecturaleHistorique;
+      parcelle.qualitePaysage = donneesComplementaires.qualitePaysage;
+      parcelle.qualiteVoieDesserte = donneesComplementaires.qualiteVoieDesserte;
     }
 
     return parcelle;

@@ -40,12 +40,23 @@ class ApiService {
    */
   async calculerMutabilite(
     input: CalculerMutabiliteInputDto,
-    options?: { modeDetaille?: boolean },
+    options?: {
+      modeDetaille?: boolean;
+      sansEnrichissement?: boolean;
+    },
   ): Promise<MutabiliteOutputDto> {
-    const queryParams = options?.modeDetaille ? "?modeDetaille=true" : "";
+    const queryParams = new URLSearchParams();
+
+    if (options?.modeDetaille) {
+      queryParams.append("modeDetaille", "true");
+    }
+
+    if (options?.sansEnrichissement) {
+      queryParams.append("sansEnrichissement", "true");
+    }
 
     const response = await fetch(
-      `${this.baseUrl}${API_CONFIG.endpoints.calculerMutabilite}${queryParams}`,
+      `${this.baseUrl}${API_CONFIG.endpoints.calculerMutabilite}${queryParams.toString() ? "?" + queryParams.toString() : ""}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },

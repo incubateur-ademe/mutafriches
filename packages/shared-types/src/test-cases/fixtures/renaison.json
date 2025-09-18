@@ -6,36 +6,38 @@
   "algorithmVersion": "1.0.0",
 
   "input": {
-    "typeProprietaire": "public",
     "surfaceSite": 46333,
     "surfaceBati": 7000,
-    "nombreBatiments": 2,
+    "typeProprietaire": "public",
+
     "etatBatiInfrastructure": "batiments-heterogenes",
     "presencePollution": "oui-autres-composes",
-    "terrainEnPente": true,
-
-    "siteEnCentreVille": false,
-    "tauxLogementsVacants": 7.2,
     "terrainViabilise": true,
     "qualiteVoieDesserte": "peu-accessible",
+
+    "siteEnCentreVille": false,
+    "proximiteCommercesServices": false,
     "distanceAutoroute": "plus-de-5km",
     "distanceTransportCommun": "plus-de-500m",
-    "proximiteCommercesServices": false,
-    "voieEauProximite": "oui-non-navigable",
-    "distanceRaccordementElectrique": "entre-1-et-5km",
+    "tauxLogementsVacants": 7.2,
 
     "zonageReglementaire": "zone-naturelle",
     "presenceRisquesNaturels": "fort",
     "presenceRisquesTechnologiques": false,
     "zonagePatrimonial": "non-concerne",
 
-    "qualitePaysage": "interessant",
     "valeurArchitecturaleHistorique": "interet-fort",
+    "qualitePaysage": "interessant",
+    "zonageEnvironnemental": "znieff-type-1-2",
 
+    "trameVerteEtBleue": "ne-sait-pas",
+
+    "nombreBatiments": 2,
+    "terrainEnPente": true,
+    "voieEauProximite": "oui-non-navigable",
+    "distanceRaccordementElectrique": "entre-1-et-5km",
     "couvertVegetal": "vegetation-arbustive-predominante",
     "presenceEspeceProtegee": "ne-sait-pas",
-    "zonageEnvironnemental": "znieff-type-1-2",
-    "trameVerteEtBleue": "ne-sait-pas",
     "zoneHumide": "ne-sait-pas"
   },
 

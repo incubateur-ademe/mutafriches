@@ -37,18 +37,30 @@ export class OrchestrateurService {
    */
   async calculerMutabilite(
     input: CalculerMutabiliteInputDto,
-    options?: { modeDetaille?: boolean },
+    options?: {
+      modeDetaille?: boolean;
+      sansEnrichissement?: boolean;
+    },
   ): Promise<MutabiliteOutputDto> {
     // Vérification des données
     if (!input.donneesEnrichies) {
       throw new Error("Données enrichies manquantes dans la requête");
     }
 
-    // Crée l'entité Parcelle
-    const parcelle = Parcelle.fromEnrichissement(
-      input.donneesEnrichies,
-      input.donneesComplementaires,
-    );
+    // Crée l'entité Parcelle selon le mode
+    let parcelle: Parcelle;
+
+    // TODO : supprimer ce log de debug
+    console.log("Options de calcul :", options);
+
+    if (options?.sansEnrichissement) {
+      // Mode sans enrichissement : utilise directement l'input
+      // Utilisé pour les tests avec des données complètes
+      parcelle = Parcelle.fromInput(input);
+    } else {
+      // Mode normal : crée depuis l'enrichissement
+      parcelle = Parcelle.fromEnrichissement(input.donneesEnrichies, input.donneesComplementaires);
+    }
 
     // Vérifie que la parcelle est complète
     if (!parcelle.estComplete()) {

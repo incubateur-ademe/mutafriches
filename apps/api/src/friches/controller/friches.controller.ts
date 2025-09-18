@@ -167,6 +167,12 @@ export class FrichesController {
     type: Boolean,
     description: "Active le mode détaillé avec le détail des calculs",
   })
+  @ApiQuery({
+    name: "sansEnrichissement",
+    required: false,
+    type: Boolean,
+    description: "Active le mode sans enrichissement (utilise seulement les données fournies)",
+  })
   @ApiResponse({
     status: 201,
     description: "Calcul réussi",
@@ -178,9 +184,11 @@ export class FrichesController {
   async calculerMutabilite(
     @Body() input: CalculerMutabiliteInputDto,
     @Query("modeDetaille") modeDetaille?: boolean,
+    @Query("sansEnrichissement") sansEnrichissement?: boolean,
   ): Promise<MutabiliteOutputDto> {
     return await this.orchestrateurService.calculerMutabilite(input, {
       modeDetaille: modeDetaille || false,
+      sansEnrichissement: sansEnrichissement || false,
     });
   }
 
