@@ -33,8 +33,7 @@
     "trameVerteEtBleue": "ne-sait-pas",
 
     "nombreBatiments": 2,
-    "distanceRaccordementElectrique": "entre-1-et-5km",
-    "zoneHumide": "ne-sait-pas"
+    "distanceRaccordementElectrique": "entre-1-et-5km"
   },
 
   "expected": {
@@ -81,7 +80,7 @@
     "metadata": {
       "criteresRenseignes": 23,
       "criteresTotal": 26,
-      "criteresManquants": ["trameVerteEtBleue", "zoneHumide"]
+      "criteresManquants": ["trameVerteEtBleue"]
     }
   }
 }

@@ -31,8 +31,7 @@
     "valeurArchitecturaleHistorique": "exceptionnel",
 
     "zonageEnvironnemental": "hors-zone",
-    "trameVerteEtBleue": "hors-trame",
-    "zoneHumide": "absence"
+    "trameVerteEtBleue": "hors-trame"
   },
 
   "expected": {

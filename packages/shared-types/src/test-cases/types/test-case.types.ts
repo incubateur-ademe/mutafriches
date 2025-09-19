@@ -39,7 +39,6 @@ export interface TestCaseInput {
   // Environnement et biodiversité
   zonageEnvironnemental: string;
   trameVerteEtBleue: string;
-  zoneHumide?: string;
 
   // Optionnel
   coordonnees?: {
