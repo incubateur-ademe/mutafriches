@@ -49,7 +49,6 @@ export const POIDS_CRITERES = {
 
   // Critères non pris en compte dans la version web
   // TODO à supprimer complètement du calcul (et meme des exemples)
-  voieEauProximite: 0.5,
   couvertVegetal: 1,
   presenceEspeceProtegee: 1,
   zoneHumide: 1,
@@ -842,8 +841,27 @@ export const MATRICE_SCORING = {
     };
   },
 
-  surfaceBati: (value: number | undefined): ScoreParUsage => {},
-
+  surfaceBati: (value: number | undefined): ScoreParUsage => {
+    if (!value || value < 10000)
+      return {
+        [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
+        [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
+        [UsageType.CULTURE]: ScoreImpact.NEUTRE,
+        [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
+        [UsageType.INDUSTRIE]: ScoreImpact.NEGATIF,
+        [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
+        [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
+      };
+    return {
+      [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
+      [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
+      [UsageType.CULTURE]: ScoreImpact.NEUTRE,
+      [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
+      [UsageType.INDUSTRIE]: ScoreImpact.POSITIF,
+      [UsageType.RENATURATION]: ScoreImpact.NEGATIF,
+      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEGATIF,
+    };
+  },
   tauxLogementsVacants: (value: number): ScoreParUsage => {
     if (value <= 7)
       // Modifié le 18/09/2024 après revue avec Anna

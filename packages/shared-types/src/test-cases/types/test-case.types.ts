@@ -23,7 +23,6 @@ export interface TestCaseInput {
   distanceAutoroute: string;
   distanceTransportCommun: string;
   proximiteCommercesServices: boolean;
-  voieEauProximite?: string;
   distanceRaccordementElectrique: string;
   connectionReseauElectricite?: boolean;
 

@@ -20,7 +20,6 @@
     "distanceAutoroute": "entre-1-et-2km",
     "distanceTransportCommun": "moins-de-500m",
     "proximiteCommercesServices": true,
-    "voieEauProximite": "non",
     "distanceRaccordementElectrique": "moins-de-1km",
 
     "zonageReglementaire": "zone-urbaine-u",
