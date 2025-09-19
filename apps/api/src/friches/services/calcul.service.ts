@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { Injectable } from "@nestjs/common";
 import {
   MutabiliteOutputDto,
@@ -40,7 +41,7 @@ export class CalculService {
     const { modeDetaille = false } = options;
 
     // TODO : log a supprimer
-    // eslint-disable-next-line no-console
+
     console.log("Calcul de la mutabilité pour la parcelle :", JSON.stringify(parcelle, null, 2));
 
     // Calculer et trier les résultats par indice décroissant
@@ -142,6 +143,10 @@ export class CalculService {
 
     // Mapper les propriétés de la parcelle aux critères
     const criteres = this.extraireCriteres(parcelle);
+    console.log(
+      "calculerScorePourUsage - critères extraits :>> ",
+      JSON.stringify(criteres, null, 2),
+    );
 
     // Pour chaque critère
     Object.entries(criteres).forEach(([champDTO, valeur]) => {
@@ -298,10 +303,8 @@ export class CalculService {
   protected calculerFiabilite(parcelle: Parcelle): Fiabilite {
     const criteres = this.extraireCriteres(parcelle);
 
+    console.log("calculerFiabilite - critères extraits :>> ", JSON.stringify(criteres, null, 2));
 
-    console.log('critères  :>> ', critères );
-
-    
     // Compter les critères non null/undefined
     const criteresRenseignes = Object.entries(criteres).filter(
       ([, valeur]) => valeur !== null && valeur !== undefined && valeur !== "ne-sait-pas",

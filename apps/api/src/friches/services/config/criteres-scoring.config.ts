@@ -19,40 +19,33 @@ export type ScoreParUsage = {
 
 // Configuration des poids
 export const POIDS_CRITERES = {
-  // Critères pris en compte dans la version web (vu le 18/09)
+  // Critères pris en compte dans la version web (vu le 19/09)
   // 14 Critères déduits module enrichissement
-  surfaceSite: 2, // OK le 18/09 avec Anna
-  surfaceBati: 2, // OK le 18/09 avec Anna, ajustement en v2 à prévoir
-  siteEnCentreVille: 1, // OK le 18/09 avec Anna // Poids corrigé
-  distanceAutoroute: 0.5, // OK le 18/09 avec Anna
-  distanceTransportCommun: 1, // OK le 18/09 avec Anna // Poids corrigé
-  proximiteCommercesServices: 1, // OK le 18/09 avec Anna
-  distanceRaccordementElectrique: 1, // OK le 18/09 avec Anna
-  tauxLogementsVacants: 1, // OK le 18/09 avec Anna
-  presenceRisquesNaturels: 1, // OK le 18/09 avec Anna
-  presenceRisquesTechnologiques: 1, // OK le 18/09 avec Anna
-  zonageEnvironnemental: 1, // OK le 18/09 avec Anna
-
-  // TODO v1.1   zonageReglementaire
+  surfaceSite: 2, // OK le 19/09 avec Anna
+  surfaceBati: 2, // OK le 19/09 avec Anna, ajustement en v2 à prévoir
+  siteEnCentreVille: 1, // OK le 19/09 avec Anna // Poids corrigé
+  distanceAutoroute: 0.5, // OK le 19/09 avec Anna
+  distanceTransportCommun: 1, // OK le 19/09 avec Anna // Poids corrigé
+  proximiteCommercesServices: 1, // OK le 19/09 avec Anna
+  distanceRaccordementElectrique: 1, // OK le 19/09 avec Anna
+  tauxLogementsVacants: 1, // OK le 19/09 avec Anna
+  presenceRisquesNaturels: 1, // OK le 19/09 avec Anna
+  presenceRisquesTechnologiques: 1, // OK le 19/09 avec Anna
+  zonageEnvironnemental: 1, // OK le 19/09 avec Anna
   zonageReglementaire: 1, // Vu en v1 mais TODO à revoir en V1.1 au niveau des options
-  zonagePatrimonial: 1, // OK le 18/09 avec Anna
-  trameVerteEtBleue: 1, // OK le 18/09 avec Anna
+  zonagePatrimonial: 1, // OK le 19/09 avec Anna
+  trameVerteEtBleue: 1, // OK le 19/09 avec Anna
 
   // ------------------------------------------------
   // 7 critères déduis des données complémentaires
   // ------------------------------------------------
-  typeProprietaire: 1, // OK le 18/09 avec Anna
-  terrainViabilise: 1, // OK le 18/09 avec Anna
-  etatBatiInfrastructure: 2, // OK le 18/09 avec Anna mais en attente de l'excel à jour coté Anna
-  presencePollution: 2, // OK le 18/09 avec Anna
-
-  // TODO v1.1  valeurArchitecturaleHistorique, options à changer
+  typeProprietaire: 1, // OK le 19/09 avec Anna
+  terrainViabilise: 1, // OK le 19/09 avec Anna
+  etatBatiInfrastructure: 2, // OK le 19/09 avec Anna mais en attente de l'excel à jour coté Anna
+  presencePollution: 2, // OK le 19/09 avec Anna
   valeurArchitecturaleHistorique: 1, // Vu en v1 mais TODO à revoir en V1.1 au niveau des options
-
-  // TODO v1.1  qualitePaysage, options à changer
   qualitePaysage: 1, // Vu en v1 mais TODO à revoir en V1.1 au niveau des options
-
-  qualiteVoieDesserte: 0.5, // OK le 18/09 avec Anna = Accessibilité par les voies de circulation
+  qualiteVoieDesserte: 0.5, // OK le 19/09 avec Anna = Accessibilité par les voies de circulation
 
   // Critères non pris en compte dans la version web
   // TODO à supprimer complètement du calcul (et meme des exemples)

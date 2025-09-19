@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { Injectable } from "@nestjs/common";
 import {
   EnrichirParcelleInputDto,
@@ -51,7 +52,7 @@ export class OrchestrateurService {
     let parcelle: Parcelle;
 
     // TODO : supprimer ce log de debug
-    console.log("Options de calcul :", options);
+    console.log("calculerMutabilite > Options de calcul :", options);
 
     if (options?.sansEnrichissement) {
       // Mode sans enrichissement : utilise directement l'input
