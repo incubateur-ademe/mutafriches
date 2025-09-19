@@ -33,7 +33,6 @@
     "trameVerteEtBleue": "ne-sait-pas",
 
     "nombreBatiments": 2,
-    "terrainEnPente": true,
     "voieEauProximite": "oui-non-navigable",
     "distanceRaccordementElectrique": "entre-1-et-5km",
     "couvertVegetal": "vegetation-arbustive-predominante",

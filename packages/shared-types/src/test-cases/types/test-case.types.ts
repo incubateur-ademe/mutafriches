@@ -14,7 +14,6 @@ export interface TestCaseInput {
   // État du site
   etatBatiInfrastructure: string;
   presencePollution: string;
-  terrainEnPente?: boolean;
 
   // Localisation et accessibilité
   siteEnCentreVille: boolean;

@@ -12,7 +12,6 @@
     "nombreBatiments": 8,
     "etatBatiInfrastructure": "batiments-heterogenes",
     "presencePollution": "ne-sait-pas",
-    "terrainEnPente": false,
 
     "siteEnCentreVille": true,
     "tauxLogementsVacants": 4.9,

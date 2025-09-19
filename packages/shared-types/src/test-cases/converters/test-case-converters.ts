@@ -9,7 +9,6 @@ import * as enumConverters from "./enum-converters";
 /**
  * Remarque : Certains champs du test case ne sont pas utilisés dans le calcul actuel
  * mais pourraient l'être dans une version future :
- * - terrainEnPente
  * - voieEauProximite
  * - couvertVegetal
  * - presenceEspeceProtegee
