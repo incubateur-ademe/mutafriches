@@ -22,7 +22,6 @@ export const transformEnrichmentToUiData = (
       : nonAccessibleVersion,
 
     // Données électriques
-    connectionElectricite: enrichmentData.connectionReseauElectricite ? "Oui" : "Non",
     distanceRaccordement: enrichmentData.distanceRaccordementElectrique
       ? `${enrichmentData.distanceRaccordementElectrique.toFixed(2)} m`
       : nonAccessibleVersion,

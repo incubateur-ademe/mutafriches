@@ -109,7 +109,6 @@ export class EnrichissementService {
       commune: parcelle.commune,
       surfaceSite: parcelle.surfaceSite,
       surfaceBati: parcelle.surfaceBati,
-      connectionReseauElectricite: parcelle.connectionReseauElectricite,
       distanceRaccordementElectrique: parcelle.distanceRaccordementElectrique,
       presenceRisquesNaturels: parcelle.presenceRisquesNaturels,
       coordonnees: parcelle.coordonnees,
@@ -192,21 +191,6 @@ export class EnrichissementService {
     manquants: string[],
   ): Promise<void> {
     try {
-      // Connection électrique - Maintenant avec les vraies coordonnées
-      const connectionResult = await this.enedisService.checkConnection(
-        parcelle.identifiantParcelle,
-        coordonnees, // Passage des coordonnées réelles de la parcelle
-      );
-
-      if (connectionResult.success && connectionResult.data) {
-        const connexionStatus = connectionResult.data;
-        // Extraction du boolean depuis l'objet EnedisConnexionStatus
-        parcelle.connectionReseauElectricite = connexionStatus.isConnected;
-        sources.push("Enedis-Connection");
-      } else {
-        manquants.push("connectionReseauElectricite");
-      }
-
       // Distance raccordement
       const distanceResult = await this.enedisService.getDistanceRaccordement(
         coordonnees.latitude,
@@ -222,7 +206,7 @@ export class EnrichissementService {
       }
     } catch (error) {
       console.error("Erreur Enedis:", error);
-      manquants.push("connectionReseauElectricite", "distanceRaccordementElectrique");
+      manquants.push("distanceRaccordementElectrique");
     }
   }
 

@@ -27,16 +27,13 @@ export class Parcelle {
   commune: string;
   coordonnees?: Coordonnees;
 
-  // Données physiques
+  // Données enrichies automatiquement
   surfaceSite: number;
   surfaceBati?: number;
-
-  // Données enrichies automatiquement
   siteEnCentreVille: boolean;
   distanceAutoroute: number;
   distanceTransportCommun: number;
   proximiteCommercesServices: boolean;
-  connectionReseauElectricite: boolean;
   distanceRaccordementElectrique: number;
   tauxLogementsVacants: number;
   presenceRisquesTechnologiques: boolean;
@@ -128,7 +125,6 @@ export class Parcelle {
     parcelle.distanceAutoroute = donneesEnrichies.distanceAutoroute;
     parcelle.distanceTransportCommun = donneesEnrichies.distanceTransportCommun;
     parcelle.proximiteCommercesServices = donneesEnrichies.proximiteCommercesServices;
-    parcelle.connectionReseauElectricite = donneesEnrichies.connectionReseauElectricite;
     parcelle.distanceRaccordementElectrique = donneesEnrichies.distanceRaccordementElectrique;
     parcelle.tauxLogementsVacants = donneesEnrichies.tauxLogementsVacants;
     parcelle.presenceRisquesTechnologiques = donneesEnrichies.presenceRisquesTechnologiques;

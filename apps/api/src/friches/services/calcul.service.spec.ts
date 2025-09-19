@@ -129,7 +129,6 @@ describe("CalculService", () => {
       parcelleComplete.surfaceBati = 2000;
       parcelleComplete.siteEnCentreVille = true;
       parcelleComplete.terrainViabilise = TerrainViabilise.OUI;
-      parcelleComplete.connectionReseauElectricite = true;
       parcelleComplete.distanceRaccordementElectrique = 100;
       parcelleComplete.proximiteCommercesServices = true;
       parcelleComplete.tauxLogementsVacants = 5.2;
@@ -183,7 +182,6 @@ describe("CalculService", () => {
       parcelleIndustrie.surfaceBati = 10000;
       parcelleIndustrie.siteEnCentreVille = false;
       parcelleIndustrie.distanceAutoroute = 1;
-      parcelleIndustrie.connectionReseauElectricite = true;
 
       const resultIndustrie = await service.calculer(parcelleIndustrie);
 

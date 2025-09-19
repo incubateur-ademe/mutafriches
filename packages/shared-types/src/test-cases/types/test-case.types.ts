@@ -9,7 +9,6 @@ export interface TestCaseInput {
   typeProprietaire: string;
   surfaceSite: number;
   surfaceBati?: number;
-  nombreBatiments?: number;
 
   // État du site
   etatBatiInfrastructure: string;
@@ -24,7 +23,6 @@ export interface TestCaseInput {
   distanceTransportCommun: string;
   proximiteCommercesServices: boolean;
   distanceRaccordementElectrique: string;
-  connectionReseauElectricite?: boolean;
 
   // Zonages et contraintes
   zonageReglementaire: string;

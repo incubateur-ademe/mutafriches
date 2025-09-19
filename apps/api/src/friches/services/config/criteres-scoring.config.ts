@@ -46,14 +46,11 @@ export const POIDS_CRITERES = {
   valeurArchitecturaleHistorique: 1, // Vu en v1 mais TODO à revoir en V1.1 au niveau des options
   qualitePaysage: 1, // Vu en v1 mais TODO à revoir en V1.1 au niveau des options
   qualiteVoieDesserte: 0.5, // OK le 19/09 avec Anna = Accessibilité par les voies de circulation
-
-  // Critères non pris en compte dans la version web
-  // TODO à supprimer complètement du calcul (et meme des exemples)
 } as const;
 
 // Matrice de scoring complète avec ScoreImpact
 export const MATRICE_SCORING = {
-  // 1. Type de propriétaire
+  // Type de propriétaire
   typeProprietaire: {
     [TypeProprietaire.PUBLIC]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.TRES_POSITIF,
@@ -93,7 +90,7 @@ export const MATRICE_SCORING = {
     },
   },
 
-  // 4. État du bâti
+  // État du bâti
   etatBatiInfrastructure: {
     [EtatBatiInfrastructure.DEGRADATION_INEXISTANTE]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.TRES_POSITIF,
@@ -133,7 +130,7 @@ export const MATRICE_SCORING = {
     },
   },
 
-  // 5. Présence de pollution
+  // Présence de pollution
   presencePollution: {
     [PresencePollution.NON]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.TRES_POSITIF,
@@ -173,7 +170,7 @@ export const MATRICE_SCORING = {
     },
   },
 
-  // 7. En centre-ville ou centre-bourg
+  // En centre-ville ou centre-bourg
   siteEnCentreVille: {
     true: {
       [UsageType.RESIDENTIEL]: ScoreImpact.TRES_POSITIF,
@@ -195,8 +192,7 @@ export const MATRICE_SCORING = {
     },
   },
 
-  // 9. Terrain viabilisé (réseau eaux)
-  // Site connecté aux réseaux d'eaux *
+  // Terrain viabilisé (Site connecté aux réseaux d'eaux)
   terrainViabilise: {
     true: {
       [UsageType.RESIDENTIEL]: ScoreImpact.TRES_POSITIF,
@@ -218,7 +214,7 @@ export const MATRICE_SCORING = {
     },
   },
 
-  // 10. Qualité voie desserte
+  // Qualité voie desserte
   qualiteVoieDesserte: {
     [QualiteVoieDesserte.ACCESSIBLE]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.POSITIF,
@@ -249,7 +245,7 @@ export const MATRICE_SCORING = {
     },
   },
 
-  // 13. Commerces / services à proximité
+  // Commerces / services à proximité
   proximiteCommercesServices: {
     true: {
       [UsageType.RESIDENTIEL]: ScoreImpact.TRES_POSITIF,
@@ -271,7 +267,7 @@ export const MATRICE_SCORING = {
     },
   },
 
-  // 16. Zonage du PLU
+  // Zonage du PLU
   zonageReglementaire: {
     [ZonageReglementaire.ZONE_URBAINE_U]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.TRES_POSITIF,
@@ -360,7 +356,7 @@ export const MATRICE_SCORING = {
     },
   },
 
-  // 17. Risque naturel
+  // Risques naturels
   presenceRisquesNaturels: {
     [RisqueNaturel.FORT]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.TRES_NEGATIF,
@@ -400,7 +396,7 @@ export const MATRICE_SCORING = {
     },
   },
 
-  // 18. Risque technologique
+  // Risques technologiques
   presenceRisquesTechnologiques: {
     true: {
       [UsageType.RESIDENTIEL]: ScoreImpact.TRES_NEGATIF,
@@ -422,7 +418,7 @@ export const MATRICE_SCORING = {
     },
   },
 
-  // 19. Monument historique
+  // Zonage patrimonial / Monument historique
   zonagePatrimonial: {
     [ZonagePatrimonial.NON_CONCERNE]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.POSITIF,
@@ -453,7 +449,7 @@ export const MATRICE_SCORING = {
     },
   },
 
-  // 20. Paysage
+  // Qualité paysage
   qualitePaysage: {
     [QualitePaysage.DEGRADE]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
@@ -502,7 +498,7 @@ export const MATRICE_SCORING = {
     },
   },
 
-  // 21. Valeur architecturale
+  // Valeur architecturale
   valeurArchitecturaleHistorique: {
     [ValeurArchitecturale.SANS_INTERET]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
@@ -551,7 +547,7 @@ export const MATRICE_SCORING = {
     },
   },
 
-  // 24. Zonage environnemental
+  // Zonage environnemental
   zonageEnvironnemental: {
     [ZonageEnvironnemental.HORS_ZONE]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.POSITIF,
@@ -600,7 +596,7 @@ export const MATRICE_SCORING = {
     },
   },
 
-  // 25. Trame verte et bleue
+  // Trame verte et bleue
   trameVerteEtBleue: {
     [TrameVerteEtBleue.HORS_TRAME]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.POSITIF,
@@ -640,63 +636,9 @@ export const MATRICE_SCORING = {
     },
   },
 
-  // TODO : vu avec Anna
-  // A implementer - pas géré dans lex fichiers excel
-  connexionElec: {
-    true: {
-      [UsageType.RESIDENTIEL]: ScoreImpact.POSITIF,
-      [UsageType.EQUIPEMENTS]: ScoreImpact.POSITIF,
-      [UsageType.CULTURE]: ScoreImpact.POSITIF,
-      [UsageType.TERTIAIRE]: ScoreImpact.POSITIF,
-      [UsageType.INDUSTRIE]: ScoreImpact.POSITIF,
-      [UsageType.RENATURATION]: ScoreImpact.NEGATIF,
-      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.TRES_POSITIF,
-    },
-    false: {
-      [UsageType.RESIDENTIEL]: ScoreImpact.NEGATIF,
-      [UsageType.EQUIPEMENTS]: ScoreImpact.NEGATIF,
-      [UsageType.CULTURE]: ScoreImpact.NEGATIF,
-      [UsageType.TERTIAIRE]: ScoreImpact.NEGATIF,
-      [UsageType.INDUSTRIE]: ScoreImpact.NEGATIF,
-      [UsageType.RENATURATION]: ScoreImpact.NEGATIF,
-      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.TRES_NEGATIF,
-    },
-  },
-
-  // TODO : vérifier avec Anna
-  // Critère non pris en compte dans la version web
-  // 14. Voie d'eau à proximité
-  // voieEauProximite: {
-  //   [VoieEauProximite.OUI_NAVIGABLE]: {
-  //     [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
-  //     [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
-  //     [UsageType.CULTURE]: ScoreImpact.NEUTRE,
-  //     [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
-  //     [UsageType.INDUSTRIE]: ScoreImpact.POSITIF,
-  //     [UsageType.RENATURATION]: ScoreImpact.POSITIF,
-  //     [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
-  //   },
-  //   [VoieEauProximite.OUI_NON_NAVIGABLE]: {
-  //     [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
-  //     [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
-  //     [UsageType.CULTURE]: ScoreImpact.NEUTRE,
-  //     [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
-  //     [UsageType.INDUSTRIE]: ScoreImpact.NEUTRE,
-  //     [UsageType.RENATURATION]: ScoreImpact.POSITIF,
-  //     [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
-  //   },
-  //   [VoieEauProximite.NON]: {
-  //     [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
-  //     [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
-  //     [UsageType.CULTURE]: ScoreImpact.NEUTRE,
-  //     [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
-  //     [UsageType.INDUSTRIE]: ScoreImpact.NEUTRE,
-  //     [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
-  //     [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
-  //   },
-  // },
-
   // Fonctions pour valeurs numériques
+
+  // Surface du site en m²
   surfaceSite: (value: number): ScoreParUsage => {
     if (value < 10000)
       return {
@@ -739,6 +681,7 @@ export const MATRICE_SCORING = {
     };
   },
 
+  // Surface bâtie en m²
   surfaceBati: (value: number | undefined): ScoreParUsage => {
     if (!value || value < 10000)
       return {
@@ -760,9 +703,11 @@ export const MATRICE_SCORING = {
       [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEGATIF,
     };
   },
+
+  // Taux de logements vacants en %
+  // Modifié le 18/09/2024 après revue avec Anna
   tauxLogementsVacants: (value: number): ScoreParUsage => {
     if (value <= 7)
-      // Modifié le 18/09/2024 après revue avec Anna
       return {
         [UsageType.RESIDENTIEL]: ScoreImpact.TRES_POSITIF,
         [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
@@ -806,6 +751,7 @@ export const MATRICE_SCORING = {
     };
   },
 
+  // Distances en km et m
   distanceAutoroute: (value: number): ScoreParUsage => {
     if (value < 1)
       return {
@@ -848,6 +794,7 @@ export const MATRICE_SCORING = {
     };
   },
 
+  // Distance aux transports en commun en mètres
   distanceTransportCommun: (value: number): ScoreParUsage => {
     return value < 500
       ? {
@@ -870,6 +817,7 @@ export const MATRICE_SCORING = {
         };
   },
 
+  // Distance au réseau électrique en km
   distanceRaccordementElectrique: (value: number): ScoreParUsage => {
     if (value < 1)
       return {

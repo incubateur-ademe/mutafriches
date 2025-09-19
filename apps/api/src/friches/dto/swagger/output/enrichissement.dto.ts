@@ -12,6 +12,8 @@ import {
  * Dupliqué depuis @mutafriches/shared-types pour ajouter les décorateurs Swagger
  */
 export class EnrichissementSwaggerDto implements IEnrichissementOutput {
+  ancienneActivite?: string;
+  connectionReseauElectricite: boolean;
   @ApiProperty({
     description: "Identifiant cadastral unique de la parcelle",
     example: "25056000HZ0346",
@@ -75,12 +77,6 @@ export class EnrichissementSwaggerDto implements IEnrichissementOutput {
     example: true,
   })
   proximiteCommercesServices: boolean;
-
-  @ApiProperty({
-    description: "Site connecté au réseau électrique",
-    example: true,
-  })
-  connectionReseauElectricite: boolean;
 
   @ApiProperty({
     description: "Distance au point de raccordement électrique le plus proche en kilomètres",

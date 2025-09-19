@@ -22,7 +22,6 @@ export interface EnrichissementOutputDto {
   proximiteCommercesServices: boolean;
 
   // Infrastructure
-  connectionReseauElectricite: boolean;
   distanceRaccordementElectrique: number;
 
   // Contexte urbain

@@ -11,7 +11,6 @@ export interface UiParcelleDto {
   // Informations parcelle
   commune: string;
   identifiantParcelle: string;
-  connectionElectricite: string;
 
   // Environnement
   centreVille: string;

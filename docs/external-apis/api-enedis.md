@@ -472,12 +472,6 @@ try {
 ```typescript
 // Dans ParcelleEnrichmentService
 private async enrichWithEnedisData(parcelle: Parcelle, coordonnees: Coordinates) {
-  // 1. Vérification connexion électrique  
-  const connexionResult = await this.enedisService.checkConnection(
-  parcelle.id, 
-  coordonnees
-  );
-  parcelle.connectionReseauElectricite = connexionResult.data?.isConnected;
 
   // 2. Calcul distance raccordement
   const raccordementResult = await this.enedisService.getDistanceRaccordement(

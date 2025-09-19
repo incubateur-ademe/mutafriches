@@ -99,12 +99,6 @@ export const EnrichmentDisplayZone: React.FC<EnrichmentDisplayZoneProps> = ({ da
               value={data.surfaceBatie}
               tooltip="Récupéré depuis API BDNB : https://api.bdnb.io/v1/bdnb"
             />
-            <EnrichmentInfoField
-              id="connection-electricite"
-              label="Connection au réseau d'électricité"
-              value={data.connectionElectricite}
-              tooltip="Récupéré depuis API Enedis : https://data.enedis.fr/api/explore/v2.1/catalog/datasets"
-            />
           </div>
         </div>
 

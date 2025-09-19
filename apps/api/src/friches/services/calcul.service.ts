@@ -245,7 +245,6 @@ export class CalculService {
       distanceAutoroute: parcelle.distanceAutoroute,
       distanceTransportCommun: parcelle.distanceTransportCommun,
       proximiteCommercesServices: parcelle.proximiteCommercesServices,
-      connectionReseauElectricite: parcelle.connectionReseauElectricite,
       distanceRaccordementElectrique: parcelle.distanceRaccordementElectrique,
       tauxLogementsVacants: parcelle.tauxLogementsVacants,
       presenceRisquesTechnologiques: parcelle.presenceRisquesTechnologiques,

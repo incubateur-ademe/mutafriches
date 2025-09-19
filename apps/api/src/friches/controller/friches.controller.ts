@@ -134,7 +134,6 @@ export class FrichesController {
             distanceAutoroute: 1.5,
             distanceTransportCommun: 250,
             proximiteCommercesServices: true,
-            connectionReseauElectricite: true,
             distanceRaccordementElectrique: 0.3,
             tauxLogementsVacants: 4.9,
             presenceRisquesTechnologiques: false,

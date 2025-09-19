@@ -26,7 +26,6 @@ export function buildCalculerMutabiliteFromFormData(formData: any): CalculerMuta
     proximiteCommercesServices: formData.proximiteCommercesServices || false,
 
     // Infrastructure électrique
-    connectionReseauElectricite: formData.connectionReseauElectricite ?? true,
     distanceRaccordementElectrique: formData.distanceRaccordementElectrique || 1,
 
     // Contexte urbain

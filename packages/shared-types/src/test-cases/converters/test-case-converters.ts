@@ -7,14 +7,6 @@ import { TestCase } from "../types/test-case.types";
 import * as enumConverters from "./enum-converters";
 
 /**
- * Remarque : Certains champs du test case ne sont pas utilisés dans le calcul actuel
- * mais pourraient l'être dans une version future :
- * - nombreBatiments
- *
- * Ces champs sont ignorés pour l'instant dans la conversion
- */
-
-/**
  * Convertit une valeur de distance textuelle en nombre
  */
 function parseDistance(
@@ -89,7 +81,6 @@ export function convertTestCaseToMutabilityInput(
     ),
 
     proximiteCommercesServices: input.proximiteCommercesServices,
-    connectionReseauElectricite: input.connectionReseauElectricite ?? true,
     tauxLogementsVacants: input.tauxLogementsVacants || 5,
     presenceRisquesTechnologiques: input.presenceRisquesTechnologiques,
 

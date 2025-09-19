@@ -79,14 +79,6 @@ describe("EnrichissementService", () => {
         source: "BDNB-Risques",
       });
 
-      vi.mocked(enedisService.checkConnection).mockResolvedValue({
-        success: true,
-        data: {
-          isConnected: true,
-        } as any,
-        source: "Enedis-Connection",
-      });
-
       vi.mocked(enedisService.getDistanceRaccordement).mockResolvedValue({
         success: true,
         data: {
@@ -104,12 +96,10 @@ describe("EnrichissementService", () => {
       expect(result.commune).toBe("49005");
       expect(result.surfaceSite).toBe(42780);
       expect(result.surfaceBati).toBe(6600);
-      expect(result.connectionReseauElectricite).toBe(true);
       expect(result.distanceRaccordementElectrique).toBe(150);
       expect(result.presenceRisquesNaturels).toBe(RisqueNaturel.FAIBLE);
       expect(result.sourcesUtilisees).toContain("Cadastre");
       expect(result.sourcesUtilisees).toContain("BDNB");
-      expect(result.sourcesUtilisees).toContain("Enedis-Connection");
       expect(result.sourcesUtilisees).toContain("Enedis-Raccordement");
       expect(result.sourcesUtilisees).toContain("BDNB-Risques");
       expect(result.fiabilite).toBeGreaterThan(5);
@@ -164,13 +154,6 @@ describe("EnrichissementService", () => {
         source: "BDNB-Risques",
       });
 
-      // Enedis connection échoue
-      vi.mocked(enedisService.checkConnection).mockResolvedValue({
-        success: false,
-        error: "Données non disponibles",
-        source: "Enedis-Connection",
-      });
-
       // Enedis raccordement échoue
       vi.mocked(enedisService.getDistanceRaccordement).mockResolvedValue({
         success: false,
@@ -185,9 +168,7 @@ describe("EnrichissementService", () => {
       expect(result.surfaceSite).toBe(10000);
       expect(result.sourcesUtilisees).toContain("Cadastre");
       expect(result.sourcesUtilisees).not.toContain("BDNB");
-      expect(result.sourcesUtilisees).not.toContain("Enedis-Connection");
       expect(result.champsManquants).toContain("surfaceBati");
-      expect(result.champsManquants).toContain("connectionReseauElectricite");
       expect(result.champsManquants).toContain("distanceRaccordementElectrique");
       expect(result.champsManquants).toContain("presenceRisquesNaturels");
 
@@ -234,10 +215,6 @@ describe("EnrichissementService", () => {
           success: false,
           source: "BDNB",
         });
-        vi.mocked(enedisService.checkConnection).mockResolvedValue({
-          success: false,
-          source: "Enedis-Connection",
-        });
         vi.mocked(enedisService.getDistanceRaccordement).mockResolvedValue({
           success: false,
           source: "Enedis-Raccordement",
@@ -276,12 +253,6 @@ describe("EnrichissementService", () => {
         success: true,
         data: { aleaArgiles: "Faible" } as any,
         source: "BDNB-Risques",
-      });
-
-      vi.mocked(enedisService.checkConnection).mockResolvedValue({
-        success: true,
-        data: { isConnected: true } as any,
-        source: "Enedis-Connection",
       });
 
       vi.mocked(enedisService.getDistanceRaccordement).mockResolvedValue({

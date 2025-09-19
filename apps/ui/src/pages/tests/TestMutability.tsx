@@ -59,7 +59,6 @@ export default function TestMutability() {
         distanceRaccordementElectrique:
           convertedData.donneesEnrichies.distanceRaccordementElectrique,
         proximiteCommercesServices: convertedData.donneesEnrichies.proximiteCommercesServices,
-        connectionReseauElectricite: convertedData.donneesEnrichies.connectionReseauElectricite,
         tauxLogementsVacants: convertedData.donneesEnrichies.tauxLogementsVacants,
         presenceRisquesTechnologiques: convertedData.donneesEnrichies.presenceRisquesTechnologiques,
         presenceRisquesNaturels: testCase.input.presenceRisquesNaturels,
