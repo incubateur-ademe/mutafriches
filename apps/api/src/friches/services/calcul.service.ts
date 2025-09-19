@@ -40,6 +40,14 @@ export class CalculService {
   async calculer(parcelle: Parcelle, options: CalculOptions = {}): Promise<MutabiliteOutputDto> {
     const { modeDetaille = false } = options;
 
+    // LOG DE DIAGNOSTIC - Parcelle reçue
+    console.log("========== DIAGNOSTIC CALCUL MUTABILITE ==========");
+    console.log("1. PARCELLE RECUE :");
+    console.log("Nombre de propriétés dans parcelle:", Object.keys(parcelle).length);
+    console.log("Propriétés de la parcelle:", Object.keys(parcelle));
+    console.log("Valeur trameVerteEtBleue dans parcelle:", parcelle.trameVerteEtBleue);
+    console.log("");
+
     // Calculer et trier les résultats par indice décroissant
     const resultatsCalcules = Object.values(UsageType)
       .map((usage) => this.calculerIndiceMutabilite(parcelle, usage, options))
@@ -71,6 +79,18 @@ export class CalculService {
     );
 
     const fiabilite = this.calculerFiabilite(parcelle);
+
+    // LOG DE DIAGNOSTIC - Résultats finaux
+    console.log("========== RESULTATS DU CALCUL ==========");
+    console.log("Fiabilité calculée:", fiabilite);
+    console.log("Nombre de résultats:", resultats.length);
+    resultats.forEach((r, idx) => {
+      console.log(`${idx + 1}. ${r.usage}: ${r.indiceMutabilite}% (rang ${r.rang})`);
+      if ("avantages" in r && "contraintes" in r) {
+        console.log(`   -> Avantages: ${r.avantages}, Contraintes: ${r.contraintes}`);
+      }
+    });
+    console.log("==========================================");
 
     return {
       fiabilite,
@@ -131,6 +151,7 @@ export class CalculService {
 
   /**
    * Calcule les scores d'avantages et de contraintes pour un usage donné
+   * Version corrigée : les critères NEUTRE comptent dans avantages ET contraintes (comme dans Excel)
    */
   protected calculerScorePourUsage(
     parcelle: Parcelle,
@@ -141,10 +162,7 @@ export class CalculService {
 
     // Mapper les propriétés de la parcelle aux critères
     const criteres = this.extraireCriteres(parcelle);
-    console.log(
-      "calculerScorePourUsage - critères extraits :>> ",
-      JSON.stringify(criteres, null, 2),
-    );
+    console.log("calculerScorePourUsage - critères extraits :", JSON.stringify(criteres, null, 2));
 
     // Pour chaque critère
     Object.entries(criteres).forEach(([champDTO, valeur]) => {
@@ -160,10 +178,16 @@ export class CalculService {
       const poids = POIDS_CRITERES[champDTO as keyof typeof POIDS_CRITERES] ?? 1;
       const pointsPonderes = score * poids;
 
-      // Séparer avantages et contraintes
-      if (pointsPonderes >= 0) {
+      // LOGIQUE EXCEL : Les critères NEUTRE (0.5) comptent dans les deux côtés
+      if (score === 0.5) {
+        // NEUTRE
+        avantages += Math.abs(pointsPonderes);
+        contraintes += Math.abs(pointsPonderes);
+      } else if (pointsPonderes > 0) {
+        // Critères positifs vont uniquement dans avantages
         avantages += pointsPonderes;
       } else {
+        // Critères négatifs vont uniquement dans contraintes
         contraintes += Math.abs(pointsPonderes);
       }
     });
@@ -173,6 +197,7 @@ export class CalculService {
 
   /**
    * Calcule les scores avec détails pour un usage donné
+   * Version corrigée : les critères NEUTRE comptent dans avantages ET contraintes (comme dans Excel)
    */
   protected calculerScorePourUsageDetaille(
     parcelle: Parcelle,
@@ -192,12 +217,12 @@ export class CalculService {
 
     const criteres = this.extraireCriteres(parcelle);
 
-    console.log(
-      `calculerScorePourUsageDetaille - ${Object.keys(criteres).length} critères extraits :>> ` +
-        JSON.stringify(criteres, null, 2),
-    );
-
     Object.entries(criteres).forEach(([champDTO, valeur]) => {
+      // LOG DE DIAGNOSTIC - Traitement de chaque critère
+      if (usage === UsageType.RESIDENTIEL) {
+        console.log(`Traitement du critère "${champDTO}" avec valeur:`, valeur);
+      }
+
       // Ignorer si non renseigné
       if (valeur === null || valeur === undefined || valeur === "ne-sait-pas") {
         detailsCriteresVides.push({
@@ -211,6 +236,12 @@ export class CalculService {
       }
 
       const scoreBrut = this.obtenirScoreCritere(champDTO, valeur, usage);
+
+      // LOG DE DIAGNOSTIC - Score obtenu
+      if (usage === UsageType.RESIDENTIEL && scoreBrut === null) {
+        console.log(`  -> Critère "${champDTO}" NON MAPPE dans MATRICE_SCORING`);
+      }
+
       if (scoreBrut === null) return;
 
       const poids = POIDS_CRITERES[champDTO as keyof typeof POIDS_CRITERES] ?? 1;
@@ -224,18 +255,89 @@ export class CalculService {
         scorePondere: Math.abs(scorePondere),
       };
 
-      if (scorePondere >= 0) {
+      // LOGIQUE EXCEL : Les critères NEUTRE (0.5) comptent dans les deux côtés
+      if (scoreBrut === 0.5) {
+        // NEUTRE
+        avantages += Math.abs(scorePondere);
+        contraintes += Math.abs(scorePondere);
+
+        // Ajouter aux deux listes pour le détail
+        detailsAvantages.push(detail);
+        // Créer une copie pour éviter les problèmes de référence
+        detailsContraintes.push({
+          critere: detail.critere,
+          valeur: detail.valeur,
+          scoreBrut: detail.scoreBrut,
+          poids: detail.poids,
+          scorePondere: detail.scorePondere,
+        });
+      } else if (scorePondere > 0) {
+        // Critères positifs vont uniquement dans avantages
         avantages += scorePondere;
         detailsAvantages.push(detail);
       } else {
+        // Critères négatifs vont uniquement dans contraintes
         contraintes += Math.abs(scorePondere);
         detailsContraintes.push(detail);
       }
     });
 
+    // LOG DE DIAGNOSTIC - Résumé pour premier usage
+    if (usage === UsageType.RESIDENTIEL) {
+      console.log("");
+      console.log("3. RESUME DU TRAITEMENT :");
+      console.log("Critères avec valeurs:", detailsAvantages.length + detailsContraintes.length);
+      console.log("Critères vides/non renseignés:", detailsCriteresVides.length);
+      console.log(
+        "Critères vides:",
+        detailsCriteresVides.map((c) => c.critere),
+      );
+
+      // Vérification des critères attendus vs reçus
+      const criteresAttendus = Object.keys(MATRICE_SCORING);
+      const criteresRecus = Object.keys(criteres);
+      const criteresManquantsDansExtraction = criteresAttendus.filter(
+        (c) => !criteresRecus.includes(c),
+      );
+      const criteresNonMappes = criteresRecus.filter((c) => !criteresAttendus.includes(c));
+
+      console.log("");
+      console.log("4. ANALYSE DES ECARTS :");
+      console.log("Critères attendus dans MATRICE_SCORING:", criteresAttendus.length);
+      console.log("Critères manquants dans extraction:", criteresManquantsDansExtraction);
+      console.log("Critères extraits mais non mappés:", criteresNonMappes);
+      console.log("========== FIN DIAGNOSTIC ==========");
+      console.log("");
+    }
+
     // Trier par impact décroissant
     detailsAvantages.sort((a, b) => b.scorePondere - a.scorePondere);
     detailsContraintes.sort((a, b) => b.scorePondere - a.scorePondere);
+
+    // LOG POUR ANALYSE DETAILLEE
+    if (usage === UsageType.RESIDENTIEL) {
+      console.log("=== ANALYSE DETAILLEE RESIDENTIEL ===");
+      console.log("AVANTAGES:");
+      detailsAvantages.forEach((d) => {
+        console.log(
+          `+ ${d.critere}: ${d.valeur} → score ${d.scoreBrut} × poids ${d.poids} = ${d.scorePondere}`,
+        );
+      });
+      console.log("Total avantages:", avantages);
+
+      console.log("\nCONTRAINTES:");
+      detailsContraintes.forEach((d) => {
+        console.log(
+          `- ${d.critere}: ${d.valeur} → score ${d.scoreBrut} × poids ${d.poids} = ${d.scorePondere}`,
+        );
+      });
+      console.log("Total contraintes:", contraintes);
+
+      console.log(
+        `\nCalcul final: ${avantages} / (${avantages} + ${contraintes}) = ${(avantages / (avantages + contraintes)) * 100}%`,
+      );
+      console.log("Attendu dans Excel: 42%");
+    }
 
     return { avantages, contraintes, detailsCriteresVides, detailsAvantages, detailsContraintes };
   }
@@ -244,8 +346,14 @@ export class CalculService {
    * Extrait les critères de calcul depuis l'entité Parcelle
    */
   protected extraireCriteres(parcelle: Parcelle): Record<string, unknown> {
+    // LOG DE DIAGNOSTIC
+    console.log(
+      "extraireCriteres - valeur trameVerteEtBleue dans parcelle:",
+      parcelle.trameVerteEtBleue,
+    );
+
     // Mapper les propriétés de la parcelle vers les clés attendues par la matrice
-    return {
+    const criteres = {
       surfaceSite: parcelle.surfaceSite,
       surfaceBati: parcelle.surfaceBati,
       typeProprietaire: parcelle.typeProprietaire,
@@ -268,6 +376,13 @@ export class CalculService {
       zonagePatrimonial: parcelle.zonagePatrimonial,
       trameVerteEtBleue: parcelle.trameVerteEtBleue,
     };
+
+    console.log(
+      "extraireCriteres - critères extraits avec trameVerteEtBleue:",
+      criteres.trameVerteEtBleue,
+    );
+
+    return criteres;
   }
 
   /**
@@ -281,7 +396,10 @@ export class CalculService {
     const matriceCritere = MATRICE_SCORING[champDTO as keyof typeof MATRICE_SCORING];
 
     // Critère non mappé
-    if (!matriceCritere) return null;
+    if (!matriceCritere) {
+      console.log(`obtenirScoreCritere - Critère "${champDTO}" non trouvé dans MATRICE_SCORING`);
+      return null;
+    }
 
     // Si c'est une fonction (critères numériques)
     if (typeof matriceCritere === "function") {
@@ -293,6 +411,12 @@ export class CalculService {
     const cleIndex = this.convertirEnCleIndex(valeur);
     const typedMatrice = matriceCritere as Record<string | number, ScoreParUsage>;
     const scores = typedMatrice[cleIndex];
+
+    if (!scores) {
+      console.log(
+        `obtenirScoreCritere - Pas de score pour "${champDTO}" avec valeur "${cleIndex}"`,
+      );
+    }
 
     return scores ? scores[usage] : null;
   }

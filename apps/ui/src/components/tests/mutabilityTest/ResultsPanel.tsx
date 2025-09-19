@@ -322,7 +322,9 @@ export function ResultsPanel({ result, error, isCalculating, expectedResults }: 
                                                 <tbody>
                                                   {usage.detailsCalcul.detailsCriteresVides.map(
                                                     (detail: DetailCritere, idx: number) => (
-                                                      <tr key={`critere-vide-${usage.usage}-${idx}`}>
+                                                      <tr
+                                                        key={`critere-vide-${usage.usage}-${idx}`}
+                                                      >
                                                         <td className="fr-text--sm">
                                                           {detail.critere}
                                                         </td>
