@@ -99,3 +99,4 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 .nuxt
 .docusaurus
 *.tsbuildinfo
+.local*
