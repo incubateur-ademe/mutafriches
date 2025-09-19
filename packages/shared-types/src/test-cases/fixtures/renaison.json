@@ -8,66 +8,63 @@
   "input": {
     "surfaceSite": 46333,
     "surfaceBati": 7000,
-    "typeProprietaire": "public",
-
-    "etatBatiInfrastructure": "batiments-heterogenes",
-    "presencePollution": "oui-autres-composes",
-    "terrainViabilise": true,
-    "qualiteVoieDesserte": "peu-accessible",
-
     "siteEnCentreVille": false,
-    "proximiteCommercesServices": false,
     "distanceAutoroute": "plus-de-5km",
     "distanceTransportCommun": "plus-de-500m",
+    "proximiteCommercesServices": false,
+    "distanceRaccordementElectrique": "entre-1-et-5km",
     "tauxLogementsVacants": 7.2,
-
-    "zonageReglementaire": "zone-naturelle",
     "presenceRisquesNaturels": "fort",
     "presenceRisquesTechnologiques": false,
+    "zonageEnvironnemental": "znieff-type-1-2",
+    "zonageReglementaire": "zone-naturelle",
     "zonagePatrimonial": "non-concerne",
+    "trameVerteEtBleue": "ne-sait-pas",
 
+    "typeProprietaire": "public",
+    "terrainViabilise": true,
+    "etatBatiInfrastructure": "batiments-heterogenes",
+    "presencePollution": "oui-autres-composes",
     "valeurArchitecturaleHistorique": "interet-fort",
     "qualitePaysage": "interessant",
-    "zonageEnvironnemental": "znieff-type-1-2",
-    "trameVerteEtBleue": "ne-sait-pas",
-    "distanceRaccordementElectrique": "entre-1-et-5km"
+    "qualiteVoieDesserte": "peu-accessible"
   },
 
   "expected": {
     "usages": [
       {
         "usage": "renaturation",
-        "indiceMutabilite": 65,
+        "indiceMutabilite": 61,
         "rang": 1
       },
       {
         "usage": "culture",
-        "indiceMutabilite": 48,
+        "indiceMutabilite": 54,
         "rang": 2
       },
       {
         "usage": "photovoltaique",
-        "indiceMutabilite": 41,
+        "indiceMutabilite": 46,
         "rang": 3
       },
       {
         "usage": "industrie",
-        "indiceMutabilite": 37,
+        "indiceMutabilite": 43,
         "rang": 4
       },
       {
         "usage": "equipements",
-        "indiceMutabilite": 35,
+        "indiceMutabilite": 42,
         "rang": 5
       },
       {
         "usage": "residentiel",
-        "indiceMutabilite": 34,
+        "indiceMutabilite": 42,
         "rang": 6
       },
       {
         "usage": "tertiaire",
-        "indiceMutabilite": 28,
+        "indiceMutabilite": 34,
         "rang": 7
       }
     ],
@@ -75,9 +72,9 @@
     "fiabilite": 7.7,
 
     "metadata": {
-      "criteresRenseignes": 23,
-      "criteresTotal": 26,
-      "criteresManquants": ["trameVerteEtBleue"]
+      "criteresRenseignes": 21,
+      "criteresTotal": 21,
+      "criteresManquants": []
     }
   }
 }

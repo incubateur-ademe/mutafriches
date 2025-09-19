@@ -880,8 +880,5 @@ export const NIVEAUX_FIABILITE = [
   },
 ] as const;
 
-// Export du nombre de critères mappés
-export const NOMBRE_CRITERES_MAPPES = 21;
-
-// Liste des critères actuellement utilisés en production
-export const CRITERES_ACTIFS = 21;
+// Export du nombre de critères utilisés dans le calcul
+export const NOMBRE_CRITERES_UTILISES = 21;

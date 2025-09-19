@@ -562,6 +562,7 @@ export function InputFormFields({ formData, onFormDataChange, isEditable }: Inpu
                 </option>
                 <option value={TrameVerteEtBleue.CORRIDOR_A_RESTAURER}>Corridor à restaurer</option>
                 <option value={TrameVerteEtBleue.CORRIDOR_A_PRESERVER}>Corridor à préserver</option>
+                <option value={TrameVerteEtBleue.NE_SAIT_PAS}>Ne sait pas</option>
               </select>
             </div>
           </div>

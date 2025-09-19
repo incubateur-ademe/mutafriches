@@ -15,6 +15,7 @@ export interface DetailCritere {
 export interface DetailCalculUsage {
   detailsAvantages: DetailCritere[]; // Critères positifs
   detailsContraintes: DetailCritere[]; // Critères négatifs
+  detailsCriteresVides: DetailCritere[]; // Critères non renseignés
   totalAvantages: number; // Somme des avantages
   totalContraintes: number; // Somme des contraintes
 }

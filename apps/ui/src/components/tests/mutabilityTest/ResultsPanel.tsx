@@ -3,7 +3,7 @@ import {
   UsageResultatDetaille,
   DetailCritere,
 } from "@mutafriches/shared-types";
-import { useState } from "react";
+import { useState, Fragment } from "react";
 
 interface ResultsPanelProps {
   result: MutabiliteOutputDto | null;
@@ -117,8 +117,8 @@ export function ResultsPanel({ result, error, isCalculating, expectedResults }: 
                       const isExpanded = expandedUsage === usage.usage;
 
                       return (
-                        <>
-                          <tr key={usage.usage}>
+                        <Fragment key={usage.usage}>
+                          <tr>
                             <td>
                               <span className="fr-badge fr-badge--sm">{usage.rang}</span>
                             </td>
@@ -189,7 +189,8 @@ export function ResultsPanel({ result, error, isCalculating, expectedResults }: 
                                       <div className="fr-card fr-card--no-border fr-background-contrast--info">
                                         <div className="fr-card__body">
                                           <h5 className="fr-text--md fr-mt-4w fr-text--bold fr-text--success fr-mb-2w">
-                                            Avantages (Total: {usage.detailsCalcul.totalAvantages})
+                                            {usage.detailsCalcul.detailsAvantages.length} avantages
+                                            (Total: {usage.detailsCalcul.totalAvantages})
                                           </h5>
                                           {usage.detailsCalcul.detailsAvantages.length > 0 ? (
                                             <div className="fr-table fr-table--sm">
@@ -206,7 +207,7 @@ export function ResultsPanel({ result, error, isCalculating, expectedResults }: 
                                                 <tbody>
                                                   {usage.detailsCalcul.detailsAvantages.map(
                                                     (detail: DetailCritere, idx: number) => (
-                                                      <tr key={idx}>
+                                                      <tr key={`avantage-${usage.usage}-${idx}`}>
                                                         <td className="fr-text--sm">
                                                           {detail.critere}
                                                         </td>
@@ -244,7 +245,8 @@ export function ResultsPanel({ result, error, isCalculating, expectedResults }: 
                                       <div className="fr-card fr-card--no-border fr-background-contrast--warning">
                                         <div className="fr-card__body">
                                           <h5 className="fr-text--md fr-mt-4w fr-text--bold fr-text--error fr-mb-2w">
-                                            Contraintes (Total:{" "}
+                                            {usage.detailsCalcul.detailsContraintes.length}{" "}
+                                            contraintes (Total:{" "}
                                             {usage.detailsCalcul.totalContraintes})
                                           </h5>
                                           {usage.detailsCalcul.detailsContraintes.length > 0 ? (
@@ -262,7 +264,65 @@ export function ResultsPanel({ result, error, isCalculating, expectedResults }: 
                                                 <tbody>
                                                   {usage.detailsCalcul.detailsContraintes.map(
                                                     (detail: DetailCritere, idx: number) => (
-                                                      <tr key={idx}>
+                                                      <tr key={`contrainte-${usage.usage}-${idx}`}>
+                                                        <td className="fr-text--sm">
+                                                          {detail.critere}
+                                                        </td>
+                                                        <td className="fr-text--sm">
+                                                          {typeof detail.valeur === "boolean"
+                                                            ? detail.valeur
+                                                              ? "Oui"
+                                                              : "Non"
+                                                            : String(detail.valeur)}
+                                                        </td>
+                                                        <td className="fr-text--sm">
+                                                          {detail.scoreBrut}
+                                                        </td>
+                                                        <td className="fr-text--sm">
+                                                          ×{detail.poids}
+                                                        </td>
+                                                        <td className="fr-text--sm fr-text--bold">
+                                                          {detail.scorePondere}
+                                                        </td>
+                                                      </tr>
+                                                    ),
+                                                  )}
+                                                </tbody>
+                                              </table>
+                                            </div>
+                                          ) : (
+                                            <p className="fr-text--sm">
+                                              Aucune contrainte identifiée
+                                            </p>
+                                          )}
+                                        </div>
+                                      </div>
+                                    </div>
+
+                                    {/* Colonne Critères Vides */}
+                                    <div className="fr-col-12">
+                                      <div className="fr-card fr-card--no-border fr-background-contrast--grey">
+                                        <div className="fr-card__body">
+                                          <h5 className="fr-text--md fr-mt-4w fr-text--bold fr-text--error fr-mb-2w">
+                                            {usage.detailsCalcul.detailsCriteresVides.length}{" "}
+                                            critère(s) vides
+                                          </h5>
+                                          {usage.detailsCalcul.detailsCriteresVides.length > 0 ? (
+                                            <div className="fr-table fr-table--sm">
+                                              <table>
+                                                <thead>
+                                                  <tr>
+                                                    <th>Critère</th>
+                                                    <th>Valeur</th>
+                                                    <th>Score</th>
+                                                    <th>Poids</th>
+                                                    <th>Total</th>
+                                                  </tr>
+                                                </thead>
+                                                <tbody>
+                                                  {usage.detailsCalcul.detailsCriteresVides.map(
+                                                    (detail: DetailCritere, idx: number) => (
+                                                      <tr key={`critere-vide-${usage.usage}-${idx}`}>
                                                         <td className="fr-text--sm">
                                                           {detail.critere}
                                                         </td>
@@ -301,7 +361,7 @@ export function ResultsPanel({ result, error, isCalculating, expectedResults }: 
                               </td>
                             </tr>
                           )}
-                        </>
+                        </Fragment>
                       );
                     })}
                 </tbody>

@@ -13,7 +13,7 @@ import { Parcelle } from "../domain/entities/parcelle.entity";
 import {
   MATRICE_SCORING,
   NIVEAUX_FIABILITE,
-  NOMBRE_CRITERES_MAPPES,
+  NOMBRE_CRITERES_UTILISES,
   POIDS_CRITERES,
   ScoreParUsage,
 } from "./config/criteres-scoring.config";
@@ -39,10 +39,6 @@ export class CalculService {
    */
   async calculer(parcelle: Parcelle, options: CalculOptions = {}): Promise<MutabiliteOutputDto> {
     const { modeDetaille = false } = options;
-
-    // TODO : log a supprimer
-
-    console.log("Calcul de la mutabilité pour la parcelle :", JSON.stringify(parcelle, null, 2));
 
     // Calculer et trier les résultats par indice décroissant
     const resultatsCalcules = Object.values(UsageType)
@@ -117,12 +113,14 @@ export class CalculService {
       const scoreDetaille = scoreData as {
         avantages: number;
         contraintes: number;
+        detailsCriteresVides: DetailCritere[];
         detailsAvantages: DetailCritere[];
         detailsContraintes: DetailCritere[];
       };
       resultat.detailsCalcul = {
         detailsAvantages: scoreDetaille.detailsAvantages,
         detailsContraintes: scoreDetaille.detailsContraintes,
+        detailsCriteresVides: scoreDetaille.detailsCriteresVides,
         totalAvantages: avantages,
         totalContraintes: contraintes,
       };
@@ -182,6 +180,7 @@ export class CalculService {
   ): {
     avantages: number;
     contraintes: number;
+    detailsCriteresVides: DetailCritere[];
     detailsAvantages: DetailCritere[];
     detailsContraintes: DetailCritere[];
   } {
@@ -189,12 +188,27 @@ export class CalculService {
     let contraintes = 0;
     const detailsAvantages: DetailCritere[] = [];
     const detailsContraintes: DetailCritere[] = [];
+    const detailsCriteresVides: DetailCritere[] = [];
 
     const criteres = this.extraireCriteres(parcelle);
 
+    console.log(
+      `calculerScorePourUsageDetaille - ${Object.keys(criteres).length} critères extraits :>> ` +
+        JSON.stringify(criteres, null, 2),
+    );
+
     Object.entries(criteres).forEach(([champDTO, valeur]) => {
       // Ignorer si non renseigné
-      if (valeur === null || valeur === undefined || valeur === "ne-sait-pas") return;
+      if (valeur === null || valeur === undefined || valeur === "ne-sait-pas") {
+        detailsCriteresVides.push({
+          critere: champDTO,
+          valeur: null,
+          scoreBrut: 0,
+          poids: 0,
+          scorePondere: 0,
+        });
+        return;
+      }
 
       const scoreBrut = this.obtenirScoreCritere(champDTO, valeur, usage);
       if (scoreBrut === null) return;
@@ -223,7 +237,7 @@ export class CalculService {
     detailsAvantages.sort((a, b) => b.scorePondere - a.scorePondere);
     detailsContraintes.sort((a, b) => b.scorePondere - a.scorePondere);
 
-    return { avantages, contraintes, detailsAvantages, detailsContraintes };
+    return { avantages, contraintes, detailsCriteresVides, detailsAvantages, detailsContraintes };
   }
 
   /**
@@ -302,15 +316,13 @@ export class CalculService {
   protected calculerFiabilite(parcelle: Parcelle): Fiabilite {
     const criteres = this.extraireCriteres(parcelle);
 
-    console.log("calculerFiabilite - critères extraits :>> ", JSON.stringify(criteres, null, 2));
-
     // Compter les critères non null/undefined
     const criteresRenseignes = Object.entries(criteres).filter(
       ([, valeur]) => valeur !== null && valeur !== undefined && valeur !== "ne-sait-pas",
     ).length;
 
     // Calculer le pourcentage sur le nombre de critères mappés
-    const pourcentage = (criteresRenseignes / NOMBRE_CRITERES_MAPPES) * 100;
+    const pourcentage = (criteresRenseignes / NOMBRE_CRITERES_UTILISES) * 100;
 
     // Note sur 10 arrondie à 0.5 près
     const note = Math.round((pourcentage / 10) * 2) / 2;
@@ -324,7 +336,7 @@ export class CalculService {
       description:
         niveau?.description || NIVEAUX_FIABILITE[NIVEAUX_FIABILITE.length - 1].description,
       criteresRenseignes,
-      criteresTotal: NOMBRE_CRITERES_MAPPES,
+      criteresTotal: NOMBRE_CRITERES_UTILISES,
     };
   }
 
