@@ -37,7 +37,6 @@ export interface TestCaseInput {
   valeurArchitecturaleHistorique: string;
 
   // Environnement et biodiversité
-  couvertVegetal?: string;
   presenceEspeceProtegee?: string;
   zonageEnvironnemental: string;
   trameVerteEtBleue: string;

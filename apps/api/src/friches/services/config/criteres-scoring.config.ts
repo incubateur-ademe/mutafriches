@@ -49,7 +49,6 @@ export const POIDS_CRITERES = {
 
   // Critères non pris en compte dans la version web
   // TODO à supprimer complètement du calcul (et meme des exemples)
-  couvertVegetal: 1,
   presenceEspeceProtegee: 1,
   zoneHumide: 1,
 } as const;
@@ -696,48 +695,6 @@ export const MATRICE_SCORING = {
   //     [UsageType.INDUSTRIE]: ScoreImpact.NEUTRE,
   //     [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
   //     [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
-  //   },
-  // },
-
-  // TODO : vérifier avec Anna
-  // Critère non pris en compte dans la version web
-  // 22. Couvert végétal
-  // couvertVegetal: {
-  //   [CouvertVegetal.IMPERMEABILISE]: {
-  //     [UsageType.RESIDENTIEL]: ScoreImpact.POSITIF,
-  //     [UsageType.EQUIPEMENTS]: ScoreImpact.POSITIF,
-  //     [UsageType.CULTURE]: ScoreImpact.NEUTRE,
-  //     [UsageType.TERTIAIRE]: ScoreImpact.POSITIF,
-  //     [UsageType.INDUSTRIE]: ScoreImpact.POSITIF,
-  //     [UsageType.RENATURATION]: ScoreImpact.NEGATIF,
-  //     [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
-  //   },
-  //   [CouvertVegetal.SOL_NU_FAIBLEMENT_HERBACE]: {
-  //     [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
-  //     [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
-  //     [UsageType.CULTURE]: ScoreImpact.NEUTRE,
-  //     [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
-  //     [UsageType.INDUSTRIE]: ScoreImpact.NEUTRE,
-  //     [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
-  //     [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
-  //   },
-  //   [CouvertVegetal.VEGETATION_ARBUSTIVE_FAIBLE]: {
-  //     [UsageType.RESIDENTIEL]: ScoreImpact.NEGATIF,
-  //     [UsageType.EQUIPEMENTS]: ScoreImpact.NEGATIF,
-  //     [UsageType.CULTURE]: ScoreImpact.NEUTRE,
-  //     [UsageType.TERTIAIRE]: ScoreImpact.NEGATIF,
-  //     [UsageType.INDUSTRIE]: ScoreImpact.NEGATIF,
-  //     [UsageType.RENATURATION]: ScoreImpact.POSITIF,
-  //     [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEGATIF,
-  //   },
-  //   [CouvertVegetal.VEGETATION_ARBUSTIVE_PREDOMINANTE]: {
-  //     [UsageType.RESIDENTIEL]: ScoreImpact.TRES_NEGATIF,
-  //     [UsageType.EQUIPEMENTS]: ScoreImpact.TRES_NEGATIF,
-  //     [UsageType.CULTURE]: ScoreImpact.NEGATIF,
-  //     [UsageType.TERTIAIRE]: ScoreImpact.TRES_NEGATIF,
-  //     [UsageType.INDUSTRIE]: ScoreImpact.TRES_NEGATIF,
-  //     [UsageType.RENATURATION]: ScoreImpact.TRES_POSITIF,
-  //     [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.TRES_NEGATIF,
   //   },
   // },
 

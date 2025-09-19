@@ -34,7 +34,6 @@
 
     "nombreBatiments": 2,
     "distanceRaccordementElectrique": "entre-1-et-5km",
-    "couvertVegetal": "vegetation-arbustive-predominante",
     "presenceEspeceProtegee": "ne-sait-pas",
     "zoneHumide": "ne-sait-pas"
   },
