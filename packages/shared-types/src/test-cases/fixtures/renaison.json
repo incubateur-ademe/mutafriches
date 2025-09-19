@@ -34,7 +34,6 @@
 
     "nombreBatiments": 2,
     "distanceRaccordementElectrique": "entre-1-et-5km",
-    "presenceEspeceProtegee": "ne-sait-pas",
     "zoneHumide": "ne-sait-pas"
   },
 
@@ -82,7 +81,7 @@
     "metadata": {
       "criteresRenseignes": 23,
       "criteresTotal": 26,
-      "criteresManquants": ["presenceEspeceProtegee", "trameVerteEtBleue", "zoneHumide"]
+      "criteresManquants": ["trameVerteEtBleue", "zoneHumide"]
     }
   }
 }
