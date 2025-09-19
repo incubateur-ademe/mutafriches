@@ -1,4 +1,4 @@
-import { EtatBatiInfrastructure, UsageType } from "@mutafriches/shared-types";
+import { EtatBatiInfrastructure, TerrainViabilise, UsageType } from "@mutafriches/shared-types";
 import {
   TypeProprietaire,
   PresencePollution,
@@ -194,7 +194,7 @@ export const MATRICE_SCORING = {
 
   // Terrain viabilisé (Site connecté aux réseaux d'eaux)
   terrainViabilise: {
-    true: {
+    [TerrainViabilise.OUI]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.TRES_POSITIF,
       [UsageType.EQUIPEMENTS]: ScoreImpact.TRES_POSITIF,
       [UsageType.CULTURE]: ScoreImpact.TRES_POSITIF,
@@ -203,7 +203,7 @@ export const MATRICE_SCORING = {
       [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
       [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
     },
-    false: {
+    [TerrainViabilise.NON]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.TRES_NEGATIF,
       [UsageType.EQUIPEMENTS]: ScoreImpact.TRES_NEGATIF,
       [UsageType.CULTURE]: ScoreImpact.TRES_NEGATIF,
