@@ -84,17 +84,11 @@ export function convertTestCaseToMutabilityInput(
     tauxLogementsVacants: input.tauxLogementsVacants || 5,
     presenceRisquesTechnologiques: input.presenceRisquesTechnologiques,
 
-    // Les enums sont déjà au bon format kebab-case dans les test cases
-    // On passe directement les valeurs, en transformant "ne-sait-pas" en undefined
-    presenceRisquesNaturels:
-      input.presenceRisquesNaturels === "ne-sait-pas" ? undefined : input.presenceRisquesNaturels,
-    zonageEnvironnemental:
-      input.zonageEnvironnemental === "ne-sait-pas" ? undefined : input.zonageEnvironnemental,
+    presenceRisquesNaturels: input.presenceRisquesNaturels,
+    zonageEnvironnemental: input.zonageEnvironnemental,
     zonageReglementaire: input.zonageReglementaire,
-    zonagePatrimonial:
-      input.zonagePatrimonial === "ne-sait-pas" ? undefined : input.zonagePatrimonial,
-    trameVerteEtBleue:
-      input.trameVerteEtBleue === "ne-sait-pas" ? undefined : input.trameVerteEtBleue,
+    zonagePatrimonial: input.zonagePatrimonial,
+    trameVerteEtBleue: input.trameVerteEtBleue,
 
     coordonnees: input.coordonnees,
     sourcesUtilisees: ["Test"],
