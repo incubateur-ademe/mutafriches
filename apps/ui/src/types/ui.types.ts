@@ -7,7 +7,6 @@ export interface UiParcelleDto {
   surfaceParcelle: string;
   surfaceBatie: string;
   typeProprietaire: string;
-  ancienneActivite: string;
 
   // Informations parcelle
   commune: string;

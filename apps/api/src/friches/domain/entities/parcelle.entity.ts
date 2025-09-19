@@ -30,7 +30,6 @@ export class Parcelle {
   // Données physiques
   surfaceSite: number;
   surfaceBati?: number;
-  ancienneActivite?: string;
 
   // Données enrichies automatiquement
   siteEnCentreVille: boolean;
@@ -125,7 +124,6 @@ export class Parcelle {
     parcelle.coordonnees = donneesEnrichies.coordonnees;
     parcelle.surfaceSite = donneesEnrichies.surfaceSite;
     parcelle.surfaceBati = donneesEnrichies.surfaceBati;
-    parcelle.ancienneActivite = donneesEnrichies.ancienneActivite;
     parcelle.siteEnCentreVille = donneesEnrichies.siteEnCentreVille;
     parcelle.distanceAutoroute = donneesEnrichies.distanceAutoroute;
     parcelle.distanceTransportCommun = donneesEnrichies.distanceTransportCommun;

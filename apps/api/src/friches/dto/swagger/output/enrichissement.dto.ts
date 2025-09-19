@@ -51,13 +51,6 @@ export class EnrichissementSwaggerDto implements IEnrichissementOutput {
   surfaceBati?: number;
 
   @ApiProperty({
-    description: "Description de l'ancienne activité du site",
-    required: false,
-    example: "Manufacture textile - Les Allumettes",
-  })
-  ancienneActivite?: string;
-
-  @ApiProperty({
     description: "Site situé en centre-ville ou centre-bourg",
     example: true,
   })

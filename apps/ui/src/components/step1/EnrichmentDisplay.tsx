@@ -104,12 +104,6 @@ export const EnrichmentDisplay: React.FC<EnrichmentDisplayProps> = ({ data }) =>
               value={data.connectionElectricite}
               tooltip="Récupéré depuis API Enedis : https://data.enedis.fr/api/explore/v2.1/catalog/datasets"
             />
-            <InfoField
-              id="ancienne-activite"
-              label="Ancienne activité"
-              value={data.ancienneActivite}
-              tooltip="Donnée de test, pas de récupération réelle pour l'instant"
-            />
           </div>
         </div>
 

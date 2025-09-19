@@ -43,7 +43,6 @@ export function buildCalculerMutabiliteFromFormData(formData: any): CalculerMuta
     trameVerteEtBleue: formData.trameVerteEtBleue,
 
     // Autres
-    ancienneActivite: formData.ancienneActivite,
     coordonnees: formData.coordonnees,
 
     // Métadonnées

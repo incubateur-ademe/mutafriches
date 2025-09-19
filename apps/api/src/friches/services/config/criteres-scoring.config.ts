@@ -49,7 +49,6 @@ export const POIDS_CRITERES = {
 
   // Critères non pris en compte dans la version web
   // TODO à supprimer complètement du calcul (et meme des exemples)
-  ancienneActivite: 1, // Pas de le Excel
   terrainEnPente: 1,
   voieEauProximite: 0.5,
   couvertVegetal: 1,
@@ -1062,7 +1061,7 @@ export const NIVEAUX_FIABILITE = [
 ] as const;
 
 // Export du nombre de critères mappés
-export const NOMBRE_CRITERES_MAPPES = 26;
+export const NOMBRE_CRITERES_MAPPES = 21;
 
 // Liste des critères actuellement utilisés en production
 export const CRITERES_ACTIFS = 21;

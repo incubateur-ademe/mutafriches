@@ -14,7 +14,6 @@ export interface EnrichissementOutputDto {
   // Données physiques du site
   surfaceSite: number;
   surfaceBati?: number;
-  ancienneActivite?: string;
 
   // Données de localisation et accessibilité
   siteEnCentreVille: boolean;

@@ -32,7 +32,6 @@ export const transformEnrichmentToUiData = (
 
     // Champs non disponibles dans l'enrichissement actuel
     typeProprietaire: nonAccessibleVersion,
-    ancienneActivite: nonAccessibleVersion,
     centreVille: nonAccessibleVersion,
     distanceAutoroute: nonAccessibleVersion,
     distanceTrain: nonAccessibleVersion,

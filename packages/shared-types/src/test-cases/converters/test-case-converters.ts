@@ -110,7 +110,6 @@ export function convertTestCaseToMutabilityInput(
     trameVerteEtBleue:
       input.trameVerteEtBleue === "ne-sait-pas" ? undefined : input.trameVerteEtBleue,
 
-    ancienneActivite: input.ancienneActivite,
     coordonnees: input.coordonnees,
     sourcesUtilisees: ["Test"],
     champsManquants: [],

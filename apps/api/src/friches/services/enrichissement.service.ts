@@ -115,7 +115,6 @@ export class EnrichissementService {
       coordonnees: parcelle.coordonnees,
 
       // Données non déductibles pour le moment
-      ancienneActivite: parcelle.ancienneActivite,
       siteEnCentreVille: parcelle.siteEnCentreVille,
       distanceAutoroute: parcelle.distanceAutoroute,
       distanceTransportCommun: parcelle.distanceTransportCommun,

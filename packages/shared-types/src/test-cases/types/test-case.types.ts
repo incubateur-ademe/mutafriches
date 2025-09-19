@@ -50,7 +50,6 @@ export interface TestCaseInput {
     latitude: number;
     longitude: number;
   };
-  ancienneActivite?: string;
 }
 
 export interface TestCaseExpectedUsage {
