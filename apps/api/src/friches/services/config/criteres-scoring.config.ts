@@ -19,29 +19,44 @@ export type ScoreParUsage = {
 
 // Configuration des poids
 export const POIDS_CRITERES = {
-  typeProprietaire: 1,
-  surfaceSite: 2,
-  surfaceBati: 2,
-  etatBatiInfrastructure: 2,
-  presencePollution: 2,
-  siteEnCentreVille: 2,
-  tauxLogementsVacants: 1,
-  terrainViabilise: 1,
-  qualiteVoieDesserte: 0.5,
-  distanceAutoroute: 0.5,
-  distanceTransportCommun: 0.5,
-  proximiteCommercesServices: 1,
-  distanceRaccordementElectrique: 1,
-  zonageReglementaire: 1,
-  presenceRisquesNaturels: 1,
-  presenceRisquesTechnologiques: 1,
-  zonagePatrimonial: 1,
-  qualitePaysage: 1,
-  valeurArchitecturaleHistorique: 1,
-  zonageEnvironnemental: 1,
-  trameVerteEtBleue: 1,
+  // Critères pris en compte dans la version web (vu le 18/09)
+  // 14 Critères déduits module enrichissement
+  surfaceSite: 2, // OK le 18/09 avec Anna
+  surfaceBati: 2, // OK le 18/09 avec Anna, ajustement en v2 à prévoir
+  siteEnCentreVille: 1, // OK le 18/09 avec Anna // Poids corrigé
+  distanceAutoroute: 0.5, // OK le 18/09 avec Anna
+  distanceTransportCommun: 1, // OK le 18/09 avec Anna // Poids corrigé
+  proximiteCommercesServices: 1, // OK le 18/09 avec Anna
+  distanceRaccordementElectrique: 1, // OK le 18/09 avec Anna
+  tauxLogementsVacants: 1, // OK le 18/09 avec Anna
+  presenceRisquesNaturels: 1, // OK le 18/09 avec Anna
+  presenceRisquesTechnologiques: 1, // OK le 18/09 avec Anna
+  zonageEnvironnemental: 1, // OK le 18/09 avec Anna
 
-  // critères non pris en compte dans la version web
+  // TODO v1.1   zonageReglementaire
+  zonageReglementaire: 1, // Vu en v1 mais TODO à revoir en V1.1 au niveau des options
+  zonagePatrimonial: 1, // OK le 18/09 avec Anna
+  trameVerteEtBleue: 1, // OK le 18/09 avec Anna
+
+  // ------------------------------------------------
+  // 7 critères déduis des données complémentaires
+  // ------------------------------------------------
+  typeProprietaire: 1, // OK le 18/09 avec Anna
+  terrainViabilise: 1, // OK le 18/09 avec Anna
+  etatBatiInfrastructure: 2, // OK le 18/09 avec Anna mais en attente de l'excel à jour coté Anna
+  presencePollution: 2, // OK le 18/09 avec Anna
+
+  // TODO v1.1  valeurArchitecturaleHistorique, options à changer
+  valeurArchitecturaleHistorique: 1, // Vu en v1 mais TODO à revoir en V1.1 au niveau des options
+
+  // TODO v1.1  qualitePaysage, options à changer
+  qualitePaysage: 1, // Vu en v1 mais TODO à revoir en V1.1 au niveau des options
+
+  qualiteVoieDesserte: 0.5, // OK le 18/09 avec Anna = Accessibilité par les voies de circulation
+
+  // Critères non pris en compte dans la version web
+  // TODO à supprimer complètement du calcul (et meme des exemples)
+  ancienneActivite: 1, // Pas de le Excel
   terrainEnPente: 1,
   voieEauProximite: 0.5,
   couvertVegetal: 1,
@@ -92,27 +107,25 @@ export const MATRICE_SCORING = {
   },
 
   // 4. État du bâti
-  // TODO : À confirmer avec Anna car incohérence entre doc et tableau excel
   etatBatiInfrastructure: {
     [EtatBatiInfrastructure.DEGRADATION_INEXISTANTE]: {
-      [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
-      [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
-      [UsageType.CULTURE]: ScoreImpact.NEUTRE,
-      [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
-      [UsageType.INDUSTRIE]: ScoreImpact.POSITIF,
+      [UsageType.RESIDENTIEL]: ScoreImpact.TRES_POSITIF,
+      [UsageType.EQUIPEMENTS]: ScoreImpact.TRES_POSITIF,
+      [UsageType.CULTURE]: ScoreImpact.TRES_POSITIF,
+      [UsageType.TERTIAIRE]: ScoreImpact.TRES_POSITIF,
+      [UsageType.INDUSTRIE]: ScoreImpact.TRES_POSITIF,
+      [UsageType.RENATURATION]: ScoreImpact.TRES_NEGATIF,
+      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.TRES_NEGATIF,
+    },
+    [EtatBatiInfrastructure.DEGRADATION_TRES_IMPORTANTE]: {
+      [UsageType.RESIDENTIEL]: ScoreImpact.NEGATIF,
+      [UsageType.EQUIPEMENTS]: ScoreImpact.NEGATIF,
+      [UsageType.CULTURE]: ScoreImpact.NEGATIF,
+      [UsageType.TERTIAIRE]: ScoreImpact.NEGATIF,
+      [UsageType.INDUSTRIE]: ScoreImpact.NEGATIF,
       [UsageType.RENATURATION]: ScoreImpact.TRES_POSITIF,
       [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.TRES_POSITIF,
     },
-    [EtatBatiInfrastructure.DEGRADATION_TRES_IMPORTANTE]: {
-      [UsageType.RESIDENTIEL]: ScoreImpact.TRES_NEGATIF,
-      [UsageType.EQUIPEMENTS]: ScoreImpact.TRES_NEGATIF,
-      [UsageType.CULTURE]: ScoreImpact.TRES_NEGATIF,
-      [UsageType.TERTIAIRE]: ScoreImpact.TRES_NEGATIF,
-      [UsageType.INDUSTRIE]: ScoreImpact.TRES_NEGATIF,
-      [UsageType.RENATURATION]: ScoreImpact.POSITIF,
-      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.POSITIF,
-    },
-
     [EtatBatiInfrastructure.DEGRADATION_MOYENNE]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
       [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
@@ -196,6 +209,7 @@ export const MATRICE_SCORING = {
   },
 
   // 9. Terrain viabilisé (réseau eaux)
+  // Site connecté aux réseaux d'eaux *
   terrainViabilise: {
     true: {
       [UsageType.RESIDENTIEL]: ScoreImpact.TRES_POSITIF,
@@ -317,6 +331,7 @@ export const MATRICE_SCORING = {
       [UsageType.RENATURATION]: ScoreImpact.TRES_POSITIF,
       [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
     },
+    // TODO à revoir completement en V1.1
     [ZonageReglementaire.ZONE_ACCELERATION_ENR]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.TRES_NEGATIF,
       [UsageType.EQUIPEMENTS]: ScoreImpact.TRES_NEGATIF,
@@ -326,6 +341,7 @@ export const MATRICE_SCORING = {
       [UsageType.RENATURATION]: ScoreImpact.TRES_NEGATIF,
       [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.TRES_POSITIF,
     },
+    // TODO à revoir completement en V1.1
     [ZonageReglementaire.ZONE_MIXTE_MULTIPLE]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
       [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
@@ -335,6 +351,7 @@ export const MATRICE_SCORING = {
       [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
       [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
     },
+    // TODO à revoir completement en V1.1
     [ZonageReglementaire.CONSTRUCTIBLE]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.POSITIF,
       [UsageType.EQUIPEMENTS]: ScoreImpact.POSITIF,
@@ -344,6 +361,7 @@ export const MATRICE_SCORING = {
       [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
       [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
     },
+    // TODO à revoir completement en V1.1
     [ZonageReglementaire.NON_CONSTRUCTIBLE]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.TRES_NEGATIF,
       [UsageType.EQUIPEMENTS]: ScoreImpact.NEGATIF,
@@ -658,6 +676,29 @@ export const MATRICE_SCORING = {
     },
   },
 
+  // TODO : vu avec Anna
+  // A implementer - pas géré dans lex fichiers excel
+  connexionElec: {
+    true: {
+      [UsageType.RESIDENTIEL]: ScoreImpact.POSITIF,
+      [UsageType.EQUIPEMENTS]: ScoreImpact.POSITIF,
+      [UsageType.CULTURE]: ScoreImpact.POSITIF,
+      [UsageType.TERTIAIRE]: ScoreImpact.POSITIF,
+      [UsageType.INDUSTRIE]: ScoreImpact.POSITIF,
+      [UsageType.RENATURATION]: ScoreImpact.NEGATIF,
+      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.TRES_POSITIF,
+    },
+    false: {
+      [UsageType.RESIDENTIEL]: ScoreImpact.NEGATIF,
+      [UsageType.EQUIPEMENTS]: ScoreImpact.NEGATIF,
+      [UsageType.CULTURE]: ScoreImpact.NEGATIF,
+      [UsageType.TERTIAIRE]: ScoreImpact.NEGATIF,
+      [UsageType.INDUSTRIE]: ScoreImpact.NEGATIF,
+      [UsageType.RENATURATION]: ScoreImpact.NEGATIF,
+      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.TRES_NEGATIF,
+    },
+  },
+
   // TODO : vérifier avec Anna
   // Critère non pris en compte dans la version web
   // 14. Voie d'eau à proximité
@@ -798,7 +839,7 @@ export const MATRICE_SCORING = {
         [UsageType.EQUIPEMENTS]: ScoreImpact.POSITIF,
         [UsageType.CULTURE]: ScoreImpact.NEUTRE,
         [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
-        [UsageType.INDUSTRIE]: ScoreImpact.NEGATIF,
+        [UsageType.INDUSTRIE]: ScoreImpact.TRES_NEGATIF, // Modifié le 18/09/2025 après revue avec Anna
         [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
         [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.TRES_NEGATIF,
       };
@@ -856,7 +897,8 @@ export const MATRICE_SCORING = {
   },
 
   tauxLogementsVacants: (value: number): ScoreParUsage => {
-    if (value <= 4)
+    if (value <= 7)
+      // Modifié le 18/09/2024 après revue avec Anna
       return {
         [UsageType.RESIDENTIEL]: ScoreImpact.TRES_POSITIF,
         [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
@@ -866,7 +908,8 @@ export const MATRICE_SCORING = {
         [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
         [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
       };
-    if (value <= 6)
+    if (value <= 8 && value > 7)
+      // Modifié le 18/09/2024 après revue avec Anna
       return {
         [UsageType.RESIDENTIEL]: ScoreImpact.POSITIF,
         [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
@@ -876,17 +919,9 @@ export const MATRICE_SCORING = {
         [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
         [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
       };
-    if (value <= 10)
-      return {
-        [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
-        [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
-        [UsageType.CULTURE]: ScoreImpact.NEUTRE,
-        [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
-        [UsageType.INDUSTRIE]: ScoreImpact.NEUTRE,
-        [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
-        [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
-      };
-    if (value <= 13)
+    if (value <= 10 && value > 8)
+      // TODO : optim
+      // Modifié le 18/09/2024 après revue avec Anna
       return {
         [UsageType.RESIDENTIEL]: ScoreImpact.NEGATIF,
         [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
@@ -952,9 +987,9 @@ export const MATRICE_SCORING = {
   distanceTransportCommun: (value: number): ScoreParUsage => {
     return value < 500
       ? {
-          [UsageType.RESIDENTIEL]: ScoreImpact.POSITIF,
-          [UsageType.EQUIPEMENTS]: ScoreImpact.POSITIF,
-          [UsageType.CULTURE]: ScoreImpact.NEUTRE,
+          [UsageType.RESIDENTIEL]: ScoreImpact.TRES_POSITIF, // Modifié le 18/09/2025 après revue avec Anna
+          [UsageType.EQUIPEMENTS]: ScoreImpact.TRES_POSITIF, // Modifié le 18/09/2025 après revue avec Anna
+          [UsageType.CULTURE]: ScoreImpact.POSITIF, // Modifié le 18/09/2025 après revue avec Anna
           [UsageType.TERTIAIRE]: ScoreImpact.POSITIF,
           [UsageType.INDUSTRIE]: ScoreImpact.POSITIF,
           [UsageType.RENATURATION]: ScoreImpact.NEUTRE,

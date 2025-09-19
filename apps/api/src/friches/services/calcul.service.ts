@@ -298,6 +298,10 @@ export class CalculService {
   protected calculerFiabilite(parcelle: Parcelle): Fiabilite {
     const criteres = this.extraireCriteres(parcelle);
 
+
+    console.log('critères  :>> ', critères );
+
+    
     // Compter les critères non null/undefined
     const criteresRenseignes = Object.entries(criteres).filter(
       ([, valeur]) => valeur !== null && valeur !== undefined && valeur !== "ne-sait-pas",
