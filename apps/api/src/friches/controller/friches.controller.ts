@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Query, Get, Param, NotFoundException } from "@nestjs/common";
+import { Controller, Post, Body, Query, Get, Param, NotFoundException, Req } from "@nestjs/common";
 import {
   ApiTags,
   ApiOperation,
@@ -27,7 +27,9 @@ import {
   TrameVerteEtBleue,
   UsageType,
   ZonageReglementaire,
+  OrigineUtilisation,
 } from "@mutafriches/shared-types";
+import { Request } from "express";
 
 import { OrchestrateurService } from "../services/orchestrateur.service";
 import { CalculerMutabiliteSwaggerDto, EnrichirParcelleSwaggerDto } from "../dto/swagger/input";
@@ -35,6 +37,7 @@ import { EnrichissementSwaggerDto, MutabiliteSwaggerDto } from "../dto/swagger/o
 import { MetadataSwaggerDto } from "../dto/swagger/output/metadata.dto";
 import { EvaluationSwaggerDto } from "../dto/swagger/output/evaluation.dto";
 import { Evaluation } from "../domain/entities/evaluation.entity";
+import { SourceUtilisation } from "@mutafriches/shared-types/dist/enums/usage.enums";
 
 @ApiTags("friches")
 @Controller("friches")
@@ -127,6 +130,7 @@ export class FrichesController {
         value: {
           donneesEnrichies: {
             identifiantParcelle: "25056000HZ0346",
+            codeInsee: "49349",
             commune: "Trélazé",
             surfaceSite: 42780,
             surfaceBati: 6600,
@@ -184,10 +188,14 @@ export class FrichesController {
     @Body() input: CalculerMutabiliteInputDto,
     @Query("modeDetaille") modeDetaille?: boolean,
     @Query("sansEnrichissement") sansEnrichissement?: boolean,
+    @Req() req?: Request,
   ): Promise<MutabiliteOutputDto> {
+    const origine = this.detecterOrigine(req);
+
     return await this.orchestrateurService.calculerMutabilite(input, {
       modeDetaille: modeDetaille || false,
       sansEnrichissement: sansEnrichissement || false,
+      origine,
     });
   }
 
@@ -278,5 +286,53 @@ export class FrichesController {
         algorithme: "1.0.0",
       },
     };
+  }
+
+  /**
+   * Helper pour détecter l'origine de l'utilisation de l'API
+   * @param req
+   * @returns
+   */
+  private detecterOrigine(req?: Request): OrigineUtilisation {
+    if (!req) {
+      return { source: SourceUtilisation.API_DIRECTE };
+    }
+
+    const referrer = req.headers["referer"] || req.headers["referrer"] || "";
+
+    // Swagger UI -> referrer qui pointe vers /api
+    if (referrer.includes("/api") || (referrer as string).endsWith("/api")) {
+      return { source: SourceUtilisation.API_DIRECTE };
+    }
+
+    // Cas du site standalone en local (localhost sans /api)
+    if (referrer.includes("localhost") && !referrer.includes("/api")) {
+      return { source: SourceUtilisation.SITE_STANDALONE };
+    }
+
+    // Cas d'une iframe intégrée (autre domaine que localhost)
+    if (referrer && !referrer.includes("localhost") && !referrer.includes("127.0.0.1")) {
+      return {
+        source: SourceUtilisation.IFRAME_INTEGREE,
+        integrateur: this.extraireIntegrateur(referrer as string),
+      };
+    }
+
+    // Par défaut pour les appels sans referrer
+    return { source: SourceUtilisation.API_DIRECTE };
+  }
+
+  /**
+   * Helper pour extraire le nom de domaine intégrateur depuis le referrer
+   * @param referrer
+   * @returns
+   */
+  private extraireIntegrateur(referrer: string): string | undefined {
+    if (!referrer) return undefined;
+    try {
+      return new URL(referrer).hostname;
+    } catch {
+      return undefined;
+    }
   }
 }

@@ -15,3 +15,12 @@ export enum UsageType {
   RENATURATION = "renaturation",
   PHOTOVOLTAIQUE = "photovoltaique",
 }
+
+/**
+ * Source d'utilisation de l'API
+ */
+export enum SourceUtilisation {
+  SITE_STANDALONE = "SITE_STANDALONE",
+  IFRAME_INTEGREE = "IFRAME_INTEGREE",
+  API_DIRECTE = "API_DIRECTE",
+}

@@ -6,12 +6,14 @@ import {
   CalculerMutabiliteInputDto,
   MutabiliteOutputDto,
   DonneesComplementairesInputDto,
+  OrigineUtilisation,
 } from "@mutafriches/shared-types";
 import { EnrichissementService } from "./enrichissement.service";
 import { CalculService } from "./calcul.service";
 import { Parcelle } from "../domain/entities/parcelle.entity";
 import { Evaluation } from "../domain/entities/evaluation.entity";
 import { EvaluationRepository } from "../repository/evaluation.repository";
+import { SourceUtilisation } from "@mutafriches/shared-types/dist/enums/usage.enums";
 
 /**
  * Service orchestrateur principal
@@ -41,6 +43,7 @@ export class OrchestrateurService {
     options?: {
       modeDetaille?: boolean;
       sansEnrichissement?: boolean;
+      origine?: OrigineUtilisation;
     },
   ): Promise<MutabiliteOutputDto> {
     // Vérification des données
@@ -71,6 +74,9 @@ export class OrchestrateurService {
     // Lance le calcul
     const resultats = await this.calculService.calculer(parcelle, options);
 
+    // Origine par défaut si non fournie
+    const origine = options?.origine || { source: SourceUtilisation.API_DIRECTE };
+
     // Création d'une évaluation de mutabilité
     const evaluation = new Evaluation(
       parcelle.identifiantParcelle,
@@ -78,6 +84,7 @@ export class OrchestrateurService {
       input.donneesEnrichies,
       input.donneesComplementaires,
       resultats,
+      origine,
     );
 
     // Sauvegarde l'évaluation et retourne l'ID si mode non détaillé
@@ -98,6 +105,7 @@ export class OrchestrateurService {
   async evaluerParcelle(
     identifiant: string,
     donneesComplementaires: DonneesComplementairesInputDto,
+    origine?: OrigineUtilisation,
   ): Promise<{
     enrichissement: EnrichissementOutputDto;
     mutabilite: MutabiliteOutputDto;
@@ -112,6 +120,9 @@ export class OrchestrateurService {
       donneesComplementaires,
     });
 
+    // Origine par défaut si non fournie
+    const origineFinale = origine || { source: SourceUtilisation.API_DIRECTE };
+
     // 3. Sauvegarde
     const evaluation = new Evaluation(
       identifiant,
@@ -119,6 +130,7 @@ export class OrchestrateurService {
       enrichissement,
       donneesComplementaires,
       mutabilite,
+      origineFinale,
     );
 
     const evaluationId = await this.evaluationRepository.save(evaluation);

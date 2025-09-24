@@ -17,6 +17,8 @@ export const evaluations = pgTable("evaluations", {
 
   // Métadonnées
   versionAlgorithme: varchar("version_algorithme", { length: 20 }).notNull(),
+  sourceUtilisation: varchar("source_utilisation", { length: 20 }).notNull(),
+  integrateur: varchar("integrateur", { length: 255 }),
   utilisateurId: varchar("utilisateur_id", { length: 50 }),
   commentaire: varchar("commentaire", { length: 1000 }),
 });

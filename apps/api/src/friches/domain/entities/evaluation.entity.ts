@@ -2,6 +2,7 @@ import {
   EnrichissementOutputDto,
   DonneesComplementairesInputDto,
   MutabiliteOutputDto,
+  OrigineUtilisation,
 } from "@mutafriches/shared-types";
 
 /**
@@ -22,6 +23,7 @@ export class Evaluation {
   resultats: MutabiliteOutputDto;
 
   // Métadonnées
+  origine: OrigineUtilisation;
   versionAlgorithme: string;
 
   constructor(
@@ -30,6 +32,7 @@ export class Evaluation {
     donneesEnrichissement: EnrichissementOutputDto,
     donneesComplementaires: DonneesComplementairesInputDto,
     resultats: MutabiliteOutputDto,
+    origine: OrigineUtilisation,
   ) {
     this.parcelleId = parcelleId;
     this.codeInsee = codeInsee;
@@ -37,6 +40,7 @@ export class Evaluation {
     this.donneesEnrichissement = donneesEnrichissement;
     this.donneesComplementaires = donneesComplementaires;
     this.resultats = resultats;
+    this.origine = origine;
     this.versionAlgorithme = "1.0.0"; // TODO: Récupérer depuis config
   }
 

@@ -8,7 +8,9 @@ import {
   EnrichissementOutputDto,
   DonneesComplementairesInputDto,
   MutabiliteOutputDto,
+  OrigineUtilisation,
 } from "@mutafriches/shared-types";
+import { SourceUtilisation } from "@mutafriches/shared-types/dist/enums/usage.enums";
 
 @Injectable()
 export class EvaluationRepository {
@@ -31,6 +33,8 @@ export class EvaluationRepository {
       donneesComplementaires: evaluation.donneesComplementaires as any,
       resultats: evaluation.resultats as any,
       fiabilite: String(evaluation.resultats.fiabilite.note),
+      sourceUtilisation: evaluation.origine.source,
+      integrateur: evaluation.origine.integrateur,
       versionAlgorithme: evaluation.versionAlgorithme,
     });
 
@@ -51,6 +55,12 @@ export class EvaluationRepository {
 
     const row = results[0];
 
+    // Reconstruire l'origine depuis la DB
+    const origine: OrigineUtilisation = {
+      source: row.sourceUtilisation as SourceUtilisation,
+      integrateur: row.integrateur || undefined,
+    };
+
     // Reconstruire l'entité
     const evaluation = new Evaluation(
       row.parcelleId,
@@ -58,6 +68,7 @@ export class EvaluationRepository {
       row.donneesEnrichissement as EnrichissementOutputDto,
       row.donneesComplementaires as DonneesComplementairesInputDto,
       row.resultats as MutabiliteOutputDto,
+      origine,
     );
 
     // Réaffecter les propriétés manquantes
@@ -79,12 +90,18 @@ export class EvaluationRepository {
       .orderBy(desc(evaluations.dateCalcul));
 
     return results.map((row) => {
+      const origine: OrigineUtilisation = {
+        source: row.sourceUtilisation as SourceUtilisation,
+        integrateur: row.integrateur || undefined,
+      };
+
       const evaluation = new Evaluation(
         row.parcelleId,
         row.codeInsee,
         row.donneesEnrichissement as EnrichissementOutputDto,
         row.donneesComplementaires as DonneesComplementairesInputDto,
         row.resultats as MutabiliteOutputDto,
+        origine,
       );
 
       evaluation.id = row.id;
