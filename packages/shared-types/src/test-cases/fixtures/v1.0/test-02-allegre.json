@@ -1,0 +1,79 @@
+{
+  "id": "test-02-allegre",
+  "name": "Ancienne scierie Fargette",
+  "description": "Test case généré depuis v1.0_test-02_allegre.xlsx",
+  "source": "v1.0_test-02_allegre.xlsx",
+  "algorithmVersion": "1.0",
+  "input": {
+    "nomSite": "Ancienne scierie Fargette",
+    "identifiantsParcellaires": "2514, 2692, 2693 et 896 (section B)",
+    "nomProprietaire": "EPF SMAF Auvergne",
+    "commune": "Allègre",
+    "typeProprietaire": "public",
+    "surfaceSite": 11427,
+    "surfaceBati": 337,
+    "nombreBatiments": 1,
+    "etatBatiInfrastructure": "degradation-moyenne",
+    "presencePollution": "oui-autres-composes",
+    "siteEnCentreVille": false,
+    "tauxLogementsVacants": 19.8,
+    "terrainViabilise": true,
+    "qualiteVoieDesserte": "accessible",
+    "distanceAutoroute": "plus-de-5km",
+    "distanceTransportCommun": "plus-de-500m",
+    "proximiteCommercesServices": false,
+    "distanceRaccordementElectrique": "moins-de-1km",
+    "zonageReglementaire": "zone-a-urbaniser-au",
+    "presenceRisquesNaturels": "fort",
+    "presenceRisquesTechnologiques": false,
+    "zonagePatrimonial": "non-concerne",
+    "qualitePaysage": "quotidien-ordinaire",
+    "valeurArchitecturaleHistorique": "banal-infra-ordinaire",
+    "zonageEnvironnemental": "proximite-d-une-zone-5km",
+    "trameVerteEtBleu": "ne-sait-pas"
+  },
+  "expected": {
+    "usages": [
+      {
+        "usage": "culture",
+        "indiceMutabilite": 50,
+        "rang": 1
+      },
+      {
+        "usage": "photovoltaique",
+        "indiceMutabilite": 52,
+        "rang": 2
+      },
+      {
+        "usage": "residentiel",
+        "indiceMutabilite": 53,
+        "rang": 3
+      },
+      {
+        "usage": "equipements",
+        "indiceMutabilite": 53,
+        "rang": 4
+      },
+      {
+        "usage": "tertiaire",
+        "indiceMutabilite": 53,
+        "rang": 5
+      },
+      {
+        "usage": "industrie",
+        "indiceMutabilite": 54,
+        "rang": 6
+      },
+      {
+        "usage": "renaturation",
+        "indiceMutabilite": 65,
+        "rang": 7
+      }
+    ],
+    "metadata": {
+      "criteresRenseignes": 21,
+      "criteresTotal": 21,
+      "criteresManquants": []
+    }
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "id": "test-05-renaison",
+  "name": "Ancien site de Teintures et apprêts du centre (TAC)",
+  "description": "Test case généré depuis v1.0_test-05_renaison.xlsx",
+  "source": "v1.0_test-05_renaison.xlsx",
+  "algorithmVersion": "1.0",
+  "input": {
+    "nomSite": "Ancien site de Teintures et apprêts du centre (TAC)",
+    "identifiantsParcellaires": "Section OB : 280, 297, 298, 299, 300, etc. …",
+    "nomProprietaire": "Liquidation",
+    "commune": "Renaison",
+    "typeProprietaire": "public",
+    "surfaceSite": 46333,
+    "surfaceBati": 7000,
+    "nombreBatiments": 2,
+    "etatBatiInfrastructure": "degradation-heterogene",
+    "presencePollution": "oui-autres-composes",
+    "siteEnCentreVille": false,
+    "tauxLogementsVacants": 7.2,
+    "terrainViabilise": true,
+    "qualiteVoieDesserte": "peu-accessible",
+    "distanceAutoroute": "plus-de-5km",
+    "distanceTransportCommun": "plus-de-500m",
+    "proximiteCommercesServices": false,
+    "distanceRaccordementElectrique": "entre-1-et-5km",
+    "zonageReglementaire": "zone-naturelle",
+    "presenceRisquesNaturels": "fort",
+    "presenceRisquesTechnologiques": false,
+    "zonagePatrimonial": "non-concerne",
+    "qualitePaysage": "interessant",
+    "valeurArchitecturaleHistorique": "interet-fort",
+    "zonageEnvironnemental": "znieff-1-ou-2",
+    "trameVerteEtBleu": "ne-sait-pas"
+  },
+  "expected": {
+    "usages": [
+      {
+        "usage": "tertiaire",
+        "indiceMutabilite": 34,
+        "rang": 1
+      },
+      {
+        "usage": "equipements",
+        "indiceMutabilite": 42,
+        "rang": 2
+      },
+      {
+        "usage": "residentiel",
+        "indiceMutabilite": 42,
+        "rang": 3
+      },
+      {
+        "usage": "industrie",
+        "indiceMutabilite": 43,
+        "rang": 4
+      },
+      {
+        "usage": "photovoltaique",
+        "indiceMutabilite": 46,
+        "rang": 5
+      },
+      {
+        "usage": "culture",
+        "indiceMutabilite": 54,
+        "rang": 6
+      },
+      {
+        "usage": "renaturation",
+        "indiceMutabilite": 61,
+        "rang": 7
+      }
+    ],
+    "metadata": {
+      "criteresRenseignes": 21,
+      "criteresTotal": 21,
+      "criteresManquants": []
+    }
+  }
+}

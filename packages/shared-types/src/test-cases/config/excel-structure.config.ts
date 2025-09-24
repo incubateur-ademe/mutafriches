@@ -1,5 +1,6 @@
-// packages/shared-types/src/test-cases/config/excel-mapping.config.ts
+import * as enumMappings from "./excel-to-enum-values.config";
 
+// Structure et mapping des champs du fichier Excel
 export interface ExcelStructure {
   sheet: string;
   nameColumn: string;
@@ -99,21 +100,13 @@ export const FIELD_MAPPINGS: FieldMapping[] = [
     excelName: "Distance d'une entrée d'autoroute (km)",
     jsonField: "distanceAutoroute",
     type: "string",
-    transform: {
-      "Moins de 1km": "moins-de-1km",
-      "Entre 1 et 2km": "entre-1-et-2km",
-      "Entre 2 et 5km": "entre-2-et-5km",
-      "Plus de 5km": "plus-de-5km",
-    },
+    transform: enumMappings.DISTANCE_AUTOROUTE_MAPPING,
   },
   {
     excelName: "Distance d'une gare/arrêt de transport en commun (m)",
     jsonField: "distanceTransportCommun",
     type: "string",
-    transform: {
-      "Moins de 500m": "moins-de-500m",
-      "Plus de 500m": "plus-de-500m",
-    },
+    transform: enumMappings.DISTANCE_TRANSPORT_MAPPING,
   },
   {
     excelName: "Commerces / services à proximité",
@@ -124,11 +117,7 @@ export const FIELD_MAPPINGS: FieldMapping[] = [
     excelName: "Distance d'un point de raccordement BT/HT (km)",
     jsonField: "distanceRaccordementElectrique",
     type: "string",
-    transform: {
-      "Moins de 1km": "moins-de-1km",
-      "Entre 1 et 5km": "entre-1-et-5km",
-      "Plus de 5km": "plus-de-5km",
-    },
+    transform: enumMappings.DISTANCE_ELECTRIQUE_MAPPING,
   },
   {
     excelName: "Taux de logements vacants (%)",
@@ -141,12 +130,7 @@ export const FIELD_MAPPINGS: FieldMapping[] = [
     excelName: "Risque naturel (innondations et/ou argiles)",
     jsonField: "presenceRisquesNaturels",
     type: "string",
-    transform: {
-      Non: "non",
-      Faible: "faible",
-      Moyen: "moyen",
-      Fort: "fort",
-    },
+    transform: enumMappings.RISQUE_NATUREL_MAPPING,
   },
   {
     excelName: "Risque technologique",
@@ -157,46 +141,25 @@ export const FIELD_MAPPINGS: FieldMapping[] = [
     excelName: "Zonage environnemental",
     jsonField: "zonageEnvironnemental",
     type: "string",
-    transform: {
-      "Hors zone": "hors-zone",
-      "ZNIEFF type 1": "znieff-type-1",
-      "ZNIEFF type 2": "znieff-type-2",
-      "ZNIEFF type 1 et 2": "znieff-type-1-2",
-      "Natura 2000": "natura-2000",
-      "Parc naturel": "parc-naturel",
-    },
+    transform: enumMappings.ZONAGE_ENVIRONNEMENTAL_MAPPING,
   },
   {
     excelName: "Zonage du PLU(I) ou de la carte communale",
     jsonField: "zonageReglementaire",
     type: "string",
-    transform: {
-      "Zone urbaine – U": "zone-urbaine",
-      "Zone à urbaniser – AU": "zone-a-urbaniser",
-      "Zone agricole – A": "zone-agricole",
-      "Zone naturelle – N": "zone-naturelle",
-    },
+    transform: enumMappings.ZONAGE_REGLEMENTAIRE_MAPPING,
   },
   {
     excelName: "Monument historique",
     jsonField: "zonagePatrimonial",
     type: "string",
-    transform: {
-      "Non concerné": "non-concerne",
-      "Périmètre de protection": "perimetre-protection",
-      "Site classé/inscrit": "site-classe-inscrit",
-    },
+    transform: enumMappings.ZONAGE_PATRIMONIAL_MAPPING,
   },
   {
     excelName: "Trame verte et bleu",
-    jsonField: "trameVerteEtBleu", // Sans 'e' à la fin
+    jsonField: "trameVerteEtBleu",
     type: "string",
-    transform: {
-      "Hors trame": "hors-trame",
-      "Corridor écologique": "corridor-ecologique",
-      "Réservoir de biodiversité": "reservoir-biodiversite",
-      "Ne sait pas": "ne-sait-pas",
-    },
+    transform: enumMappings.TRAME_VERTE_BLEUE_MAPPING,
   },
 
   // Propriétaire et état
@@ -204,11 +167,7 @@ export const FIELD_MAPPINGS: FieldMapping[] = [
     excelName: "Propriétaire",
     jsonField: "typeProprietaire",
     type: "string",
-    transform: {
-      Privé: "prive",
-      Public: "public",
-      Mixte: "mixte",
-    },
+    transform: enumMappings.TYPE_PROPRIETAIRE_MAPPING,
   },
   {
     excelName: "Terrain viabilisé",
@@ -219,26 +178,13 @@ export const FIELD_MAPPINGS: FieldMapping[] = [
     excelName: "État du bâti et infrastructure",
     jsonField: "etatBatiInfrastructure",
     type: "string",
-    transform: {
-      "Bâtiments hétérogènes": "batiments-heterogenes",
-      "Bon état": "bon-etat",
-      "État dégradé": "etat-degrade",
-      "En ruine": "en-ruine",
-      "Aucun bâtiment": "aucun-batiment",
-    },
+    transform: enumMappings.ETAT_BATI_MAPPING,
   },
   {
     excelName: "Présence de pollution",
     jsonField: "presencePollution",
     type: "string",
-    transform: {
-      "Ne sait pas": "ne-sait-pas",
-      Non: "non",
-      Oui: "oui",
-      "Oui (métaux lourds)": "oui-metaux-lourds",
-      "Oui (hydrocarbures)": "oui-hydrocarbures",
-      "Oui (autres composés)": "oui-autres-composes",
-    },
+    transform: enumMappings.PRESENCE_POLLUTION_MAPPING,
   },
 
   // Qualités paysagères et architecturales
@@ -246,32 +192,19 @@ export const FIELD_MAPPINGS: FieldMapping[] = [
     excelName: "Valeur architecturale et/ou histoire sociale",
     jsonField: "valeurArchitecturaleHistorique",
     type: "string",
-    transform: {
-      "Aucun intérêt": "aucun-interet",
-      "Intérêt faible": "interet-faible",
-      "Intérêt fort": "interet-fort",
-      Exceptionnel: "exceptionnel",
-    },
+    transform: enumMappings.VALEUR_ARCHITECTURALE_MAPPING,
   },
   {
     excelName: "Paysage",
     jsonField: "qualitePaysage",
     type: "string",
-    transform: {
-      "Banal / infra-ordinaire": "banal",
-      Intéressant: "interessant",
-      Remarquable: "remarquable",
-    },
+    transform: enumMappings.QUALITE_PAYSAGE_MAPPING,
   },
   {
     excelName: "Qualité de la voie de desserte",
     jsonField: "qualiteVoieDesserte",
     type: "string",
-    transform: {
-      Accessible: "accessible",
-      "Peu accessible": "peu-accessible",
-      "Très peu accessible": "tres-peu-accessible",
-    },
+    transform: enumMappings.QUALITE_VOIE_DESSERTE_MAPPING,
   },
 ];
 

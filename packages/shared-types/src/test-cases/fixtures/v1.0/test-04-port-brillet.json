@@ -1,0 +1,79 @@
+{
+  "id": "test-04-port-brillet",
+  "name": "Ancienne fonderie Pebeco",
+  "description": "Test case généré depuis v1.0_test-04_port-brillet.xlsx",
+  "source": "v1.0_test-04_port-brillet.xlsx",
+  "algorithmVersion": "1.0",
+  "input": {
+    "nomSite": "Ancienne fonderie Pebeco",
+    "identifiantsParcellaires": "276, 304 et 305 (secteur AB)",
+    "nomProprietaire": "Commune de Port-Brillet",
+    "commune": "Port-Brillet",
+    "typeProprietaire": "public",
+    "surfaceSite": 83400,
+    "surfaceBati": 45000,
+    "nombreBatiments": null,
+    "etatBatiInfrastructure": "degradation-heterogene",
+    "presencePollution": "oui-autres-composes",
+    "siteEnCentreVille": true,
+    "tauxLogementsVacants": 7.3,
+    "terrainViabilise": true,
+    "qualiteVoieDesserte": "accessible",
+    "distanceAutoroute": "plus-de-5km",
+    "distanceTransportCommun": "moins-de-500m",
+    "proximiteCommercesServices": true,
+    "distanceRaccordementElectrique": "entre-1-et-5km",
+    "zonageReglementaire": "zone-urbaine-u",
+    "presenceRisquesNaturels": "faible",
+    "presenceRisquesTechnologiques": false,
+    "zonagePatrimonial": "non-concerne",
+    "qualitePaysage": "interessant",
+    "valeurArchitecturaleHistorique": "interet-fort",
+    "zonageEnvironnemental": "proximite-d-une-zone-5km",
+    "trameVerteEtBleu": "ne-sait-pas"
+  },
+  "expected": {
+    "usages": [
+      {
+        "usage": "photovoltaique",
+        "indiceMutabilite": 45,
+        "rang": 1
+      },
+      {
+        "usage": "renaturation",
+        "indiceMutabilite": 46,
+        "rang": 2
+      },
+      {
+        "usage": "industrie",
+        "indiceMutabilite": 57,
+        "rang": 3
+      },
+      {
+        "usage": "tertiaire",
+        "indiceMutabilite": 57,
+        "rang": 4
+      },
+      {
+        "usage": "culture",
+        "indiceMutabilite": 63,
+        "rang": 5
+      },
+      {
+        "usage": "equipements",
+        "indiceMutabilite": 69,
+        "rang": 6
+      },
+      {
+        "usage": "residentiel",
+        "indiceMutabilite": 72,
+        "rang": 7
+      }
+    ],
+    "metadata": {
+      "criteresRenseignes": 21,
+      "criteresTotal": 21,
+      "criteresManquants": []
+    }
+  }
+}

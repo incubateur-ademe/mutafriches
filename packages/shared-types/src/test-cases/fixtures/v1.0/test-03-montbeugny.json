@@ -1,0 +1,79 @@
+{
+  "id": "test-03-montbeugny",
+  "name": "JYS Chrome",
+  "description": "Test case généré depuis v1.0_test-03_montbeugny.xlsx",
+  "source": "v1.0_test-03_montbeugny.xlsx",
+  "algorithmVersion": "1.0",
+  "input": {
+    "nomSite": "JYS Chrome",
+    "identifiantsParcellaires": "OA 521",
+    "nomProprietaire": "Mairie de Montbeugny",
+    "commune": "Montbeugny",
+    "typeProprietaire": "public",
+    "surfaceSite": 775,
+    "surfaceBati": 0,
+    "nombreBatiments": 0,
+    "etatBatiInfrastructure": "",
+    "presencePollution": "oui-composes-volatils",
+    "siteEnCentreVille": true,
+    "tauxLogementsVacants": 4.1,
+    "terrainViabilise": true,
+    "qualiteVoieDesserte": "accessible",
+    "distanceAutoroute": "entre-2-et-5km",
+    "distanceTransportCommun": "moins-de-500m",
+    "proximiteCommercesServices": true,
+    "distanceRaccordementElectrique": "moins-de-1km",
+    "zonageReglementaire": "zone-urbaine-u",
+    "presenceRisquesNaturels": "moyen",
+    "presenceRisquesTechnologiques": false,
+    "zonagePatrimonial": "non-concerne",
+    "qualitePaysage": "quotidien-ordinaire",
+    "valeurArchitecturaleHistorique": "ordinaire",
+    "zonageEnvironnemental": "znieff-1-ou-2",
+    "trameVerteEtBleu": "ne-sait-pas"
+  },
+  "expected": {
+    "usages": [
+      {
+        "usage": "industrie",
+        "indiceMutabilite": 32,
+        "rang": 1
+      },
+      {
+        "usage": "photovoltaique",
+        "indiceMutabilite": 39,
+        "rang": 2
+      },
+      {
+        "usage": "culture",
+        "indiceMutabilite": 46,
+        "rang": 3
+      },
+      {
+        "usage": "tertiaire",
+        "indiceMutabilite": 58,
+        "rang": 4
+      },
+      {
+        "usage": "renaturation",
+        "indiceMutabilite": 60,
+        "rang": 5
+      },
+      {
+        "usage": "equipements",
+        "indiceMutabilite": 65,
+        "rang": 6
+      },
+      {
+        "usage": "residentiel",
+        "indiceMutabilite": 69,
+        "rang": 7
+      }
+    ],
+    "metadata": {
+      "criteresRenseignes": 21,
+      "criteresTotal": 21,
+      "criteresManquants": []
+    }
+  }
+}

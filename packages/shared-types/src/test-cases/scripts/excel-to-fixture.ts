@@ -1,5 +1,3 @@
-// packages/shared-types/src/test-cases/scripts/excel-to-fixture.ts
-
 import * as XLSX from "xlsx";
 import * as fs from "fs";
 import * as path from "path";
@@ -15,7 +13,7 @@ import {
   USAGE_MAPPING,
   getFieldByExcelName,
   type FieldMapping,
-} from "../config/excel-mapping.config";
+} from "../config/excel-structure.config";
 
 // Fonction pour obtenir la valeur d'une cellule
 function getCellValue(worksheet: XLSX.WorkSheet, column: string, row: number): any {
@@ -50,7 +48,33 @@ function transformValue(value: any, fieldMapping: FieldMapping): any {
   // Transformation des strings avec mapping
   if (fieldMapping.type === "string" && fieldMapping.transform) {
     const strValue = String(value).trim();
-    return fieldMapping.transform[strValue] || strValue.toLowerCase().replace(/\s+/g, "-");
+
+    // Normaliser les apostrophes avant de chercher dans le mapping
+    const normalizedValue = strValue.replace(/'/g, "'"); // Remplacer apostrophe courbe par droite
+
+    // Chercher d'abord avec la valeur normalisée
+    if (fieldMapping.transform[normalizedValue]) {
+      const result = fieldMapping.transform[normalizedValue];
+      return result;
+    }
+
+    // Puis avec la valeur originale
+    if (fieldMapping.transform[strValue]) {
+      const result = fieldMapping.transform[strValue];
+      return result;
+    }
+
+    // Si pas de correspondance exacte, normaliser la valeur en kebab-case
+    const normalized = strValue
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "") // Retirer les accents
+      .replace(/[^\w\s-]/g, "-") // Remplacer les caractères spéciaux par des tirets
+      .replace(/\s+/g, "-") // Remplacer les espaces par des tirets
+      .replace(/-+/g, "-") // Remplacer les tirets multiples par un seul
+      .replace(/^-+|-+$/g, ""); // Retirer les tirets en début et fin
+
+    return normalized;
   }
 
   return value;
@@ -202,8 +226,12 @@ function processExcelFile(filePath: string, outputName: string, description?: st
 
 // Fonction pour traiter tous les fichiers d'un dossier
 function processAllExcelFiles() {
-  const sourceDir = path.join(__dirname, "..", "excel-sources", "v1.0");
-  const outputDir = path.join(__dirname, "..", "fixtures");
+  // Extraire la version depuis les arguments ou utiliser v1.0 par défaut
+  const versionArg = process.argv.find((arg) => arg.startsWith("--version="));
+  const version = versionArg ? versionArg.split("=")[1] : "v1.0";
+
+  const sourceDir = path.join(__dirname, "..", "excel-sources", version);
+  const outputDir = path.join(__dirname, "..", "fixtures", version);
 
   // Créer le dossier de sortie si nécessaire
   if (!fs.existsSync(outputDir)) {
@@ -276,13 +304,19 @@ function processAllExcelFiles() {
 function processSingleFile() {
   const args = process.argv.slice(2).filter((arg) => !arg.startsWith("--"));
 
+  // Extraire la version depuis les arguments ou utiliser v1.0 par défaut
+  const versionArg = process.argv.find((arg) => arg.startsWith("--version="));
+  const version = versionArg ? versionArg.split("=")[1] : "v1.0";
+
   if (args.length < 1) {
     console.error("Usage: pnpm run excel-to-fixture <excel-file> [output-name] [description]");
+    console.error("       pnpm run excel-to-fixture <excel-file> --version=v1.0");
     console.error(
       "Example: pnpm run excel-to-fixture ./excel-sources/v1.0/v1.0_test-01_oyonnax.xlsx",
     );
     console.error("\nOu pour traiter tous les fichiers:");
     console.error("pnpm run excel-to-fixture:all");
+    console.error("pnpm run excel-to-fixture:all --version=v1.0");
     process.exit(1);
   }
 
@@ -299,7 +333,7 @@ function processSingleFile() {
   try {
     const testCase = processExcelFile(excelPath, finalOutputName, description);
 
-    const outputDir = path.join(__dirname, "..", "fixtures");
+    const outputDir = path.join(__dirname, "..", "fixtures", version);
     if (!fs.existsSync(outputDir)) {
       fs.mkdirSync(outputDir, { recursive: true });
     }

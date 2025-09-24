@@ -1,0 +1,79 @@
+{
+  "id": "test-09-trelaze",
+  "name": "Ancienne manufacture Les Allumettes",
+  "description": "Test case généré depuis v1.0_test-09_trelaze.xlsx",
+  "source": "v1.0_test-09_trelaze.xlsx",
+  "algorithmVersion": "1.0",
+  "input": {
+    "nomSite": "Ancienne manufacture Les Allumettes",
+    "identifiantsParcellaires": "11 parcelles",
+    "nomProprietaire": "Podeliha (bailleur social)",
+    "commune": "Trélazé",
+    "typeProprietaire": "prive",
+    "surfaceSite": 42780,
+    "surfaceBati": 6600,
+    "nombreBatiments": 8,
+    "etatBatiInfrastructure": "degradation-heterogene",
+    "presencePollution": "ne-sait-pas",
+    "siteEnCentreVille": true,
+    "tauxLogementsVacants": 4.9,
+    "terrainViabilise": true,
+    "qualiteVoieDesserte": "accessible",
+    "distanceAutoroute": "entre-1-et-2km",
+    "distanceTransportCommun": "moins-de-500m",
+    "proximiteCommercesServices": true,
+    "distanceRaccordementElectrique": "moins-de-1km",
+    "zonageReglementaire": "zone-urbaine-u",
+    "presenceRisquesNaturels": "faible",
+    "presenceRisquesTechnologiques": false,
+    "zonagePatrimonial": "non-concerne",
+    "qualitePaysage": "banal-infra-ordinaire",
+    "valeurArchitecturaleHistorique": "exceptionnel",
+    "zonageEnvironnemental": "hors-zone",
+    "trameVerteEtBleu": "hors-trame"
+  },
+  "expected": {
+    "usages": [
+      {
+        "usage": "renaturation",
+        "indiceMutabilite": 42,
+        "rang": 1
+      },
+      {
+        "usage": "photovoltaique",
+        "indiceMutabilite": 47,
+        "rang": 2
+      },
+      {
+        "usage": "industrie",
+        "indiceMutabilite": 57,
+        "rang": 3
+      },
+      {
+        "usage": "culture",
+        "indiceMutabilite": 63,
+        "rang": 4
+      },
+      {
+        "usage": "tertiaire",
+        "indiceMutabilite": 64,
+        "rang": 5
+      },
+      {
+        "usage": "equipements",
+        "indiceMutabilite": 68,
+        "rang": 6
+      },
+      {
+        "usage": "residentiel",
+        "indiceMutabilite": 74,
+        "rang": 7
+      }
+    ],
+    "metadata": {
+      "criteresRenseignes": 21,
+      "criteresTotal": 21,
+      "criteresManquants": []
+    }
+  }
+}

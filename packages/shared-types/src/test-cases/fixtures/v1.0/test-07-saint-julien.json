@@ -1,0 +1,78 @@
+{
+  "id": "test-07-saint-julien",
+  "name": "ACIER POLI",
+  "description": "Test case généré depuis v1.0_test-07_saint-julien.xlsx",
+  "source": "v1.0_test-07_saint-julien.xlsx",
+  "algorithmVersion": "1.0",
+  "input": {
+    "nomSite": "ACIER POLI",
+    "identifiantsParcellaires": "583 (section AE)",
+    "commune": "Saint-Julien-de-Sault",
+    "typeProprietaire": "public",
+    "surfaceSite": 9000,
+    "surfaceBati": 2800,
+    "nombreBatiments": 9,
+    "etatBatiInfrastructure": "degradation-tres-importante",
+    "presencePollution": "ne-sait-pas",
+    "siteEnCentreVille": true,
+    "tauxLogementsVacants": 16.3,
+    "terrainViabilise": true,
+    "qualiteVoieDesserte": "degradee",
+    "distanceAutoroute": "plus-de-5km",
+    "distanceTransportCommun": "plus-de-500m",
+    "proximiteCommercesServices": true,
+    "distanceRaccordementElectrique": "entre-1-et-5km",
+    "zonageReglementaire": "zone-urbaine-u",
+    "presenceRisquesNaturels": "faible",
+    "presenceRisquesTechnologiques": true,
+    "zonagePatrimonial": "non-concerne",
+    "qualitePaysage": "interessant",
+    "valeurArchitecturaleHistorique": "ordinaire",
+    "zonageEnvironnemental": "znieff-1-ou-2",
+    "trameVerteEtBleu": "hors-trame"
+  },
+  "expected": {
+    "usages": [
+      {
+        "usage": "industrie",
+        "indiceMutabilite": 33,
+        "rang": 1
+      },
+      {
+        "usage": "culture",
+        "indiceMutabilite": 50,
+        "rang": 2
+      },
+      {
+        "usage": "photovoltaique",
+        "indiceMutabilite": 50,
+        "rang": 2
+      },
+      {
+        "usage": "tertiaire",
+        "indiceMutabilite": 52,
+        "rang": 4
+      },
+      {
+        "usage": "equipements",
+        "indiceMutabilite": 65,
+        "rang": 5
+      },
+      {
+        "usage": "renaturation",
+        "indiceMutabilite": 68,
+        "rang": 6
+      },
+      {
+        "usage": "residentiel",
+        "indiceMutabilite": 68,
+        "rang": 7
+      }
+    ],
+    "metadata": {
+      "criteresRenseignes": 21,
+      "criteresTotal": 21,
+      "criteresManquants": []
+    }
+  }
+}

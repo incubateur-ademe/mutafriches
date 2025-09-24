@@ -1,0 +1,79 @@
+{
+  "id": "test-06-segre",
+  "name": "Ancien site minier - Central 7",
+  "description": "Test case généré depuis v1.0_test-06_segre.xlsx",
+  "source": "v1.0_test-06_segre.xlsx",
+  "algorithmVersion": "1.0",
+  "input": {
+    "nomSite": "Ancien site minier - Central 7",
+    "identifiantsParcellaires": "2 parcelles",
+    "nomProprietaire": "EPCI",
+    "commune": "Segré-en-Anjou Bleu",
+    "typeProprietaire": "public",
+    "surfaceSite": 10010,
+    "surfaceBati": 6600,
+    "nombreBatiments": 2,
+    "etatBatiInfrastructure": "degradation-moyenne",
+    "presencePollution": "non",
+    "siteEnCentreVille": false,
+    "tauxLogementsVacants": 8.4,
+    "terrainViabilise": true,
+    "qualiteVoieDesserte": "accessible",
+    "distanceAutoroute": "plus-de-5km",
+    "distanceTransportCommun": "plus-de-500m",
+    "proximiteCommercesServices": false,
+    "distanceRaccordementElectrique": "plus-de-5km",
+    "zonageReglementaire": "constructible-ou-en-partie",
+    "presenceRisquesNaturels": "faible",
+    "presenceRisquesTechnologiques": true,
+    "zonagePatrimonial": "non-concerne",
+    "qualitePaysage": "banal-infra-ordinaire",
+    "valeurArchitecturaleHistorique": "interet-fort",
+    "zonageEnvironnemental": "proximite-d-une-zone-5km",
+    "trameVerteEtBleu": "presence-corridor-a-preserver"
+  },
+  "expected": {
+    "usages": [
+      {
+        "usage": "photovoltaique",
+        "indiceMutabilite": 50,
+        "rang": 1
+      },
+      {
+        "usage": "residentiel",
+        "indiceMutabilite": 56,
+        "rang": 2
+      },
+      {
+        "usage": "equipements",
+        "indiceMutabilite": 56,
+        "rang": 3
+      },
+      {
+        "usage": "tertiaire",
+        "indiceMutabilite": 56,
+        "rang": 4
+      },
+      {
+        "usage": "culture",
+        "indiceMutabilite": 59,
+        "rang": 5
+      },
+      {
+        "usage": "renaturation",
+        "indiceMutabilite": 64,
+        "rang": 6
+      },
+      {
+        "usage": "industrie",
+        "indiceMutabilite": 68,
+        "rang": 7
+      }
+    ],
+    "metadata": {
+      "criteresRenseignes": 21,
+      "criteresTotal": 21,
+      "criteresManquants": []
+    }
+  }
+}

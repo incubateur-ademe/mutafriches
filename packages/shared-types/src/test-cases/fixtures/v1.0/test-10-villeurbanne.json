@@ -1,0 +1,79 @@
+{
+  "id": "test-10-villeurbanne",
+  "name": "Ancien site industriel rue du docteur Rollet",
+  "description": "Test case généré depuis v1.0_test-10_villeurbanne.xlsx",
+  "source": "v1.0_test-10_villeurbanne.xlsx",
+  "algorithmVersion": "1.0",
+  "input": {
+    "nomSite": "Ancien site industriel rue du docteur Rollet",
+    "identifiantsParcellaires": "Secteur BO : 257, 258 et 277",
+    "nomProprietaire": "Société Bouygues Immobilier",
+    "commune": "Villeurbanne",
+    "typeProprietaire": "prive",
+    "surfaceSite": 58000,
+    "surfaceBati": 0,
+    "nombreBatiments": 0,
+    "etatBatiInfrastructure": "",
+    "presencePollution": "oui-composes-volatils",
+    "siteEnCentreVille": true,
+    "tauxLogementsVacants": 8.5,
+    "terrainViabilise": true,
+    "qualiteVoieDesserte": "accessible",
+    "distanceAutoroute": "entre-1-et-2km",
+    "distanceTransportCommun": "moins-de-500m",
+    "proximiteCommercesServices": true,
+    "distanceRaccordementElectrique": "moins-de-1km",
+    "zonageReglementaire": "zone-urbaine-u",
+    "presenceRisquesNaturels": "fort",
+    "presenceRisquesTechnologiques": true,
+    "zonagePatrimonial": "non-concerne",
+    "qualitePaysage": "banal-infra-ordinaire",
+    "valeurArchitecturaleHistorique": "banal-infra-ordinaire",
+    "zonageEnvironnemental": "proximite-d-une-zone-5km",
+    "trameVerteEtBleu": "hors-trame"
+  },
+  "expected": {
+    "usages": [
+      {
+        "usage": "culture",
+        "indiceMutabilite": 39,
+        "rang": 1
+      },
+      {
+        "usage": "equipements",
+        "indiceMutabilite": 51,
+        "rang": 2
+      },
+      {
+        "usage": "tertiaire",
+        "indiceMutabilite": 55,
+        "rang": 3
+      },
+      {
+        "usage": "residentiel",
+        "indiceMutabilite": 56,
+        "rang": 4
+      },
+      {
+        "usage": "industrie",
+        "indiceMutabilite": 58,
+        "rang": 5
+      },
+      {
+        "usage": "renaturation",
+        "indiceMutabilite": 58,
+        "rang": 6
+      },
+      {
+        "usage": "photovoltaique",
+        "indiceMutabilite": 59,
+        "rang": 7
+      }
+    ],
+    "metadata": {
+      "criteresRenseignes": 21,
+      "criteresTotal": 21,
+      "criteresManquants": []
+    }
+  }
+}
