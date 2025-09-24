@@ -13,6 +13,7 @@ export function buildCalculerMutabiliteFromFormData(formData: any): CalculerMuta
   const donneesEnrichies: EnrichissementOutputDto = {
     // Identifiants
     identifiantParcelle: formData.identifiantParcelle || "manual-input",
+    codeInsee: formData.codeInsee || "Non renseigné",
     commune: formData.commune || "Non renseigné",
 
     // Surfaces

@@ -21,6 +21,12 @@ export class EnrichissementSwaggerDto implements IEnrichissementOutput {
   identifiantParcelle: string;
 
   @ApiProperty({
+    description: "Code INSEE de la parcelle",
+    example: "12345",
+  })
+  codeInsee: string;
+
+  @ApiProperty({
     description: "Nom de la commune où se situe la parcelle",
     example: "Trélazé",
   })

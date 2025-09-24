@@ -10,6 +10,7 @@ import {
  */
 export class Evaluation {
   id?: string;
+  codeInsee: string;
   parcelleId: string;
   dateCalcul: Date;
 
@@ -25,11 +26,13 @@ export class Evaluation {
 
   constructor(
     parcelleId: string,
+    codeInsee: string,
     donneesEnrichissement: EnrichissementOutputDto,
     donneesComplementaires: DonneesComplementairesInputDto,
     resultats: MutabiliteOutputDto,
   ) {
     this.parcelleId = parcelleId;
+    this.codeInsee = codeInsee;
     this.dateCalcul = new Date();
     this.donneesEnrichissement = donneesEnrichissement;
     this.donneesComplementaires = donneesComplementaires;

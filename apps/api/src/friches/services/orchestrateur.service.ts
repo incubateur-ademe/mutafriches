@@ -74,6 +74,7 @@ export class OrchestrateurService {
     // Création d'une évaluation de mutabilité
     const evaluation = new Evaluation(
       parcelle.identifiantParcelle,
+      parcelle.codeInsee,
       input.donneesEnrichies,
       input.donneesComplementaires,
       resultats,
@@ -114,6 +115,7 @@ export class OrchestrateurService {
     // 3. Sauvegarde
     const evaluation = new Evaluation(
       identifiant,
+      enrichissement.codeInsee,
       enrichissement,
       donneesComplementaires,
       mutabilite,

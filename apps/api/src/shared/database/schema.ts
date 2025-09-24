@@ -4,6 +4,7 @@ import { pgTable, varchar, jsonb, timestamp, numeric } from "drizzle-orm/pg-core
 export const evaluations = pgTable("evaluations", {
   id: varchar("id", { length: 50 }).primaryKey(),
   parcelleId: varchar("parcelle_id", { length: 20 }).notNull(),
+  codeInsee: varchar("code_insee", { length: 5 }).notNull(),
   dateCalcul: timestamp("date_calcul").notNull().defaultNow(),
 
   // Snapshot des données au moment du calcul

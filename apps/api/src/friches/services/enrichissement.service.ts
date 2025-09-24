@@ -32,6 +32,7 @@ export class EnrichissementService {
 
     const parcelle = new Parcelle();
     parcelle.identifiantParcelle = cadastreData.identifiant;
+    parcelle.codeInsee = cadastreData.codeInsee;
     parcelle.commune = cadastreData.commune;
     parcelle.surfaceSite = cadastreData.surface;
     parcelle.coordonnees = cadastreData.coordonnees;
@@ -106,6 +107,7 @@ export class EnrichissementService {
     return {
       // Données déduites automatiquement de la parcelle
       identifiantParcelle: parcelle.identifiantParcelle,
+      codeInsee: parcelle.codeInsee,
       commune: parcelle.commune,
       surfaceSite: parcelle.surfaceSite,
       surfaceBati: parcelle.surfaceBati,

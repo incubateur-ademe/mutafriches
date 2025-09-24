@@ -5,6 +5,7 @@
 export interface EnrichissementOutputDto {
   // Données d'identification
   identifiantParcelle: string;
+  codeInsee: string;
   commune: string;
   coordonnees?: {
     latitude: number;

@@ -67,6 +67,7 @@ export function convertTestCaseToMutabilityInput(
   // Données enrichies
   const donneesEnrichies: EnrichissementOutputDto = {
     identifiantParcelle: identifiantParcelle || input.identifiantParcelle || `test-${testCase.id}`,
+    codeInsee: "12345", // Code INSEE fictif pour les tests
     commune: commune || input.commune || "Test",
     surfaceSite: input.surfaceSite,
     surfaceBati: input.surfaceBati,

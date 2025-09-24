@@ -2,6 +2,7 @@ import { ApiResponse } from "../shared/api-response.types";
 
 export interface CadastreServiceResponse {
   identifiant: string;
+  codeInsee: string;
   commune: string;
   surface: number; // m²
   coordonnees: {

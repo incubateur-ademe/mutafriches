@@ -83,6 +83,7 @@ export class CadastreService {
         success: true,
         data: {
           identifiant,
+          codeInsee: parcelle.properties.code_insee,
           commune: parcelle.properties.nom_com,
           surface: Math.round(parcelle.properties.contenance),
           coordonnees,

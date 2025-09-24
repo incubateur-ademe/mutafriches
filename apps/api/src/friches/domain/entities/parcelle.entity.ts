@@ -24,6 +24,7 @@ import {
 export class Parcelle {
   // Identification
   identifiantParcelle: string;
+  codeInsee: string;
   commune: string;
   coordonnees?: Coordonnees;
 

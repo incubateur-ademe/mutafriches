@@ -24,6 +24,7 @@ export class EvaluationRepository {
 
     await this.database.db.insert(evaluations).values({
       id: evaluation.id,
+      codeInsee: evaluation.codeInsee,
       parcelleId: evaluation.parcelleId,
       dateCalcul: evaluation.dateCalcul,
       donneesEnrichissement: evaluation.donneesEnrichissement as any,
@@ -53,6 +54,7 @@ export class EvaluationRepository {
     // Reconstruire l'entité
     const evaluation = new Evaluation(
       row.parcelleId,
+      row.codeInsee,
       row.donneesEnrichissement as EnrichissementOutputDto,
       row.donneesComplementaires as DonneesComplementairesInputDto,
       row.resultats as MutabiliteOutputDto,
@@ -79,6 +81,7 @@ export class EvaluationRepository {
     return results.map((row) => {
       const evaluation = new Evaluation(
         row.parcelleId,
+        row.codeInsee,
         row.donneesEnrichissement as EnrichissementOutputDto,
         row.donneesComplementaires as DonneesComplementairesInputDto,
         row.resultats as MutabiliteOutputDto,
