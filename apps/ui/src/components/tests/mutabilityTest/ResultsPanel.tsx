@@ -61,7 +61,101 @@ export function ResultsPanel({ result, error, isCalculating, expectedResults }: 
                 <span className="fr-badge fr-badge--new fr-ml-1w">Mode détaillé activé</span>
               )}
             </div>
+            {/* Analyse de la comparaison si cas de test */}
+            {expectedResults &&
+              result.resultats &&
+              (() => {
+                const ecarts = (result.resultats as UsageResultatDetaille[]).map((r) => {
+                  const expected = expectedResults.usages?.find((e: any) => e.usage === r.usage);
+                  return {
+                    usage: r.usage,
+                    ecart: expected ? Math.abs(r.indiceMutabilite - expected.indiceMutabilite) : 0,
+                    calculé: r.indiceMutabilite,
+                    attendu: expected?.indiceMutabilite || 0,
+                  };
+                });
 
+                const maxEcart = Math.max(...ecarts.map((e) => e.ecart));
+                const avgEcart = ecarts.reduce((a, b) => a + b.ecart, 0) / ecarts.length;
+                const ecartsSignificatifs = ecarts.filter((e) => e.ecart > 2);
+
+                // Déterminer le type d'alerte et le message
+                if (maxEcart < 2) {
+                  return (
+                    <div className="fr-alert fr-alert--success fr-mb-3w">
+                      <h3 className="fr-alert__title">
+                        Succès : Résultats conformes (écart max: {maxEcart.toFixed(1)}%)
+                      </h3>
+                      <p>
+                        Tous les résultats correspondent aux valeurs attendues avec une précision
+                        excellente.
+                      </p>
+                    </div>
+                  );
+                } else if (maxEcart < 5) {
+                  return (
+                    <div className="fr-alert fr-alert--warning fr-mb-3w">
+                      <h3 className="fr-alert__title">
+                        Attention : Écarts modérés détectés (max: {maxEcart.toFixed(1)}%, moyenne:{" "}
+                        {avgEcart.toFixed(1)}%)
+                      </h3>
+                      <p>Des différences mineures sont présentes sur certains usages :</p>
+                      {ecartsSignificatifs.length > 0 && (
+                        <ul className="fr-mt-2w">
+                          {ecartsSignificatifs.map((e) => (
+                            <li key={e.usage}>
+                              <strong>{e.usage}</strong> : {e.calculé}% (attendu: {e.attendu}%) -
+                              Écart: {e.ecart.toFixed(1)}%
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  );
+                } else {
+                  return (
+                    <div className="fr-alert fr-alert--error fr-mb-3w">
+                      <h3 className="fr-alert__title">
+                        Erreur : Écarts importants détectés (max: {maxEcart.toFixed(1)}%)
+                      </h3>
+                      <p>
+                        Des différences significatives nécessitent une vérification de l'algorithme
+                        :
+                      </p>
+                      <ul className="fr-mt-2w">
+                        {ecartsSignificatifs.map((e) => (
+                          <li key={e.usage}>
+                            <strong>{e.usage}</strong> : {e.calculé}% (attendu: {e.attendu}%) -{" "}
+                            <span className="fr-text--bold fr-text--error">
+                              Écart: {e.ecart.toFixed(1)}%
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                      <p className="fr-mt-2w fr-text--sm">
+                        Vérifiez les matrices de scoring, les transformations de données ou la
+                        logique de calcul.
+                      </p>
+                    </div>
+                  );
+                }
+              })()}
+            {/* Données brutes pour debug */}
+            <details className="fr-mt-3w">
+              <summary className="fr-text--sm">Données brutes (debug)</summary>
+              <pre
+                className="fr-text--xs fr-mt-2w"
+                style={{
+                  maxHeight: "800px",
+                  overflow: "auto",
+                  backgroundColor: "#f6f6f6",
+                  padding: "1rem",
+                  borderRadius: "4px",
+                }}
+              >
+                {JSON.stringify(result, null, 2)}
+              </pre>
+            </details>
             {/* Indice de fiabilité global */}
             {result.fiabilite && (
               <div className="fr-callout fr-mb-3w">
@@ -78,7 +172,6 @@ export function ResultsPanel({ result, error, isCalculating, expectedResults }: 
                 )}
               </div>
             )}
-
             {/* Tableau des résultats */}
             <div className="fr-table fr-mb-3w">
               <table
@@ -369,52 +462,6 @@ export function ResultsPanel({ result, error, isCalculating, expectedResults }: 
                 </tbody>
               </table>
             </div>
-
-            {/* Analyse de la comparaison si cas de test */}
-            {expectedResults && result.resultats && (
-              <div className="fr-alert fr-alert--info fr-mb-3w">
-                <h4 className="fr-alert__title">Analyse de la comparaison</h4>
-                <p>
-                  {(() => {
-                    const ecarts = (result.resultats as UsageResultatDetaille[]).map((r) => {
-                      const expected = expectedResults.usages?.find(
-                        (e: any) => e.usage === r.usage,
-                      );
-                      return expected
-                        ? Math.abs(r.indiceMutabilite - expected.indiceMutabilite)
-                        : 0;
-                    });
-                    const maxEcart = Math.max(...ecarts);
-                    const avgEcart = ecarts.reduce((a, b) => a + b, 0) / ecarts.length;
-
-                    if (maxEcart < 2) {
-                      return "Excellent : tous les résultats correspondent aux valeurs attendues";
-                    } else if (maxEcart < 5) {
-                      return `Bon : écart moyen de ${avgEcart.toFixed(1)}%`;
-                    } else {
-                      return `À vérifier : écart maximum de ${maxEcart.toFixed(1)}%`;
-                    }
-                  })()}
-                </p>
-              </div>
-            )}
-
-            {/* Données brutes pour debug */}
-            <details className="fr-mt-3w">
-              <summary className="fr-text--sm">Données brutes (debug)</summary>
-              <pre
-                className="fr-text--xs fr-mt-2w"
-                style={{
-                  maxHeight: "800px",
-                  overflow: "auto",
-                  backgroundColor: "#f6f6f6",
-                  padding: "1rem",
-                  borderRadius: "4px",
-                }}
-              >
-                {JSON.stringify(result, null, 2)}
-              </pre>
-            </details>
           </>
         )}
       </div>

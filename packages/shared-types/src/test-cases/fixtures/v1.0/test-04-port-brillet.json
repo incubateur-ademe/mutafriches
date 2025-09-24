@@ -12,7 +12,7 @@
     "typeProprietaire": "public",
     "surfaceSite": 83400,
     "surfaceBati": 45000,
-    "nombreBatiments": null,
+    "nombreBatiments": 0,
     "etatBatiInfrastructure": "degradation-heterogene",
     "presencePollution": "oui-autres-composes",
     "siteEnCentreVille": true,

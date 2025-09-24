@@ -38,7 +38,7 @@ export function TestCasePanel({ selectedTestCase, onTestCaseSelect }: TestCasePa
             <option value="">-- Sélectionner un cas de test --</option>
             {testCaseOptions.map((option) => (
               <option key={option.id} value={option.id}>
-                {option.name}
+                {option.id}
               </option>
             ))}
           </select>

@@ -23,6 +23,8 @@ export const ETAT_BATI_MAPPING: Record<string, EtatBatiInfrastructure> = {
   "Bon état": EtatBatiInfrastructure.DEGRADATION_INEXISTANTE,
   "Dégradation moyenne": EtatBatiInfrastructure.DEGRADATION_MOYENNE,
   "Dégradation très importante": EtatBatiInfrastructure.DEGRADATION_TRES_IMPORTANTE,
+  "dégradation très importante": EtatBatiInfrastructure.DEGRADATION_TRES_IMPORTANTE, // Variante minuscule
+
   "Dégradation hétérogène": EtatBatiInfrastructure.DEGRADATION_HETEROGENE,
   "Absence de bâtiments": EtatBatiInfrastructure.DEGRADATION_INEXISTANTE,
   "Ne sait pas": EtatBatiInfrastructure.NE_SAIT_PAS,
@@ -104,6 +106,8 @@ export const ZONAGE_ENVIRONNEMENTAL_MAPPING: Record<string, ZonageEnvironnementa
 // Zonage réglementaire - Valeurs EXACTES de l'Excel
 export const ZONAGE_REGLEMENTAIRE_MAPPING: Record<string, ZonageReglementaire> = {
   "Zone urbaine": ZonageReglementaire.ZONE_URBAINE_U,
+  "Zone urbaine – U": ZonageReglementaire.ZONE_URBAINE_U, // Variante avec tiret
+
   "Zone urbaine hors zone d'accélération ENR": ZonageReglementaire.ZONE_URBAINE_U,
   "Zone urbaine en zone d'accélération ENR": ZonageReglementaire.ZONE_URBAINE_U,
 
@@ -152,16 +156,19 @@ export const DISTANCE_AUTOROUTE_MAPPING: Record<string, string> = {
   "Moins de 1 km": "moins-de-1km",
   "Entre 1 et 2 km": "entre-1-et-2km",
   "Entre 2 et 5 km": "entre-2-et-5km",
+  "Plus de 5km": "plus-de-5km", // Variante sans espace
   "Plus de 5 km": "plus-de-5km",
 };
 
 export const DISTANCE_TRANSPORT_MAPPING: Record<string, string> = {
   "Moins de 500 m": "moins-de-500m",
   "Plus de 500 m": "plus-de-500m",
+  "Plus de 500m": "plus-de-500m", // Variante sans espace
 };
 
 export const DISTANCE_ELECTRIQUE_MAPPING: Record<string, string> = {
   "Moins de 1 km": "moins-de-1km",
   "Entre 1 et 5 km": "entre-1-et-5km",
+  "Entre 1 et 5km": "entre-1-et-5km", // Variante sans espace
   "Plus de 5 km": "plus-de-5km",
 };
