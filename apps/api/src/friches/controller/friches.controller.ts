@@ -305,13 +305,26 @@ export class FrichesController {
       return { source: SourceUtilisation.API_DIRECTE };
     }
 
-    // Cas du site standalone en local (localhost sans /api)
-    if (referrer.includes("localhost") && !referrer.includes("/api")) {
+    // Liste des domaines du site standalone (local + prod)
+    // TODO : externaliser cette liste dans une config si elle évolue
+    const domainesStandalone = [
+      "localhost",
+      "127.0.0.1",
+      "mutafriches.fr",
+      "www.mutafriches.fr",
+      "mutafriches-preprod.osc-fr1.scalingo.io",
+      "mutafriches.osc-secnum-fr1.scalingo.io",
+    ];
+
+    // Vérifier si le referrer vient d'un domaine standalone
+    const isStandalone = domainesStandalone.some((domain) => referrer.includes(domain));
+
+    if (isStandalone && !referrer.includes("/api")) {
       return { source: SourceUtilisation.SITE_STANDALONE };
     }
 
-    // Cas d'une iframe intégrée (autre domaine que localhost)
-    if (referrer && !referrer.includes("localhost") && !referrer.includes("127.0.0.1")) {
+    // Si on a un referrer qui n'est pas un domaine standalone -> iframe
+    if (referrer) {
       return {
         source: SourceUtilisation.IFRAME_INTEGREE,
         integrateur: this.extraireIntegrateur(referrer as string),
