@@ -10,6 +10,9 @@ import { ValidationPipe } from "@nestjs/common";
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
+  // TODO : Revoir la configuration CORS avec Anna si besoin + gestion integrateurs
+  app.enableCors(); // Tout ouvert par défaut (à restreindre en prod si besoin)
+
   // Configuration de la validation
   app.useGlobalPipes(new ValidationPipe());
 
