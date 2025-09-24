@@ -97,6 +97,7 @@ export const ZONAGE_ENVIRONNEMENTAL_MAPPING: Record<string, ZonageEnvironnementa
   "Natura 2000": ZonageEnvironnemental.NATURA_2000,
   "ZNIEFF type 1 ou 2": ZonageEnvironnemental.ZNIEFF_TYPE_1_2,
   "ZNIEFF 1 ou 2": ZonageEnvironnemental.ZNIEFF_TYPE_1_2, // Variante courante
+  "Proximité d’une zone (<5km)": ZonageEnvironnemental.PROXIMITE_ZONE,
   "Parc naturel régional": ZonageEnvironnemental.PARC_NATUREL_REGIONAL,
   "Parc naturel national": ZonageEnvironnemental.PARC_NATUREL_NATIONAL,
   "Réserve naturelle": ZonageEnvironnemental.RESERVE_NATURELLE,
@@ -123,12 +124,17 @@ export const ZONAGE_REGLEMENTAIRE_MAPPING: Record<string, ZonageReglementaire> =
   "Zone naturelle hors zone d'accélération ENR": ZonageReglementaire.ZONE_NATURELLE,
   "Zone naturelle en zone d'accélération ENR": ZonageReglementaire.ZONE_NATURELLE,
 
+  "Zone activités": ZonageReglementaire.ZONE_ACTIVITES,
   "Zone agricole": ZonageReglementaire.ZONE_AGRICOLE,
   "Zone agricole hors zone d'accélération ENR": ZonageReglementaire.ZONE_AGRICOLE,
   "Zone agricole en zone d'accélération ENR": ZonageReglementaire.ZONE_AGRICOLE,
+  "Zone d'accélération ENR": ZonageReglementaire.ZONE_ACCELERATION_ENR,
+  "Zone mixte ou multiple": ZonageReglementaire.ZONE_MIXTE_MULTIPLE,
 
   Constructible: ZonageReglementaire.CONSTRUCTIBLE,
+  "Constructible – ou en partie": ZonageReglementaire.CONSTRUCTIBLE, // Variante avec tiret
   "Non constructible": ZonageReglementaire.NON_CONSTRUCTIBLE,
+  "Non-constructible": ZonageReglementaire.NON_CONSTRUCTIBLE, // Variante avec tiret
 };
 
 // Zonage patrimonial - Valeurs exactes
@@ -146,8 +152,11 @@ export const ZONAGE_PATRIMONIAL_MAPPING: Record<string, ZonagePatrimonial> = {
 export const TRAME_VERTE_BLEUE_MAPPING: Record<string, TrameVerteEtBleue> = {
   "Hors trame": TrameVerteEtBleue.HORS_TRAME,
   "Réservoir de biodiversité": TrameVerteEtBleue.RESERVOIR_BIODIVERSITE,
+  "Situé en réservoir de biodiversité": TrameVerteEtBleue.RESERVOIR_BIODIVERSITE, // Variante courante
   "Corridor à restaurer": TrameVerteEtBleue.CORRIDOR_A_RESTAURER,
   "Corridor à préserver": TrameVerteEtBleue.CORRIDOR_A_PRESERVER,
+  "Présence corridor à restaurer": TrameVerteEtBleue.CORRIDOR_A_RESTAURER, // Variante courante
+  "Présence corridor à préserver": TrameVerteEtBleue.CORRIDOR_A_PRESERVER, // Variante courante
   "Ne sait pas": TrameVerteEtBleue.NE_SAIT_PAS,
 };
 

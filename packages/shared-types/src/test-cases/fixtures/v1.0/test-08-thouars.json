@@ -22,14 +22,14 @@
     "distanceTransportCommun": "moins-de-500m",
     "proximiteCommercesServices": true,
     "distanceRaccordementElectrique": "entre-1-et-5km",
-    "zonageReglementaire": "zone-mixte-ou-multiple",
+    "zonageReglementaire": "zone-mixte-multiple",
     "presenceRisquesNaturels": "absent",
     "presenceRisquesTechnologiques": false,
     "zonagePatrimonial": "non-concerne",
     "qualitePaysage": "degrade",
     "valeurArchitecturaleHistorique": "interet-fort",
     "zonageEnvironnemental": "hors-zone",
-    "trameVerteEtBleu": "presence-corridor-a-restaurer"
+    "trameVerteEtBleu": "corridor-a-restaurer"
   },
   "expected": {
     "usages": [

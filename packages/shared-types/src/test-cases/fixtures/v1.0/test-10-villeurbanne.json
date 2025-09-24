@@ -29,7 +29,7 @@
     "zonagePatrimonial": "non-concerne",
     "qualitePaysage": "banal-infra-ordinaire",
     "valeurArchitecturaleHistorique": "banal-infra-ordinaire",
-    "zonageEnvironnemental": "proximite-d-une-zone-5km",
+    "zonageEnvironnemental": "proximite-zone",
     "trameVerteEtBleu": "hors-trame"
   },
   "expected": {

@@ -413,7 +413,8 @@ export function BatchTestPanel({ onRunTest }: BatchTestPanelProps) {
         {showDetails &&
           testResults.find((r) => r.testCaseId === showDetails) &&
           (() => {
-            const result = testResults.find((r) => r.testCaseId === showDetails)!;
+            const result = testResults.find((r) => r.testCaseId === showDetails);
+            if (!result) return null;
 
             return (
               <div className="fr-callout fr-mt-3w">

@@ -23,14 +23,14 @@
     "distanceTransportCommun": "plus-de-500m",
     "proximiteCommercesServices": false,
     "distanceRaccordementElectrique": "plus-de-5km",
-    "zonageReglementaire": "constructible-ou-en-partie",
+    "zonageReglementaire": "constructible",
     "presenceRisquesNaturels": "faible",
     "presenceRisquesTechnologiques": true,
     "zonagePatrimonial": "non-concerne",
     "qualitePaysage": "banal-infra-ordinaire",
     "valeurArchitecturaleHistorique": "interet-fort",
-    "zonageEnvironnemental": "proximite-d-une-zone-5km",
-    "trameVerteEtBleu": "presence-corridor-a-preserver"
+    "zonageEnvironnemental": "proximite-zone",
+    "trameVerteEtBleu": "corridor-a-preserver"
   },
   "expected": {
     "usages": [
