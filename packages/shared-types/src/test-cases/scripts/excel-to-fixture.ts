@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import * as XLSX from "xlsx";
 import * as fs from "fs";
 import * as path from "path";
@@ -164,7 +165,7 @@ function generateMetadata(input: any): TestCaseExpected["metadata"] {
 
   testCaseFields.forEach((field) => {
     const value = input[field];
-    // Un champ est considéré comme renseigné s'il a une valeur (même "ne-sait-pas")
+    // Un champ est considéré comme renseigné s'il a une valeur
     if (value !== undefined && value !== null) {
       renseignes.push(field);
     } else {

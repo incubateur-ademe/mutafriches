@@ -65,7 +65,7 @@ export default function TestMutability() {
         zonageEnvironnemental: testCase.input.zonageEnvironnemental,
         zonageReglementaire: testCase.input.zonageReglementaire,
         zonagePatrimonial: testCase.input.zonagePatrimonial,
-        trameVerteEtBleue: testCase.input.trameVerteEtBleue,
+        trameVerteEtBleue: testCase.input.trameVerteEtBleu,
 
         // Données complémentaires directement du test case
         // car elles sont déjà au format kebab-case comme nos enums
