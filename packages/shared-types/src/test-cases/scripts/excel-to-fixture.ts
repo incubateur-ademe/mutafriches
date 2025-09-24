@@ -340,7 +340,7 @@ function processSingleFile() {
     }
 
     const outputPath = path.join(outputDir, `${finalOutputName}.json`);
-    fs.writeFileSync(outputPath, JSON.stringify(testCase, null, 2));
+    fs.writeFileSync(outputPath, JSON.stringify(testCase, null, 2) + "\n");
 
     console.log(`\n✓ Fixture créée avec succès: ${outputPath}`);
     console.log(`  - ${testCase.expected.usages.length} usages`);
