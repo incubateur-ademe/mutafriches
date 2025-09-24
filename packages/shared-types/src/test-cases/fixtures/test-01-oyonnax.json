@@ -1,0 +1,79 @@
+{
+  "id": "test-01-oyonnax",
+  "name": "Foyer Sonacotra de Geilles ",
+  "description": "Test case généré depuis v1.0_test-01_oyonnax.xlsx",
+  "source": "v1.0_test-01_oyonnax.xlsx",
+  "algorithmVersion": "1.0",
+  "input": {
+    "nomSite": "Foyer Sonacotra de Geilles ",
+    "identifiantsParcellaires": "000 : E839, E829",
+    "nomProprietaire": "Commune d'Oyonnax et SEMCODA",
+    "commune": "Oyonnax",
+    "typeProprietaire": "public",
+    "surfaceSite": 20000,
+    "surfaceBati": 2000,
+    "nombreBatiments": 1,
+    "etatBatiInfrastructure": "dégradation-très-importante",
+    "presencePollution": "oui---autres-composés",
+    "siteEnCentreVille": false,
+    "tauxLogementsVacants": 12.4,
+    "terrainViabilise": true,
+    "qualiteVoieDesserte": "accessible",
+    "distanceAutoroute": "entre-2-et-5km",
+    "distanceTransportCommun": "plus-de-500m",
+    "proximiteCommercesServices": false,
+    "distanceRaccordementElectrique": "entre-1-et-5km",
+    "zonageReglementaire": "zone-urbaine",
+    "presenceRisquesNaturels": "faible",
+    "presenceRisquesTechnologiques": false,
+    "zonagePatrimonial": "non-concerne",
+    "qualitePaysage": "remarquable",
+    "valeurArchitecturaleHistorique": "banal-/-infra-ordinaire",
+    "zonageEnvironnemental": "znieff-1-ou-2",
+    "trameVerteEtBleu": "ne-sait-pas"
+  },
+  "expected": {
+    "usages": [
+      {
+        "usage": "tertiaire",
+        "indiceMutabilite": 45,
+        "rang": 1
+      },
+      {
+        "usage": "industrie",
+        "indiceMutabilite": 49,
+        "rang": 2
+      },
+      {
+        "usage": "residentiel",
+        "indiceMutabilite": 51,
+        "rang": 3
+      },
+      {
+        "usage": "equipements",
+        "indiceMutabilite": 51,
+        "rang": 4
+      },
+      {
+        "usage": "culture",
+        "indiceMutabilite": 52,
+        "rang": 5
+      },
+      {
+        "usage": "photovoltaique",
+        "indiceMutabilite": 64,
+        "rang": 6
+      },
+      {
+        "usage": "renaturation",
+        "indiceMutabilite": 68,
+        "rang": 7
+      }
+    ],
+    "metadata": {
+      "criteresRenseignes": 21,
+      "criteresTotal": 21,
+      "criteresManquants": []
+    }
+  }
+}

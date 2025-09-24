@@ -1,9 +1,17 @@
+// packages/shared-types/src/test-cases/types/test-case.types.ts
+
 // Types spécifiques pour les fichiers de test JSON
 
 export interface TestCaseInput {
+  // Champs informatifs (optionnels)
+  nomSite?: string;
+  identifiantsParcellaires?: string;
+  nomProprietaire?: string;
+  commune?: string;
+  nombreBatiments?: number;
+
   // Identifiants (optionnels dans les tests)
   identifiantParcelle?: string;
-  commune?: string;
 
   // Propriété et surfaces
   typeProprietaire: string;
@@ -36,7 +44,7 @@ export interface TestCaseInput {
 
   // Environnement et biodiversité
   zonageEnvironnemental: string;
-  trameVerteEtBleue: string;
+  trameVerteEtBleu: string; // Sans 'e' à la fin
 
   // Optionnel
   coordonnees?: {
@@ -53,7 +61,7 @@ export interface TestCaseExpectedUsage {
 
 export interface TestCaseExpected {
   usages: TestCaseExpectedUsage[];
-  fiabilite: number;
+  // fiabilite supprimée
   metadata: {
     criteresRenseignes: number;
     criteresTotal: number;

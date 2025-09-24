@@ -3,7 +3,7 @@
   "name": "Ancienne manufacture Les Allumettes - Trélazé",
   "description": "Ancienne manufacture située à Trélazé, propriétaire privé (bailleur social), en centre-ville avec valeur architecturale exceptionnelle",
   "source": "Test Trélazé.xlsx",
-  "algorithmVersion": "1.0.0",
+  "algorithmVersion": "1.0",
 
   "input": {
     "typeProprietaire": "prive",

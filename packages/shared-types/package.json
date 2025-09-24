@@ -7,9 +7,14 @@
   "scripts": {
     "build": "tsc",
     "clean": "rm -rf dist",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "excel-to-fixture": "tsx src/test-cases/scripts/excel-to-fixture.ts",
+    "excel-to-fixture:all": "tsx src/test-cases/scripts/excel-to-fixture.ts --all"
   },
   "devDependencies": {
-    "typescript": "^5.3.3"
+    "@types/node": "^22.18.1",
+    "tsx": "^4.20.5",
+    "typescript": "^5.3.3",
+    "xlsx": "^0.18.5"
   }
 }

@@ -2,8 +2,8 @@
   "id": "renaison-001",
   "name": "Ancien site de Teintures et apprêts du centre (TAC) - Renaison",
   "description": "Ancien site industriel de teintures situé à Renaison, avec bâtiments hétérogènes, pollution confirmée, en zone naturelle avec contraintes environnementales importantes",
-  "source": "Test 3 - Renaison.xlsx",
-  "algorithmVersion": "1.0.0",
+  "source": "v1.0_test-05_renaison.xlsx",
+  "algorithmVersion": "1.0",
 
   "input": {
     "surfaceSite": 46333,
