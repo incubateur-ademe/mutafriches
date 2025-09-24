@@ -6,7 +6,7 @@ export interface TestCaseInput {
   identifiantsParcellaires?: string;
   nomProprietaire?: string;
   commune?: string;
-  nombreBatiments?: number;
+  nombreBatiments?: number | null;
 
   // Identifiants (optionnels dans les tests)
   identifiantParcelle?: string;

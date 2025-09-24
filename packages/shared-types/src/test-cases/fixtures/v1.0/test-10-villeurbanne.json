@@ -45,13 +45,13 @@
         "rang": 2
       },
       {
-        "usage": "tertiaire",
-        "indiceMutabilite": 55,
+        "usage": "residentiel",
+        "indiceMutabilite": 52,
         "rang": 3
       },
       {
-        "usage": "residentiel",
-        "indiceMutabilite": 56,
+        "usage": "tertiaire",
+        "indiceMutabilite": 55,
         "rang": 4
       },
       {

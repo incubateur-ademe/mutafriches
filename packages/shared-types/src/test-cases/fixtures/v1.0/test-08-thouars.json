@@ -34,18 +34,18 @@
   "expected": {
     "usages": [
       {
+        "usage": "residentiel",
+        "indiceMutabilite": 49,
+        "rang": 1
+      },
+      {
         "usage": "culture",
         "indiceMutabilite": 50,
-        "rang": 1
+        "rang": 2
       },
       {
         "usage": "tertiaire",
         "indiceMutabilite": 51,
-        "rang": 2
-      },
-      {
-        "usage": "residentiel",
-        "indiceMutabilite": 54,
         "rang": 3
       },
       {

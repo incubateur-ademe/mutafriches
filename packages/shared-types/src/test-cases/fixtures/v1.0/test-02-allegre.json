@@ -35,18 +35,18 @@
   "expected": {
     "usages": [
       {
+        "usage": "residentiel",
+        "indiceMutabilite": 47,
+        "rang": 1
+      },
+      {
         "usage": "culture",
         "indiceMutabilite": 50,
-        "rang": 1
+        "rang": 2
       },
       {
         "usage": "photovoltaique",
         "indiceMutabilite": 52,
-        "rang": 2
-      },
-      {
-        "usage": "residentiel",
-        "indiceMutabilite": 53,
         "rang": 3
       },
       {

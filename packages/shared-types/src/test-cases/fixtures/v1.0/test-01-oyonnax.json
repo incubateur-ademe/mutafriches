@@ -40,13 +40,13 @@
         "rang": 1
       },
       {
-        "usage": "industrie",
-        "indiceMutabilite": 49,
+        "usage": "residentiel",
+        "indiceMutabilite": 46,
         "rang": 2
       },
       {
-        "usage": "residentiel",
-        "indiceMutabilite": 51,
+        "usage": "industrie",
+        "indiceMutabilite": 49,
         "rang": 3
       },
       {

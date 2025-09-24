@@ -54,17 +54,17 @@
         "rang": 4
       },
       {
-        "usage": "equipements",
-        "indiceMutabilite": 65,
+        "usage": "residentiel",
+        "indiceMutabilite": 62,
         "rang": 5
       },
       {
-        "usage": "renaturation",
-        "indiceMutabilite": 68,
+        "usage": "equipements",
+        "indiceMutabilite": 65,
         "rang": 6
       },
       {
-        "usage": "residentiel",
+        "usage": "renaturation",
         "indiceMutabilite": 68,
         "rang": 7
       }
