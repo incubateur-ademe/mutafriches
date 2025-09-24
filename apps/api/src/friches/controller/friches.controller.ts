@@ -310,10 +310,14 @@ export class FrichesController {
     const domainesStandalone = [
       "localhost",
       "127.0.0.1",
-      "mutafriches.fr",
-      "www.mutafriches.fr",
-      "mutafriches-preprod.osc-fr1.scalingo.io",
+      "https://mutafriches.beta.gouv.fr",
+      "mutafriches.beta.gouv.fr",
+      "https://mutafriches.osc-secnum-fr1.scalingo.io",
       "mutafriches.osc-secnum-fr1.scalingo.io",
+      "https://mutafriches.incubateur.ademe.dev",
+      "mutafriches.incubateur.ademe.dev",
+      "https://mutafriches-preprod.osc-fr1.scalingo.io",
+      "mutafriches-preprod.osc-fr1.scalingo.io",
     ];
 
     // Vérifier si le referrer vient d'un domaine standalone
