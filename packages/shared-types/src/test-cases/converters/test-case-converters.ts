@@ -88,7 +88,7 @@ export function convertTestCaseToMutabilityInput(
     zonageEnvironnemental: input.zonageEnvironnemental,
     zonageReglementaire: input.zonageReglementaire,
     zonagePatrimonial: input.zonagePatrimonial,
-    trameVerteEtBleue: input.trameVerteEtBleue,
+    trameVerteEtBleue: input.trameVerteEtBleu,
 
     coordonnees: input.coordonnees,
     sourcesUtilisees: ["Test"],

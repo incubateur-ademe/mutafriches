@@ -1,5 +1,3 @@
-// packages/shared-types/src/test-cases/types/test-case.types.ts
-
 // Types spécifiques pour les fichiers de test JSON
 
 export interface TestCaseInput {
@@ -44,7 +42,7 @@ export interface TestCaseInput {
 
   // Environnement et biodiversité
   zonageEnvironnemental: string;
-  trameVerteEtBleu: string; // Sans 'e' à la fin
+  trameVerteEtBleu: string;
 
   // Optionnel
   coordonnees?: {
