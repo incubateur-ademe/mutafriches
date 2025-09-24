@@ -94,6 +94,7 @@ export const ZONAGE_ENVIRONNEMENTAL_MAPPING: Record<string, ZonageEnvironnementa
   "Hors zone": ZonageEnvironnemental.HORS_ZONE,
   "Natura 2000": ZonageEnvironnemental.NATURA_2000,
   "ZNIEFF type 1 ou 2": ZonageEnvironnemental.ZNIEFF_TYPE_1_2,
+  "ZNIEFF 1 ou 2": ZonageEnvironnemental.ZNIEFF_TYPE_1_2, // Variante courante
   "Parc naturel régional": ZonageEnvironnemental.PARC_NATUREL_REGIONAL,
   "Parc naturel national": ZonageEnvironnemental.PARC_NATUREL_NATIONAL,
   "Réserve naturelle": ZonageEnvironnemental.RESERVE_NATURELLE,

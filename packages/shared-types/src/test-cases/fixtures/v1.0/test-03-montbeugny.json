@@ -29,7 +29,7 @@
     "zonagePatrimonial": "non-concerne",
     "qualitePaysage": "quotidien-ordinaire",
     "valeurArchitecturaleHistorique": "ordinaire",
-    "zonageEnvironnemental": "znieff-1-ou-2",
+    "zonageEnvironnemental": "znieff-type-1-2",
     "trameVerteEtBleu": "ne-sait-pas"
   },
   "expected": {

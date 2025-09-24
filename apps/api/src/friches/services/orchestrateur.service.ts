@@ -43,6 +43,8 @@ export class OrchestrateurService {
       sansEnrichissement?: boolean;
     },
   ): Promise<MutabiliteOutputDto> {
+    const { modeDetaille = false, sansEnrichissement = false } = options;
+
     // Vérification des données
     if (!input.donneesEnrichies) {
       throw new Error("Données enrichies manquantes dans la requête");
@@ -79,8 +81,11 @@ export class OrchestrateurService {
       resultats,
     );
 
-    // Sauvegarde l'évaluation et retourne l'ID
-    const evaluationId = await this.evaluationRepository.save(evaluation);
+    // Sauvegarde l'évaluation et retourne l'ID si mode non détaillé
+    let evaluationId: string | undefined = undefined;
+    if (!modeDetaille) {
+      evaluationId = await this.evaluationRepository.save(evaluation);
+    }
 
     return {
       ...resultats,
