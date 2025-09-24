@@ -1,4 +1,4 @@
-type Mode = "test-case" | "manual";
+type Mode = "test-case" | "manual" | "batch-test";
 
 interface ModeSelectorProps {
   mode: Mode;
@@ -9,6 +9,19 @@ export function ModeSelector({ mode, onModeChange }: ModeSelectorProps) {
   return (
     <fieldset className="fr-segmented">
       <div className="fr-segmented__elements">
+        <div className="fr-segmented__element">
+          <input
+            value="batch-test"
+            checked={mode === "batch-test"}
+            type="radio"
+            id="mode-batch-test"
+            name="test-mode"
+            onChange={() => onModeChange("batch-test")}
+          />
+          <label className="fr-label" htmlFor="mode-batch-test">
+            Test en masse
+          </label>
+        </div>
         <div className="fr-segmented__element">
           <input
             value="test-case"

@@ -13,12 +13,13 @@ import {
   TestCasePanel,
 } from "../../components/tests/mutabilityTest";
 import { buildCalculerMutabiliteFromFormData } from "../../utils/mappers/form-to-dto.mapper";
+import { BatchTestPanel } from "../../components/tests/mutabilityTest/BatchTestPanel";
 
-type Mode = "test-case" | "manual";
+type Mode = "test-case" | "manual" | "batch-test";
 type InputMode = "locked" | "editable";
 
 export default function TestMutability() {
-  const [mode, setMode] = useState<Mode>("test-case");
+  const [mode, setMode] = useState<Mode>("batch-test");
   const [inputMode, setInputMode] = useState<InputMode>("locked");
   const [selectedTestCase, setSelectedTestCase] = useState<TestCase | null>(null);
   const [formData, setFormData] = useState<any>({});
@@ -32,9 +33,10 @@ export default function TestMutability() {
       setSelectedTestCase(null);
       setFormData({});
       setInputMode("editable");
-    } else {
+    } else if (newMode === "test-case") {
       setInputMode("locked");
     }
+    // Pour batch-test, on garde l'état actuel mais on réinitialise les résultats
     setMutabilityResult(null);
     setError(null);
   };
@@ -46,7 +48,6 @@ export default function TestMutability() {
       const convertedData = convertTestCaseToMutabilityInput(testCase);
 
       // Pour le formulaire, on utilise directement les données du test case
-      // car elles sont déjà au bon format (kebab-case comme nos enums)
       const flatFormData = {
         // Données enrichies issues de la conversion
         identifiantParcelle: convertedData.donneesEnrichies.identifiantParcelle,
@@ -68,7 +69,6 @@ export default function TestMutability() {
         trameVerteEtBleue: testCase.input.trameVerteEtBleu,
 
         // Données complémentaires directement du test case
-        // car elles sont déjà au format kebab-case comme nos enums
         typeProprietaire: testCase.input.typeProprietaire,
         terrainViabilise:
           testCase.input.terrainViabilise === true
@@ -109,17 +109,8 @@ export default function TestMutability() {
       // Préparer les données à envoyer en fonction du mode
       const dataToSend =
         selectedTestCase && inputMode === "locked"
-          ? convertTestCaseToMutabilityInput(selectedTestCase) // Toujours envoyer les données converties du cas de test
-          : buildCalculerMutabiliteFromFormData(formData); // Construire à partir des données du formulaire
-
-      // Pour les tests, on désactive l'enrichissement automatique
-      // car on fournit déjà toutes les données
-
-      // TODO : log a supprimer
-      console.log(
-        "Données envoyées pour le calcul de mutabilité :",
-        JSON.stringify(dataToSend, null, 2),
-      );
+          ? convertTestCaseToMutabilityInput(selectedTestCase)
+          : buildCalculerMutabiliteFromFormData(formData);
 
       const result = await apiService.calculerMutabilite(dataToSend, {
         modeDetaille: true,
@@ -135,6 +126,23 @@ export default function TestMutability() {
     }
   };
 
+  // Fonction pour exécuter un test en mode batch
+  const handleRunBatchTest = async (testCase: TestCase): Promise<MutabiliteOutputDto> => {
+    try {
+      const dataToSend = convertTestCaseToMutabilityInput(testCase);
+
+      const result = await apiService.calculerMutabilite(dataToSend, {
+        modeDetaille: true,
+        sansEnrichissement: true,
+      });
+
+      return result;
+    } catch (error) {
+      console.error(`Erreur lors du test ${testCase.id}:`, error);
+      throw error;
+    }
+  };
+
   return (
     <Layout>
       <div className="fr-container-fluid fr-background-alt--grey fr-py-4w">
@@ -144,8 +152,8 @@ export default function TestMutability() {
             <div className="fr-col-12">
               <h1 className="fr-h2 fr-mb-2w">Test de l'algorithme de mutabilité</h1>
               <p className="fr-text--lead fr-mb-4w">
-                Testez l'algorithme avec des cas prédéfinis ou en saisissant manuellement les
-                données
+                Testez l'algorithme avec des cas prédéfinis, en saisissant manuellement les données,
+                ou en exécutant tous les tests en masse
               </p>
             </div>
           </div>
@@ -156,48 +164,59 @@ export default function TestMutability() {
           <ModeSelector mode={mode} onModeChange={handleModeChange} />
         </div>
 
-        {/* Contenu principal avec layout en 2 colonnes */}
+        {/* Contenu principal */}
         <div className="fr-container">
-          <div className="fr-grid-row fr-grid-row--gutters">
-            {/* Sélection et données d'entrée */}
-            <div className="fr-col-12">
-              <div style={{ minHeight: "600px" }}>
-                {/* Panneau de sélection du cas de test (uniquement en mode test-case) */}
-                {mode === "test-case" && (
+          {/* Mode Test en masse */}
+          {mode === "batch-test" && (
+            <div className="fr-grid-row">
+              <div className="fr-col-12">
+                <BatchTestPanel onRunTest={handleRunBatchTest} />
+              </div>
+            </div>
+          )}
+
+          {/* Modes Test unitaire et Manuel */}
+          {(mode === "test-case" || mode === "manual") && (
+            <div className="fr-grid-row fr-grid-row--gutters">
+              <div className="fr-col-12">
+                <div style={{ minHeight: "600px" }}>
+                  {/* Panneau de sélection du cas de test (uniquement en mode test-case) */}
+                  {mode === "test-case" && (
+                    <div className="fr-mb-3w">
+                      <TestCasePanel
+                        selectedTestCase={selectedTestCase}
+                        onTestCaseSelect={handleTestCaseSelect}
+                      />
+                    </div>
+                  )}
+
+                  {/* Panneau des données d'entrée */}
                   <div className="fr-mb-3w">
-                    <TestCasePanel
-                      selectedTestCase={selectedTestCase}
-                      onTestCaseSelect={handleTestCaseSelect}
+                    <InputDataPanel
+                      mode={mode}
+                      inputMode={inputMode}
+                      formData={formData}
+                      onFormDataChange={handleFormDataChange}
+                      onInputModeChange={handleInputModeChange}
+                      onCalculate={handleCalculate}
+                      isCalculating={isCalculating}
+                      hasData={mode === "manual" || selectedTestCase !== null}
                     />
                   </div>
-                )}
 
-                {/* Panneau des données d'entrée */}
-                <div className="fr-mb-3w">
-                  <InputDataPanel
-                    mode={mode}
-                    inputMode={inputMode}
-                    formData={formData}
-                    onFormDataChange={handleFormDataChange}
-                    onInputModeChange={handleInputModeChange}
-                    onCalculate={handleCalculate}
-                    isCalculating={isCalculating}
-                    hasData={mode === "manual" || selectedTestCase !== null}
-                  />
-                </div>
-
-                {/* Colonne Résultats */}
-                <div style={{ minHeight: "600px" }}>
-                  <ResultsPanel
-                    result={mutabilityResult}
-                    error={error}
-                    isCalculating={isCalculating}
-                    expectedResults={selectedTestCase?.expected || null}
-                  />
+                  {/* Panneau Résultats */}
+                  <div style={{ minHeight: "600px" }}>
+                    <ResultsPanel
+                      result={mutabilityResult}
+                      error={error}
+                      isCalculating={isCalculating}
+                      expectedResults={selectedTestCase?.expected || null}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </Layout>
