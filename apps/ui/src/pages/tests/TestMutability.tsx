@@ -5,7 +5,6 @@ import {
   convertTestCaseToMutabilityInput,
 } from "@mutafriches/shared-types";
 import { apiService } from "../../services/api/api.service";
-import { Layout } from "../../layouts";
 import {
   InputDataPanel,
   ModeSelector,
@@ -14,6 +13,7 @@ import {
 } from "../../components/tests/mutabilityTest";
 import { buildCalculerMutabiliteFromFormData } from "../../utils/mappers/form-to-dto.mapper";
 import { BatchTestPanel } from "../../components/tests/mutabilityTest/BatchTestPanel";
+import { Layout } from "../../layouts/Layout";
 
 type Mode = "test-case" | "manual" | "batch-test";
 type InputMode = "locked" | "editable";

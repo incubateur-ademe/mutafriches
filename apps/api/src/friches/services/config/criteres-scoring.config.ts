@@ -954,3 +954,5 @@ export const NIVEAUX_FIABILITE = [
 
 // Export du nombre de critères utilisés dans le calcul
 export const NOMBRE_CRITERES_UTILISES = 21;
+
+export const VERSION_ALGO = "1.0";

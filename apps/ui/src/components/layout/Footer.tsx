@@ -44,6 +44,11 @@ export function Footer() {
                   Paramètres d'affichage
                 </button>
               </li>
+              <li className="fr-footer__bottom-item">
+                <a className="fr-footer__bottom-link" href="/tests">
+                  Pages de tests
+                </a>
+              </li>
             </ul>
             <div className="fr-footer__bottom-copy">
               <p>

@@ -9,8 +9,8 @@ import { MultiParcelleToggle } from "../components/step1/parcelle-selection/Mult
 import { ErrorAlert } from "../components/common/ErrorAlert";
 import { EnrichmentDisplayZone } from "../components/step1/enrichment-display/EnrichmentDisplayZone";
 import { transformEnrichmentToUiData } from "../utils/mappers/enrichissment.mapper";
-import { IFrameableLayout } from "../layouts";
 import { Stepper } from "../components/layout";
+import { Layout } from "../layouts/Layout";
 
 export const Step1: React.FC = () => {
   const navigate = useNavigate();
@@ -73,7 +73,7 @@ export const Step1: React.FC = () => {
   };
 
   return (
-    <IFrameableLayout>
+    <Layout showSimpleHeader={true}>
       {/* Si des données existent, proposer de continuer ou recommencer */}
       {state.completedSteps.length > 0 && (
         <div className="fr-alert fr-alert--info fr-mb-3w">
@@ -146,6 +146,6 @@ export const Step1: React.FC = () => {
           </button>
         </div>
       </div>
-    </IFrameableLayout>
+    </Layout>
   );
 };

@@ -12,9 +12,9 @@ import { PartnerCard } from "../components/step3/PartnerCard";
 import { buildMutabilityInput } from "../utils/mappers/mutability.mapper";
 import { Stepper } from "../components/layout";
 import { createIframeCommunicator } from "../utils/iframe/iframeCommunication";
-import { IFrameableLayout } from "../layouts";
 import { MutabiliteOutputDto } from "@mutafriches/shared-types";
 import { IframeEvaluationSummaryDto } from "../types/iframe.types";
+import { Layout } from "../layouts/Layout";
 
 export const Step3: React.FC = () => {
   const navigate = useNavigate();
@@ -176,7 +176,7 @@ export const Step3: React.FC = () => {
   }
 
   return (
-    <IFrameableLayout>
+    <Layout showSimpleHeader={true}>
       <Stepper
         currentStep={3}
         totalSteps={3}
@@ -340,6 +340,6 @@ export const Step3: React.FC = () => {
           )}
         </div>
       </div>
-    </IFrameableLayout>
+    </Layout>
   );
 };
