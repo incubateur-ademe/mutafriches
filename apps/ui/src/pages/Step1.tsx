@@ -3,10 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { useFormContext } from "../context";
 import { apiService } from "../services/api/api.service";
 import { getStepRoute, ROUTES } from "../config/routes/routes.config";
-import { SelectParcelleByMap } from "../components/step1/parcelle-selection/SelectParcelleByMap";
 import { LoadingCallout } from "../components/common/LoadingCallout";
 import { SelectParcelleById } from "../components/step1/parcelle-selection/SelectParcelleById";
-import { SelectionParcelleMode } from "../components/step1/parcelle-selection/SelectionParcelleMode";
 import { MultiParcelleToggle } from "../components/step1/parcelle-selection/MultiParcelleToggle";
 import { ErrorAlert } from "../components/common/ErrorAlert";
 import { EnrichmentDisplayZone } from "../components/step1/enrichment-display/EnrichmentDisplayZone";
@@ -18,7 +16,6 @@ export const Step1: React.FC = () => {
   const navigate = useNavigate();
   const { state, setEnrichmentData, setCurrentStep, resetForm } = useFormContext();
 
-  const [selectionMode, setSelectionMode] = useState<"id" | "carte">("id");
   const [isMultiParcelle, setIsMultiParcelle] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -50,11 +47,6 @@ export const Step1: React.FC = () => {
   // Handlers pour les différents modes de sélection
   const handleSearchById = (identifiant: string) => {
     handleEnrichir(identifiant);
-  };
-
-  const handleMapSelection = () => {
-    const testParcelId = "50147000AR0010";
-    handleEnrichir(testParcelId);
   };
 
   // Navigation vers l'étape suivante
