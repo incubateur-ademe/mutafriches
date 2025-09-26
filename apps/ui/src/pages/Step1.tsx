@@ -122,20 +122,12 @@ export const Step1: React.FC = () => {
 
         {/* Contrôles de sélection */}
         <div className="fr-grid-row fr-grid-row--gutters">
-          <div className="fr-col-12 fr-col-md-8">
-            <SelectionParcelleMode mode={selectionMode} onChange={setSelectionMode} />
-          </div>
           <div className="fr-col-12 fr-col-md-4">
             <MultiParcelleToggle isMulti={isMultiParcelle} onChange={setIsMultiParcelle} />
           </div>
         </div>
 
-        {/* Mode de sélection actif */}
-        {selectionMode === "id" ? (
-          <SelectParcelleById onSearch={handleSearchById} />
-        ) : (
-          <SelectParcelleByMap onSelect={handleMapSelection} />
-        )}
+        <SelectParcelleById onSearch={handleSearchById} />
 
         {/* États de l'interface */}
         {isLoading && (
