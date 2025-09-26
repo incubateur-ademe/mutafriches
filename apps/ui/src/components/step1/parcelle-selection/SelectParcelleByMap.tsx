@@ -1,10 +1,30 @@
-import React from "react";
+import React, { useState } from "react";
+import ParcelleSelector from "../parcelle-selector/ParcelleSelector";
+import { ParcelleFeature } from "../parcelle-selector/types";
 
 interface SelectParcelleByMapProps {
   onSelect: () => void;
 }
 
 export const SelectParcelleByMap: React.FC<SelectParcelleByMapProps> = ({ onSelect }) => {
+  const [parcelleId, setParcelleId] = useState<string | null>(null);
+  const [parcelleData, setParcelleData] = useState<ParcelleFeature | null>(null);
+
+  const handleParcelleSelect = (id: string, parcelle: ParcelleFeature) => {
+    console.log("Parcelle sélectionnée:", id);
+    console.log("parcelleId :>> ", parcelleId);
+    console.log("parcelleData :>> ", parcelleData);
+    setParcelleId(id);
+    setParcelleData(parcelle);
+
+    // Ici Appel API pour enrichir les données
+    // fetch(`/api/friches/enrichir`, {
+    //   method: 'POST',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body: JSON.stringify({ identifiant: id })
+    // });
+  };
+
   const handleMapClick = (e?: React.MouseEvent) => {
     if (e) {
       e.stopPropagation();
@@ -17,6 +37,14 @@ export const SelectParcelleByMap: React.FC<SelectParcelleByMapProps> = ({ onSele
       <p className="fr-text--sm">
         Cliquez sur la carte pour sélectionner la (les) parcelle(s) à analyser
       </p>
+
+      <ParcelleSelector
+        onParcelleSelect={handleParcelleSelect}
+        center={[47.2383, 6.0241]} // Besançon au lieu de Paris
+        zoom={17}
+        height="600px"
+      />
+
       <div className="fr-grid-row fr-grid-row--gutters">
         <div className="fr-col-12">
           <div
