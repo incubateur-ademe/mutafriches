@@ -1,29 +1,33 @@
-/**
- * Enum représentant les niveaux d'impact pour le calcul de mutabilité
- * Correspondance avec les valeurs Excel : Très négatif, Négatif, Neutre, Positif, Très positif
- */
-export enum ScoreImpact {
-  /** Très négatif - Impact très défavorable */
-  TRES_NEGATIF = -2,
+import { ScoreImpact } from "./criteres-scoring.config";
 
-  /** Négatif - Impact défavorable */
-  NEGATIF = -1,
-
-  /** Neutre - Impact minimal */
-  // Vu avec Anna, permet d'éviter le déclassement total d'un usage au regard du critère en question
-  NEUTRE = 0.5,
-
-  /** Positif - Impact favorable */
-  POSITIF = 1,
-
-  /** Très positif - Impact très favorable */
-  TRES_POSITIF = 2,
-}
-
-/**
- * Type helper pour les valeurs de score acceptées
- */
-export type ScoreValue = ScoreImpact | number;
+// Configuration des niveaux de fiabilité
+export const NIVEAUX_FIABILITE = [
+  {
+    seuilMin: 9,
+    text: "Très fiable",
+    description: "Analyse complète avec toutes les données disponibles.",
+  },
+  {
+    seuilMin: 7,
+    text: "Fiable",
+    description: "Données analysées avec un niveau de confiance élevé.",
+  },
+  {
+    seuilMin: 5,
+    text: "Moyennement fiable",
+    description: "Analyse partielle, certaines données manquantes.",
+  },
+  {
+    seuilMin: 3,
+    text: "Peu fiable",
+    description: "Données insuffisantes pour une analyse complète.",
+  },
+  {
+    seuilMin: 0,
+    text: "Très peu fiable",
+    description: "Données très incomplètes, résultats indicatifs uniquement.",
+  },
+] as const;
 
 /**
  * Fonction helper pour convertir une chaîne Excel en ScoreImpact

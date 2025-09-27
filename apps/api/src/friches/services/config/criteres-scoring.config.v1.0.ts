@@ -14,7 +14,7 @@ import {
 import { ScoreParUsage } from "./algorithme.types";
 
 // Version de l'algorithme
-export const VERSION_ALGO = "1.1";
+export const VERSION_ALGO = "1.0";
 
 /**
  * Enum représentant les niveaux d'impact pour le calcul de mutabilité
@@ -70,7 +70,7 @@ export const POIDS_CRITERES = {
 } as const;
 
 // Matrice de scoring complète avec ScoreImpact
-export const MATRICE_SCORING = {
+export const MATRICE_SCORING_V1_0 = {
   // Type de propriétaire
   typeProprietaire: {
     [TypeProprietaire.PUBLIC]: {

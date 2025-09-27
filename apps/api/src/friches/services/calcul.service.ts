@@ -12,11 +12,11 @@ import {
 import { Parcelle } from "../domain/entities/parcelle.entity";
 import {
   MATRICE_SCORING,
-  NIVEAUX_FIABILITE,
   NOMBRE_CRITERES_UTILISES,
   POIDS_CRITERES,
-  ScoreParUsage,
 } from "./config/criteres-scoring.config";
+import { NIVEAUX_FIABILITE } from "./config/algorithme.helpers";
+import { ScoreParUsage } from "./config/algorithme.types";
 
 // Structure pour les calculs intermédiaires
 interface CalculIntermediaire {
