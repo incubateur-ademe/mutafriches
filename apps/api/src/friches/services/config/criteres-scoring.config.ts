@@ -776,9 +776,19 @@ export const MATRICE_SCORING = {
 
   // Surface bâtie en m²
   surfaceBati: (value: number | undefined): ScoreParUsage => {
-    if (!value || value < 10000)
+    if (!value || value < 5000)
       return {
-        [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
+        [UsageType.RESIDENTIEL]: ScoreImpact.POSITIF,
+        [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
+        [UsageType.CULTURE]: ScoreImpact.NEUTRE,
+        [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
+        [UsageType.INDUSTRIE]: ScoreImpact.TRES_NEGATIF,
+        [UsageType.RENATURATION]: ScoreImpact.POSITIF,
+        [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.POSITIF,
+      };
+    if (value >= 5000 && value <= 10000)
+      return {
+        [UsageType.RESIDENTIEL]: ScoreImpact.POSITIF,
         [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
         [UsageType.CULTURE]: ScoreImpact.NEUTRE,
         [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
@@ -787,7 +797,7 @@ export const MATRICE_SCORING = {
         [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
       };
     return {
-      [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
+      [UsageType.RESIDENTIEL]: ScoreImpact.NEGATIF,
       [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
       [UsageType.CULTURE]: ScoreImpact.NEUTRE,
       [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
