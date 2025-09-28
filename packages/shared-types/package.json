@@ -8,8 +8,8 @@
     "build": "tsc",
     "clean": "rm -rf dist",
     "typecheck": "tsc --noEmit",
-    "excel-to-fixture": "tsx src/test-cases/scripts/excel-to-fixture.ts",
-    "excel-to-fixture:all": "tsx src/test-cases/scripts/excel-to-fixture.ts --all && prettier --write src/test-cases/fixtures/**/*.json"
+    "excel-to-fixture:all": "tsx src/test-cases/scripts/excel-to-fixture.ts --all",
+    "excel-to-fixture:all:format": "tsx src/test-cases/scripts/excel-to-fixture.ts --all && prettier --write src/test-cases/fixtures/**/*.json"
   },
   "devDependencies": {
     "@types/node": "^22.18.1",

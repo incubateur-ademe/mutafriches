@@ -208,13 +208,17 @@ function processExcelFile(filePath: string, outputName: string, description?: st
   // Récupérer le nom du site depuis les données extraites ou utiliser le nom par défaut
   const siteName = (input as any).nomSite || outputName;
 
+  // Extraire la version depuis le nom du fichier
+  const versionMatch = path.basename(filePath).match(/^v([\d.]+)_/);
+  const algorithmVersion = versionMatch ? versionMatch[1] : "1.0";
+
   // Construire le test case avec tous les champs (y compris informatifs)
   const testCase: TestCase = {
     id: outputName.toLowerCase().replace(/\s+/g, "-"),
     name: siteName,
     description: description || `Test case généré depuis ${path.basename(filePath)}`,
     source: path.basename(filePath),
-    algorithmVersion: "1.0",
+    algorithmVersion: algorithmVersion,
     input: input as TestCaseInput, // Garder tous les champs
     expected: {
       usages,
@@ -229,10 +233,13 @@ function processExcelFile(filePath: string, outputName: string, description?: st
 function processAllExcelFiles() {
   // Extraire la version depuis les arguments ou utiliser v1.0 par défaut
   const versionArg = process.argv.find((arg) => arg.startsWith("--version="));
-  const version = versionArg ? versionArg.split("=")[1] : "v1.0";
+  const version = versionArg ? versionArg.split("=")[1] : "1.0";
 
-  const sourceDir = path.join(__dirname, "..", "excel-sources", version);
-  const outputDir = path.join(__dirname, "..", "fixtures", version);
+  // Formater la version avec le préfixe 'v'
+  const versionFolder = `v${version}`;
+
+  const sourceDir = path.join(__dirname, "..", "excel-sources", versionFolder);
+  const outputDir = path.join(__dirname, "..", "fixtures", versionFolder);
 
   // Créer le dossier de sortie si nécessaire
   if (!fs.existsSync(outputDir)) {
@@ -242,6 +249,16 @@ function processAllExcelFiles() {
   if (!fs.existsSync(sourceDir)) {
     console.error(`Le dossier ${sourceDir} n'existe pas`);
     console.log("Créez le dossier et placez-y vos fichiers Excel");
+    console.log("Versions disponibles:");
+    const excelSourcesDir = path.join(__dirname, "..", "excel-sources");
+    if (fs.existsSync(excelSourcesDir)) {
+      const versions = fs
+        .readdirSync(excelSourcesDir)
+        .filter(
+          (f) => f.startsWith("v") && fs.statSync(path.join(excelSourcesDir, f)).isDirectory(),
+        );
+      versions.forEach((v) => console.log(`  - ${v} (utilisez --version=${v.substring(1)})`));
+    }
     process.exit(1);
   }
 
@@ -255,6 +272,9 @@ function processAllExcelFiles() {
     process.exit(1);
   }
 
+  console.log(`Version: ${version}`);
+  console.log(`Dossier source: ${sourceDir}`);
+  console.log(`Dossier destination: ${outputDir}`);
   console.log(`Traitement de ${files.length} fichiers Excel...\n`);
 
   const results: { success: string[]; errors: string[] } = {
@@ -266,8 +286,10 @@ function processAllExcelFiles() {
     const filePath = path.join(sourceDir, file);
 
     // Extraire le nom de sortie depuis le nom du fichier
-    // Format attendu: v1.0_test-01_oyonnax.xlsx -> test-01-oyonnax
-    const match = file.match(/v1\.0_(.+)\.xlsx$/);
+    // Format attendu: v1.1_test-01_oyonnax.xlsx -> test-01-oyonnax
+    const versionPattern = `v${version.replace(/\./g, "\\.")}_`;
+    const regex = new RegExp(`${versionPattern}(.+)\\.xlsx$`);
+    const match = file.match(regex);
     const outputName = match ? match[1].replace(/_/g, "-") : file.replace(".xlsx", "");
 
     try {
@@ -305,36 +327,38 @@ function processAllExcelFiles() {
 function processSingleFile() {
   const args = process.argv.slice(2).filter((arg) => !arg.startsWith("--"));
 
-  // Extraire la version depuis les arguments ou utiliser v1.0 par défaut
+  // Extraire la version depuis les arguments ou utiliser 1.0 par défaut
   const versionArg = process.argv.find((arg) => arg.startsWith("--version="));
-  const version = versionArg ? versionArg.split("=")[1] : "v1.0";
+  const version = versionArg ? versionArg.split("=")[1] : "1.0";
+
+  // Formater la version avec le préfixe 'v'
+  const versionFolder = `v${version}`;
 
   if (args.length < 1) {
     console.error("Usage: pnpm run excel-to-fixture <excel-file> [output-name] [description]");
-    console.error("       pnpm run excel-to-fixture <excel-file> --version=v1.0");
+    console.error("       pnpm run excel-to-fixture <excel-file> --version=1.1");
     console.error(
-      "Example: pnpm run excel-to-fixture ./excel-sources/v1.0/v1.0_test-01_oyonnax.xlsx",
+      "Example: pnpm run excel-to-fixture ./excel-sources/v1.1/v1.1_test-01_oyonnax.xlsx --version=1.1",
     );
     console.error("\nOu pour traiter tous les fichiers:");
     console.error("pnpm run excel-to-fixture:all");
-    console.error("pnpm run excel-to-fixture:all --version=v1.0");
+    console.error("pnpm run excel-to-fixture:all --version=1.1");
     process.exit(1);
   }
 
   const [excelPath, outputName, description] = args;
 
   // Si pas de nom de sortie, l'extraire du nom du fichier
+  const versionPattern = `v${version.replace(/\./g, "\\.")}_`;
+  const regex = new RegExp(`${versionPattern}(.+)\\.xlsx$`);
+  const match = path.basename(excelPath).match(regex);
   const finalOutputName =
-    outputName ||
-    path
-      .basename(excelPath, ".xlsx")
-      .replace(/^v1\.0_/, "")
-      .replace(/_/g, "-");
+    outputName || (match ? match[1].replace(/_/g, "-") : path.basename(excelPath, ".xlsx"));
 
   try {
     const testCase = processExcelFile(excelPath, finalOutputName, description);
 
-    const outputDir = path.join(__dirname, "..", "fixtures", version);
+    const outputDir = path.join(__dirname, "..", "fixtures", versionFolder);
     if (!fs.existsSync(outputDir)) {
       fs.mkdirSync(outputDir, { recursive: true });
     }
@@ -342,7 +366,8 @@ function processSingleFile() {
     const outputPath = path.join(outputDir, `${finalOutputName}.json`);
     fs.writeFileSync(outputPath, JSON.stringify(testCase, null, 2) + "\n");
 
-    console.log(`\n✓ Fixture créée avec succès: ${outputPath}`);
+    console.log(`\nVersion: ${version}`);
+    console.log(`✓ Fixture créée avec succès: ${outputPath}`);
     console.log(`  - ${testCase.expected.usages.length} usages`);
     console.log(
       `  - Critères: ${testCase.expected.metadata.criteresRenseignes}/${testCase.expected.metadata.criteresTotal}`,
