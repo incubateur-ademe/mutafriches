@@ -246,7 +246,7 @@ export const MATRICE_SCORING = {
       [UsageType.TERTIAIRE]: ScoreImpact.NEGATIF,
       [UsageType.INDUSTRIE]: ScoreImpact.TRES_POSITIF,
       [UsageType.RENATURATION]: ScoreImpact.POSITIF,
-      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.TRES_POSITIF,
+      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.POSITIF,
     },
   },
 
