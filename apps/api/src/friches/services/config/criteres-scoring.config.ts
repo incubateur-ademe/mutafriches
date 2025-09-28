@@ -42,31 +42,31 @@ export enum ScoreImpact {
 export const POIDS_CRITERES = {
   // Critères pris en compte dans la version web (vu le 19/09)
   // 14 Critères déduits module enrichissement
-  surfaceSite: 2, // OK le 19/09 avec Anna
-  surfaceBati: 2, // OK le 19/09 avec Anna, ajustement en v2 à prévoir
-  siteEnCentreVille: 1, // OK le 19/09 avec Anna // Poids corrigé
-  distanceAutoroute: 0.5, // OK le 19/09 avec Anna
-  distanceTransportCommun: 1, // OK le 19/09 avec Anna // Poids corrigé
-  proximiteCommercesServices: 1, // OK le 19/09 avec Anna
-  distanceRaccordementElectrique: 1, // OK le 19/09 avec Anna
-  tauxLogementsVacants: 1, // OK le 19/09 avec Anna
-  presenceRisquesNaturels: 1, // OK le 19/09 avec Anna
-  presenceRisquesTechnologiques: 1, // OK le 19/09 avec Anna
-  zonageEnvironnemental: 1, // OK le 19/09 avec Anna
-  zonageReglementaire: 1, // Vu en v1 mais TODO à revoir en V1.1 au niveau des options
-  zonagePatrimonial: 1, // OK le 19/09 avec Anna
-  trameVerteEtBleue: 1, // OK le 19/09 avec Anna
+  surfaceSite: 2,
+  surfaceBati: 2,
+  siteEnCentreVille: 1,
+  distanceAutoroute: 0.5,
+  distanceTransportCommun: 1,
+  proximiteCommercesServices: 1,
+  distanceRaccordementElectrique: 1,
+  tauxLogementsVacants: 1,
+  presenceRisquesNaturels: 2,
+  presenceRisquesTechnologiques: 1,
+  zonageEnvironnemental: 1,
+  zonageReglementaire: 1,
+  zonagePatrimonial: 1,
+  trameVerteEtBleue: 1,
 
   // ------------------------------------------------
   // 7 critères déduis des données complémentaires
   // ------------------------------------------------
-  typeProprietaire: 1, // OK le 19/09 avec Anna
-  terrainViabilise: 1, // OK le 19/09 avec Anna
-  etatBatiInfrastructure: 2, // OK le 19/09 avec Anna mais en attente de l'excel à jour coté Anna
-  presencePollution: 2, // OK le 19/09 avec Anna
-  valeurArchitecturaleHistorique: 1, // Vu en v1 mais TODO à revoir en V1.1 au niveau des options
-  qualitePaysage: 1, // Vu en v1 mais TODO à revoir en V1.1 au niveau des options
-  qualiteVoieDesserte: 0.5, // OK le 19/09 avec Anna = Accessibilité par les voies de circulation
+  typeProprietaire: 1,
+  terrainViabilise: 1,
+  etatBatiInfrastructure: 2,
+  presencePollution: 2,
+  valeurArchitecturaleHistorique: 1,
+  qualitePaysage: 1,
+  qualiteVoieDesserte: 0.5,
 } as const;
 
 // Matrice de scoring complète avec ScoreImpact
@@ -336,7 +336,7 @@ export const MATRICE_SCORING = {
       [UsageType.RESIDENTIEL]: ScoreImpact.NEGATIF,
       [UsageType.EQUIPEMENTS]: ScoreImpact.NEGATIF,
       [UsageType.CULTURE]: ScoreImpact.NEUTRE,
-      [UsageType.TERTIAIRE]: ScoreImpact.NEGATIF  ,
+      [UsageType.TERTIAIRE]: ScoreImpact.NEGATIF,
       [UsageType.INDUSTRIE]: ScoreImpact.NEUTRE,
       [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
       [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
