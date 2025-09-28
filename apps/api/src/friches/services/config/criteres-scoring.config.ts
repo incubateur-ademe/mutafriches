@@ -911,8 +911,8 @@ export const MATRICE_SCORING = {
   distanceTransportCommun: (value: number): ScoreParUsage => {
     return value < 500
       ? {
-          [UsageType.RESIDENTIEL]: ScoreImpact.TRES_POSITIF, // Modifié le 18/09/2025 après revue avec Anna
-          [UsageType.EQUIPEMENTS]: ScoreImpact.TRES_POSITIF, // Modifié le 18/09/2025 après revue avec Anna
+          [UsageType.RESIDENTIEL]: ScoreImpact.POSITIF,
+          [UsageType.EQUIPEMENTS]: ScoreImpact.POSITIF,
           [UsageType.CULTURE]: ScoreImpact.POSITIF, // Modifié le 18/09/2025 après revue avec Anna
           [UsageType.TERTIAIRE]: ScoreImpact.POSITIF,
           [UsageType.INDUSTRIE]: ScoreImpact.POSITIF,
