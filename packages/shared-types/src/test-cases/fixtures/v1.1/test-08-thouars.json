@@ -1,0 +1,77 @@
+{
+  "id": "test-08-thouars",
+  "name": "Friche de la Folie",
+  "description": "Test case généré depuis v1.1_test-08_thouars.xlsx",
+  "source": "v1.1_test-08_thouars.xlsx",
+  "algorithmVersion": "1.1",
+  "input": {
+    "nomSite": "Friche de la Folie",
+    "nomProprietaire": "Ville de Thouars",
+    "commune": "Thouars",
+    "typeProprietaire": "public",
+    "surfaceSite": 53700,
+    "surfaceBati": 0,
+    "nombreBatiments": 0,
+    "etatBatiInfrastructure": "",
+    "presencePollution": "oui-composes-volatils",
+    "siteEnCentreVille": false,
+    "tauxLogementsVacants": 11.3,
+    "qualiteVoieDesserte": "accessible",
+    "distanceAutoroute": "plus-de-5km",
+    "distanceTransportCommun": "moins-de-500m",
+    "proximiteCommercesServices": true,
+    "distanceRaccordementElectrique": "entre-1-et-5km",
+    "zonageReglementaire": "ne-sait-pas",
+    "presenceRisquesNaturels": "absent",
+    "presenceRisquesTechnologiques": false,
+    "zonagePatrimonial": "non-concerne",
+    "qualitePaysage": "sans-interet",
+    "valeurArchitecturaleHistorique": "interet-remarquable",
+    "zonageEnvironnemental": "hors-zone",
+    "trameVerteEtBleu": "corridor-a-restaurer"
+  },
+  "expected": {
+    "usages": [
+      {
+        "usage": "culture",
+        "indiceMutabilite": 50,
+        "rang": 1
+      },
+      {
+        "usage": "residentiel",
+        "indiceMutabilite": 51,
+        "rang": 2
+      },
+      {
+        "usage": "tertiaire",
+        "indiceMutabilite": 51,
+        "rang": 3
+      },
+      {
+        "usage": "equipements",
+        "indiceMutabilite": 53,
+        "rang": 4
+      },
+      {
+        "usage": "industrie",
+        "indiceMutabilite": 57,
+        "rang": 5
+      },
+      {
+        "usage": "renaturation",
+        "indiceMutabilite": 63,
+        "rang": 6
+      },
+      {
+        "usage": "photovoltaique",
+        "indiceMutabilite": 64,
+        "rang": 7
+      }
+    ],
+    "metadata": {
+      "criteresRenseignes": 20,
+      "criteresTotal": 21,
+      "criteresManquants": ["terrainViabilise"]
+    }
+  }
+}

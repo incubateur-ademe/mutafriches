@@ -1,0 +1,78 @@
+{
+  "id": "test-03-oyonnax",
+  "name": "Foyer Sonacotra de Geilles ",
+  "description": "Test case généré depuis v1.1_test-03_oyonnax.xlsx",
+  "source": "v1.1_test-03_oyonnax.xlsx",
+  "algorithmVersion": "1.1",
+  "input": {
+    "nomSite": "Foyer Sonacotra de Geilles ",
+    "identifiantsParcellaires": "000 : E839, E829",
+    "nomProprietaire": "Commune d'Oyonnax et SEMCODA",
+    "commune": "Oyonnax",
+    "typeProprietaire": "mixte-public-et-prive",
+    "surfaceSite": 20000,
+    "surfaceBati": 2000,
+    "nombreBatiments": 1,
+    "etatBatiInfrastructure": "degradation-tres-importante",
+    "presencePollution": "oui-autres-composes",
+    "siteEnCentreVille": false,
+    "tauxLogementsVacants": 12.4,
+    "qualiteVoieDesserte": "accessible",
+    "distanceAutoroute": "entre-2-et-5km",
+    "distanceTransportCommun": "plus-de-500m",
+    "proximiteCommercesServices": false,
+    "distanceRaccordementElectrique": "entre-1-et-5km",
+    "zonageReglementaire": "zone-urbaine-u",
+    "presenceRisquesNaturels": "faible",
+    "presenceRisquesTechnologiques": false,
+    "zonagePatrimonial": "non-concerne",
+    "qualitePaysage": "interet-remarquable",
+    "valeurArchitecturaleHistorique": "ordinaire",
+    "zonageEnvironnemental": "znieff-type-1-2",
+    "trameVerteEtBleu": "ne-sait-pas"
+  },
+  "expected": {
+    "usages": [
+      {
+        "usage": "tertiaire",
+        "indiceMutabilite": 47,
+        "rang": 1
+      },
+      {
+        "usage": "residentiel",
+        "indiceMutabilite": 49,
+        "rang": 2
+      },
+      {
+        "usage": "industrie",
+        "indiceMutabilite": 51,
+        "rang": 3
+      },
+      {
+        "usage": "equipements",
+        "indiceMutabilite": 51,
+        "rang": 4
+      },
+      {
+        "usage": "culture",
+        "indiceMutabilite": 52,
+        "rang": 5
+      },
+      {
+        "usage": "photovoltaique",
+        "indiceMutabilite": 62,
+        "rang": 6
+      },
+      {
+        "usage": "renaturation",
+        "indiceMutabilite": 70,
+        "rang": 7
+      }
+    ],
+    "metadata": {
+      "criteresRenseignes": 20,
+      "criteresTotal": 21,
+      "criteresManquants": ["terrainViabilise"]
+    }
+  }
+}

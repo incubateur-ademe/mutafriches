@@ -1,0 +1,77 @@
+{
+  "id": "test-07-st-julien",
+  "name": "ACIER POLI",
+  "description": "Test case généré depuis v1.1_test-07_st-julien.xlsx",
+  "source": "v1.1_test-07_st-julien.xlsx",
+  "algorithmVersion": "1.1",
+  "input": {
+    "nomSite": "ACIER POLI",
+    "identifiantsParcellaires": "583 (section AE)",
+    "commune": "Saint-Julien-de-Sault",
+    "typeProprietaire": "public",
+    "surfaceSite": 9000,
+    "surfaceBati": 2800,
+    "nombreBatiments": 9,
+    "etatBatiInfrastructure": "degradation-tres-importante",
+    "presencePollution": "ne-sait-pas",
+    "siteEnCentreVille": true,
+    "tauxLogementsVacants": 16.3,
+    "qualiteVoieDesserte": "degradee",
+    "distanceAutoroute": "plus-de-5km",
+    "distanceTransportCommun": "plus-de-500m",
+    "proximiteCommercesServices": true,
+    "distanceRaccordementElectrique": "entre-1-et-5km",
+    "zonageReglementaire": "zone-urbaine-u",
+    "presenceRisquesNaturels": "faible",
+    "presenceRisquesTechnologiques": false,
+    "zonagePatrimonial": "non-concerne",
+    "qualitePaysage": "interet-remarquable",
+    "valeurArchitecturaleHistorique": "ordinaire",
+    "zonageEnvironnemental": "znieff-type-1-2",
+    "trameVerteEtBleu": "hors-trame"
+  },
+  "expected": {
+    "usages": [
+      {
+        "usage": "industrie",
+        "indiceMutabilite": 33,
+        "rang": 1
+      },
+      {
+        "usage": "photovoltaique",
+        "indiceMutabilite": 48,
+        "rang": 2
+      },
+      {
+        "usage": "culture",
+        "indiceMutabilite": 56,
+        "rang": 3
+      },
+      {
+        "usage": "tertiaire",
+        "indiceMutabilite": 60,
+        "rang": 4
+      },
+      {
+        "usage": "equipements",
+        "indiceMutabilite": 71,
+        "rang": 5
+      },
+      {
+        "usage": "residentiel",
+        "indiceMutabilite": 71,
+        "rang": 6
+      },
+      {
+        "usage": "renaturation",
+        "indiceMutabilite": 72,
+        "rang": 7
+      }
+    ],
+    "metadata": {
+      "criteresRenseignes": 20,
+      "criteresTotal": 21,
+      "criteresManquants": ["terrainViabilise"]
+    }
+  }
+}

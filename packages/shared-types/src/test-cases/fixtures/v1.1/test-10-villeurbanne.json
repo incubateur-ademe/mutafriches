@@ -1,0 +1,78 @@
+{
+  "id": "test-10-villeurbanne",
+  "name": "Ancien site industriel rue du docteur Rollet",
+  "description": "Test case généré depuis v1.1_test-10_villeurbanne.xlsx",
+  "source": "v1.1_test-10_villeurbanne.xlsx",
+  "algorithmVersion": "1.1",
+  "input": {
+    "nomSite": "Ancien site industriel rue du docteur Rollet",
+    "identifiantsParcellaires": "Secteur BO : 257, 258 et 277",
+    "nomProprietaire": "Société Bouygues Immobilier",
+    "commune": "Villeurbanne",
+    "typeProprietaire": "prive",
+    "surfaceSite": 5800,
+    "surfaceBati": 0,
+    "nombreBatiments": 0,
+    "etatBatiInfrastructure": "degradation-tres-importante",
+    "presencePollution": "oui-composes-volatils",
+    "siteEnCentreVille": true,
+    "tauxLogementsVacants": 8.5,
+    "qualiteVoieDesserte": "accessible",
+    "distanceAutoroute": "entre-1-et-2km",
+    "distanceTransportCommun": "moins-de-500m",
+    "proximiteCommercesServices": true,
+    "distanceRaccordementElectrique": "moins-de-1km",
+    "zonageReglementaire": "zone-urbaine-u",
+    "presenceRisquesNaturels": "faible",
+    "presenceRisquesTechnologiques": true,
+    "zonagePatrimonial": "non-concerne",
+    "qualitePaysage": "ordinaire",
+    "valeurArchitecturaleHistorique": "ordinaire",
+    "zonageEnvironnemental": "proximite-zone",
+    "trameVerteEtBleu": "hors-trame"
+  },
+  "expected": {
+    "usages": [
+      {
+        "usage": "industrie",
+        "indiceMutabilite": 43,
+        "rang": 1
+      },
+      {
+        "usage": "culture",
+        "indiceMutabilite": 47,
+        "rang": 2
+      },
+      {
+        "usage": "photovoltaique",
+        "indiceMutabilite": 51,
+        "rang": 3
+      },
+      {
+        "usage": "tertiaire",
+        "indiceMutabilite": 56,
+        "rang": 4
+      },
+      {
+        "usage": "equipements",
+        "indiceMutabilite": 58,
+        "rang": 5
+      },
+      {
+        "usage": "residentiel",
+        "indiceMutabilite": 63,
+        "rang": 6
+      },
+      {
+        "usage": "renaturation",
+        "indiceMutabilite": 66,
+        "rang": 7
+      }
+    ],
+    "metadata": {
+      "criteresRenseignes": 20,
+      "criteresTotal": 21,
+      "criteresManquants": ["terrainViabilise"]
+    }
+  }
+}

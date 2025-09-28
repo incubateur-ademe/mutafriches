@@ -1,0 +1,78 @@
+{
+  "id": "test-09-trelaze",
+  "name": "Ancienne manufacture Les Allumettes",
+  "description": "Test case généré depuis v1.1_test-09_trelaze.xlsx",
+  "source": "v1.1_test-09_trelaze.xlsx",
+  "algorithmVersion": "1.1",
+  "input": {
+    "nomSite": "Ancienne manufacture Les Allumettes",
+    "identifiantsParcellaires": "11 parcelles",
+    "nomProprietaire": "Podeliha (bailleur social)",
+    "commune": "Trélazé",
+    "typeProprietaire": "prive",
+    "surfaceSite": 42780,
+    "surfaceBati": 6600,
+    "nombreBatiments": 8,
+    "etatBatiInfrastructure": "degradation-heterogene",
+    "presencePollution": "ne-sait-pas",
+    "siteEnCentreVille": true,
+    "tauxLogementsVacants": 4.9,
+    "qualiteVoieDesserte": "accessible",
+    "distanceAutoroute": "entre-1-et-2km",
+    "distanceTransportCommun": "moins-de-500m",
+    "proximiteCommercesServices": true,
+    "distanceRaccordementElectrique": "moins-de-1km",
+    "zonageReglementaire": "zone-urbaine-u",
+    "presenceRisquesNaturels": "faible",
+    "presenceRisquesTechnologiques": false,
+    "zonagePatrimonial": "non-concerne",
+    "qualitePaysage": "ordinaire",
+    "valeurArchitecturaleHistorique": "interet-remarquable",
+    "zonageEnvironnemental": "hors-zone",
+    "trameVerteEtBleu": "hors-trame"
+  },
+  "expected": {
+    "usages": [
+      {
+        "usage": "photovoltaique",
+        "indiceMutabilite": 41,
+        "rang": 1
+      },
+      {
+        "usage": "renaturation",
+        "indiceMutabilite": 42,
+        "rang": 2
+      },
+      {
+        "usage": "industrie",
+        "indiceMutabilite": 60,
+        "rang": 3
+      },
+      {
+        "usage": "culture",
+        "indiceMutabilite": 66,
+        "rang": 4
+      },
+      {
+        "usage": "tertiaire",
+        "indiceMutabilite": 67,
+        "rang": 5
+      },
+      {
+        "usage": "equipements",
+        "indiceMutabilite": 69,
+        "rang": 6
+      },
+      {
+        "usage": "residentiel",
+        "indiceMutabilite": 78,
+        "rang": 7
+      }
+    ],
+    "metadata": {
+      "criteresRenseignes": 20,
+      "criteresTotal": 21,
+      "criteresManquants": ["terrainViabilise"]
+    }
+  }
+}

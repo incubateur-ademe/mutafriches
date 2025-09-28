@@ -1,0 +1,78 @@
+{
+  "id": "test-06-segre",
+  "name": "Ancien site minier - Central 7",
+  "description": "Test case généré depuis v1.1_test-06_segre.xlsx",
+  "source": "v1.1_test-06_segre.xlsx",
+  "algorithmVersion": "1.1",
+  "input": {
+    "nomSite": "Ancien site minier - Central 7",
+    "identifiantsParcellaires": "2 parcelles",
+    "nomProprietaire": "EPCI",
+    "commune": "Segré-en-Anjou Bleu",
+    "typeProprietaire": "public",
+    "surfaceSite": 10010,
+    "surfaceBati": 6600,
+    "nombreBatiments": 2,
+    "etatBatiInfrastructure": "degradation-moyenne",
+    "presencePollution": "non",
+    "siteEnCentreVille": false,
+    "tauxLogementsVacants": 8.4,
+    "qualiteVoieDesserte": "accessible",
+    "distanceAutoroute": "plus-de-5km",
+    "distanceTransportCommun": "plus-de-500m",
+    "proximiteCommercesServices": false,
+    "distanceRaccordementElectrique": "plus-de-5km",
+    "zonageReglementaire": "secteur-de-carte-communale-ouvert-a-la-construction",
+    "presenceRisquesNaturels": "faible",
+    "presenceRisquesTechnologiques": true,
+    "zonagePatrimonial": "non-concerne",
+    "qualitePaysage": "ordinaire",
+    "valeurArchitecturaleHistorique": "interet-remarquable",
+    "zonageEnvironnemental": "proximite-zone",
+    "trameVerteEtBleu": "corridor-a-preserver"
+  },
+  "expected": {
+    "usages": [
+      {
+        "usage": "photovoltaique",
+        "indiceMutabilite": 45,
+        "rang": 1
+      },
+      {
+        "usage": "residentiel",
+        "indiceMutabilite": 57,
+        "rang": 2
+      },
+      {
+        "usage": "equipements",
+        "indiceMutabilite": 57,
+        "rang": 3
+      },
+      {
+        "usage": "tertiaire",
+        "indiceMutabilite": 57,
+        "rang": 4
+      },
+      {
+        "usage": "renaturation",
+        "indiceMutabilite": 59,
+        "rang": 5
+      },
+      {
+        "usage": "culture",
+        "indiceMutabilite": 62,
+        "rang": 6
+      },
+      {
+        "usage": "industrie",
+        "indiceMutabilite": 68,
+        "rang": 7
+      }
+    ],
+    "metadata": {
+      "criteresRenseignes": 20,
+      "criteresTotal": 21,
+      "criteresManquants": ["terrainViabilise"]
+    }
+  }
+}
