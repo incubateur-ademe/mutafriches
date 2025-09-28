@@ -27,6 +27,7 @@ export const ETAT_BATI_MAPPING: Record<string, EtatBatiInfrastructure> = {
 
   "Dégradation hétérogène": EtatBatiInfrastructure.DEGRADATION_HETEROGENE,
   "Absence de bâtiments": EtatBatiInfrastructure.DEGRADATION_INEXISTANTE,
+  "pas de bâti": EtatBatiInfrastructure.PAS_DE_BATI,
   "Ne sait pas": EtatBatiInfrastructure.NE_SAIT_PAS,
 };
 
