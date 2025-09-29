@@ -53,7 +53,7 @@ export const POIDS_CRITERES = {
   presenceRisquesNaturels: 2,
   presenceRisquesTechnologiques: 1,
   zonageEnvironnemental: 1,
-  zonageReglementaire: 1,
+  zonageReglementaire: 2,
   zonagePatrimonial: 1,
   trameVerteEtBleue: 1,
 
@@ -348,60 +348,44 @@ export const MATRICE_SCORING = {
     [ZonageReglementaire.ZONE_URBAINE_U]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.TRES_POSITIF,
       [UsageType.EQUIPEMENTS]: ScoreImpact.TRES_POSITIF,
-      [UsageType.CULTURE]: ScoreImpact.NEUTRE,
+      [UsageType.CULTURE]: ScoreImpact.POSITIF,
       [UsageType.TERTIAIRE]: ScoreImpact.POSITIF,
-      [UsageType.INDUSTRIE]: ScoreImpact.TRES_NEGATIF,
+      [UsageType.INDUSTRIE]: ScoreImpact.NEUTRE,
       [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
-      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
+      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEGATIF,
     },
+
     [ZonageReglementaire.ZONE_A_URBANISER_AU]: {
-      [UsageType.RESIDENTIEL]: ScoreImpact.TRES_POSITIF,
-      [UsageType.EQUIPEMENTS]: ScoreImpact.TRES_POSITIF,
+      [UsageType.RESIDENTIEL]: ScoreImpact.POSITIF,
+      [UsageType.EQUIPEMENTS]: ScoreImpact.POSITIF,
       [UsageType.CULTURE]: ScoreImpact.NEUTRE,
       [UsageType.TERTIAIRE]: ScoreImpact.POSITIF,
-      [UsageType.INDUSTRIE]: ScoreImpact.TRES_NEGATIF,
-      [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
-      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
+      [UsageType.INDUSTRIE]: ScoreImpact.NEUTRE,
+      [UsageType.RENATURATION]: ScoreImpact.NEGATIF,
+      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEGATIF,
     },
-    [ZonageReglementaire.ZONE_ACTIVITES]: {
+
+    [ZonageReglementaire.ZONE_VOCATION_ACTIVITES]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.TRES_NEGATIF,
       [UsageType.EQUIPEMENTS]: ScoreImpact.NEGATIF,
       [UsageType.CULTURE]: ScoreImpact.NEGATIF,
       [UsageType.TERTIAIRE]: ScoreImpact.NEGATIF,
       [UsageType.INDUSTRIE]: ScoreImpact.TRES_POSITIF,
-      [UsageType.RENATURATION]: ScoreImpact.TRES_NEGATIF,
+      [UsageType.RENATURATION]: ScoreImpact.NEGATIF,
       [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
     },
-    [ZonageReglementaire.ZONE_NATURELLE]: {
-      [UsageType.RESIDENTIEL]: ScoreImpact.TRES_NEGATIF,
-      [UsageType.EQUIPEMENTS]: ScoreImpact.TRES_NEGATIF,
-      [UsageType.CULTURE]: ScoreImpact.NEUTRE,
-      [UsageType.TERTIAIRE]: ScoreImpact.TRES_NEGATIF,
-      [UsageType.INDUSTRIE]: ScoreImpact.TRES_NEGATIF,
-      [UsageType.RENATURATION]: ScoreImpact.TRES_POSITIF,
+
+    [ZonageReglementaire.SECTEUR_OUVERT_A_LA_CONSTRUCTION]: {
+      [UsageType.RESIDENTIEL]: ScoreImpact.POSITIF,
+      [UsageType.EQUIPEMENTS]: ScoreImpact.POSITIF,
+      [UsageType.CULTURE]: ScoreImpact.POSITIF,
+      [UsageType.TERTIAIRE]: ScoreImpact.POSITIF,
+      [UsageType.INDUSTRIE]: ScoreImpact.POSITIF,
+      [UsageType.RENATURATION]: ScoreImpact.NEGATIF,
       [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEGATIF,
     },
-    [ZonageReglementaire.ZONE_AGRICOLE]: {
-      [UsageType.RESIDENTIEL]: ScoreImpact.TRES_NEGATIF,
-      [UsageType.EQUIPEMENTS]: ScoreImpact.TRES_NEGATIF,
-      [UsageType.CULTURE]: ScoreImpact.NEUTRE,
-      [UsageType.TERTIAIRE]: ScoreImpact.TRES_NEGATIF,
-      [UsageType.INDUSTRIE]: ScoreImpact.TRES_NEGATIF,
-      [UsageType.RENATURATION]: ScoreImpact.TRES_POSITIF,
-      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
-    },
-    // TODO à revoir completement en V1.1
-    [ZonageReglementaire.ZONE_ACCELERATION_ENR]: {
-      [UsageType.RESIDENTIEL]: ScoreImpact.TRES_NEGATIF,
-      [UsageType.EQUIPEMENTS]: ScoreImpact.TRES_NEGATIF,
-      [UsageType.CULTURE]: ScoreImpact.TRES_NEGATIF,
-      [UsageType.TERTIAIRE]: ScoreImpact.TRES_NEGATIF,
-      [UsageType.INDUSTRIE]: ScoreImpact.TRES_NEGATIF,
-      [UsageType.RENATURATION]: ScoreImpact.TRES_NEGATIF,
-      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.TRES_POSITIF,
-    },
-    // TODO à revoir completement en V1.1
-    [ZonageReglementaire.ZONE_MIXTE_MULTIPLE]: {
+
+    [ZonageReglementaire.SECTEUR_REGLEMENT_URBANISME]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
       [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
       [UsageType.CULTURE]: ScoreImpact.NEUTRE,
@@ -410,25 +394,45 @@ export const MATRICE_SCORING = {
       [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
       [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
     },
-    // TODO à revoir completement en V1.1
-    [ZonageReglementaire.CONSTRUCTIBLE]: {
-      [UsageType.RESIDENTIEL]: ScoreImpact.POSITIF,
-      [UsageType.EQUIPEMENTS]: ScoreImpact.POSITIF,
-      [UsageType.CULTURE]: ScoreImpact.POSITIF,
-      [UsageType.TERTIAIRE]: ScoreImpact.POSITIF,
-      [UsageType.INDUSTRIE]: ScoreImpact.POSITIF,
-      [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
-      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
-    },
-    // TODO à revoir completement en V1.1
-    [ZonageReglementaire.NON_CONSTRUCTIBLE]: {
+
+    [ZonageReglementaire.SECTEUR_NON_OUVERT_A_LA_CONSTRUCTION]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.TRES_NEGATIF,
       [UsageType.EQUIPEMENTS]: ScoreImpact.NEGATIF,
-      [UsageType.CULTURE]: ScoreImpact.NEUTRE,
-      [UsageType.TERTIAIRE]: ScoreImpact.NEGATIF,
-      [UsageType.INDUSTRIE]: ScoreImpact.NEGATIF,
+      [UsageType.CULTURE]: ScoreImpact.NEGATIF,
+      [UsageType.TERTIAIRE]: ScoreImpact.TRES_NEGATIF,
+      [UsageType.INDUSTRIE]: ScoreImpact.TRES_NEGATIF,
       [UsageType.RENATURATION]: ScoreImpact.TRES_POSITIF,
-      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.TRES_POSITIF,
+      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.POSITIF,
+    },
+
+    [ZonageReglementaire.ZONE_AGRICOLE_A]: {
+      [UsageType.RESIDENTIEL]: ScoreImpact.TRES_NEGATIF,
+      [UsageType.EQUIPEMENTS]: ScoreImpact.NEGATIF,
+      [UsageType.CULTURE]: ScoreImpact.NEGATIF,
+      [UsageType.TERTIAIRE]: ScoreImpact.TRES_NEGATIF,
+      [UsageType.INDUSTRIE]: ScoreImpact.TRES_NEGATIF,
+      [UsageType.RENATURATION]: ScoreImpact.TRES_POSITIF,
+      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
+    },
+
+    [ZonageReglementaire.ZONE_NATURELLE_N]: {
+      [UsageType.RESIDENTIEL]: ScoreImpact.TRES_NEGATIF,
+      [UsageType.EQUIPEMENTS]: ScoreImpact.NEGATIF,
+      [UsageType.CULTURE]: ScoreImpact.NEGATIF,
+      [UsageType.TERTIAIRE]: ScoreImpact.TRES_NEGATIF,
+      [UsageType.INDUSTRIE]: ScoreImpact.TRES_NEGATIF,
+      [UsageType.RENATURATION]: ScoreImpact.TRES_POSITIF,
+      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
+    },
+
+    [ZonageReglementaire.NE_SAIT_PAS]: {
+      [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
+      [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
+      [UsageType.CULTURE]: ScoreImpact.NEUTRE,
+      [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
+      [UsageType.INDUSTRIE]: ScoreImpact.NEUTRE,
+      [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
+      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
     },
   },
 

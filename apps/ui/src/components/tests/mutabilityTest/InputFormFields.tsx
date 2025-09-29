@@ -369,18 +369,25 @@ export function InputFormFields({ formData, onFormDataChange, isEditable }: Inpu
                 disabled={!isEditable}
               >
                 <option value="">-- Sélectionner --</option>
-                <option value={ZonageReglementaire.ZONE_URBAINE_U}>Zone urbaine (U)</option>
-                <option value={ZonageReglementaire.ZONE_NATURELLE}>Zone naturelle (N)</option>
-                <option value={ZonageReglementaire.ZONE_AGRICOLE}>Zone agricole (A)</option>
+                <option value={ZonageReglementaire.ZONE_URBAINE_U}>Zone urbaine (U)</option>{" "}
                 <option value={ZonageReglementaire.ZONE_A_URBANISER_AU}>
                   Zone à urbaniser (AU)
                 </option>
-                <option value={ZonageReglementaire.ZONE_ACTIVITES}>Zone d'activités</option>
-                <option value={ZonageReglementaire.ZONE_ACCELERATION_ENR}>
-                  Zone d'accélération ENR
+                <option value={ZonageReglementaire.ZONE_VOCATION_ACTIVITES}>
+                  Zone à vocation d'activités (UA)
                 </option>
-                <option value={ZonageReglementaire.CONSTRUCTIBLE}>Constructible</option>
-                <option value={ZonageReglementaire.NON_CONSTRUCTIBLE}>Non constructible</option>
+                <option value={ZonageReglementaire.SECTEUR_OUVERT_A_LA_CONSTRUCTION}>
+                  Secteur de carte ouverte à la construction
+                </option>
+                <option value={ZonageReglementaire.SECTEUR_REGLEMENT_URBANISME}>
+                  Secteur de règlement d'urbanisme
+                </option>
+                <option value={ZonageReglementaire.SECTEUR_NON_OUVERT_A_LA_CONSTRUCTION}>
+                  Secteur non ouvert à la construction
+                </option>
+                <option value={ZonageReglementaire.ZONE_AGRICOLE_A}>Zone agricole (A)</option>
+                <option value={ZonageReglementaire.ZONE_NATURELLE_N}>Zone naturelle (N)</option>
+                <option value={ZonageReglementaire.NE_SAIT_PAS}>Ne sait pas</option>
               </select>
             </div>
           </div>

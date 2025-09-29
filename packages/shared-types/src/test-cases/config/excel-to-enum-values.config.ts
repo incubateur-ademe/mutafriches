@@ -103,35 +103,18 @@ export const ZONAGE_ENVIRONNEMENTAL_MAPPING: Record<string, ZonageEnvironnementa
 
 // Zonage réglementaire - Valeurs EXACTES de l'Excel
 export const ZONAGE_REGLEMENTAIRE_MAPPING: Record<string, ZonageReglementaire> = {
-  "Zone urbaine": ZonageReglementaire.ZONE_URBAINE_U,
-  "Zone urbaine – U": ZonageReglementaire.ZONE_URBAINE_U, // Variante avec tiret
-
-  "Zone urbaine hors zone d'accélération ENR": ZonageReglementaire.ZONE_URBAINE_U,
-  "Zone urbaine en zone d'accélération ENR": ZonageReglementaire.ZONE_URBAINE_U,
-
-  "Zone à urbaniser": ZonageReglementaire.ZONE_A_URBANISER_AU,
-  "Zone à urbaniser hors zone d'accélération ENR": ZonageReglementaire.ZONE_A_URBANISER_AU,
-  "Zone à urbaniser en zone d'accélération ENR": ZonageReglementaire.ZONE_A_URBANISER_AU,
-
-  "Zone d'activités": ZonageReglementaire.ZONE_ACTIVITES,
-  "Zone d'activités hors zone d'accélération ENR": ZonageReglementaire.ZONE_ACTIVITES,
-  "Zone d'activités en zone d'accélération ENR": ZonageReglementaire.ZONE_ACTIVITES,
-
-  "Zone naturelle": ZonageReglementaire.ZONE_NATURELLE,
-  "Zone naturelle hors zone d'accélération ENR": ZonageReglementaire.ZONE_NATURELLE,
-  "Zone naturelle en zone d'accélération ENR": ZonageReglementaire.ZONE_NATURELLE,
-
-  "Zone activités": ZonageReglementaire.ZONE_ACTIVITES,
-  "Zone agricole": ZonageReglementaire.ZONE_AGRICOLE,
-  "Zone agricole hors zone d'accélération ENR": ZonageReglementaire.ZONE_AGRICOLE,
-  "Zone agricole en zone d'accélération ENR": ZonageReglementaire.ZONE_AGRICOLE,
-  "Zone d'accélération ENR": ZonageReglementaire.ZONE_ACCELERATION_ENR,
-  "Zone mixte ou multiple": ZonageReglementaire.ZONE_MIXTE_MULTIPLE,
-
-  Constructible: ZonageReglementaire.CONSTRUCTIBLE,
-  "Constructible – ou en partie": ZonageReglementaire.CONSTRUCTIBLE, // Variante avec tiret
-  "Non constructible": ZonageReglementaire.NON_CONSTRUCTIBLE,
-  "Non-constructible": ZonageReglementaire.NON_CONSTRUCTIBLE, // Variante avec tiret
+  "Zone urbaine – U": ZonageReglementaire.ZONE_URBAINE_U,
+  "Zone à urbaniser – AU": ZonageReglementaire.ZONE_A_URBANISER_AU,
+  "Zone à vocation activités": ZonageReglementaire.ZONE_VOCATION_ACTIVITES,
+  "Secteur de carte communale ouvert à la construction":
+    ZonageReglementaire.SECTEUR_OUVERT_A_LA_CONSTRUCTION,
+  "Secteur soumis au règlement national de l’urbanisme":
+    ZonageReglementaire.SECTEUR_REGLEMENT_URBANISME,
+  "Secteur de carte communale non ouvert à la construction":
+    ZonageReglementaire.SECTEUR_NON_OUVERT_A_LA_CONSTRUCTION,
+  "zone agricole “A”": ZonageReglementaire.ZONE_AGRICOLE_A,
+  "zone naturelle et forestière “N”": ZonageReglementaire.ZONE_NATURELLE_N,
+  "Ne sait pas": ZonageReglementaire.NE_SAIT_PAS,
 };
 
 // Zonage patrimonial - Valeurs exactes
