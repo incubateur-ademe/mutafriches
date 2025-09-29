@@ -54,7 +54,7 @@ export function buildCalculerMutabiliteFromFormData(formData: any): CalculerMuta
   // Construction des données complémentaires
   const donneesComplementaires: DonneesComplementairesInputDto = {
     typeProprietaire: formData.typeProprietaire || "NE_SAIT_PAS",
-    terrainViabilise: formData.terrainViabilise || "NE_SAIT_PAS",
+    raccordementEau: formData.raccordementEau || "NE_SAIT_PAS",
     etatBatiInfrastructure: formData.etatBatiInfrastructure || "NE_SAIT_PAS",
     presencePollution: formData.presencePollution || "NE_SAIT_PAS",
     valeurArchitecturaleHistorique: formData.valeurArchitecturaleHistorique || "NE_SAIT_PAS",
@@ -85,7 +85,7 @@ function getFieldsMissing(formData: any): string[] {
     "presenceRisquesTechnologiques",
     "presenceRisquesNaturels",
     "zonageReglementaire",
-    "terrainViabilise",
+    "raccordementEau",
     "etatBatiInfrastructure",
     "presencePollution",
     "valeurArchitecturaleHistorique",

@@ -5,6 +5,7 @@ import { EnrichissementService } from "./enrichissement.service";
 import { CalculService } from "./calcul.service";
 import { EvaluationRepository } from "../repository/evaluation.repository";
 import { Parcelle } from "../domain/entities/parcelle.entity";
+import { RaccordementEau } from "@mutafriches/shared-types";
 
 describe("OrchestrateurService", () => {
   let service: OrchestrateurService;
@@ -74,7 +75,7 @@ describe("OrchestrateurService", () => {
 
       const mockDonneesComplementaires = {
         siteEnCentreVille: true,
-        terrainViabilise: true,
+        raccordementEau: true,
       } as any;
 
       const input = {

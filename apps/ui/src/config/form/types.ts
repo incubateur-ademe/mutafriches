@@ -5,7 +5,7 @@ import {
   ValeurArchitecturale,
   QualitePaysage,
   QualiteVoieDesserte,
-  TerrainViabilise,
+  RaccordementEau,
 } from "@mutafriches/shared-types";
 
 /**
@@ -33,7 +33,7 @@ export type FormFieldConfig<T = string> = {
  */
 export type ManualFormValues = {
   typeProprietaire: TypeProprietaire | "";
-  terrainViabilise: TerrainViabilise | "";
+  raccordementEau: RaccordementEau | "";
   etatBati: EtatBatiInfrastructure | "";
   presencePollution: PresencePollution | "";
   valeurArchitecturale: ValeurArchitecturale | "";
@@ -46,7 +46,7 @@ export type ManualFormValues = {
  */
 export const DEFAULT_FORM_VALUES: ManualFormValues = {
   typeProprietaire: "",
-  terrainViabilise: "",
+  raccordementEau: "",
   etatBati: "",
   presencePollution: "",
   valeurArchitecturale: "",

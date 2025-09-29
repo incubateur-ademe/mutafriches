@@ -3,7 +3,7 @@ import {
   EtatBatiInfrastructure,
   PresencePollution,
   ValeurArchitecturale,
-  TerrainViabilise,
+  RaccordementEau,
 } from "@mutafriches/shared-types";
 import { SelectOption } from "../types";
 
@@ -27,18 +27,18 @@ export const SITE_FIELDS = {
     ] as SelectOption<TypeProprietaire>[],
   },
 
-  terrainViabilise: {
+  raccordementEau: {
     id: "reseau-eaux",
-    name: "terrainViabilise",
+    name: "raccordementEau",
     label: "Site connecté aux réseaux d'eaux",
     required: true,
     section: "site" as const,
     options: [
       { value: "", label: "Sélectionner une option" },
-      { value: TerrainViabilise.OUI, label: "Oui" },
-      { value: TerrainViabilise.NON, label: "Non" },
-      { value: TerrainViabilise.NE_SAIT_PAS, label: "Ne sait pas" },
-    ] as SelectOption<TerrainViabilise>[],
+      { value: RaccordementEau.OUI, label: "Oui" },
+      { value: RaccordementEau.NON, label: "Non" },
+      { value: RaccordementEau.NE_SAIT_PAS, label: "Ne sait pas" },
+    ] as SelectOption<RaccordementEau>[],
   },
 
   etatBati: {

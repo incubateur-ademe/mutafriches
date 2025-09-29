@@ -3,12 +3,12 @@ import {
   DonneesComplementairesInputDto,
   EnrichissementOutputDto,
   TypeProprietaire,
-  TerrainViabilise,
   EtatBatiInfrastructure,
   PresencePollution,
   ValeurArchitecturale,
   QualitePaysage,
   QualiteVoieDesserte,
+  RaccordementEau,
 } from "@mutafriches/shared-types";
 
 export function buildMutabilityInput(
@@ -19,8 +19,7 @@ export function buildMutabilityInput(
   const donneesComplementaires: DonneesComplementairesInputDto = {
     typeProprietaire: (manualData.typeProprietaire ||
       TypeProprietaire.NE_SAIT_PAS) as TypeProprietaire,
-    terrainViabilise: (manualData.terrainViabilise ||
-      TerrainViabilise.NE_SAIT_PAS) as TerrainViabilise,
+    raccordementEau: (manualData.raccordementEau || RaccordementEau.NE_SAIT_PAS) as RaccordementEau,
     etatBatiInfrastructure: (manualData.etatBatiInfrastructure ||
       EtatBatiInfrastructure.NE_SAIT_PAS) as EtatBatiInfrastructure,
     presencePollution: (manualData.presencePollution ||

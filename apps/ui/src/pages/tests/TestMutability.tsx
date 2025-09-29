@@ -70,12 +70,12 @@ export default function TestMutability() {
 
         // Données complémentaires directement du test case
         typeProprietaire: testCase.input.typeProprietaire,
-        terrainViabilise:
-          testCase.input.terrainViabilise === true
+        raccordementEau:
+          testCase.input.raccordementEau === true
             ? "oui"
-            : testCase.input.terrainViabilise === false
+            : testCase.input.raccordementEau === false
               ? "non"
-              : testCase.input.terrainViabilise,
+              : testCase.input.raccordementEau,
         etatBatiInfrastructure: mapEtatBati(testCase.input.etatBatiInfrastructure),
         presencePollution: testCase.input.presencePollution,
         valeurArchitecturaleHistorique: testCase.input.valeurArchitecturaleHistorique,

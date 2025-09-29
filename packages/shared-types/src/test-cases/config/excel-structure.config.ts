@@ -170,8 +170,8 @@ export const FIELD_MAPPINGS: FieldMapping[] = [
     transform: enumMappings.TYPE_PROPRIETAIRE_MAPPING,
   },
   {
-    excelName: "Terrain viabilisé",
-    jsonField: "terrainViabilise",
+    excelName: "Raccordement en eau",
+    jsonField: "raccordementEau",
     type: "boolean",
   },
   {

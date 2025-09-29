@@ -16,6 +16,7 @@
     "presencePollution": "oui-autres-composes",
     "siteEnCentreVille": true,
     "tauxLogementsVacants": 7.3,
+    "raccordementEau": true,
     "qualiteVoieDesserte": "accessible",
     "distanceAutoroute": "plus-de-5km",
     "distanceTransportCommun": "moins-de-500m",
@@ -69,9 +70,9 @@
       }
     ],
     "metadata": {
-      "criteresRenseignes": 20,
+      "criteresRenseignes": 21,
       "criteresTotal": 21,
-      "criteresManquants": ["terrainViabilise"]
+      "criteresManquants": []
     }
   }
 }

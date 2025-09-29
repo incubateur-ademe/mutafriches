@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { Test, TestingModule } from "@nestjs/testing";
 import { CalculService } from "./calcul.service";
-import { TerrainViabilise, UsageType } from "@mutafriches/shared-types";
+import { RaccordementEau, UsageType } from "@mutafriches/shared-types";
 import { Parcelle } from "../domain/entities/parcelle.entity";
 import { T } from "vitest/dist/chunks/reporters.d.BFLkQcL6";
 
@@ -23,7 +23,7 @@ describe("CalculService", () => {
       parcelle.surfaceSite = 42780;
       parcelle.surfaceBati = 6600;
       parcelle.siteEnCentreVille = true;
-      parcelle.terrainViabilise = TerrainViabilise.OUI;
+      parcelle.raccordementEau = RaccordementEau.OUI;
 
       // Calculer
       const result = await service.calculer(parcelle);
@@ -128,7 +128,7 @@ describe("CalculService", () => {
       parcelleComplete.surfaceSite = 10000;
       parcelleComplete.surfaceBati = 2000;
       parcelleComplete.siteEnCentreVille = true;
-      parcelleComplete.terrainViabilise = TerrainViabilise.OUI;
+      parcelleComplete.raccordementEau = RaccordementEau.OUI;
       parcelleComplete.distanceRaccordementElectrique = 100;
       parcelleComplete.proximiteCommercesServices = true;
       parcelleComplete.tauxLogementsVacants = 5.2;

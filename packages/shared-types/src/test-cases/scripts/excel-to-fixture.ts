@@ -210,7 +210,7 @@ function processExcelFile(filePath: string, outputName: string, description?: st
 
   // Extraire la version depuis le nom du fichier
   const versionMatch = path.basename(filePath).match(/^v([\d.]+)_/);
-  const algorithmVersion = versionMatch ? versionMatch[1] : "1.0";
+  const algorithmVersion = versionMatch ? versionMatch[1] : "1.1";
 
   // Construire le test case avec tous les champs (y compris informatifs)
   const testCase: TestCase = {
@@ -231,9 +231,9 @@ function processExcelFile(filePath: string, outputName: string, description?: st
 
 // Fonction pour traiter tous les fichiers d'un dossier
 function processAllExcelFiles() {
-  // Extraire la version depuis les arguments ou utiliser v1.0 par défaut
+  // Extraire la version depuis les arguments ou utiliser v1.1 par défaut
   const versionArg = process.argv.find((arg) => arg.startsWith("--version="));
-  const version = versionArg ? versionArg.split("=")[1] : "1.0";
+  const version = versionArg ? versionArg.split("=")[1] : "1.1";
 
   // Formater la version avec le préfixe 'v'
   const versionFolder = `v${version}`;
@@ -327,9 +327,9 @@ function processAllExcelFiles() {
 function processSingleFile() {
   const args = process.argv.slice(2).filter((arg) => !arg.startsWith("--"));
 
-  // Extraire la version depuis les arguments ou utiliser 1.0 par défaut
+  // Extraire la version depuis les arguments ou utiliser 1.1 par défaut
   const versionArg = process.argv.find((arg) => arg.startsWith("--version="));
-  const version = versionArg ? versionArg.split("=")[1] : "1.0";
+  const version = versionArg ? versionArg.split("=")[1] : "1.1";
 
   // Formater la version avec le préfixe 'v'
   const versionFolder = `v${version}`;

@@ -1,4 +1,4 @@
-import { EtatBatiInfrastructure, TerrainViabilise, UsageType } from "@mutafriches/shared-types";
+import { EtatBatiInfrastructure, RaccordementEau, UsageType } from "@mutafriches/shared-types";
 import {
   TypeProprietaire,
   PresencePollution,
@@ -61,7 +61,7 @@ export const POIDS_CRITERES = {
   // 7 critères déduis des données complémentaires
   // ------------------------------------------------
   typeProprietaire: 1,
-  terrainViabilise: 1,
+  raccordementEau: 1,
   etatBatiInfrastructure: 2,
   presencePollution: 2,
   valeurArchitecturaleHistorique: 1,
@@ -250,9 +250,9 @@ export const MATRICE_SCORING = {
     },
   },
 
-  // Terrain viabilisé (Site connecté aux réseaux d'eaux)
-  terrainViabilise: {
-    [TerrainViabilise.OUI]: {
+  // Raccordement à l'eau
+  raccordementEau: {
+    [RaccordementEau.OUI]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.TRES_POSITIF,
       [UsageType.EQUIPEMENTS]: ScoreImpact.TRES_POSITIF,
       [UsageType.CULTURE]: ScoreImpact.TRES_POSITIF,
@@ -261,7 +261,7 @@ export const MATRICE_SCORING = {
       [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
       [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
     },
-    [TerrainViabilise.NON]: {
+    [RaccordementEau.NON]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.TRES_NEGATIF,
       [UsageType.EQUIPEMENTS]: ScoreImpact.TRES_NEGATIF,
       [UsageType.CULTURE]: ScoreImpact.TRES_NEGATIF,
@@ -270,7 +270,7 @@ export const MATRICE_SCORING = {
       [UsageType.RENATURATION]: ScoreImpact.TRES_POSITIF,
       [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.POSITIF,
     },
-    [TerrainViabilise.NE_SAIT_PAS]: {
+    [RaccordementEau.NE_SAIT_PAS]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
       [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
       [UsageType.CULTURE]: ScoreImpact.NEUTRE,

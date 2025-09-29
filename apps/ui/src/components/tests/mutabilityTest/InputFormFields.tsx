@@ -1,6 +1,6 @@
 import {
   TypeProprietaire,
-  TerrainViabilise,
+  RaccordementEau,
   EtatBatiInfrastructure,
   PresencePollution,
   ValeurArchitecturale,
@@ -191,20 +191,20 @@ export function InputFormFields({ formData, onFormDataChange, isEditable }: Inpu
 
           <div className="fr-col-12 fr-col-md-6">
             <div className="fr-select-group">
-              <label className="fr-label" htmlFor="terrainViabilise">
-                Terrain viabilisé
+              <label className="fr-label" htmlFor="raccordementEau">
+                Raccordement eau
               </label>
               <select
                 className="fr-select"
-                id="terrainViabilise"
-                value={formData.terrainViabilise || ""}
-                onChange={(e) => handleInputChange("terrainViabilise", e.target.value)}
+                id="raccordementEau"
+                value={formData.raccordementEau || ""}
+                onChange={(e) => handleInputChange("raccordementEau", e.target.value)}
                 disabled={!isEditable}
               >
                 <option value="">-- Sélectionner --</option>
-                <option value={TerrainViabilise.OUI}>Oui</option>
-                <option value={TerrainViabilise.NON}>Non</option>
-                <option value={TerrainViabilise.NE_SAIT_PAS}>Ne sait pas</option>
+                <option value={RaccordementEau.OUI}>Oui</option>
+                <option value={RaccordementEau.NON}>Non</option>
+                <option value={RaccordementEau.NE_SAIT_PAS}>Ne sait pas</option>
               </select>
             </div>
           </div>

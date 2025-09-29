@@ -357,7 +357,7 @@ export class CalculService {
       surfaceSite: parcelle.surfaceSite,
       surfaceBati: parcelle.surfaceBati,
       typeProprietaire: parcelle.typeProprietaire,
-      terrainViabilise: parcelle.terrainViabilise,
+      raccordementEau: parcelle.raccordementEau,
       etatBatiInfrastructure: parcelle.etatBatiInfrastructure,
       presencePollution: parcelle.presencePollution,
       valeurArchitecturaleHistorique: parcelle.valeurArchitecturaleHistorique,
