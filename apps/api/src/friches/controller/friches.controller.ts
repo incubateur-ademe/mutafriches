@@ -195,8 +195,16 @@ export class FrichesController {
   ): Promise<MutabiliteOutputDto> {
     let origine: OrigineUtilisation;
 
+    const iframeMode = String(isIframe) === "true";
+
+    // Log des paramètres reçus pour debug
+    console.log("===== PARAMS RECUS =====");
+    console.log("iframe (raw):", isIframe, "type:", typeof isIframe);
+    console.log("integrateur:", integrateur);
+    console.log("========================");
+
     // Priorité aux paramètres explicites iframe
-    if (isIframe === true) {
+    if (iframeMode) {
       console.log(`[IFRAME] Détection explicite - Intégrateur: ${integrateur || "unknown"}`);
       origine = {
         source: SourceUtilisation.IFRAME_INTEGREE,
