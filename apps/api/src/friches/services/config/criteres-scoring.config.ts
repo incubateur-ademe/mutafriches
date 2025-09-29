@@ -527,51 +527,36 @@ export const MATRICE_SCORING = {
 
   // Qualité paysage
   qualitePaysage: {
-    [QualitePaysage.DEGRADE]: {
+    [QualitePaysage.SANS_INTERET]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
       [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
       [UsageType.CULTURE]: ScoreImpact.NEGATIF,
-      [UsageType.TERTIAIRE]: ScoreImpact.POSITIF,
+      [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
       [UsageType.INDUSTRIE]: ScoreImpact.POSITIF,
       [UsageType.RENATURATION]: ScoreImpact.POSITIF,
       [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.POSITIF,
     },
-    [QualitePaysage.BANAL_INFRA_ORDINAIRE]: {
-      [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
-      [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
-      [UsageType.CULTURE]: ScoreImpact.NEGATIF,
-      [UsageType.TERTIAIRE]: ScoreImpact.POSITIF,
-      [UsageType.INDUSTRIE]: ScoreImpact.POSITIF,
-      [UsageType.RENATURATION]: ScoreImpact.POSITIF,
-      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.POSITIF,
-    },
-    [QualitePaysage.QUOTIDIEN_ORDINAIRE]: {
+
+    [QualitePaysage.ORDINAIRE]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
       [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
       [UsageType.CULTURE]: ScoreImpact.NEUTRE,
       [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
-      [UsageType.INDUSTRIE]: ScoreImpact.NEUTRE,
+      [UsageType.INDUSTRIE]: ScoreImpact.POSITIF,
       [UsageType.RENATURATION]: ScoreImpact.POSITIF,
-      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
+      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.POSITIF,
     },
-    [QualitePaysage.INTERESSANT]: {
+
+    [QualitePaysage.INTERET_REMARQUABLE]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
       [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
-      [UsageType.CULTURE]: ScoreImpact.POSITIF,
-      [UsageType.TERTIAIRE]: ScoreImpact.NEGATIF,
+      [UsageType.CULTURE]: ScoreImpact.NEUTRE,
+      [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
       [UsageType.INDUSTRIE]: ScoreImpact.NEGATIF,
       [UsageType.RENATURATION]: ScoreImpact.POSITIF,
       [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEGATIF,
     },
-    [QualitePaysage.REMARQUABLE]: {
-      [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
-      [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
-      [UsageType.CULTURE]: ScoreImpact.TRES_POSITIF,
-      [UsageType.TERTIAIRE]: ScoreImpact.NEGATIF,
-      [UsageType.INDUSTRIE]: ScoreImpact.TRES_NEGATIF,
-      [UsageType.RENATURATION]: ScoreImpact.POSITIF,
-      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.TRES_NEGATIF,
-    },
+
     [QualitePaysage.NE_SAIT_PAS]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
       [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,

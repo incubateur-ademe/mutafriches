@@ -490,13 +490,9 @@ export function InputFormFields({ formData, onFormDataChange, isEditable }: Inpu
                 disabled={!isEditable}
               >
                 <option value="">-- Sélectionner --</option>
-                <option value={QualitePaysage.REMARQUABLE}>Remarquable</option>
-                <option value={QualitePaysage.INTERESSANT}>Intéressant</option>
-                <option value={QualitePaysage.QUOTIDIEN_ORDINAIRE}>Quotidien ordinaire</option>
-                <option value={QualitePaysage.BANAL_INFRA_ORDINAIRE}>
-                  Banal / infra-ordinaire
-                </option>
-                <option value={QualitePaysage.DEGRADE}>Dégradé</option>
+                <option value={QualitePaysage.SANS_INTERET}>Sans interet</option>
+                <option value={QualitePaysage.ORDINAIRE}>Ordinaire</option>
+                <option value={QualitePaysage.INTERET_REMARQUABLE}>Interet remarquable</option>
                 <option value={QualitePaysage.NE_SAIT_PAS}>Ne sait pas</option>
               </select>
             </div>

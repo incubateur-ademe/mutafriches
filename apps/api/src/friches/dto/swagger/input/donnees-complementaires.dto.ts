@@ -49,7 +49,7 @@ export class DonneesComplementairesSwaggerDto implements IDonneesComplementaires
   @ApiProperty({
     enum: QualitePaysage,
     description: "Qualité du paysage environnant",
-    example: QualitePaysage.BANAL_INFRA_ORDINAIRE,
+    example: QualitePaysage.INTERET_REMARQUABLE,
   })
   qualitePaysage: QualitePaysage;
 

@@ -13,9 +13,9 @@ export const ENVIRONNEMENT_FIELDS = {
     section: "environnement" as const,
     options: [
       { value: "", label: "Sélectionner une option" },
-      { value: QualitePaysage.DEGRADE, label: "Sans intérêt" },
-      { value: QualitePaysage.BANAL_INFRA_ORDINAIRE, label: "Ordinaire" },
-      { value: QualitePaysage.REMARQUABLE, label: "Intérêt remarquable" },
+      { value: QualitePaysage.SANS_INTERET, label: "Sans intérêt" },
+      { value: QualitePaysage.ORDINAIRE, label: "Ordinaire" },
+      { value: QualitePaysage.INTERET_REMARQUABLE, label: "Intérêt remarquable" },
       { value: QualitePaysage.NE_SAIT_PAS, label: "Ne sait pas" },
     ] as SelectOption<QualitePaysage>[],
   },

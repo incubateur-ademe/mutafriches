@@ -60,11 +60,9 @@ export enum ValeurArchitecturale {
  * Qualité du paysage environnant
  */
 export enum QualitePaysage {
-  DEGRADE = "degrade",
-  BANAL_INFRA_ORDINAIRE = "banal-infra-ordinaire",
-  QUOTIDIEN_ORDINAIRE = "quotidien-ordinaire",
-  INTERESSANT = "interessant",
-  REMARQUABLE = "remarquable",
+  SANS_INTERET = "sans-interet",
+  ORDINAIRE = "ordinaire",
+  INTERET_REMARQUABLE = "interet-remarquable",
   NE_SAIT_PAS = "ne-sait-pas",
 }
 

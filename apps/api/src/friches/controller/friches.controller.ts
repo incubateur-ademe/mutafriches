@@ -157,7 +157,7 @@ export class FrichesController {
             etatBatiInfrastructure: EtatBatiInfrastructure.DEGRADATION_HETEROGENE,
             presencePollution: PresencePollution.NE_SAIT_PAS,
             valeurArchitecturaleHistorique: ValeurArchitecturale.INTERET_REMARQUABLE,
-            qualitePaysage: QualitePaysage.BANAL_INFRA_ORDINAIRE,
+            qualitePaysage: QualitePaysage.INTERET_REMARQUABLE,
             qualiteVoieDesserte: QualiteVoieDesserte.ACCESSIBLE,
           },
         },

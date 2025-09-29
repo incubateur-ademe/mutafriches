@@ -66,11 +66,9 @@ export const VALEUR_ARCHITECTURALE_MAPPING: Record<string, ValeurArchitecturale>
 
 // Qualité paysage - Valeurs exactes
 export const QUALITE_PAYSAGE_MAPPING: Record<string, QualitePaysage> = {
-  Dégradé: QualitePaysage.DEGRADE,
-  "Banal / infra-ordinaire": QualitePaysage.BANAL_INFRA_ORDINAIRE,
-  "Quotidien / ordinaire": QualitePaysage.QUOTIDIEN_ORDINAIRE,
-  Intéressant: QualitePaysage.INTERESSANT,
-  Remarquable: QualitePaysage.REMARQUABLE,
+  "Sans intérêt": QualitePaysage.SANS_INTERET,
+  Ordinaire: QualitePaysage.ORDINAIRE,
+  "Interet remarquable": QualitePaysage.INTERET_REMARQUABLE,
   "Ne sait pas": QualitePaysage.NE_SAIT_PAS,
 };
 

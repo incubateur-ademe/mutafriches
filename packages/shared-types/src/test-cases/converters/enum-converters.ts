@@ -181,11 +181,9 @@ export function toQualitePaysage(value: string | undefined): QualitePaysage {
 
   const mapping: Record<string, QualitePaysage> = {
     // Formats test case (kebab-case)
-    remarquable: QualitePaysage.REMARQUABLE,
-    interessant: QualitePaysage.INTERESSANT,
-    "quotidien-ordinaire": QualitePaysage.QUOTIDIEN_ORDINAIRE,
-    "banal-infra-ordinaire": QualitePaysage.BANAL_INFRA_ORDINAIRE,
-    degrade: QualitePaysage.DEGRADE,
+    "sans-interet": QualitePaysage.SANS_INTERET,
+    ordinaire: QualitePaysage.ORDINAIRE,
+    "interet-remarquable": QualitePaysage.INTERET_REMARQUABLE,
     "ne-sait-pas": QualitePaysage.NE_SAIT_PAS,
   };
 
@@ -194,11 +192,9 @@ export function toQualitePaysage(value: string | undefined): QualitePaysage {
   }
 
   // Essayer avec la valeur originale si c'est déjà un enum
-  if (value === "REMARQUABLE") return QualitePaysage.REMARQUABLE;
-  if (value === "INTERESSANT") return QualitePaysage.INTERESSANT;
-  if (value === "QUOTIDIEN_ORDINAIRE") return QualitePaysage.QUOTIDIEN_ORDINAIRE;
-  if (value === "BANAL_INFRA_ORDINAIRE") return QualitePaysage.BANAL_INFRA_ORDINAIRE;
-  if (value === "DEGRADE") return QualitePaysage.DEGRADE;
+  if (value === "INTERET_REMARQUABLE") return QualitePaysage.INTERET_REMARQUABLE;
+  if (value === "ORDINAIRE") return QualitePaysage.ORDINAIRE;
+  if (value === "SANS_INTERET") return QualitePaysage.SANS_INTERET;
   if (value === "NE_SAIT_PAS") return QualitePaysage.NE_SAIT_PAS;
 
   return QualitePaysage.NE_SAIT_PAS;
