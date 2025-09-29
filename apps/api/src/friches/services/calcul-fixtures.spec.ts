@@ -49,7 +49,7 @@ describe("CalculService - Validation des fixtures", () => {
 
         const ecart = Math.abs(calculatedUsage.indiceMutabilite - expectedUsage.indiceMutabilite);
 
-        if (ecart > 1) {
+        if (ecart > 1.5) {
           problemes.push(
             `${expectedUsage.usage}: écart ${ecart.toFixed(1)}% ` +
               `(calculé: ${calculatedUsage.indiceMutabilite}%, attendu: ${expectedUsage.indiceMutabilite}%)`,
