@@ -2,7 +2,6 @@ import {
   EnrichissementOutputDto,
   DonneesComplementairesInputDto,
   TypeProprietaire,
-  TerrainViabilise,
   EtatBatiInfrastructure,
   PresencePollution,
   ValeurArchitecturale,
@@ -16,6 +15,7 @@ import {
   Coordonnees,
   CalculerMutabiliteInputDto,
 } from "@mutafriches/shared-types";
+import { RaccordementEau } from "@mutafriches/shared-types/dist/enums/saisie.enums";
 
 /**
  * Entité métier Parcelle
@@ -46,7 +46,7 @@ export class Parcelle {
 
   // Données saisies manuellement
   typeProprietaire?: TypeProprietaire;
-  terrainViabilise?: TerrainViabilise;
+  raccordementEau?: RaccordementEau;
   etatBatiInfrastructure?: EtatBatiInfrastructure;
   presencePollution?: PresencePollution;
   valeurArchitecturaleHistorique?: ValeurArchitecturale;
@@ -155,7 +155,7 @@ export class Parcelle {
     // Copier les données complémentaires si présentes
     if (donneesComplementaires) {
       parcelle.typeProprietaire = donneesComplementaires.typeProprietaire;
-      parcelle.terrainViabilise = donneesComplementaires.terrainViabilise;
+      parcelle.raccordementEau = donneesComplementaires.raccordementEau;
       parcelle.etatBatiInfrastructure = donneesComplementaires.etatBatiInfrastructure;
       parcelle.presencePollution = donneesComplementaires.presencePollution;
       parcelle.valeurArchitecturaleHistorique =
@@ -177,7 +177,7 @@ export class Parcelle {
         v !== undefined &&
         v !== null &&
         v !== TypeProprietaire.NE_SAIT_PAS &&
-        v !== TerrainViabilise.NE_SAIT_PAS &&
+        v !== RaccordementEau.NE_SAIT_PAS &&
         v !== EtatBatiInfrastructure.NE_SAIT_PAS &&
         v !== PresencePollution.NE_SAIT_PAS &&
         v !== ValeurArchitecturale.NE_SAIT_PAS &&
@@ -197,7 +197,7 @@ export class Parcelle {
       this.commune &&
       this.surfaceSite &&
       this.typeProprietaire &&
-      this.terrainViabilise &&
+      this.raccordementEau &&
       this.etatBatiInfrastructure &&
       this.presencePollution &&
       this.valeurArchitecturaleHistorique &&

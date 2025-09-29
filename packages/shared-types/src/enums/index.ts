@@ -14,7 +14,7 @@ export {
 // Enums pour les données saisies par l'utilisateur
 export {
   TypeProprietaire,
-  TerrainViabilise,
+  RaccordementEau,
   EtatBatiInfrastructure,
   PresencePollution,
   ValeurArchitecturale,

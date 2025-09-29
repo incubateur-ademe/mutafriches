@@ -1,6 +1,5 @@
 import {
   TypeProprietaire,
-  TerrainViabilise,
   EtatBatiInfrastructure,
   PresencePollution,
   ValeurArchitecturale,
@@ -11,6 +10,7 @@ import {
   ZonageReglementaire,
   ZonagePatrimonial,
   TrameVerteEtBleue,
+  RaccordementEau,
 } from "../../enums";
 
 /**
@@ -40,11 +40,11 @@ export const TYPE_PROPRIETAIRE_MAPPING: Record<string, TypeProprietaire> = {
   "Ne sait pas": TypeProprietaire.NE_SAIT_PAS,
 };
 
-// Terrain viabilisé (booléen dans l'Excel)
-export const TERRAIN_VIABILISE_MAPPING: Record<string, TerrainViabilise> = {
-  Oui: TerrainViabilise.OUI,
-  Non: TerrainViabilise.NON,
-  "Ne sait pas": TerrainViabilise.NE_SAIT_PAS,
+// Raccordement eau - Valeurs exactes de l'Excel
+export const RACCORDEMENT_EAU_MAPPING: Record<string, RaccordementEau> = {
+  Oui: RaccordementEau.OUI,
+  Non: RaccordementEau.NON,
+  "Ne sait pas": RaccordementEau.NE_SAIT_PAS,
 };
 
 // Présence pollution - Valeurs exactes de l'Excel

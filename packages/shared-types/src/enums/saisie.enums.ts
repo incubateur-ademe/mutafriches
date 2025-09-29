@@ -17,7 +17,7 @@ export enum TypeProprietaire {
 /**
  * Site connecté aux réseaux d'eau et assainissement
  */
-export enum TerrainViabilise {
+export enum RaccordementEau {
   OUI = "oui",
   NON = "non",
   NE_SAIT_PAS = "ne-sait-pas",

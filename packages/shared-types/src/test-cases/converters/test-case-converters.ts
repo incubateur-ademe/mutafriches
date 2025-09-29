@@ -102,7 +102,7 @@ export function convertTestCaseToMutabilityInput(
   // (ex: "batiments-heterogenes" → "degradation-heterogene")
   const donneesComplementaires: DonneesComplementairesInputDto = {
     typeProprietaire: enumConverters.toTypeProprietaire(input.typeProprietaire),
-    terrainViabilise: enumConverters.toTerrainViabilise(input.terrainViabilise),
+    raccordementEau: enumConverters.toRaccordementEau(input.raccordementEau),
     etatBatiInfrastructure: enumConverters.toEtatBati(input.etatBatiInfrastructure),
     presencePollution: enumConverters.toPresencePollution(input.presencePollution),
     valeurArchitecturaleHistorique: enumConverters.toValeurArchitecturale(

@@ -1,11 +1,11 @@
 import {
   TypeProprietaire,
-  TerrainViabilise,
   EtatBatiInfrastructure,
   PresencePollution,
   ValeurArchitecturale,
   QualitePaysage,
   QualiteVoieDesserte,
+  RaccordementEau,
 } from "../../enums";
 
 /**
@@ -17,7 +17,7 @@ export interface DonneesComplementairesInputDto {
   typeProprietaire: TypeProprietaire;
 
   // Infrastructure
-  terrainViabilise: TerrainViabilise;
+  raccordementEau: RaccordementEau;
   etatBatiInfrastructure: EtatBatiInfrastructure;
 
   // Environnement

@@ -15,7 +15,7 @@ import {
   CalculerMutabiliteInputDto,
   MutabiliteOutputDto,
   TypeProprietaire,
-  TerrainViabilise,
+  RaccordementEau,
   EtatBatiInfrastructure,
   PresencePollution,
   ValeurArchitecturale,
@@ -153,7 +153,7 @@ export class FrichesController {
           },
           donneesComplementaires: {
             typeProprietaire: TypeProprietaire.PRIVE,
-            terrainViabilise: TerrainViabilise.OUI,
+            raccordementEau: RaccordementEau.OUI,
             etatBatiInfrastructure: EtatBatiInfrastructure.DEGRADATION_HETEROGENE,
             presencePollution: PresencePollution.NE_SAIT_PAS,
             valeurArchitecturaleHistorique: ValeurArchitecturale.EXCEPTIONNEL,
@@ -272,7 +272,7 @@ export class FrichesController {
         },
         saisie: {
           typeProprietaire: Object.values(TypeProprietaire),
-          terrainViabilise: Object.values(TerrainViabilise),
+          raccordementEau: Object.values(RaccordementEau),
           etatBatiInfrastructure: Object.values(EtatBatiInfrastructure),
           presencePollution: Object.values(PresencePollution),
           valeurArchitecturaleHistorique: Object.values(ValeurArchitecturale),

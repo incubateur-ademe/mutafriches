@@ -10,7 +10,7 @@ export class MetadataSwaggerDto {
       },
       saisie: {
         typeProprietaire: ["public", "prive", "mixte", "copro-indivision", "ne-sait-pas"],
-        terrainViabilise: ["oui", "non", "ne-sait-pas"],
+        raccordementEau: ["oui", "non", "ne-sait-pas"],
       },
       usages: [
         "residentiel",

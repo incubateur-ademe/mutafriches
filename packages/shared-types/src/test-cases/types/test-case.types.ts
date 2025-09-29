@@ -23,7 +23,7 @@ export interface TestCaseInput {
   // Localisation et accessibilité
   siteEnCentreVille: boolean;
   tauxLogementsVacants?: number;
-  terrainViabilise?: boolean;
+  raccordementEau?: boolean;
   qualiteVoieDesserte: string;
   distanceAutoroute: string;
   distanceTransportCommun: string;

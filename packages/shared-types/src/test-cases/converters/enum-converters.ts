@@ -1,11 +1,11 @@
 import {
   TypeProprietaire,
-  TerrainViabilise,
   EtatBatiInfrastructure,
   PresencePollution,
   ValeurArchitecturale,
   QualitePaysage,
   QualiteVoieDesserte,
+  RaccordementEau,
 } from "../../enums";
 
 /**
@@ -78,24 +78,24 @@ export function toTypeProprietaire(value: string | undefined): TypeProprietaire 
 }
 
 /**
- * Convertit un booléen ou string en TerrainViabilise
+ * Convertit un booléen ou string en RaccordementEau
  */
-export function toTerrainViabilise(value: boolean | string | undefined): TerrainViabilise {
+export function toRaccordementEau(value: boolean | string | undefined): RaccordementEau {
   if (typeof value === "boolean") {
-    return value ? TerrainViabilise.OUI : TerrainViabilise.NON;
+    return value ? RaccordementEau.OUI : RaccordementEau.NON;
   }
 
-  if (!value) return TerrainViabilise.NE_SAIT_PAS;
+  if (!value) return RaccordementEau.NE_SAIT_PAS;
 
   const normalizedValue = value.toString().toLowerCase();
 
-  const mapping: Record<string, TerrainViabilise> = {
+  const mapping: Record<string, RaccordementEau> = {
     // Formats test case et bool string
-    oui: TerrainViabilise.OUI,
-    non: TerrainViabilise.NON,
-    true: TerrainViabilise.OUI,
-    false: TerrainViabilise.NON,
-    "ne-sait-pas": TerrainViabilise.NE_SAIT_PAS,
+    oui: RaccordementEau.OUI,
+    non: RaccordementEau.NON,
+    true: RaccordementEau.OUI,
+    false: RaccordementEau.NON,
+    "ne-sait-pas": RaccordementEau.NE_SAIT_PAS,
   };
 
   if (mapping[normalizedValue]) {
@@ -103,11 +103,11 @@ export function toTerrainViabilise(value: boolean | string | undefined): Terrain
   }
 
   // Essayer avec la valeur originale si c'est déjà un enum
-  if (value === "OUI") return TerrainViabilise.OUI;
-  if (value === "NON") return TerrainViabilise.NON;
-  if (value === "NE_SAIT_PAS") return TerrainViabilise.NE_SAIT_PAS;
+  if (value === "OUI") return RaccordementEau.OUI;
+  if (value === "NON") return RaccordementEau.NON;
+  if (value === "NE_SAIT_PAS") return RaccordementEau.NE_SAIT_PAS;
 
-  return TerrainViabilise.NE_SAIT_PAS;
+  return RaccordementEau.NE_SAIT_PAS;
 }
 
 /**

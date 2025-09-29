@@ -1,13 +1,13 @@
 import {
   DonneesComplementairesInputDto as IDonneesComplementaires,
   TypeProprietaire,
-  TerrainViabilise,
   EtatBatiInfrastructure,
   PresencePollution,
   ValeurArchitecturale,
   QualitePaysage,
   QualiteVoieDesserte,
 } from "@mutafriches/shared-types";
+import { RaccordementEau } from "@mutafriches/shared-types/dist/enums/saisie.enums";
 import { ApiProperty } from "@nestjs/swagger";
 
 export class DonneesComplementairesSwaggerDto implements IDonneesComplementaires {
@@ -19,11 +19,11 @@ export class DonneesComplementairesSwaggerDto implements IDonneesComplementaires
   typeProprietaire: TypeProprietaire;
 
   @ApiProperty({
-    enum: TerrainViabilise,
+    enum: RaccordementEau,
     description: "Site connecté aux réseaux d'eau et assainissement",
-    example: TerrainViabilise.OUI,
+    example: RaccordementEau.OUI,
   })
-  terrainViabilise: TerrainViabilise;
+  raccordementEau: RaccordementEau;
 
   @ApiProperty({
     enum: EtatBatiInfrastructure,
