@@ -192,6 +192,24 @@ export class FrichesController {
   ): Promise<MutabiliteOutputDto> {
     const origine = this.detecterOrigine(req);
 
+    // DEBUG : Logger l'origine détectée
+    console.log("===== DEBUG ORIGINE =====");
+    console.log("Headers complets:", req?.headers);
+    console.log("Referer:", req?.headers?.["referer"] || req?.headers?.["referrer"]);
+    console.log("Origin:", req?.headers?.["origin"]);
+    console.log("User-Agent:", req?.headers?.["user-agent"]);
+    console.log("Origine détectée:", origine);
+    console.log("========================");
+
+    // Options de calcul avec origine
+    const options = {
+      modeDetaille: modeDetaille || false,
+      sansEnrichissement: sansEnrichissement || false,
+      origine,
+    };
+
+    console.log("Options de calcul:", JSON.stringify(options, null, 2));
+
     return await this.orchestrateurService.calculerMutabilite(input, {
       modeDetaille: modeDetaille || false,
       sansEnrichissement: sansEnrichissement || false,
@@ -295,28 +313,55 @@ export class FrichesController {
    */
   private detecterOrigine(req?: Request): OrigineUtilisation {
     if (!req) {
+      console.log("DEBUG: Pas de request object");
       return { source: SourceUtilisation.API_DIRECTE };
     }
 
-    const referrer = req.headers["referer"] || req.headers["referrer"] || "";
+    // Essayer plusieurs headers pour la détection
+    const referrer =
+      req.headers["referer"] || req.headers["referrer"] || req.headers["origin"] || "";
+
+    console.log(`DEBUG detecterOrigine - Referrer trouvé: "${referrer}"`);
+
+    // Si pas de referrer mais qu'on a un origin header
+    if (!referrer && req.headers["origin"]) {
+      const origin = req.headers["origin"] as string;
+      console.log(`DEBUG: Utilisation de l'origin header: ${origin}`);
+
+      // Vérifier si c'est un domaine standalone
+      const domainesStandalone = [
+        "localhost",
+        "127.0.0.1",
+        "mutafriches.beta.gouv.fr",
+        "mutafriches.osc-secnum-fr1.scalingo.io",
+        "mutafriches.incubateur.ademe.dev",
+        "mutafriches-preprod.osc-fr1.scalingo.io",
+      ];
+
+      const isStandalone = domainesStandalone.some((domain) => origin.includes(domain));
+
+      if (isStandalone) {
+        return { source: SourceUtilisation.SITE_STANDALONE };
+      } else {
+        return {
+          source: SourceUtilisation.IFRAME_INTEGREE,
+          integrateur: this.extraireIntegrateur(origin),
+        };
+      }
+    }
 
     // Swagger UI -> referrer qui pointe vers /api
     if (referrer.includes("/api") || (referrer as string).endsWith("/api")) {
       return { source: SourceUtilisation.API_DIRECTE };
     }
 
-    // Liste des domaines du site standalone (local + prod)
-    // TODO : externaliser cette liste dans une config si elle évolue
+    // Liste des domaines du site standalone
     const domainesStandalone = [
       "localhost",
       "127.0.0.1",
-      "https://mutafriches.beta.gouv.fr",
       "mutafriches.beta.gouv.fr",
-      "https://mutafriches.osc-secnum-fr1.scalingo.io",
       "mutafriches.osc-secnum-fr1.scalingo.io",
-      "https://mutafriches.incubateur.ademe.dev",
       "mutafriches.incubateur.ademe.dev",
-      "https://mutafriches-preprod.osc-fr1.scalingo.io",
       "mutafriches-preprod.osc-fr1.scalingo.io",
     ];
 
@@ -324,18 +369,22 @@ export class FrichesController {
     const isStandalone = domainesStandalone.some((domain) => referrer.includes(domain));
 
     if (isStandalone && !referrer.includes("/api")) {
+      console.log("DEBUG: Détecté comme SITE_STANDALONE");
       return { source: SourceUtilisation.SITE_STANDALONE };
     }
 
     // Si on a un referrer qui n'est pas un domaine standalone -> iframe
     if (referrer) {
+      const integrateur = this.extraireIntegrateur(referrer as string);
+      console.log(`DEBUG: Détecté comme IFRAME_INTEGREE, integrateur: ${integrateur}`);
       return {
         source: SourceUtilisation.IFRAME_INTEGREE,
-        integrateur: this.extraireIntegrateur(referrer as string),
+        integrateur,
       };
     }
 
     // Par défaut pour les appels sans referrer
+    console.log("DEBUG: Par défaut -> API_DIRECTE");
     return { source: SourceUtilisation.API_DIRECTE };
   }
 
@@ -347,8 +396,11 @@ export class FrichesController {
   private extraireIntegrateur(referrer: string): string | undefined {
     if (!referrer) return undefined;
     try {
-      return new URL(referrer).hostname;
-    } catch {
+      const url = new URL(referrer);
+      console.log(`DEBUG extraireIntegrateur - hostname: ${url.hostname}`);
+      return url.hostname;
+    } catch (error) {
+      console.error("DEBUG: Erreur parsing URL:", error);
       return undefined;
     }
   }
