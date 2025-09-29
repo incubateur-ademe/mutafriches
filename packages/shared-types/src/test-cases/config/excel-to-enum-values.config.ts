@@ -29,6 +29,7 @@ export const ETAT_BATI_MAPPING: Record<string, EtatBatiInfrastructure> = {
   "Absence de bâtiments": EtatBatiInfrastructure.DEGRADATION_INEXISTANTE,
   "pas de bâti": EtatBatiInfrastructure.PAS_DE_BATI,
   "Ne sait pas": EtatBatiInfrastructure.NE_SAIT_PAS,
+  "-": EtatBatiInfrastructure.NE_SAIT_PAS,
 };
 
 // Type propriétaire
@@ -82,6 +83,7 @@ export const QUALITE_VOIE_DESSERTE_MAPPING: Record<string, QualiteVoieDesserte> 
 
 // Risque naturel - Valeurs exactes
 export const RISQUE_NATUREL_MAPPING: Record<string, RisqueNaturel> = {
+  Absent: RisqueNaturel.AUCUN,
   Aucun: RisqueNaturel.AUCUN,
   Faible: RisqueNaturel.FAIBLE,
   Moyen: RisqueNaturel.MOYEN,
