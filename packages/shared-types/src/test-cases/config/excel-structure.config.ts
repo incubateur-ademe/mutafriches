@@ -171,7 +171,7 @@ export const FIELD_MAPPINGS: FieldMapping[] = [
   },
   {
     excelName: "Raccordement en eau",
-    jsonField: "raccordementEau",
+    jsonField: "terrainViabilise",
     type: "boolean",
   },
   {

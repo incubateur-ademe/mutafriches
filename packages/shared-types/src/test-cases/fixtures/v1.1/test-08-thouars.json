@@ -12,7 +12,6 @@
     "surfaceSite": 53700,
     "surfaceBati": 0,
     "nombreBatiments": 0,
-    "etatBatiInfrastructure": "ne-sait-pas",
     "presencePollution": "oui-composes-volatils",
     "siteEnCentreVille": false,
     "tauxLogementsVacants": 11.3,
@@ -70,9 +69,9 @@
       }
     ],
     "metadata": {
-      "criteresRenseignes": 21,
+      "criteresRenseignes": 20,
       "criteresTotal": 21,
-      "criteresManquants": []
+      "criteresManquants": ["etatBatiInfrastructure"]
     }
   }
 }

@@ -14,6 +14,7 @@ import {
   MATRICE_SCORING,
   NOMBRE_CRITERES_UTILISES,
   POIDS_CRITERES,
+  ScoreImpact,
 } from "./config/criteres-scoring.config";
 import { NIVEAUX_FIABILITE } from "./config/algorithme.helpers";
 import { ScoreParUsage } from "./config/algorithme.types";
@@ -237,6 +238,24 @@ export class CalculService {
 
       const scoreBrut = this.obtenirScoreCritere(champDTO, valeur, usage);
 
+      // LOG DE DIAGNOSTIC - Détails du score:
+      if (usage === UsageType.INDUSTRIE) {
+        console.log(`[INDUSTRIE DEBUG] ${champDTO}:`);
+        console.log(`  - Valeur: ${valeur}`);
+        console.log(`  - Score brut: ${scoreBrut}`);
+        console.log(`  - Type du score: ${typeof scoreBrut}`);
+        console.log(`  - Test scoreBrut === 0.5: ${scoreBrut === 0.5}`);
+        console.log(
+          `  - Test Math.abs(scoreBrut - 0.5) < 0.001: ${Math.abs(scoreBrut - 0.5) < 0.001}`,
+        );
+
+        // Vérifier spécifiquement ScoreImpact.NEUTRE
+        console.log(`  - ScoreImpact.NEUTRE value: ${ScoreImpact.NEUTRE}`);
+        console.log(
+          `  - Test scoreBrut === ScoreImpact.NEUTRE: ${scoreBrut === ScoreImpact.NEUTRE}`,
+        );
+      }
+
       // LOG DE DIAGNOSTIC - Score obtenu
       if (usage === UsageType.RESIDENTIEL && scoreBrut === null) {
         console.log(`  -> Critère "${champDTO}" NON MAPPE dans MATRICE_SCORING`);
@@ -255,11 +274,28 @@ export class CalculService {
         scorePondere: Math.abs(scorePondere),
       };
 
+      // Log de diagnostic spécifique pour INDUSTRIE
+      if (usage === UsageType.INDUSTRIE && Math.abs(scoreBrut - 0.5) < 0.001) {
+        console.log(`[INDUSTRIE NEUTRE] ${champDTO} devrait être NEUTRE`);
+        console.log(`  - Avant traitement: avantages=${avantages}, contraintes=${contraintes}`);
+      }
+
       // LOGIQUE EXCEL : Les critères NEUTRE (0.5) comptent dans les deux côtés
       if (scoreBrut === 0.5) {
+        // AJOUT DE LOGS POUR DEBUG
+        console.log(`[DEBUG NEUTRE] ${usage} - Critère "${champDTO}" avec valeur "${valeur}"`);
+        console.log(
+          `[DEBUG NEUTRE] Score brut: ${scoreBrut}, Poids: ${poids}, Score pondéré: ${Math.abs(scorePondere)}`,
+        );
+        console.log(
+          `[DEBUG NEUTRE] Ajout aux DEUX côtés - Avant: avantages=${avantages}, contraintes=${contraintes}`,
+        );
+
         // NEUTRE
         avantages += Math.abs(scorePondere);
         contraintes += Math.abs(scorePondere);
+
+        console.log(`[DEBUG NEUTRE] Après: avantages=${avantages}, contraintes=${contraintes}`);
 
         // Ajouter aux deux listes pour le détail
         detailsAvantages.push(detail);
@@ -279,6 +315,13 @@ export class CalculService {
         // Critères négatifs vont uniquement dans contraintes
         contraintes += Math.abs(scorePondere);
         detailsContraintes.push(detail);
+
+        // Log de diagnostic spécifique pour INDUSTRIE
+        if (usage === UsageType.INDUSTRIE) {
+          console.log(
+            `[INDUSTRIE NEGATIF] ${champDTO}: score ${scoreBrut} × poids ${poids} = ${Math.abs(scorePondere)} ajouté aux contraintes`,
+          );
+        }
       }
     });
 

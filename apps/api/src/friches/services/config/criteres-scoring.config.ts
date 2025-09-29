@@ -217,15 +217,6 @@ export const MATRICE_SCORING = {
       [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
       [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
     },
-    [PresencePollution.NE_SAIT_PAS]: {
-      [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
-      [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
-      [UsageType.CULTURE]: ScoreImpact.NEUTRE,
-      [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
-      [UsageType.INDUSTRIE]: ScoreImpact.NEUTRE,
-      [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
-      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
-    },
   },
 
   // En centre-ville ou centre-bourg
@@ -597,9 +588,9 @@ export const MATRICE_SCORING = {
     [ValeurArchitecturale.INTERET_REMARQUABLE]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
       [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
-      [UsageType.CULTURE]: ScoreImpact.NEUTRE,
+      [UsageType.CULTURE]: ScoreImpact.POSITIF,
       [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
-      [UsageType.INDUSTRIE]: ScoreImpact.NEUTRE,
+      [UsageType.INDUSTRIE]: ScoreImpact.NEGATIF,
       [UsageType.RENATURATION]: ScoreImpact.TRES_NEGATIF,
       [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.TRES_NEGATIF,
     },
@@ -723,7 +714,7 @@ export const MATRICE_SCORING = {
         [UsageType.EQUIPEMENTS]: ScoreImpact.POSITIF,
         [UsageType.CULTURE]: ScoreImpact.NEUTRE,
         [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
-        [UsageType.INDUSTRIE]: ScoreImpact.TRES_NEGATIF, // Modifié le 18/09/2025 après revue avec Anna
+        [UsageType.INDUSTRIE]: ScoreImpact.TRES_NEGATIF,
         [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
         [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.TRES_NEGATIF,
       };

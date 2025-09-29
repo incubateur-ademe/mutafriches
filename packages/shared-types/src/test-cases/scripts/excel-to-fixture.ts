@@ -25,7 +25,7 @@ function getCellValue(worksheet: XLSX.WorkSheet, column: string, row: number): a
 
 // Fonction pour transformer une valeur selon le type et les règles
 function transformValue(value: any, fieldMapping: FieldMapping): any {
-  if (value === undefined || value === null || value === "") {
+  if (value === undefined || value === null || value === "" || value === "-") {
     return undefined;
   }
 
