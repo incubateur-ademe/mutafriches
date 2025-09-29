@@ -43,26 +43,38 @@ class ApiService {
     options?: {
       modeDetaille?: boolean;
       sansEnrichissement?: boolean;
+      integrator?: string;
+      isIframe?: boolean;
     },
   ): Promise<MutabiliteOutputDto> {
-    const queryParams = new URLSearchParams();
+    const params = new URLSearchParams();
 
     if (options?.modeDetaille) {
-      queryParams.append("modeDetaille", "true");
+      params.append("modeDetaille", "true");
     }
 
     if (options?.sansEnrichissement) {
-      queryParams.append("sansEnrichissement", "true");
+      params.append("sansEnrichissement", "true");
     }
 
-    const response = await fetch(
-      `${this.baseUrl}${API_CONFIG.endpoints.calculerMutabilite}${queryParams.toString() ? "?" + queryParams.toString() : ""}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(input),
-      },
-    );
+    // Utiliser les infos passées en paramètre
+    if (options?.isIframe) {
+      params.append("iframe", "true");
+      if (options?.integrator) {
+        params.append("integrateur", options.integrator);
+      }
+    }
+
+    // URL finale avec query params
+    const finalUrl = params.toString()
+      ? `${this.baseUrl}${API_CONFIG.endpoints.calculerMutabilite}?${params.toString()}`
+      : `${this.baseUrl}${API_CONFIG.endpoints.calculerMutabilite}`;
+
+    const response = await fetch(finalUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(input),
+    });
 
     if (!response.ok) {
       const error = await response.text();

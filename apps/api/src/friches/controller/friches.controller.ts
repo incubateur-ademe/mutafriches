@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { Controller, Post, Body, Query, Get, Param, NotFoundException, Req } from "@nestjs/common";
 import {
   ApiTags,
@@ -188,27 +189,31 @@ export class FrichesController {
     @Body() input: CalculerMutabiliteInputDto,
     @Query("modeDetaille") modeDetaille?: boolean,
     @Query("sansEnrichissement") sansEnrichissement?: boolean,
+    @Query("iframe") isIframe?: boolean,
+    @Query("integrateur") integrateur?: string,
     @Req() req?: Request,
   ): Promise<MutabiliteOutputDto> {
-    const origine = this.detecterOrigine(req);
+    let origine: OrigineUtilisation;
 
-    // DEBUG : Logger l'origine détectée
-    console.log("===== DEBUG ORIGINE =====");
-    console.log("Headers complets:", req?.headers);
-    console.log("Referer:", req?.headers?.["referer"] || req?.headers?.["referrer"]);
-    console.log("Origin:", req?.headers?.["origin"]);
-    console.log("User-Agent:", req?.headers?.["user-agent"]);
-    console.log("Origine détectée:", origine);
-    console.log("========================");
+    // Priorité aux paramètres explicites iframe
+    if (isIframe === true) {
+      console.log(`[IFRAME] Détection explicite - Intégrateur: ${integrateur || "unknown"}`);
+      origine = {
+        source: SourceUtilisation.IFRAME_INTEGREE,
+        integrateur: integrateur || "unknown",
+      };
+    } else {
+      // Fallback sur la détection
+      origine = this.detecterOrigine(req);
+    }
 
-    // Options de calcul avec origine
-    const options = {
-      modeDetaille: modeDetaille || false,
-      sansEnrichissement: sansEnrichissement || false,
-      origine,
-    };
-
-    console.log("Options de calcul:", JSON.stringify(options, null, 2));
+    // Log pour monitoring
+    console.log("===== ORIGINE FINALE =====");
+    console.log("Source:", origine.source);
+    if (origine.integrateur) {
+      console.log("Intégrateur:", origine.integrateur);
+    }
+    console.log("=========================");
 
     return await this.orchestrateurService.calculerMutabilite(input, {
       modeDetaille: modeDetaille || false,

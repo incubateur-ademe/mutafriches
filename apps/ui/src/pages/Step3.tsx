@@ -35,12 +35,10 @@ export const Step3: React.FC = () => {
   // Créer le communicator une seule fois
   const iframeCommunicator = React.useMemo(() => {
     if (isIframeMode && parentOrigin) {
-      // Pour demo ou test local permettre toutes les origines
-      const target = integrator === "demo" || integrator === "test" ? "*" : parentOrigin;
-      return createIframeCommunicator(target);
+      return createIframeCommunicator(parentOrigin);
     }
     return null;
-  }, [isIframeMode, parentOrigin, integrator]);
+  }, [isIframeMode, parentOrigin]);
 
   // Fonction pour envoyer les messages iframe
   const sendIframeMessages = useCallback(
@@ -92,7 +90,10 @@ export const Step3: React.FC = () => {
 
     try {
       const mutabilityInput = buildMutabilityInput(state.enrichmentData, state.manualData);
-      const result = await apiService.calculerMutabilite(mutabilityInput);
+      const result = await apiService.calculerMutabilite(mutabilityInput, {
+        isIframe: isIframeMode,
+        integrator: integrator || undefined,
+      });
       setMutabilityResult(result);
       setMutabilityData(result);
       sendIframeMessages(result);
@@ -114,6 +115,7 @@ export const Step3: React.FC = () => {
     sendIframeMessages,
     isIframeMode,
     iframeCommunicator,
+    integrator,
   ]);
 
   // useEffect principal pour l'initialisation
