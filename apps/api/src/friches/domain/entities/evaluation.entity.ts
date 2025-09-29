@@ -4,6 +4,7 @@ import {
   MutabiliteOutputDto,
   OrigineUtilisation,
 } from "@mutafriches/shared-types";
+import { VERSION_ALGO } from "../../services/config/criteres-scoring.config";
 
 /**
  * Entité métier Evaluation
@@ -41,7 +42,7 @@ export class Evaluation {
     this.donneesComplementaires = donneesComplementaires;
     this.resultats = resultats;
     this.origine = origine;
-    this.versionAlgorithme = "1.0.0"; // TODO: Récupérer depuis config
+    this.versionAlgorithme = VERSION_ALGO;
   }
 
   /**

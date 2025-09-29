@@ -1,5 +1,6 @@
 import { UsageResultat } from "@mutafriches/shared-types";
 import React from "react";
+import { getUsageInfo } from "../../utils/mappers/usages.mapper";
 
 interface ResultsTableProps {
   results: UsageResultat[];
@@ -70,7 +71,9 @@ export const ResultsTable: React.FC<ResultsTableProps> = ({ results }) => {
                             </strong>
                           </td>
                           <td>
-                            <strong className={result.rang <= 3 ? "" : ""}>{result.usage}</strong>
+                            <strong className={result.rang <= 3 ? "" : ""}>
+                              {getUsageInfo(result.usage).label}
+                            </strong>
                           </td>
                           <td>
                             <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>

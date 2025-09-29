@@ -1,13 +1,13 @@
 import { UsageType } from "@mutafriches/shared-types";
 
 export const UsageLabels: Record<UsageType, string> = {
-  [UsageType.RESIDENTIEL]: "Résidentiel ou mixte",
+  [UsageType.RESIDENTIEL]: "Habitat et commerce de proximité",
   [UsageType.EQUIPEMENTS]: "Équipements publics",
-  [UsageType.CULTURE]: "Culture, tourisme",
-  [UsageType.TERTIAIRE]: "Tertiaire",
+  [UsageType.CULTURE]: "Equipements culturels et touristiques",
+  [UsageType.TERTIAIRE]: "Bureaux",
   [UsageType.INDUSTRIE]: "Industrie",
-  [UsageType.RENATURATION]: "Renaturation",
-  [UsageType.PHOTOVOLTAIQUE]: "Photovoltaïque au sol",
+  [UsageType.RENATURATION]: "Espace renaturé",
+  [UsageType.PHOTOVOLTAIQUE]: "Centrale photovoltaique au sol",
 };
 
 // Configuration UI pour chaque usage (icônes et couleurs)

@@ -68,7 +68,7 @@ export const Step3: React.FC = () => {
         })),
         metadata: {
           dateAnalyse: new Date().toISOString(),
-          versionAlgorithme: "1.0.0", // À mettre à jour avec la vraie version si besoin
+          versionAlgorithme: "1.1", // TODO À mettre à jour avec la vraie version via package shared si besoin
         },
       };
 
