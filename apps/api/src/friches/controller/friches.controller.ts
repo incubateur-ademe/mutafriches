@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { Controller, Post, Body, Query, Get, Param, NotFoundException, Req } from "@nestjs/common";
 import {
   ApiTags,
@@ -197,15 +196,8 @@ export class FrichesController {
 
     const iframeMode = String(isIframe) === "true";
 
-    // Log des paramètres reçus pour debug
-    console.log("===== PARAMS RECUS =====");
-    console.log("iframe (raw):", isIframe, "type:", typeof isIframe);
-    console.log("integrateur:", integrateur);
-    console.log("========================");
-
     // Priorité aux paramètres explicites iframe
     if (iframeMode) {
-      console.log(`[IFRAME] Détection explicite - Intégrateur: ${integrateur || "unknown"}`);
       origine = {
         source: SourceUtilisation.IFRAME_INTEGREE,
         integrateur: integrateur || "unknown",
@@ -214,14 +206,6 @@ export class FrichesController {
       // Fallback sur la détection
       origine = this.detecterOrigine(req);
     }
-
-    // Log pour monitoring
-    console.log("===== ORIGINE FINALE =====");
-    console.log("Source:", origine.source);
-    if (origine.integrateur) {
-      console.log("Intégrateur:", origine.integrateur);
-    }
-    console.log("=========================");
 
     return await this.orchestrateurService.calculerMutabilite(input, {
       modeDetaille: modeDetaille || false,
@@ -326,7 +310,6 @@ export class FrichesController {
    */
   private detecterOrigine(req?: Request): OrigineUtilisation {
     if (!req) {
-      console.log("DEBUG: Pas de request object");
       return { source: SourceUtilisation.API_DIRECTE };
     }
 
@@ -334,12 +317,9 @@ export class FrichesController {
     const referrer =
       req.headers["referer"] || req.headers["referrer"] || req.headers["origin"] || "";
 
-    console.log(`DEBUG detecterOrigine - Referrer trouvé: "${referrer}"`);
-
     // Si pas de referrer mais qu'on a un origin header
     if (!referrer && req.headers["origin"]) {
       const origin = req.headers["origin"] as string;
-      console.log(`DEBUG: Utilisation de l'origin header: ${origin}`);
 
       // Vérifier si c'est un domaine standalone
       const domainesStandalone = [
@@ -382,14 +362,12 @@ export class FrichesController {
     const isStandalone = domainesStandalone.some((domain) => referrer.includes(domain));
 
     if (isStandalone && !referrer.includes("/api")) {
-      console.log("DEBUG: Détecté comme SITE_STANDALONE");
       return { source: SourceUtilisation.SITE_STANDALONE };
     }
 
     // Si on a un referrer qui n'est pas un domaine standalone -> iframe
     if (referrer) {
       const integrateur = this.extraireIntegrateur(referrer as string);
-      console.log(`DEBUG: Détecté comme IFRAME_INTEGREE, integrateur: ${integrateur}`);
       return {
         source: SourceUtilisation.IFRAME_INTEGREE,
         integrateur,
@@ -397,7 +375,6 @@ export class FrichesController {
     }
 
     // Par défaut pour les appels sans referrer
-    console.log("DEBUG: Par défaut -> API_DIRECTE");
     return { source: SourceUtilisation.API_DIRECTE };
   }
 
@@ -410,7 +387,6 @@ export class FrichesController {
     if (!referrer) return undefined;
     try {
       const url = new URL(referrer);
-      console.log(`DEBUG extraireIntegrateur - hostname: ${url.hostname}`);
       return url.hostname;
     } catch (error) {
       console.error("DEBUG: Erreur parsing URL:", error);

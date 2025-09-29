@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { Injectable } from "@nestjs/common";
 import {
   MutabiliteOutputDto,
@@ -14,7 +13,6 @@ import {
   MATRICE_SCORING,
   NOMBRE_CRITERES_UTILISES,
   POIDS_CRITERES,
-  ScoreImpact,
 } from "./config/criteres-scoring.config";
 import { NIVEAUX_FIABILITE } from "./config/algorithme.helpers";
 import { ScoreParUsage } from "./config/algorithme.types";
@@ -40,14 +38,6 @@ export class CalculService {
    */
   async calculer(parcelle: Parcelle, options: CalculOptions = {}): Promise<MutabiliteOutputDto> {
     const { modeDetaille = false } = options;
-
-    // LOG DE DIAGNOSTIC - Parcelle reçue
-    console.log("========== DIAGNOSTIC CALCUL MUTABILITE ==========");
-    console.log("1. PARCELLE RECUE :");
-    console.log("Nombre de propriétés dans parcelle:", Object.keys(parcelle).length);
-    console.log("Propriétés de la parcelle:", Object.keys(parcelle));
-    console.log("Valeur trameVerteEtBleue dans parcelle:", parcelle.trameVerteEtBleue);
-    console.log("");
 
     // Calculer et trier les résultats par indice décroissant
     const resultatsCalcules = Object.values(UsageType)
@@ -80,18 +70,6 @@ export class CalculService {
     );
 
     const fiabilite = this.calculerFiabilite(parcelle);
-
-    // LOG DE DIAGNOSTIC - Résultats finaux
-    console.log("========== RESULTATS DU CALCUL ==========");
-    console.log("Fiabilité calculée:", fiabilite);
-    console.log("Nombre de résultats:", resultats.length);
-    resultats.forEach((r, idx) => {
-      console.log(`${idx + 1}. ${r.usage}: ${r.indiceMutabilite}% (rang ${r.rang})`);
-      if ("avantages" in r && "contraintes" in r) {
-        console.log(`   -> Avantages: ${r.avantages}, Contraintes: ${r.contraintes}`);
-      }
-    });
-    console.log("==========================================");
 
     return {
       fiabilite,
@@ -219,11 +197,6 @@ export class CalculService {
     const criteres = this.extraireCriteres(parcelle);
 
     Object.entries(criteres).forEach(([champDTO, valeur]) => {
-      // LOG DE DIAGNOSTIC - Traitement de chaque critère
-      if (usage === UsageType.RESIDENTIEL) {
-        console.log(`Traitement du critère "${champDTO}" avec valeur:`, valeur);
-      }
-
       // Ignorer si non renseigné
       if (valeur === null || valeur === undefined || valeur === "ne-sait-pas") {
         detailsCriteresVides.push({
@@ -238,29 +211,6 @@ export class CalculService {
 
       const scoreBrut = this.obtenirScoreCritere(champDTO, valeur, usage);
 
-      // LOG DE DIAGNOSTIC - Détails du score:
-      if (usage === UsageType.INDUSTRIE) {
-        console.log(`[INDUSTRIE DEBUG] ${champDTO}:`);
-        console.log(`  - Valeur: ${valeur}`);
-        console.log(`  - Score brut: ${scoreBrut}`);
-        console.log(`  - Type du score: ${typeof scoreBrut}`);
-        console.log(`  - Test scoreBrut === 0.5: ${scoreBrut === 0.5}`);
-        console.log(
-          `  - Test Math.abs(scoreBrut - 0.5) < 0.001: ${Math.abs(scoreBrut - 0.5) < 0.001}`,
-        );
-
-        // Vérifier spécifiquement ScoreImpact.NEUTRE
-        console.log(`  - ScoreImpact.NEUTRE value: ${ScoreImpact.NEUTRE}`);
-        console.log(
-          `  - Test scoreBrut === ScoreImpact.NEUTRE: ${scoreBrut === ScoreImpact.NEUTRE}`,
-        );
-      }
-
-      // LOG DE DIAGNOSTIC - Score obtenu
-      if (usage === UsageType.RESIDENTIEL && scoreBrut === null) {
-        console.log(`  -> Critère "${champDTO}" NON MAPPE dans MATRICE_SCORING`);
-      }
-
       if (scoreBrut === null) return;
 
       const poids = POIDS_CRITERES[champDTO as keyof typeof POIDS_CRITERES] ?? 1;
@@ -274,28 +224,11 @@ export class CalculService {
         scorePondere: Math.abs(scorePondere),
       };
 
-      // Log de diagnostic spécifique pour INDUSTRIE
-      if (usage === UsageType.INDUSTRIE && Math.abs(scoreBrut - 0.5) < 0.001) {
-        console.log(`[INDUSTRIE NEUTRE] ${champDTO} devrait être NEUTRE`);
-        console.log(`  - Avant traitement: avantages=${avantages}, contraintes=${contraintes}`);
-      }
-
       // LOGIQUE EXCEL : Les critères NEUTRE (0.5) comptent dans les deux côtés
       if (scoreBrut === 0.5) {
-        // AJOUT DE LOGS POUR DEBUG
-        console.log(`[DEBUG NEUTRE] ${usage} - Critère "${champDTO}" avec valeur "${valeur}"`);
-        console.log(
-          `[DEBUG NEUTRE] Score brut: ${scoreBrut}, Poids: ${poids}, Score pondéré: ${Math.abs(scorePondere)}`,
-        );
-        console.log(
-          `[DEBUG NEUTRE] Ajout aux DEUX côtés - Avant: avantages=${avantages}, contraintes=${contraintes}`,
-        );
-
         // NEUTRE
         avantages += Math.abs(scorePondere);
         contraintes += Math.abs(scorePondere);
-
-        console.log(`[DEBUG NEUTRE] Après: avantages=${avantages}, contraintes=${contraintes}`);
 
         // Ajouter aux deux listes pour le détail
         detailsAvantages.push(detail);
@@ -315,72 +248,12 @@ export class CalculService {
         // Critères négatifs vont uniquement dans contraintes
         contraintes += Math.abs(scorePondere);
         detailsContraintes.push(detail);
-
-        // Log de diagnostic spécifique pour INDUSTRIE
-        if (usage === UsageType.INDUSTRIE) {
-          console.log(
-            `[INDUSTRIE NEGATIF] ${champDTO}: score ${scoreBrut} × poids ${poids} = ${Math.abs(scorePondere)} ajouté aux contraintes`,
-          );
-        }
       }
     });
-
-    // LOG DE DIAGNOSTIC - Résumé pour premier usage
-    if (usage === UsageType.RESIDENTIEL) {
-      console.log("");
-      console.log("3. RESUME DU TRAITEMENT :");
-      console.log("Critères avec valeurs:", detailsAvantages.length + detailsContraintes.length);
-      console.log("Critères vides/non renseignés:", detailsCriteresVides.length);
-      console.log(
-        "Critères vides:",
-        detailsCriteresVides.map((c) => c.critere),
-      );
-
-      // Vérification des critères attendus vs reçus
-      const criteresAttendus = Object.keys(MATRICE_SCORING);
-      const criteresRecus = Object.keys(criteres);
-      const criteresManquantsDansExtraction = criteresAttendus.filter(
-        (c) => !criteresRecus.includes(c),
-      );
-      const criteresNonMappes = criteresRecus.filter((c) => !criteresAttendus.includes(c));
-
-      console.log("");
-      console.log("4. ANALYSE DES ECARTS :");
-      console.log("Critères attendus dans MATRICE_SCORING:", criteresAttendus.length);
-      console.log("Critères manquants dans extraction:", criteresManquantsDansExtraction);
-      console.log("Critères extraits mais non mappés:", criteresNonMappes);
-      console.log("========== FIN DIAGNOSTIC ==========");
-      console.log("");
-    }
 
     // Trier par impact décroissant
     detailsAvantages.sort((a, b) => b.scorePondere - a.scorePondere);
     detailsContraintes.sort((a, b) => b.scorePondere - a.scorePondere);
-
-    // LOG POUR ANALYSE DETAILLEE
-    if (usage === UsageType.RESIDENTIEL) {
-      console.log("=== ANALYSE DETAILLEE RESIDENTIEL ===");
-      console.log("AVANTAGES:");
-      detailsAvantages.forEach((d) => {
-        console.log(
-          `+ ${d.critere}: ${d.valeur} → score ${d.scoreBrut} × poids ${d.poids} = ${d.scorePondere}`,
-        );
-      });
-      console.log("Total avantages:", avantages);
-
-      console.log("\nCONTRAINTES:");
-      detailsContraintes.forEach((d) => {
-        console.log(
-          `- ${d.critere}: ${d.valeur} → score ${d.scoreBrut} × poids ${d.poids} = ${d.scorePondere}`,
-        );
-      });
-      console.log("Total contraintes:", contraintes);
-
-      console.log(
-        `\nCalcul final: ${avantages} / (${avantages} + ${contraintes}) = ${(avantages / (avantages + contraintes)) * 100}%`,
-      );
-      console.log("Attendu dans Excel: 42%");
-    }
 
     return { avantages, contraintes, detailsCriteresVides, detailsAvantages, detailsContraintes };
   }
@@ -389,12 +262,6 @@ export class CalculService {
    * Extrait les critères de calcul depuis l'entité Parcelle
    */
   protected extraireCriteres(parcelle: Parcelle): Record<string, unknown> {
-    // LOG DE DIAGNOSTIC
-    console.log(
-      "extraireCriteres - valeur trameVerteEtBleue dans parcelle:",
-      parcelle.trameVerteEtBleue,
-    );
-
     // Mapper les propriétés de la parcelle vers les clés attendues par la matrice
     const criteres = {
       surfaceSite: parcelle.surfaceSite,
@@ -419,11 +286,6 @@ export class CalculService {
       zonagePatrimonial: parcelle.zonagePatrimonial,
       trameVerteEtBleue: parcelle.trameVerteEtBleue,
     };
-
-    console.log(
-      "extraireCriteres - critères extraits avec trameVerteEtBleue:",
-      criteres.trameVerteEtBleue,
-    );
 
     return criteres;
   }
