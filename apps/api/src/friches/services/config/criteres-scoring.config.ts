@@ -267,8 +267,8 @@ export const MATRICE_SCORING = {
       [UsageType.CULTURE]: ScoreImpact.TRES_NEGATIF,
       [UsageType.TERTIAIRE]: ScoreImpact.TRES_NEGATIF,
       [UsageType.INDUSTRIE]: ScoreImpact.TRES_NEGATIF,
-      [UsageType.RENATURATION]: ScoreImpact.TRES_POSITIF,
-      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.POSITIF,
+      [UsageType.RENATURATION]: ScoreImpact.POSITIF,
+      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
     },
     [RaccordementEau.NE_SAIT_PAS]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
