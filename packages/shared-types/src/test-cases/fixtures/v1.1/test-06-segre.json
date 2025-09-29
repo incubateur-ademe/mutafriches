@@ -23,7 +23,7 @@
     "distanceTransportCommun": "plus-de-500m",
     "proximiteCommercesServices": false,
     "distanceRaccordementElectrique": "plus-de-5km",
-    "zonageReglementaire": "secteur-de-carte-communale-ouvert-a-la-construction",
+    "zonageReglementaire": "secteur-ouvert-a-la-construction",
     "presenceRisquesNaturels": "faible",
     "presenceRisquesTechnologiques": true,
     "zonagePatrimonial": "non-concerne",
