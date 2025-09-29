@@ -42,7 +42,7 @@ export class DonneesComplementairesSwaggerDto implements IDonneesComplementaires
   @ApiProperty({
     enum: ValeurArchitecturale,
     description: "Valeur architecturale et/ou historique du site",
-    example: ValeurArchitecturale.BANAL_INFRA_ORDINAIRE,
+    example: ValeurArchitecturale.INTERET_REMARQUABLE,
   })
   valeurArchitecturaleHistorique: ValeurArchitecturale;
 

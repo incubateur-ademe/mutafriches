@@ -59,10 +59,8 @@ export const PRESENCE_POLLUTION_MAPPING: Record<string, PresencePollution> = {
 // Valeur architecturale - Valeurs exactes
 export const VALEUR_ARCHITECTURALE_MAPPING: Record<string, ValeurArchitecturale> = {
   "Sans intérêt": ValeurArchitecturale.SANS_INTERET,
-  "Banal / infra-ordinaire": ValeurArchitecturale.BANAL_INFRA_ORDINAIRE,
   Ordinaire: ValeurArchitecturale.ORDINAIRE,
-  "Intérêt fort": ValeurArchitecturale.INTERET_FORT,
-  Exceptionnel: ValeurArchitecturale.EXCEPTIONNEL,
+  "Interet remarquable": ValeurArchitecturale.INTERET_REMARQUABLE,
   "Ne sait pas": ValeurArchitecturale.NE_SAIT_PAS,
 };
 

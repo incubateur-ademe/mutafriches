@@ -89,7 +89,7 @@ export const SITE_FIELDS = {
       { value: "", label: "Sélectionner une option" },
       { value: ValeurArchitecturale.SANS_INTERET, label: "Sans intérêt" },
       { value: ValeurArchitecturale.ORDINAIRE, label: "Ordinaire" },
-      { value: ValeurArchitecturale.INTERET_FORT, label: "Intérêt remarquable" },
+      { value: ValeurArchitecturale.INTERET_REMARQUABLE, label: "Intérêt remarquable" },
       { value: ValeurArchitecturale.NE_SAIT_PAS, label: "Ne sait pas" },
     ] as SelectOption<ValeurArchitecturale>[],
   },

@@ -152,11 +152,9 @@ export function toValeurArchitecturale(value: string | undefined): ValeurArchite
 
   const mapping: Record<string, ValeurArchitecturale> = {
     // Formats test case (kebab-case)
-    exceptionnel: ValeurArchitecturale.EXCEPTIONNEL,
-    "interet-fort": ValeurArchitecturale.INTERET_FORT,
-    ordinaire: ValeurArchitecturale.ORDINAIRE,
-    "banal-infra-ordinaire": ValeurArchitecturale.BANAL_INFRA_ORDINAIRE,
     "sans-interet": ValeurArchitecturale.SANS_INTERET,
+    ordinaire: ValeurArchitecturale.ORDINAIRE,
+    "interet-remarquable": ValeurArchitecturale.INTERET_REMARQUABLE,
     "ne-sait-pas": ValeurArchitecturale.NE_SAIT_PAS,
   };
 
@@ -165,10 +163,8 @@ export function toValeurArchitecturale(value: string | undefined): ValeurArchite
   }
 
   // Essayer avec la valeur originale si c'est déjà un enum
-  if (value === "EXCEPTIONNEL") return ValeurArchitecturale.EXCEPTIONNEL;
-  if (value === "INTERET_FORT") return ValeurArchitecturale.INTERET_FORT;
+  if (value === "INTERET_REMARQUABLE") return ValeurArchitecturale.INTERET_REMARQUABLE;
   if (value === "ORDINAIRE") return ValeurArchitecturale.ORDINAIRE;
-  if (value === "BANAL_INFRA_ORDINAIRE") return ValeurArchitecturale.BANAL_INFRA_ORDINAIRE;
   if (value === "SANS_INTERET") return ValeurArchitecturale.SANS_INTERET;
   if (value === "NE_SAIT_PAS") return ValeurArchitecturale.NE_SAIT_PAS;
 

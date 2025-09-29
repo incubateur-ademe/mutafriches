@@ -469,13 +469,9 @@ export function InputFormFields({ formData, onFormDataChange, isEditable }: Inpu
                 disabled={!isEditable}
               >
                 <option value="">-- Sélectionner --</option>
-                <option value={ValeurArchitecturale.EXCEPTIONNEL}>Exceptionnel</option>
-                <option value={ValeurArchitecturale.INTERET_FORT}>Intérêt fort</option>
-                <option value={ValeurArchitecturale.ORDINAIRE}>Ordinaire</option>
-                <option value={ValeurArchitecturale.BANAL_INFRA_ORDINAIRE}>
-                  Banal / infra-ordinaire
-                </option>
                 <option value={ValeurArchitecturale.SANS_INTERET}>Sans intérêt</option>
+                <option value={ValeurArchitecturale.ORDINAIRE}>Ordinaire</option>
+                <option value={ValeurArchitecturale.INTERET_REMARQUABLE}>Remarquable</option>
                 <option value={ValeurArchitecturale.NE_SAIT_PAS}>Ne sait pas</option>
               </select>
             </div>

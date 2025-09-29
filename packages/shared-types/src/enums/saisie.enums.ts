@@ -51,10 +51,8 @@ export enum PresencePollution {
  */
 export enum ValeurArchitecturale {
   SANS_INTERET = "sans-interet",
-  BANAL_INFRA_ORDINAIRE = "banal-infra-ordinaire",
   ORDINAIRE = "ordinaire",
-  INTERET_FORT = "interet-fort",
-  EXCEPTIONNEL = "exceptionnel",
+  INTERET_REMARQUABLE = "interet-remarquable",
   NE_SAIT_PAS = "ne-sait-pas",
 }
 

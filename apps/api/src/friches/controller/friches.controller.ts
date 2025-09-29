@@ -156,7 +156,7 @@ export class FrichesController {
             raccordementEau: RaccordementEau.OUI,
             etatBatiInfrastructure: EtatBatiInfrastructure.DEGRADATION_HETEROGENE,
             presencePollution: PresencePollution.NE_SAIT_PAS,
-            valeurArchitecturaleHistorique: ValeurArchitecturale.EXCEPTIONNEL,
+            valeurArchitecturaleHistorique: ValeurArchitecturale.INTERET_REMARQUABLE,
             qualitePaysage: QualitePaysage.BANAL_INFRA_ORDINAIRE,
             qualiteVoieDesserte: QualiteVoieDesserte.ACCESSIBLE,
           },
