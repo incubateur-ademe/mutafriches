@@ -19,17 +19,17 @@ export function Tests() {
     },
     {
       id: "test-dsfr",
-      title: "Test DSFR",
-      description: "Vérifier que le Design System de l'État est bien chargé et fonctionnel",
-      href: "/test/dsfr",
-      image: "/illustrations/undraw_design-components_529l.svg",
+      title: "Test Sélection de parcelle",
+      description: "Tester la sélection de parcelle et récupération de l'IDU via une carte",
+      href: "/test/carte-parcelle",
+      image: "/illustrations/undraw_map-dark_g9xq.svg",
     },
     {
       id: "test-enrichissement",
       title: "Test Enrichissement",
       description: "Tester l'API d'enrichissement des parcelles et la récupération des données",
       href: "/test/enrichissement-parcelle",
-      image: "/illustrations/undraw_map-dark_g9xq.svg",
+      image: "/illustrations/undraw_design-components_529l.svg",
     },
   ];
 

@@ -8,7 +8,7 @@ export const ROUTES = {
   STEP3: "/resultats",
   DEBUG: "/debug",
   TESTS: "/tests",
-  TEST_DSFR: "/test/dsfr",
+  TEST_CARTE_PARCELLE: "/test/carte-parcelle",
   TEST_ENRICHISSEMENT: "/test/enrichissement-parcelle",
   TEST_MUTABILITE: "/test/algorithme",
   TEST_IFRAME: "/test/iframe",

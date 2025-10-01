@@ -5,7 +5,7 @@ import { Step2 } from "./pages/Step2";
 import { ROUTES } from "./config/routes/routes.config";
 import { Step3 } from "./pages/Step3";
 import { Tests } from "./pages/Tests";
-import { TestDsfr } from "./pages/tests/TestDsfr";
+import { TestCarteParcelle } from "./pages/tests/TestCarteParcelle";
 import TestMutability from "./pages/tests/TestMutability";
 import { TestEnrichment } from "./pages/tests/TestEnrichment";
 import { TestIframe } from "./pages/tests/TestIframe";
@@ -23,7 +23,7 @@ function App() {
 
           {/* Routes pour les tests */}
           <Route path={ROUTES.TESTS} element={<Tests />} />
-          <Route path={ROUTES.TEST_DSFR} element={<TestDsfr />} />
+          <Route path={ROUTES.TEST_CARTE_PARCELLE} element={<TestCarteParcelle />} />
           <Route path={ROUTES.TEST_ENRICHISSEMENT} element={<TestEnrichment />} />
           <Route path={ROUTES.TEST_MUTABILITE} element={<TestMutability />} />
           <Route path={ROUTES.TEST_IFRAME} element={<TestIframe />} />
