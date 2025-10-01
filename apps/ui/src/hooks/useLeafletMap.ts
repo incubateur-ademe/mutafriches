@@ -1,8 +1,8 @@
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { searchParcelWithFallback } from "../services/cadastre-map/cadastre.service";
-import { extractIdu } from "../services/cadastre-map/geo.utils";
+import { searchParcelWithFallback } from "../services/cadastre/cadastre.service";
+import { extractIdu } from "../services/cadastre/geo.utils";
 import type { ParcelleDisplayData, OnParcelleSelectedCallback } from "../types/parcelle.types";
 
 // Fix Leaflet : Réinitialisation des icônes par défaut
@@ -34,6 +34,15 @@ export function useLeafletMap({
   const mapRef = useRef<L.Map | null>(null);
   const highlightRef = useRef<L.GeoJSON | null>(null);
   const callbackRef = useRef<OnParcelleSelectedCallback | undefined>(onParcelleSelected);
+
+  // Fonction exposée pour recentrer la carte
+  const flyToLocation = useCallback((lat: number, lng: number, zoom = 17) => {
+    if (mapRef.current) {
+      mapRef.current.flyTo([lat, lng], zoom, {
+        duration: 1.5,
+      });
+    }
+  }, []);
 
   // Synchroniser la ref du callback
   useEffect(() => {
@@ -175,5 +184,6 @@ export function useLeafletMap({
     };
   }, [containerId, initialCenter, initialZoom]);
 
-  return undefined;
+  // Memoization de la fonction flyToLocation pour éviter les rerenders inutiles
+  return useMemo(() => ({ flyToLocation }), [flyToLocation]);
 }
