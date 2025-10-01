@@ -1,4 +1,16 @@
-import { Controller, Post, Body, Query, Get, Param, NotFoundException, Req } from "@nestjs/common";
+import {
+  Controller,
+  Post,
+  Body,
+  Query,
+  Get,
+  Param,
+  NotFoundException,
+  Req,
+  HttpException,
+  HttpStatus,
+  Logger,
+} from "@nestjs/common";
 import {
   ApiTags,
   ApiOperation,
@@ -38,10 +50,13 @@ import { MetadataSwaggerDto } from "../dto/swagger/output/metadata.dto";
 import { EvaluationSwaggerDto } from "../dto/swagger/output/evaluation.dto";
 import { Evaluation } from "../domain/entities/evaluation.entity";
 import { SourceUtilisation } from "@mutafriches/shared-types/dist/enums/usage.enums";
+import { isValidParcelId } from "../utils/validation.utils";
 
 @ApiTags("friches")
 @Controller("friches")
 export class FrichesController {
+  private readonly logger = new Logger(FrichesController.name);
+
   constructor(private readonly orchestrateurService: OrchestrateurService) {}
 
   @Post("enrichir")
@@ -95,7 +110,82 @@ export class FrichesController {
   async enrichirParcelle(
     @Body() input: EnrichirParcelleInputDto,
   ): Promise<EnrichissementOutputDto> {
-    return await this.orchestrateurService.enrichirParcelle(input);
+    try {
+      this.logger.log(`Enrichissement parcelle: ${input.identifiant}`);
+
+      // Validation de l'input
+      if (!input.identifiant) {
+        throw new HttpException(
+          {
+            statusCode: HttpStatus.BAD_REQUEST,
+            message: "L'identifiant de parcelle est requis",
+            error: "Bad Request",
+          },
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      // Validation du format de l'identifiant
+      if (!isValidParcelId(input.identifiant)) {
+        throw new HttpException(
+          {
+            statusCode: HttpStatus.BAD_REQUEST,
+            message:
+              "Format d'identifiant invalide. Format attendu : code commune (5-6 chiffres) + section (2 lettres majuscules) + numéro (4 chiffres). Exemple : 25056000IK0102",
+            error: "Bad Request",
+          },
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      const result = await this.orchestrateurService.enrichirParcelle(input);
+      return result;
+    } catch (error) {
+      this.logger.error(`Erreur enrichissement parcelle ${input.identifiant}:`, error);
+
+      // Si c'est déjà une HttpException, on la propage
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      // Extraire le message d'erreur
+      const errorMessage = error instanceof Error ? error.message : "Une erreur est survenue";
+
+      // Déterminer le code HTTP approprié selon le type d'erreur
+      let statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
+      let errorType = "Internal Server Error";
+
+      if (
+        errorMessage.toLowerCase().includes("introuvable") ||
+        errorMessage.toLowerCase().includes("pas trouvé") ||
+        errorMessage.toLowerCase().includes("non trouvé")
+      ) {
+        statusCode = HttpStatus.NOT_FOUND;
+        errorType = "Not Found";
+      } else if (
+        errorMessage.toLowerCase().includes("invalide") ||
+        errorMessage.toLowerCase().includes("incorrect") ||
+        errorMessage.toLowerCase().includes("format")
+      ) {
+        statusCode = HttpStatus.BAD_REQUEST;
+        errorType = "Bad Request";
+      } else if (
+        errorMessage.toLowerCase().includes("timeout") ||
+        errorMessage.toLowerCase().includes("connexion")
+      ) {
+        statusCode = HttpStatus.SERVICE_UNAVAILABLE;
+        errorType = "Service Unavailable";
+      }
+
+      throw new HttpException(
+        {
+          statusCode,
+          message: errorMessage,
+          error: errorType,
+        },
+        statusCode,
+      );
+    }
   }
 
   @Post("calculer")
@@ -192,26 +282,87 @@ export class FrichesController {
     @Query("integrateur") integrateur?: string,
     @Req() req?: Request,
   ): Promise<MutabiliteOutputDto> {
-    let origine: OrigineUtilisation;
+    try {
+      this.logger.log("Calcul de mutabilité demandé");
 
-    const iframeMode = String(isIframe) === "true";
+      // Validation de l'input
+      if (!input) {
+        throw new HttpException(
+          {
+            statusCode: HttpStatus.BAD_REQUEST,
+            message: "Les données d'entrée sont requises pour le calcul de mutabilité",
+            error: "Bad Request",
+          },
+          HttpStatus.BAD_REQUEST,
+        );
+      }
 
-    // Priorité aux paramètres explicites iframe
-    if (iframeMode) {
-      origine = {
-        source: SourceUtilisation.IFRAME_INTEGREE,
-        integrateur: integrateur || "unknown",
-      };
-    } else {
-      // Fallback sur la détection
-      origine = this.detecterOrigine(req);
+      // Validation des données enrichies
+      if (!input.donneesEnrichies) {
+        throw new HttpException(
+          {
+            statusCode: HttpStatus.BAD_REQUEST,
+            message: "Les données enrichies sont requises pour le calcul",
+            error: "Bad Request",
+          },
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      // Validation des données complémentaires si pas en mode sansEnrichissement
+      if (!sansEnrichissement && !input.donneesComplementaires) {
+        throw new HttpException(
+          {
+            statusCode: HttpStatus.BAD_REQUEST,
+            message: "Les données complémentaires sont requises pour le calcul complet",
+            error: "Bad Request",
+          },
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      let origine: OrigineUtilisation;
+      const iframeMode = String(isIframe) === "true";
+
+      // Priorité aux paramètres explicites iframe
+      if (iframeMode) {
+        origine = {
+          source: SourceUtilisation.IFRAME_INTEGREE,
+          integrateur: integrateur || "unknown",
+        };
+      } else {
+        // Fallback sur la détection
+        origine = this.detecterOrigine(req);
+      }
+
+      const result = await this.orchestrateurService.calculerMutabilite(input, {
+        modeDetaille: modeDetaille || false,
+        sansEnrichissement: sansEnrichissement || false,
+        origine,
+      });
+
+      return result;
+    } catch (error) {
+      this.logger.error("Erreur calcul mutabilité:", error);
+
+      // Si c'est déjà une HttpException, on la propage
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      // Extraire le message d'erreur
+      const errorMessage =
+        error instanceof Error ? error.message : "Une erreur est survenue lors du calcul";
+
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+          message: errorMessage,
+          error: "Internal Server Error",
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
-
-    return await this.orchestrateurService.calculerMutabilite(input, {
-      modeDetaille: modeDetaille || false,
-      sansEnrichissement: sansEnrichissement || false,
-      origine,
-    });
   }
 
   @Get("evaluations/:id")
@@ -233,13 +384,30 @@ export class FrichesController {
     description: "Évaluation non trouvée",
   })
   async recupererEvaluation(@Param("id") id: string): Promise<EvaluationSwaggerDto> {
-    const evaluation = await this.orchestrateurService.recupererEvaluation(id);
+    try {
+      const evaluation = await this.orchestrateurService.recupererEvaluation(id);
 
-    if (!evaluation) {
-      throw new NotFoundException(`Évaluation ${id} non trouvée`);
+      if (!evaluation) {
+        throw new NotFoundException(`Évaluation ${id} non trouvée`);
+      }
+
+      return this.mapEvaluationToDto(evaluation);
+    } catch (error) {
+      this.logger.error(`Erreur récupération évaluation ${id}:`, error);
+
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+          message: "Erreur lors de la récupération de l'évaluation",
+          error: "Internal Server Error",
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
-
-    return this.mapEvaluationToDto(evaluation);
   }
 
   /**
