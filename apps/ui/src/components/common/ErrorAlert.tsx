@@ -40,10 +40,11 @@ export function ErrorAlert({
     const defaultSuggestions: string[] = [];
 
     if (message.toLowerCase().includes("cadastrales introuvables")) {
+      // TODO message dans packages/shared ?
       defaultSuggestions.push(
         "Vérifiez que l'identifiant de parcelle est correct",
-        "Format attendu : code commune (5 ou 6 chiffres) + préfixe (3 chiffres) + section (2 lettres) + numéro (4 chiffres)",
-        "Exemple : 25056000IK0102",
+        "Format attendu : code commune (5-6 caractères) + préfixe (0-3 caractères) + section (1-2 lettres majuscules) + numéro (4 chiffres). ",
+        "Exemples : 25056000IK0102 ou 972090000O0498",
       );
     } else if (message.toLowerCase().includes("connexion")) {
       defaultSuggestions.push(
