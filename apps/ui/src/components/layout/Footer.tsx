@@ -1,3 +1,5 @@
+import { ROUTES } from "../../config/routes/routes.config";
+
 export function Footer() {
   return (
     <>
@@ -45,8 +47,13 @@ export function Footer() {
                 </button>
               </li>
               <li className="fr-footer__bottom-item">
-                <a className="fr-footer__bottom-link" href="/tests">
+                <a className="fr-footer__bottom-link" href={ROUTES.TESTS}>
                   Pages de tests
+                </a>
+              </li>
+              <li className="fr-footer__bottom-item">
+                <a className="fr-footer__bottom-link" href={ROUTES.STATS}>
+                  Statistiques
                 </a>
               </li>
             </ul>

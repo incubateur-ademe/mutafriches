@@ -10,6 +10,7 @@ import TestMutability from "./pages/tests/TestMutability";
 import { TestEnrichment } from "./pages/tests/TestEnrichment";
 import { TestIframe } from "./pages/tests/TestIframe";
 import { TestCallback } from "./pages/tests/TestCallback";
+import { Statistiques } from "./pages/Statistiques";
 
 function App() {
   return (
@@ -20,6 +21,9 @@ function App() {
           <Route path={ROUTES.STEP1} element={<Step1 />} />
           <Route path={ROUTES.STEP2} element={<Step2 />} />
           <Route path={ROUTES.STEP3} element={<Step3 />} />
+
+          {/* Route pour les statistiques */}
+          <Route path={ROUTES.STATS} element={<Statistiques />} />
 
           {/* Routes pour les tests */}
           <Route path={ROUTES.TESTS} element={<Tests />} />
