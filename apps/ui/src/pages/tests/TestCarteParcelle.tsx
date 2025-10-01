@@ -56,9 +56,21 @@ export function TestCarteParcelle() {
           </p>
         </div>
 
+        {/* Instructions */}
+        <div className="fr-alert fr-alert--info fr-mb-4w">
+          <h3 className="fr-alert__title">Instructions</h3>
+          <p>
+            1. Utilisez la molette de la souris pour zoomer sur la carte
+            <br />
+            2. Cliquez sur une parcelle visible pour la sélectionner
+            <br />
+            3. Les informations de la parcelle s'affichent
+          </p>
+        </div>
+
         {/* Informations sur la parcelle sélectionnée */}
         {selectedIdu && parcelleData && (
-          <div className="fr-callout fr-mb-4w">
+          <div className="fr-callout  fr-callout--blue-ecume fr-mb-4w">
             <h3 className="fr-callout__title">Parcelle sélectionnée</h3>
             <div className="fr-callout__text">
               <dl className="fr-grid-row">
@@ -97,18 +109,6 @@ export function TestCarteParcelle() {
             </div>
           </div>
         )}
-
-        {/* Instructions */}
-        <div className="fr-alert fr-alert--info fr-mb-4w">
-          <h3 className="fr-alert__title">Instructions</h3>
-          <p>
-            1. Utilisez la molette de la souris pour zoomer sur la carte
-            <br />
-            2. Cliquez sur une parcelle visible pour la sélectionner
-            <br />
-            3. Les informations de la parcelle s'affichent
-          </p>
-        </div>
 
         {/* Carte de sélection */}
         <div className="fr-mb-4w">
