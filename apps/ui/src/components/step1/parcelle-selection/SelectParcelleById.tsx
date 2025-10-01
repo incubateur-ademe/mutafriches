@@ -8,8 +8,72 @@ export const SelectParcelleById: React.FC<SelectParcelleByIdProps> = ({ onSearch
   const [parcelId, setParcelId] = useState("");
   const [showGuide, setShowGuide] = useState(false);
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const cleaned = e.target.value.replace(/[^0-9A-Za-z]/g, "").toUpperCase();
+    const limited = cleaned.slice(0, 17);
+
+    let formatted = "";
+    let pos = 0;
+
+    let deptCommune = limited.slice(0, 6);
+    if (limited.length >= 6 && /^97[1-6]/.test(limited)) {
+      deptCommune = limited.slice(0, 6);
+      pos = 6;
+    } else if (limited.length >= 5 && /^2[AB]/.test(limited)) {
+      deptCommune = limited.slice(0, 5);
+      pos = 5;
+    } else if (limited.length >= 5) {
+      deptCommune = limited.slice(0, 5);
+      pos = 5;
+    } else {
+      formatted = limited;
+      setParcelId(formatted);
+      return;
+    }
+
+    formatted = deptCommune;
+
+    if (limited.length <= pos) {
+      setParcelId(formatted);
+      return;
+    }
+
+    const reste = limited.slice(pos);
+    let prefixeSection = "";
+    let numeroStart = -1;
+
+    for (let i = reste.length - 4; i >= 0; i--) {
+      if (/^[0-9]{4}$/.test(reste.slice(i, i + 4))) {
+        numeroStart = i;
+        break;
+      }
+    }
+
+    if (numeroStart > 0) {
+      prefixeSection = reste.slice(0, numeroStart);
+      formatted += " " + prefixeSection.slice(0, 3);
+      if (prefixeSection.length > 3) {
+        formatted += " " + prefixeSection.slice(3);
+      }
+      formatted += " " + reste.slice(numeroStart, numeroStart + 4);
+    } else {
+      if (reste.length > 0) {
+        formatted += " " + reste.slice(0, 3);
+      }
+      if (reste.length > 3) {
+        formatted += " " + reste.slice(3, 5);
+      }
+      if (reste.length > 5) {
+        formatted += " " + reste.slice(5);
+      }
+    }
+
+    setParcelId(formatted);
+  };
+
   const handleSearch = () => {
-    onSearch(parcelId);
+    const cleanId = parcelId.replace(/\s/g, "");
+    onSearch(cleanId);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -21,7 +85,7 @@ export const SelectParcelleById: React.FC<SelectParcelleByIdProps> = ({ onSearch
   return (
     <div>
       <p className="fr-text--sm">
-        Saisissez l'identifiant ou les identifiants des parcelles à analyser
+        Saisissez l&apos;identifiant ou les identifiants des parcelles à analyser
       </p>
 
       <div className="fr-grid-row fr-grid-row--gutters">
@@ -30,7 +94,7 @@ export const SelectParcelleById: React.FC<SelectParcelleByIdProps> = ({ onSearch
             <label className="fr-label" htmlFor="parcel-id">
               Identifiant de parcelle
               <span className="fr-hint-text">
-                Format : code département + code commune + section + numéro
+                Format : code département + code commune + préfixe + section + numéro
               </span>
             </label>
             <input
@@ -38,9 +102,9 @@ export const SelectParcelleById: React.FC<SelectParcelleByIdProps> = ({ onSearch
               type="text"
               id="parcel-id"
               name="parcel-id"
-              placeholder="Ex: 50147000AR0010"
+              placeholder="Ex: 25056 000 IK 0102"
               value={parcelId}
-              onChange={(e) => setParcelId(e.target.value)}
+              onChange={handleInputChange}
               onKeyPress={handleKeyPress}
             />
           </div>
@@ -57,7 +121,9 @@ export const SelectParcelleById: React.FC<SelectParcelleByIdProps> = ({ onSearch
       </div>
 
       <div className="fr-callout fr-mt-8w">
-        <h3 className="fr-callout__title">Comment trouver l'identifiant de votre parcelle ?</h3>
+        <h3 className="fr-callout__title">
+          Comment trouver l&apos;identifiant de votre parcelle ?
+        </h3>
 
         <div className="fr-mb-3w">
           <button
@@ -74,7 +140,7 @@ export const SelectParcelleById: React.FC<SelectParcelleByIdProps> = ({ onSearch
 
         {showGuide && (
           <div className="fr-background-alt--grey fr-p-3w fr-mb-3w" style={{ borderRadius: "4px" }}>
-            <h4 className="fr-h6">📍 Guide pour obtenir l'identifiant sur le Géoportail</h4>
+            <h4 className="fr-h6">Guide pour obtenir l&apos;identifiant sur le Géoportail</h4>
 
             <ol className="fr-mt-2w">
               <li className="fr-mb-2w">
@@ -91,22 +157,24 @@ export const SelectParcelleById: React.FC<SelectParcelleByIdProps> = ({ onSearch
               </li>
 
               <li className="fr-mb-2w">
-                <strong>Activez la couche "Parcelles cadastrales"</strong>
+                <strong>Activez la couche &quot;Parcelles cadastrales&quot;</strong>
                 <br />
                 <span className="fr-text--sm fr-text--regular">
-                  • Cliquez sur l'icône "Cartes" dans le menu de gauche
+                  Cliquez sur l&apos;icône &quot;Cartes&quot; dans le menu de gauche
                   <br />
-                  • Dans la section "Foncier, cadastre, urbanisme"
-                  <br />• Cochez "Parcelles cadastrales"
+                  Dans la section &quot;Foncier, cadastre, urbanisme&quot;
+                  <br />
+                  Cochez &quot;Parcelles cadastrales&quot;
                 </span>
               </li>
 
               <li className="fr-mb-2w">
-                <strong>Naviguez jusqu'à votre parcelle</strong>
+                <strong>Naviguez jusqu&apos;à votre parcelle</strong>
                 <br />
                 <span className="fr-text--sm fr-text--regular">
-                  • Utilisez la barre de recherche pour entrer une adresse
-                  <br />• Ou naviguez manuellement et zoomez sur la zone souhaitée
+                  Utilisez la barre de recherche pour entrer une adresse
+                  <br />
+                  Ou naviguez manuellement et zoomez sur la zone souhaitée
                 </span>
               </li>
 
@@ -114,19 +182,21 @@ export const SelectParcelleById: React.FC<SelectParcelleByIdProps> = ({ onSearch
                 <strong>Cliquez sur la parcelle</strong>
                 <br />
                 <span className="fr-text--sm fr-text--regular">
-                  Une bulle d'information apparaît avec l'identifiant complet
+                  Une bulle d&apos;information apparaît avec l&apos;identifiant complet
                 </span>
               </li>
 
               <li>
-                <strong>Copiez l'identifiant</strong>
+                <strong>Copiez l&apos;identifiant</strong>
                 <br />
                 <span className="fr-text--sm fr-text--regular">
-                  Il apparaît sous la forme : <code>50147000AR0010</code>
-                  <br />• <strong>50</strong> : département (Manche)
-                  <br />• <strong>147</strong> : commune
-                  <br />• <strong>000AR</strong> : préfixe + section
-                  <br />• <strong>0010</strong> : numéro de parcelle
+                  Exemples de formats :
+                  <br />
+                  <code>25056000IK0102</code> (Métropole : 5 + 3 + 2 + 4)
+                  <br />
+                  <code>972090000O0498</code> (DOM-TOM : 6 + 3 + 1 + 4)
+                  <br />
+                  <code>2A004000AC0045</code> (Corse : 5 + 3 + 2 + 4)
                 </span>
               </li>
             </ol>
@@ -135,7 +205,7 @@ export const SelectParcelleById: React.FC<SelectParcelleByIdProps> = ({ onSearch
               <div className="fr-container">
                 <div className="fr-notice__body">
                   <p className="fr-notice__title">
-                    💡 Astuce : Sur le Géoportail, les parcelles apparaissent en orange quand vous
+                    Astuce : Sur le Géoportail, les parcelles apparaissent en orange quand vous
                     zoomez suffisamment sur la carte.
                   </p>
                 </div>
@@ -145,8 +215,8 @@ export const SelectParcelleById: React.FC<SelectParcelleByIdProps> = ({ onSearch
         )}
 
         <p className="fr-callout__text fr-mb-2w">
-          L'identifiant de parcelle peut être trouvé sur le cadastre, les documents officiels de
-          propriété (acte notarié, taxe foncière) ou directement sur la carte interactive du
+          L&apos;identifiant de parcelle peut être trouvé sur le cadastre, les documents officiels
+          de propriété (acte notarié, taxe foncière) ou directement sur la carte interactive du
           Géoportail.
         </p>
 

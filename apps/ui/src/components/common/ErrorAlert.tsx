@@ -42,8 +42,8 @@ export function ErrorAlert({
     if (message.toLowerCase().includes("cadastrales introuvables")) {
       defaultSuggestions.push(
         "Vérifiez que l'identifiant de parcelle est correct",
-        "Format attendu : code commune (6 chiffres) + section (2 lettres) + numéro (4 chiffres)",
-        "Exemple : 290124AD0338",
+        "Format attendu : code commune (5 ou 6 chiffres) + préfixe (3 chiffres) + section (2 lettres) + numéro (4 chiffres)",
+        "Exemple : 25056000IK0102",
       );
     } else if (message.toLowerCase().includes("connexion")) {
       defaultSuggestions.push(

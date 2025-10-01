@@ -119,7 +119,7 @@ class ApiService {
       // Validation du format (même regex que côté API)
       if (!isValidParcelId(identifiant)) {
         throw new ApiError(
-          "Format d'identifiant invalide. Format attendu : code commune (5-6 chiffres) + section (2 lettres majuscules) + numéro (4 chiffres). Exemple : 25056000IK0102",
+          "Format d'identifiant invalide. Format attendu : code commune (5-6 caractères) + préfixe (0-3 caractères) + section (1-2 lettres majuscules) + numéro (4 chiffres). Exemples : 25056000IK0102 ou 972090000O0498",
           400,
           "Bad Request",
         );

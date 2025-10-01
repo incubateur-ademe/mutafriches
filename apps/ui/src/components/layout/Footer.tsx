@@ -51,11 +51,6 @@ export function Footer() {
                   Pages de tests
                 </a>
               </li>
-              <li className="fr-footer__bottom-item">
-                <a className="fr-footer__bottom-link" href={ROUTES.STATS}>
-                  Statistiques
-                </a>
-              </li>
             </ul>
             <div className="fr-footer__bottom-copy">
               <p>
