@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { ApiCartoFeatureCollection } from "../../types/parcelle.types";
 import { squareBufferLngLat } from "./geo.utils";
 
@@ -26,8 +25,6 @@ export async function fetchParcelAtPoint(
   params.set("_limit", "1");
 
   const url = `${API_BASE_URL}/parcelle?${params.toString()}`;
-
-  console.log("API Carto - Point exact:", url);
 
   try {
     const res = await fetch(url);
@@ -68,8 +65,6 @@ export async function fetchParcelsAroundPoint(
 
   const url = `${API_BASE_URL}/parcelle?${params.toString()}`;
 
-  console.log(`API Carto - Buffer ${meters}m:`, url);
-
   try {
     const res = await fetch(url);
 
@@ -99,36 +94,26 @@ export async function searchParcelWithFallback(
   lng: number,
   lat: number,
 ): Promise<ApiCartoFeatureCollection | null> {
-  console.log("=== RECHERCHE PARCELLE ===");
-  console.log("Coordonnées:", { lat, lng });
-
   // Tentative 1: Point exact
-  console.log("Tentative 1: Point exact");
   let result = await fetchParcelAtPoint(lng, lat);
 
   if (result && result.features && result.features.length > 0) {
-    console.log("Parcelle trouvée avec point exact");
     return result;
   }
 
   // Tentative 2: Buffer 5m
-  console.log("Tentative 2: Buffer 5m");
   result = await fetchParcelsAroundPoint(lng, lat, 5);
 
   if (result && result.features && result.features.length > 0) {
-    console.log("Parcelle trouvée avec buffer 5m");
     return result;
   }
 
   // Tentative 3: Buffer 10m
-  console.log("Tentative 3: Buffer 10m");
   result = await fetchParcelsAroundPoint(lng, lat, 10);
 
   if (result && result.features && result.features.length > 0) {
-    console.log("Parcelle trouvée avec buffer 10m");
     return result;
   }
 
-  console.log("Aucune parcelle trouvée");
   return null;
 }

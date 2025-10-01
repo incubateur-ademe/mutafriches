@@ -1,6 +1,7 @@
 // apps/ui/src/components/step1/parcelle-selection-map/AddressSearchBar.tsx
 
 import { useState, useEffect, useRef } from "react";
+import { flushSync } from "react-dom";
 import { searchAddresses, AddressSuggestion } from "../../../services/geocoding/geocoding.service";
 
 interface AddressSearchBarProps {
@@ -10,26 +11,40 @@ interface AddressSearchBarProps {
 export function AddressSearchBar({ onAddressSelected }: AddressSearchBarProps) {
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState<AddressSuggestion[]>([]);
+  const [justSelected, setJustSelected] = useState(false);
+
   const [isLoading, setIsLoading] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const debounceTimerRef = useRef<number | null>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
 
-  // Recherche avec debounce (attendre 300ms après la dernière saisie)
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
+        setShowSuggestions(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   useEffect(() => {
     if (debounceTimerRef.current) {
       clearTimeout(debounceTimerRef.current);
     }
 
-    if (query.length < 3) {
+    if (query.length < 3 || justSelected) {
       setSuggestions([]);
+      setShowSuggestions(false);
       return;
     }
 
-    debounceTimerRef.current = setTimeout(async () => {
+    debounceTimerRef.current = window.setTimeout(async () => {
       setIsLoading(true);
       const results = await searchAddresses(query);
       setSuggestions(results);
-      setShowSuggestions(true);
+      setShowSuggestions(results.length > 0);
       setIsLoading(false);
     }, 300);
 
@@ -38,76 +53,92 @@ export function AddressSearchBar({ onAddressSelected }: AddressSearchBarProps) {
         clearTimeout(debounceTimerRef.current);
       }
     };
-  }, [query]);
+  }, [query, justSelected]);
 
+  // Fonction appelée lorsqu'une suggestion est sélectionnée
   const handleSelectAddress = (suggestion: AddressSuggestion) => {
     const [lng, lat] = suggestion.coordinates;
+
+    setJustSelected(true);
+
+    flushSync(() => {
+      setShowSuggestions(false);
+      setSuggestions([]);
+    });
+
     setQuery(suggestion.label);
-    setShowSuggestions(false);
     onAddressSelected(lat, lng);
   };
 
+  const handleSearch = () => {
+    if (suggestions.length > 0) {
+      handleSelectAddress(suggestions[0]);
+    }
+  };
+
   return (
-    <div style={{ position: "relative", width: "100%", maxWidth: "400px" }}>
-      <div className="fr-search-bar" role="search">
+    <div ref={wrapperRef} style={{ position: "relative" }}>
+      <div className="fr-search-bar fr-search-bar--lg" role="search">
+        <label className="fr-label" htmlFor="address-search-input">
+          Rechercher une adresse
+        </label>
         <input
           className="fr-input"
-          placeholder="Rechercher une adresse..."
-          type="text"
+          aria-describedby="address-search-input-messages"
+          placeholder="Ex: 13 Rue Henri Fouilleret, 77650 Longueville"
+          id="address-search-input"
+          type="search"
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={(e) => {
+            setQuery(e.target.value);
+            setJustSelected(false); // Reset justSelected
+          }}
           onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
+          autoComplete="off"
         />
-        {isLoading && (
-          <span style={{ position: "absolute", right: "10px", top: "10px" }}>Recherche...</span>
-        )}
+        <div className="fr-messages-group" id="address-search-input-messages" aria-live="polite">
+          {isLoading && <p className="fr-message fr-message--info">Recherche en cours...</p>}
+        </div>
+        <button title="Rechercher" type="button" className="fr-btn" onClick={handleSearch}>
+          Rechercher
+        </button>
       </div>
 
-      {/* Liste des suggestions */}
       {showSuggestions && suggestions.length > 0 && (
-        <ul
+        <fieldset
+          className="fr-fieldset"
+          id="address-suggestions"
           style={{
-            position: "absolute",
-            top: "100%",
-            left: 0,
-            right: 0,
-            backgroundColor: "white",
-            border: "1px solid #ccc",
-            borderRadius: "4px",
-            maxHeight: "300px",
+            marginTop: "1rem",
+            border: "1px solid var(--border-default-grey)",
+            borderRadius: "0.25rem",
+            padding: "1rem",
+            backgroundColor: "var(--background-default-grey)",
+            maxHeight: "400px",
             overflowY: "auto",
-            listStyle: "none",
-            margin: 0,
-            padding: 0,
-            zIndex: 1001,
-            boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
           }}
         >
           {suggestions.map((suggestion, index) => (
-            <li
-              key={index}
-              style={{
-                padding: "10px",
-                cursor: "pointer",
-                borderBottom: index < suggestions.length - 1 ? "1px solid #eee" : "none",
-              }}
-              onClick={() => handleSelectAddress(suggestion)}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = "#f5f5f5";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = "white";
-              }}
-            >
-              <div style={{ fontWeight: "bold", fontSize: "14px" }}>{suggestion.label}</div>
-              {suggestion.city && (
-                <div style={{ fontSize: "12px", color: "#666" }}>
-                  {suggestion.postcode} {suggestion.city}
-                </div>
-              )}
-            </li>
+            <div key={index} className="fr-fieldset__element">
+              <div className="fr-radio-group">
+                <input
+                  type="radio"
+                  id={`address-radio-${index}`}
+                  name="address-suggestions-group"
+                  onChange={() => handleSelectAddress(suggestion)}
+                />
+                <label className="fr-label" htmlFor={`address-radio-${index}`}>
+                  <span style={{ fontWeight: 500, display: "block" }}>{suggestion.label}</span>
+                  {suggestion.city && (
+                    <span className="fr-hint-text">
+                      {suggestion.postcode} {suggestion.city}
+                    </span>
+                  )}
+                </label>
+              </div>
+            </div>
           ))}
-        </ul>
+        </fieldset>
       )}
     </div>
   );
