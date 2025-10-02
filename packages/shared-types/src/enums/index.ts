@@ -24,3 +24,5 @@ export {
 
 // Enums pour les résultats de calcul
 export { UsageType } from "./usage.enums";
+
+export * from "./evenements.enums";

@@ -25,7 +25,11 @@
     "test:mutability": "vitest run mutability-calculation",
     "test:mutability:verbose": "cross-env VERBOSE=true vitest run mutability-calculation",
     "test:ui": "vitest --ui",
-    "test:e2e": "vitest run --config vitest.config.ts test/"
+    "test:e2e": "vitest run --config vitest.config.ts test/",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
     "@mutafriches/shared-types": "workspace:*",

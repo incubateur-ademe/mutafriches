@@ -1,7 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { v4 as uuidv4 } from "uuid";
 import { DatabaseService } from "../../shared/database/database.service";
-import { evaluations } from "../../shared/database/schema";
 import { Evaluation } from "../domain/entities/evaluation.entity";
 import { eq, desc } from "drizzle-orm";
 import {
@@ -11,6 +10,7 @@ import {
   OrigineUtilisation,
 } from "@mutafriches/shared-types";
 import { SourceUtilisation } from "@mutafriches/shared-types/dist/enums/usage.enums";
+import { evaluations } from "../../shared/database/schemas/evaluations.schema";
 
 @Injectable()
 export class EvaluationRepository {
