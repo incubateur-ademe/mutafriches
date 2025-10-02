@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
+import { useEventTracking } from "../../../hooks/useEventTracking";
 
 interface MultiParcelleToggleProps {
   isMulti: boolean;
@@ -6,8 +7,16 @@ interface MultiParcelleToggleProps {
 }
 
 export const MultiParcelleToggle: React.FC<MultiParcelleToggleProps> = ({ isMulti, onChange }) => {
-  const handleChange = (value: string) => {
+  const { trackInteretMultiParcelles } = useEventTracking();
+  const [trackingEnvoye, setTrackingEnvoye] = useState(false);
+
+  const handleChange = async (value: string) => {
     if (value === "2") {
+      // Track seulement la première fois
+      if (!trackingEnvoye) {
+        await trackInteretMultiParcelles("step1_toggle");
+        setTrackingEnvoye(true);
+      }
       alert("La gestion multi-parcelles n'est pas encore disponible mais le sera bientôt !");
       return;
     }

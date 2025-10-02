@@ -1,18 +1,25 @@
-import React from "react";
+import React, { useState } from "react";
 import { getUsageInfo } from "../../utils/mappers/usages.mapper";
 import { UsageResultat } from "@mutafriches/shared-types";
+import { useEventTracking } from "../../hooks/useEventTracking";
 
 interface PodiumCardProps {
   result: UsageResultat;
   position: 1 | 2 | 3;
+  evaluationId?: string;
 }
 
 /**
  * Carte pour afficher un usage dans le podium (top 3)
  */
-export const PodiumCard: React.FC<PodiumCardProps> = ({ result, position }) => {
+export const PodiumCard: React.FC<PodiumCardProps> = ({ result, position, evaluationId }) => {
   // Informations sur l'usage
   const usageInfo = getUsageInfo(result.usage);
+
+  const { trackInteretMiseEnRelation } = useEventTracking();
+
+  // State pour éviter les clics multiples
+  const [trackingEnvoye, setTrackingEnvoye] = useState(false);
 
   // Déterminer les styles selon la position
   const getPositionStyles = () => {
@@ -41,6 +48,19 @@ export const PodiumCard: React.FC<PodiumCardProps> = ({ result, position }) => {
     }
   };
 
+  // Handler pour le clic
+  const handleRencontrerPorteurs = async () => {
+    // Track seulement la première fois
+    if (!trackingEnvoye && evaluationId) {
+      await trackInteretMiseEnRelation(evaluationId, result.usage);
+      setTrackingEnvoye(true);
+    }
+
+    alert(
+      "Fonctionnalité à venir ! Vous serez bientôt mis en relation avec des porteurs de projets.",
+    );
+  };
+
   const styles = getPositionStyles();
 
   return (
@@ -56,7 +76,7 @@ export const PodiumCard: React.FC<PodiumCardProps> = ({ result, position }) => {
             </p>
           </div>
 
-          <div className="fr-card__content fr-text--center" style={{ textAlign: "center" }}>
+          <div className="fr-card__content text-center">
             {/* Icône usage */}
             <div style={{ fontSize: "3rem", marginBottom: "1rem" }}>{usageInfo.icon}</div>
 
@@ -83,8 +103,12 @@ export const PodiumCard: React.FC<PodiumCardProps> = ({ result, position }) => {
           </div>
 
           {/* Actions */}
-          <div className="fr-card__footer fr-text--center">
-            <button type="button" className="fr-btn fr-btn--sm fr-btn--secondary">
+          <div className="fr-card__footer text-center">
+            <button
+              type="button"
+              onClick={handleRencontrerPorteurs}
+              className="fr-align fr-btn fr-btn--sm fr-btn--secondary"
+            >
               Rencontrer des porteurs de projets
             </button>
           </div>

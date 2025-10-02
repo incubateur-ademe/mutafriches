@@ -15,6 +15,7 @@ import { createIframeCommunicator } from "../utils/iframe/iframeCommunication";
 import { MutabiliteOutputDto } from "@mutafriches/shared-types";
 import { IframeEvaluationSummaryDto } from "../types/iframe.types";
 import { Layout } from "../layouts/Layout";
+import { useEventTracking } from "../hooks/useEventTracking";
 
 export const Step3: React.FC = () => {
   const navigate = useNavigate();
@@ -25,9 +26,14 @@ export const Step3: React.FC = () => {
   const { hasCallback, callbackUrl, callbackLabel } = useIframeCallback();
   const { parentOrigin, integrator } = useIframe();
 
+  // Hook tracking
+  const { trackFeedback, trackExporterResultats } = useEventTracking();
+
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [mutabilityData, setMutabilityData] = useState<MutabiliteOutputDto | null>(null);
+  const [feedbackEnvoye, setFeedbackEnvoye] = useState(false);
+  const [trackingExporterEnvoye, setTrackingExporterEnvoye] = useState(false);
 
   // Un seul ref pour tracker si on a déjà initialisé
   const hasInitializedRef = React.useRef(false);
@@ -69,9 +75,6 @@ export const Step3: React.FC = () => {
           versionAlgorithme: "1.1", // TODO À mettre à jour avec la vraie version via package shared si besoin
         },
       };
-
-      // (à discuter avec les intégrateurs)
-      // si besoin, envoyer aussi les données d'enrichissement et d'autres métadonnées
 
       iframeCommunicator.sendCompleted(evaluationSummary);
     },
@@ -131,20 +134,38 @@ export const Step3: React.FC = () => {
     hasInitializedRef.current = true;
     setCurrentStep(3);
 
-    // Gestion des données
     if (state.mutabilityResult) {
-      // On a déjà les résultats
       setMutabilityData(state.mutabilityResult);
       sendIframeMessages(state.mutabilityResult);
     } else {
-      // On doit calculer
       calculateMutability();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Vide volontairement - on utilise hasInitializedRef pour la protection
+  }, []);
+
+  // Handler pour le feedback de pertinence
+  const handlePertinenceFeedback = async (pertinent: boolean) => {
+    if (!mutabilityData?.evaluationId || feedbackEnvoye) return;
+
+    try {
+      await trackFeedback(mutabilityData.evaluationId, pertinent);
+      setFeedbackEnvoye(true);
+    } catch (err) {
+      console.error("Erreur feedback:", err);
+    }
+  };
 
   // Handler pour exporter les résultats
-  const handleExport = () => {
+  const handleExport = async () => {
+    if (!mutabilityData?.evaluationId || trackingExporterEnvoye) return;
+
+    try {
+      await trackExporterResultats(mutabilityData.evaluationId);
+      setTrackingExporterEnvoye(true);
+    } catch (err) {
+      console.error("Erreur tracking export:", err);
+    }
+
     alert("Fonctionnalité d'export à venir ! Les résultats seront exportés en PDF.");
   };
 
@@ -172,7 +193,6 @@ export const Step3: React.FC = () => {
     }
   };
 
-  // Si pas d'accès, ne rien afficher
   if (!canAccessStep(3)) {
     return null;
   }
@@ -193,7 +213,6 @@ export const Step3: React.FC = () => {
           pertinents pour votre site.
         </p>
 
-        {/* États de chargement et erreur */}
         {isLoading && (
           <LoadingCallout
             title="Calcul en cours"
@@ -203,10 +222,8 @@ export const Step3: React.FC = () => {
 
         {error && !isLoading && <ErrorAlert message={error} />}
 
-        {/* Résultats */}
         {mutabilityData && !isLoading && (
           <>
-            {/* Header avec bouton export */}
             <div
               style={{
                 display: "flex",
@@ -224,62 +241,77 @@ export const Step3: React.FC = () => {
               </button>
             </div>
 
-            {/* Podium - Top 3 */}
             <div className="fr-grid-row fr-grid-row--gutters fr-mb-4w">
               {mutabilityData.resultats.slice(0, 3).map((result, index) => (
                 <PodiumCard
                   key={result.usage}
                   result={result}
                   position={(index + 1) as 1 | 2 | 3}
+                  evaluationId={mutabilityData.evaluationId}
                 />
               ))}
             </div>
 
-            {/* Question pertinence */}
+            {/* Question pertinence - MISE À JOUR */}
             <div
               className="fr-mt-4w fr-mb-4w"
               style={{ display: "flex", justifyContent: "center" }}
             >
               <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-                <p className="fr-text--sm" style={{ margin: 0, fontWeight: "normal" }}>
-                  Ce classement vous semble-t-il pertinent ?
-                </p>
-                <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
-                  <div className="fr-radio-group fr-radio-group--sm" style={{ margin: 0 }}>
-                    <input type="radio" id="radio-pertinent-oui" name="pertinence" />
-                    <label
-                      className="fr-label fr-text--sm"
-                      htmlFor="radio-pertinent-oui"
-                      style={{ margin: 0 }}
-                    >
-                      Oui
-                    </label>
+                {feedbackEnvoye ? (
+                  <div className="fr-alert fr-alert--success fr-alert--sm">
+                    <h3 className="fr-alert__title">Merci pour votre retour</h3>
                   </div>
-                  <div className="fr-radio-group fr-radio-group--sm" style={{ margin: 0 }}>
-                    <input type="radio" id="radio-pertinent-non" name="pertinence" />
-                    <label
-                      className="fr-label fr-text--sm"
-                      htmlFor="radio-pertinent-non"
-                      style={{ margin: 0 }}
-                    >
-                      Non
-                    </label>
-                  </div>
-                </div>
+                ) : (
+                  <>
+                    <p className="fr-text--sm" style={{ margin: 0, fontWeight: "normal" }}>
+                      Ce classement vous semble-t-il pertinent ?
+                    </p>
+                    <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
+                      <div className="fr-radio-group fr-radio-group--sm" style={{ margin: 0 }}>
+                        <input
+                          type="radio"
+                          onClick={() => handlePertinenceFeedback(true)}
+                          id="radio-pertinent-oui"
+                          name="pertinence"
+                        />
+                        <label
+                          className="fr-label fr-text--sm"
+                          htmlFor="radio-pertinent-oui"
+                          style={{ margin: 0 }}
+                        >
+                          Oui
+                        </label>
+                      </div>
+                      <div className="fr-radio-group fr-radio-group--sm" style={{ margin: 0 }}>
+                        <input
+                          type="radio"
+                          onClick={() => handlePertinenceFeedback(false)}
+                          id="radio-pertinent-non"
+                          name="pertinence"
+                        />
+                        <label
+                          className="fr-label fr-text--sm"
+                          htmlFor="radio-pertinent-non"
+                          style={{ margin: 0 }}
+                        >
+                          Non
+                        </label>
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
 
-            {/* Score de fiabilité */}
             <ReliabilityScore
               note={mutabilityData.fiabilite.note}
               text={mutabilityData.fiabilite.text}
               description={mutabilityData.fiabilite.description}
             />
 
-            {/* Tableau complet */}
             <ResultsTable results={mutabilityData.resultats} />
 
-            {/* Section outils et services */}
             <div className="fr-accordions-group fr-mt-4w">
               <section className="fr-accordion">
                 <h4 className="fr-accordion__title">
@@ -311,7 +343,6 @@ export const Step3: React.FC = () => {
           </>
         )}
 
-        {/* Boutons de navigation */}
         <div className="fr-mt-4w" style={{ textAlign: "center" }}>
           <button
             className="fr-btn fr-btn--secondary"
@@ -322,7 +353,6 @@ export const Step3: React.FC = () => {
             Modifier les données
           </button>
 
-          {/* Bouton Nouvelle analyse - uniquement si pas de callback */}
           {!hasCallback && (
             <button className="fr-btn fr-ml-4w" onClick={handleNewAnalysis} disabled={isLoading}>
               Nouvelle analyse
@@ -330,7 +360,6 @@ export const Step3: React.FC = () => {
             </button>
           )}
 
-          {/* Bouton callback en mode iframe */}
           {isIframeMode && hasCallback && callbackLabel && (
             <button
               className="fr-btn fr-ml-4w fr-btn--icon-right fr-icon-external-link-line"

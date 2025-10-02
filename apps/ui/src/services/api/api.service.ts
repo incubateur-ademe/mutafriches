@@ -4,7 +4,7 @@ import {
   CalculerMutabiliteInputDto,
   MutabiliteOutputDto,
 } from "@mutafriches/shared-types";
-import { API_CONFIG } from "./api.config";
+import { API_CONFIG } from "../../config/api.config";
 import { buildMutabilityInput } from "../../utils/mappers/mutability.mapper";
 import { isValidParcelId } from "../../utils/validation.utils";
 
