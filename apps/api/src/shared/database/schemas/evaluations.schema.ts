@@ -1,0 +1,24 @@
+import { pgTable, varchar, jsonb, timestamp, numeric } from "drizzle-orm/pg-core";
+
+// Table pour les évaluations
+export const evaluations = pgTable("evaluations", {
+  id: varchar("id", { length: 50 }).primaryKey(),
+  parcelleId: varchar("parcelle_id", { length: 20 }).notNull(),
+  codeInsee: varchar("code_insee", { length: 5 }).notNull(),
+  dateCalcul: timestamp("date_calcul").notNull().defaultNow(),
+
+  // Snapshot des données au moment du calcul
+  donneesEnrichissement: jsonb("donnees_enrichissement").notNull(),
+  donneesComplementaires: jsonb("donnees_complementaires").notNull(),
+
+  // Résultats
+  resultats: jsonb("resultats").notNull(),
+  fiabilite: numeric("fiabilite").notNull(),
+
+  // Métadonnées
+  versionAlgorithme: varchar("version_algorithme", { length: 20 }).notNull(),
+  sourceUtilisation: varchar("source_utilisation", { length: 20 }).notNull(),
+  integrateur: varchar("integrateur", { length: 255 }),
+  utilisateurId: varchar("utilisateur_id", { length: 50 }),
+  commentaire: varchar("commentaire", { length: 1000 }),
+});
