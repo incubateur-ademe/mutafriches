@@ -1,2 +1,2 @@
-release: echo "=== RELEASE HOOK - Debut ===" && node --version && pnpm --version && echo "=== RELEASE HOOK - Fin ==="
+postdeploy: echo "===========================================" && echo "POSTDEPLOY HOOK MUTAFRICHES" && echo "===========================================" && node --version && pnpm --version && echo "===========================================" && echo "Typecheck..." && pnpm run typecheck && echo "Postdeploy termine"
 web: node apps/api/dist/src/main
