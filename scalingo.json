@@ -1,0 +1,13 @@
+{
+  "name": "mutafriches-test",
+  "description": "Test de detection du fichier scalingo.json",
+  "formation": {
+    "web": {
+      "amount": 1,
+      "size": "S"
+    }
+  },
+  "scripts": {
+    "postdeploy": "echo 'SCALINGO.JSON DETECTE ET EXECUTE !'"
+  }
+}
