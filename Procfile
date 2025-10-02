@@ -1,2 +1,2 @@
-postdeploy: echo "===========================================" && echo "POSTDEPLOY HOOK MUTAFRICHES" && echo "===========================================" && node --version && pnpm --version && echo "===========================================" && echo "Typecheck..." && pnpm run typecheck && echo "Postdeploy termine"
+postdeploy: echo "Migrations..." && pnpm db:migrate && echo "Typecheck..." && pnpm typecheck && echo "Postdeploy termine"
 web: node apps/api/dist/src/main
