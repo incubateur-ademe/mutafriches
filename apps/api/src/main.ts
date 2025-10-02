@@ -60,6 +60,7 @@ async function bootstrap() {
       if (
         req.path.startsWith("/api") ||
         req.path.startsWith("/friches") ||
+        req.path.startsWith("/evenements") ||
         req.path.startsWith("/health") ||
         req.path.includes(".") // Pour les fichiers statiques (.js, .css, etc.)
       ) {
