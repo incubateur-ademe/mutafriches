@@ -1,6 +1,6 @@
 {
-  "name": "mutafriches-test",
-  "description": "Test de detection du fichier scalingo.json",
+  "name": "mutafriches",
+  "description": "API NestJS - Analyse mutabilite friches urbaines",
   "formation": {
     "web": {
       "amount": 1,
@@ -8,6 +8,6 @@
     }
   },
   "scripts": {
-    "postdeploy": "echo 'SCALINGO.JSON DETECTE ET EXECUTE !'"
+    "first-deploy": "echo 'Premier deploiement Mutafriches'"
   }
 }
