@@ -5,6 +5,7 @@ import { CadastreService } from "./external/cadastre/cadastre.service";
 import { BdnbService } from "./external/bdnb/bdnb.service";
 import { EnedisService } from "./external/enedis/enedis.service";
 import { RisqueNaturel } from "@mutafriches/shared-types";
+import { LogsEnrichissementRepository } from "../repository/logs-enrichissement.repository";
 
 describe("EnrichissementService", () => {
   let service: EnrichissementService;
@@ -34,6 +35,12 @@ describe("EnrichissementService", () => {
           useValue: {
             checkConnection: vi.fn(),
             getDistanceRaccordement: vi.fn(),
+          },
+        },
+        {
+          provide: LogsEnrichissementRepository,
+          useValue: {
+            log: vi.fn().mockResolvedValue("mock-log-id"),
           },
         },
       ],

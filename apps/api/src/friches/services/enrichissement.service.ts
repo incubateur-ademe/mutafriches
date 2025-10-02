@@ -6,6 +6,13 @@ import { CadastreService } from "./external/cadastre/cadastre.service";
 import { BdnbService } from "./external/bdnb/bdnb.service";
 import { EnedisService } from "./external/enedis/enedis.service";
 import { CadastreServiceResponse } from "./external/cadastre/cadastre.types";
+import {
+  StatutEnrichissement,
+  CodeErreurEnrichissement,
+  MessagesErreurEnrichissement,
+  SourceEnrichissement,
+} from "./enrichissement.constants";
+import { LogsEnrichissementRepository } from "../repository/logs-enrichissement.repository";
 
 @Injectable()
 export class EnrichissementService {
@@ -13,125 +20,243 @@ export class EnrichissementService {
     private readonly cadastreService: CadastreService,
     private readonly bdnbService: BdnbService,
     private readonly enedisService: EnedisService,
+    private readonly logsRepository: LogsEnrichissementRepository,
   ) {}
 
   /**
    * Enrichit une parcelle depuis toutes les sources externes disponibles
    */
-  async enrichir(identifiantParcelle: string): Promise<EnrichissementOutputDto> {
+  async enrichir(
+    identifiantParcelle: string,
+    sourceUtilisation?: string,
+    integrateur?: string,
+  ): Promise<EnrichissementOutputDto> {
     console.log(`Enrichissement parcelle: ${identifiantParcelle}`);
 
+    const startTime = Date.now();
     const sourcesUtilisees: string[] = [];
     const champsManquants: string[] = [];
+    const sourcesEchouees: string[] = [];
 
-    // 1. Données cadastrales (obligatoires)
-    const cadastreData = await this.getCadastreData(identifiantParcelle);
-    if (!cadastreData) {
-      throw new Error("Données cadastrales introuvables");
-    }
+    let result: EnrichissementOutputDto;
+    let statut = StatutEnrichissement.SUCCES;
+    let messageErreur: string | undefined;
+    let codeErreur: CodeErreurEnrichissement | undefined;
 
-    const parcelle = new Parcelle();
-    parcelle.identifiantParcelle = cadastreData.identifiant;
-    parcelle.codeInsee = cadastreData.codeInsee;
-    parcelle.commune = cadastreData.commune;
-    parcelle.surfaceSite = cadastreData.surface;
-    parcelle.coordonnees = cadastreData.coordonnees;
-    sourcesUtilisees.push("Cadastre");
-
-    // 2. Surface bâtie (BDNB)
-    const surfaceBatie = await this.getSurfaceBatie(identifiantParcelle);
-    if (surfaceBatie !== null) {
-      parcelle.surfaceBati = surfaceBatie;
-      sourcesUtilisees.push("BDNB");
-    } else {
-      champsManquants.push("surfaceBati");
-    }
-
-    // 3. Distance transport
-    if (parcelle.coordonnees) {
-      const distanceTransport = await this.getDistanceTransport(parcelle.coordonnees);
-      if (distanceTransport !== null) {
-        parcelle.distanceTransportCommun = distanceTransport;
-        sourcesUtilisees.push("Transport");
-      } else {
-        champsManquants.push("distanceTransportCommun");
+    try {
+      // 1. Données cadastrales (obligatoires)
+      const cadastreData = await this.getCadastreData(identifiantParcelle);
+      if (!cadastreData) {
+        throw new Error(
+          MessagesErreurEnrichissement[CodeErreurEnrichissement.CADASTRE_INTROUVABLE],
+        );
       }
 
-      // 4. Données Enedis
-      await this.enrichWithEnedisData(
+      const parcelle = new Parcelle();
+      parcelle.identifiantParcelle = cadastreData.identifiant;
+      parcelle.codeInsee = cadastreData.codeInsee;
+      parcelle.commune = cadastreData.commune;
+      parcelle.surfaceSite = cadastreData.surface;
+      parcelle.coordonnees = cadastreData.coordonnees;
+      sourcesUtilisees.push(SourceEnrichissement.CADASTRE);
+
+      // 2. Surface bâtie (BDNB)
+      const surfaceBatie = await this.getSurfaceBatie(identifiantParcelle);
+      if (surfaceBatie !== null) {
+        parcelle.surfaceBati = surfaceBatie;
+        sourcesUtilisees.push(SourceEnrichissement.BDNB);
+      } else {
+        champsManquants.push("surfaceBati");
+        sourcesEchouees.push(SourceEnrichissement.BDNB_SURFACE_BATIE);
+      }
+
+      // 3. Distance transport
+      if (parcelle.coordonnees) {
+        const distanceTransport = await this.getDistanceTransport(parcelle.coordonnees);
+        if (distanceTransport !== null) {
+          parcelle.distanceTransportCommun = distanceTransport;
+          sourcesUtilisees.push(SourceEnrichissement.TRANSPORT);
+        } else {
+          champsManquants.push("distanceTransportCommun");
+          sourcesEchouees.push(SourceEnrichissement.TRANSPORT);
+        }
+
+        // 4. Données Enedis
+        await this.enrichWithEnedisData(
+          parcelle,
+          parcelle.coordonnees,
+          sourcesUtilisees,
+          champsManquants,
+          sourcesEchouees,
+        );
+
+        // 5. Données Overpass
+        await this.enrichWithOverpassData(
+          parcelle,
+          parcelle.coordonnees,
+          sourcesUtilisees,
+          champsManquants,
+          sourcesEchouees,
+        );
+      }
+
+      // 6. Données Lovac
+      await this.enrichWithLovacData(
         parcelle,
-        parcelle.coordonnees,
+        cadastreData.commune,
         sourcesUtilisees,
         champsManquants,
+        sourcesEchouees,
       );
 
-      // 5. Données Overpass
-      await this.enrichWithOverpassData(
+      // 7. Risques naturels (BDNB)
+      await this.enrichWithRisquesNaturels(
         parcelle,
-        parcelle.coordonnees,
+        identifiantParcelle,
         sourcesUtilisees,
         champsManquants,
+        sourcesEchouees,
       );
+
+      // 8. Données complémentaires temporaires
+      await this.enrichWithTemporaryMockData(
+        parcelle,
+        identifiantParcelle,
+        sourcesUtilisees,
+        champsManquants,
+        sourcesEchouees,
+      );
+
+      const fiabilite = this.calculateFiabilite(sourcesUtilisees.length, champsManquants.length);
+
+      console.log(
+        `Enrichissement terminé - Sources: ${sourcesUtilisees.length}, Manquants: ${champsManquants.length}`,
+      );
+
+      // Déterminer le statut
+      if (sourcesEchouees.length === 0) {
+        statut = StatutEnrichissement.SUCCES;
+      } else if (sourcesUtilisees.length > 0) {
+        statut = StatutEnrichissement.PARTIEL;
+      } else {
+        statut = StatutEnrichissement.ECHEC;
+      }
+
+      result = {
+        // Données déduites automatiquement de la parcelle
+        identifiantParcelle: parcelle.identifiantParcelle,
+        codeInsee: parcelle.codeInsee,
+        commune: parcelle.commune,
+        surfaceSite: parcelle.surfaceSite,
+        surfaceBati: parcelle.surfaceBati,
+        distanceRaccordementElectrique: parcelle.distanceRaccordementElectrique,
+        presenceRisquesNaturels: parcelle.presenceRisquesNaturels,
+        coordonnees: parcelle.coordonnees,
+
+        // Données non déductibles pour le moment
+        siteEnCentreVille: parcelle.siteEnCentreVille,
+        distanceAutoroute: parcelle.distanceAutoroute,
+        distanceTransportCommun: parcelle.distanceTransportCommun,
+        proximiteCommercesServices: parcelle.proximiteCommercesServices,
+        tauxLogementsVacants: parcelle.tauxLogementsVacants,
+        presenceRisquesTechnologiques: parcelle.presenceRisquesTechnologiques,
+        zonageEnvironnemental: parcelle.zonageEnvironnemental,
+        zonageReglementaire: parcelle.zonageReglementaire,
+        zonagePatrimonial: parcelle.zonagePatrimonial,
+        trameVerteEtBleue: parcelle.trameVerteEtBleue,
+
+        // Métadonnées d'enrichissement
+        sourcesUtilisees,
+        champsManquants,
+        fiabilite,
+      } as EnrichissementOutputDto;
+    } catch (error) {
+      statut = StatutEnrichissement.ECHEC;
+      messageErreur =
+        error instanceof Error
+          ? error.message
+          : MessagesErreurEnrichissement[CodeErreurEnrichissement.UNKNOWN_ERROR];
+      codeErreur = CodeErreurEnrichissement.ENRICHISSEMENT_FAILED;
+
+      console.error("Erreur enrichissement:", messageErreur);
+
+      // Logger l'échec de manière non-bloquante
+      this.logEnrichissement(
+        identifiantParcelle,
+        undefined,
+        undefined,
+        statut,
+        undefined,
+        messageErreur,
+        codeErreur,
+        sourcesUtilisees,
+        sourcesEchouees,
+        Date.now() - startTime,
+        sourceUtilisation,
+        integrateur,
+      );
+
+      // Relancer l'erreur pour le contrôleur
+      throw error;
     }
 
-    // 6. Données Lovac
-    await this.enrichWithLovacData(
-      parcelle,
-      cadastreData.commune,
-      sourcesUtilisees,
-      champsManquants,
-    );
-
-    // 7. Risques naturels (BDNB)
-    await this.enrichWithRisquesNaturels(
-      parcelle,
+    // Logger le succès ou partiel de manière non-bloquante
+    this.logEnrichissement(
       identifiantParcelle,
+      result.codeInsee,
+      result.commune,
+      statut,
+      result,
+      messageErreur,
+      codeErreur,
       sourcesUtilisees,
-      champsManquants,
+      sourcesEchouees,
+      Date.now() - startTime,
+      sourceUtilisation,
+      integrateur,
     );
 
-    // 8. Données complémentaires temporaires
-    await this.enrichWithTemporaryMockData(
-      parcelle,
-      identifiantParcelle,
-      sourcesUtilisees,
-      champsManquants,
-    );
+    return result;
+  }
 
-    const fiabilite = this.calculateFiabilite(sourcesUtilisees.length, champsManquants.length);
-
-    console.log(
-      `Enrichissement terminé - Sources: ${sourcesUtilisees.length}, Manquants: ${champsManquants.length}`,
-    );
-
-    return {
-      // Données déduites automatiquement de la parcelle
-      identifiantParcelle: parcelle.identifiantParcelle,
-      codeInsee: parcelle.codeInsee,
-      commune: parcelle.commune,
-      surfaceSite: parcelle.surfaceSite,
-      surfaceBati: parcelle.surfaceBati,
-      distanceRaccordementElectrique: parcelle.distanceRaccordementElectrique,
-      presenceRisquesNaturels: parcelle.presenceRisquesNaturels,
-      coordonnees: parcelle.coordonnees,
-
-      // Données non déductibles pour le moment
-      siteEnCentreVille: parcelle.siteEnCentreVille,
-      distanceAutoroute: parcelle.distanceAutoroute,
-      distanceTransportCommun: parcelle.distanceTransportCommun,
-      proximiteCommercesServices: parcelle.proximiteCommercesServices,
-      tauxLogementsVacants: parcelle.tauxLogementsVacants,
-      presenceRisquesTechnologiques: parcelle.presenceRisquesTechnologiques,
-      zonageEnvironnemental: parcelle.zonageEnvironnemental,
-      zonageReglementaire: parcelle.zonageReglementaire,
-      zonagePatrimonial: parcelle.zonagePatrimonial,
-      trameVerteEtBleue: parcelle.trameVerteEtBleue,
-
-      // Métadonnées d'enrichissement
-      sourcesUtilisees,
-      champsManquants,
-      fiabilite,
-    } as EnrichissementOutputDto;
+  /**
+   * Helper pour l'enregistrement des logs d'enrichissement de manière non-bloquante
+   */
+  private logEnrichissement(
+    identifiantCadastral: string,
+    codeInsee: string | undefined,
+    commune: string | undefined,
+    statut: StatutEnrichissement,
+    donnees: EnrichissementOutputDto | undefined,
+    messageErreur: string | undefined,
+    codeErreur: CodeErreurEnrichissement | undefined,
+    sourcesReussies: string[],
+    sourcesEchouees: string[],
+    dureeMs: number,
+    sourceUtilisation: string | undefined,
+    integrateur: string | undefined,
+  ): void {
+    // Appel non-bloquant - on ne veut pas que le log bloque l'enrichissement
+    this.logsRepository
+      .log({
+        identifiantCadastral,
+        codeInsee,
+        commune,
+        statut,
+        donnees,
+        messageErreur,
+        codeErreur,
+        sourcesReussies,
+        sourcesEchouees,
+        dureeMs,
+        sourceUtilisation,
+        integrateur,
+        versionApi: "1.0", // TODO : externaliser la version dans une config globale plus tard
+      })
+      .catch((error) => {
+        // Ne pas bloquer si le log échoue, juste logger l'erreur
+        console.error("Erreur lors de l'enregistrement du log enrichissement:", error);
+      });
   }
 
   /**
@@ -191,6 +316,7 @@ export class EnrichissementService {
     coordonnees: { latitude: number; longitude: number },
     sources: string[],
     manquants: string[],
+    echouees: string[],
   ): Promise<void> {
     try {
       // Distance raccordement
@@ -202,13 +328,15 @@ export class EnrichissementService {
       if (distanceResult.success && distanceResult.data) {
         const raccordementData = distanceResult.data;
         parcelle.distanceRaccordementElectrique = raccordementData.distance;
-        sources.push("Enedis-Raccordement");
+        sources.push(SourceEnrichissement.ENEDIS_RACCORDEMENT);
       } else {
         manquants.push("distanceRaccordementElectrique");
+        echouees.push(SourceEnrichissement.ENEDIS_RACCORDEMENT);
       }
     } catch (error) {
       console.error("Erreur Enedis:", error);
       manquants.push("distanceRaccordementElectrique");
+      echouees.push(SourceEnrichissement.ENEDIS_RACCORDEMENT);
     }
   }
 
@@ -221,6 +349,7 @@ export class EnrichissementService {
     coordonnees: { latitude: number; longitude: number },
     sources: string[],
     manquants: string[],
+    echouees: string[],
   ): Promise<void> {
     try {
       // TODO: Implémenter les appels aux services Overpass pour récupérer les données
@@ -231,10 +360,11 @@ export class EnrichissementService {
       // Données temporaires - présence aléatoire de commerces/services
       const hasCommercesServices = Math.random() > 0.5;
       parcelle.proximiteCommercesServices = hasCommercesServices;
-      sources.push("Overpass-Temporaire");
+      sources.push(SourceEnrichissement.OVERPASS_TEMPORAIRE);
     } catch (error) {
       console.error("Erreur Overpass:", error);
       manquants.push("proximiteCommercesServices");
+      echouees.push(SourceEnrichissement.OVERPASS);
     }
   }
 
@@ -247,6 +377,7 @@ export class EnrichissementService {
     commune: string,
     sources: string[],
     manquants: string[],
+    echouees: string[],
   ): Promise<void> {
     try {
       // TODO: Implémenter l'appel au service Lovac pour récupérer les données
@@ -255,10 +386,11 @@ export class EnrichissementService {
       // Données temporaires - taux de logements vacants aléatoire entre 2% et 15%
       const tauxTemporaire = Math.floor(Math.random() * 13) + 2;
       parcelle.tauxLogementsVacants = tauxTemporaire;
-      sources.push("Lovac-Temporaire");
+      sources.push(SourceEnrichissement.LOVAC_TEMPORAIRE);
     } catch (error) {
       console.error("Erreur Lovac:", error);
       manquants.push("tauxLogementsVacants");
+      echouees.push(SourceEnrichissement.LOVAC);
     }
   }
 
@@ -270,6 +402,7 @@ export class EnrichissementService {
     identifiantParcelle: string,
     sources: string[],
     manquants: string[],
+    echouees: string[],
   ): Promise<void> {
     try {
       const risquesResult = await this.bdnbService.getRisquesNaturels(identifiantParcelle);
@@ -282,17 +415,23 @@ export class EnrichissementService {
           parcelle.presenceRisquesNaturels = this.transformAleaArgilesToRisque(
             risquesData.aleaArgiles,
           );
-          sources.push("BDNB-Risques");
+          sources.push(SourceEnrichissement.BDNB_RISQUES);
         } else {
           manquants.push("presenceRisquesNaturels");
+          echouees.push(SourceEnrichissement.BDNB_RISQUES);
         }
       } else {
         manquants.push("presenceRisquesNaturels");
+        echouees.push(SourceEnrichissement.BDNB_RISQUES);
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Erreur inconnue";
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : MessagesErreurEnrichissement[CodeErreurEnrichissement.UNKNOWN_ERROR];
       console.error("Erreur récupération risques naturels BDNB:", errorMessage);
       manquants.push("presenceRisquesNaturels");
+      echouees.push(SourceEnrichissement.BDNB_RISQUES);
     }
   }
 
@@ -325,6 +464,7 @@ export class EnrichissementService {
     identifiant: string,
     sources: string[],
     manquants: string[],
+    echouees: string[],
   ): Promise<void> {
     // TODO: Ces champs seront enrichis par de vrais services plus tard
     console.log(`Données temporaires pour parcelle: ${identifiant}`);
@@ -343,10 +483,11 @@ export class EnrichissementService {
         parcelle.presenceRisquesTechnologiques = Math.random() > 0.8; // 20% de chance de risques technologiques
       }
 
-      sources.push("Données-Temporaires");
+      sources.push(SourceEnrichissement.DONNEES_TEMPORAIRES);
     } catch (error) {
       console.error("Erreur données temporaires:", error);
       manquants.push("données-temporaires");
+      echouees.push(SourceEnrichissement.DONNEES_TEMPORAIRES);
     }
   }
 

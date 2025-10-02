@@ -9,14 +9,16 @@ import { BdnbService } from "./services/external/bdnb/bdnb.service";
 import { EnedisService } from "./services/external/enedis/enedis.service";
 import { DatabaseService } from "../shared/database/database.service";
 import { EvaluationRepository } from "./repository/evaluation.repository";
+import { LogsEnrichissementRepository } from "./repository/logs-enrichissement.repository";
 
 @Module({
   imports: [HttpModule],
   controllers: [FrichesController],
   providers: [
-    // Database
+    // Database & Repositories
     DatabaseService,
     EvaluationRepository,
+    LogsEnrichissementRepository,
     // Services principaux
     OrchestrateurService,
     EnrichissementService,
