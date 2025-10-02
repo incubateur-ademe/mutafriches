@@ -1,5 +1,5 @@
 // TODO remove console logs or replace by proper logger
-/* eslint-disable no-console */
+
 import { Injectable, HttpException, HttpStatus } from "@nestjs/common";
 import { HttpService } from "@nestjs/axios";
 import { firstValueFrom } from "rxjs";
@@ -31,8 +31,6 @@ export class EnedisService {
     longitude: number,
   ): Promise<ApiResponse<EnedisRaccordement>> {
     try {
-      console.log(`Calcul distance raccordement pour: ${latitude}, ${longitude}`);
-
       // Recherche des postes dans un rayon de 5km
       const postesProches = await this.rechercherPostes(latitude, longitude, 5000);
 
@@ -126,8 +124,6 @@ export class EnedisService {
     coordonnees?: { latitude: number; longitude: number },
   ): Promise<ApiResponse<EnedisConnexionStatus>> {
     try {
-      console.log(`Vérification connexion pour parcelle: ${identifiantParcelle}`);
-
       // Si pas de coordonnées fournies, impossible de faire la vérification
       if (!coordonnees) {
         return {
@@ -194,8 +190,6 @@ export class EnedisService {
     longitude: number,
   ): Promise<ApiResponse<EnedisAnalyseComplete>> {
     try {
-      console.log(`Analyse complète pour: ${latitude}, ${longitude}`);
-
       // Exécution des analyses en parallèle
       const [raccordementResult, connexionResult] = await Promise.all([
         this.getDistanceRaccordement(latitude, longitude),
@@ -256,8 +250,6 @@ export class EnedisService {
     }>
   > {
     try {
-      console.log(`Recherche infrastructures dans rayon ${rayonMetres}m`);
-
       const [postesData, lignesData, poteauxData] = await Promise.all([
         this.rechercherPostes(latitude, longitude, rayonMetres),
         this.rechercherLignesBT(latitude, longitude, rayonMetres),

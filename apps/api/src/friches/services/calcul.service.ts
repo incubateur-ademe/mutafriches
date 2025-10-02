@@ -142,7 +142,6 @@ export class CalculService {
 
     // Mapper les propriétés de la parcelle aux critères
     const criteres = this.extraireCriteres(parcelle);
-    console.log("calculerScorePourUsage - critères extraits :", JSON.stringify(criteres, null, 2));
 
     // Pour chaque critère
     Object.entries(criteres).forEach(([champDTO, valeur]) => {
@@ -303,7 +302,6 @@ export class CalculService {
 
     // Critère non mappé
     if (!matriceCritere) {
-      console.log(`obtenirScoreCritere - Critère "${champDTO}" non trouvé dans MATRICE_SCORING`);
       return null;
     }
 

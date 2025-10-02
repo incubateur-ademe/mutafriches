@@ -1,5 +1,5 @@
 // TODO remove console logs or replace by proper logger
-/* eslint-disable no-console */
+
 import { Injectable } from "@nestjs/common";
 import { HttpService } from "@nestjs/axios";
 import { firstValueFrom } from "rxjs";
@@ -28,8 +28,6 @@ export class BdnbService {
     const startTime = Date.now();
 
     try {
-      console.log(`Récupération surface bâtie pour parcelle: ${identifiantParcelle}`);
-
       const response = await this.callBdnbApi(identifiantParcelle);
 
       if (!response.success || !response.data) {
@@ -44,10 +42,6 @@ export class BdnbService {
       const surfaceTotale = response.data.reduce(
         (total, batiment) => total + (batiment.surface_emprise_sol || 0),
         0,
-      );
-
-      console.log(
-        `Surface bâtie calculée: ${surfaceTotale} m² pour ${response.data.length} bâtiment(s)`,
       );
 
       return {
@@ -78,8 +72,6 @@ export class BdnbService {
     const startTime = Date.now();
 
     try {
-      console.log(`Récupération données complètes pour parcelle: ${identifiantParcelle}`);
-
       const response = await this.callBdnbApi(identifiantParcelle);
 
       if (!response.success || !response.data) {
@@ -120,10 +112,6 @@ export class BdnbService {
         fiabiliteCroisementAdresse: premierBatiment?.fiabilite_cr_adr_niv_1,
       };
 
-      console.log(
-        `Données enrichies récupérées: ${batimentsEnrichis.length} bâtiment(s), surface totale: ${surfaceTotaleBatie} m²`,
-      );
-
       const responseTimeMs = Date.now() - startTime;
 
       return {
@@ -154,8 +142,6 @@ export class BdnbService {
     const startTime = Date.now();
 
     try {
-      console.log(`Récupération risques naturels pour parcelle: ${identifiantParcelle}`);
-
       const response = await this.callBdnbApi(identifiantParcelle);
 
       if (!response.success || !response.data || response.data.length === 0) {
@@ -170,10 +156,6 @@ export class BdnbService {
       // Utiliser le premier bâtiment pour extraire les risques naturels de la parcelle
       const premierBatiment = response.data[0];
       const risquesNaturels = this.extractRisquesNaturels(premierBatiment);
-
-      console.log(
-        `Risques naturels extraits - Aléa argiles: ${risquesNaturels.aleaArgiles}, Aléa radon: ${risquesNaturels.aleaRadon}`,
-      );
 
       return {
         success: true,
@@ -209,8 +191,6 @@ export class BdnbService {
         limit: 100,
       };
 
-      console.log(`Appel API BDNB: ${url} avec parcelle_id=${identifiantParcelle}`);
-
       const response = await firstValueFrom(
         this.httpService.get<BdnbBatimentGroupeComplet[]>(url, {
           params,
@@ -232,8 +212,6 @@ export class BdnbService {
           source: "API BDNB",
         };
       }
-
-      console.log(`API BDNB: ${data.length} bâtiment(s) trouvé(s)`);
 
       return {
         success: true,

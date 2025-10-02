@@ -1,5 +1,5 @@
 // TODO remove console logs or replace by proper logger
-/* eslint-disable no-console */
+
 import { Injectable } from "@nestjs/common";
 import { HttpService } from "@nestjs/axios";
 import { firstValueFrom } from "rxjs"; // ← Import manquant !
@@ -28,8 +28,6 @@ export class CadastreService {
     const startTime = Date.now();
 
     try {
-      console.log(`Récupération données parcelle: ${identifiant}`);
-
       // Valider le format de l'identifiant parcellaire
       if (!isValidParcelId(identifiant)) {
         return {
@@ -140,8 +138,6 @@ export class CadastreService {
         source_ign: "PCI",
       };
 
-      console.log(`Appel API IGN parcelle: ${url}`, params);
-
       const response = await firstValueFrom(
         this.httpService.get<IGNParcelleResponse>(url, { params }),
       );
@@ -187,8 +183,6 @@ export class CadastreService {
         numero: components.numero,
         source_ign: "PCI",
       };
-
-      console.log(`Appel API IGN localisant: ${url}`, params);
 
       const response = await firstValueFrom(
         this.httpService.get<IGNLocalisantResponse>(url, { params }),

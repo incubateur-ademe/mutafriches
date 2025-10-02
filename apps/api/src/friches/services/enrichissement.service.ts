@@ -31,8 +31,6 @@ export class EnrichissementService {
     sourceUtilisation?: string,
     integrateur?: string,
   ): Promise<EnrichissementOutputDto> {
-    console.log(`Enrichissement parcelle: ${identifiantParcelle}`);
-
     const startTime = Date.now();
     const sourcesUtilisees: string[] = [];
     const champsManquants: string[] = [];
@@ -128,10 +126,6 @@ export class EnrichissementService {
       );
 
       const fiabilite = this.calculateFiabilite(sourcesUtilisees.length, champsManquants.length);
-
-      console.log(
-        `Enrichissement terminé - Sources: ${sourcesUtilisees.length}, Manquants: ${champsManquants.length}`,
-      );
 
       // Déterminer le statut
       if (sourcesEchouees.length === 0) {
