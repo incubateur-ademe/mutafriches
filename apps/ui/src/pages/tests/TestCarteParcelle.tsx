@@ -2,16 +2,13 @@ import { useCallback, useState } from "react";
 import { Link } from "react-router-dom";
 import { Layout } from "../../layouts/Layout";
 import { ParcelleSelectionMap } from "../../components/step1/parcelle-selection-map/ParcelleSelectionMap";
-import { ParcelleDisplayData } from "../../types/parcelle.types";
 
 export function TestCarteParcelle() {
   const [selectedIdu, setSelectedIdu] = useState<string | null>(null);
-  const [parcelleData, setParcelleData] = useState<ParcelleDisplayData | null>(null);
 
-  const handleParcelleSelected = useCallback((idu: string, data: ParcelleDisplayData) => {
-    console.log("Parcelle sélectionnée:", { idu, data });
+  const handleParcelleSelected = useCallback((idu: string) => {
+    console.log("Parcelle sélectionnée:", { idu });
     setSelectedIdu(idu);
-    setParcelleData(data);
   }, []);
 
   return (
@@ -69,7 +66,7 @@ export function TestCarteParcelle() {
         </div>
 
         {/* Informations sur la parcelle sélectionnée */}
-        {selectedIdu && parcelleData && (
+        {selectedIdu && (
           <div className="fr-callout  fr-callout--blue-ecume fr-mb-4w">
             <h3 className="fr-callout__title">Parcelle sélectionnée</h3>
             <div className="fr-callout__text">
@@ -80,31 +77,6 @@ export function TestCarteParcelle() {
                 <dd className="fr-col-12 fr-col-md-9">
                   <code>{selectedIdu}</code>
                 </dd>
-
-                <dt className="fr-col-12 fr-col-md-3">
-                  <strong>Commune :</strong>
-                </dt>
-                <dd className="fr-col-12 fr-col-md-9">{parcelleData.commune}</dd>
-
-                <dt className="fr-col-12 fr-col-md-3">
-                  <strong>Code INSEE :</strong>
-                </dt>
-                <dd className="fr-col-12 fr-col-md-9">{parcelleData.codeInsee}</dd>
-
-                <dt className="fr-col-12 fr-col-md-3">
-                  <strong>Section :</strong>
-                </dt>
-                <dd className="fr-col-12 fr-col-md-9">{parcelleData.section}</dd>
-
-                <dt className="fr-col-12 fr-col-md-3">
-                  <strong>Numéro :</strong>
-                </dt>
-                <dd className="fr-col-12 fr-col-md-9">{parcelleData.numero}</dd>
-
-                <dt className="fr-col-12 fr-col-md-3">
-                  <strong>Surface :</strong>
-                </dt>
-                <dd className="fr-col-12 fr-col-md-9">{parcelleData.surface}</dd>
               </dl>
             </div>
           </div>

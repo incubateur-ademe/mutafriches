@@ -39,18 +39,6 @@ export interface ParcelleProperties {
 }
 
 /**
- * Données de parcelle simplifiées pour l'affichage
- */
-export interface ParcelleDisplayData {
-  idu: string;
-  commune: string;
-  codeInsee: string;
-  section: string;
-  numero: string;
-  surface: string;
-}
-
-/**
  * Callback appelé lors de la sélection d'une parcelle
  */
-export type OnParcelleSelectedCallback = (idu: string, data: ParcelleDisplayData) => void;
+export type OnParcelleSelectedCallback = (idu: string) => void;

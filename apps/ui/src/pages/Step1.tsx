@@ -4,13 +4,13 @@ import { useFormContext } from "../context";
 import { apiService } from "../services/api/api.service";
 import { getStepRoute, ROUTES } from "../config/routes/routes.config";
 import { LoadingCallout } from "../components/common/LoadingCallout";
-import { SelectParcelleById } from "../components/step1/parcelle-selection/SelectParcelleById";
 import { MultiParcelleToggle } from "../components/step1/parcelle-selection/MultiParcelleToggle";
 import { ErrorAlert } from "../components/common/ErrorAlert";
 import { EnrichmentDisplayZone } from "../components/step1/enrichment-display/EnrichmentDisplayZone";
 import { transformEnrichmentToUiData } from "../utils/mappers/enrichissment.mapper";
 import { Stepper } from "../components/layout";
 import { Layout } from "../layouts/Layout";
+import { ParcelleSelection } from "../components/step1/parcelle-selection/ParcelleSelection";
 
 export const Step1: React.FC = () => {
   const navigate = useNavigate();
@@ -42,11 +42,6 @@ export const Step1: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  // Handlers pour les différents modes de sélection
-  const handleSearchById = (identifiant: string) => {
-    handleEnrichir(identifiant);
   };
 
   // Navigation vers l'étape suivante
@@ -119,7 +114,7 @@ export const Step1: React.FC = () => {
           </div>
         </div>
 
-        <SelectParcelleById onSearch={handleSearchById} />
+        <ParcelleSelection onAnalyze={handleEnrichir} />
 
         {/* États de l'interface */}
         {isLoading && (

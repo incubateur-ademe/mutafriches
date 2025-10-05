@@ -3,7 +3,7 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { searchParcelWithFallback } from "../services/cadastre/cadastre.service";
 import { extractIdu } from "../services/cadastre/geo.utils";
-import type { ParcelleDisplayData, OnParcelleSelectedCallback } from "../types/parcelle.types";
+import type { OnParcelleSelectedCallback } from "../types/parcelle.types";
 
 // Fix Leaflet : Réinitialisation des icônes par défaut
 // @ts-expect-error - Suppression nécessaire pour le fix Leaflet
@@ -111,18 +111,9 @@ export function useLeafletMap({
         const p = feature.properties;
         const idu = extractIdu(p);
 
-        const data: ParcelleDisplayData = {
-          idu,
-          commune: p.nom_com || p.commune || "-",
-          codeInsee: p.code_com || p.code_insee || "-",
-          section: p.section || "-",
-          numero: p.numero || "-",
-          surface: p.contenance ? `${p.contenance} m²` : "-",
-        };
-
         // Appel du callback avec les données de la parcelle
         if (callbackRef.current) {
-          callbackRef.current(idu, data);
+          callbackRef.current(idu);
         }
 
         // Affichage du liseré bleu autour de la parcelle
@@ -151,12 +142,12 @@ export function useLeafletMap({
           <div style="min-width: 200px">
             <h3 style="margin: 0 0 10px 0;">Parcelle Cadastrale</h3>
             <table style="width: 100%; font-size: 12px;">
-              <tr><td><b>IDU:</b></td><td>${data.idu}</td></tr>
-              <tr><td><b>Commune:</b></td><td>${data.commune}</td></tr>
-              <tr><td><b>Code INSEE:</b></td><td>${data.codeInsee}</td></tr>
-              <tr><td><b>Section:</b></td><td>${data.section}</td></tr>
-              <tr><td><b>Numéro:</b></td><td>${data.numero}</td></tr>
-              <tr><td><b>Surface:</b></td><td>${data.surface}</td></tr>
+              <tr><td><b>IDU:</b></td><td>${idu}</td></tr>
+              <tr><td><b>Commune:</b></td><td>${p.nom_com || p.commune || "-"}</td></tr>
+              <tr><td><b>Code INSEE:</b></td><td>${p.code_com || p.code_insee || "-"}</td></tr>
+              <tr><td><b>Section:</b></td><td>${p.section || "-"}</td></tr>
+              <tr><td><b>Numéro:</b></td><td>${p.numero || "-"}</td></tr>
+              <tr><td><b>Surface:</b></td><td>${p.contenance ? `${p.contenance} m²` : "-"}</td></tr>
             </table>
           </div>
         `;

@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 
 interface SelectParcelleByIdProps {
-  onSearch: (identifiant: string) => void;
+  onParcelleIdChange: (identifiant: string) => void;
 }
 
-export const SelectParcelleById: React.FC<SelectParcelleByIdProps> = ({ onSearch }) => {
+export const SelectParcelleById: React.FC<SelectParcelleByIdProps> = ({ onParcelleIdChange }) => {
   const [parcelId, setParcelId] = useState("");
   const [showGuide, setShowGuide] = useState(false);
 
@@ -28,6 +28,8 @@ export const SelectParcelleById: React.FC<SelectParcelleByIdProps> = ({ onSearch
     } else {
       formatted = limited;
       setParcelId(formatted);
+      // Remonter l'identifiant nettoyé au parent
+      onParcelleIdChange(limited);
       return;
     }
 
@@ -35,6 +37,7 @@ export const SelectParcelleById: React.FC<SelectParcelleByIdProps> = ({ onSearch
 
     if (limited.length <= pos) {
       setParcelId(formatted);
+      onParcelleIdChange(limited);
       return;
     }
 
@@ -69,17 +72,8 @@ export const SelectParcelleById: React.FC<SelectParcelleByIdProps> = ({ onSearch
     }
 
     setParcelId(formatted);
-  };
-
-  const handleSearch = () => {
-    const cleanId = parcelId.replace(/\s/g, "");
-    onSearch(cleanId);
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      handleSearch();
-    }
+    // Remonter l'identifiant nettoyé (sans espaces) au parent
+    onParcelleIdChange(limited);
   };
 
   return (
@@ -89,7 +83,7 @@ export const SelectParcelleById: React.FC<SelectParcelleByIdProps> = ({ onSearch
       </p>
 
       <div className="fr-grid-row fr-grid-row--gutters">
-        <div className="fr-col-12 fr-col-md-6">
+        <div className="fr-col-12">
           <div className="fr-input-group">
             <label className="fr-label" htmlFor="parcel-id">
               Identifiant de parcelle
@@ -105,22 +99,12 @@ export const SelectParcelleById: React.FC<SelectParcelleByIdProps> = ({ onSearch
               placeholder="Ex: 25056 000 IK 0102"
               value={parcelId}
               onChange={handleInputChange}
-              onKeyPress={handleKeyPress}
             />
           </div>
         </div>
-        <div className="fr-col-12 fr-col-md-6" style={{ display: "flex", alignItems: "end" }}>
-          <button
-            className="fr-btn fr-btn--icon-left fr-icon-search-line"
-            type="button"
-            onClick={handleSearch}
-          >
-            Rechercher la parcelle
-          </button>
-        </div>
       </div>
 
-      <div className="fr-callout fr-mt-8w">
+      <div className="fr-callout fr-mt-4w">
         <h3 className="fr-callout__title">
           Comment trouver l&apos;identifiant de votre parcelle ?
         </h3>
