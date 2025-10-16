@@ -4,6 +4,7 @@
 
 import { CatnatResultNormalized } from "./catnat/catnat.types";
 import { CavitesResultNormalized } from "./cavites/cavites.types";
+import { IcpeResultNormalized } from "./icpe/icpe.types";
 import { MvtResultNormalized } from "./mvt/mvt.types";
 import { OldResultNormalized } from "./old/old.types";
 import { RgaResultNormalized } from "./rga/rga.types";
@@ -53,6 +54,7 @@ export interface GeoRisquesResult {
   cavites?: CavitesResultNormalized;
   old?: OldResultNormalized;
   sis?: SisResultNormalized;
+  icpe?: IcpeResultNormalized;
 
   metadata: {
     sourcesUtilisees: string[];

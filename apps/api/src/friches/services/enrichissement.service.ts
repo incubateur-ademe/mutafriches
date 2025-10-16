@@ -22,6 +22,7 @@ import { CavitesService } from "./external/georisques/cavites/cavites.service";
 import { GEORISQUES_RAYONS_DEFAUT } from "./external/georisques/georisques.constants";
 import { OldService } from "./external/georisques/old/old.service";
 import { SisService } from "./external/georisques/sis/sis.service";
+import { IcpeService } from "./external/georisques/icpe/icpe.service";
 
 const PROMISE_FULFILLED = "fulfilled" as const;
 
@@ -41,6 +42,7 @@ export class EnrichissementService {
     private readonly cavitesService: CavitesService,
     private readonly oldService: OldService,
     private readonly sisService: SisService,
+    private readonly icpeService: IcpeService,
 
     private readonly logsRepository: LogsEnrichissementRepository,
   ) {}
@@ -388,6 +390,7 @@ export class EnrichissementService {
         SourceEnrichissement.GEORISQUES_CAVITES,
         SourceEnrichissement.GEORISQUES_OLD,
         SourceEnrichissement.GEORISQUES_SIS,
+        SourceEnrichissement.GEORISQUES_ICPE,
       );
       return undefined;
     }
@@ -412,6 +415,7 @@ export class EnrichissementService {
       cavitesResult,
       oldResult,
       sisResult,
+      icpeResult,
     ] = await Promise.allSettled([
       this.rgaService.getRga({
         latitude: coordonnees.latitude,
@@ -449,9 +453,15 @@ export class EnrichissementService {
         longitude: coordonnees.longitude,
         rayon: GEORISQUES_RAYONS_DEFAUT.SIS,
       }),
+      this.icpeService.getIcpeByLatLon({
+        latitude: coordonnees.latitude,
+        longitude: coordonnees.longitude,
+        rayon: GEORISQUES_RAYONS_DEFAUT.ICPE,
+      }),
     ]);
 
     // Traiter tous les résultats avec une méthode générique
+    // 1. RGA
     this.processGeoRisqueResult(
       rgaResult,
       "rga",
@@ -464,6 +474,7 @@ export class EnrichissementService {
       echoueesGeorisques,
     );
 
+    // 2. CATNAT
     this.processGeoRisqueResult(
       catnatResult,
       "catnat",
@@ -476,6 +487,7 @@ export class EnrichissementService {
       echoueesGeorisques,
     );
 
+    // 3. TRI
     this.processGeoRisqueResult(
       triResult,
       "triZonage",
@@ -488,6 +500,7 @@ export class EnrichissementService {
       echoueesGeorisques,
     );
 
+    // 4. MVT
     this.processGeoRisqueResult(
       mvtResult,
       "mvt",
@@ -500,6 +513,7 @@ export class EnrichissementService {
       echoueesGeorisques,
     );
 
+    // 5. Zonage Sismique
     this.processGeoRisqueResult(
       zonageSismiqueResult,
       "zonageSismique",
@@ -512,6 +526,7 @@ export class EnrichissementService {
       echoueesGeorisques,
     );
 
+    // 6. Cavités
     this.processGeoRisqueResult(
       cavitesResult,
       "cavites",
@@ -524,6 +539,7 @@ export class EnrichissementService {
       echoueesGeorisques,
     );
 
+    // 7. OLD
     this.processGeoRisqueResult(
       oldResult,
       "old",
@@ -536,6 +552,7 @@ export class EnrichissementService {
       echoueesGeorisques,
     );
 
+    // 8. SIS
     this.processGeoRisqueResult(
       sisResult,
       "sis",
@@ -548,8 +565,21 @@ export class EnrichissementService {
       echoueesGeorisques,
     );
 
+    // 9. ICPE
+    this.processGeoRisqueResult(
+      icpeResult,
+      "icpe",
+      "ICPE",
+      SourceEnrichissement.GEORISQUES_ICPE,
+      result,
+      sources,
+      echouees,
+      sourcesGeorisques,
+      echoueesGeorisques,
+    );
+
     // Calculer la fiabilité (sur 10)
-    const totalServices = 8;
+    const totalServices = 9; // Nombre total de services GeoRisques appelés
     const servicesReussis = sourcesGeorisques.length;
     result.metadata.sourcesUtilisees = sourcesGeorisques;
     result.metadata.sourcesEchouees = echoueesGeorisques;

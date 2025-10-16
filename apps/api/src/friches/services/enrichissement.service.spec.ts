@@ -15,6 +15,7 @@ import { SourceEnrichissement } from "./enrichissement.constants";
 import { CavitesService } from "./external/georisques/cavites/cavites.service";
 import { OldService } from "./external/georisques/old/old.service";
 import { SisService } from "./external/georisques/sis/sis.service";
+import { IcpeService } from "./external/georisques/icpe/icpe.service";
 
 describe("EnrichissementService", () => {
   let service: EnrichissementService;
@@ -123,6 +124,16 @@ describe("EnrichissementService", () => {
               success: false,
               error: "Non mocké",
               source: SourceEnrichissement.GEORISQUES_SIS,
+            }),
+          },
+        },
+        {
+          provide: IcpeService,
+          useValue: {
+            getIcpeByLatLon: vi.fn().mockResolvedValue({
+              success: false,
+              error: "Non mocké",
+              source: SourceEnrichissement.GEORISQUES_ICPE,
             }),
           },
         },

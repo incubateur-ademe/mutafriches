@@ -19,6 +19,7 @@ export const GEORISQUES_ENDPOINTS = {
   CAVITES: "/cavites",
   OLD: "/old",
   SIS: "/ssp/conclusions_sis",
+  ICPE: "/installations_classees",
 } as const;
 
 /**
@@ -33,6 +34,7 @@ export const GEORISQUES_RAYONS_DEFAUT = {
   CAVITES: 1000, // 1 km pour cavités
   OLD: 0, // OLD ne nécessite pas de rayon (recherche par point)
   SIS: 1000, // 1 km pour SIS (max 10000m autorisé par l'API)
+  ICPE: 1000, // 1 km pour ICPE (max 10000m autorisé par l'API)
 } as const;
 
 /**
@@ -43,6 +45,7 @@ export const GEORISQUES_NOMBRE_RESULTATS_RECENTS = {
   MVT: 5, // 5 mouvements les plus proches
   CAVITES: 5, // 5 cavités les plus proches
   SIS: 5, // 5 SIS les plus proches
+  ICPE: 5, // 5 ICPE les plus proches
 } as const;
 
 /**
@@ -57,6 +60,7 @@ export const GEORISQUES_SOURCES = {
   CAVITES: "GeoRisques - Cavités Souterraines",
   OLD: "GeoRisques - Obligations Légales Débroussaillement",
   SIS: "GeoRisques - Secteurs d'Information sur les Sols",
+  ICPE: "GeoRisques - Installations Classées",
 } as const;
 
 /**
