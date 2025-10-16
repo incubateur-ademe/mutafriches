@@ -39,6 +39,8 @@
     "@nestjs/platform-express": "^11.0.1",
     "@nestjs/swagger": "^11.2.0",
     "@types/express-session": "^1.18.2",
+    "@turf/centroid": "^7.1.0",
+    "@turf/helpers": "^7.1.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.2",
     "drizzle-kit": "^0.31.4",
