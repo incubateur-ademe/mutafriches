@@ -5,15 +5,14 @@ import {
   ZonageEnvironnemental,
   ZonagePatrimonial,
   TrameVerteEtBleue,
+  Coordonnees,
+  GeometrieParcelle,
 } from "@mutafriches/shared-types";
 
 /**
  * DTO Swagger pour le résultat d'enrichissement
- * Dupliqué depuis @mutafriches/shared-types pour ajouter les décorateurs Swagger
  */
 export class EnrichissementSwaggerDto implements IEnrichissementOutput {
-  ancienneActivite?: string;
-  connectionReseauElectricite: boolean;
   @ApiProperty({
     description: "Identifiant cadastral unique de la parcelle",
     example: "25056000HZ0346",
@@ -33,15 +32,31 @@ export class EnrichissementSwaggerDto implements IEnrichissementOutput {
   commune: string;
 
   @ApiProperty({
-    description: "Coordonnées géographiques de la parcelle",
+    description: "Coordonnées GPS du point d'entrée de la parcelle",
     example: { latitude: 47.4514, longitude: -0.4619 },
     required: false,
     type: Object,
   })
-  coordonnees?: {
-    latitude: number;
-    longitude: number;
-  };
+  coordonnees?: Coordonnees;
+
+  @ApiProperty({
+    description: "Géométrie complète de la parcelle (polygone GeoJSON)",
+    required: false,
+    type: Object,
+    example: {
+      type: "Polygon",
+      coordinates: [
+        [
+          [2.3609, 48.855],
+          [2.3619, 48.855],
+          [2.3619, 48.8554],
+          [2.3609, 48.8554],
+          [2.3609, 48.855],
+        ],
+      ],
+    },
+  })
+  geometrie?: GeometrieParcelle;
 
   @ApiProperty({
     description: "Surface totale du site en mètres carrés",

@@ -1,14 +1,13 @@
 import { ApiResponse } from "../shared/api-response.types";
+import { GeometrieParcelle, Coordonnees } from "@mutafriches/shared-types";
 
 export interface CadastreServiceResponse {
   identifiant: string;
   codeInsee: string;
   commune: string;
   surface: number; // m²
-  coordonnees: {
-    latitude: number;
-    longitude: number;
-  };
+  coordonnees: Coordonnees;
+  geometrie?: GeometrieParcelle;
 }
 
 export interface ICadastreService {
@@ -20,7 +19,7 @@ export interface IGNParcelleFeature {
   id: string;
   geometry: {
     type: "MultiPolygon" | "Polygon";
-    coordinates: number[][][];
+    coordinates: number[][][] | number[][][][]; // Support MultiPolygon
   };
   properties: {
     gid: number;

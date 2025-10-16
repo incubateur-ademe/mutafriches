@@ -13,6 +13,7 @@ import {
   ZonageReglementaire,
   TrameVerteEtBleue,
   Coordonnees,
+  GeometrieParcelle,
   CalculerMutabiliteInputDto,
 } from "@mutafriches/shared-types";
 import { RaccordementEau } from "@mutafriches/shared-types/dist/enums/saisie.enums";
@@ -26,7 +27,8 @@ export class Parcelle {
   identifiantParcelle: string;
   codeInsee: string;
   commune: string;
-  coordonnees?: Coordonnees;
+  coordonnees?: Coordonnees; // Point d'entrée GPS de la parcelle
+  geometrie?: GeometrieParcelle; // Polygone complet de la parcelle
 
   // Données enrichies automatiquement
   surfaceSite: number;
@@ -67,15 +69,13 @@ export class Parcelle {
   ): Parcelle {
     const parcelle = new Parcelle();
 
-    // Vérifier que enrichissement existe
     if (!enrichissement) {
       throw new Error("Données d'enrichissement manquantes");
     }
 
-    // Copie sécurisée des données enrichies
     Object.assign(parcelle, {
       ...enrichissement,
-      // Cast sécurisé des enums avec vérification
+      // Cast sécurisé des enums
       presenceRisquesNaturels: enrichissement.presenceRisquesNaturels
         ? (enrichissement.presenceRisquesNaturels as RisqueNaturel)
         : undefined,
@@ -91,9 +91,11 @@ export class Parcelle {
       trameVerteEtBleue: enrichissement.trameVerteEtBleue
         ? (enrichissement.trameVerteEtBleue as TrameVerteEtBleue)
         : undefined,
+      // Copie des données géographiques
+      coordonnees: enrichissement.coordonnees,
+      geometrie: enrichissement.geometrie,
     });
 
-    // Ajout des données complémentaires si fournies
     if (donneesComplementaires) {
       Object.assign(parcelle, donneesComplementaires);
     }
@@ -103,23 +105,21 @@ export class Parcelle {
 
   /**
    * Constructeur direct à partir de l'input complet (sans enrichissement)
-   * Utilisé pour les tests ou quand toutes les données sont déjà disponibles
    */
   static fromInput(input: CalculerMutabiliteInputDto): Parcelle {
     const parcelle = new Parcelle();
 
-    // Vérifier que les données sont présentes
     if (!input.donneesEnrichies) {
       throw new Error("Données enrichies manquantes dans l'input");
     }
 
-    // Fusionner toutes les données de l'input
     const { donneesEnrichies, donneesComplementaires } = input;
 
     // Copier les données enrichies
     parcelle.identifiantParcelle = donneesEnrichies.identifiantParcelle;
     parcelle.commune = donneesEnrichies.commune;
     parcelle.coordonnees = donneesEnrichies.coordonnees;
+    parcelle.geometrie = donneesEnrichies.geometrie;
     parcelle.surfaceSite = donneesEnrichies.surfaceSite;
     parcelle.surfaceBati = donneesEnrichies.surfaceBati;
     parcelle.siteEnCentreVille = donneesEnrichies.siteEnCentreVille;

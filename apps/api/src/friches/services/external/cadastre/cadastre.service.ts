@@ -1,10 +1,9 @@
-// TODO remove console logs or replace by proper logger
-
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { HttpService } from "@nestjs/axios";
-import { firstValueFrom } from "rxjs"; // ← Import manquant !
+import { firstValueFrom } from "rxjs";
+import { centroid } from "@turf/centroid";
+import { GeometrieParcelle, Coordonnees } from "@mutafriches/shared-types";
 import { ApiResponse } from "../shared/api-response.types";
-
 import { isValidParcelId } from "../../../utils/validation.utils";
 import {
   CadastreServiceResponse,
@@ -16,6 +15,7 @@ import {
 
 @Injectable()
 export class CadastreService {
+  private readonly logger = new Logger(CadastreService.name);
   private readonly baseUrl =
     process.env.IGN_CADASTRE_API_URL || "https://apicarto.ign.fr/api/cadastre";
 
@@ -28,7 +28,6 @@ export class CadastreService {
     const startTime = Date.now();
 
     try {
-      // Valider le format de l'identifiant parcellaire
       if (!isValidParcelId(identifiant)) {
         return {
           success: false,
@@ -38,7 +37,6 @@ export class CadastreService {
         };
       }
 
-      // Extraire les composants de l'identifiant
       const parcelComponents = this.parseParcelId(identifiant);
       if (!parcelComponents) {
         return {
@@ -49,13 +47,11 @@ export class CadastreService {
         };
       }
 
-      // Appels parallèles optimisés
       const [parcelleResult, localisantResult] = await Promise.all([
         this.fetchParcelle(parcelComponents),
         this.fetchLocalisant(parcelComponents),
       ]);
 
-      // Vérifier que la parcelle existe
       if (!parcelleResult.success || !parcelleResult.data) {
         return {
           success: false,
@@ -67,15 +63,23 @@ export class CadastreService {
 
       const parcelle = parcelleResult.data;
 
-      // Validation de l'IDU (sécurité)
       if (parcelle.properties.idu !== identifiant) {
-        console.warn(`IDU mismatch: demandé ${identifiant}, reçu ${parcelle.properties.idu}`);
+        this.logger.warn(`IDU mismatch: demandé ${identifiant}, reçu ${parcelle.properties.idu}`);
       }
 
       // Coordonnées depuis localisant ou fallback
       const coordonnees = this.extractCoordonnees(localisantResult, parcelle);
 
+      // Géométrie complète de la parcelle
+      const geometrie = this.normalizeGeometry(parcelle.geometry);
+
       const responseTimeMs = Date.now() - startTime;
+
+      this.logger.log(
+        `Parcelle ${identifiant}: surface=${Math.round(parcelle.properties.contenance)}m², ` +
+          `centroid=${coordonnees ? `lat=${coordonnees.latitude.toFixed(5)}, lon=${coordonnees.longitude.toFixed(5)}` : "KO"}, ` +
+          `geometrie=${geometrie ? "OK" : "KO"}`,
+      );
 
       return {
         success: true,
@@ -85,13 +89,17 @@ export class CadastreService {
           commune: parcelle.properties.nom_com,
           surface: Math.round(parcelle.properties.contenance),
           coordonnees,
+          geometrie,
         },
         source: "IGN Cadastre",
         responseTimeMs,
       };
     } catch (error) {
       const responseTimeMs = Date.now() - startTime;
-      console.error(`Erreur lors de la récupération de la parcelle ${identifiant}:`, error);
+      this.logger.error(
+        `Erreur lors de la récupération de la parcelle ${identifiant}:`,
+        (error as Error).stack,
+      );
 
       return {
         success: false,
@@ -158,7 +166,7 @@ export class CadastreService {
         source: "IGN Cadastre",
       };
     } catch (error) {
-      console.error("Erreur lors de la récupération de la parcelle:", error);
+      this.logger.error("Erreur lors de la récupération de la parcelle:", (error as Error).stack);
       return {
         success: false,
         error: error instanceof Error ? error.message : "Erreur API IGN",
@@ -204,7 +212,7 @@ export class CadastreService {
         source: "IGN Cadastre",
       };
     } catch (error) {
-      console.error("Erreur lors de la récupération du localisant:", error);
+      this.logger.error("Erreur lors de la récupération du localisant:", (error as Error).stack);
       return {
         success: false,
         error: error instanceof Error ? error.message : "Erreur API IGN",
@@ -214,33 +222,64 @@ export class CadastreService {
   }
 
   /**
-   * Extrait les coordonnées depuis le localisant ou calcule depuis la géométrie
+   * Extrait les coordonnées depuis le localisant ou calcule avec turf.js
    */
   private extractCoordonnees(
     localisantResult: ApiResponse<IGNLocalisantFeature>,
     parcelle: IGNParcelleFeature,
-  ): { latitude: number; longitude: number } {
+  ): Coordonnees {
     // Priorité 1: Utiliser le localisant si disponible
     if (localisantResult.success && localisantResult.data) {
-      // Format: coordinates: [[longitude, latitude]]
       const [longitude, latitude] = localisantResult.data.geometry.coordinates[0];
       return { latitude, longitude };
     }
 
-    // Fallback: Calculer depuis la géométrie de la parcelle
-    console.warn("Localisant non disponible, calcul centroïde depuis géométrie");
-    return this.calculateCentroid(parcelle.geometry);
+    // Fallback: Calculer avec turf.js (plus précis)
+    this.logger.warn("Localisant non disponible, calcul centroïde avec turf.js");
+    return this.calculateCentroidWithTurf(parcelle.geometry);
   }
 
   /**
-   * Calcule le centroïde d'un polygone (fallback)
+   * Calcule le centroïde avec turf.js (méthode robuste)
    */
-  private calculateCentroid(geometry: {
+  private calculateCentroidWithTurf(geometry: {
     type: "MultiPolygon" | "Polygon";
-    coordinates: number[][][];
-  }): { latitude: number; longitude: number } {
+    coordinates: number[][][] | number[][][][];
+  }): Coordonnees {
+    try {
+      const feature = {
+        type: "Feature" as const,
+        geometry: geometry as GeometrieParcelle,
+        properties: {},
+      };
+
+      const center = centroid(feature);
+      const [longitude, latitude] = center.geometry.coordinates;
+
+      // Validation
+      if (!this.isValidLatLon(latitude, longitude)) {
+        this.logger.warn(`Centroid hors limites: lat=${latitude}, lon=${longitude}`);
+        return this.calculateCentroidFallback(geometry);
+      }
+
+      return { latitude, longitude };
+    } catch (error) {
+      this.logger.warn(`Erreur turf.js, fallback manuel: ${(error as Error).message}`);
+      return this.calculateCentroidFallback(geometry);
+    }
+  }
+
+  /**
+   * Calcule le centroïde manuellement (fallback si turf échoue)
+   */
+  private calculateCentroidFallback(geometry: {
+    type: "MultiPolygon" | "Polygon";
+    coordinates: number[][][] | number[][][][];
+  }): Coordonnees {
     const coords =
-      geometry.type === "MultiPolygon" ? geometry.coordinates[0] : geometry.coordinates;
+      geometry.type === "MultiPolygon"
+        ? (geometry.coordinates as number[][][][])[0]
+        : (geometry.coordinates as number[][][]);
 
     if (!coords || coords.length === 0) {
       return { latitude: 0, longitude: 0 };
@@ -253,8 +292,8 @@ export class CadastreService {
 
     for (const point of ring) {
       if (Array.isArray(point) && point.length >= 2) {
-        const lon = point[0];
-        const lat = point[1];
+        const lon = point[0] as number;
+        const lat = point[1] as number;
 
         sumLon += lon;
         sumLat += lat;
@@ -266,5 +305,31 @@ export class CadastreService {
       latitude: count > 0 ? sumLat / count : 0,
       longitude: count > 0 ? sumLon / count : 0,
     };
+  }
+
+  /**
+   * Normalise la géométrie au format GeometrieParcelle
+   */
+  private normalizeGeometry(geometry: {
+    type: "MultiPolygon" | "Polygon";
+    coordinates: number[][][] | number[][][][];
+  }): GeometrieParcelle {
+    return {
+      type: geometry.type,
+      coordinates: geometry.coordinates,
+    };
+  }
+
+  /**
+   * Valide les coordonnées GPS
+   */
+  private isValidLatLon(latitude: number, longitude: number): boolean {
+    // France métropolitaine
+    const isFranceMetro = latitude >= 41 && latitude <= 51 && longitude >= -5 && longitude <= 10;
+
+    // DOM-TOM (validation large)
+    const isDomTom = latitude >= -22 && latitude <= 50 && longitude >= -180 && longitude <= 180;
+
+    return isFranceMetro || isDomTom;
   }
 }
