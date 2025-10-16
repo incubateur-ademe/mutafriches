@@ -16,6 +16,7 @@ export const GEORISQUES_ENDPOINTS = {
   TRI_ZONAGE: "/tri_zonage",
   MVT: "/mvt",
   ZONAGE_SISMIQUE: "/zonage_sismique",
+  CAVITES: "/cavites",
 } as const;
 
 /**
@@ -27,6 +28,7 @@ export const GEORISQUES_RAYONS_DEFAUT = {
   TRI_ZONAGE: 0, // TRI ne nécessite pas de rayon (recherche par point)
   MVT: 1000, // 1 km pour mouvements de terrain
   ZONAGE_SISMIQUE: 0, // Zonage sismique ne nécessite pas de rayon (recherche par point)
+  CAVITES: 1000, // 1 km pour cavités
 } as const;
 
 /**
@@ -35,6 +37,7 @@ export const GEORISQUES_RAYONS_DEFAUT = {
 export const GEORISQUES_NOMBRE_RESULTATS_RECENTS = {
   CATNAT: 5, // 5 dernières catastrophes
   MVT: 5, // 5 mouvements les plus proches
+  CAVITES: 5, // 5 cavités les plus proches
 } as const;
 
 /**
@@ -46,6 +49,7 @@ export const GEORISQUES_SOURCES = {
   TRI_ZONAGE: "GeoRisques - TRI Zonage Inondation",
   MVT: "GeoRisques - Mouvements de Terrain",
   ZONAGE_SISMIQUE: "GeoRisques - Zonage Sismique",
+  CAVITES: "GeoRisques - Cavités Souterraines",
 } as const;
 
 /**

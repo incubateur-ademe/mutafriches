@@ -18,6 +18,10 @@ import { CatnatService } from "./external/georisques/catnat/catnat.service";
 import { TriService } from "./external/georisques/tri/tri.service";
 import { MvtService } from "./external/georisques/mvt/mvt.service";
 import { ZonageSismiqueService } from "./external/georisques/zonage-sismique/zonage-sismique.service";
+import { CavitesService } from "./external/georisques/cavites/cavites.service";
+import { GEORISQUES_RAYONS_DEFAUT } from "./external/georisques/georisques.constants";
+
+const PROMISE_FULFILLED = "fulfilled" as const;
 
 @Injectable()
 export class EnrichissementService {
@@ -32,6 +36,7 @@ export class EnrichissementService {
     private readonly triService: TriService,
     private readonly mvtService: MvtService,
     private readonly zonageSismiqueService: ZonageSismiqueService,
+    private readonly cavitesService: CavitesService,
 
     private readonly logsRepository: LogsEnrichissementRepository,
   ) {}
@@ -376,6 +381,7 @@ export class EnrichissementService {
         SourceEnrichissement.GEORISQUES_TRI,
         SourceEnrichissement.GEORISQUES_MVT,
         SourceEnrichissement.GEORISQUES_ZONAGE_SISMIQUE,
+        SourceEnrichissement.GEORISQUES_CAVITES,
       );
       return undefined;
     }
@@ -391,7 +397,7 @@ export class EnrichissementService {
     };
 
     // Lancer tous les appels en parallèle
-    const [rgaResult, catnatResult, triResult, mvtResult, zonageSismiqueResult] =
+    const [rgaResult, catnatResult, triResult, mvtResult, zonageSismiqueResult, cavitesResult] =
       await Promise.allSettled([
         this.rgaService.getRga({
           latitude: coordonnees.latitude,
@@ -400,7 +406,7 @@ export class EnrichissementService {
         this.catnatService.getCatnat({
           latitude: coordonnees.latitude,
           longitude: coordonnees.longitude,
-          rayon: 1000,
+          rayon: GEORISQUES_RAYONS_DEFAUT.CATNAT,
         }),
         this.triService.getTri({
           latitude: coordonnees.latitude,
@@ -409,16 +415,21 @@ export class EnrichissementService {
         this.mvtService.getMvt({
           latitude: coordonnees.latitude,
           longitude: coordonnees.longitude,
-          rayon: 1000,
+          rayon: GEORISQUES_RAYONS_DEFAUT.MVT,
         }),
         this.zonageSismiqueService.getZonageSismique({
           latitude: coordonnees.latitude,
           longitude: coordonnees.longitude,
         }),
+        this.cavitesService.getCavites({
+          latitude: coordonnees.latitude,
+          longitude: coordonnees.longitude,
+          rayon: GEORISQUES_RAYONS_DEFAUT.CAVITES,
+        }),
       ]);
 
     // 1. Traiter RGA
-    if (rgaResult.status === "fulfilled") {
+    if (rgaResult.status === PROMISE_FULFILLED) {
       const data = rgaResult.value;
       if (data.success && data.data) {
         result.rga = data.data;
@@ -436,7 +447,7 @@ export class EnrichissementService {
     }
 
     // 2. Traiter CATNAT
-    if (catnatResult.status === "fulfilled") {
+    if (catnatResult.status === PROMISE_FULFILLED) {
       const data = catnatResult.value;
       if (data.success && data.data) {
         result.catnat = data.data;
@@ -457,7 +468,7 @@ export class EnrichissementService {
     }
 
     // 3. Traiter TRI
-    if (triResult.status === "fulfilled") {
+    if (triResult.status === PROMISE_FULFILLED) {
       const data = triResult.value;
       if (data.success && data.data) {
         result.triZonage = data.data;
@@ -475,7 +486,7 @@ export class EnrichissementService {
     }
 
     // 4. Traiter MVT
-    if (mvtResult.status === "fulfilled") {
+    if (mvtResult.status === PROMISE_FULFILLED) {
       const data = mvtResult.value;
       if (data.success && data.data) {
         result.mvt = data.data;
@@ -493,7 +504,7 @@ export class EnrichissementService {
     }
 
     // 5. Traiter Zonage Sismique
-    if (zonageSismiqueResult.status === "fulfilled") {
+    if (zonageSismiqueResult.status === PROMISE_FULFILLED) {
       const data = zonageSismiqueResult.value;
       if (data.success && data.data) {
         result.zonageSismique = data.data;
@@ -513,8 +524,29 @@ export class EnrichissementService {
       echouees.push(SourceEnrichissement.GEORISQUES_ZONAGE_SISMIQUE);
     }
 
+    // 6. Traiter Cavités
+    if (cavitesResult.status === PROMISE_FULFILLED) {
+      const data = cavitesResult.value;
+      if (data.success && data.data) {
+        result.cavites = data.data;
+        sourcesGeorisques.push(SourceEnrichissement.GEORISQUES_CAVITES);
+        sources.push(SourceEnrichissement.GEORISQUES_CAVITES);
+      } else {
+        this.logger.warn(`Échec récupération Cavités: ${data.error}`);
+        echoueesGeorisques.push(SourceEnrichissement.GEORISQUES_CAVITES);
+        echouees.push(SourceEnrichissement.GEORISQUES_CAVITES);
+      }
+    } else {
+      this.logger.error(
+        `Erreur GeoRisques Cavités: ${cavitesResult.reason}`,
+        cavitesResult.reason?.stack,
+      );
+      echoueesGeorisques.push(SourceEnrichissement.GEORISQUES_CAVITES);
+      echouees.push(SourceEnrichissement.GEORISQUES_CAVITES);
+    }
+
     // Calculer la fiabilité (sur 10)
-    const totalServices = 5;
+    const totalServices = 6; // Nombre total de services GeoRisques appelés
     const servicesReussis = sourcesGeorisques.length;
     result.metadata.sourcesUtilisees = sourcesGeorisques;
     result.metadata.sourcesEchouees = echoueesGeorisques;

@@ -15,6 +15,7 @@ import { CatnatService } from "./services/external/georisques/catnat/catnat.serv
 import { TriService } from "./services/external/georisques/tri/tri.service";
 import { MvtService } from "./services/external/georisques/mvt/mvt.service";
 import { ZonageSismiqueService } from "./services/external/georisques/zonage-sismique/zonage-sismique.service";
+import { CavitesService } from "./services/external/georisques/cavites/cavites.service";
 
 @Module({
   imports: [HttpModule],
@@ -38,6 +39,7 @@ import { ZonageSismiqueService } from "./services/external/georisques/zonage-sis
     TriService,
     MvtService,
     ZonageSismiqueService,
+    CavitesService,
   ],
   exports: [OrchestrateurService],
 })
