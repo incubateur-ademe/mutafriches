@@ -15,6 +15,7 @@ import { LogsEnrichissementRepository } from "../repository/logs-enrichissement.
 import { RgaService } from "./external/georisques/rga/rga.service";
 import { GeoRisquesResult } from "./external/georisques/georisques.types";
 import { CatnatService } from "./external/georisques/catnat/catnat.service";
+import { TriService } from "./external/georisques/tri/tri.service";
 
 @Injectable()
 export class EnrichissementService {
@@ -26,6 +27,7 @@ export class EnrichissementService {
     private readonly enedisService: EnedisService,
     private readonly rgaService: RgaService,
     private readonly catnatService: CatnatService,
+    private readonly triService: TriService,
     private readonly logsRepository: LogsEnrichissementRepository,
   ) {}
 
@@ -353,7 +355,7 @@ export class EnrichissementService {
   }
 
   /**
-   * Enrichit avec les risques GeoRisques (RGA + CATNAT)
+   * Enrichit avec les risques GeoRisques (RGA + CATNAT + TRI)
    */
   private async enrichWithGeoRisques(
     coordonnees: { latitude: number; longitude: number } | undefined,
@@ -364,6 +366,7 @@ export class EnrichissementService {
       this.logger.warn("Pas de coordonnées disponibles pour GeoRisques");
       echouees.push(SourceEnrichissement.GEORISQUES_RGA);
       echouees.push(SourceEnrichissement.GEORISQUES_CATNAT);
+      echouees.push(SourceEnrichissement.GEORISQUES_TRI);
       return undefined;
     }
 
@@ -407,7 +410,7 @@ export class EnrichissementService {
       const catnatResult = await this.catnatService.getCatnat({
         latitude: coordonnees.latitude,
         longitude: coordonnees.longitude,
-        rayon: 1000, // 1 km
+        rayon: 1000,
       });
 
       if (catnatResult.success && catnatResult.data) {
@@ -428,8 +431,33 @@ export class EnrichissementService {
       echouees.push(SourceEnrichissement.GEORISQUES_CATNAT);
     }
 
+    // 3. Appel TRI
+    try {
+      const triResult = await this.triService.getTri({
+        latitude: coordonnees.latitude,
+        longitude: coordonnees.longitude,
+      });
+
+      if (triResult.success && triResult.data) {
+        result.triZonage = triResult.data;
+        sourcesGeorisques.push(SourceEnrichissement.GEORISQUES_TRI);
+        sources.push(SourceEnrichissement.GEORISQUES_TRI);
+      } else {
+        this.logger.warn(`Échec récupération TRI: ${triResult.error}`);
+        echoueesGeorisques.push(SourceEnrichissement.GEORISQUES_TRI);
+        echouees.push(SourceEnrichissement.GEORISQUES_TRI);
+      }
+    } catch (error) {
+      this.logger.error(
+        `Erreur GeoRisques TRI: ${(error as Error).message}`,
+        (error as Error).stack,
+      );
+      echoueesGeorisques.push(SourceEnrichissement.GEORISQUES_TRI);
+      echouees.push(SourceEnrichissement.GEORISQUES_TRI);
+    }
+
     // Calculer la fiabilité (sur 10)
-    const totalServices = 2; // RGA + CATNAT
+    const totalServices = 3; // RGA, CATNAT, TRI
     const servicesReussis = sourcesGeorisques.length;
     result.metadata.sourcesUtilisees = sourcesGeorisques;
     result.metadata.sourcesEchouees = echoueesGeorisques;

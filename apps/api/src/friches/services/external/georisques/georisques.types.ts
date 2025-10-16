@@ -4,6 +4,7 @@
 
 import { CatnatResultNormalized } from "./catnat/catnat.types";
 import { RgaResultNormalized } from "./rga/rga.types";
+import { TriResultNormalized } from "./tri/tri.types";
 
 /**
  * Paramètres de recherche géographique communs
@@ -41,6 +42,7 @@ export interface GeoRisquesMetadata {
 export interface GeoRisquesResult {
   rga?: RgaResultNormalized;
   catnat?: CatnatResultNormalized;
+  triZonage?: TriResultNormalized;
 
   metadata: {
     sourcesUtilisees: string[];

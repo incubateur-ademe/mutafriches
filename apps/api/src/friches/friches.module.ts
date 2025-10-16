@@ -12,6 +12,7 @@ import { EvaluationRepository } from "./repository/evaluation.repository";
 import { LogsEnrichissementRepository } from "./repository/logs-enrichissement.repository";
 import { RgaService } from "./services/external/georisques/rga/rga.service";
 import { CatnatService } from "./services/external/georisques/catnat/catnat.service";
+import { TriService } from "./services/external/georisques/tri/tri.service";
 
 @Module({
   imports: [HttpModule],
@@ -32,6 +33,7 @@ import { CatnatService } from "./services/external/georisques/catnat/catnat.serv
     // Services GeoRisques
     RgaService,
     CatnatService,
+    TriService,
   ],
   exports: [OrchestrateurService],
 })

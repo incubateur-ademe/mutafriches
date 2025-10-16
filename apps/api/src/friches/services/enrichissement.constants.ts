@@ -57,4 +57,5 @@ export enum SourceEnrichissement {
   DONNEES_TEMPORAIRES = "Données-Temporaires",
   GEORISQUES_RGA = "GeoRisques-RGA",
   GEORISQUES_CATNAT = "GeoRisques-CatNat",
+  GEORISQUES_TRI = "GeoRisques-TRI",
 }
