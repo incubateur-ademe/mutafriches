@@ -21,6 +21,7 @@ import { ZonageSismiqueService } from "./external/georisques/zonage-sismique/zon
 import { CavitesService } from "./external/georisques/cavites/cavites.service";
 import { GEORISQUES_RAYONS_DEFAUT } from "./external/georisques/georisques.constants";
 import { OldService } from "./external/georisques/old/old.service";
+import { SisService } from "./external/georisques/sis/sis.service";
 
 const PROMISE_FULFILLED = "fulfilled" as const;
 
@@ -39,6 +40,7 @@ export class EnrichissementService {
     private readonly zonageSismiqueService: ZonageSismiqueService,
     private readonly cavitesService: CavitesService,
     private readonly oldService: OldService,
+    private readonly sisService: SisService,
 
     private readonly logsRepository: LogsEnrichissementRepository,
   ) {}
@@ -385,6 +387,7 @@ export class EnrichissementService {
         SourceEnrichissement.GEORISQUES_ZONAGE_SISMIQUE,
         SourceEnrichissement.GEORISQUES_CAVITES,
         SourceEnrichissement.GEORISQUES_OLD,
+        SourceEnrichissement.GEORISQUES_SIS,
       );
       return undefined;
     }
@@ -408,6 +411,7 @@ export class EnrichissementService {
       zonageSismiqueResult,
       cavitesResult,
       oldResult,
+      sisResult,
     ] = await Promise.allSettled([
       this.rgaService.getRga({
         latitude: coordonnees.latitude,
@@ -439,6 +443,11 @@ export class EnrichissementService {
       this.oldService.getOld({
         latitude: coordonnees.latitude,
         longitude: coordonnees.longitude,
+      }),
+      this.sisService.getSisByLatLon({
+        latitude: coordonnees.latitude,
+        longitude: coordonnees.longitude,
+        rayon: GEORISQUES_RAYONS_DEFAUT.SIS,
       }),
     ]);
 
@@ -527,8 +536,20 @@ export class EnrichissementService {
       echoueesGeorisques,
     );
 
+    this.processGeoRisqueResult(
+      sisResult,
+      "sis",
+      "SIS",
+      SourceEnrichissement.GEORISQUES_SIS,
+      result,
+      sources,
+      echouees,
+      sourcesGeorisques,
+      echoueesGeorisques,
+    );
+
     // Calculer la fiabilité (sur 10)
-    const totalServices = 7;
+    const totalServices = 8;
     const servicesReussis = sourcesGeorisques.length;
     result.metadata.sourcesUtilisees = sourcesGeorisques;
     result.metadata.sourcesEchouees = echoueesGeorisques;

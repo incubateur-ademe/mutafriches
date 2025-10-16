@@ -16,6 +16,7 @@ import { MvtService } from "./services/external/georisques/mvt/mvt.service";
 import { ZonageSismiqueService } from "./services/external/georisques/zonage-sismique/zonage-sismique.service";
 import { CavitesService } from "./services/external/georisques/cavites/cavites.service";
 import { OldService } from "./services/external/georisques/old/old.service";
+import { SisService } from "./services/external/georisques/sis/sis.service";
 
 @Module({
   imports: [HttpModule],
@@ -40,6 +41,7 @@ import { OldService } from "./services/external/georisques/old/old.service";
     ZonageSismiqueService,
     CavitesService,
     OldService,
+    SisService,
   ],
   exports: [OrchestrateurService],
 })

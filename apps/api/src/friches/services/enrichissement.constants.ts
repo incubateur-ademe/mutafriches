@@ -62,4 +62,5 @@ export enum SourceEnrichissement {
   GEORISQUES_ZONAGE_SISMIQUE = "GeoRisques-ZonageSismique",
   GEORISQUES_CAVITES = "GeoRisques-Cavites",
   GEORISQUES_OLD = "GeoRisques-OLD",
+  GEORISQUES_SIS = "GeoRisques-SIS",
 }

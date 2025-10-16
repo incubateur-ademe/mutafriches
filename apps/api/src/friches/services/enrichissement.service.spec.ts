@@ -14,6 +14,7 @@ import { ZonageSismiqueService } from "./external/georisques/zonage-sismique/zon
 import { SourceEnrichissement } from "./enrichissement.constants";
 import { CavitesService } from "./external/georisques/cavites/cavites.service";
 import { OldService } from "./external/georisques/old/old.service";
+import { SisService } from "./external/georisques/sis/sis.service";
 
 describe("EnrichissementService", () => {
   let service: EnrichissementService;
@@ -112,6 +113,16 @@ describe("EnrichissementService", () => {
               success: false,
               error: "Non mocké",
               source: SourceEnrichissement.GEORISQUES_OLD,
+            }),
+          },
+        },
+        {
+          provide: SisService,
+          useValue: {
+            getSisByLatLon: vi.fn().mockResolvedValue({
+              success: false,
+              error: "Non mocké",
+              source: SourceEnrichissement.GEORISQUES_SIS,
             }),
           },
         },
