@@ -19,3 +19,11 @@ export interface OrigineUtilisation {
   source: SourceUtilisation;
   integrateur?: string;
 }
+
+/**
+ * Géométrie complète de la parcelle (GeoJSON)
+ */
+export interface GeometrieParcelle {
+  type: "Polygon" | "MultiPolygon";
+  coordinates: number[][][] | number[][][][];
+}

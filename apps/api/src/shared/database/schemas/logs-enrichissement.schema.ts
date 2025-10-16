@@ -1,4 +1,4 @@
-import { pgTable, varchar, jsonb, timestamp, integer, index } from "drizzle-orm/pg-core";
+import { pgTable, varchar, jsonb, timestamp, integer, numeric, index } from "drizzle-orm/pg-core";
 
 export const logs_enrichissement = pgTable(
   "logs_enrichissement",
@@ -18,12 +18,21 @@ export const logs_enrichissement = pgTable(
     sourceUtilisation: varchar("source_utilisation", { length: 20 }),
     integrateur: varchar("integrateur", { length: 255 }),
     versionApi: varchar("version_api", { length: 20 }),
+
+    // Informations géométriques
+    centroidLatitude: numeric("centroid_latitude", { precision: 10, scale: 7 }),
+    centroidLongitude: numeric("centroid_longitude", { precision: 10, scale: 7 }),
+    geometrie: jsonb("geometrie"),
   },
   (table) => {
     return {
       identifiantIdx: index("idx_logs_enrichissement_identifiant").on(table.identifiantCadastral),
       statutIdx: index("idx_logs_enrichissement_statut").on(table.statut),
       dateIdx: index("idx_logs_enrichissement_date").on(table.dateEnrichissement),
+      centroidIdx: index("idx_logs_enrichissement_centroid").on(
+        table.centroidLatitude,
+        table.centroidLongitude,
+      ),
     };
   },
 );

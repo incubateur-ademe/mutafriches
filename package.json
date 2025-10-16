@@ -30,6 +30,7 @@
     "db:studio": "cd apps/api && pnpm drizzle-kit studio",
     "db:generate": "cd apps/api && pnpm drizzle-kit generate",
     "db:migrate": "cd apps/api && pnpm drizzle-kit migrate",
+    "db:introspect": "cd apps/api && pnpm drizzle-kit introspect",
     "validate": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test",
     "clean": "pnpm -r clean && rm -rf node_modules",
     "fresh": "rm -rf node_modules apps/*/node_modules pnpm-lock.yaml && pnpm install && pnpm start:dev"

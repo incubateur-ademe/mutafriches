@@ -1,3 +1,5 @@
+import { Coordonnees, GeometrieParcelle } from "../..";
+
 /**
  * Résultat de l'enrichissement automatique des données de parcelle
  * Contient uniquement les données extraites automatiquement depuis des sources externes
@@ -7,10 +9,8 @@ export interface EnrichissementOutputDto {
   identifiantParcelle: string;
   codeInsee: string;
   commune: string;
-  coordonnees?: {
-    latitude: number;
-    longitude: number;
-  };
+  coordonnees?: Coordonnees; // Coordonnées GPS du point d'entrée de la parcelle
+  geometrie?: GeometrieParcelle; // Polygone complet
 
   // Données physiques du site
   surfaceSite: number;
