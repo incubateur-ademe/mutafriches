@@ -7,7 +7,6 @@ import { CalculService } from "./services/calcul.service";
 import { CadastreService } from "./services/external/cadastre/cadastre.service";
 import { BdnbService } from "./services/external/bdnb/bdnb.service";
 import { EnedisService } from "./services/external/enedis/enedis.service";
-import { DatabaseService } from "../shared/database/database.service";
 import { EvaluationRepository } from "./repository/evaluation.repository";
 import { LogsEnrichissementRepository } from "./repository/logs-enrichissement.repository";
 import { RgaService } from "./services/external/georisques/rga/rga.service";
@@ -22,8 +21,7 @@ import { OldService } from "./services/external/georisques/old/old.service";
   imports: [HttpModule],
   controllers: [FrichesController],
   providers: [
-    // Database & Repositories
-    DatabaseService,
+    // Repositories
     EvaluationRepository,
     LogsEnrichissementRepository,
     // Services principaux

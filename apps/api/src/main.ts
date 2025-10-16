@@ -1,89 +1,97 @@
-/* eslint-disable no-console */
 import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
 import { join } from "path";
 import { NestExpressApplication } from "@nestjs/platform-express";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { Request, Response, NextFunction } from "express";
-import { ValidationPipe } from "@nestjs/common";
+import { ValidationPipe, Logger } from "@nestjs/common";
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  const logger = new Logger("Bootstrap");
 
-  // TODO : Revoir la configuration CORS avec Anna si besoin + gestion integrateurs
-  app.enableCors(); // Tout ouvert par défaut (à restreindre en prod si besoin)
+  try {
+    const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
-  // Configuration de la validation
-  app.useGlobalPipes(new ValidationPipe());
+    // TODO : Revoir la configuration CORS avec Anna si besoin + gestion integrateurs
+    app.enableCors(); // Tout ouvert par défaut (à restreindre en prod si besoin)
 
-  // Configuration Swagger
-  const config = new DocumentBuilder()
-    .setTitle("Mutafriches API")
-    .setDescription("API pour analyser la mutabilité des friches urbaines")
-    .setVersion("1.0")
-    .addTag("friches", "Opérations sur les friches urbaines")
-    .build();
+    // Configuration de la validation
+    app.useGlobalPipes(new ValidationPipe());
 
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup("api", app, document, {
-    swaggerOptions: {
-      persistAuthorization: true,
-      displayRequestDuration: true,
-    },
-  });
+    // Configuration Swagger
+    const config = new DocumentBuilder()
+      .setTitle("Mutafriches API")
+      .setDescription("API pour analyser la mutabilité des friches urbaines")
+      .setVersion("1.0")
+      .addTag("friches", "Opérations sur les friches urbaines")
+      .build();
 
-  // Trust proxy pour Scalingo et autres environnements
-  if (process.env.NODE_ENV === "production") {
-    app.set("trust proxy", 1);
-  }
-
-  // Configuration CORS pour le développement
-  if (process.env.NODE_ENV !== "production") {
-    app.enableCors({
-      origin: "http://localhost:5173",
-      credentials: true,
+    const document = SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup("api", app, document, {
+      swaggerOptions: {
+        persistAuthorization: true,
+        displayRequestDuration: true,
+      },
     });
-  }
 
-  // Servir l'UI React en production
-  const isProduction = process.env.NODE_ENV === "production";
-  if (isProduction) {
-    // Chemin vers le dossier dist-ui qui est dans /apps/dist-ui après build - spécifique à Scalingo
-    const uiPath = "/app/apps/dist-ui";
+    // Trust proxy pour Scalingo et autres environnements
+    if (process.env.NODE_ENV === "production") {
+      app.set("trust proxy", 1);
+      logger.log("Proxy configuré pour l'environnement de production");
+    }
 
-    // Servir les fichiers statiques de l'UI React
-    app.useStaticAssets(uiPath);
+    // Configuration CORS pour le développement
+    if (process.env.NODE_ENV !== "production") {
+      app.enableCors({
+        origin: "http://localhost:5173",
+        credentials: true,
+      });
+      logger.log("CORS configuré pour le développement (http://localhost:5173)");
+    }
 
-    // Catch-all route pour le SPA React (doit être après toutes les routes API)
-    app.use((req: Request, res: Response, next: NextFunction) => {
-      // Ne pas intercepter les routes API et les assets
-      if (
-        req.path.startsWith("/api") ||
-        req.path.startsWith("/friches") ||
-        req.path.startsWith("/evenements") ||
-        req.path.startsWith("/health") ||
-        req.path.includes(".") // Pour les fichiers statiques (.js, .css, etc.)
-      ) {
-        return next();
-      }
+    // Servir l'UI React en production
+    const isProduction = process.env.NODE_ENV === "production";
+    if (isProduction) {
+      // Chemin vers le dossier dist-ui qui est dans /apps/dist-ui après build - spécifique à Scalingo
+      const uiPath = "/app/apps/dist-ui";
+      logger.log(`Configuration UI React en production : ${uiPath}`);
 
-      // Servir index.html pour toutes les autres routes (SPA)
-      res.sendFile(join(uiPath, "index.html"));
-    });
-  }
+      // Servir les fichiers statiques de l'UI React
+      app.useStaticAssets(uiPath);
 
-  const port = process.env.PORT || 3000;
-  const host = isProduction ? "0.0.0.0" : "localhost";
+      // Catch-all route pour le SPA React (doit être après toutes les routes API)
+      app.use((req: Request, res: Response, next: NextFunction) => {
+        // Ne pas intercepter les routes API et les assets
+        if (
+          req.path.startsWith("/api") ||
+          req.path.startsWith("/friches") ||
+          req.path.startsWith("/evenements") ||
+          req.path.startsWith("/health") ||
+          req.path.includes(".") // Pour les fichiers statiques (.js, .css, etc.)
+        ) {
+          return next();
+        }
 
-  await app.listen(port, host);
-  console.log(`Application lancée sur : http://${host}:${port}`);
-  console.log(`Documentation swagger sur : http://${host}:${port}/api`);
-  if (!isProduction) {
-    console.log(`UI React en dev sur : http://localhost:5173`);
+        // Servir index.html pour toutes les autres routes (SPA)
+        res.sendFile(join(uiPath, "index.html"));
+      });
+    }
+
+    const port = process.env.PORT || 3000;
+    const host = isProduction ? "0.0.0.0" : "localhost";
+
+    await app.listen(port, host);
+
+    logger.log(`Application lancée sur : http://${host}:${port}`);
+    logger.log(`Documentation Swagger sur : http://${host}:${port}/api`);
+
+    if (!isProduction) {
+      logger.log(`UI React en dev sur : http://localhost:5173`);
+    }
+  } catch (err) {
+    logger.error("Erreur lors du démarrage de l'application", err as Error);
+    process.exit(1);
   }
 }
 
-bootstrap().catch((err) => {
-  console.error("Erreur lors du démarrage de l'application:", err);
-  process.exit(1);
-});
+bootstrap();
