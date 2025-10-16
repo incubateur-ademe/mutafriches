@@ -10,6 +10,8 @@ import { RgaService } from "./external/georisques/rga/rga.service";
 import { CatnatService } from "./external/georisques/catnat/catnat.service";
 import { TriService } from "./external/georisques/tri/tri.service";
 import { MvtService } from "./external/georisques/mvt/mvt.service";
+import { ZonageSismiqueService } from "./external/georisques/zonage-sismique/zonage-sismique.service";
+import { SourceEnrichissement } from "./enrichissement.constants";
 
 describe("EnrichissementService", () => {
   let service: EnrichissementService;
@@ -44,25 +46,51 @@ describe("EnrichissementService", () => {
         {
           provide: RgaService,
           useValue: {
-            getRga: vi.fn(),
+            getRga: vi.fn().mockResolvedValue({
+              success: false,
+              error: "Non mocké",
+              source: SourceEnrichissement.GEORISQUES_RGA,
+            }),
           },
         },
         {
           provide: CatnatService,
           useValue: {
-            getCatnat: vi.fn(),
+            getCatnat: vi.fn().mockResolvedValue({
+              success: false,
+              error: "Non mocké",
+              source: SourceEnrichissement.GEORISQUES_CATNAT,
+            }),
           },
         },
         {
           provide: TriService,
           useValue: {
-            getTri: vi.fn(),
+            getTri: vi.fn().mockResolvedValue({
+              success: false,
+              error: "Non mocké",
+              source: SourceEnrichissement.GEORISQUES_TRI,
+            }),
           },
         },
         {
           provide: MvtService,
           useValue: {
-            getMvt: vi.fn(),
+            getMvt: vi.fn().mockResolvedValue({
+              success: false,
+              error: "Non mocké",
+              source: SourceEnrichissement.GEORISQUES_MVT,
+            }),
+          },
+        },
+        {
+          provide: ZonageSismiqueService,
+          useValue: {
+            getZonageSismique: vi.fn().mockResolvedValue({
+              success: false,
+              error: "Non mocké",
+              source: SourceEnrichissement.GEORISQUES_ZONAGE_SISMIQUE,
+            }),
           },
         },
         {

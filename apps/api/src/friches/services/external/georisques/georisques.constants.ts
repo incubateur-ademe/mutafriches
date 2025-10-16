@@ -15,12 +15,7 @@ export const GEORISQUES_ENDPOINTS = {
   CATNAT: "/gaspar/catnat",
   TRI_ZONAGE: "/tri_zonage",
   MVT: "/mvt",
-
-  TRI: "/gaspar/tri",
   ZONAGE_SISMIQUE: "/zonage_sismique",
-  SSP: "/ssp",
-  ICPE: "/installations_classees",
-  CAVITES: "/cavites",
 } as const;
 
 /**
@@ -31,11 +26,7 @@ export const GEORISQUES_RAYONS_DEFAUT = {
   CATNAT: 1000, // 1 km pour catastrophes naturelles
   TRI_ZONAGE: 0, // TRI ne nécessite pas de rayon (recherche par point)
   MVT: 1000, // 1 km pour mouvements de terrain
-
-  TRI: 5000, // 5 km pour inondations
-  SSP: 500, // 500m pour pollution
-  ICPE: 2000, // 2 km pour installations classées
-  CAVITES: 1000, // 1 km pour cavités
+  ZONAGE_SISMIQUE: 0, // Zonage sismique ne nécessite pas de rayon (recherche par point)
 } as const;
 
 /**
@@ -54,10 +45,7 @@ export const GEORISQUES_SOURCES = {
   CATNAT: "GeoRisques - Catastrophes Naturelles",
   TRI_ZONAGE: "GeoRisques - TRI Zonage Inondation",
   MVT: "GeoRisques - Mouvements de Terrain",
-
   ZONAGE_SISMIQUE: "GeoRisques - Zonage Sismique",
-  SSP: "GeoRisques - Sites et Sols Pollués",
-  ICPE: "GeoRisques - Installations Classées",
 } as const;
 
 /**

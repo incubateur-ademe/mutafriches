@@ -59,4 +59,5 @@ export enum SourceEnrichissement {
   GEORISQUES_CATNAT = "GeoRisques-CATNAT",
   GEORISQUES_TRI = "GeoRisques-TRI",
   GEORISQUES_MVT = "GeoRisques-MVT",
+  GEORISQUES_ZONAGE_SISMIQUE = "GeoRisques-ZonageSismique",
 }

@@ -17,6 +17,7 @@ import { GeoRisquesResult } from "./external/georisques/georisques.types";
 import { CatnatService } from "./external/georisques/catnat/catnat.service";
 import { TriService } from "./external/georisques/tri/tri.service";
 import { MvtService } from "./external/georisques/mvt/mvt.service";
+import { ZonageSismiqueService } from "./external/georisques/zonage-sismique/zonage-sismique.service";
 
 @Injectable()
 export class EnrichissementService {
@@ -30,6 +31,8 @@ export class EnrichissementService {
     private readonly catnatService: CatnatService,
     private readonly triService: TriService,
     private readonly mvtService: MvtService,
+    private readonly zonageSismiqueService: ZonageSismiqueService,
+
     private readonly logsRepository: LogsEnrichissementRepository,
   ) {}
 
@@ -357,7 +360,8 @@ export class EnrichissementService {
   }
 
   /**
-   * Enrichit avec les risques GeoRisques (RGA + CATNAT + TRI + MVT)
+   * Enrichit avec les risques GeoRisques (RGA + CATNAT + TRI + MVT + Zonage Sismique)
+   * Appels parallélisés pour optimiser les performances
    */
   private async enrichWithGeoRisques(
     coordonnees: { latitude: number; longitude: number } | undefined,
@@ -366,10 +370,13 @@ export class EnrichissementService {
   ): Promise<GeoRisquesResult | undefined> {
     if (!coordonnees) {
       this.logger.warn("Pas de coordonnées disponibles pour GeoRisques");
-      echouees.push(SourceEnrichissement.GEORISQUES_RGA);
-      echouees.push(SourceEnrichissement.GEORISQUES_CATNAT);
-      echouees.push(SourceEnrichissement.GEORISQUES_TRI);
-      echouees.push(SourceEnrichissement.GEORISQUES_MVT);
+      echouees.push(
+        SourceEnrichissement.GEORISQUES_RGA,
+        SourceEnrichissement.GEORISQUES_CATNAT,
+        SourceEnrichissement.GEORISQUES_TRI,
+        SourceEnrichissement.GEORISQUES_MVT,
+        SourceEnrichissement.GEORISQUES_ZONAGE_SISMIQUE,
+      );
       return undefined;
     }
 
@@ -383,110 +390,131 @@ export class EnrichissementService {
       },
     };
 
-    // 1. Appel RGA
-    try {
-      const rgaResult = await this.rgaService.getRga({
-        latitude: coordonnees.latitude,
-        longitude: coordonnees.longitude,
-      });
+    // Lancer tous les appels en parallèle
+    const [rgaResult, catnatResult, triResult, mvtResult, zonageSismiqueResult] =
+      await Promise.allSettled([
+        this.rgaService.getRga({
+          latitude: coordonnees.latitude,
+          longitude: coordonnees.longitude,
+        }),
+        this.catnatService.getCatnat({
+          latitude: coordonnees.latitude,
+          longitude: coordonnees.longitude,
+          rayon: 1000,
+        }),
+        this.triService.getTri({
+          latitude: coordonnees.latitude,
+          longitude: coordonnees.longitude,
+        }),
+        this.mvtService.getMvt({
+          latitude: coordonnees.latitude,
+          longitude: coordonnees.longitude,
+          rayon: 1000,
+        }),
+        this.zonageSismiqueService.getZonageSismique({
+          latitude: coordonnees.latitude,
+          longitude: coordonnees.longitude,
+        }),
+      ]);
 
-      if (rgaResult.success && rgaResult.data) {
-        result.rga = rgaResult.data;
+    // 1. Traiter RGA
+    if (rgaResult.status === "fulfilled") {
+      const data = rgaResult.value;
+      if (data.success && data.data) {
+        result.rga = data.data;
         sourcesGeorisques.push(SourceEnrichissement.GEORISQUES_RGA);
         sources.push(SourceEnrichissement.GEORISQUES_RGA);
       } else {
-        this.logger.warn(`Échec récupération RGA: ${rgaResult.error}`);
+        this.logger.warn(`Échec récupération RGA: ${data.error}`);
         echoueesGeorisques.push(SourceEnrichissement.GEORISQUES_RGA);
         echouees.push(SourceEnrichissement.GEORISQUES_RGA);
       }
-    } catch (error) {
-      this.logger.error(
-        `Erreur GeoRisques RGA: ${(error as Error).message}`,
-        (error as Error).stack,
-      );
+    } else {
+      this.logger.error(`Erreur GeoRisques RGA: ${rgaResult.reason}`, rgaResult.reason?.stack);
       echoueesGeorisques.push(SourceEnrichissement.GEORISQUES_RGA);
       echouees.push(SourceEnrichissement.GEORISQUES_RGA);
     }
 
-    // 2. Appel CATNAT
-    try {
-      const catnatResult = await this.catnatService.getCatnat({
-        latitude: coordonnees.latitude,
-        longitude: coordonnees.longitude,
-        rayon: 1000,
-      });
-
-      if (catnatResult.success && catnatResult.data) {
-        result.catnat = catnatResult.data;
+    // 2. Traiter CATNAT
+    if (catnatResult.status === "fulfilled") {
+      const data = catnatResult.value;
+      if (data.success && data.data) {
+        result.catnat = data.data;
         sourcesGeorisques.push(SourceEnrichissement.GEORISQUES_CATNAT);
         sources.push(SourceEnrichissement.GEORISQUES_CATNAT);
       } else {
-        this.logger.warn(`Échec récupération CATNAT: ${catnatResult.error}`);
+        this.logger.warn(`Échec récupération CATNAT: ${data.error}`);
         echoueesGeorisques.push(SourceEnrichissement.GEORISQUES_CATNAT);
         echouees.push(SourceEnrichissement.GEORISQUES_CATNAT);
       }
-    } catch (error) {
+    } else {
       this.logger.error(
-        `Erreur GeoRisques CATNAT: ${(error as Error).message}`,
-        (error as Error).stack,
+        `Erreur GeoRisques CATNAT: ${catnatResult.reason}`,
+        catnatResult.reason?.stack,
       );
       echoueesGeorisques.push(SourceEnrichissement.GEORISQUES_CATNAT);
       echouees.push(SourceEnrichissement.GEORISQUES_CATNAT);
     }
 
-    // 3. Appel TRI
-    try {
-      const triResult = await this.triService.getTri({
-        latitude: coordonnees.latitude,
-        longitude: coordonnees.longitude,
-      });
-
-      if (triResult.success && triResult.data) {
-        result.triZonage = triResult.data;
+    // 3. Traiter TRI
+    if (triResult.status === "fulfilled") {
+      const data = triResult.value;
+      if (data.success && data.data) {
+        result.triZonage = data.data;
         sourcesGeorisques.push(SourceEnrichissement.GEORISQUES_TRI);
         sources.push(SourceEnrichissement.GEORISQUES_TRI);
       } else {
-        this.logger.warn(`Échec récupération TRI: ${triResult.error}`);
+        this.logger.warn(`Échec récupération TRI: ${data.error}`);
         echoueesGeorisques.push(SourceEnrichissement.GEORISQUES_TRI);
         echouees.push(SourceEnrichissement.GEORISQUES_TRI);
       }
-    } catch (error) {
-      this.logger.error(
-        `Erreur GeoRisques TRI: ${(error as Error).message}`,
-        (error as Error).stack,
-      );
+    } else {
+      this.logger.error(`Erreur GeoRisques TRI: ${triResult.reason}`, triResult.reason?.stack);
       echoueesGeorisques.push(SourceEnrichissement.GEORISQUES_TRI);
       echouees.push(SourceEnrichissement.GEORISQUES_TRI);
     }
 
-    // 4. Appel MVT ← NOUVEAU BLOC
-    try {
-      const mvtResult = await this.mvtService.getMvt({
-        latitude: coordonnees.latitude,
-        longitude: coordonnees.longitude,
-        rayon: 1000,
-      });
-
-      if (mvtResult.success && mvtResult.data) {
-        result.mvt = mvtResult.data;
+    // 4. Traiter MVT
+    if (mvtResult.status === "fulfilled") {
+      const data = mvtResult.value;
+      if (data.success && data.data) {
+        result.mvt = data.data;
         sourcesGeorisques.push(SourceEnrichissement.GEORISQUES_MVT);
         sources.push(SourceEnrichissement.GEORISQUES_MVT);
       } else {
-        this.logger.warn(`Échec récupération MVT: ${mvtResult.error}`);
+        this.logger.warn(`Échec récupération MVT: ${data.error}`);
         echoueesGeorisques.push(SourceEnrichissement.GEORISQUES_MVT);
         echouees.push(SourceEnrichissement.GEORISQUES_MVT);
       }
-    } catch (error) {
-      this.logger.error(
-        `Erreur GeoRisques MVT: ${(error as Error).message}`,
-        (error as Error).stack,
-      );
+    } else {
+      this.logger.error(`Erreur GeoRisques MVT: ${mvtResult.reason}`, mvtResult.reason?.stack);
       echoueesGeorisques.push(SourceEnrichissement.GEORISQUES_MVT);
       echouees.push(SourceEnrichissement.GEORISQUES_MVT);
     }
 
+    // 5. Traiter Zonage Sismique
+    if (zonageSismiqueResult.status === "fulfilled") {
+      const data = zonageSismiqueResult.value;
+      if (data.success && data.data) {
+        result.zonageSismique = data.data;
+        sourcesGeorisques.push(SourceEnrichissement.GEORISQUES_ZONAGE_SISMIQUE);
+        sources.push(SourceEnrichissement.GEORISQUES_ZONAGE_SISMIQUE);
+      } else {
+        this.logger.warn(`Échec récupération Zonage Sismique: ${data.error}`);
+        echoueesGeorisques.push(SourceEnrichissement.GEORISQUES_ZONAGE_SISMIQUE);
+        echouees.push(SourceEnrichissement.GEORISQUES_ZONAGE_SISMIQUE);
+      }
+    } else {
+      this.logger.error(
+        `Erreur GeoRisques Zonage Sismique: ${zonageSismiqueResult.reason}`,
+        zonageSismiqueResult.reason?.stack,
+      );
+      echoueesGeorisques.push(SourceEnrichissement.GEORISQUES_ZONAGE_SISMIQUE);
+      echouees.push(SourceEnrichissement.GEORISQUES_ZONAGE_SISMIQUE);
+    }
+
     // Calculer la fiabilité (sur 10)
-    const totalServices = 4; // ← MODIFIÉ : RGA + CATNAT + TRI + MVT
+    const totalServices = 5;
     const servicesReussis = sourcesGeorisques.length;
     result.metadata.sourcesUtilisees = sourcesGeorisques;
     result.metadata.sourcesEchouees = echoueesGeorisques;

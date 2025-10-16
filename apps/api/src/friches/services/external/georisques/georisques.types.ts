@@ -6,6 +6,7 @@ import { CatnatResultNormalized } from "./catnat/catnat.types";
 import { MvtResultNormalized } from "./mvt/mvt.types";
 import { RgaResultNormalized } from "./rga/rga.types";
 import { TriResultNormalized } from "./tri/tri.types";
+import { ZonageSismiqueResultNormalized } from "./zonage-sismique/zonage-sismique.types";
 
 /**
  * Paramètres de recherche géographique communs
@@ -45,6 +46,7 @@ export interface GeoRisquesResult {
   catnat?: CatnatResultNormalized;
   triZonage?: TriResultNormalized;
   mvt?: MvtResultNormalized;
+  zonageSismique?: ZonageSismiqueResultNormalized;
 
   metadata: {
     sourcesUtilisees: string[];
