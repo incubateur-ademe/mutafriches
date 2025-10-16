@@ -9,6 +9,7 @@ import { LogsEnrichissementRepository } from "../repository/logs-enrichissement.
 import { RgaService } from "./external/georisques/rga/rga.service";
 import { CatnatService } from "./external/georisques/catnat/catnat.service";
 import { TriService } from "./external/georisques/tri/tri.service";
+import { MvtService } from "./external/georisques/mvt/mvt.service";
 
 describe("EnrichissementService", () => {
   let service: EnrichissementService;
@@ -56,6 +57,12 @@ describe("EnrichissementService", () => {
           provide: TriService,
           useValue: {
             getTri: vi.fn(),
+          },
+        },
+        {
+          provide: MvtService,
+          useValue: {
+            getMvt: vi.fn(),
           },
         },
         {

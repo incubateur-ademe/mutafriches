@@ -14,6 +14,7 @@ import {
   GEORISQUES_SOURCES,
   GEORISQUES_TIMEOUT_MS,
   GEORISQUES_RAYONS_DEFAUT,
+  GEORISQUES_NOMBRE_RESULTATS_RECENTS,
 } from "../georisques.constants";
 
 @Injectable()
@@ -113,7 +114,6 @@ export class CatnatService {
    * Normalise les données brutes de l'API CATNAT
    */
   private normalizeCatnatData(data: CatnatApiResponse): CatnatResultNormalized {
-    const NB_EVENTS_MAX = 5;
     const evenements = data.data || [];
 
     // Trier par date de début décroissante (plus récent en premier)
@@ -121,9 +121,9 @@ export class CatnatService {
       return new Date(b.date_debut_evt).getTime() - new Date(a.date_debut_evt).getTime();
     });
 
-    // Extraire les NB_EVENTS_MAX événements les plus récents
+    // Extraire les GEORISQUES_NOMBRE_RESULTATS_RECENTS.CATNAT événements les plus récents
     const evenementsRecents = evenementsTries
-      .slice(0, NB_EVENTS_MAX)
+      .slice(0, GEORISQUES_NOMBRE_RESULTATS_RECENTS.CATNAT)
       .map((evt) => this.normalizeEvent(evt));
 
     // Extraire les types de risques uniques

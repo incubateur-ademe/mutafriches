@@ -16,6 +16,7 @@ import { RgaService } from "./external/georisques/rga/rga.service";
 import { GeoRisquesResult } from "./external/georisques/georisques.types";
 import { CatnatService } from "./external/georisques/catnat/catnat.service";
 import { TriService } from "./external/georisques/tri/tri.service";
+import { MvtService } from "./external/georisques/mvt/mvt.service";
 
 @Injectable()
 export class EnrichissementService {
@@ -28,6 +29,7 @@ export class EnrichissementService {
     private readonly rgaService: RgaService,
     private readonly catnatService: CatnatService,
     private readonly triService: TriService,
+    private readonly mvtService: MvtService,
     private readonly logsRepository: LogsEnrichissementRepository,
   ) {}
 
@@ -355,7 +357,7 @@ export class EnrichissementService {
   }
 
   /**
-   * Enrichit avec les risques GeoRisques (RGA + CATNAT + TRI)
+   * Enrichit avec les risques GeoRisques (RGA + CATNAT + TRI + MVT)
    */
   private async enrichWithGeoRisques(
     coordonnees: { latitude: number; longitude: number } | undefined,
@@ -367,6 +369,7 @@ export class EnrichissementService {
       echouees.push(SourceEnrichissement.GEORISQUES_RGA);
       echouees.push(SourceEnrichissement.GEORISQUES_CATNAT);
       echouees.push(SourceEnrichissement.GEORISQUES_TRI);
+      echouees.push(SourceEnrichissement.GEORISQUES_MVT);
       return undefined;
     }
 
@@ -456,8 +459,34 @@ export class EnrichissementService {
       echouees.push(SourceEnrichissement.GEORISQUES_TRI);
     }
 
+    // 4. Appel MVT ← NOUVEAU BLOC
+    try {
+      const mvtResult = await this.mvtService.getMvt({
+        latitude: coordonnees.latitude,
+        longitude: coordonnees.longitude,
+        rayon: 1000,
+      });
+
+      if (mvtResult.success && mvtResult.data) {
+        result.mvt = mvtResult.data;
+        sourcesGeorisques.push(SourceEnrichissement.GEORISQUES_MVT);
+        sources.push(SourceEnrichissement.GEORISQUES_MVT);
+      } else {
+        this.logger.warn(`Échec récupération MVT: ${mvtResult.error}`);
+        echoueesGeorisques.push(SourceEnrichissement.GEORISQUES_MVT);
+        echouees.push(SourceEnrichissement.GEORISQUES_MVT);
+      }
+    } catch (error) {
+      this.logger.error(
+        `Erreur GeoRisques MVT: ${(error as Error).message}`,
+        (error as Error).stack,
+      );
+      echoueesGeorisques.push(SourceEnrichissement.GEORISQUES_MVT);
+      echouees.push(SourceEnrichissement.GEORISQUES_MVT);
+    }
+
     // Calculer la fiabilité (sur 10)
-    const totalServices = 3; // RGA, CATNAT, TRI
+    const totalServices = 4; // ← MODIFIÉ : RGA + CATNAT + TRI + MVT
     const servicesReussis = sourcesGeorisques.length;
     result.metadata.sourcesUtilisees = sourcesGeorisques;
     result.metadata.sourcesEchouees = echoueesGeorisques;

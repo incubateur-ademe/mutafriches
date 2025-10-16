@@ -13,6 +13,7 @@ import { LogsEnrichissementRepository } from "./repository/logs-enrichissement.r
 import { RgaService } from "./services/external/georisques/rga/rga.service";
 import { CatnatService } from "./services/external/georisques/catnat/catnat.service";
 import { TriService } from "./services/external/georisques/tri/tri.service";
+import { MvtService } from "./services/external/georisques/mvt/mvt.service";
 
 @Module({
   imports: [HttpModule],
@@ -34,6 +35,7 @@ import { TriService } from "./services/external/georisques/tri/tri.service";
     RgaService,
     CatnatService,
     TriService,
+    MvtService,
   ],
   exports: [OrchestrateurService],
 })
