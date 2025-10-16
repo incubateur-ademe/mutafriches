@@ -6,6 +6,7 @@ import { BdnbService } from "./external/bdnb/bdnb.service";
 import { EnedisService } from "./external/enedis/enedis.service";
 import { RisqueNaturel } from "@mutafriches/shared-types";
 import { LogsEnrichissementRepository } from "../repository/logs-enrichissement.repository";
+import { RgaService } from "./external/georisques/rga/rga.service";
 
 describe("EnrichissementService", () => {
   let service: EnrichissementService;
@@ -35,6 +36,12 @@ describe("EnrichissementService", () => {
           useValue: {
             checkConnection: vi.fn(),
             getDistanceRaccordement: vi.fn(),
+          },
+        },
+        {
+          provide: RgaService,
+          useValue: {
+            getRga: vi.fn(),
           },
         },
         {

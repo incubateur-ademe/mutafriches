@@ -13,6 +13,8 @@ import {
   SourceEnrichissement,
 } from "./enrichissement.constants";
 import { LogsEnrichissementRepository } from "../repository/logs-enrichissement.repository";
+import { RgaService } from "./external/georisques/rga/rga.service";
+import { GeoRisquesResult } from "./external/georisques/georisques.types";
 
 @Injectable()
 export class EnrichissementService {
@@ -20,6 +22,7 @@ export class EnrichissementService {
     private readonly cadastreService: CadastreService,
     private readonly bdnbService: BdnbService,
     private readonly enedisService: EnedisService,
+    private readonly rgaService: RgaService,
     private readonly logsRepository: LogsEnrichissementRepository,
   ) {}
 
@@ -117,7 +120,14 @@ export class EnrichissementService {
         sourcesEchouees,
       );
 
-      // 8. Données complémentaires temporaires
+      // 8. Risques GeoRisques (RGA) ← NOUVEAU BLOC
+      const risquesGeorisques = await this.enrichWithGeoRisques(
+        parcelle.coordonnees,
+        sourcesUtilisees,
+        sourcesEchouees,
+      );
+
+      // 9. Données complémentaires temporaires
       await this.enrichWithTemporaryMockData(
         parcelle,
         identifiantParcelle,
@@ -160,6 +170,9 @@ export class EnrichissementService {
         zonageReglementaire: parcelle.zonageReglementaire,
         zonagePatrimonial: parcelle.zonagePatrimonial,
         trameVerteEtBleue: parcelle.trameVerteEtBleue,
+
+        // Risques GeoRisques
+        risquesGeorisques,
 
         // Métadonnées d'enrichissement
         sourcesUtilisees,
@@ -333,6 +346,50 @@ export class EnrichissementService {
       console.error("Erreur Enedis:", error);
       manquants.push("distanceRaccordementElectrique");
       echouees.push(SourceEnrichissement.ENEDIS_RACCORDEMENT);
+    }
+  }
+
+  /**
+   * Enrichit avec les risques GeoRisques (RGA)
+   */
+  private async enrichWithGeoRisques(
+    coordonnees: { latitude: number; longitude: number } | undefined,
+    sources: string[],
+    echouees: string[],
+  ): Promise<GeoRisquesResult | undefined> {
+    if (!coordonnees) {
+      console.log("Pas de coordonnées disponibles pour GeoRisques");
+      echouees.push(SourceEnrichissement.GEORISQUES_RGA);
+      return undefined;
+    }
+
+    try {
+      const rgaResult = await this.rgaService.getRga({
+        latitude: coordonnees.latitude,
+        longitude: coordonnees.longitude,
+      });
+
+      if (rgaResult.success && rgaResult.data) {
+        sources.push(SourceEnrichissement.GEORISQUES_RGA);
+
+        return {
+          rga: rgaResult.data,
+          metadata: {
+            sourcesUtilisees: [SourceEnrichissement.GEORISQUES_RGA],
+            sourcesEchouees: [],
+            fiabilite: 10, // Pleine confiance dans GeoRisques
+          },
+        };
+      } else {
+        console.warn(`Échec récupération RGA: ${rgaResult.error}`);
+        echouees.push(SourceEnrichissement.GEORISQUES_RGA);
+        return undefined;
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Erreur inconnue";
+      console.error(`Erreur GeoRisques RGA: ${errorMessage}`, (error as Error).stack);
+      echouees.push(SourceEnrichissement.GEORISQUES_RGA);
+      return undefined;
     }
   }
 

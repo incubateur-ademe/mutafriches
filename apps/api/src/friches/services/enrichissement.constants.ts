@@ -20,6 +20,7 @@ export enum CodeErreurEnrichissement {
   LOVAC_API_ERROR = "LOVAC_API_ERROR",
   ENRICHISSEMENT_FAILED = "ENRICHISSEMENT_FAILED",
   UNKNOWN_ERROR = "UNKNOWN_ERROR",
+  GEORISQUES_RGA_ERROR = "GEORISQUES_RGA_ERROR",
 }
 
 /**
@@ -36,6 +37,7 @@ export const MessagesErreurEnrichissement: Record<CodeErreurEnrichissement, stri
   [CodeErreurEnrichissement.LOVAC_API_ERROR]: "Erreur lors de l'appel à l'API Lovac",
   [CodeErreurEnrichissement.ENRICHISSEMENT_FAILED]: "Échec général de l'enrichissement",
   [CodeErreurEnrichissement.UNKNOWN_ERROR]: "Erreur inconnue lors de l'enrichissement",
+  [CodeErreurEnrichissement.GEORISQUES_RGA_ERROR]: "Erreur lors de l'appel à l'API GeoRisques RGA",
 };
 
 /**
@@ -53,4 +55,5 @@ export enum SourceEnrichissement {
   LOVAC = "Lovac",
   LOVAC_TEMPORAIRE = "Lovac-Temporaire",
   DONNEES_TEMPORAIRES = "Données-Temporaires",
+  GEORISQUES_RGA = "GeoRisques-RGA",
 }

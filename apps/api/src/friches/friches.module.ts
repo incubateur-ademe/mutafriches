@@ -10,6 +10,7 @@ import { EnedisService } from "./services/external/enedis/enedis.service";
 import { DatabaseService } from "../shared/database/database.service";
 import { EvaluationRepository } from "./repository/evaluation.repository";
 import { LogsEnrichissementRepository } from "./repository/logs-enrichissement.repository";
+import { RgaService } from "./services/external/georisques/rga/rga.service";
 
 @Module({
   imports: [HttpModule],
@@ -27,6 +28,7 @@ import { LogsEnrichissementRepository } from "./repository/logs-enrichissement.r
     CadastreService,
     BdnbService,
     EnedisService,
+    RgaService,
   ],
   exports: [OrchestrateurService],
 })
