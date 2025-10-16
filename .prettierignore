@@ -28,3 +28,8 @@ Thumbs.db
 
 # Documentation
 *.md
+
+# Drizzle generated files
+**/migrations/meta/*.json
+**/migrations/schema.ts
+**/migrations/relations.ts

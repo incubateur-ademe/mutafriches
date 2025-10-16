@@ -3,6 +3,8 @@ import { HttpService } from "@nestjs/axios";
 import { firstValueFrom } from "rxjs";
 import { centroid } from "@turf/centroid";
 import { GeometrieParcelle, Coordonnees } from "@mutafriches/shared-types";
+import type { Geometry } from "geojson";
+
 import { ApiResponse } from "../shared/api-response.types";
 import { isValidParcelId } from "../../../utils/validation.utils";
 import {
@@ -240,16 +242,17 @@ export class CadastreService {
   }
 
   /**
-   * Calcule le centroïde avec turf.js (méthode robuste)
+   * Calcule le centroïde avec turf
    */
   private calculateCentroidWithTurf(geometry: {
     type: "MultiPolygon" | "Polygon";
     coordinates: number[][][] | number[][][][];
   }): Coordonnees {
     try {
+      // Cast explicite pour satisfaire Turf.js
       const feature = {
         type: "Feature" as const,
-        geometry: geometry as GeometrieParcelle,
+        geometry: geometry as unknown as Geometry,
         properties: {},
       };
 

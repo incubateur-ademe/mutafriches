@@ -123,6 +123,9 @@ importers:
       '@types/express':
         specifier: ^5.0.3
         version: 5.0.3
+      '@types/geojson':
+        specifier: ^7946.0.16
+        version: 7946.0.16
       '@types/pg':
         specifier: ^8.15.4
         version: 8.15.5

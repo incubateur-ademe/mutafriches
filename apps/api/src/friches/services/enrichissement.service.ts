@@ -56,6 +56,7 @@ export class EnrichissementService {
       parcelle.commune = cadastreData.commune;
       parcelle.surfaceSite = cadastreData.surface;
       parcelle.coordonnees = cadastreData.coordonnees;
+      parcelle.geometrie = cadastreData.geometrie;
       sourcesUtilisees.push(SourceEnrichissement.CADASTRE);
 
       // 2. Surface bâtie (BDNB)
@@ -146,6 +147,7 @@ export class EnrichissementService {
         distanceRaccordementElectrique: parcelle.distanceRaccordementElectrique,
         presenceRisquesNaturels: parcelle.presenceRisquesNaturels,
         coordonnees: parcelle.coordonnees,
+        geometrie: parcelle.geometrie,
 
         // Données non déductibles pour le moment
         siteEnCentreVille: parcelle.siteEnCentreVille,
