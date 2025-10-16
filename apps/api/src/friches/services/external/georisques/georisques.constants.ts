@@ -17,6 +17,7 @@ export const GEORISQUES_ENDPOINTS = {
   MVT: "/mvt",
   ZONAGE_SISMIQUE: "/zonage_sismique",
   CAVITES: "/cavites",
+  OLD: "/old",
 } as const;
 
 /**
@@ -29,6 +30,7 @@ export const GEORISQUES_RAYONS_DEFAUT = {
   MVT: 1000, // 1 km pour mouvements de terrain
   ZONAGE_SISMIQUE: 0, // Zonage sismique ne nécessite pas de rayon (recherche par point)
   CAVITES: 1000, // 1 km pour cavités
+  OLD: 0, // OLD ne nécessite pas de rayon (recherche par point)
 } as const;
 
 /**
@@ -50,6 +52,7 @@ export const GEORISQUES_SOURCES = {
   MVT: "GeoRisques - Mouvements de Terrain",
   ZONAGE_SISMIQUE: "GeoRisques - Zonage Sismique",
   CAVITES: "GeoRisques - Cavités Souterraines",
+  OLD: "GeoRisques - Obligations Légales Débroussaillement",
 } as const;
 
 /**

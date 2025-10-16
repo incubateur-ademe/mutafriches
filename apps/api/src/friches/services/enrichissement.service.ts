@@ -20,6 +20,7 @@ import { MvtService } from "./external/georisques/mvt/mvt.service";
 import { ZonageSismiqueService } from "./external/georisques/zonage-sismique/zonage-sismique.service";
 import { CavitesService } from "./external/georisques/cavites/cavites.service";
 import { GEORISQUES_RAYONS_DEFAUT } from "./external/georisques/georisques.constants";
+import { OldService } from "./external/georisques/old/old.service";
 
 const PROMISE_FULFILLED = "fulfilled" as const;
 
@@ -37,6 +38,7 @@ export class EnrichissementService {
     private readonly mvtService: MvtService,
     private readonly zonageSismiqueService: ZonageSismiqueService,
     private readonly cavitesService: CavitesService,
+    private readonly oldService: OldService,
 
     private readonly logsRepository: LogsEnrichissementRepository,
   ) {}
@@ -365,7 +367,7 @@ export class EnrichissementService {
   }
 
   /**
-   * Enrichit avec les risques GeoRisques (RGA + CATNAT + TRI + MVT + Zonage Sismique)
+   * Enrichit avec les risques GeoRisques (RGA + CATNAT + TRI + MVT + Zonage Sismique + Cavités + OLD)
    * Appels parallélisés pour optimiser les performances
    */
   private async enrichWithGeoRisques(
@@ -382,6 +384,7 @@ export class EnrichissementService {
         SourceEnrichissement.GEORISQUES_MVT,
         SourceEnrichissement.GEORISQUES_ZONAGE_SISMIQUE,
         SourceEnrichissement.GEORISQUES_CAVITES,
+        SourceEnrichissement.GEORISQUES_OLD,
       );
       return undefined;
     }
@@ -397,156 +400,135 @@ export class EnrichissementService {
     };
 
     // Lancer tous les appels en parallèle
-    const [rgaResult, catnatResult, triResult, mvtResult, zonageSismiqueResult, cavitesResult] =
-      await Promise.allSettled([
-        this.rgaService.getRga({
-          latitude: coordonnees.latitude,
-          longitude: coordonnees.longitude,
-        }),
-        this.catnatService.getCatnat({
-          latitude: coordonnees.latitude,
-          longitude: coordonnees.longitude,
-          rayon: GEORISQUES_RAYONS_DEFAUT.CATNAT,
-        }),
-        this.triService.getTri({
-          latitude: coordonnees.latitude,
-          longitude: coordonnees.longitude,
-        }),
-        this.mvtService.getMvt({
-          latitude: coordonnees.latitude,
-          longitude: coordonnees.longitude,
-          rayon: GEORISQUES_RAYONS_DEFAUT.MVT,
-        }),
-        this.zonageSismiqueService.getZonageSismique({
-          latitude: coordonnees.latitude,
-          longitude: coordonnees.longitude,
-        }),
-        this.cavitesService.getCavites({
-          latitude: coordonnees.latitude,
-          longitude: coordonnees.longitude,
-          rayon: GEORISQUES_RAYONS_DEFAUT.CAVITES,
-        }),
-      ]);
+    const [
+      rgaResult,
+      catnatResult,
+      triResult,
+      mvtResult,
+      zonageSismiqueResult,
+      cavitesResult,
+      oldResult,
+    ] = await Promise.allSettled([
+      this.rgaService.getRga({
+        latitude: coordonnees.latitude,
+        longitude: coordonnees.longitude,
+      }),
+      this.catnatService.getCatnat({
+        latitude: coordonnees.latitude,
+        longitude: coordonnees.longitude,
+        rayon: GEORISQUES_RAYONS_DEFAUT.CATNAT,
+      }),
+      this.triService.getTri({
+        latitude: coordonnees.latitude,
+        longitude: coordonnees.longitude,
+      }),
+      this.mvtService.getMvt({
+        latitude: coordonnees.latitude,
+        longitude: coordonnees.longitude,
+        rayon: GEORISQUES_RAYONS_DEFAUT.MVT,
+      }),
+      this.zonageSismiqueService.getZonageSismique({
+        latitude: coordonnees.latitude,
+        longitude: coordonnees.longitude,
+      }),
+      this.cavitesService.getCavites({
+        latitude: coordonnees.latitude,
+        longitude: coordonnees.longitude,
+        rayon: GEORISQUES_RAYONS_DEFAUT.CAVITES,
+      }),
+      this.oldService.getOld({
+        latitude: coordonnees.latitude,
+        longitude: coordonnees.longitude,
+      }),
+    ]);
 
-    // 1. Traiter RGA
-    if (rgaResult.status === PROMISE_FULFILLED) {
-      const data = rgaResult.value;
-      if (data.success && data.data) {
-        result.rga = data.data;
-        sourcesGeorisques.push(SourceEnrichissement.GEORISQUES_RGA);
-        sources.push(SourceEnrichissement.GEORISQUES_RGA);
-      } else {
-        this.logger.warn(`Échec récupération RGA: ${data.error}`);
-        echoueesGeorisques.push(SourceEnrichissement.GEORISQUES_RGA);
-        echouees.push(SourceEnrichissement.GEORISQUES_RGA);
-      }
-    } else {
-      this.logger.error(`Erreur GeoRisques RGA: ${rgaResult.reason}`, rgaResult.reason?.stack);
-      echoueesGeorisques.push(SourceEnrichissement.GEORISQUES_RGA);
-      echouees.push(SourceEnrichissement.GEORISQUES_RGA);
-    }
+    // Traiter tous les résultats avec une méthode générique
+    this.processGeoRisqueResult(
+      rgaResult,
+      "rga",
+      "RGA",
+      SourceEnrichissement.GEORISQUES_RGA,
+      result,
+      sources,
+      echouees,
+      sourcesGeorisques,
+      echoueesGeorisques,
+    );
 
-    // 2. Traiter CATNAT
-    if (catnatResult.status === PROMISE_FULFILLED) {
-      const data = catnatResult.value;
-      if (data.success && data.data) {
-        result.catnat = data.data;
-        sourcesGeorisques.push(SourceEnrichissement.GEORISQUES_CATNAT);
-        sources.push(SourceEnrichissement.GEORISQUES_CATNAT);
-      } else {
-        this.logger.warn(`Échec récupération CATNAT: ${data.error}`);
-        echoueesGeorisques.push(SourceEnrichissement.GEORISQUES_CATNAT);
-        echouees.push(SourceEnrichissement.GEORISQUES_CATNAT);
-      }
-    } else {
-      this.logger.error(
-        `Erreur GeoRisques CATNAT: ${catnatResult.reason}`,
-        catnatResult.reason?.stack,
-      );
-      echoueesGeorisques.push(SourceEnrichissement.GEORISQUES_CATNAT);
-      echouees.push(SourceEnrichissement.GEORISQUES_CATNAT);
-    }
+    this.processGeoRisqueResult(
+      catnatResult,
+      "catnat",
+      "CATNAT",
+      SourceEnrichissement.GEORISQUES_CATNAT,
+      result,
+      sources,
+      echouees,
+      sourcesGeorisques,
+      echoueesGeorisques,
+    );
 
-    // 3. Traiter TRI
-    if (triResult.status === PROMISE_FULFILLED) {
-      const data = triResult.value;
-      if (data.success && data.data) {
-        result.triZonage = data.data;
-        sourcesGeorisques.push(SourceEnrichissement.GEORISQUES_TRI);
-        sources.push(SourceEnrichissement.GEORISQUES_TRI);
-      } else {
-        this.logger.warn(`Échec récupération TRI: ${data.error}`);
-        echoueesGeorisques.push(SourceEnrichissement.GEORISQUES_TRI);
-        echouees.push(SourceEnrichissement.GEORISQUES_TRI);
-      }
-    } else {
-      this.logger.error(`Erreur GeoRisques TRI: ${triResult.reason}`, triResult.reason?.stack);
-      echoueesGeorisques.push(SourceEnrichissement.GEORISQUES_TRI);
-      echouees.push(SourceEnrichissement.GEORISQUES_TRI);
-    }
+    this.processGeoRisqueResult(
+      triResult,
+      "triZonage",
+      "TRI",
+      SourceEnrichissement.GEORISQUES_TRI,
+      result,
+      sources,
+      echouees,
+      sourcesGeorisques,
+      echoueesGeorisques,
+    );
 
-    // 4. Traiter MVT
-    if (mvtResult.status === PROMISE_FULFILLED) {
-      const data = mvtResult.value;
-      if (data.success && data.data) {
-        result.mvt = data.data;
-        sourcesGeorisques.push(SourceEnrichissement.GEORISQUES_MVT);
-        sources.push(SourceEnrichissement.GEORISQUES_MVT);
-      } else {
-        this.logger.warn(`Échec récupération MVT: ${data.error}`);
-        echoueesGeorisques.push(SourceEnrichissement.GEORISQUES_MVT);
-        echouees.push(SourceEnrichissement.GEORISQUES_MVT);
-      }
-    } else {
-      this.logger.error(`Erreur GeoRisques MVT: ${mvtResult.reason}`, mvtResult.reason?.stack);
-      echoueesGeorisques.push(SourceEnrichissement.GEORISQUES_MVT);
-      echouees.push(SourceEnrichissement.GEORISQUES_MVT);
-    }
+    this.processGeoRisqueResult(
+      mvtResult,
+      "mvt",
+      "MVT",
+      SourceEnrichissement.GEORISQUES_MVT,
+      result,
+      sources,
+      echouees,
+      sourcesGeorisques,
+      echoueesGeorisques,
+    );
 
-    // 5. Traiter Zonage Sismique
-    if (zonageSismiqueResult.status === PROMISE_FULFILLED) {
-      const data = zonageSismiqueResult.value;
-      if (data.success && data.data) {
-        result.zonageSismique = data.data;
-        sourcesGeorisques.push(SourceEnrichissement.GEORISQUES_ZONAGE_SISMIQUE);
-        sources.push(SourceEnrichissement.GEORISQUES_ZONAGE_SISMIQUE);
-      } else {
-        this.logger.warn(`Échec récupération Zonage Sismique: ${data.error}`);
-        echoueesGeorisques.push(SourceEnrichissement.GEORISQUES_ZONAGE_SISMIQUE);
-        echouees.push(SourceEnrichissement.GEORISQUES_ZONAGE_SISMIQUE);
-      }
-    } else {
-      this.logger.error(
-        `Erreur GeoRisques Zonage Sismique: ${zonageSismiqueResult.reason}`,
-        zonageSismiqueResult.reason?.stack,
-      );
-      echoueesGeorisques.push(SourceEnrichissement.GEORISQUES_ZONAGE_SISMIQUE);
-      echouees.push(SourceEnrichissement.GEORISQUES_ZONAGE_SISMIQUE);
-    }
+    this.processGeoRisqueResult(
+      zonageSismiqueResult,
+      "zonageSismique",
+      "Zonage Sismique",
+      SourceEnrichissement.GEORISQUES_ZONAGE_SISMIQUE,
+      result,
+      sources,
+      echouees,
+      sourcesGeorisques,
+      echoueesGeorisques,
+    );
 
-    // 6. Traiter Cavités
-    if (cavitesResult.status === PROMISE_FULFILLED) {
-      const data = cavitesResult.value;
-      if (data.success && data.data) {
-        result.cavites = data.data;
-        sourcesGeorisques.push(SourceEnrichissement.GEORISQUES_CAVITES);
-        sources.push(SourceEnrichissement.GEORISQUES_CAVITES);
-      } else {
-        this.logger.warn(`Échec récupération Cavités: ${data.error}`);
-        echoueesGeorisques.push(SourceEnrichissement.GEORISQUES_CAVITES);
-        echouees.push(SourceEnrichissement.GEORISQUES_CAVITES);
-      }
-    } else {
-      this.logger.error(
-        `Erreur GeoRisques Cavités: ${cavitesResult.reason}`,
-        cavitesResult.reason?.stack,
-      );
-      echoueesGeorisques.push(SourceEnrichissement.GEORISQUES_CAVITES);
-      echouees.push(SourceEnrichissement.GEORISQUES_CAVITES);
-    }
+    this.processGeoRisqueResult(
+      cavitesResult,
+      "cavites",
+      "Cavités",
+      SourceEnrichissement.GEORISQUES_CAVITES,
+      result,
+      sources,
+      echouees,
+      sourcesGeorisques,
+      echoueesGeorisques,
+    );
+
+    this.processGeoRisqueResult(
+      oldResult,
+      "old",
+      "OLD",
+      SourceEnrichissement.GEORISQUES_OLD,
+      result,
+      sources,
+      echouees,
+      sourcesGeorisques,
+      echoueesGeorisques,
+    );
 
     // Calculer la fiabilité (sur 10)
-    const totalServices = 6; // Nombre total de services GeoRisques appelés
+    const totalServices = 7;
     const servicesReussis = sourcesGeorisques.length;
     result.metadata.sourcesUtilisees = sourcesGeorisques;
     result.metadata.sourcesEchouees = echoueesGeorisques;
@@ -558,6 +540,41 @@ export class EnrichissementService {
     }
 
     return result;
+  }
+
+  /**
+   * Traite le résultat d'un service GeoRisques de manière générique
+   */
+  private processGeoRisqueResult(
+    promiseResult: PromiseSettledResult<any>,
+    resultKey: keyof Omit<GeoRisquesResult, "metadata">,
+    serviceName: string,
+    sourceEnrichissement: SourceEnrichissement,
+    result: GeoRisquesResult,
+    sources: string[],
+    echouees: string[],
+    sourcesGeorisques: string[],
+    echoueesGeorisques: string[],
+  ): void {
+    if (promiseResult.status === PROMISE_FULFILLED) {
+      const data = promiseResult.value;
+      if (data.success && data.data) {
+        result[resultKey] = data.data;
+        sourcesGeorisques.push(sourceEnrichissement);
+        sources.push(sourceEnrichissement);
+      } else {
+        this.logger.warn(`Échec récupération ${serviceName}: ${data.error}`);
+        echoueesGeorisques.push(sourceEnrichissement);
+        echouees.push(sourceEnrichissement);
+      }
+    } else {
+      this.logger.error(
+        `Erreur GeoRisques ${serviceName}: ${promiseResult.reason}`,
+        promiseResult.reason?.stack,
+      );
+      echoueesGeorisques.push(sourceEnrichissement);
+      echouees.push(sourceEnrichissement);
+    }
   }
 
   /**

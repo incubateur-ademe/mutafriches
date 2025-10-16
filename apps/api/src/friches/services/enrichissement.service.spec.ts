@@ -13,6 +13,7 @@ import { MvtService } from "./external/georisques/mvt/mvt.service";
 import { ZonageSismiqueService } from "./external/georisques/zonage-sismique/zonage-sismique.service";
 import { SourceEnrichissement } from "./enrichissement.constants";
 import { CavitesService } from "./external/georisques/cavites/cavites.service";
+import { OldService } from "./external/georisques/old/old.service";
 
 describe("EnrichissementService", () => {
   let service: EnrichissementService;
@@ -101,6 +102,16 @@ describe("EnrichissementService", () => {
               success: false,
               error: "Non mocké",
               source: SourceEnrichissement.GEORISQUES_CAVITES,
+            }),
+          },
+        },
+        {
+          provide: OldService,
+          useValue: {
+            getOld: vi.fn().mockResolvedValue({
+              success: false,
+              error: "Non mocké",
+              source: SourceEnrichissement.GEORISQUES_OLD,
             }),
           },
         },

@@ -5,6 +5,7 @@
 import { CatnatResultNormalized } from "./catnat/catnat.types";
 import { CavitesResultNormalized } from "./cavites/cavites.types";
 import { MvtResultNormalized } from "./mvt/mvt.types";
+import { OldResultNormalized } from "./old/old.types";
 import { RgaResultNormalized } from "./rga/rga.types";
 import { TriResultNormalized } from "./tri/tri.types";
 import { ZonageSismiqueResultNormalized } from "./zonage-sismique/zonage-sismique.types";
@@ -49,6 +50,7 @@ export interface GeoRisquesResult {
   mvt?: MvtResultNormalized;
   zonageSismique?: ZonageSismiqueResultNormalized;
   cavites?: CavitesResultNormalized;
+  old?: OldResultNormalized;
 
   metadata: {
     sourcesUtilisees: string[];
