@@ -1,5 +1,4 @@
-/* eslint-disable no-console */
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { EnrichissementOutputDto, RisqueNaturel } from "@mutafriches/shared-types";
 import { Parcelle } from "../domain/entities/parcelle.entity";
 import { CadastreService } from "./external/cadastre/cadastre.service";
@@ -15,14 +14,18 @@ import {
 import { LogsEnrichissementRepository } from "../repository/logs-enrichissement.repository";
 import { RgaService } from "./external/georisques/rga/rga.service";
 import { GeoRisquesResult } from "./external/georisques/georisques.types";
+import { CatnatService } from "./external/georisques/catnat/catnat.service";
 
 @Injectable()
 export class EnrichissementService {
+  private readonly logger = new Logger(EnrichissementService.name);
+
   constructor(
     private readonly cadastreService: CadastreService,
     private readonly bdnbService: BdnbService,
     private readonly enedisService: EnedisService,
     private readonly rgaService: RgaService,
+    private readonly catnatService: CatnatService,
     private readonly logsRepository: LogsEnrichissementRepository,
   ) {}
 
@@ -187,7 +190,7 @@ export class EnrichissementService {
           : MessagesErreurEnrichissement[CodeErreurEnrichissement.UNKNOWN_ERROR];
       codeErreur = CodeErreurEnrichissement.ENRICHISSEMENT_FAILED;
 
-      console.error("Erreur enrichissement:", messageErreur);
+      this.logger.error("Erreur enrichissement:", messageErreur);
 
       // Logger l'échec de manière non-bloquante
       this.logEnrichissement(
@@ -264,7 +267,7 @@ export class EnrichissementService {
       })
       .catch((error) => {
         // Ne pas bloquer si le log échoue, juste logger l'erreur
-        console.error("Erreur lors de l'enregistrement du log enrichissement:", error);
+        this.logger.error("Erreur lors de l'enregistrement du log enrichissement:", error);
       });
   }
 
@@ -276,7 +279,7 @@ export class EnrichissementService {
       const result = await this.cadastreService.getParcelleInfo(identifiant);
       return result.success && result.data ? result.data : null;
     } catch (error) {
-      console.error("Erreur cadastre:", error);
+      this.logger.error("Erreur cadastre:", error);
       return null;
     }
   }
@@ -289,7 +292,7 @@ export class EnrichissementService {
       const result = await this.bdnbService.getSurfaceBatie(identifiant);
       return result.success && result.data !== undefined ? result.data : null;
     } catch (error) {
-      console.error("Erreur BDNB:", error);
+      this.logger.error("Erreur BDNB:", error);
       return null;
     }
   }
@@ -304,7 +307,7 @@ export class EnrichissementService {
   }): Promise<number | null> {
     try {
       // TODO: Remplacer par le vrai service de transport
-      console.log(
+      this.logger.debug(
         `Transport temporaire pour coordonnées: ${coordonnees.latitude}, ${coordonnees.longitude}`,
       );
 
@@ -312,7 +315,7 @@ export class EnrichissementService {
       const distanceTemporaire = Math.floor(Math.random() * 1900) + 100;
       return distanceTemporaire;
     } catch (error) {
-      console.error("Erreur Transport:", error);
+      this.logger.error("Erreur Transport:", error);
       return null;
     }
   }
@@ -343,14 +346,14 @@ export class EnrichissementService {
         echouees.push(SourceEnrichissement.ENEDIS_RACCORDEMENT);
       }
     } catch (error) {
-      console.error("Erreur Enedis:", error);
+      this.logger.error("Erreur Enedis:", error);
       manquants.push("distanceRaccordementElectrique");
       echouees.push(SourceEnrichissement.ENEDIS_RACCORDEMENT);
     }
   }
 
   /**
-   * Enrichit avec les risques GeoRisques (RGA)
+   * Enrichit avec les risques GeoRisques (RGA + CATNAT)
    */
   private async enrichWithGeoRisques(
     coordonnees: { latitude: number; longitude: number } | undefined,
@@ -358,11 +361,23 @@ export class EnrichissementService {
     echouees: string[],
   ): Promise<GeoRisquesResult | undefined> {
     if (!coordonnees) {
-      console.log("Pas de coordonnées disponibles pour GeoRisques");
+      this.logger.warn("Pas de coordonnées disponibles pour GeoRisques");
       echouees.push(SourceEnrichissement.GEORISQUES_RGA);
+      echouees.push(SourceEnrichissement.GEORISQUES_CATNAT);
       return undefined;
     }
 
+    const sourcesGeorisques: string[] = [];
+    const echoueesGeorisques: string[] = [];
+    const result: GeoRisquesResult = {
+      metadata: {
+        sourcesUtilisees: [],
+        sourcesEchouees: [],
+        fiabilite: 0,
+      },
+    };
+
+    // 1. Appel RGA
     try {
       const rgaResult = await this.rgaService.getRga({
         latitude: coordonnees.latitude,
@@ -370,27 +385,62 @@ export class EnrichissementService {
       });
 
       if (rgaResult.success && rgaResult.data) {
+        result.rga = rgaResult.data;
+        sourcesGeorisques.push(SourceEnrichissement.GEORISQUES_RGA);
         sources.push(SourceEnrichissement.GEORISQUES_RGA);
-
-        return {
-          rga: rgaResult.data,
-          metadata: {
-            sourcesUtilisees: [SourceEnrichissement.GEORISQUES_RGA],
-            sourcesEchouees: [],
-            fiabilite: 10, // Pleine confiance dans GeoRisques
-          },
-        };
       } else {
-        console.warn(`Échec récupération RGA: ${rgaResult.error}`);
+        this.logger.warn(`Échec récupération RGA: ${rgaResult.error}`);
+        echoueesGeorisques.push(SourceEnrichissement.GEORISQUES_RGA);
         echouees.push(SourceEnrichissement.GEORISQUES_RGA);
-        return undefined;
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Erreur inconnue";
-      console.error(`Erreur GeoRisques RGA: ${errorMessage}`, (error as Error).stack);
+      this.logger.error(
+        `Erreur GeoRisques RGA: ${(error as Error).message}`,
+        (error as Error).stack,
+      );
+      echoueesGeorisques.push(SourceEnrichissement.GEORISQUES_RGA);
       echouees.push(SourceEnrichissement.GEORISQUES_RGA);
+    }
+
+    // 2. Appel CATNAT
+    try {
+      const catnatResult = await this.catnatService.getCatnat({
+        latitude: coordonnees.latitude,
+        longitude: coordonnees.longitude,
+        rayon: 1000, // 1 km
+      });
+
+      if (catnatResult.success && catnatResult.data) {
+        result.catnat = catnatResult.data;
+        sourcesGeorisques.push(SourceEnrichissement.GEORISQUES_CATNAT);
+        sources.push(SourceEnrichissement.GEORISQUES_CATNAT);
+      } else {
+        this.logger.warn(`Échec récupération CATNAT: ${catnatResult.error}`);
+        echoueesGeorisques.push(SourceEnrichissement.GEORISQUES_CATNAT);
+        echouees.push(SourceEnrichissement.GEORISQUES_CATNAT);
+      }
+    } catch (error) {
+      this.logger.error(
+        `Erreur GeoRisques CATNAT: ${(error as Error).message}`,
+        (error as Error).stack,
+      );
+      echoueesGeorisques.push(SourceEnrichissement.GEORISQUES_CATNAT);
+      echouees.push(SourceEnrichissement.GEORISQUES_CATNAT);
+    }
+
+    // Calculer la fiabilité (sur 10)
+    const totalServices = 2; // RGA + CATNAT
+    const servicesReussis = sourcesGeorisques.length;
+    result.metadata.sourcesUtilisees = sourcesGeorisques;
+    result.metadata.sourcesEchouees = echoueesGeorisques;
+    result.metadata.fiabilite = (servicesReussis / totalServices) * 10;
+
+    // Retourner undefined si aucun service n'a réussi
+    if (servicesReussis === 0) {
       return undefined;
     }
+
+    return result;
   }
 
   /**
@@ -406,7 +456,7 @@ export class EnrichissementService {
   ): Promise<void> {
     try {
       // TODO: Implémenter les appels aux services Overpass pour récupérer les données
-      console.log(
+      this.logger.debug(
         `Overpass temporaire pour coordonnées: ${coordonnees.latitude}, ${coordonnees.longitude}`,
       );
 
@@ -415,7 +465,7 @@ export class EnrichissementService {
       parcelle.proximiteCommercesServices = hasCommercesServices;
       sources.push(SourceEnrichissement.OVERPASS_TEMPORAIRE);
     } catch (error) {
-      console.error("Erreur Overpass:", error);
+      this.logger.error("Erreur Overpass:", error);
       manquants.push("proximiteCommercesServices");
       echouees.push(SourceEnrichissement.OVERPASS);
     }
@@ -434,14 +484,14 @@ export class EnrichissementService {
   ): Promise<void> {
     try {
       // TODO: Implémenter l'appel au service Lovac pour récupérer les données
-      console.log(`Lovac temporaire pour commune: ${commune}`);
+      this.logger.debug(`Lovac temporaire pour commune: ${commune}`);
 
       // Données temporaires - taux de logements vacants aléatoire entre 2% et 15%
       const tauxTemporaire = Math.floor(Math.random() * 13) + 2;
       parcelle.tauxLogementsVacants = tauxTemporaire;
       sources.push(SourceEnrichissement.LOVAC_TEMPORAIRE);
     } catch (error) {
-      console.error("Erreur Lovac:", error);
+      this.logger.error("Erreur Lovac:", error);
       manquants.push("tauxLogementsVacants");
       echouees.push(SourceEnrichissement.LOVAC);
     }
@@ -482,7 +532,7 @@ export class EnrichissementService {
         error instanceof Error
           ? error.message
           : MessagesErreurEnrichissement[CodeErreurEnrichissement.UNKNOWN_ERROR];
-      console.error("Erreur récupération risques naturels BDNB:", errorMessage);
+      this.logger.error("Erreur récupération risques naturels BDNB:", errorMessage);
       manquants.push("presenceRisquesNaturels");
       echouees.push(SourceEnrichissement.BDNB_RISQUES);
     }
@@ -520,7 +570,7 @@ export class EnrichissementService {
     echouees: string[],
   ): Promise<void> {
     // TODO: Ces champs seront enrichis par de vrais services plus tard
-    console.log(`Données temporaires pour parcelle: ${identifiant}`);
+    this.logger.debug(`Données temporaires pour parcelle: ${identifiant}`);
 
     try {
       // Données temporaires pour les champs manquants
@@ -538,7 +588,7 @@ export class EnrichissementService {
 
       sources.push(SourceEnrichissement.DONNEES_TEMPORAIRES);
     } catch (error) {
-      console.error("Erreur données temporaires:", error);
+      this.logger.error("Erreur données temporaires:", error);
       manquants.push("données-temporaires");
       echouees.push(SourceEnrichissement.DONNEES_TEMPORAIRES);
     }

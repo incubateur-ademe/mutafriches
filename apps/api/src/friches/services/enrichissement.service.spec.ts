@@ -7,6 +7,7 @@ import { EnedisService } from "./external/enedis/enedis.service";
 import { RisqueNaturel } from "@mutafriches/shared-types";
 import { LogsEnrichissementRepository } from "../repository/logs-enrichissement.repository";
 import { RgaService } from "./external/georisques/rga/rga.service";
+import { CatnatService } from "./external/georisques/catnat/catnat.service";
 
 describe("EnrichissementService", () => {
   let service: EnrichissementService;
@@ -42,6 +43,12 @@ describe("EnrichissementService", () => {
           provide: RgaService,
           useValue: {
             getRga: vi.fn(),
+          },
+        },
+        {
+          provide: CatnatService,
+          useValue: {
+            getCatnat: vi.fn(),
           },
         },
         {

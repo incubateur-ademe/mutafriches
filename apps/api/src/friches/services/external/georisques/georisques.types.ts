@@ -2,6 +2,7 @@
  * Types généraux pour l'API GeoRisques
  */
 
+import { CatnatResultNormalized } from "./catnat/catnat.types";
 import { RgaResultNormalized } from "./rga/rga.types";
 
 /**
@@ -38,8 +39,8 @@ export interface GeoRisquesMetadata {
  * Sera enrichi progressivement avec les autres risques
  */
 export interface GeoRisquesResult {
-  rga?: RgaResultNormalized; // ← Import depuis rga/georisques-rga.types.ts
-  // À ajouter plus tard : sismique, mvt, ssp, icpe, etc.
+  rga?: RgaResultNormalized;
+  catnat?: CatnatResultNormalized;
 
   metadata: {
     sourcesUtilisees: string[];

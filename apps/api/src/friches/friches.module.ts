@@ -11,6 +11,7 @@ import { DatabaseService } from "../shared/database/database.service";
 import { EvaluationRepository } from "./repository/evaluation.repository";
 import { LogsEnrichissementRepository } from "./repository/logs-enrichissement.repository";
 import { RgaService } from "./services/external/georisques/rga/rga.service";
+import { CatnatService } from "./services/external/georisques/catnat/catnat.service";
 
 @Module({
   imports: [HttpModule],
@@ -28,7 +29,9 @@ import { RgaService } from "./services/external/georisques/rga/rga.service";
     CadastreService,
     BdnbService,
     EnedisService,
+    // Services GeoRisques
     RgaService,
+    CatnatService,
   ],
   exports: [OrchestrateurService],
 })

@@ -56,4 +56,5 @@ export enum SourceEnrichissement {
   LOVAC_TEMPORAIRE = "Lovac-Temporaire",
   DONNEES_TEMPORAIRES = "Données-Temporaires",
   GEORISQUES_RGA = "GeoRisques-RGA",
+  GEORISQUES_CATNAT = "GeoRisques-CatNat",
 }
