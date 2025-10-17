@@ -28,7 +28,7 @@ export function Header() {
                   title={`Retour à l'accueil du site - Mutafriches - République Française`}
                 >
                   <span className="flex flex-row items-center">
-                    <p className="fr-header__service-title mr-4!">Mutafriches</p>
+                    <p className="fr-header__service-title fr-mr-1w">Mutafriches</p>
                     <p className="fr-badge fr-badge--success fr-badge--no-icon">BETA</p>
                   </span>
                 </a>
