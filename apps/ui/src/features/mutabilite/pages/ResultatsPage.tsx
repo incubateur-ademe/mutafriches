@@ -17,6 +17,7 @@ import { useIframe, useIframeCallback, useIsIframeMode } from "../../../shared/i
 import { createIframeCommunicator } from "../../../shared/iframe/iframeCommunication";
 import { IframeEvaluationSummaryDto } from "../../../shared/iframe/iframe.types";
 import { frichesService } from "../../../shared/services/api/api.friches.service";
+import { ModalInfo } from "../../../shared/components/common/ModalInfo";
 
 export const Step3ResultatsPage: React.FC = () => {
   const navigate = useNavigate();
@@ -35,6 +36,9 @@ export const Step3ResultatsPage: React.FC = () => {
   const [mutabilityData, setMutabilityData] = useState<MutabiliteOutputDto | null>(null);
   const [feedbackEnvoye, setFeedbackEnvoye] = useState(false);
   const [trackingExporterEnvoye, setTrackingExporterEnvoye] = useState(false);
+
+  // Modal export
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
 
   // Un seul ref pour tracker si on a déjà initialisé
   const hasInitializedRef = React.useRef(false);
@@ -167,7 +171,7 @@ export const Step3ResultatsPage: React.FC = () => {
       console.error("Erreur tracking export:", err);
     }
 
-    alert("Fonctionnalité d'export à venir ! Les résultats seront exportés en PDF.");
+    setIsExportModalOpen(true);
   };
 
   // Handler pour nouvelle analyse
@@ -374,6 +378,23 @@ export const Step3ResultatsPage: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* Modal d'export */}
+      <ModalInfo
+        id="modal-export"
+        title="Export des résultats"
+        isOpen={isExportModalOpen}
+        onClose={() => setIsExportModalOpen(false)}
+        icon="fr-icon-download-line"
+      >
+        <p>
+          La fonctionnalité d'export PDF est en cours de développement et sera bientôt disponible !
+        </p>
+        <p className="fr-text--sm">
+          Vous pourrez exporter vos résultats d'analyse en format PDF pour les partager ou les
+          conserver.
+        </p>
+      </ModalInfo>
     </Layout>
   );
 };
