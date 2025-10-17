@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { createLogger } from "vite";
 
 interface GeoRisquesTableProps {
   data: Record<string, unknown>;
