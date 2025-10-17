@@ -42,4 +42,7 @@ export interface EnrichissementOutputDto {
   sourcesUtilisees: string[];
   champsManquants: string[];
   fiabilite: number; // 0-10
+
+  // TODO a supprimer Données Géorisques
+  risquesGeorisques?: any;
 }

@@ -180,4 +180,7 @@ export class EnrichissementSwaggerDto implements IEnrichissementOutput {
     maximum: 10,
   })
   fiabilite: number;
+
+  // TODO a supprimer Données Géorisques
+  risquesGeorisques?: any;
 }
