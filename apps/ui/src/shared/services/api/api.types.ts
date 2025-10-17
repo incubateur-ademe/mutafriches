@@ -30,6 +30,6 @@ export interface CalculerMutabiliteOptions extends ApiCallOptions {
 }
 
 // Options pour les requêtes HTTP
-export interface HttpRequestOptions extends RequestInit {
+export interface HttpRequestOptions extends Record<string, any> {
   params?: Record<string, string>;
 }
