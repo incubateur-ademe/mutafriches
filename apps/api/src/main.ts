@@ -86,7 +86,9 @@ async function bootstrap() {
     logger.log(`Documentation Swagger sur : http://${host}:${port}/api`);
 
     if (!isProduction) {
-      logger.log(`UI React en dev sur : http://localhost:5173`);
+      const blue = "\x1b[34m";
+      const reset = "\x1b[0m";
+      logger.log(`${blue}UI en dev sur : http://localhost:5173${reset}`);
     }
   } catch (err) {
     logger.error("Erreur lors du démarrage de l'application", err as Error);
