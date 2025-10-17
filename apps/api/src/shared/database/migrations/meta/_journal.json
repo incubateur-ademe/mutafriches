@@ -15,6 +15,13 @@
       "when": 1737000000000,
       "tag": "0001_add_centroid_columns",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1760694265519,
+      "tag": "0002_right_roughhouse",
+      "breakpoints": true
     }
   ]
 }

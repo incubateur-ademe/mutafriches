@@ -5,10 +5,10 @@ import {
   StatutEnrichissement,
 } from "../services/enrichissement.constants";
 import { DatabaseService } from "../../shared/database/database.service";
-import { logs_enrichissement } from "../../shared/database/schema";
+import { enrichissements } from "../../shared/database/schema";
 import { EnrichissementOutputDto } from "@mutafriches/shared-types";
 
-export interface LogEnrichissementData {
+export interface EnrichissementData {
   identifiantCadastral: string;
   codeInsee?: string;
   commune?: string;
@@ -25,15 +25,15 @@ export interface LogEnrichissementData {
 }
 
 @Injectable()
-export class LogsEnrichissementRepository {
-  private readonly logger = new Logger(LogsEnrichissementRepository.name);
+export class EnrichissementRepository {
+  private readonly logger = new Logger(EnrichissementRepository.name);
 
   constructor(private readonly database: DatabaseService) {}
 
   /**
-   * Enregistre un log d'enrichissement en base
+   * Enregistre un enrichissement en base
    */
-  async log(data: LogEnrichissementData): Promise<string> {
+  async save(data: EnrichissementData): Promise<string> {
     const id = uuidv4();
     const now = new Date();
 
@@ -53,7 +53,7 @@ export class LogsEnrichissementRepository {
       );
     }
 
-    await this.database.db.insert(logs_enrichissement).values({
+    await this.database.db.insert(enrichissements).values({
       id,
       identifiantCadastral: data.identifiantCadastral,
       codeInsee: data.codeInsee,

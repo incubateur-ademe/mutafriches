@@ -5,7 +5,7 @@ import { CadastreService } from "./external/cadastre/cadastre.service";
 import { BdnbService } from "./external/bdnb/bdnb.service";
 import { EnedisService } from "./external/enedis/enedis.service";
 import { RisqueNaturel } from "@mutafriches/shared-types";
-import { LogsEnrichissementRepository } from "../repository/logs-enrichissement.repository";
+import { EnrichissementRepository } from "../repository/enrichissement.repository";
 import { RgaService } from "./external/georisques/rga/rga.service";
 import { CatnatService } from "./external/georisques/catnat/catnat.service";
 import { TriService } from "./external/georisques/tri/tri.service";
@@ -138,9 +138,9 @@ describe("EnrichissementService", () => {
           },
         },
         {
-          provide: LogsEnrichissementRepository,
+          provide: EnrichissementRepository,
           useValue: {
-            log: vi.fn().mockResolvedValue("mock-log-id"),
+            save: vi.fn().mockResolvedValue("mock-log-id"),
           },
         },
       ],

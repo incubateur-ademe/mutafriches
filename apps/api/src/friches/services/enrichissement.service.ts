@@ -11,7 +11,7 @@ import {
   MessagesErreurEnrichissement,
   SourceEnrichissement,
 } from "./enrichissement.constants";
-import { LogsEnrichissementRepository } from "../repository/logs-enrichissement.repository";
+import { EnrichissementRepository } from "../repository/enrichissement.repository";
 import { RgaService } from "./external/georisques/rga/rga.service";
 import { GeoRisquesResult } from "./external/georisques/georisques.types";
 import { CatnatService } from "./external/georisques/catnat/catnat.service";
@@ -44,7 +44,7 @@ export class EnrichissementService {
     private readonly sisService: SisService,
     private readonly icpeService: IcpeService,
 
-    private readonly logsRepository: LogsEnrichissementRepository,
+    private readonly enrichissementRepository: EnrichissementRepository,
   ) {}
 
   /**
@@ -211,7 +211,7 @@ export class EnrichissementService {
       this.logger.error("Erreur enrichissement:", messageErreur);
 
       // Logger l'échec de manière non-bloquante
-      this.logEnrichissement(
+      this.saveEnrichissement(
         identifiantParcelle,
         undefined,
         undefined,
@@ -231,7 +231,7 @@ export class EnrichissementService {
     }
 
     // Logger le succès ou partiel de manière non-bloquante
-    this.logEnrichissement(
+    this.saveEnrichissement(
       identifiantParcelle,
       result.codeInsee,
       result.commune,
@@ -250,9 +250,9 @@ export class EnrichissementService {
   }
 
   /**
-   * Helper pour l'enregistrement des logs d'enrichissement de manière non-bloquante
+   * Helper pour l'enregistrement de l'enrichissement de manière non-bloquante
    */
-  private logEnrichissement(
+  private saveEnrichissement(
     identifiantCadastral: string,
     codeInsee: string | undefined,
     commune: string | undefined,
@@ -267,8 +267,8 @@ export class EnrichissementService {
     integrateur: string | undefined,
   ): void {
     // Appel non-bloquant - on ne veut pas que le log bloque l'enrichissement
-    this.logsRepository
-      .log({
+    this.enrichissementRepository
+      .save({
         identifiantCadastral,
         codeInsee,
         commune,

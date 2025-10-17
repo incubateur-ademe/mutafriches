@@ -1,7 +1,7 @@
 import { pgTable, varchar, jsonb, timestamp, integer, numeric, index } from "drizzle-orm/pg-core";
 
-export const logs_enrichissement = pgTable(
-  "logs_enrichissement",
+export const enrichissements = pgTable(
+  "enrichissements",
   {
     id: varchar("id", { length: 50 }).primaryKey(),
     identifiantCadastral: varchar("identifiant_cadastral", { length: 20 }).notNull(),
@@ -26,10 +26,10 @@ export const logs_enrichissement = pgTable(
   },
   (table) => {
     return {
-      identifiantIdx: index("idx_logs_enrichissement_identifiant").on(table.identifiantCadastral),
-      statutIdx: index("idx_logs_enrichissement_statut").on(table.statut),
-      dateIdx: index("idx_logs_enrichissement_date").on(table.dateEnrichissement),
-      centroidIdx: index("idx_logs_enrichissement_centroid").on(
+      identifiantIdx: index("idx_enrichissements_identifiant").on(table.identifiantCadastral),
+      statutIdx: index("idx_enrichissements_statut").on(table.statut),
+      dateIdx: index("idx_enrichissements_date").on(table.dateEnrichissement),
+      centroidIdx: index("idx_enrichissements_centroid").on(
         table.centroidLatitude,
         table.centroidLongitude,
       ),

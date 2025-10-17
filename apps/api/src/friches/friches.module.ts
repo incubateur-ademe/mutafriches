@@ -8,7 +8,7 @@ import { CadastreService } from "./services/external/cadastre/cadastre.service";
 import { BdnbService } from "./services/external/bdnb/bdnb.service";
 import { EnedisService } from "./services/external/enedis/enedis.service";
 import { EvaluationRepository } from "./repository/evaluation.repository";
-import { LogsEnrichissementRepository } from "./repository/logs-enrichissement.repository";
+import { EnrichissementRepository } from "./repository/enrichissement.repository";
 import { RgaService } from "./services/external/georisques/rga/rga.service";
 import { CatnatService } from "./services/external/georisques/catnat/catnat.service";
 import { TriService } from "./services/external/georisques/tri/tri.service";
@@ -25,7 +25,7 @@ import { IcpeService } from "./services/external/georisques/icpe/icpe.service";
   providers: [
     // Repositories
     EvaluationRepository,
-    LogsEnrichissementRepository,
+    EnrichissementRepository,
     // Services principaux
     OrchestrateurService,
     EnrichissementService,
