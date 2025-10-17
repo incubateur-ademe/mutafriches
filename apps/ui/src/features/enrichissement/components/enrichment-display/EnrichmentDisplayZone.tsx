@@ -1,16 +1,22 @@
 import React from "react";
-import { EnrichmentInfoField } from "./EnrichmentInfoField";
 import { ParcelleUiModel } from "../../../../shared/types/parcelle.models";
+import { EnrichmentInfoField } from "./EnrichmentInfoField";
 
 interface EnrichmentDisplayZoneProps {
   data: ParcelleUiModel | null;
+  onNext?: () => void;
+  isLoadingNext?: boolean;
 }
 
-export const EnrichmentDisplayZone: React.FC<EnrichmentDisplayZoneProps> = ({ data }) => {
+export const EnrichmentDisplayZone: React.FC<EnrichmentDisplayZoneProps> = ({
+  data,
+  onNext,
+  isLoadingNext = false,
+}) => {
   if (!data) return null;
 
   return (
-    <div id="enrichment-display-zone" className="fr-mt-4w">
+    <div id="enrichment-display-zone" className="fr-mt-4w fade-in">
       <hr />
       <h3>Données publiques sourcées</h3>
       <p className="fr-text--sm">
@@ -198,6 +204,16 @@ export const EnrichmentDisplayZone: React.FC<EnrichmentDisplayZoneProps> = ({ da
           </div>
         </div>
       </div>
+
+      {/* Bouton "Suivant" à la fin de la zone d'enrichissement */}
+      {onNext && (
+        <div className="fr-mt-4w" style={{ textAlign: "right" }}>
+          <button className="fr-btn" onClick={onNext} disabled={isLoadingNext}>
+            Suivant
+            <span className="fr-icon-arrow-right-s-line fr-icon--sm" aria-hidden="true"></span>
+          </button>
+        </div>
+      )}
     </div>
   );
 };

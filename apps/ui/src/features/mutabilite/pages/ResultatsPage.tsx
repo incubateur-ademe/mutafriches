@@ -18,7 +18,7 @@ import { createIframeCommunicator } from "../../../shared/iframe/iframeCommunica
 import { IframeEvaluationSummaryDto } from "../../../shared/iframe/iframe.types";
 import { frichesService } from "../../../shared/services/api/api.friches.service";
 
-export const Step3: React.FC = () => {
+export const Step3ResultatsPage: React.FC = () => {
   const navigate = useNavigate();
   const { state, setMutabilityResult, setCurrentStep, canAccessStep, resetForm } = useFormContext();
 
@@ -199,16 +199,16 @@ export const Step3: React.FC = () => {
   }
 
   return (
-    <Layout showSimpleHeader={true}>
+    <Layout>
       <Stepper
         currentStep={3}
         totalSteps={3}
-        currentStepTitle="Usages les plus appropriés"
+        currentStepTitle="Consulter les usages appropriés à la parcelle"
         nextStepTitle="Analyse terminée"
       />
 
       <div className="fr-mb-4w">
-        <h3>Consultez les usages les plus appropriés à votre site</h3>
+        <h3>Consultez les usages les plus appropriés à la parcelle</h3>
         <p className="fr-text--sm">
           Au regard des caractéristiques sourcées et renseignées, vous trouverez les usages les plus
           pertinents pour votre site.
@@ -225,6 +225,14 @@ export const Step3: React.FC = () => {
 
         {mutabilityData && !isLoading && (
           <>
+            {/* Indice de fiabilité */}
+            <ReliabilityScore
+              note={mutabilityData.fiabilite.note}
+              text={mutabilityData.fiabilite.text}
+              description={mutabilityData.fiabilite.description}
+            />
+
+            {/* Podium des usages */}
             <div
               style={{
                 display: "flex",
@@ -233,7 +241,7 @@ export const Step3: React.FC = () => {
                 marginBottom: "1rem",
               }}
             >
-              <h4 className="fr-mb-0 fr-mt-4w">Podium des usages recommandés</h4>
+              <h4 className="fr-mb-0 fr-mt-4w">Usages les plus appropriés à la parcelle</h4>
               <button
                 className="fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-download-line fr-btn--sm"
                 onClick={handleExport}
@@ -304,12 +312,6 @@ export const Step3: React.FC = () => {
                 )}
               </div>
             </div>
-
-            <ReliabilityScore
-              note={mutabilityData.fiabilite.note}
-              text={mutabilityData.fiabilite.text}
-              description={mutabilityData.fiabilite.description}
-            />
 
             <ResultsTable results={mutabilityData.resultats} />
 

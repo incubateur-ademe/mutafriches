@@ -1,8 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import { ROUTES } from "./shared/config/routes.config";
-import { Step1 } from "./features/enrichissement/pages/EnrichmentPage";
-import { Step2 } from "./features/donnees-complementaires/pages/DonneesComplementairesPage";
-import { Step3 } from "./features/mutabilite/pages/ResultatsPage";
+import { Step2DonneesComplementairesPage } from "./features/donnees-complementaires/pages/DonneesComplementairesPage";
+import { Step3ResultatsPage } from "./features/mutabilite/pages/ResultatsPage";
 import { Tests } from "./features/tests/pages/TestsPage";
 import { TestEnrichment } from "./features/tests/test-enrichissement/pages/TestEnrichment";
 import { IframeProvider } from "./shared/iframe/IframeProvider";
@@ -11,16 +10,17 @@ import { TestCarteParcelle } from "./features/tests/test-carte/pages/TestCartePa
 import { TestMutability } from "./features/tests/test-mutabilite/pages/TestMutability";
 import { TestIframe } from "./features/tests/test-iframe/pages/TestIframe";
 import { TestCallback } from "./features/tests/test-iframe/pages/TestCallback";
+import { Step1EnrichmentPage } from "./features/enrichissement/pages/EnrichmentPage";
 
 function App() {
   return (
     <IframeProvider>
       <FormProvider>
         <Routes>
-          <Route path={ROUTES.HOME} element={<Step1 />} />
-          <Route path={ROUTES.STEP1} element={<Step1 />} />
-          <Route path={ROUTES.STEP2} element={<Step2 />} />
-          <Route path={ROUTES.STEP3} element={<Step3 />} />
+          <Route path={ROUTES.HOME} element={<Step1EnrichmentPage />} />
+          <Route path={ROUTES.STEP1} element={<Step1EnrichmentPage />} />
+          <Route path={ROUTES.STEP2} element={<Step2DonneesComplementairesPage />} />
+          <Route path={ROUTES.STEP3} element={<Step3ResultatsPage />} />
 
           {/* Routes pour les tests */}
           <Route path={ROUTES.TESTS} element={<Tests />} />

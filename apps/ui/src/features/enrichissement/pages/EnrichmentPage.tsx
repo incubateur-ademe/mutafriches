@@ -12,7 +12,7 @@ import { transformEnrichmentToUiData } from "../utils/enrichissment.mapper";
 import { useFormContext } from "../../../shared/form/useFormContext";
 import { frichesService } from "../../../shared/services/api/api.friches.service";
 
-export const Step1: React.FC = () => {
+export const Step1EnrichmentPage: React.FC = () => {
   const navigate = useNavigate();
   const { state, setEnrichmentData, setCurrentStep, resetForm } = useFormContext();
 
@@ -20,12 +20,10 @@ export const Step1: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Mettre à jour l'étape courante au montage
   useEffect(() => {
     setCurrentStep(1);
   }, [setCurrentStep]);
 
-  // Fonction principale d'enrichissement
   const handleEnrichir = async (identifiant: string) => {
     setIsLoading(true);
     setError(null);
@@ -35,7 +33,6 @@ export const Step1: React.FC = () => {
       const uiData = transformEnrichmentToUiData(enrichmentResult);
       setEnrichmentData(enrichmentResult, uiData, identifiant);
 
-      // Scroll vers les résultats après succès
       scrollToEnrichmentZone();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Une erreur est survenue");
@@ -44,7 +41,6 @@ export const Step1: React.FC = () => {
     }
   };
 
-  // Navigation vers l'étape suivante
   const handleNext = () => {
     if (!state.enrichmentData) {
       setError("Veuillez d'abord enrichir une parcelle");
@@ -53,7 +49,6 @@ export const Step1: React.FC = () => {
     navigate(ROUTES.STEP2);
   };
 
-  // Scroll vers la zone d'affichage des données enrichies
   const scrollToEnrichmentZone = () => {
     setTimeout(() => {
       const element = document.getElementById("enrichment-display-zone");
@@ -64,12 +59,11 @@ export const Step1: React.FC = () => {
           inline: "nearest",
         });
       }
-    }, 100); // Petit délai pour laisser le DOM se mettre à jour
+    }, 100);
   };
 
   return (
-    <Layout showSimpleHeader={true}>
-      {/* Si des données existent, proposer de continuer ou recommencer */}
+    <Layout>
       {state.completedSteps.length > 0 && (
         <div className="fr-alert fr-alert--info fr-mb-3w">
           <h3 className="fr-alert__title">Analyse en cours</h3>
@@ -107,7 +101,6 @@ export const Step1: React.FC = () => {
       <div className="fr-mb-4w">
         <h3>Sélectionner la parcelle en friche pour analyser sa mutabilité</h3>
 
-        {/* Contrôles de sélection */}
         <div className="fr-grid-row fr-grid-row--gutters">
           <div className="fr-col-12 fr-col-md-4">
             <MultiParcelleToggle isMulti={isMultiParcelle} onChange={setIsMultiParcelle} />
@@ -116,7 +109,6 @@ export const Step1: React.FC = () => {
 
         <ParcelleSelection onAnalyze={handleEnrichir} />
 
-        {/* États de l'interface */}
         {isLoading && (
           <LoadingCallout
             title="Enrichissement en cours"
@@ -126,20 +118,13 @@ export const Step1: React.FC = () => {
 
         {error && !isLoading && <ErrorAlert message={error} />}
 
-        {/* Affichage des données enrichies */}
-        {state.uiData && <EnrichmentDisplayZone data={state.uiData} />}
-
-        {/* Navigation */}
-        <div className="fr-mt-4w" style={{ textAlign: "right" }}>
-          <button
-            className="fr-btn"
-            onClick={handleNext}
-            disabled={!state.enrichmentData || isLoading}
-          >
-            Suivant
-            <span className="fr-icon-arrow-right-s-line fr-icon--sm" aria-hidden="true"></span>
-          </button>
-        </div>
+        {state.uiData && (
+          <EnrichmentDisplayZone
+            data={state.uiData}
+            onNext={handleNext}
+            isLoadingNext={isLoading}
+          />
+        )}
       </div>
     </Layout>
   );

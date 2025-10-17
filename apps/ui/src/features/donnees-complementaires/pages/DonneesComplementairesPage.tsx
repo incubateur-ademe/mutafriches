@@ -7,7 +7,7 @@ import { Layout } from "../../../shared/components/layout/Layout";
 import { ManualDataForm } from "../components/ManualDataForm";
 import { useFormContext } from "../../../shared/form/useFormContext";
 
-export const Step2: React.FC = () => {
+export const Step2DonneesComplementairesPage: React.FC = () => {
   const navigate = useNavigate();
   const { state, setManualData, setCurrentStep, canAccessStep } = useFormContext();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -56,16 +56,16 @@ export const Step2: React.FC = () => {
   }
 
   return (
-    <Layout showSimpleHeader={true}>
+    <Layout>
       <Stepper
         currentStep={2}
         totalSteps={3}
-        currentStepTitle="Données complémentaires"
-        nextStepTitle="Usages les plus appropriés"
+        currentStepTitle="Qualifier la parcelle en friche"
+        nextStepTitle="Consulter les usages appropriés à la parcelle"
       />
 
       <div className="fr-mb-4w">
-        <h3>Renseignez des données complémentaires</h3>
+        <h3>Qualifier la parcelle en friche selon ses caractéristiques</h3>
         <p className="fr-text--sm">
           Complétez les champs suivants pour améliorer la fiabilité des résultats qui vont suivre
         </p>
