@@ -6,10 +6,20 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
+      // Nouveaux alias pour la structure DDD
+      "@": path.resolve(__dirname, "./src"),
+      "@shared": path.resolve(__dirname, "./src/shared"),
+      "@features": path.resolve(__dirname, "./src/features"),
+
+      // Alias existant pour shared-types (à garder pour compatibilité)
       "@mutafriches/shared-types": path.resolve(
         __dirname,
         "../../packages/shared-types/src/index.ts",
       ),
+
+      // Nouvel alias court pour shared-types (optionnel, plus pratique)
+      "@shared-types": path.resolve(__dirname, "../../packages/shared-types/src"),
+
       // Alias pour résoudre le problème CommonJS/ESM dans le monorepo
       // Vite compile directement les sources TypeScript au lieu d'utiliser les fichiers dist/
       // Cela évite l'incompatibilité entre le CommonJS (pour NestJS) et l'ESM (pour Vite)

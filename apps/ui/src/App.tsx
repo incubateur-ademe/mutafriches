@@ -1,15 +1,15 @@
 import { Routes, Route } from "react-router-dom";
-import { Step1 } from "./pages/Step1";
 import { FormProvider, IframeProvider } from "./context";
-import { Step2 } from "./pages/Step2";
-import { ROUTES } from "./config/routes/routes.config";
-import { Step3 } from "./pages/Step3";
-import { Tests } from "./pages/Tests";
-import { TestCarteParcelle } from "./pages/tests/TestCarteParcelle";
-import TestMutability from "./pages/tests/TestMutability";
-import { TestEnrichment } from "./pages/tests/TestEnrichment";
-import { TestIframe } from "./pages/tests/TestIframe";
-import { TestCallback } from "./pages/tests/TestCallback";
+import { Step1 } from "./features/enrichissement/pages/EnrichmentPage";
+import { ROUTES } from "./shared/config/routes.config";
+import { Step2 } from "./features/donnees-complementaires/pages/DonneesComplementairesPage";
+import { Step3 } from "./features/mutabilite/pages/ResultatsPage";
+import { Tests } from "./features/tests/pages/TestsPage";
+import { TestCarteParcelle } from "./features/tests/pages/TestCarteParcelle";
+import { TestEnrichment } from "./features/tests/pages/TestEnrichment";
+import TestMutability from "./features/tests/pages/TestMutability";
+import { TestIframe } from "./features/tests/pages/TestIframe";
+import { TestCallback } from "./features/tests/pages/TestCallback";
 
 function App() {
   return (

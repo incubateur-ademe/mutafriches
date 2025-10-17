@@ -23,7 +23,11 @@
     /* Paths */
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
+      "@shared/*": ["src/shared/*"],
+      "@features/*": ["src/features/*"],
+      "@mutafriches/shared-types": ["../../packages/shared-types/src/index.ts"],
+      "@shared-types/*": ["../../packages/shared-types/src/*"]
     }
   },
   "include": ["src", "vite.config.ts"]
