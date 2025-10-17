@@ -1,8 +1,8 @@
 import React from "react";
-import { UiParcelleDto } from "../../../shared/types/ui.types";
+import { ParcelleUiModel } from "../../../shared/types/parcelle.models";
 
 interface EnrichmentDisplayProps {
-  data: UiParcelleDto | null;
+  data: ParcelleUiModel | null;
 }
 
 export const EnrichmentDisplay: React.FC<EnrichmentDisplayProps> = ({ data }) => {

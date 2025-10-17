@@ -5,10 +5,10 @@ import {
   convertTestCaseToMutabilityInput,
 } from "@mutafriches/shared-types";
 import { buildCalculerMutabiliteFromFormData } from "../utils/form-to-dto.mapper";
-import { apiService } from "../../../../shared/services/api/api.service";
 import { Layout } from "../../../../shared/components/layout/Layout";
 import { InputDataPanel, ModeSelector, ResultsPanel, TestCasePanel } from "../components";
 import { BatchTestPanel } from "../components/BatchTestPanel";
+import { frichesService } from "../../../../shared/services/api/api.friches.service";
 
 type Mode = "test-case" | "manual" | "batch-test";
 type InputMode = "locked" | "editable";
@@ -107,7 +107,7 @@ export function TestMutability() {
           ? convertTestCaseToMutabilityInput(selectedTestCase)
           : buildCalculerMutabiliteFromFormData(formData);
 
-      const result = await apiService.calculerMutabilite(dataToSend, {
+      const result = await frichesService.calculerMutabilite(dataToSend, {
         modeDetaille: true,
         sansEnrichissement: true, // Pas d'enrichissement pour les tests
       });
@@ -126,7 +126,7 @@ export function TestMutability() {
     try {
       const dataToSend = convertTestCaseToMutabilityInput(testCase);
 
-      const result = await apiService.calculerMutabilite(dataToSend, {
+      const result = await frichesService.calculerMutabilite(dataToSend, {
         modeDetaille: true,
         sansEnrichissement: true,
       });

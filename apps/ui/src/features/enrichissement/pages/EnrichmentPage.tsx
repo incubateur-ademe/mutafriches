@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { apiService } from "../../../shared/services/api/api.service";
 import { getStepRoute, ROUTES } from "../../../shared/config/routes.config";
 import { Layout } from "../../../shared/components/layout/Layout";
 import { Stepper } from "../../../shared/components/layout";
@@ -11,6 +10,7 @@ import { ErrorAlert } from "../../../shared/components/common/ErrorAlert";
 import { EnrichmentDisplayZone } from "../components/enrichment-display/EnrichmentDisplayZone";
 import { transformEnrichmentToUiData } from "../utils/enrichissment.mapper";
 import { useFormContext } from "../../../shared/form/useFormContext";
+import { frichesService } from "../../../shared/services/api/api.friches.service";
 
 export const Step1: React.FC = () => {
   const navigate = useNavigate();
@@ -31,7 +31,7 @@ export const Step1: React.FC = () => {
     setError(null);
 
     try {
-      const enrichmentResult = await apiService.enrichirParcelle(identifiant);
+      const enrichmentResult = await frichesService.enrichirParcelle(identifiant);
       const uiData = transformEnrichmentToUiData(enrichmentResult);
       setEnrichmentData(enrichmentResult, uiData, identifiant);
 

@@ -37,8 +37,3 @@ export interface ParcelleProperties {
   contenance?: number;
   [key: string]: unknown;
 }
-
-/**
- * Callback appelé lors de la sélection d'une parcelle
- */
-export type OnParcelleSelectedCallback = (idu: string) => void;

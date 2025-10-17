@@ -1,11 +1,11 @@
 import { EnrichissementOutputDto, MutabiliteOutputDto } from "@mutafriches/shared-types";
-import { UiParcelleDto } from "../types/ui.types";
+import { ParcelleUiModel } from "../types/parcelle.models";
 
 export interface FormState {
   // Étape 1 - Données d'enrichissement
   identifiantParcelle?: string;
   enrichmentData?: EnrichissementOutputDto;
-  uiData?: UiParcelleDto;
+  uiData?: ParcelleUiModel;
 
   // Étape 2 - Données manuelles
   manualData?: Record<string, string>;
@@ -24,7 +24,7 @@ export interface FormContextType {
   // Actions pour l'étape 1
   setEnrichmentData: (
     data: EnrichissementOutputDto,
-    uiData: UiParcelleDto,
+    uiData: ParcelleUiModel,
     identifiant: string,
   ) => void;
 

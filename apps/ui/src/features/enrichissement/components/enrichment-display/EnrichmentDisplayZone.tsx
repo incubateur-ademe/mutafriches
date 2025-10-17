@@ -1,9 +1,9 @@
 import React from "react";
 import { EnrichmentInfoField } from "./EnrichmentInfoField";
-import { UiParcelleDto } from "../../../../shared/types/ui.types";
+import { ParcelleUiModel } from "../../../../shared/types/parcelle.models";
 
 interface EnrichmentDisplayZoneProps {
-  data: UiParcelleDto | null;
+  data: ParcelleUiModel | null;
 }
 
 export const EnrichmentDisplayZone: React.FC<EnrichmentDisplayZoneProps> = ({ data }) => {

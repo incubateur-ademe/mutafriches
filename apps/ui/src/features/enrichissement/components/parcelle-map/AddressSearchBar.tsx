@@ -1,9 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { flushSync } from "react-dom";
-import {
-  AddressSuggestion,
-  searchAddresses,
-} from "../../../../shared/services/geocoding/geocoding.service";
+import { AddressSuggestion } from "../../../../shared/services/geocoding/api.geocoding.types";
+import { searchAddresses } from "../../../../shared/services/geocoding/api.geocoding.service";
 
 interface AddressSearchBarProps {
   onAddressSelected: (lat: number, lng: number) => void;

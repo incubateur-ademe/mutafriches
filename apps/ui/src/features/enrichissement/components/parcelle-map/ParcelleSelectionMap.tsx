@@ -1,5 +1,5 @@
 import { useLeafletMap } from "../../../../shared/hooks/useLeafletMap";
-import { OnParcelleSelectedCallback } from "../../../../shared/types/parcelle.types";
+import { OnParcelleSelectedCallback } from "../../../../shared/types/callbacks.types";
 import { AddressSearchBar } from "./AddressSearchBar";
 
 interface ParcelleSelectionMapProps {

@@ -3,7 +3,7 @@ import { FormContext } from "./FormContext";
 import { FormState, FormContextType, STORAGE_KEY, initialState } from "./FormContext.types";
 import { EnrichissementOutputDto, MutabiliteOutputDto } from "@mutafriches/shared-types";
 import { ROUTES } from "../config/routes.config";
-import { UiParcelleDto } from "../types/ui.types";
+import { ParcelleUiModel } from "../types/parcelle.models";
 
 const SESSION_DURATION = 30 * 60 * 1000; // 30 minutes
 
@@ -58,7 +58,7 @@ export const FormProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const setEnrichmentData = (
     data: EnrichissementOutputDto,
-    uiData: UiParcelleDto,
+    uiData: ParcelleUiModel,
     identifiant: string,
   ) => {
     setState((prev) => ({

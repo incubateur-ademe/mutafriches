@@ -1,29 +1,6 @@
+import { AddressSuggestion, GeocodingApiResponse } from "./api.geocoding.types";
+
 const GEOCODING_API_URL = "https://data.geopf.fr/geocodage";
-
-export interface AddressSuggestion {
-  label: string;
-  coordinates: [number, number]; // [lng, lat]
-  city: string;
-  postcode: string;
-}
-
-interface GeocodingApiFeature {
-  type: "Feature";
-  geometry: {
-    coordinates: [number, number];
-  };
-  properties: {
-    label: string;
-    city?: string;
-    postcode?: string;
-    score: number;
-  };
-}
-
-interface GeocodingApiResponse {
-  type: "FeatureCollection";
-  features: GeocodingApiFeature[];
-}
 
 /**
  * Recherche d'adresses avec auto-complétion via l'API Géoplateforme
@@ -37,7 +14,7 @@ export async function searchAddresses(query: string): Promise<AddressSuggestion[
     q: query,
     limit: "10",
     autocomplete: "1",
-    index: "address", // Uniquement les adresses
+    index: "address",
   });
 
   try {

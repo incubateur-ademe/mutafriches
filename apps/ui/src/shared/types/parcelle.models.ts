@@ -1,8 +1,8 @@
 /**
- * Type pour l'affichage UI d'une parcelle
- * Convertit les données enrichies en strings pour l'affichage
+ * Modèle UI pour l'affichage d'une parcelle enrichie
+ * Convertit les données enrichies en strings formatées pour l'affichage
  */
-export interface UiParcelleDto {
+export interface ParcelleUiModel {
   // Données de base
   surfaceParcelle: string;
   surfaceBatie: string;

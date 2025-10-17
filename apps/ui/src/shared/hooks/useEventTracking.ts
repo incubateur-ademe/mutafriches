@@ -1,7 +1,7 @@
 import { useCallback } from "react";
-import { evenementService } from "../services/api/evenement.service";
 import { TypeEvenement, EvenementInputDto } from "@mutafriches/shared-types";
 import { useIframe, useIsIframeMode } from "../iframe/useIframe";
+import { evenementsService } from "../services/api/api.evenements.service";
 
 export function useEventTracking() {
   const isIframeMode = useIsIframeMode();
@@ -12,7 +12,7 @@ export function useEventTracking() {
       typeEvenement: TypeEvenement,
       data?: Omit<EvenementInputDto, "typeEvenement" | "sessionId">,
     ) => {
-      await evenementService.enregistrerEvenement(
+      await evenementsService.enregistrerEvenement(
         {
           typeEvenement,
           evaluationId: data?.evaluationId,

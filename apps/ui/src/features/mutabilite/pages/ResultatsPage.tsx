@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { useEventTracking } from "../../../shared/hooks/useEventTracking";
 import { MutabiliteOutputDto } from "../../../../../../packages/shared-types/src";
 import { buildMutabilityInput } from "../utils/mutability.mapper";
-import { apiService } from "../../../shared/services/api/api.service";
 import { ROUTES } from "../../../shared/config/routes.config";
 import { Stepper } from "../../../shared/components/layout";
 import { Layout } from "../../../shared/components/layout/Layout";
@@ -17,6 +16,7 @@ import { useFormContext } from "../../../shared/form/useFormContext";
 import { useIframe, useIframeCallback, useIsIframeMode } from "../../../shared/iframe/useIframe";
 import { createIframeCommunicator } from "../../../shared/iframe/iframeCommunication";
 import { IframeEvaluationSummaryDto } from "../../../shared/iframe/iframe.types";
+import { frichesService } from "../../../shared/services/api/api.friches.service";
 
 export const Step3: React.FC = () => {
   const navigate = useNavigate();
@@ -94,7 +94,7 @@ export const Step3: React.FC = () => {
 
     try {
       const mutabilityInput = buildMutabilityInput(state.enrichmentData, state.manualData);
-      const result = await apiService.calculerMutabilite(mutabilityInput, {
+      const result = await frichesService.calculerMutabilite(mutabilityInput, {
         isIframe: isIframeMode,
         integrator: integrator || undefined,
       });

@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { searchParcelWithFallback } from "../services/cadastre/cadastre.service";
 import { extractIdu } from "../utils/geo.utils";
-import type { OnParcelleSelectedCallback } from "../types/parcelle.types";
+import { searchParcelWithFallback } from "../services/cadastre/api.cadastre.service";
+import { OnParcelleSelectedCallback } from "../types/callbacks.types";
 
 // Fix Leaflet : Réinitialisation des icônes par défaut
 // @ts-expect-error - Suppression nécessaire pour le fix Leaflet
