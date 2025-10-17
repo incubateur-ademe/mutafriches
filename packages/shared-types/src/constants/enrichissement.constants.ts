@@ -65,3 +65,17 @@ export enum SourceEnrichissement {
   GEORISQUES_SIS = "GeoRisques-SIS",
   GEORISQUES_ICPE = "GeoRisques-ICPE",
 }
+
+/**
+ * Helper pour vérifier si une source est utilisée
+ */
+export const hasSource = (sources: string[], sourceEnum: SourceEnrichissement): boolean => {
+  return sources.includes(sourceEnum);
+};
+
+/**
+ * Helper pour grouper les sources GeoRisques
+ */
+export const hasGeoRisquesData = (sources: string[]): boolean => {
+  return sources.some((s) => s.startsWith("GeoRisques-"));
+};

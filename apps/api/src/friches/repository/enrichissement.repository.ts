@@ -1,12 +1,13 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { v4 as uuidv4 } from "uuid";
-import {
-  CodeErreurEnrichissement,
-  StatutEnrichissement,
-} from "../services/enrichissement.constants";
+
 import { DatabaseService } from "../../shared/database/database.service";
 import { enrichissements } from "../../shared/database/schema";
-import { EnrichissementOutputDto } from "@mutafriches/shared-types";
+import {
+  CodeErreurEnrichissement,
+  EnrichissementOutputDto,
+  StatutEnrichissement,
+} from "@mutafriches/shared-types";
 
 export interface EnrichissementData {
   identifiantCadastral: string;

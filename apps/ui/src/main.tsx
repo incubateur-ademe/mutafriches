@@ -12,6 +12,7 @@ import "@gouvfr/dsfr/dist/dsfr.module.min.js";
 
 // Import styles custom
 import "../styles/index.css";
+import "../styles/animations.css";
 
 const rootElement = document.getElementById("root");
 

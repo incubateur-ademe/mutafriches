@@ -7,9 +7,9 @@ interface LoadingCalloutProps {
 
 export const LoadingCallout: React.FC<LoadingCalloutProps> = ({ title, message }) => {
   return (
-    <div className="fr-callout fr-callout--blue-france fr-mt-4w">
+    <div className="fr-callout fr-callout--blue-cumulus fr-mt-4w  fade-in shimmer">
       <h3 className="fr-callout__title">
-        <span className="fr-icon-refresh-fill" aria-hidden="true"></span>
+        <span className="fr-icon-refresh-fill spin fr-mr-1w" aria-hidden="true"></span>
         {title}
       </h3>
       {message && <p className="fr-callout__text">{message}</p>}

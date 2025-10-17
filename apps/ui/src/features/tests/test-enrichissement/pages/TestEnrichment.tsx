@@ -1,7 +1,28 @@
 import { Link } from "react-router-dom";
-import { Layout } from "../../../../shared/components/layout/Layout";
+import { useState } from "react";
+import { Layout } from "@/shared/components/layout/Layout";
+import { TestEnrichmentDisplay } from "../components/TestEnrichmentDisplay";
+import type { EnrichissementOutputDto } from "@mutafriches/shared-types";
+import { EnrichmentTestSelection } from "../components/EnrichmentTestSelection";
 
 export function TestEnrichment() {
+  const [enrichmentData, setEnrichmentData] = useState<EnrichissementOutputDto | null>(null);
+
+  const handleEnrichmentComplete = (data: EnrichissementOutputDto) => {
+    setEnrichmentData(data);
+
+    // Scroll vers les résultats
+    setTimeout(() => {
+      const element = document.getElementById("test-enrichment-results");
+      if (element) {
+        element.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
+    }, 100);
+  };
+
   return (
     <Layout>
       <div className="fr-container-fluid">
@@ -38,15 +59,22 @@ export function TestEnrichment() {
           </nav>
 
           <h1>Test d'enrichissement de Parcelle</h1>
-        </div>
-
-        {/* Grille de test des composants */}
-        <div className="fr-callout">
-          <h3 className="fr-callout__title">Information importante</h3>
-          <p className="fr-callout__text">
-            Work in progress - Cette page est en cours de développement.
+          <p className="fr-text--lead">
+            Testez l'enrichissement automatique des données de parcelle depuis les APIs externes
           </p>
         </div>
+
+        {/* Zone de sélection */}
+        <div className="fr-mb-6w">
+          <EnrichmentTestSelection onEnrichmentComplete={handleEnrichmentComplete} />
+        </div>
+
+        {/* Zone de résultats */}
+        {enrichmentData && (
+          <div id="test-enrichment-results">
+            <TestEnrichmentDisplay data={enrichmentData} />
+          </div>
+        )}
       </div>
     </Layout>
   );

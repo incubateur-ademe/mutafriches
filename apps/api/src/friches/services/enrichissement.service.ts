@@ -1,16 +1,17 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { EnrichissementOutputDto, RisqueNaturel } from "@mutafriches/shared-types";
+import {
+  CodeErreurEnrichissement,
+  EnrichissementOutputDto,
+  MessagesErreurEnrichissement,
+  RisqueNaturel,
+  SourceEnrichissement,
+  StatutEnrichissement,
+} from "@mutafriches/shared-types";
 import { Parcelle } from "../domain/entities/parcelle.entity";
 import { CadastreService } from "./external/cadastre/cadastre.service";
 import { BdnbService } from "./external/bdnb/bdnb.service";
 import { EnedisService } from "./external/enedis/enedis.service";
 import { CadastreServiceResponse } from "./external/cadastre/cadastre.types";
-import {
-  StatutEnrichissement,
-  CodeErreurEnrichissement,
-  MessagesErreurEnrichissement,
-  SourceEnrichissement,
-} from "./enrichissement.constants";
 import { EnrichissementRepository } from "../repository/enrichissement.repository";
 import { RgaService } from "./external/georisques/rga/rga.service";
 import { GeoRisquesResult } from "./external/georisques/georisques.types";
