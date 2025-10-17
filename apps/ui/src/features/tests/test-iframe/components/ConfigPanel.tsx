@@ -1,4 +1,4 @@
-import { INTEGRATORS } from "../../../../context";
+import { INTEGRATORS } from "../../../../shared/iframe/IframeContext.constants";
 
 interface ConfigPanelProps {
   integrator: string;

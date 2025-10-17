@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 import { Link } from "react-router-dom";
-import { Layout } from "../../../shared/components/layout/Layout";
-import { ParcelleSelectionMap } from "../../enrichissement/components/parcelle-map/ParcelleSelectionMap";
+import { Layout } from "../../../../shared/components/layout/Layout";
+import { ParcelleSelectionMap } from "../../../enrichissement/components/parcelle-map/ParcelleSelectionMap";
 
 export function TestCarteParcelle() {
   const [selectedIdu, setSelectedIdu] = useState<string | null>(null);

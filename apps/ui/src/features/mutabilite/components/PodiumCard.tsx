@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { UsageResultat } from "@mutafriches/shared-types";
-import { getUsageInfo } from "../utils/usages.mapper";
+import { getUsageInfo } from "../utils/usagesLabels.utils";
 import { useEventTracking } from "../../../shared/hooks/useEventTracking";
 
 interface PodiumCardProps {

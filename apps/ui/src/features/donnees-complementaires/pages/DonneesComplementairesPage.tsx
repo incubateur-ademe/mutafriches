@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useFormContext } from "../context/useFormContext";
 import { ROUTES } from "../../../shared/config/routes.config";
 import { ManualFormValues } from "../config";
 import { Stepper } from "../../../shared/components/layout";
 import { Layout } from "../../../shared/components/layout/Layout";
 import { ManualDataForm } from "../components/ManualDataForm";
+import { useFormContext } from "../../../shared/form/useFormContext";
 
 export const Step2: React.FC = () => {
   const navigate = useNavigate();

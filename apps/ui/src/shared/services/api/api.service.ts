@@ -4,9 +4,9 @@ import {
   CalculerMutabiliteInputDto,
   MutabiliteOutputDto,
 } from "@mutafriches/shared-types";
-import { API_CONFIG } from "../../config/api.config";
-import { isValidParcelId } from "../../utils/validation.utils";
+import { isValidParcelId } from "../../utils/parcelle.utils";
 import { buildMutabilityInput } from "../../../features/mutabilite/utils/mutability.mapper";
+import { API_CONFIG } from "./api.config";
 
 // Type pour la réponse d'erreur de l'API
 interface ApiErrorResponse {

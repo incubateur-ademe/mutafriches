@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import { evenementService } from "../services/api/evenement.service";
 import { TypeEvenement, EvenementInputDto } from "@mutafriches/shared-types";
-import { useIframe, useIsIframeMode } from "../../context";
+import { useIframe, useIsIframeMode } from "../iframe/useIframe";
 
 export function useEventTracking() {
   const isIframeMode = useIsIframeMode();

@@ -1,6 +1,6 @@
 import { UsageResultat } from "@mutafriches/shared-types";
 import React from "react";
-import { getUsageInfo } from "../utils/usages.mapper";
+import { getUsageInfo } from "../utils/usagesLabels.utils";
 
 interface ResultsTableProps {
   results: UsageResultat[];

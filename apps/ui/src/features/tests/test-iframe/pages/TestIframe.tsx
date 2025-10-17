@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import { Layout } from "../../../shared/components/layout/Layout";
-import { ConfigPanel, IframeViewer, MessageConsole } from "../components/iframe-test";
+import { Layout } from "../../../../shared/components/layout/Layout";
+import { ConfigPanel, IframeViewer, MessageConsole } from "../components";
 
 interface MessageLog {
   id: number;

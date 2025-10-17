@@ -1,10 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { useFormContext, useIframe, useIframeCallback, useIsIframeMode } from "../../../context";
 import { useEventTracking } from "../../../shared/hooks/useEventTracking";
 import { MutabiliteOutputDto } from "../../../../../../packages/shared-types/src";
-import { createIframeCommunicator } from "../../../shared/utils/iframe/iframeCommunication";
-import { IframeEvaluationSummaryDto } from "../../../shared/types/iframe.types";
 import { buildMutabilityInput } from "../utils/mutability.mapper";
 import { apiService } from "../../../shared/services/api/api.service";
 import { ROUTES } from "../../../shared/config/routes.config";
@@ -16,6 +13,10 @@ import { PodiumCard } from "../components/PodiumCard";
 import { ReliabilityScore } from "../components/ReliabilityScore";
 import { ResultsTable } from "../components/ResultTable";
 import { PartnerCard } from "../components/PartnerCard";
+import { useFormContext } from "../../../shared/form/useFormContext";
+import { useIframe, useIframeCallback, useIsIframeMode } from "../../../shared/iframe/useIframe";
+import { createIframeCommunicator } from "../../../shared/iframe/iframeCommunication";
+import { IframeEvaluationSummaryDto } from "../../../shared/iframe/iframe.types";
 
 export const Step3: React.FC = () => {
   const navigate = useNavigate();

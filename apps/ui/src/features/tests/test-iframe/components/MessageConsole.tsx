@@ -1,4 +1,4 @@
-import { IframeMessageType } from "../../../../shared/utils/iframe/iframeCommunication";
+import { IframeMessageType } from "../../../../shared/iframe/iframeCommunication";
 
 interface MessageLog {
   id: number;

@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useFormContext } from "../../../context";
-import { transformEnrichmentToUiData } from "../../../shared/utils/mappers/enrichissment.mapper";
 import { apiService } from "../../../shared/services/api/api.service";
 import { getStepRoute, ROUTES } from "../../../shared/config/routes.config";
 import { Layout } from "../../../shared/components/layout/Layout";
@@ -11,6 +9,8 @@ import { ParcelleSelection } from "../components/parcelle-selection/ParcelleSele
 import { LoadingCallout } from "../../../shared/components/common/LoadingCallout";
 import { ErrorAlert } from "../../../shared/components/common/ErrorAlert";
 import { EnrichmentDisplayZone } from "../components/enrichment-display/EnrichmentDisplayZone";
+import { transformEnrichmentToUiData } from "../utils/enrichissment.mapper";
+import { useFormContext } from "../../../shared/form/useFormContext";
 
 export const Step1: React.FC = () => {
   const navigate = useNavigate();

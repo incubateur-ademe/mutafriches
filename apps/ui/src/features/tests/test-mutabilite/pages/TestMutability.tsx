@@ -4,21 +4,16 @@ import {
   TestCase,
   convertTestCaseToMutabilityInput,
 } from "@mutafriches/shared-types";
-import { buildCalculerMutabiliteFromFormData } from "../../donnees-complementaires/utils/form-to-dto.mapper";
-import { apiService } from "../../../shared/services/api/api.service";
-import { Layout } from "../../../shared/components/layout/Layout";
-import {
-  InputDataPanel,
-  ModeSelector,
-  ResultsPanel,
-  TestCasePanel,
-} from "../components/mutability-test";
-import { BatchTestPanel } from "../components/mutability-test/BatchTestPanel";
+import { buildCalculerMutabiliteFromFormData } from "../utils/form-to-dto.mapper";
+import { apiService } from "../../../../shared/services/api/api.service";
+import { Layout } from "../../../../shared/components/layout/Layout";
+import { InputDataPanel, ModeSelector, ResultsPanel, TestCasePanel } from "../components";
+import { BatchTestPanel } from "../components/BatchTestPanel";
 
 type Mode = "test-case" | "manual" | "batch-test";
 type InputMode = "locked" | "editable";
 
-export default function TestMutability() {
+export function TestMutability() {
   const [mode, setMode] = useState<Mode>("batch-test");
   const [inputMode, setInputMode] = useState<InputMode>("locked");
   const [selectedTestCase, setSelectedTestCase] = useState<TestCase | null>(null);

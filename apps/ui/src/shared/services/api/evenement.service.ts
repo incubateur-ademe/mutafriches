@@ -1,5 +1,5 @@
 import { EvenementInputDto } from "@mutafriches/shared-types";
-import { API_CONFIG } from "../../config/api.config";
+import { API_CONFIG } from "./api.config";
 
 class EvenementService {
   private sessionId: string;

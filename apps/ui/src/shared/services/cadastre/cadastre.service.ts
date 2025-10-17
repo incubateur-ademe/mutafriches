@@ -1,5 +1,5 @@
 import { ApiCartoFeatureCollection } from "../../types/parcelle.types";
-import { squareBufferLngLat } from "./geo.utils";
+import { squareBufferLngLat } from "../../utils/geo.utils";
 
 const API_BASE_URL = "https://apicarto.ign.fr/api/cadastre";
 

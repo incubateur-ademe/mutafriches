@@ -1,5 +1,5 @@
 import { EnrichissementOutputDto, MutabiliteOutputDto } from "@mutafriches/shared-types";
-import { UiParcelleDto } from "../../../shared/types/ui.types";
+import { UiParcelleDto } from "../types/ui.types";
 
 export interface FormState {
   // Étape 1 - Données d'enrichissement

@@ -1,8 +1,8 @@
 import { ReactNode } from "react";
-import { useIsIframeMode } from "../../../context";
 import { SimpleHeader } from "./SimpleHeader";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
+import { useIsIframeMode } from "../../iframe/useIframe";
 
 interface LayoutProps {
   children: ReactNode;

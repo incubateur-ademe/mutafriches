@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
-import { IframeEvaluationSummaryDto } from "../../types/iframe.types";
+
+import { IframeEvaluationSummaryDto } from "./iframe.types";
 
 // Types des messages échangés
 export enum IframeMessageType {

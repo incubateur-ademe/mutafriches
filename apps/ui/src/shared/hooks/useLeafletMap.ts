@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { searchParcelWithFallback } from "../services/cadastre/cadastre.service";
-import { extractIdu } from "../services/cadastre/geo.utils";
+import { extractIdu } from "../utils/geo.utils";
 import type { OnParcelleSelectedCallback } from "../types/parcelle.types";
 
 // Fix Leaflet : Réinitialisation des icônes par défaut
