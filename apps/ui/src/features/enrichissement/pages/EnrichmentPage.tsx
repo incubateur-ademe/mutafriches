@@ -100,12 +100,12 @@ export const Step1: React.FC = () => {
       <Stepper
         currentStep={1}
         totalSteps={3}
-        currentStepTitle="Votre site en friche"
-        nextStepTitle="Données complémentaires"
+        currentStepTitle="Sélectionner une parcelle en friche"
+        nextStepTitle="Qualifier la parcelle en friche"
       />
 
       <div className="fr-mb-4w">
-        <h3>Sélectionnez la (les) parcelle(s) concernée(s)</h3>
+        <h3>Sélectionner la parcelle en friche pour analyser sa mutabilité</h3>
 
         {/* Contrôles de sélection */}
         <div className="fr-grid-row fr-grid-row--gutters">

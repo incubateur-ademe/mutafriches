@@ -22,6 +22,10 @@ export const ParcelleSelection: React.FC<ParcelleSelectionProps> = ({ onAnalyze 
     setSelectedParcelId(parcelId);
   };
 
+  const handleSwitchToMap = () => {
+    setActiveTab("map");
+  };
+
   const handleAnalyze = () => {
     if (selectedParcelId && onAnalyze) {
       onAnalyze(selectedParcelId);
@@ -34,7 +38,6 @@ export const ParcelleSelection: React.FC<ParcelleSelectionProps> = ({ onAnalyze 
     <div>
       <h2 className="fr-h4 fr-mb-3w">Sélection de la parcelle</h2>
 
-      {/* Système d'onglets DSFR */}
       <div className="fr-tabs">
         <ul className="fr-tabs__list" role="tablist" aria-label="Méthodes de sélection de parcelle">
           <li role="presentation">
@@ -67,7 +70,6 @@ export const ParcelleSelection: React.FC<ParcelleSelectionProps> = ({ onAnalyze 
           </li>
         </ul>
 
-        {/* Panneau : Sur la carte */}
         <div
           id="tab-map-panel"
           className={`fr-tabs__panel ${activeTab === "map" ? "fr-tabs__panel--selected" : ""}`}
@@ -81,7 +83,6 @@ export const ParcelleSelection: React.FC<ParcelleSelectionProps> = ({ onAnalyze 
           />
         </div>
 
-        {/* Panneau : Par identifiant */}
         <div
           id="tab-id-panel"
           className={`fr-tabs__panel ${activeTab === "id" ? "fr-tabs__panel--selected" : ""}`}
@@ -89,11 +90,13 @@ export const ParcelleSelection: React.FC<ParcelleSelectionProps> = ({ onAnalyze 
           aria-labelledby="tab-id"
           tabIndex={0}
         >
-          <SelectParcelleById onParcelleIdChange={handleParcelIdChange} />
+          <SelectParcelleById
+            onParcelleIdChange={handleParcelIdChange}
+            onSwitchToMap={handleSwitchToMap}
+          />
         </div>
       </div>
 
-      {/* Bouton d'analyse */}
       <div className="fr-mt-4w" style={{ textAlign: "center" }}>
         <button
           className="fr-btn fr-btn--lg fr-btn--icon-left fr-icon-bar-chart-box-line"

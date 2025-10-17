@@ -2,11 +2,14 @@ import React, { useState } from "react";
 
 interface SelectParcelleByIdProps {
   onParcelleIdChange: (identifiant: string) => void;
+  onSwitchToMap?: () => void;
 }
 
-export const SelectParcelleById: React.FC<SelectParcelleByIdProps> = ({ onParcelleIdChange }) => {
+export const SelectParcelleById: React.FC<SelectParcelleByIdProps> = ({
+  onParcelleIdChange,
+  onSwitchToMap,
+}) => {
   const [parcelId, setParcelId] = useState("");
-  const [showGuide, setShowGuide] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const cleaned = e.target.value.replace(/[^0-9A-Za-z]/g, "").toUpperCase();
@@ -28,7 +31,6 @@ export const SelectParcelleById: React.FC<SelectParcelleByIdProps> = ({ onParcel
     } else {
       formatted = limited;
       setParcelId(formatted);
-      // Remonter l'identifiant nettoyé au parent
       onParcelleIdChange(limited);
       return;
     }
@@ -72,158 +74,44 @@ export const SelectParcelleById: React.FC<SelectParcelleByIdProps> = ({ onParcel
     }
 
     setParcelId(formatted);
-    // Remonter l'identifiant nettoyé (sans espaces) au parent
     onParcelleIdChange(limited);
   };
 
+  const handleMapLinkClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    if (onSwitchToMap) {
+      onSwitchToMap();
+    }
+  };
+
   return (
-    <div>
-      <p className="fr-text--sm">
-        Saisissez l&apos;identifiant ou les identifiants des parcelles à analyser
+    <div className="fr-input-group">
+      <label className="fr-label" htmlFor="parcel-id">
+        <strong>Identifiant de parcelle</strong>
+      </label>
+
+      <p className="fr-text--sm fr-mt-1w fr-mb-1w">
+        Entrer l'IDU (identifiant parcellaire unique) de la parcelle que vous voulez analyser. Si
+        vous ne le connaissez pas,{" "}
+        <a href="#" onClick={handleMapLinkClick} className="fr-link">
+          recherchez la parcelle via notre carte
+        </a>
+        .
       </p>
 
-      <div className="fr-grid-row fr-grid-row--gutters">
-        <div className="fr-col-12">
-          <div className="fr-input-group">
-            <label className="fr-label" htmlFor="parcel-id">
-              Identifiant de parcelle
-              <span className="fr-hint-text">
-                Format : code département + code commune + préfixe + section + numéro
-              </span>
-            </label>
-            <input
-              className="fr-input"
-              type="text"
-              id="parcel-id"
-              name="parcel-id"
-              placeholder="Ex: 25056 000 IK 0102"
-              value={parcelId}
-              onChange={handleInputChange}
-            />
-          </div>
-        </div>
-      </div>
+      <span className="fr-hint-text fr-mb-2w">
+        Format : code département + code commune + préfixe + section + numéro
+      </span>
 
-      <div className="fr-callout fr-mt-4w">
-        <h3 className="fr-callout__title">
-          Comment trouver l&apos;identifiant de votre parcelle ?
-        </h3>
-
-        <div className="fr-mb-3w">
-          <button
-            className="fr-btn fr-btn--tertiary-no-outline fr-btn--icon-left"
-            type="button"
-            onClick={() => setShowGuide(!showGuide)}
-            aria-expanded={showGuide}
-            style={{ paddingLeft: 0 }}
-          >
-            <span className={showGuide ? "fr-icon-arrow-up-s-line" : "fr-icon-arrow-down-s-line"} />
-            {showGuide ? "Masquer" : "Afficher"} le guide étape par étape
-          </button>
-        </div>
-
-        {showGuide && (
-          <div className="fr-background-alt--grey fr-p-3w fr-mb-3w" style={{ borderRadius: "4px" }}>
-            <h4 className="fr-h6">Guide pour obtenir l&apos;identifiant sur le Géoportail</h4>
-
-            <ol className="fr-mt-2w">
-              <li className="fr-mb-2w">
-                <strong>Accédez au Géoportail</strong>
-                <br />
-                Cliquez sur le bouton ci-dessous ou rendez-vous sur{" "}
-                <a
-                  href="https://www.geoportail.gouv.fr/carte"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  geoportail.gouv.fr/carte
-                </a>
-              </li>
-
-              <li className="fr-mb-2w">
-                <strong>Activez la couche &quot;Parcelles cadastrales&quot;</strong>
-                <br />
-                <span className="fr-text--sm fr-text--regular">
-                  Cliquez sur l&apos;icône &quot;Cartes&quot; dans le menu de gauche
-                  <br />
-                  Dans la section &quot;Foncier, cadastre, urbanisme&quot;
-                  <br />
-                  Cochez &quot;Parcelles cadastrales&quot;
-                </span>
-              </li>
-
-              <li className="fr-mb-2w">
-                <strong>Naviguez jusqu&apos;à votre parcelle</strong>
-                <br />
-                <span className="fr-text--sm fr-text--regular">
-                  Utilisez la barre de recherche pour entrer une adresse
-                  <br />
-                  Ou naviguez manuellement et zoomez sur la zone souhaitée
-                </span>
-              </li>
-
-              <li className="fr-mb-2w">
-                <strong>Cliquez sur la parcelle</strong>
-                <br />
-                <span className="fr-text--sm fr-text--regular">
-                  Une bulle d&apos;information apparaît avec l&apos;identifiant complet
-                </span>
-              </li>
-
-              <li>
-                <strong>Copiez l&apos;identifiant</strong>
-                <br />
-                <span className="fr-text--sm fr-text--regular">
-                  Exemples de formats :
-                  <br />
-                  <code>25056000IK0102</code> (Métropole : 5 + 3 + 2 + 4)
-                  <br />
-                  <code>972090000O0498</code> (DOM-TOM : 6 + 3 + 1 + 4)
-                  <br />
-                  <code>2A004000AC0045</code> (Corse : 5 + 3 + 2 + 4)
-                </span>
-              </li>
-            </ol>
-
-            <div className="fr-notice fr-notice--info fr-mt-3w">
-              <div className="fr-container">
-                <div className="fr-notice__body">
-                  <p className="fr-notice__title">
-                    Astuce : Sur le Géoportail, les parcelles apparaissent en orange quand vous
-                    zoomez suffisamment sur la carte.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        <p className="fr-callout__text fr-mb-2w">
-          L&apos;identifiant de parcelle peut être trouvé sur le cadastre, les documents officiels
-          de propriété (acte notarié, taxe foncière) ou directement sur la carte interactive du
-          Géoportail.
-        </p>
-
-        <a
-          href="https://www.geoportail.gouv.fr/carte"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-map-pin-2-line"
-        >
-          Ouvrir la carte du Géoportail
-        </a>
-
-        <div className="fr-mt-2w">
-          <a
-            href="https://www.cadastre.gouv.fr/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="fr-link fr-link--sm"
-          >
-            Ou consultez le site du cadastre (cadastre.gouv.fr)
-          </a>
-        </div>
-      </div>
+      <input
+        className="fr-input"
+        type="text"
+        id="parcel-id"
+        name="parcel-id"
+        placeholder="Ex: 25056 000 IK 0102"
+        value={parcelId}
+        onChange={handleInputChange}
+      />
     </div>
   );
 };
