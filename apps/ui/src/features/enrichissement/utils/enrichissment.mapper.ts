@@ -28,6 +28,12 @@ export const transformEnrichmentToUiData = (
 
     // Risques
     risquesNaturels: enrichmentData.presenceRisquesNaturels || nonAccessibleVersion,
+    risquesTechno:
+      enrichmentData.presenceRisquesTechnologiques !== undefined
+        ? enrichmentData.presenceRisquesTechnologiques
+          ? "Oui"
+          : "Non"
+        : nonAccessibleVersion,
 
     // Champs non disponibles dans l'enrichissement actuel
     typeProprietaire: nonAccessibleVersion,
@@ -36,7 +42,6 @@ export const transformEnrichmentToUiData = (
     distanceTrain: nonAccessibleVersion,
     proximiteCommerces: nonAccessibleVersion,
     tauxLV: nonAccessibleVersion,
-    risquesTechno: nonAccessibleVersion,
     zonageEnviro: nonAccessibleVersion,
     zonageUrba: nonAccessibleVersion,
     zonagePatrimonial: nonAccessibleVersion,
