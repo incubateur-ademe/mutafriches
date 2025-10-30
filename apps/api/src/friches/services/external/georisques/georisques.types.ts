@@ -9,6 +9,7 @@ import { MvtResultNormalized } from "./mvt/mvt.types";
 import { OldResultNormalized } from "./old/old.types";
 import { RgaResultNormalized } from "./rga/rga.types";
 import { SisResultNormalized } from "./sis/sis.types";
+import { TriZonageResultNormalized } from "./tri-zonage/tri-zonage.types";
 import { TriResultNormalized } from "./tri/tri.types";
 import { ZonageSismiqueResultNormalized } from "./zonage-sismique/zonage-sismique.types";
 
@@ -48,7 +49,8 @@ export interface GeoRisquesMetadata {
 export interface GeoRisquesResult {
   rga?: RgaResultNormalized;
   catnat?: CatnatResultNormalized;
-  triZonage?: TriResultNormalized;
+  triZonage?: TriZonageResultNormalized;
+  tri?: TriResultNormalized;
   mvt?: MvtResultNormalized;
   zonageSismique?: ZonageSismiqueResultNormalized;
   cavites?: CavitesResultNormalized;

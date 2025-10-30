@@ -16,7 +16,7 @@ import { EnrichissementRepository } from "../repository/enrichissement.repositor
 import { RgaService } from "./external/georisques/rga/rga.service";
 import { GeoRisquesResult } from "./external/georisques/georisques.types";
 import { CatnatService } from "./external/georisques/catnat/catnat.service";
-import { TriService } from "./external/georisques/tri/tri.service";
+import { TriZonageService } from "./external/georisques/tri-zonage/tri-zonage.service";
 import { MvtService } from "./external/georisques/mvt/mvt.service";
 import { ZonageSismiqueService } from "./external/georisques/zonage-sismique/zonage-sismique.service";
 import { CavitesService } from "./external/georisques/cavites/cavites.service";
@@ -25,6 +25,7 @@ import { OldService } from "./external/georisques/old/old.service";
 import { SisService } from "./external/georisques/sis/sis.service";
 import { IcpeService } from "./external/georisques/icpe/icpe.service";
 import { CavitesResultNormalized } from "./external/georisques/cavites/cavites.types";
+import { TriService } from "./external/georisques/tri/tri.service";
 
 const PROMISE_FULFILLED = "fulfilled" as const;
 
@@ -38,6 +39,7 @@ export class EnrichissementService {
     private readonly enedisService: EnedisService,
     private readonly rgaService: RgaService,
     private readonly catnatService: CatnatService,
+    private readonly triZonageService: TriZonageService,
     private readonly triService: TriService,
     private readonly mvtService: MvtService,
     private readonly zonageSismiqueService: ZonageSismiqueService,
@@ -418,6 +420,7 @@ export class EnrichissementService {
     const [
       rgaResult,
       catnatResult,
+      triZonageResult,
       triResult,
       mvtResult,
       zonageSismiqueResult,
@@ -434,6 +437,10 @@ export class EnrichissementService {
         latitude: coordonnees.latitude,
         longitude: coordonnees.longitude,
         rayon: GEORISQUES_RAYONS_DEFAUT.CATNAT,
+      }),
+      this.triZonageService.getTri({
+        latitude: coordonnees.latitude,
+        longitude: coordonnees.longitude,
       }),
       this.triService.getTri({
         latitude: coordonnees.latitude,
@@ -496,10 +503,23 @@ export class EnrichissementService {
       echoueesGeorisques,
     );
 
-    // 3. TRI
+    // 3. TRI Zonage
+    this.processGeoRisqueResult(
+      triZonageResult,
+      "triZonage",
+      "TRI Zonage",
+      SourceEnrichissement.GEORISQUES_TRI_ZONAGE,
+      result,
+      sources,
+      echouees,
+      sourcesGeorisques,
+      echoueesGeorisques,
+    );
+
+    // 4. TRI
     this.processGeoRisqueResult(
       triResult,
-      "triZonage",
+      "tri",
       "TRI",
       SourceEnrichissement.GEORISQUES_TRI,
       result,
@@ -509,7 +529,7 @@ export class EnrichissementService {
       echoueesGeorisques,
     );
 
-    // 4. MVT
+    // 5. MVT
     this.processGeoRisqueResult(
       mvtResult,
       "mvt",
@@ -522,7 +542,7 @@ export class EnrichissementService {
       echoueesGeorisques,
     );
 
-    // 5. Zonage Sismique
+    // 6. Zonage Sismique
     this.processGeoRisqueResult(
       zonageSismiqueResult,
       "zonageSismique",
@@ -535,7 +555,7 @@ export class EnrichissementService {
       echoueesGeorisques,
     );
 
-    // 6. Cavités
+    // 7. Cavités
     this.processGeoRisqueResult(
       cavitesResult,
       "cavites",
@@ -548,7 +568,7 @@ export class EnrichissementService {
       echoueesGeorisques,
     );
 
-    // 7. OLD
+    // 8. OLD
     this.processGeoRisqueResult(
       oldResult,
       "old",
@@ -561,7 +581,7 @@ export class EnrichissementService {
       echoueesGeorisques,
     );
 
-    // 8. SIS
+    // 9. SIS
     this.processGeoRisqueResult(
       sisResult,
       "sis",
@@ -574,7 +594,7 @@ export class EnrichissementService {
       echoueesGeorisques,
     );
 
-    // 9. ICPE
+    // 10. ICPE
     this.processGeoRisqueResult(
       icpeResult,
       "icpe",
@@ -588,7 +608,7 @@ export class EnrichissementService {
     );
 
     // Calculer la fiabilité (sur 10)
-    const totalServices = 9; // Nombre total de services GeoRisques appelés
+    const totalServices = 10; // Nombre total de services GeoRisques appelés
     const servicesReussis = sourcesGeorisques.length;
     result.metadata.sourcesUtilisees = sourcesGeorisques;
     result.metadata.sourcesEchouees = echoueesGeorisques;

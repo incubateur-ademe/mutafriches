@@ -8,13 +8,14 @@ import { RisqueNaturel, SourceEnrichissement } from "@mutafriches/shared-types";
 import { EnrichissementRepository } from "../repository/enrichissement.repository";
 import { RgaService } from "./external/georisques/rga/rga.service";
 import { CatnatService } from "./external/georisques/catnat/catnat.service";
-import { TriService } from "./external/georisques/tri/tri.service";
+import { TriZonageService } from "./external/georisques/tri-zonage/tri-zonage.service";
 import { MvtService } from "./external/georisques/mvt/mvt.service";
 import { ZonageSismiqueService } from "./external/georisques/zonage-sismique/zonage-sismique.service";
 import { CavitesService } from "./external/georisques/cavites/cavites.service";
 import { OldService } from "./external/georisques/old/old.service";
 import { SisService } from "./external/georisques/sis/sis.service";
 import { IcpeService } from "./external/georisques/icpe/icpe.service";
+import { TriService } from "./external/georisques/tri/tri.service";
 
 describe("EnrichissementService", () => {
   let service: EnrichissementService;
@@ -72,6 +73,16 @@ describe("EnrichissementService", () => {
               success: false,
               error: "Non mocké",
               source: SourceEnrichissement.GEORISQUES_TRI,
+            }),
+          },
+        },
+        {
+          provide: TriZonageService,
+          useValue: {
+            getTri: vi.fn().mockResolvedValue({
+              success: false,
+              error: "Non mocké",
+              source: SourceEnrichissement.GEORISQUES_TRI_ZONAGE,
             }),
           },
         },

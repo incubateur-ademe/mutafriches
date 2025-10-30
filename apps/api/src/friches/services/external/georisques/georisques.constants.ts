@@ -14,6 +14,7 @@ export const GEORISQUES_ENDPOINTS = {
   RGA: "/rga",
   CATNAT: "/gaspar/catnat",
   TRI_ZONAGE: "/tri_zonage",
+  TRI: "/api/v1/gaspar/tri",
   MVT: "/mvt",
   ZONAGE_SISMIQUE: "/zonage_sismique",
   CAVITES: "/cavites",
@@ -54,6 +55,7 @@ export const GEORISQUES_NOMBRE_RESULTATS_RECENTS = {
 export const GEORISQUES_SOURCES = {
   RGA: "GeoRisques - Retrait-Gonflement Argiles",
   CATNAT: "GeoRisques - Catastrophes Naturelles",
+  TRI: "GeoRisques - TRI",
   TRI_ZONAGE: "GeoRisques - TRI Zonage Inondation",
   MVT: "GeoRisques - Mouvements de Terrain",
   ZONAGE_SISMIQUE: "GeoRisques - Zonage Sismique",

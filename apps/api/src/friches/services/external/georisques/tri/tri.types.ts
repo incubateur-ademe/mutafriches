@@ -1,21 +1,13 @@
 /**
- * Types spécifiques pour l'API TRI Zonage (Territoires à Risques importants d'Inondation)
+ * Types spécifiques pour l'API TRI (Territoires à Risques importants d'Inondation)
  */
 
 /**
- * Type d'inondation
+ * Risque associé à un TRI
  */
-export interface TriTypeInondation {
-  code: string;
-  libelle: string;
-}
-
-/**
- * Scénario TRI
- */
-export interface TriScenario {
-  code: string;
-  libelle: string;
+export interface TriRisque {
+  num_risque: string;
+  libelle_risque_long: string;
 }
 
 /**
@@ -23,11 +15,9 @@ export interface TriScenario {
  */
 export interface TriItem {
   code_national_tri: string;
-  identifiant_tri: string;
   libelle_tri: string;
-  cours_deau: string;
-  typeInondation: TriTypeInondation;
-  scenario: TriScenario;
+  liste_libelle_risque: TriRisque[];
+  libelle_bassin_risques: string;
   date_arrete_pcb: string;
   date_arrete_carte: string;
   date_arrete_pcb_local: string;
@@ -39,13 +29,30 @@ export interface TriItem {
 }
 
 /**
- * Réponse brute de l'API GeoRisques TRI Zonage
+ * Réponse brute de l'API GeoRisques TRI
  */
 export interface TriApiResponse {
   results: number;
+  page: number;
+  total_pages: number;
   data: TriItem[];
   response_code: number;
   message: string;
+  next: string | null;
+  previous: string | null;
+}
+
+/**
+ * TRI normalisé
+ */
+export interface TriNormalized {
+  codeNational: string;
+  libelle: string;
+  risques: string[]; // Libellés des risques
+  bassinRisques: string;
+  codeInsee: string;
+  commune: string;
+  dateArreteApprobation: string | null;
 }
 
 /**
@@ -55,22 +62,10 @@ export interface TriResultNormalized {
   exposition: boolean; // true si au moins 1 TRI
   nombreTri: number;
   tri: TriNormalized[]; // Liste des TRI
-  typesInondation: string[]; // Types d'inondation uniques
-  coursEau: string[]; // Cours d'eau concernés
+  risquesUniques: string[]; // Liste unique des risques
+  communesConcernees: string[]; // Liste des communes concernées
   source: string;
   dateRecuperation: string;
-}
-
-/**
- * TRI normalisé
- */
-export interface TriNormalized {
-  codeNational: string;
-  identifiant: string;
-  libelle: string;
-  coursEau: string;
-  typeInondation: string;
-  scenario: string;
 }
 
 /**
@@ -79,4 +74,5 @@ export interface TriNormalized {
 export interface TriSearchParams {
   latitude: number;
   longitude: number;
+  rayon?: number; // Rayon en mètres (max 10000, défaut 1000)
 }

@@ -3,12 +3,12 @@ import { HttpService } from "@nestjs/axios";
 import { firstValueFrom } from "rxjs";
 import { ApiResponse } from "../../shared/api-response.types";
 import {
-  TriApiResponse,
-  TriResultNormalized,
-  TriSearchParams,
-  TriNormalized,
-  TriItem,
-} from "./tri.types";
+  TriZonageApiResponse,
+  TriZonageResultNormalized,
+  TriZonageSearchParams,
+  TriZonageNormalized,
+  TriZonageItem,
+} from "./tri-zonage.types";
 import {
   GEORISQUES_API_BASE_URL,
   GEORISQUES_ENDPOINTS,
@@ -17,8 +17,8 @@ import {
 } from "../georisques.constants";
 
 @Injectable()
-export class TriService {
-  private readonly logger = new Logger(TriService.name);
+export class TriZonageService {
+  private readonly logger = new Logger(TriZonageService.name);
   private readonly baseUrl: string;
 
   constructor(private readonly httpService: HttpService) {
@@ -28,22 +28,18 @@ export class TriService {
   /**
    * Récupère les TRI (Territoires à Risques importants d'Inondation) pour une localisation
    */
-  async getTri(params: TriSearchParams): Promise<ApiResponse<TriResultNormalized>> {
+  async getTri(params: TriZonageSearchParams): Promise<ApiResponse<TriZonageResultNormalized>> {
     const startTime = Date.now();
 
     try {
-      const url = `${this.baseUrl}${GEORISQUES_ENDPOINTS.TRI}`;
+      const url = `${this.baseUrl}${GEORISQUES_ENDPOINTS.TRI_ZONAGE}`;
       const latlon = `${params.longitude},${params.latitude}`;
-      const rayon = params.rayon || 1000; // Rayon par défaut de 1000m
 
-      this.logger.debug(`Appel API TRI: ${url}?latlon=${latlon}&rayon=${rayon}`);
+      this.logger.debug(`Appel API TRI Zonage: ${url}?latlon=${latlon}`);
 
       const response = await firstValueFrom(
-        this.httpService.get<TriApiResponse>(url, {
-          params: {
-            latlon,
-            rayon,
-          },
+        this.httpService.get<TriZonageApiResponse>(url, {
+          params: { latlon },
           timeout: GEORISQUES_TIMEOUT_MS,
         }),
       );
@@ -53,23 +49,23 @@ export class TriService {
       // Gérer les réponses vides (pas de TRI)
       if (!data || !data.data || data.data.length === 0) {
         this.logger.log(
-          `Aucun TRI pour lat=${params.latitude.toFixed(5)}, lon=${params.longitude.toFixed(5)}, rayon=${rayon}m`,
+          `Aucun TRI pour lat=${params.latitude.toFixed(5)}, lon=${params.longitude.toFixed(5)}`,
         );
 
-        const normalized: TriResultNormalized = {
+        const normalized: TriZonageResultNormalized = {
           exposition: false,
           nombreTri: 0,
           tri: [],
-          risquesUniques: [],
-          communesConcernees: [],
-          source: GEORISQUES_SOURCES.TRI,
+          typesInondation: [],
+          coursEau: [],
+          source: GEORISQUES_SOURCES.TRI_ZONAGE,
           dateRecuperation: new Date().toISOString(),
         };
 
         return {
           success: true,
           data: normalized,
-          source: GEORISQUES_SOURCES.TRI,
+          source: GEORISQUES_SOURCES.TRI_ZONAGE,
           responseTimeMs: Date.now() - startTime,
         };
       }
@@ -81,13 +77,13 @@ export class TriService {
 
       this.logger.log(
         `TRI: lat=${params.latitude.toFixed(5)}, lon=${params.longitude.toFixed(5)} → ` +
-          `${normalized.nombreTri} TRI, risques: ${normalized.risquesUniques.slice(0, 3).join(", ")}${normalized.risquesUniques.length > 3 ? "..." : ""}`,
+          `${normalized.nombreTri} TRI, types: ${normalized.typesInondation.join(", ")}`,
       );
 
       return {
         success: true,
         data: normalized,
-        source: GEORISQUES_SOURCES.TRI,
+        source: GEORISQUES_SOURCES.TRI_ZONAGE,
         responseTimeMs,
       };
     } catch (error) {
@@ -102,7 +98,7 @@ export class TriService {
       return {
         success: false,
         error: errorMessage,
-        source: GEORISQUES_SOURCES.TRI,
+        source: GEORISQUES_SOURCES.TRI_ZONAGE,
         responseTimeMs,
       };
     }
@@ -111,31 +107,27 @@ export class TriService {
   /**
    * Normalise les données brutes de l'API TRI
    */
-  private normalizeTriData(data: TriApiResponse): TriResultNormalized {
+  private normalizeTriData(data: TriZonageApiResponse): TriZonageResultNormalized {
     const items = data.data || [];
 
     // Normaliser chaque TRI
     const triNormalises = items.map((item) => this.normalizeTri(item));
 
-    // Extraire les risques uniques
-    const risquesUniques = [
-      ...new Set(
-        items.flatMap((item) =>
-          (item.liste_libelle_risque || []).map((r) => r.libelle_risque_long),
-        ),
-      ),
+    // Extraire les types d'inondation uniques
+    const typesInondation = [
+      ...new Set(items.map((item) => item.typeInondation?.libelle || "Inconnu")),
     ];
 
-    // Extraire les communes concernées
-    const communesConcernees = [...new Set(items.map((item) => item.libelle_commune))];
+    // Extraire les cours d'eau uniques
+    const coursEau = [...new Set(items.map((item) => item.cours_deau).filter((c) => c))];
 
     return {
       exposition: items.length > 0,
       nombreTri: items.length,
       tri: triNormalises,
-      risquesUniques,
-      communesConcernees,
-      source: GEORISQUES_SOURCES.TRI,
+      typesInondation,
+      coursEau,
+      source: GEORISQUES_SOURCES.TRI_ZONAGE,
       dateRecuperation: new Date().toISOString(),
     };
   }
@@ -143,15 +135,14 @@ export class TriService {
   /**
    * Normalise un TRI individuel
    */
-  private normalizeTri(item: TriItem): TriNormalized {
+  private normalizeTri(item: TriZonageItem): TriZonageNormalized {
     return {
       codeNational: item.code_national_tri,
+      identifiant: item.identifiant_tri,
       libelle: item.libelle_tri,
-      risques: (item.liste_libelle_risque || []).map((r) => r.libelle_risque_long),
-      bassinRisques: item.libelle_bassin_risques || "Non renseigné",
-      codeInsee: item.code_insee,
-      commune: item.libelle_commune,
-      dateArreteApprobation: item.date_arrete_approbation || null,
+      coursEau: item.cours_deau || "Non renseigné",
+      typeInondation: item.typeInondation?.libelle || "Inconnu",
+      scenario: item.scenario?.libelle || "Non renseigné",
     };
   }
 }
