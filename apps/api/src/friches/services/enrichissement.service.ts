@@ -27,6 +27,8 @@ import { IcpeService } from "./external/georisques/icpe/icpe.service";
 import { CavitesResultNormalized } from "./external/georisques/cavites/cavites.types";
 import { TriService } from "./external/georisques/tri/tri.service";
 import { AziService } from "./external/georisques/azi/azi.service";
+import { PapiService } from "./external/georisques/papi/papi.service";
+import { PprService } from "./external/georisques/ppr/ppr.service";
 
 const PROMISE_FULFILLED = "fulfilled" as const;
 
@@ -49,6 +51,8 @@ export class EnrichissementService {
     private readonly sisService: SisService,
     private readonly icpeService: IcpeService,
     private readonly aziService: AziService,
+    private readonly papiService: PapiService,
+    private readonly pprService: PprService,
 
     private readonly enrichissementRepository: EnrichissementRepository,
   ) {}
@@ -406,6 +410,8 @@ export class EnrichissementService {
         SourceEnrichissement.GEORISQUES_SIS,
         SourceEnrichissement.GEORISQUES_ICPE,
         SourceEnrichissement.GEORISQUES_AZI,
+        SourceEnrichissement.GEORISQUES_PAPI,
+        SourceEnrichissement.GEORISQUES_PPR,
       );
       return undefined;
     }
@@ -433,6 +439,8 @@ export class EnrichissementService {
       sisResult,
       icpeResult,
       aziResult,
+      papiResult,
+      pprResult,
     ] = await Promise.allSettled([
       this.rgaService.getRga({
         latitude: coordonnees.latitude,
@@ -483,6 +491,16 @@ export class EnrichissementService {
         latitude: coordonnees.latitude,
         longitude: coordonnees.longitude,
         rayon: GEORISQUES_RAYONS_DEFAUT.AZI,
+      }),
+      this.papiService.getPapi({
+        latitude: coordonnees.latitude,
+        longitude: coordonnees.longitude,
+        rayon: GEORISQUES_RAYONS_DEFAUT.PAPI,
+      }),
+      this.pprService.getPpr({
+        latitude: coordonnees.latitude,
+        longitude: coordonnees.longitude,
+        rayon: GEORISQUES_RAYONS_DEFAUT.PPR,
       }),
     ]);
 
@@ -630,8 +648,34 @@ export class EnrichissementService {
       echoueesGeorisques,
     );
 
+    // 12. PAPI
+    this.processGeoRisqueResult(
+      papiResult,
+      "papi",
+      "PAPI",
+      SourceEnrichissement.GEORISQUES_PAPI,
+      result,
+      sources,
+      echouees,
+      sourcesGeorisques,
+      echoueesGeorisques,
+    );
+
+    // 13. PPR
+    this.processGeoRisqueResult(
+      pprResult,
+      "ppr",
+      "PPR",
+      SourceEnrichissement.GEORISQUES_PPR,
+      result,
+      sources,
+      echouees,
+      sourcesGeorisques,
+      echoueesGeorisques,
+    );
+
     // Calculer la fiabilité (sur 10)
-    const totalServices = 11; // Nombre total de services GeoRisques appelés
+    const totalServices = 13; // Nombre total de services GeoRisques appelés
     const servicesReussis = sourcesGeorisques.length;
     result.metadata.sourcesUtilisees = sourcesGeorisques;
     result.metadata.sourcesEchouees = echoueesGeorisques;

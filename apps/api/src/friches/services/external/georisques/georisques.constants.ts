@@ -22,6 +22,8 @@ export const GEORISQUES_ENDPOINTS = {
   SIS: "/ssp/conclusions_sis",
   ICPE: "/installations_classees",
   AZI: "/gaspar/azi",
+  PAPI: "/gaspar/papi",
+  PPR: "/ppr",
 } as const;
 
 /**
@@ -37,7 +39,9 @@ export const GEORISQUES_RAYONS_DEFAUT = {
   OLD: 0, // OLD ne nécessite pas de rayon (recherche par point)
   SIS: 1000, // 1 km pour SIS (max 10000m autorisé par l'API)
   ICPE: 1000, // 1 km pour ICPE (max 10000m autorisé par l'API)
-  AZI: 1000, // 1 km pour AZI
+  AZI: 1000, // 1 km pour AZI (max 10000m autorisé par l'API)
+  PAPI: 1000, // 1 km pour PAPI (max 10000m autorisé par l'API)
+  PPR: 1000, // 1 km pour PPR (max 10000m autorisé par l'API)
 } as const;
 
 /**
@@ -66,6 +70,8 @@ export const GEORISQUES_SOURCES = {
   OLD: "GeoRisques - Obligations Légales Débroussaillement",
   SIS: "GeoRisques - Secteurs d'Information sur les Sols",
   ICPE: "GeoRisques - Installations Classées",
+  PAPI: "GeoRisques - PAPI",
+  PPR: "GeoRisques - PPR",
 } as const;
 
 /**

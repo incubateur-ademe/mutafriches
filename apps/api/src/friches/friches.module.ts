@@ -20,6 +20,8 @@ import { SisService } from "./services/external/georisques/sis/sis.service";
 import { IcpeService } from "./services/external/georisques/icpe/icpe.service";
 import { TriService } from "./services/external/georisques/tri/tri.service";
 import { AziService } from "./services/external/georisques/azi/azi.service";
+import { PapiService } from "./services/external/georisques/papi/papi.service";
+import { PprService } from "./services/external/georisques/ppr/ppr.service";
 
 @Module({
   imports: [HttpModule],
@@ -48,6 +50,8 @@ import { AziService } from "./services/external/georisques/azi/azi.service";
     SisService,
     IcpeService,
     AziService,
+    PapiService,
+    PprService,
   ],
   exports: [OrchestrateurService],
 })

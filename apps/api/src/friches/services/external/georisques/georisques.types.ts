@@ -8,6 +8,8 @@ import { CavitesResultNormalized } from "./cavites/cavites.types";
 import { IcpeResultNormalized } from "./icpe/icpe.types";
 import { MvtResultNormalized } from "./mvt/mvt.types";
 import { OldResultNormalized } from "./old/old.types";
+import { PapiResultNormalized } from "./papi/papi.types";
+import { PprResultNormalized } from "./ppr/ppr.types";
 import { RgaResultNormalized } from "./rga/rga.types";
 import { SisResultNormalized } from "./sis/sis.types";
 import { TriZonageResultNormalized } from "./tri-zonage/tri-zonage.types";
@@ -59,6 +61,8 @@ export interface GeoRisquesResult {
   old?: OldResultNormalized;
   sis?: SisResultNormalized;
   icpe?: IcpeResultNormalized;
+  papi?: PapiResultNormalized;
+  ppr?: PprResultNormalized;
 
   metadata: {
     sourcesUtilisees: string[];
