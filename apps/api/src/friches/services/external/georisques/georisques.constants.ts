@@ -14,7 +14,7 @@ export const GEORISQUES_ENDPOINTS = {
   RGA: "/rga",
   CATNAT: "/gaspar/catnat",
   TRI_ZONAGE: "/tri_zonage",
-  TRI: "/api/v1/gaspar/tri",
+  TRI: "/gaspar/tri",
   MVT: "/mvt",
   ZONAGE_SISMIQUE: "/zonage_sismique",
   CAVITES: "/cavites",
