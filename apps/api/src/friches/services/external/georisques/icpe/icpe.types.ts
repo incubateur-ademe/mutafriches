@@ -129,10 +129,11 @@ export interface IcpeResultNormalized {
   presenceSeveso: boolean;
   nombreSeveso: number;
   presencePrioriteNationale: boolean;
+  plusProche?: IcpeSummary; // ICPE la plus proche
+  distancePlusProche?: number; // Distance en mètres
   source: string;
   dateRecuperation: string;
 }
-
 /**
  * Paramètres de recherche ICPE par code INSEE
  */
