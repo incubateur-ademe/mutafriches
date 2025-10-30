@@ -23,6 +23,8 @@ describe("EnrichissementService", () => {
   let enedisService: EnedisService;
   let rgaService: RgaService;
   let cavitesService: CavitesService;
+  let sisService: SisService;
+  let icpeService: IcpeService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -112,21 +114,13 @@ describe("EnrichissementService", () => {
         {
           provide: SisService,
           useValue: {
-            getSisByLatLon: vi.fn().mockResolvedValue({
-              success: false,
-              error: "Non mocké",
-              source: SourceEnrichissement.GEORISQUES_SIS,
-            }),
+            getSisByLatLon: vi.fn(),
           },
         },
         {
           provide: IcpeService,
           useValue: {
-            getIcpeByLatLon: vi.fn().mockResolvedValue({
-              success: false,
-              error: "Non mocké",
-              source: SourceEnrichissement.GEORISQUES_ICPE,
-            }),
+            getIcpeByLatLon: vi.fn(),
           },
         },
         {
@@ -144,6 +138,8 @@ describe("EnrichissementService", () => {
     enedisService = module.get<EnedisService>(EnedisService);
     rgaService = module.get<RgaService>(RgaService);
     cavitesService = module.get<CavitesService>(CavitesService);
+    sisService = module.get<SisService>(SisService);
+    icpeService = module.get<IcpeService>(IcpeService);
   });
 
   describe("enrichir", () => {
@@ -193,6 +189,29 @@ describe("EnrichissementService", () => {
         source: SourceEnrichissement.GEORISQUES_CAVITES,
       });
 
+      vi.mocked(sisService.getSisByLatLon).mockResolvedValue({
+        success: true,
+        data: {
+          presenceSis: false,
+        } as any,
+        source: SourceEnrichissement.GEORISQUES_SIS,
+      });
+
+      vi.mocked(icpeService.getIcpeByLatLon).mockResolvedValue({
+        success: true,
+        data: {
+          presenceIcpe: false,
+          nombreIcpe: 0,
+          icpeProches: [],
+          presenceSeveso: false,
+          nombreSeveso: 0,
+          presencePrioriteNationale: false,
+          source: SourceEnrichissement.GEORISQUES_ICPE,
+          dateRecuperation: new Date().toISOString(),
+        } as any,
+        source: SourceEnrichissement.GEORISQUES_ICPE,
+      });
+
       vi.mocked(enedisService.getDistanceRaccordement).mockResolvedValue({
         success: true,
         data: {
@@ -211,11 +230,14 @@ describe("EnrichissementService", () => {
       expect(result.surfaceBati).toBe(6600);
       expect(result.distanceRaccordementElectrique).toBe(150);
       expect(result.presenceRisquesNaturels).toBe(RisqueNaturel.FAIBLE);
+      expect(result.presenceRisquesTechnologiques).toBe(false);
       expect(result.sourcesUtilisees).toContain(SourceEnrichissement.CADASTRE);
       expect(result.sourcesUtilisees).toContain(SourceEnrichissement.BDNB);
       expect(result.sourcesUtilisees).toContain(SourceEnrichissement.ENEDIS_RACCORDEMENT);
       expect(result.sourcesUtilisees).toContain(SourceEnrichissement.GEORISQUES_RGA);
       expect(result.sourcesUtilisees).toContain(SourceEnrichissement.GEORISQUES_CAVITES);
+      expect(result.sourcesUtilisees).toContain(SourceEnrichissement.GEORISQUES_SIS);
+      expect(result.sourcesUtilisees).toContain(SourceEnrichissement.GEORISQUES_ICPE);
       expect(result.fiabilite).toBeGreaterThan(5);
       expect(result.fiabilite).toBeLessThanOrEqual(10);
     });
@@ -271,6 +293,18 @@ describe("EnrichissementService", () => {
         source: SourceEnrichissement.GEORISQUES_CAVITES,
       });
 
+      vi.mocked(sisService.getSisByLatLon).mockResolvedValue({
+        success: false,
+        error: "Service indisponible",
+        source: SourceEnrichissement.GEORISQUES_SIS,
+      });
+
+      vi.mocked(icpeService.getIcpeByLatLon).mockResolvedValue({
+        success: false,
+        error: "Service indisponible",
+        source: SourceEnrichissement.GEORISQUES_ICPE,
+      });
+
       vi.mocked(enedisService.getDistanceRaccordement).mockResolvedValue({
         success: false,
         error: "Données non disponibles",
@@ -317,6 +351,16 @@ describe("EnrichissementService", () => {
       vi.mocked(enedisService.getDistanceRaccordement).mockResolvedValue({
         success: false,
         source: "Enedis-Raccordement",
+      });
+
+      vi.mocked(sisService.getSisByLatLon).mockResolvedValue({
+        success: false,
+        source: SourceEnrichissement.GEORISQUES_SIS,
+      });
+
+      vi.mocked(icpeService.getIcpeByLatLon).mockResolvedValue({
+        success: false,
+        source: SourceEnrichissement.GEORISQUES_ICPE,
       });
 
       // Cavités toujours aucune pour ce test (on teste uniquement RGA)
@@ -383,6 +427,16 @@ describe("EnrichissementService", () => {
         source: "Enedis-Raccordement",
       });
 
+      vi.mocked(sisService.getSisByLatLon).mockResolvedValue({
+        success: false,
+        source: SourceEnrichissement.GEORISQUES_SIS,
+      });
+
+      vi.mocked(icpeService.getIcpeByLatLon).mockResolvedValue({
+        success: false,
+        source: SourceEnrichissement.GEORISQUES_ICPE,
+      });
+
       // RGA toujours faible pour ce test (on teste uniquement Cavités)
       vi.mocked(rgaService.getRga).mockResolvedValue({
         success: true,
@@ -447,39 +501,28 @@ describe("EnrichissementService", () => {
         source: "Enedis-Raccordement",
       });
 
+      vi.mocked(sisService.getSisByLatLon).mockResolvedValue({
+        success: false,
+        source: SourceEnrichissement.GEORISQUES_SIS,
+      });
+
+      vi.mocked(icpeService.getIcpeByLatLon).mockResolvedValue({
+        success: false,
+        source: SourceEnrichissement.GEORISQUES_ICPE,
+      });
+
       // Test de combinaisons RGA + Cavités
-      // Règles:
-      // - Fort + Fort = Fort
-      // - Fort + Moyen = Fort
-      // - Fort + Faible/Aucun = Moyen
-      // - Moyen + Fort = Fort
-      // - Moyen + Moyen = Moyen
-      // - Moyen + Faible/Aucun = Moyen
-      // - Faible + Fort = Moyen
-      // - Faible + Moyen = Moyen
-      // - Faible + Faible = Faible
       const testCases = [
-        // Fort + Fort = Fort
         { rga: "Fort", caviteDistance: 300, expected: RisqueNaturel.FORT },
-        // Fort + Moyen = Fort
         { rga: "Fort", caviteDistance: 700, expected: RisqueNaturel.FORT },
-        // Fort + Faible = Moyen
         { rga: "Fort", caviteDistance: 1500, expected: RisqueNaturel.MOYEN },
-        // Moyen + Fort = Fort
         { rga: "Moyen", caviteDistance: 300, expected: RisqueNaturel.FORT },
-        // Moyen + Moyen = Moyen
         { rga: "Moyen", caviteDistance: 700, expected: RisqueNaturel.MOYEN },
-        // Moyen + Faible = Moyen
         { rga: "Moyen", caviteDistance: 1500, expected: RisqueNaturel.MOYEN },
-        // Faible + Fort = Moyen
         { rga: "Faible", caviteDistance: 300, expected: RisqueNaturel.MOYEN },
-        // Faible + Moyen = Moyen
         { rga: "Faible", caviteDistance: 700, expected: RisqueNaturel.MOYEN },
-        // Faible + Faible = Faible
         { rga: "Faible", caviteDistance: 1500, expected: RisqueNaturel.FAIBLE },
-        // Fort + Aucun (pas de cavité) = Moyen
         { rga: "Fort", caviteDistance: undefined, expected: RisqueNaturel.MOYEN },
-        // Faible + Aucun = Faible
         { rga: "Faible", caviteDistance: undefined, expected: RisqueNaturel.FAIBLE },
       ];
 
@@ -491,7 +534,6 @@ describe("EnrichissementService", () => {
         });
 
         if (testCase.caviteDistance === undefined) {
-          // Aucune cavité
           vi.mocked(cavitesService.getCavites).mockResolvedValue({
             success: true,
             data: {
@@ -505,7 +547,6 @@ describe("EnrichissementService", () => {
             source: SourceEnrichissement.GEORISQUES_CAVITES,
           });
         } else {
-          // Cavité avec distance
           vi.mocked(cavitesService.getCavites).mockResolvedValue({
             success: true,
             data: {
@@ -523,6 +564,150 @@ describe("EnrichissementService", () => {
 
         const result = await service.enrichir(identifiantParcelle);
         expect(result.presenceRisquesNaturels).toBe(testCase.expected);
+      }
+    });
+
+    it("devrait détecter les risques technologiques avec présence SIS", async () => {
+      const identifiantParcelle = "490055000AI0001";
+
+      vi.mocked(cadastreService.getParcelleInfo).mockResolvedValue({
+        success: true,
+        data: {
+          identifiant: identifiantParcelle,
+          codeInsee: "49005",
+          commune: "Angers",
+          surface: 10000,
+          coordonnees: {
+            latitude: 47.4784,
+            longitude: -0.5607,
+          },
+          geometrie: {} as any,
+        } as any,
+        source: "Cadastre",
+      });
+
+      vi.mocked(bdnbService.getSurfaceBatie).mockResolvedValue({
+        success: false,
+        source: "BDNB",
+      });
+
+      vi.mocked(enedisService.getDistanceRaccordement).mockResolvedValue({
+        success: false,
+        source: "Enedis-Raccordement",
+      });
+
+      vi.mocked(rgaService.getRga).mockResolvedValue({
+        success: false,
+        source: SourceEnrichissement.GEORISQUES_RGA,
+      });
+
+      vi.mocked(cavitesService.getCavites).mockResolvedValue({
+        success: false,
+        source: SourceEnrichissement.GEORISQUES_CAVITES,
+      });
+
+      // Présence SIS = risque technologique OUI
+      vi.mocked(sisService.getSisByLatLon).mockResolvedValue({
+        success: true,
+        data: {
+          presenceSis: true,
+        } as any,
+        source: SourceEnrichissement.GEORISQUES_SIS,
+      });
+
+      vi.mocked(icpeService.getIcpeByLatLon).mockResolvedValue({
+        success: true,
+        data: {
+          presenceIcpe: false,
+          nombreIcpe: 0,
+          icpeProches: [],
+          presenceSeveso: false,
+          nombreSeveso: 0,
+          presencePrioriteNationale: false,
+          source: SourceEnrichissement.GEORISQUES_ICPE,
+          dateRecuperation: new Date().toISOString(),
+        } as any,
+        source: SourceEnrichissement.GEORISQUES_ICPE,
+      });
+
+      const result = await service.enrichir(identifiantParcelle);
+
+      expect(result.presenceRisquesTechnologiques).toBe(true);
+    });
+
+    it("devrait détecter les risques technologiques avec ICPE proche", async () => {
+      const identifiantParcelle = "490055000AI0001";
+
+      vi.mocked(cadastreService.getParcelleInfo).mockResolvedValue({
+        success: true,
+        data: {
+          identifiant: identifiantParcelle,
+          codeInsee: "49005",
+          commune: "Angers",
+          surface: 10000,
+          coordonnees: {
+            latitude: 47.4784,
+            longitude: -0.5607,
+          },
+          geometrie: {} as any,
+        } as any,
+        source: "Cadastre",
+      });
+
+      vi.mocked(bdnbService.getSurfaceBatie).mockResolvedValue({
+        success: false,
+        source: "BDNB",
+      });
+
+      vi.mocked(enedisService.getDistanceRaccordement).mockResolvedValue({
+        success: false,
+        source: "Enedis-Raccordement",
+      });
+
+      vi.mocked(rgaService.getRga).mockResolvedValue({
+        success: false,
+        source: SourceEnrichissement.GEORISQUES_RGA,
+      });
+
+      vi.mocked(cavitesService.getCavites).mockResolvedValue({
+        success: false,
+        source: SourceEnrichissement.GEORISQUES_CAVITES,
+      });
+
+      vi.mocked(sisService.getSisByLatLon).mockResolvedValue({
+        success: true,
+        data: {
+          presenceSis: false,
+        } as any,
+        source: SourceEnrichissement.GEORISQUES_SIS,
+      });
+
+      const testCases = [
+        { distance: 300, expected: true }, // ICPE <= 500m = risque OUI
+        { distance: 500, expected: true }, // ICPE = 500m = risque OUI
+        { distance: 700, expected: false }, // ICPE > 500m = risque NON
+        { distance: undefined, expected: false }, // Pas d'ICPE = risque NON
+      ];
+
+      for (const testCase of testCases) {
+        vi.mocked(icpeService.getIcpeByLatLon).mockResolvedValue({
+          success: true,
+          data: {
+            presenceIcpe: testCase.distance !== undefined,
+            nombreIcpe: testCase.distance !== undefined ? 1 : 0,
+            icpeProches: [],
+            presenceSeveso: false,
+            nombreSeveso: 0,
+            presencePrioriteNationale: false,
+            distancePlusProche: testCase.distance,
+            source: SourceEnrichissement.GEORISQUES_ICPE,
+            dateRecuperation: new Date().toISOString(),
+          } as any,
+          source: SourceEnrichissement.GEORISQUES_ICPE,
+        });
+
+        const result = await service.enrichir(identifiantParcelle);
+        expect(result.presenceRisquesTechnologiques).toBe(testCase.expected);
       }
     });
 
@@ -568,6 +753,29 @@ describe("EnrichissementService", () => {
           dateRecuperation: new Date().toISOString(),
         } as any,
         source: SourceEnrichissement.GEORISQUES_CAVITES,
+      });
+
+      vi.mocked(sisService.getSisByLatLon).mockResolvedValue({
+        success: true,
+        data: {
+          presenceSis: false,
+        } as any,
+        source: SourceEnrichissement.GEORISQUES_SIS,
+      });
+
+      vi.mocked(icpeService.getIcpeByLatLon).mockResolvedValue({
+        success: true,
+        data: {
+          presenceIcpe: false,
+          nombreIcpe: 0,
+          icpeProches: [],
+          presenceSeveso: false,
+          nombreSeveso: 0,
+          presencePrioriteNationale: false,
+          source: SourceEnrichissement.GEORISQUES_ICPE,
+          dateRecuperation: new Date().toISOString(),
+        } as any,
+        source: SourceEnrichissement.GEORISQUES_ICPE,
       });
 
       vi.mocked(enedisService.getDistanceRaccordement).mockResolvedValue({

@@ -142,14 +142,22 @@ export class EnrichissementService {
         sourcesEchouees,
       );
 
-      // 8. Risques GeoRisques Bruts
+      // 8 Risques technologiques (GeoRisques SIS + ICPE)
+      await this.enrichRisquesTechnologiques(
+        parcelle,
+        parcelle.coordonnees,
+        sourcesUtilisees,
+        sourcesEchouees,
+      );
+
+      // 9. Risques GeoRisques Bruts
       const risquesGeorisques = await this.enrichWithRawGeoRisques(
         parcelle.coordonnees,
         sourcesUtilisees,
         sourcesEchouees,
       );
 
-      // 9. Données complémentaires temporaires
+      // 10. Données complémentaires temporaires
       await this.enrichWithTemporaryMockData(
         parcelle,
         identifiantParcelle,
@@ -595,6 +603,41 @@ export class EnrichissementService {
   }
 
   /**
+   * Traite le résultat d'un service GeoRisques de manière générique
+   */
+  private processGeoRisqueResult(
+    promiseResult: PromiseSettledResult<any>,
+    resultKey: keyof Omit<GeoRisquesResult, "metadata">,
+    serviceName: string,
+    sourceEnrichissement: SourceEnrichissement,
+    result: GeoRisquesResult,
+    sources: string[],
+    echouees: string[],
+    sourcesGeorisques: string[],
+    echoueesGeorisques: string[],
+  ): void {
+    if (promiseResult.status === PROMISE_FULFILLED) {
+      const data = promiseResult.value;
+      if (data.success && data.data) {
+        result[resultKey] = data.data;
+        sourcesGeorisques.push(sourceEnrichissement);
+        sources.push(sourceEnrichissement);
+      } else {
+        this.logger.warn(`Échec récupération ${serviceName}: ${data.error}`);
+        echoueesGeorisques.push(sourceEnrichissement);
+        echouees.push(sourceEnrichissement);
+      }
+    } else {
+      this.logger.error(
+        `Erreur GeoRisques ${serviceName}: ${promiseResult.reason}`,
+        promiseResult.reason?.stack,
+      );
+      echoueesGeorisques.push(sourceEnrichissement);
+      echouees.push(sourceEnrichissement);
+    }
+  }
+
+  /**
    * Enrichit les risques naturels depuis l'API Géorisques
    * Calcule le niveau de risque en fonction du RGA
    * et de la présence de cavités souterraines
@@ -777,38 +820,94 @@ export class EnrichissementService {
   }
 
   /**
-   * Traite le résultat d'un service GeoRisques de manière générique
+   * Enrichit les risques technologiques depuis l'API Géorisques
+   * Calcule le niveau de risque en fonction de la présence SIS et ICPE
    */
-  private processGeoRisqueResult(
-    promiseResult: PromiseSettledResult<any>,
-    resultKey: keyof Omit<GeoRisquesResult, "metadata">,
-    serviceName: string,
-    sourceEnrichissement: SourceEnrichissement,
-    result: GeoRisquesResult,
+  private async enrichRisquesTechnologiques(
+    parcelle: Parcelle,
+    coordonnees: { latitude: number; longitude: number } | undefined,
     sources: string[],
     echouees: string[],
-    sourcesGeorisques: string[],
-    echoueesGeorisques: string[],
-  ): void {
-    if (promiseResult.status === PROMISE_FULFILLED) {
-      const data = promiseResult.value;
-      if (data.success && data.data) {
-        result[resultKey] = data.data;
-        sourcesGeorisques.push(sourceEnrichissement);
-        sources.push(sourceEnrichissement);
-      } else {
-        this.logger.warn(`Échec récupération ${serviceName}: ${data.error}`);
-        echoueesGeorisques.push(sourceEnrichissement);
-        echouees.push(sourceEnrichissement);
-      }
-    } else {
-      this.logger.error(
-        `Erreur GeoRisques ${serviceName}: ${promiseResult.reason}`,
-        promiseResult.reason?.stack,
-      );
-      echoueesGeorisques.push(sourceEnrichissement);
-      echouees.push(sourceEnrichissement);
+  ): Promise<void> {
+    if (!coordonnees) {
+      this.logger.warn("Pas de coordonnées disponibles pour les risques technologiques");
+      echouees.push(SourceEnrichissement.GEORISQUES_ICPE, SourceEnrichissement.GEORISQUES_SIS);
+      return;
     }
+
+    let presenceSis = false;
+    let distanceIcpePlusProche: number | undefined;
+
+    let sisSuccess = false;
+    let icpeSuccess = false;
+
+    // 1. Récupérer la présence SIS
+    try {
+      const sisResult = await this.sisService.getSisByLatLon({
+        latitude: coordonnees.latitude,
+        longitude: coordonnees.longitude,
+        rayon: GEORISQUES_RAYONS_DEFAUT.SIS,
+      });
+
+      if (sisResult.success && sisResult.data) {
+        presenceSis = sisResult.data.presenceSis;
+        sisSuccess = true;
+        this.logger.debug(`SIS récupéré: présence=${presenceSis}`);
+      } else {
+        this.logger.warn(`Échec récupération SIS: ${sisResult.error}`);
+        echouees.push(SourceEnrichissement.GEORISQUES_SIS);
+      }
+    } catch (error) {
+      this.logger.error("Erreur SIS:", error);
+      echouees.push(SourceEnrichissement.GEORISQUES_SIS);
+    }
+
+    // 2. Récupérer l'ICPE la plus proche
+    try {
+      const icpeResult = await this.icpeService.getIcpeByLatLon({
+        latitude: coordonnees.latitude,
+        longitude: coordonnees.longitude,
+        rayon: GEORISQUES_RAYONS_DEFAUT.ICPE,
+      });
+
+      if (icpeResult.success && icpeResult.data) {
+        distanceIcpePlusProche = icpeResult.data.distancePlusProche;
+        icpeSuccess = true;
+        this.logger.debug(
+          `ICPE récupérées: ${icpeResult.data.nombreIcpe} installations, ` +
+            `plus proche: ${distanceIcpePlusProche !== undefined ? `${Math.round(distanceIcpePlusProche)}m` : "N/A"}`,
+        );
+      } else {
+        this.logger.warn(`Échec récupération ICPE: ${icpeResult.error}`);
+        echouees.push(SourceEnrichissement.GEORISQUES_ICPE);
+      }
+    } catch (error) {
+      this.logger.error("Erreur ICPE:", error);
+      echouees.push(SourceEnrichissement.GEORISQUES_ICPE);
+    }
+
+    // 3. Calculer le risque technologique final selon les règles de combinaison
+    // Règles:
+    // - Si présence SIS → OUI
+    // - Si ICPE plus proche <= 500m → OUI
+    // - Sinon → NON
+    const risqueIcpe = distanceIcpePlusProche !== undefined && distanceIcpePlusProche <= 500;
+    const risqueFinal = presenceSis || risqueIcpe;
+
+    parcelle.presenceRisquesTechnologiques = risqueFinal;
+
+    // 4. Ajout des sources réussies
+    if (sisSuccess) {
+      sources.push(SourceEnrichissement.GEORISQUES_SIS);
+    }
+
+    if (icpeSuccess) {
+      sources.push(SourceEnrichissement.GEORISQUES_ICPE);
+    }
+
+    this.logger.log(
+      `Risques technologiques calculés: SIS=${presenceSis}, ICPE=${distanceIcpePlusProche !== undefined ? `${Math.round(distanceIcpePlusProche)}m` : "N/A"} → Final=${risqueFinal}`,
+    );
   }
 
   /**
@@ -866,26 +965,6 @@ export class EnrichissementService {
   }
 
   /**
-   * Transforme l'aléa argiles BDNB en risque naturel pour Mutafriches
-   */
-  private transformAleaArgilesToRisque(aleaArgiles: string): RisqueNaturel {
-    const aleaNormalise = aleaArgiles.toLowerCase();
-
-    if (aleaNormalise.includes("fort") || aleaNormalise.includes("élevé")) {
-      return RisqueNaturel.FORT;
-    } else if (aleaNormalise.includes("moyen") || aleaNormalise.includes("modéré")) {
-      return RisqueNaturel.MOYEN;
-    } else if (aleaNormalise.includes("faible") || aleaNormalise.includes("bas")) {
-      return RisqueNaturel.FAIBLE;
-    } else if (aleaNormalise.includes("nul") || aleaNormalise.includes("inexistant")) {
-      return RisqueNaturel.AUCUN;
-    }
-
-    // Valeur par défaut si format non reconnu
-    return RisqueNaturel.AUCUN;
-  }
-
-  /**
    * Enrichit avec les données temporaires restantes
    * TODO: Remplacer par de vrais services quand disponibles
    */
@@ -907,10 +986,6 @@ export class EnrichissementService {
 
       if (!parcelle.distanceAutoroute) {
         parcelle.distanceAutoroute = Math.floor(Math.random() * 20) + 1; // Entre 1 et 20 km
-      }
-
-      if (!parcelle.presenceRisquesTechnologiques) {
-        parcelle.presenceRisquesTechnologiques = Math.random() > 0.8; // 20% de chance de risques technologiques
       }
 
       sources.push(SourceEnrichissement.DONNEES_TEMPORAIRES);
