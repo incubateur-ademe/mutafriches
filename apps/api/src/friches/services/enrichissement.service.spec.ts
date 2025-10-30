@@ -21,6 +21,8 @@ describe("EnrichissementService", () => {
   let cadastreService: CadastreService;
   let bdnbService: BdnbService;
   let enedisService: EnedisService;
+  let rgaService: RgaService;
+  let cavitesService: CavitesService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -36,7 +38,6 @@ describe("EnrichissementService", () => {
           provide: BdnbService,
           useValue: {
             getSurfaceBatie: vi.fn(),
-            getRisquesNaturels: vi.fn(),
           },
         },
         {
@@ -49,11 +50,7 @@ describe("EnrichissementService", () => {
         {
           provide: RgaService,
           useValue: {
-            getRga: vi.fn().mockResolvedValue({
-              success: false,
-              error: "Non mocké",
-              source: SourceEnrichissement.GEORISQUES_RGA,
-            }),
+            getRga: vi.fn(),
           },
         },
         {
@@ -99,11 +96,7 @@ describe("EnrichissementService", () => {
         {
           provide: CavitesService,
           useValue: {
-            getCavites: vi.fn().mockResolvedValue({
-              success: false,
-              error: "Non mocké",
-              source: SourceEnrichissement.GEORISQUES_CAVITES,
-            }),
+            getCavites: vi.fn(),
           },
         },
         {
@@ -149,24 +142,26 @@ describe("EnrichissementService", () => {
     cadastreService = module.get<CadastreService>(CadastreService);
     bdnbService = module.get<BdnbService>(BdnbService);
     enedisService = module.get<EnedisService>(EnedisService);
+    rgaService = module.get<RgaService>(RgaService);
+    cavitesService = module.get<CavitesService>(CavitesService);
   });
 
   describe("enrichir", () => {
     it("devrait enrichir une parcelle avec succès", async () => {
-      // Données de test
       const identifiantParcelle = "490055000AI0001";
 
-      // Configuration des mocks avec as any pour simplifier
       vi.mocked(cadastreService.getParcelleInfo).mockResolvedValue({
         success: true,
         data: {
           identifiant: identifiantParcelle,
-          commune: "49005",
+          codeInsee: "49005",
+          commune: "Angers",
           surface: 42780,
           coordonnees: {
             latitude: 47.4784,
             longitude: -0.5607,
           },
+          geometrie: {} as any,
         } as any,
         source: "Cadastre",
       });
@@ -177,12 +172,25 @@ describe("EnrichissementService", () => {
         source: "BDNB",
       });
 
-      vi.mocked(bdnbService.getRisquesNaturels).mockResolvedValue({
+      vi.mocked(rgaService.getRga).mockResolvedValue({
         success: true,
         data: {
-          aleaArgiles: "Faible",
+          alea: "Faible",
         } as any,
-        source: "BDNB-Risques",
+        source: SourceEnrichissement.GEORISQUES_RGA,
+      });
+
+      vi.mocked(cavitesService.getCavites).mockResolvedValue({
+        success: true,
+        data: {
+          exposition: false,
+          nombreCavites: 0,
+          cavitesProches: [],
+          typesCavites: [],
+          source: SourceEnrichissement.GEORISQUES_CAVITES,
+          dateRecuperation: new Date().toISOString(),
+        } as any,
+        source: SourceEnrichissement.GEORISQUES_CAVITES,
       });
 
       vi.mocked(enedisService.getDistanceRaccordement).mockResolvedValue({
@@ -193,21 +201,21 @@ describe("EnrichissementService", () => {
         source: "Enedis-Raccordement",
       });
 
-      // Exécuter la méthode
       const result = await service.enrichir(identifiantParcelle);
 
-      // Vérifications
       expect(result).toBeDefined();
       expect(result.identifiantParcelle).toBe(identifiantParcelle);
-      expect(result.commune).toBe("49005");
+      expect(result.codeInsee).toBe("49005");
+      expect(result.commune).toBe("Angers");
       expect(result.surfaceSite).toBe(42780);
       expect(result.surfaceBati).toBe(6600);
       expect(result.distanceRaccordementElectrique).toBe(150);
       expect(result.presenceRisquesNaturels).toBe(RisqueNaturel.FAIBLE);
-      expect(result.sourcesUtilisees).toContain("Cadastre");
-      expect(result.sourcesUtilisees).toContain("BDNB");
-      expect(result.sourcesUtilisees).toContain("Enedis-Raccordement");
-      expect(result.sourcesUtilisees).toContain("BDNB-Risques");
+      expect(result.sourcesUtilisees).toContain(SourceEnrichissement.CADASTRE);
+      expect(result.sourcesUtilisees).toContain(SourceEnrichissement.BDNB);
+      expect(result.sourcesUtilisees).toContain(SourceEnrichissement.ENEDIS_RACCORDEMENT);
+      expect(result.sourcesUtilisees).toContain(SourceEnrichissement.GEORISQUES_RGA);
+      expect(result.sourcesUtilisees).toContain(SourceEnrichissement.GEORISQUES_CAVITES);
       expect(result.fiabilite).toBeGreaterThan(5);
       expect(result.fiabilite).toBeLessThanOrEqual(10);
     });
@@ -215,14 +223,12 @@ describe("EnrichissementService", () => {
     it("devrait gérer les erreurs du service cadastre", async () => {
       const identifiantParcelle = "INVALID";
 
-      // Mock d'une erreur du cadastre - données obligatoires
       vi.mocked(cadastreService.getParcelleInfo).mockResolvedValue({
         success: false,
         error: "Parcelle non trouvée",
         source: "Cadastre",
       });
 
-      // Vérifier que l'erreur est bien gérée
       await expect(service.enrichir(identifiantParcelle)).rejects.toThrow(
         "Données cadastrales introuvables",
       );
@@ -231,36 +237,40 @@ describe("EnrichissementService", () => {
     it("devrait continuer même si certains services optionnels échouent", async () => {
       const identifiantParcelle = "490055000AI0001";
 
-      // Cadastre fonctionne (obligatoire)
       vi.mocked(cadastreService.getParcelleInfo).mockResolvedValue({
         success: true,
         data: {
           identifiant: identifiantParcelle,
-          commune: "49005",
+          codeInsee: "49005",
+          commune: "Angers",
           surface: 10000,
           coordonnees: {
             latitude: 47.4784,
             longitude: -0.5607,
           },
+          geometrie: {} as any,
         } as any,
         source: "Cadastre",
       });
 
-      // BDNB surface échoue
       vi.mocked(bdnbService.getSurfaceBatie).mockResolvedValue({
         success: false,
         error: "Service indisponible",
         source: "BDNB",
       });
 
-      // BDNB risques échoue
-      vi.mocked(bdnbService.getRisquesNaturels).mockResolvedValue({
+      vi.mocked(rgaService.getRga).mockResolvedValue({
         success: false,
         error: "Service indisponible",
-        source: "BDNB-Risques",
+        source: SourceEnrichissement.GEORISQUES_RGA,
       });
 
-      // Enedis raccordement échoue
+      vi.mocked(cavitesService.getCavites).mockResolvedValue({
+        success: false,
+        error: "Service indisponible",
+        source: SourceEnrichissement.GEORISQUES_CAVITES,
+      });
+
       vi.mocked(enedisService.getDistanceRaccordement).mockResolvedValue({
         success: false,
         error: "Données non disponibles",
@@ -269,62 +279,247 @@ describe("EnrichissementService", () => {
 
       const result = await service.enrichir(identifiantParcelle);
 
-      // Vérifications
       expect(result).toBeDefined();
       expect(result.surfaceSite).toBe(10000);
-      expect(result.sourcesUtilisees).toContain("Cadastre");
-      expect(result.sourcesUtilisees).not.toContain("BDNB");
+      expect(result.sourcesUtilisees).toContain(SourceEnrichissement.CADASTRE);
+      expect(result.sourcesUtilisees).not.toContain(SourceEnrichissement.BDNB);
       expect(result.champsManquants).toContain("surfaceBati");
       expect(result.champsManquants).toContain("distanceRaccordementElectrique");
-      expect(result.champsManquants).toContain("presenceRisquesNaturels");
 
-      // Verifier que la fiabilité est basse mais définie
-      // TODO: ajuster cette valeur en fonction de la formule de fiabilité
       expect(result.fiabilite).toBeDefined();
       expect(result.fiabilite).toBeGreaterThan(0);
     });
 
-    it("devrait transformer correctement les risques naturels", async () => {
+    it("devrait transformer correctement les risques naturels RGA", async () => {
       const identifiantParcelle = "490055000AI0001";
 
       vi.mocked(cadastreService.getParcelleInfo).mockResolvedValue({
         success: true,
         data: {
           identifiant: identifiantParcelle,
-          commune: "49005",
+          codeInsee: "49005",
+          commune: "Angers",
           surface: 10000,
           coordonnees: {
             latitude: 47.4784,
             longitude: -0.5607,
           },
+          geometrie: {} as any,
         } as any,
         source: "Cadastre",
       });
 
-      // Test différents niveaux de risques
+      vi.mocked(bdnbService.getSurfaceBatie).mockResolvedValue({
+        success: false,
+        source: "BDNB",
+      });
+
+      vi.mocked(enedisService.getDistanceRaccordement).mockResolvedValue({
+        success: false,
+        source: "Enedis-Raccordement",
+      });
+
+      // Cavités toujours aucune pour ce test (on teste uniquement RGA)
+      vi.mocked(cavitesService.getCavites).mockResolvedValue({
+        success: true,
+        data: {
+          exposition: false,
+          nombreCavites: 0,
+          cavitesProches: [],
+          typesCavites: [],
+          source: SourceEnrichissement.GEORISQUES_CAVITES,
+          dateRecuperation: new Date().toISOString(),
+        } as any,
+        source: SourceEnrichissement.GEORISQUES_CAVITES,
+      });
+
+      // Test avec RGA seul (Cavités = AUCUN)
+      // Fort + Aucun = Moyen, Moyen + Aucun = Moyen, Faible + Aucun = Faible, Aucun + Aucun = Aucun
       const testCases = [
-        { aleaArgiles: "Fort", expected: RisqueNaturel.FORT },
-        { aleaArgiles: "Moyen", expected: RisqueNaturel.MOYEN },
-        { aleaArgiles: "Faible", expected: RisqueNaturel.FAIBLE },
-        { aleaArgiles: "Nul", expected: RisqueNaturel.AUCUN },
+        { alea: "Fort", expected: RisqueNaturel.MOYEN },
+        { alea: "Moyen", expected: RisqueNaturel.MOYEN },
+        { alea: "Faible", expected: RisqueNaturel.FAIBLE },
+        { alea: "Nul", expected: RisqueNaturel.AUCUN },
       ];
 
       for (const testCase of testCases) {
-        vi.mocked(bdnbService.getRisquesNaturels).mockResolvedValue({
+        vi.mocked(rgaService.getRga).mockResolvedValue({
           success: true,
-          data: { aleaArgiles: testCase.aleaArgiles } as any,
-          source: "BDNB-Risques",
+          data: { alea: testCase.alea } as any,
+          source: SourceEnrichissement.GEORISQUES_RGA,
         });
 
-        // Mock les autres services pour éviter les erreurs
-        vi.mocked(bdnbService.getSurfaceBatie).mockResolvedValue({
-          success: false,
-          source: "BDNB",
+        const result = await service.enrichir(identifiantParcelle);
+        expect(result.presenceRisquesNaturels).toBe(testCase.expected);
+      }
+    });
+
+    it("devrait transformer correctement les risques naturels Cavités", async () => {
+      const identifiantParcelle = "490055000AI0001";
+
+      vi.mocked(cadastreService.getParcelleInfo).mockResolvedValue({
+        success: true,
+        data: {
+          identifiant: identifiantParcelle,
+          codeInsee: "49005",
+          commune: "Angers",
+          surface: 10000,
+          coordonnees: {
+            latitude: 47.4784,
+            longitude: -0.5607,
+          },
+          geometrie: {} as any,
+        } as any,
+        source: "Cadastre",
+      });
+
+      vi.mocked(bdnbService.getSurfaceBatie).mockResolvedValue({
+        success: false,
+        source: "BDNB",
+      });
+
+      vi.mocked(enedisService.getDistanceRaccordement).mockResolvedValue({
+        success: false,
+        source: "Enedis-Raccordement",
+      });
+
+      // RGA toujours faible pour ce test (on teste uniquement Cavités)
+      vi.mocked(rgaService.getRga).mockResolvedValue({
+        success: true,
+        data: { alea: "Faible" } as any,
+        source: SourceEnrichissement.GEORISQUES_RGA,
+      });
+
+      // Test avec différentes distances de cavités (RGA = FAIBLE)
+      // Fort + Faible = Moyen, Moyen + Faible = Moyen, Faible + Faible = Faible
+      const testCases = [
+        { distance: 300, expected: RisqueNaturel.MOYEN }, // Cavité FORT + RGA FAIBLE = MOYEN
+        { distance: 700, expected: RisqueNaturel.MOYEN }, // Cavité MOYEN + RGA FAIBLE = MOYEN
+        { distance: 1200, expected: RisqueNaturel.FAIBLE }, // Cavité FAIBLE + RGA FAIBLE = FAIBLE
+      ];
+
+      for (const testCase of testCases) {
+        vi.mocked(cavitesService.getCavites).mockResolvedValue({
+          success: true,
+          data: {
+            exposition: true,
+            nombreCavites: 1,
+            cavitesProches: [],
+            typesCavites: ["Cave"],
+            distancePlusProche: testCase.distance,
+            source: SourceEnrichissement.GEORISQUES_CAVITES,
+            dateRecuperation: new Date().toISOString(),
+          } as any,
+          source: SourceEnrichissement.GEORISQUES_CAVITES,
         });
-        vi.mocked(enedisService.getDistanceRaccordement).mockResolvedValue({
-          success: false,
-          source: "Enedis-Raccordement",
+
+        const result = await service.enrichir(identifiantParcelle);
+        expect(result.presenceRisquesNaturels).toBe(testCase.expected);
+      }
+    });
+
+    it("devrait combiner correctement RGA et Cavités", async () => {
+      const identifiantParcelle = "490055000AI0001";
+
+      vi.mocked(cadastreService.getParcelleInfo).mockResolvedValue({
+        success: true,
+        data: {
+          identifiant: identifiantParcelle,
+          codeInsee: "49005",
+          commune: "Angers",
+          surface: 10000,
+          coordonnees: {
+            latitude: 47.4784,
+            longitude: -0.5607,
+          },
+          geometrie: {} as any,
+        } as any,
+        source: "Cadastre",
+      });
+
+      vi.mocked(bdnbService.getSurfaceBatie).mockResolvedValue({
+        success: false,
+        source: "BDNB",
+      });
+
+      vi.mocked(enedisService.getDistanceRaccordement).mockResolvedValue({
+        success: false,
+        source: "Enedis-Raccordement",
+      });
+
+      // Test de combinaisons RGA + Cavités
+      // Règles:
+      // - Fort + Fort = Fort
+      // - Fort + Moyen = Fort
+      // - Fort + Faible/Aucun = Moyen
+      // - Moyen + Fort = Fort
+      // - Moyen + Moyen = Moyen
+      // - Moyen + Faible/Aucun = Moyen
+      // - Faible + Fort = Moyen
+      // - Faible + Moyen = Moyen
+      // - Faible + Faible = Faible
+      const testCases = [
+        // Fort + Fort = Fort
+        { rga: "Fort", caviteDistance: 300, expected: RisqueNaturel.FORT },
+        // Fort + Moyen = Fort
+        { rga: "Fort", caviteDistance: 700, expected: RisqueNaturel.FORT },
+        // Fort + Faible = Moyen
+        { rga: "Fort", caviteDistance: 1500, expected: RisqueNaturel.MOYEN },
+        // Moyen + Fort = Fort
+        { rga: "Moyen", caviteDistance: 300, expected: RisqueNaturel.FORT },
+        // Moyen + Moyen = Moyen
+        { rga: "Moyen", caviteDistance: 700, expected: RisqueNaturel.MOYEN },
+        // Moyen + Faible = Moyen
+        { rga: "Moyen", caviteDistance: 1500, expected: RisqueNaturel.MOYEN },
+        // Faible + Fort = Moyen
+        { rga: "Faible", caviteDistance: 300, expected: RisqueNaturel.MOYEN },
+        // Faible + Moyen = Moyen
+        { rga: "Faible", caviteDistance: 700, expected: RisqueNaturel.MOYEN },
+        // Faible + Faible = Faible
+        { rga: "Faible", caviteDistance: 1500, expected: RisqueNaturel.FAIBLE },
+        // Fort + Aucun (pas de cavité) = Moyen
+        { rga: "Fort", caviteDistance: undefined, expected: RisqueNaturel.MOYEN },
+        // Faible + Aucun = Faible
+        { rga: "Faible", caviteDistance: undefined, expected: RisqueNaturel.FAIBLE },
+      ];
+
+      for (const testCase of testCases) {
+        vi.mocked(rgaService.getRga).mockResolvedValue({
+          success: true,
+          data: { alea: testCase.rga } as any,
+          source: SourceEnrichissement.GEORISQUES_RGA,
         });
+
+        if (testCase.caviteDistance === undefined) {
+          // Aucune cavité
+          vi.mocked(cavitesService.getCavites).mockResolvedValue({
+            success: true,
+            data: {
+              exposition: false,
+              nombreCavites: 0,
+              cavitesProches: [],
+              typesCavites: [],
+              source: SourceEnrichissement.GEORISQUES_CAVITES,
+              dateRecuperation: new Date().toISOString(),
+            } as any,
+            source: SourceEnrichissement.GEORISQUES_CAVITES,
+          });
+        } else {
+          // Cavité avec distance
+          vi.mocked(cavitesService.getCavites).mockResolvedValue({
+            success: true,
+            data: {
+              exposition: true,
+              nombreCavites: 1,
+              cavitesProches: [],
+              typesCavites: ["Cave"],
+              distancePlusProche: testCase.caviteDistance,
+              source: SourceEnrichissement.GEORISQUES_CAVITES,
+              dateRecuperation: new Date().toISOString(),
+            } as any,
+            source: SourceEnrichissement.GEORISQUES_CAVITES,
+          });
+        }
 
         const result = await service.enrichir(identifiantParcelle);
         expect(result.presenceRisquesNaturels).toBe(testCase.expected);
@@ -334,17 +529,18 @@ describe("EnrichissementService", () => {
     it("devrait calculer correctement la fiabilité", async () => {
       const identifiantParcelle = "490055000AI0001";
 
-      // Test avec toutes les sources disponibles
       vi.mocked(cadastreService.getParcelleInfo).mockResolvedValue({
         success: true,
         data: {
           identifiant: identifiantParcelle,
-          commune: "49005",
+          codeInsee: "49005",
+          commune: "Angers",
           surface: 10000,
           coordonnees: {
             latitude: 47.4784,
             longitude: -0.5607,
           },
+          geometrie: {} as any,
         } as any,
         source: "Cadastre",
       });
@@ -355,10 +551,23 @@ describe("EnrichissementService", () => {
         source: "BDNB",
       });
 
-      vi.mocked(bdnbService.getRisquesNaturels).mockResolvedValue({
+      vi.mocked(rgaService.getRga).mockResolvedValue({
         success: true,
-        data: { aleaArgiles: "Faible" } as any,
-        source: "BDNB-Risques",
+        data: { alea: "Faible" } as any,
+        source: SourceEnrichissement.GEORISQUES_RGA,
+      });
+
+      vi.mocked(cavitesService.getCavites).mockResolvedValue({
+        success: true,
+        data: {
+          exposition: false,
+          nombreCavites: 0,
+          cavitesProches: [],
+          typesCavites: [],
+          source: SourceEnrichissement.GEORISQUES_CAVITES,
+          dateRecuperation: new Date().toISOString(),
+        } as any,
+        source: SourceEnrichissement.GEORISQUES_CAVITES,
       });
 
       vi.mocked(enedisService.getDistanceRaccordement).mockResolvedValue({
@@ -369,7 +578,6 @@ describe("EnrichissementService", () => {
 
       const result = await service.enrichir(identifiantParcelle);
 
-      // Avec toutes les sources et peu de champs manquants, la fiabilité devrait être élevée
       expect(result.fiabilite).toBeGreaterThanOrEqual(8);
       expect(result.sourcesUtilisees.length).toBeGreaterThan(5);
       expect(result.champsManquants.length).toBeLessThan(5);

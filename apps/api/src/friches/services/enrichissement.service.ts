@@ -24,6 +24,7 @@ import { GEORISQUES_RAYONS_DEFAUT } from "./external/georisques/georisques.const
 import { OldService } from "./external/georisques/old/old.service";
 import { SisService } from "./external/georisques/sis/sis.service";
 import { IcpeService } from "./external/georisques/icpe/icpe.service";
+import { CavitesResultNormalized } from "./external/georisques/cavites/cavites.types";
 
 const PROMISE_FULFILLED = "fulfilled" as const;
 
@@ -133,17 +134,16 @@ export class EnrichissementService {
         sourcesEchouees,
       );
 
-      // 7. Risques naturels (BDNB)
-      await this.enrichWithRisquesNaturels(
+      // 7. Risques naturels (GeoRisques RGA + Cavités)
+      await this.enrichRisquesNaturels(
         parcelle,
-        identifiantParcelle,
+        parcelle.coordonnees,
         sourcesUtilisees,
-        champsManquants,
         sourcesEchouees,
       );
 
-      // 8. Risques GeoRisques (RGA) ← NOUVEAU BLOC
-      const risquesGeorisques = await this.enrichWithGeoRisques(
+      // 8. Risques GeoRisques Bruts
+      const risquesGeorisques = await this.enrichWithRawGeoRisques(
         parcelle.coordonnees,
         sourcesUtilisees,
         sourcesEchouees,
@@ -193,7 +193,7 @@ export class EnrichissementService {
         zonagePatrimonial: parcelle.zonagePatrimonial,
         trameVerteEtBleue: parcelle.trameVerteEtBleue,
 
-        // Risques GeoRisques
+        // Risques GeoRisques Bruts
         risquesGeorisques,
 
         // Métadonnées d'enrichissement
@@ -375,7 +375,7 @@ export class EnrichissementService {
    * Enrichit avec les risques GeoRisques (RGA + CATNAT + TRI + MVT + Zonage Sismique + Cavités + OLD)
    * Appels parallélisés pour optimiser les performances
    */
-  private async enrichWithGeoRisques(
+  private async enrichWithRawGeoRisques(
     coordonnees: { latitude: number; longitude: number } | undefined,
     sources: string[],
     echouees: string[],
@@ -595,6 +595,188 @@ export class EnrichissementService {
   }
 
   /**
+   * Enrichit les risques naturels depuis l'API Géorisques
+   * Calcule le niveau de risque en fonction du RGA
+   * et de la présence de cavités souterraines
+   */
+  private async enrichRisquesNaturels(
+    parcelle: Parcelle,
+    coordonnees: { latitude: number; longitude: number } | undefined,
+    sources: string[],
+    echouees: string[],
+  ): Promise<void> {
+    if (!coordonnees) {
+      this.logger.warn("Pas de coordonnées disponibles pour les risques naturels");
+      echouees.push(SourceEnrichissement.GEORISQUES_RGA, SourceEnrichissement.GEORISQUES_CAVITES);
+      return;
+    }
+
+    let aleaRga: RisqueNaturel = RisqueNaturel.AUCUN;
+    let aleaCavites: RisqueNaturel = RisqueNaturel.AUCUN;
+    let rgaSuccess = false;
+    let cavitesSuccess = false;
+
+    // 1. Récupérer l'aléa RGA
+    try {
+      const rgaResult = await this.rgaService.getRga({
+        latitude: coordonnees.latitude,
+        longitude: coordonnees.longitude,
+      });
+
+      if (rgaResult.success && rgaResult.data) {
+        aleaRga = this.transformRgaToRisque(rgaResult.data.alea);
+        rgaSuccess = true;
+        this.logger.debug(`RGA récupéré: ${rgaResult.data.alea} → ${aleaRga}`);
+      } else {
+        this.logger.warn(`Échec récupération RGA: ${rgaResult.error}`);
+        echouees.push(SourceEnrichissement.GEORISQUES_RGA);
+      }
+    } catch (error) {
+      this.logger.error("Erreur RGA:", error);
+      echouees.push(SourceEnrichissement.GEORISQUES_RGA);
+    }
+
+    // 2. Récupérer l'aléa Cavités
+    try {
+      const cavitesResult = await this.cavitesService.getCavites({
+        latitude: coordonnees.latitude,
+        longitude: coordonnees.longitude,
+        rayon: GEORISQUES_RAYONS_DEFAUT.CAVITES,
+      });
+
+      if (cavitesResult.success && cavitesResult.data) {
+        aleaCavites = this.transformCavitesToRisque(cavitesResult.data);
+        cavitesSuccess = true;
+        this.logger.debug(
+          `Cavités récupérées: ${cavitesResult.data.nombreCavites} cavités, ` +
+            `plus proche: ${cavitesResult.data.distancePlusProche ? `${Math.round(cavitesResult.data.distancePlusProche)}m` : "N/A"} → ${aleaCavites}`,
+        );
+      } else {
+        this.logger.warn(`Échec récupération Cavités: ${cavitesResult.error}`);
+        echouees.push(SourceEnrichissement.GEORISQUES_CAVITES);
+      }
+    } catch (error) {
+      this.logger.error("Erreur Cavités:", error);
+      echouees.push(SourceEnrichissement.GEORISQUES_CAVITES);
+    }
+
+    // 3. Calculer le risque naturel final selon les règles de combinaison
+    const risqueFinal = this.combinerRisquesNaturels(aleaRga, aleaCavites);
+    parcelle.presenceRisquesNaturels = risqueFinal;
+
+    // 4. Ajout des sources réussies
+    if (rgaSuccess) {
+      sources.push(SourceEnrichissement.GEORISQUES_RGA);
+    }
+
+    if (cavitesSuccess) {
+      sources.push(SourceEnrichissement.GEORISQUES_CAVITES);
+    }
+
+    this.logger.log(
+      `Risques naturels calculés: RGA=${aleaRga}, Cavités=${aleaCavites} → Final=${risqueFinal}`,
+    );
+  }
+
+  /**
+   * Combine les risques RGA et Cavités selon les règles métier
+   *
+   * Règles:
+   * - Si un des deux est FORT et l'autre est FORT ou MOYEN → FORT
+   * - Si un des deux est FORT et l'autre est FAIBLE ou AUCUN → MOYEN
+   * - Si au moins un est MOYEN → MOYEN
+   * - Si les deux sont FAIBLE ou (un FAIBLE + un AUCUN) → FAIBLE
+   * - Sinon → AUCUN
+   */
+  private combinerRisquesNaturels(
+    aleaRga: RisqueNaturel,
+    aleaCavites: RisqueNaturel,
+  ): RisqueNaturel {
+    // Convertir en valeurs numériques pour simplifier les comparaisons
+    const niveaux = {
+      [RisqueNaturel.AUCUN]: 0,
+      [RisqueNaturel.FAIBLE]: 1,
+      [RisqueNaturel.MOYEN]: 2,
+      [RisqueNaturel.FORT]: 3,
+    };
+
+    const niveauRga = niveaux[aleaRga];
+    const niveauCavites = niveaux[aleaCavites];
+    const niveauMax = Math.max(niveauRga, niveauCavites);
+    const niveauMin = Math.min(niveauRga, niveauCavites);
+
+    // Si un des deux est FORT
+    if (niveauMax === 3) {
+      // FORT + FORT ou FORT + MOYEN → FORT
+      if (niveauMin >= 2) {
+        return RisqueNaturel.FORT;
+      }
+      // FORT + FAIBLE ou FORT + AUCUN → MOYEN
+      return RisqueNaturel.MOYEN;
+    }
+
+    // Si au moins un est MOYEN → MOYEN
+    if (niveauMax === 2) {
+      return RisqueNaturel.MOYEN;
+    }
+
+    // Si au moins un est FAIBLE → FAIBLE
+    if (niveauMax === 1) {
+      return RisqueNaturel.FAIBLE;
+    }
+
+    // Les deux sont AUCUN → AUCUN
+    return RisqueNaturel.AUCUN;
+  }
+
+  /**
+   * Transforme le niveau d'aléa RGA en risque naturel
+   */
+  private transformRgaToRisque(alea: string): RisqueNaturel {
+    const aleaNormalise = alea.toLowerCase().trim();
+
+    if (aleaNormalise.includes("fort") || aleaNormalise === "fort") {
+      return RisqueNaturel.FORT;
+    } else if (aleaNormalise.includes("moyen") || aleaNormalise === "moyen") {
+      return RisqueNaturel.MOYEN;
+    } else if (aleaNormalise.includes("faible") || aleaNormalise === "faible") {
+      return RisqueNaturel.FAIBLE;
+    }
+
+    return RisqueNaturel.AUCUN;
+  }
+
+  /**
+   * Transforme les données cavités en risque naturel
+   * Basé sur la distance de la cavité la plus proche
+   */
+  private transformCavitesToRisque(cavitesData: CavitesResultNormalized): RisqueNaturel {
+    // Si aucune cavité détectée
+    if (!cavitesData.exposition || cavitesData.nombreCavites === 0) {
+      return RisqueNaturel.AUCUN;
+    }
+
+    const distancePlusProche = cavitesData.distancePlusProche;
+
+    // Si on n'a pas de distance, on considère aucun risque par défaut
+    if (distancePlusProche === undefined) {
+      return RisqueNaturel.AUCUN;
+    }
+
+    // Règles de calcul basées sur la distance de la cavité la plus proche
+    if (distancePlusProche <= 500) {
+      // Cavité à moins de 500m
+      return RisqueNaturel.FORT;
+    } else if (distancePlusProche <= 1000) {
+      // Cavité entre 500m et 1000m
+      return RisqueNaturel.MOYEN;
+    } else {
+      // Cavité superieure à 1000m
+      return RisqueNaturel.FAIBLE;
+    }
+  }
+
+  /**
    * Traite le résultat d'un service GeoRisques de manière générique
    */
   private processGeoRisqueResult(
@@ -680,47 +862,6 @@ export class EnrichissementService {
       this.logger.error("Erreur Lovac:", error);
       manquants.push("tauxLogementsVacants");
       echouees.push(SourceEnrichissement.LOVAC);
-    }
-  }
-
-  /**
-   * Enrichit avec les risques naturels depuis BDNB
-   */
-  private async enrichWithRisquesNaturels(
-    parcelle: Parcelle,
-    identifiantParcelle: string,
-    sources: string[],
-    manquants: string[],
-    echouees: string[],
-  ): Promise<void> {
-    try {
-      const risquesResult = await this.bdnbService.getRisquesNaturels(identifiantParcelle);
-
-      if (risquesResult.success && risquesResult.data) {
-        const risquesData = risquesResult.data;
-
-        if (risquesData.aleaArgiles) {
-          // Transformer l'aléa argiles BDNB en enum de présence de risques naturels
-          parcelle.presenceRisquesNaturels = this.transformAleaArgilesToRisque(
-            risquesData.aleaArgiles,
-          );
-          sources.push(SourceEnrichissement.BDNB_RISQUES);
-        } else {
-          manquants.push("presenceRisquesNaturels");
-          echouees.push(SourceEnrichissement.BDNB_RISQUES);
-        }
-      } else {
-        manquants.push("presenceRisquesNaturels");
-        echouees.push(SourceEnrichissement.BDNB_RISQUES);
-      }
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : MessagesErreurEnrichissement[CodeErreurEnrichissement.UNKNOWN_ERROR];
-      this.logger.error("Erreur récupération risques naturels BDNB:", errorMessage);
-      manquants.push("presenceRisquesNaturels");
-      echouees.push(SourceEnrichissement.BDNB_RISQUES);
     }
   }
 
