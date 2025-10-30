@@ -2,6 +2,7 @@
  * Types généraux pour l'API GeoRisques
  */
 
+import { AziResultNormalized } from "./azi/azi.types";
 import { CatnatResultNormalized } from "./catnat/catnat.types";
 import { CavitesResultNormalized } from "./cavites/cavites.types";
 import { IcpeResultNormalized } from "./icpe/icpe.types";
@@ -47,6 +48,7 @@ export interface GeoRisquesMetadata {
  * Sera enrichi progressivement avec les autres risques
  */
 export interface GeoRisquesResult {
+  azi?: AziResultNormalized;
   rga?: RgaResultNormalized;
   catnat?: CatnatResultNormalized;
   triZonage?: TriZonageResultNormalized;

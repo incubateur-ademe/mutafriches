@@ -26,6 +26,7 @@ import { SisService } from "./external/georisques/sis/sis.service";
 import { IcpeService } from "./external/georisques/icpe/icpe.service";
 import { CavitesResultNormalized } from "./external/georisques/cavites/cavites.types";
 import { TriService } from "./external/georisques/tri/tri.service";
+import { AziService } from "./external/georisques/azi/azi.service";
 
 const PROMISE_FULFILLED = "fulfilled" as const;
 
@@ -47,6 +48,7 @@ export class EnrichissementService {
     private readonly oldService: OldService,
     private readonly sisService: SisService,
     private readonly icpeService: IcpeService,
+    private readonly aziService: AziService,
 
     private readonly enrichissementRepository: EnrichissementRepository,
   ) {}
@@ -396,12 +398,14 @@ export class EnrichissementService {
         SourceEnrichissement.GEORISQUES_RGA,
         SourceEnrichissement.GEORISQUES_CATNAT,
         SourceEnrichissement.GEORISQUES_TRI,
+        SourceEnrichissement.GEORISQUES_TRI_ZONAGE,
         SourceEnrichissement.GEORISQUES_MVT,
         SourceEnrichissement.GEORISQUES_ZONAGE_SISMIQUE,
         SourceEnrichissement.GEORISQUES_CAVITES,
         SourceEnrichissement.GEORISQUES_OLD,
         SourceEnrichissement.GEORISQUES_SIS,
         SourceEnrichissement.GEORISQUES_ICPE,
+        SourceEnrichissement.GEORISQUES_AZI,
       );
       return undefined;
     }
@@ -428,6 +432,7 @@ export class EnrichissementService {
       oldResult,
       sisResult,
       icpeResult,
+      aziResult,
     ] = await Promise.allSettled([
       this.rgaService.getRga({
         latitude: coordonnees.latitude,
@@ -473,6 +478,11 @@ export class EnrichissementService {
         latitude: coordonnees.latitude,
         longitude: coordonnees.longitude,
         rayon: GEORISQUES_RAYONS_DEFAUT.ICPE,
+      }),
+      this.aziService.getAzi({
+        latitude: coordonnees.latitude,
+        longitude: coordonnees.longitude,
+        rayon: GEORISQUES_RAYONS_DEFAUT.AZI,
       }),
     ]);
 
@@ -607,8 +617,21 @@ export class EnrichissementService {
       echoueesGeorisques,
     );
 
+    // 11. AZI
+    this.processGeoRisqueResult(
+      aziResult,
+      "azi",
+      "AZI",
+      SourceEnrichissement.GEORISQUES_AZI,
+      result,
+      sources,
+      echouees,
+      sourcesGeorisques,
+      echoueesGeorisques,
+    );
+
     // Calculer la fiabilité (sur 10)
-    const totalServices = 10; // Nombre total de services GeoRisques appelés
+    const totalServices = 11; // Nombre total de services GeoRisques appelés
     const servicesReussis = sourcesGeorisques.length;
     result.metadata.sourcesUtilisees = sourcesGeorisques;
     result.metadata.sourcesEchouees = echoueesGeorisques;

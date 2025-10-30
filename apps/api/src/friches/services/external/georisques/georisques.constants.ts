@@ -21,6 +21,7 @@ export const GEORISQUES_ENDPOINTS = {
   OLD: "/old",
   SIS: "/ssp/conclusions_sis",
   ICPE: "/installations_classees",
+  AZI: "/gaspar/azi",
 } as const;
 
 /**
@@ -36,6 +37,7 @@ export const GEORISQUES_RAYONS_DEFAUT = {
   OLD: 0, // OLD ne nécessite pas de rayon (recherche par point)
   SIS: 1000, // 1 km pour SIS (max 10000m autorisé par l'API)
   ICPE: 1000, // 1 km pour ICPE (max 10000m autorisé par l'API)
+  AZI: 1000, // 1 km pour AZI
 } as const;
 
 /**
@@ -53,6 +55,7 @@ export const GEORISQUES_NOMBRE_RESULTATS_RECENTS = {
  * Sources de données GeoRisques
  */
 export const GEORISQUES_SOURCES = {
+  AZI: "GeoRisques - AZI",
   RGA: "GeoRisques - Retrait-Gonflement Argiles",
   CATNAT: "GeoRisques - Catastrophes Naturelles",
   TRI: "GeoRisques - TRI",

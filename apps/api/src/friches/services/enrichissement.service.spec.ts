@@ -16,6 +16,7 @@ import { OldService } from "./external/georisques/old/old.service";
 import { SisService } from "./external/georisques/sis/sis.service";
 import { IcpeService } from "./external/georisques/icpe/icpe.service";
 import { TriService } from "./external/georisques/tri/tri.service";
+import { AziService } from "./external/georisques/azi/azi.service";
 
 describe("EnrichissementService", () => {
   let service: EnrichissementService;
@@ -93,6 +94,16 @@ describe("EnrichissementService", () => {
               success: false,
               error: "Non mocké",
               source: SourceEnrichissement.GEORISQUES_MVT,
+            }),
+          },
+        },
+        {
+          provide: AziService,
+          useValue: {
+            getAzi: vi.fn().mockResolvedValue({
+              success: false,
+              error: "Non mocké",
+              source: SourceEnrichissement.GEORISQUES_AZI,
             }),
           },
         },

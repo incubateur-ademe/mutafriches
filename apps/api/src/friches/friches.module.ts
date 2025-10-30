@@ -19,6 +19,7 @@ import { OldService } from "./services/external/georisques/old/old.service";
 import { SisService } from "./services/external/georisques/sis/sis.service";
 import { IcpeService } from "./services/external/georisques/icpe/icpe.service";
 import { TriService } from "./services/external/georisques/tri/tri.service";
+import { AziService } from "./services/external/georisques/azi/azi.service";
 
 @Module({
   imports: [HttpModule],
@@ -46,6 +47,7 @@ import { TriService } from "./services/external/georisques/tri/tri.service";
     OldService,
     SisService,
     IcpeService,
+    AziService,
   ],
   exports: [OrchestrateurService],
 })
