@@ -18,6 +18,7 @@ import { createIframeCommunicator } from "../../../shared/iframe/iframeCommunica
 import { IframeEvaluationSummaryDto } from "../../../shared/iframe/iframe.types";
 import { evaluationService } from "../../../shared/services/api/api.evaluation.service";
 import { ModalInfo } from "../../../shared/components/common/ModalInfo";
+import { VERSION_ALGO } from "@mutafriches/shared-types";
 
 export const Step3ResultatsPage: React.FC = () => {
   const navigate = useNavigate();
@@ -77,7 +78,7 @@ export const Step3ResultatsPage: React.FC = () => {
         })),
         metadata: {
           dateAnalyse: new Date().toISOString(),
-          versionAlgorithme: "1.1", // TODO À mettre à jour avec la vraie version via package shared si besoin
+          versionAlgorithme: VERSION_ALGO,
         },
       };
 
