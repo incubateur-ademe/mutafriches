@@ -1,4 +1,4 @@
-import { TypeEvenement } from "../../enums";
+import { TypeEvenement } from "../enums";
 
 export interface EvenementInputDto {
   typeEvenement: TypeEvenement;

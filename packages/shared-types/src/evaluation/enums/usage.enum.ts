@@ -1,8 +1,4 @@
 /**
- * Enums utilisés pour les résultats de calcul de mutabilité
- */
-
-/**
  * Types d'usage pour le calcul de mutabilité
  * Utilisé comme identifiant technique dans l'API
  */

@@ -1,4 +1,4 @@
-import { EnrichissementOutputDto } from "../output/enrichissement-output.dto";
+import { EnrichissementOutputDto } from "../../enrichissement";
 import { DonneesComplementairesInputDto } from "./donnees-complementaires-input.dto";
 
 /**

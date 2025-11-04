@@ -1,22 +1,24 @@
-import {
-  TypeProprietaire,
-  EtatBatiInfrastructure,
-  PresencePollution,
-  ValeurArchitecturale,
-  QualitePaysage,
-  QualiteVoieDesserte,
-  RisqueNaturel,
-  ZonageEnvironnemental,
-  ZonageReglementaire,
-  ZonagePatrimonial,
-  TrameVerteEtBleue,
-  RaccordementEau,
-} from "../../enums";
-
 /**
  * Mapping direct des valeurs Excel vers les enums de l'algorithme
  * Basé sur les vraies valeurs de l'onglet "Base" du fichier Excel v1.0
  */
+
+import {
+  RisqueNaturel,
+  TrameVerteEtBleue,
+  ZonageEnvironnemental,
+  ZonagePatrimonial,
+  ZonageReglementaire,
+} from "../../enrichissement";
+import {
+  EtatBatiInfrastructure,
+  PresencePollution,
+  QualitePaysage,
+  QualiteVoieDesserte,
+  RaccordementEau,
+  TypeProprietaire,
+  ValeurArchitecturale,
+} from "../../evaluation";
 
 // État du bâti - Valeurs exactes de l'Excel
 export const ETAT_BATI_MAPPING: Record<string, EtatBatiInfrastructure> = {

@@ -1,12 +1,12 @@
 import {
-  TypeProprietaire,
   EtatBatiInfrastructure,
   PresencePollution,
-  ValeurArchitecturale,
   QualitePaysage,
   QualiteVoieDesserte,
   RaccordementEau,
-} from "../../enums";
+  TypeProprietaire,
+  ValeurArchitecturale,
+} from "../enums";
 
 /**
  * Données complémentaires saisies par l'utilisateur dans l'UI

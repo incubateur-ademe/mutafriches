@@ -1,8 +1,5 @@
-import {
-  CalculerMutabiliteInputDto,
-  DonneesComplementairesInputDto,
-  EnrichissementOutputDto,
-} from "../../dto";
+import { EnrichissementOutputDto } from "../../enrichissement";
+import { CalculerMutabiliteInputDto, DonneesComplementairesInputDto } from "../../evaluation";
 import { TestCase } from "../types/test-case.types";
 import * as enumConverters from "./enum-converters";
 

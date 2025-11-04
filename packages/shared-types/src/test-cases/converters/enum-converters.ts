@@ -1,12 +1,12 @@
 import {
-  TypeProprietaire,
   EtatBatiInfrastructure,
   PresencePollution,
-  ValeurArchitecturale,
   QualitePaysage,
   QualiteVoieDesserte,
   RaccordementEau,
-} from "../../enums";
+  TypeProprietaire,
+  ValeurArchitecturale,
+} from "../../evaluation";
 
 /**
  * Convertit une string en valeur d'enum EtatBatiInfrastructure

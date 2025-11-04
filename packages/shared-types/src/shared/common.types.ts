@@ -2,7 +2,7 @@
  * Types communs partagés
  */
 
-import { SourceUtilisation } from "../enums/usage.enums";
+import { SourceUtilisation } from "../evaluation";
 
 /**
  * Coordonnées géographiques GPS
