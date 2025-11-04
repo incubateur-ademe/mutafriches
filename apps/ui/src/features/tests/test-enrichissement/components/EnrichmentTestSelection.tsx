@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { LoadingCallout } from "@/shared/components/common/LoadingCallout";
 import { ErrorAlert } from "@/shared/components/common/ErrorAlert";
-import { frichesService } from "@/shared/services/api/api.friches.service";
 import type { EnrichissementOutputDto } from "@mutafriches/shared-types";
 import { ParcelleSelection } from "../../../enrichissement/components/parcelle-selection/ParcelleSelection";
+import { enrichissementService } from "../../../../shared/services/api/api.enrichissement.service";
 
 interface EnrichmentTestSelectionProps {
   onEnrichmentComplete: (data: EnrichissementOutputDto) => void;
@@ -20,7 +20,7 @@ export const EnrichmentTestSelection: React.FC<EnrichmentTestSelectionProps> = (
     setError(null);
 
     try {
-      const enrichmentResult = await frichesService.enrichirParcelle(identifiant);
+      const enrichmentResult = await enrichissementService.enrichirParcelle(identifiant);
       onEnrichmentComplete(enrichmentResult);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Une erreur est survenue");

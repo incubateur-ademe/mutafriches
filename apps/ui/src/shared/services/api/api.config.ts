@@ -13,12 +13,22 @@ const getApiUrl = (): string => {
 export const API_CONFIG = {
   baseUrl: getApiUrl(),
   endpoints: {
-    friches: {
-      enrichir: "/friches/enrichir",
-      calculer: "/friches/calculer",
+    // Nouveaux endpoints DDD
+    enrichissement: {
+      enrichir: "/enrichissement",
+    },
+    evaluation: {
+      calculer: "/evaluation/calculer",
+      recuperer: (id: string) => `/evaluation/${id}`,
+      metadata: "/evaluation/metadata",
     },
     evenements: {
       enregistrer: "/evenements",
+    },
+    // Legacy endpoints (deprecated - pour compatibilité)
+    friches: {
+      enrichir: "/friches/enrichir",
+      calculer: "/friches/calculer",
     },
   },
 } as const;

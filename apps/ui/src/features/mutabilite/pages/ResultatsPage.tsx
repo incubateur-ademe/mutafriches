@@ -16,7 +16,7 @@ import { useFormContext } from "../../../shared/form/useFormContext";
 import { useIframe, useIframeCallback, useIsIframeMode } from "../../../shared/iframe/useIframe";
 import { createIframeCommunicator } from "../../../shared/iframe/iframeCommunication";
 import { IframeEvaluationSummaryDto } from "../../../shared/iframe/iframe.types";
-import { frichesService } from "../../../shared/services/api/api.friches.service";
+import { evaluationService } from "../../../shared/services/api/api.evaluation.service";
 import { ModalInfo } from "../../../shared/components/common/ModalInfo";
 
 export const Step3ResultatsPage: React.FC = () => {
@@ -98,7 +98,7 @@ export const Step3ResultatsPage: React.FC = () => {
 
     try {
       const mutabilityInput = buildMutabilityInput(state.enrichmentData, state.manualData);
-      const result = await frichesService.calculerMutabilite(mutabilityInput, {
+      const result = await evaluationService.calculerMutabilite(mutabilityInput, {
         isIframe: isIframeMode,
         integrator: integrator || undefined,
       });

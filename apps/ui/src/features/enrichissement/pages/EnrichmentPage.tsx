@@ -10,7 +10,7 @@ import { ErrorAlert } from "../../../shared/components/common/ErrorAlert";
 import { EnrichmentDisplayZone } from "../components/enrichment-display/EnrichmentDisplayZone";
 import { transformEnrichmentToUiData } from "../utils/enrichissment.mapper";
 import { useFormContext } from "../../../shared/form/useFormContext";
-import { frichesService } from "../../../shared/services/api/api.friches.service";
+import { enrichissementService } from "../../../shared/services/api/api.enrichissement.service";
 
 export const Step1EnrichmentPage: React.FC = () => {
   const navigate = useNavigate();
@@ -29,7 +29,7 @@ export const Step1EnrichmentPage: React.FC = () => {
     setError(null);
 
     try {
-      const enrichmentResult = await frichesService.enrichirParcelle(identifiant);
+      const enrichmentResult = await enrichissementService.enrichirParcelle(identifiant);
       const uiData = transformEnrichmentToUiData(enrichmentResult);
       setEnrichmentData(enrichmentResult, uiData, identifiant);
 
