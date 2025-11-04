@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
 import { EvenementsController } from "./evenements.controller";
-import { EvenementRepository } from "./evenement.repository";
-import { EvenementService } from "./evenement.service";
+import { EvenementService } from "./services/evenement.service";
+import { EvenementRepository } from "./repositories/evenement.repository";
 
 @Module({
   controllers: [EvenementsController],

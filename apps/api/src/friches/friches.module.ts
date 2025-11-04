@@ -1,58 +1,15 @@
 import { Module } from "@nestjs/common";
-import { HttpModule } from "@nestjs/axios";
-import { FrichesController } from "./controller/friches.controller";
-import { OrchestrateurService } from "./services/orchestrateur.service";
-import { EnrichissementService } from "./services/enrichissement.service";
-import { CalculService } from "./services/calcul.service";
-import { CadastreService } from "./services/external/cadastre/cadastre.service";
-import { BdnbService } from "./services/external/bdnb/bdnb.service";
-import { EnedisService } from "./services/external/enedis/enedis.service";
-import { EvaluationRepository } from "./repository/evaluation.repository";
-import { EnrichissementRepository } from "./repository/enrichissement.repository";
-import { RgaService } from "./services/external/georisques/rga/rga.service";
-import { CatnatService } from "./services/external/georisques/catnat/catnat.service";
-import { TriZonageService } from "./services/external/georisques/tri-zonage/tri-zonage.service";
-import { MvtService } from "./services/external/georisques/mvt/mvt.service";
-import { ZonageSismiqueService } from "./services/external/georisques/zonage-sismique/zonage-sismique.service";
-import { CavitesService } from "./services/external/georisques/cavites/cavites.service";
-import { OldService } from "./services/external/georisques/old/old.service";
-import { SisService } from "./services/external/georisques/sis/sis.service";
-import { IcpeService } from "./services/external/georisques/icpe/icpe.service";
-import { TriService } from "./services/external/georisques/tri/tri.service";
-import { AziService } from "./services/external/georisques/azi/azi.service";
-import { PapiService } from "./services/external/georisques/papi/papi.service";
-import { PprService } from "./services/external/georisques/ppr/ppr.service";
+import { FrichesController } from "./friches.controller";
+import { EnrichissementModule } from "../enrichissement/enrichissement.module";
+import { EvaluationModule } from "../evaluation/evaluation.module";
 
+/**
+ * Module de compatibilité Friches
+ * Maintient les routes /friches/* pour rétrocompatibilité
+ * Redirige vers les nouveaux modules Enrichissement et Evaluation
+ */
 @Module({
-  imports: [HttpModule],
+  imports: [EnrichissementModule, EvaluationModule],
   controllers: [FrichesController],
-  providers: [
-    // Repositories
-    EvaluationRepository,
-    EnrichissementRepository,
-    // Services principaux
-    OrchestrateurService,
-    EnrichissementService,
-    CalculService,
-    // Services externes
-    CadastreService,
-    BdnbService,
-    EnedisService,
-    // Services GeoRisques
-    RgaService,
-    CatnatService,
-    TriZonageService,
-    TriService,
-    MvtService,
-    ZonageSismiqueService,
-    CavitesService,
-    OldService,
-    SisService,
-    IcpeService,
-    AziService,
-    PapiService,
-    PprService,
-  ],
-  exports: [OrchestrateurService],
 })
 export class FrichesModule {}

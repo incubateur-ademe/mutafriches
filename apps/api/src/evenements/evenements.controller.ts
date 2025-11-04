@@ -2,7 +2,7 @@ import { Controller, Post, Body, Query, Req } from "@nestjs/common";
 import { ApiExcludeController } from "@nestjs/swagger";
 import { Request } from "express";
 import { EvenementInputDto, EvenementOutputDto } from "@mutafriches/shared-types";
-import { EvenementService } from "./evenement.service";
+import { EvenementService } from "./services/evenement.service";
 
 @ApiExcludeController()
 @Controller("evenements")
