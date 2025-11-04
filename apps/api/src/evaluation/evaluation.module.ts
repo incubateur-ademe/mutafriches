@@ -7,16 +7,9 @@ import { DatabaseModule } from "../shared/database/database.module";
 import { EnrichissementModule } from "../enrichissement/enrichissement.module";
 
 @Module({
-  imports: [
-    DatabaseModule,
-    EnrichissementModule, // Import pour utiliser EnrichissementService dans OrchestrateurService
-  ],
+  imports: [DatabaseModule, EnrichissementModule],
   controllers: [EvaluationController],
-  providers: [
-    OrchestrateurService,
-    CalculService,
-    EvaluationRepository,
-  ],
-  exports: [OrchestrateurService], // Export si besoin ailleurs
+  providers: [OrchestrateurService, CalculService, EvaluationRepository],
+  exports: [OrchestrateurService], // Exporte le service pour utilisation dans FrichesModule
 })
 export class EvaluationModule {}

@@ -1,4 +1,6 @@
 import { Module } from "@nestjs/common";
+import { HttpModule } from "@nestjs/axios";
+
 import { EnrichissementController } from "./enrichissement.controller";
 import { EnrichissementService } from "./services/enrichissement.service";
 import { EnrichissementRepository } from "./repositories/enrichissement.repository";
@@ -24,7 +26,7 @@ import { PapiService } from "./services/external/georisques/papi/papi.service";
 import { PprService } from "./services/external/georisques/ppr/ppr.service";
 
 @Module({
-  imports: [DatabaseModule],
+  imports: [DatabaseModule, HttpModule],
   controllers: [EnrichissementController],
   providers: [
     EnrichissementService,
@@ -48,6 +50,6 @@ import { PprService } from "./services/external/georisques/ppr/ppr.service";
     PapiService,
     PprService,
   ],
-  exports: [EnrichissementService], // Export pour utilisation dans EvaluationModule
+  exports: [EnrichissementService], // Exporte le service
 })
 export class EnrichissementModule {}
