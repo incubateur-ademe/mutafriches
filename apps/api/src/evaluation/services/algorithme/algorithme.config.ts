@@ -11,7 +11,7 @@ import {
   TrameVerteEtBleue,
   ZonageReglementaire,
 } from "@mutafriches/shared-types";
-import { ScoreImpact, ScoreParUsage } from "@mutafriches/shared-types";
+import { ScoreImpact, ScoreParUsage } from "./algorithme.types";
 
 // Configuration des poids
 export const POIDS_CRITERES = {
@@ -782,7 +782,6 @@ export const MATRICE_SCORING = {
         [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
       };
     if (value <= 10 && value > 8)
-      // TODO : optim
       // Modifié le 18/09/2024 après revue avec Anna
       return {
         [UsageType.RESIDENTIEL]: ScoreImpact.NEGATIF,

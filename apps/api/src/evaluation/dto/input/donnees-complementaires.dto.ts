@@ -6,8 +6,8 @@ import {
   ValeurArchitecturale,
   QualitePaysage,
   QualiteVoieDesserte,
+  RaccordementEau,
 } from "@mutafriches/shared-types";
-import { RaccordementEau } from "@mutafriches/shared-types/dist/enums/saisie.enums";
 import { ApiProperty } from "@nestjs/swagger";
 
 export class DonneesComplementairesSwaggerDto implements IDonneesComplementaires {

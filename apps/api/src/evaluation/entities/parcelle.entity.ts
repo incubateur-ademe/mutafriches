@@ -15,8 +15,8 @@ import {
   Coordonnees,
   GeometrieParcelle,
   CalculerMutabiliteInputDto,
+  RaccordementEau,
 } from "@mutafriches/shared-types";
-import { RaccordementEau } from "@mutafriches/shared-types/dist/enums/saisie.enums";
 
 /**
  * Entité métier Parcelle

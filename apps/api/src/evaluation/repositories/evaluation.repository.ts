@@ -7,8 +7,8 @@ import {
   DonneesComplementairesInputDto,
   MutabiliteOutputDto,
   OrigineUtilisation,
+  SourceUtilisation,
 } from "@mutafriches/shared-types";
-import { SourceUtilisation } from "@mutafriches/shared-types/dist/enums/usage.enums";
 import { evaluations } from "../../shared/database/schemas/evaluations.schema";
 import { Evaluation } from "../entities/evaluation.entity";
 
