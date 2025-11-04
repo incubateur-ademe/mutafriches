@@ -1,11 +1,10 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { Test, TestingModule } from "@nestjs/testing";
 import { OrchestrateurService } from "./orchestrateur.service";
-import { EnrichissementService } from "./enrichissement.service";
 import { CalculService } from "./calcul.service";
-import { EvaluationRepository } from "../repository/evaluation.repository";
-import { Parcelle } from "../domain/entities/parcelle.entity";
-import { RaccordementEau } from "@mutafriches/shared-types";
+import { EnrichissementService } from "../../enrichissement/services/enrichissement.service";
+import { EvaluationRepository } from "../repositories/evaluation.repository";
+import { Parcelle } from "../entities/parcelle.entity";
 
 describe("OrchestrateurService", () => {
   let service: OrchestrateurService;

@@ -4,7 +4,7 @@ import {
   MutabiliteOutputDto,
   OrigineUtilisation,
 } from "@mutafriches/shared-types";
-import { VERSION_ALGO } from "../services/algorithme/algorithme.constants";
+import { VERSION_ALGO } from "@mutafriches/shared-types";
 
 /**
  * Entité métier Evaluation

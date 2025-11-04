@@ -5,7 +5,6 @@ import { CadastreService } from "./external/cadastre/cadastre.service";
 import { BdnbService } from "./external/bdnb/bdnb.service";
 import { EnedisService } from "./external/enedis/enedis.service";
 import { RisqueNaturel, SourceEnrichissement } from "@mutafriches/shared-types";
-import { EnrichissementRepository } from "../repository/enrichissement.repository";
 import { RgaService } from "./external/georisques/rga/rga.service";
 import { CatnatService } from "./external/georisques/catnat/catnat.service";
 import { TriZonageService } from "./external/georisques/tri-zonage/tri-zonage.service";
@@ -19,6 +18,7 @@ import { TriService } from "./external/georisques/tri/tri.service";
 import { AziService } from "./external/georisques/azi/azi.service";
 import { PapiService } from "./external/georisques/papi/papi.service";
 import { PprService } from "./external/georisques/ppr/ppr.service";
+import { EnrichissementRepository } from "../repositories/enrichissement.repository";
 
 describe("EnrichissementService", () => {
   let service: EnrichissementService;

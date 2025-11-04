@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Query, Get, Param, Req, NotFoundException } from "@nestjs/common";
+import { Controller, Post, Body, Query, Get, Param, NotFoundException } from "@nestjs/common";
 import { ApiTags, ApiOperation } from "@nestjs/swagger";
 import {
   EnrichirParcelleInputDto,
@@ -21,7 +21,6 @@ import {
   OrigineUtilisation,
   SourceUtilisation,
 } from "@mutafriches/shared-types";
-import { Request } from "express";
 import { EnrichissementService } from "../enrichissement/services/enrichissement.service";
 import { OrchestrateurService } from "../evaluation/services/orchestrateur.service";
 import { EvaluationSwaggerDto } from "../evaluation/dto/output/evaluation.dto";

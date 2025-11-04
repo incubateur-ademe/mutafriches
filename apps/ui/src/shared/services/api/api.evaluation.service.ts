@@ -1,7 +1,4 @@
-import type {
-  CalculerMutabiliteInputDto,
-  MutabiliteOutputDto,
-} from "@mutafriches/shared-types";
+import type { CalculerMutabiliteInputDto, MutabiliteOutputDto } from "@mutafriches/shared-types";
 import { apiClient } from "./api.client";
 import { API_CONFIG } from "./api.config";
 import { ApiError } from "./api.types";
@@ -24,11 +21,7 @@ class EvaluationService {
     }
 
     if (!options?.sansEnrichissement && !input.donneesComplementaires) {
-      throw new ApiError(
-        "Les données complémentaires sont requises",
-        400,
-        "Bad Request",
-      );
+      throw new ApiError("Les données complémentaires sont requises", 400, "Bad Request");
     }
 
     const params: Record<string, string> = {};
@@ -48,11 +41,9 @@ class EvaluationService {
       }
     }
 
-    return apiClient.post<MutabiliteOutputDto>(
-      API_CONFIG.endpoints.evaluation.calculer,
-      input,
-      { params },
-    );
+    return apiClient.post<MutabiliteOutputDto>(API_CONFIG.endpoints.evaluation.calculer, input, {
+      params,
+    });
   }
 }
 

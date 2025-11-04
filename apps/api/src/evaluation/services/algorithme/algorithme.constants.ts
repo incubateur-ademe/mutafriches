@@ -1,10 +1,7 @@
-/**
- * Version de l'algorithme
- */
-export const VERSION_ALGO = "1.1";
+import { POIDS_CRITERES } from "./algorithme.config";
 
 /**
  * Nombre de critères utilisés dans le calcul
- * Calculé automatiquement à partir de POIDS_CRITERES
+ * Calculé automatiquement depuis POIDS_CRITERES
  */
-export const NOMBRE_CRITERES_UTILISES = 21; // 14 enrichissement + 7 complémentaires
+export const NOMBRE_CRITERES_UTILISES = Object.keys(POIDS_CRITERES).length;

@@ -2,8 +2,7 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { Test, TestingModule } from "@nestjs/testing";
 import { CalculService } from "./calcul.service";
 import { RaccordementEau, UsageType } from "@mutafriches/shared-types";
-import { Parcelle } from "../domain/entities/parcelle.entity";
-import { T } from "vitest/dist/chunks/reporters.d.BFLkQcL6";
+import { Parcelle } from "../entities/parcelle.entity";
 
 describe("CalculService", () => {
   let service: CalculService;
