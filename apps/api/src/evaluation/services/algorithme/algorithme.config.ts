@@ -11,7 +11,7 @@ import {
   TrameVerteEtBleue,
   ZonageReglementaire,
 } from "@mutafriches/shared-types";
-import { ScoreImpact, ScoreParUsage } from "@mutafriches/shared-types";
+import { ScoreImpact, ScoreParUsage } from "./algorithme.types";
 
 // Configuration des poids
 export const POIDS_CRITERES = {

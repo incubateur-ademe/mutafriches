@@ -8,12 +8,12 @@ import {
   DetailCalculUsage,
   DetailCritere,
   UsageResultatDetaille,
-  NOMBRE_CRITERES_UTILISES,
 } from "@mutafriches/shared-types";
 import { Parcelle } from "../entities/parcelle.entity";
 import { MATRICE_SCORING, POIDS_CRITERES } from "./algorithme/algorithme.config";
 import { NIVEAUX_FIABILITE } from "@mutafriches/shared-types";
-import { ScoreParUsage } from "@mutafriches/shared-types";
+import { ScoreParUsage } from "./algorithme/algorithme.types";
+import { NOMBRE_CRITERES_UTILISES } from "./algorithme/algorithme.constants";
 
 // Structure pour les calculs intermédiaires
 interface CalculIntermediaire {

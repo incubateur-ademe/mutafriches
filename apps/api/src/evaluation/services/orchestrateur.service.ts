@@ -6,13 +6,13 @@ import {
   MutabiliteOutputDto,
   DonneesComplementairesInputDto,
   OrigineUtilisation,
+  SourceUtilisation,
 } from "@mutafriches/shared-types";
 import { EnrichissementService } from "../../enrichissement/services/enrichissement.service";
 import { CalculService } from "./calcul.service";
 import { Parcelle } from "../entities/parcelle.entity";
 import { Evaluation } from "../entities/evaluation.entity";
 import { EvaluationRepository } from "../repositories/evaluation.repository";
-import { SourceUtilisation } from "@mutafriches/shared-types/dist/enums/usage.enums";
 
 /**
  * Service orchestrateur principal
