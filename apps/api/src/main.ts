@@ -12,8 +12,8 @@ async function bootstrap() {
   try {
     const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
-    // TODO : Revoir la configuration CORS avec Anna si besoin + gestion integrateurs
-    app.enableCors(); // Tout ouvert par défaut (à restreindre en prod si besoin)
+    // TODO : Revoir la configuration CORS
+    app.enableCors();
 
     // Configuration de la validation
     app.useGlobalPipes(new ValidationPipe());
@@ -23,7 +23,10 @@ async function bootstrap() {
       .setTitle("Mutafriches API")
       .setDescription("API pour analyser la mutabilité des friches urbaines")
       .setVersion("1.0")
-      .addTag("friches", "Opérations sur les friches urbaines")
+      .addTag("enrichissement", "Module d'enrichissement des parcelles")
+      .addTag("evaluation", "Module d'évaluation de la mutabilité")
+      .addTag("friches", "Routes de compatibilité (deprecated)")
+      .addTag("evenements", "Tracking des événements utilisateur")
       .build();
 
     const document = SwaggerModule.createDocument(app, config);
@@ -49,25 +52,24 @@ async function bootstrap() {
       logger.log("CORS configuré pour le développement (http://localhost:5173)");
     }
 
-    // Servir l'UI React en production
     const isProduction = process.env.NODE_ENV === "production";
     if (isProduction) {
-      // Chemin vers le dossier dist-ui qui est dans /apps/dist-ui après build - spécifique à Scalingo
       const uiPath = "/app/apps/dist-ui";
       logger.log(`Configuration UI React en production : ${uiPath}`);
 
-      // Servir les fichiers statiques de l'UI React
       app.useStaticAssets(uiPath);
 
-      // Catch-all route pour le SPA React (doit être après toutes les routes API)
+      // Catch-all route pour le SPA React
       app.use((req: Request, res: Response, next: NextFunction) => {
         // Ne pas intercepter les routes API et les assets
         if (
           req.path.startsWith("/api") ||
-          req.path.startsWith("/friches") ||
+          req.path.startsWith("/enrichissement") ||
+          req.path.startsWith("/evaluation") ||
+          req.path.startsWith("/friches") || // Legacy
           req.path.startsWith("/evenements") ||
           req.path.startsWith("/health") ||
-          req.path.includes(".") // Pour les fichiers statiques (.js, .css, etc.)
+          req.path.includes(".")
         ) {
           return next();
         }
