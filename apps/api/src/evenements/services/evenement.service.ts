@@ -49,7 +49,7 @@ export class EvenementService {
     if (!value) return undefined;
 
     return value
-      .replace(/[<>\"'`]/g, "")
+      .replace(/[<>"'`]/g, "")
       .replace(/javascript:/gi, "")
       .replace(/on\w+=/gi, "")
       .substring(0, 255)
@@ -63,7 +63,7 @@ export class EvenementService {
     if (!userAgent) return undefined;
 
     return userAgent
-      .replace(/[<>\"'`]/g, "")
+      .replace(/[<>"'`]/g, "")
       .substring(0, 500)
       .trim();
   }
@@ -88,7 +88,7 @@ export class EvenementService {
 
       if (typeof value === "string") {
         sanitized[cleanKey] = value
-          .replace(/[<>\"'`]/g, "")
+          .replace(/[<>"'`]/g, "")
           .replace(/javascript:/gi, "")
           .replace(/on\w+=/gi, "")
           .replace(/http:\/\//gi, "")
