@@ -19,7 +19,7 @@ export interface FeedbackPertinenceDto extends EvenementInputDto {
 export interface InteretMultiParcellesDto extends EvenementInputDto {
   typeEvenement: TypeEvenement.INTERET_MULTI_PARCELLES;
   donnees?: {
-    contexte?: string; // "step1_initial" | "step1_modification" etc.
+    contexte?: string;
   };
 }
 

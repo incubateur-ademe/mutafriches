@@ -1,10 +1,16 @@
-import { pgTable, varchar, jsonb, timestamp, index } from "drizzle-orm/pg-core";
+import { pgTable, varchar, jsonb, timestamp, index, pgEnum } from "drizzle-orm/pg-core";
+import { TypeEvenement } from "@mutafriches/shared-types";
+
+export const typeEvenementEnum = pgEnum(
+  "type_evenement_enum",
+  Object.values(TypeEvenement) as [string, ...string[]],
+);
 
 export const evenements_utilisateur = pgTable(
   "evenements_utilisateur",
   {
     id: varchar("id", { length: 50 }).primaryKey(),
-    typeEvenement: varchar("type_evenement", { length: 50 }).notNull(),
+    typeEvenement: typeEvenementEnum("type_evenement").notNull(),
     evaluationId: varchar("evaluation_id", { length: 50 }),
     identifiantCadastral: varchar("identifiant_cadastral", { length: 20 }),
     donnees: jsonb("donnees"),
