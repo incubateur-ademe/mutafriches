@@ -1,36 +1,34 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import { Test, TestingModule } from "@nestjs/testing";
 import { SourceEnrichissement } from "@mutafriches/shared-types";
 import { CadastreEnrichissementService } from "./cadastre-enrichissement.service";
 import { CadastreService } from "../../adapters/cadastre/cadastre.service";
 import { BdnbService } from "../../adapters/bdnb/bdnb.service";
+import {
+  createMockCadastreService,
+  createMockBdnbService,
+} from "../../__test-helpers__/enrichissement.mocks";
 
 describe("CadastreEnrichissementService", () => {
   let service: CadastreEnrichissementService;
-  let cadastreService: { getParcelleInfo: ReturnType<typeof vi.fn> };
-  let bdnbService: { getSurfaceBatie: ReturnType<typeof vi.fn> };
+  let cadastreService: ReturnType<typeof createMockCadastreService>;
+  let bdnbService: ReturnType<typeof createMockBdnbService>;
 
   beforeEach(async () => {
-    // Créer les mocks
-    const mockCadastreService = {
-      getParcelleInfo: vi.fn(),
-    };
-
-    const mockBdnbService = {
-      getSurfaceBatie: vi.fn(),
-    };
+    const mockCadastre = createMockCadastreService();
+    const mockBdnb = createMockBdnbService();
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         CadastreEnrichissementService,
-        { provide: CadastreService, useValue: mockCadastreService },
-        { provide: BdnbService, useValue: mockBdnbService },
+        { provide: CadastreService, useValue: mockCadastre },
+        { provide: BdnbService, useValue: mockBdnb },
       ],
     }).compile();
 
     service = module.get<CadastreEnrichissementService>(CadastreEnrichissementService);
-    cadastreService = module.get(CadastreService);
-    bdnbService = module.get(BdnbService);
+    cadastreService = mockCadastre;
+    bdnbService = mockBdnb;
   });
 
   describe("enrichir", () => {

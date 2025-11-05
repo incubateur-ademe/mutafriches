@@ -1,5 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
-import { Test, TestingModule } from "@nestjs/testing";
+import { describe, it, expect, beforeEach } from "vitest";
 import { SourceEnrichissement } from "@mutafriches/shared-types";
 import { UrbanismeEnrichissementService } from "./urbanisme-enrichissement.service";
 import { Parcelle } from "../../../evaluation/entities/parcelle.entity";
@@ -7,12 +6,8 @@ import { Parcelle } from "../../../evaluation/entities/parcelle.entity";
 describe("UrbanismeEnrichissementService", () => {
   let service: UrbanismeEnrichissementService;
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [UrbanismeEnrichissementService],
-    }).compile();
-
-    service = module.get<UrbanismeEnrichissementService>(UrbanismeEnrichissementService);
+  beforeEach(() => {
+    service = new UrbanismeEnrichissementService();
   });
 
   describe("enrichir", () => {
@@ -90,7 +85,7 @@ describe("UrbanismeEnrichissementService", () => {
       // Arrange
       const parcelle = new Parcelle();
       parcelle.identifiantParcelle = "29232000AB0123";
-      parcelle.coordonnees = undefined; // Pas de coordonnées
+      parcelle.coordonnees = undefined;
       parcelle.commune = "Quimper";
 
       // Act
@@ -106,7 +101,7 @@ describe("UrbanismeEnrichissementService", () => {
       const parcelle = new Parcelle();
       parcelle.identifiantParcelle = "29232000AB0123";
       parcelle.coordonnees = { latitude: 48.0, longitude: -4.0 };
-      parcelle.commune = undefined; // Pas de commune
+      parcelle.commune = undefined;
 
       // Act
       const result = await service.enrichir(parcelle);
@@ -120,14 +115,14 @@ describe("UrbanismeEnrichissementService", () => {
       // Arrange
       const parcelle = new Parcelle();
       parcelle.identifiantParcelle = "29232000AB0123";
-      parcelle.coordonnees = undefined; // Pas de coordonnées
+      parcelle.coordonnees = undefined;
       parcelle.commune = "Quimper";
 
       // Act
       const result = await service.enrichir(parcelle);
 
       // Assert
-      expect(result.success).toBe(true); // Succès partiel
+      expect(result.success).toBe(true);
       expect(result.sourcesUtilisees.length).toBeGreaterThan(0);
       expect(result.sourcesEchouees.length).toBeGreaterThan(0);
     });

@@ -1,5 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
-import { Test, TestingModule } from "@nestjs/testing";
+import { describe, it, expect, beforeEach } from "vitest";
 import { SourceEnrichissement } from "@mutafriches/shared-types";
 import { TransportEnrichissementService } from "./transport-enrichissement.service";
 import { Parcelle } from "../../../evaluation/entities/parcelle.entity";
@@ -7,12 +6,8 @@ import { Parcelle } from "../../../evaluation/entities/parcelle.entity";
 describe("TransportEnrichissementService", () => {
   let service: TransportEnrichissementService;
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [TransportEnrichissementService],
-    }).compile();
-
-    service = module.get<TransportEnrichissementService>(TransportEnrichissementService);
+  beforeEach(() => {
+    service = new TransportEnrichissementService();
   });
 
   describe("enrichir", () => {
@@ -58,7 +53,7 @@ describe("TransportEnrichissementService", () => {
       // Act
       const result = await service.enrichir(parcelle);
 
-      // Assert - Les données sont temporaires
+      // Assert
       expect(result.sourcesUtilisees).toContain(SourceEnrichissement.TRANSPORT);
       // Note: Une fois le vrai service implémenté, ce test devra être adapté
     });

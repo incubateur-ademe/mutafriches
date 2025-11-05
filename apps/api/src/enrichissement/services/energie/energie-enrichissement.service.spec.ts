@@ -1,28 +1,24 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import { Test, TestingModule } from "@nestjs/testing";
 import { SourceEnrichissement } from "@mutafriches/shared-types";
 import { EnergieEnrichissementService } from "./energie-enrichissement.service";
 import { EnedisService } from "../../adapters/enedis/enedis.service";
 import { Parcelle } from "../../../evaluation/entities/parcelle.entity";
+import { createMockEnedisService } from "../../__test-helpers__/enrichissement.mocks";
 
 describe("EnergieEnrichissementService", () => {
   let service: EnergieEnrichissementService;
-  let enedisService: { getDistanceRaccordement: ReturnType<typeof vi.fn> };
+  let enedisService: ReturnType<typeof createMockEnedisService>;
 
   beforeEach(async () => {
-    const mockEnedisService = {
-      getDistanceRaccordement: vi.fn(),
-    };
+    const mockEnedis = createMockEnedisService();
 
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        EnergieEnrichissementService,
-        { provide: EnedisService, useValue: mockEnedisService },
-      ],
+      providers: [EnergieEnrichissementService, { provide: EnedisService, useValue: mockEnedis }],
     }).compile();
 
     service = module.get<EnergieEnrichissementService>(EnergieEnrichissementService);
-    enedisService = module.get(EnedisService);
+    enedisService = mockEnedis;
   });
 
   describe("enrichir", () => {
@@ -51,7 +47,7 @@ describe("EnergieEnrichissementService", () => {
       // Arrange
       const parcelle = new Parcelle();
       parcelle.identifiantParcelle = "29232000AB0123";
-      parcelle.coordonnees = undefined; // Pas de coordonnées
+      parcelle.coordonnees = undefined;
 
       // Act
       const result = await service.enrichir(parcelle);

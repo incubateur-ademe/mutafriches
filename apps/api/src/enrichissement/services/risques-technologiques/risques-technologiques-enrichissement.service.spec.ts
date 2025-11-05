@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import { Test, TestingModule } from "@nestjs/testing";
 import { SourceEnrichissement } from "@mutafriches/shared-types";
 import { RisquesTechnologiquesEnrichissementService } from "./risques-technologiques-enrichissement.service";
@@ -6,31 +6,28 @@ import { RisquesTechnologiquesCalculator } from "./risques-technologiques.calcul
 import { SisService } from "../../adapters/georisques/sis/sis.service";
 import { IcpeService } from "../../adapters/georisques/icpe/icpe.service";
 import { Parcelle } from "../../../evaluation/entities/parcelle.entity";
+import {
+  createMockSisService,
+  createMockIcpeService,
+  createMockRisquesTechnologiquesCalculator,
+} from "../../__test-helpers__/enrichissement.mocks";
 
 describe("RisquesTechnologiquesEnrichissementService", () => {
   let service: RisquesTechnologiquesEnrichissementService;
-  let sisService: { getSisByLatLon: ReturnType<typeof vi.fn> };
-  let icpeService: { getIcpeByLatLon: ReturnType<typeof vi.fn> };
-  let calculator: { evaluer: ReturnType<typeof vi.fn> };
+  let sisService: ReturnType<typeof createMockSisService>;
+  let icpeService: ReturnType<typeof createMockIcpeService>;
+  let calculator: ReturnType<typeof createMockRisquesTechnologiquesCalculator>;
 
   beforeEach(async () => {
-    const mockSisService = {
-      getSisByLatLon: vi.fn(),
-    };
-
-    const mockIcpeService = {
-      getIcpeByLatLon: vi.fn(),
-    };
-
-    const mockCalculator = {
-      evaluer: vi.fn(),
-    };
+    const mockSis = createMockSisService();
+    const mockIcpe = createMockIcpeService();
+    const mockCalculator = createMockRisquesTechnologiquesCalculator();
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         RisquesTechnologiquesEnrichissementService,
-        { provide: SisService, useValue: mockSisService },
-        { provide: IcpeService, useValue: mockIcpeService },
+        { provide: SisService, useValue: mockSis },
+        { provide: IcpeService, useValue: mockIcpe },
         { provide: RisquesTechnologiquesCalculator, useValue: mockCalculator },
       ],
     }).compile();
@@ -38,9 +35,9 @@ describe("RisquesTechnologiquesEnrichissementService", () => {
     service = module.get<RisquesTechnologiquesEnrichissementService>(
       RisquesTechnologiquesEnrichissementService,
     );
-    sisService = module.get(SisService);
-    icpeService = module.get(IcpeService);
-    calculator = module.get(RisquesTechnologiquesCalculator);
+    sisService = mockSis;
+    icpeService = mockIcpe;
+    calculator = mockCalculator;
   });
 
   describe("enrichir", () => {
@@ -199,9 +196,9 @@ describe("RisquesTechnologiquesEnrichissementService", () => {
       // Act
       await service.enrichir(parcelle);
 
-      // Assert - Les deux appels doivent avoir été lancés presque en même temps
+      // Assert
       const timeDiff = Math.abs(sisCallTime - icpeCallTime);
-      expect(timeDiff).toBeLessThan(5); // Moins de 5ms de différence
+      expect(timeDiff).toBeLessThan(5);
     });
 
     it("devrait enrichir sans distance ICPE si aucune installation", async () => {

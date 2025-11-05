@@ -12,61 +12,73 @@ import { GeoRisquesEnrichissementService } from "./georisques/georisques-enrichi
 import { FiabiliteCalculator } from "./shared/fiabilite.calculator";
 import { EnrichissementRepository } from "../repositories/enrichissement.repository";
 import { Parcelle } from "../../evaluation/entities/parcelle.entity";
+import {
+  createMockCadastreEnrichissementService,
+  createMockEnergieEnrichissementService,
+  createMockTransportEnrichissementService,
+  createMockUrbanismeEnrichissementService,
+  createMockRisquesNaturelsEnrichissementService,
+  createMockRisquesTechnologiquesEnrichissementService,
+  createMockGeoRisquesEnrichissementService,
+  createMockFiabiliteCalculator,
+  createMockEnrichissementRepository,
+} from "../__test-helpers__/enrichissement.mocks";
 
 describe("EnrichissementService", () => {
   let service: EnrichissementService;
-  let cadastreEnrichissement: { enrichir: ReturnType<typeof vi.fn> };
-  let energieEnrichissement: { enrichir: ReturnType<typeof vi.fn> };
-  let transportEnrichissement: { enrichir: ReturnType<typeof vi.fn> };
-  let urbanismeEnrichissement: { enrichir: ReturnType<typeof vi.fn> };
-  let risquesNaturelsEnrichissement: { enrichir: ReturnType<typeof vi.fn> };
-  let risquesTechnologiquesEnrichissement: { enrichir: ReturnType<typeof vi.fn> };
-  let georisquesEnrichissement: { enrichir: ReturnType<typeof vi.fn> };
-  let fiabiliteCalculator: { calculate: ReturnType<typeof vi.fn> };
-  let enrichissementRepository: { save: ReturnType<typeof vi.fn> };
+  let cadastreEnrichissement: ReturnType<typeof createMockCadastreEnrichissementService>;
+  let energieEnrichissement: ReturnType<typeof createMockEnergieEnrichissementService>;
+  let transportEnrichissement: ReturnType<typeof createMockTransportEnrichissementService>;
+  let urbanismeEnrichissement: ReturnType<typeof createMockUrbanismeEnrichissementService>;
+  let risquesNaturelsEnrichissement: ReturnType<
+    typeof createMockRisquesNaturelsEnrichissementService
+  >;
+  let risquesTechnologiquesEnrichissement: ReturnType<
+    typeof createMockRisquesTechnologiquesEnrichissementService
+  >;
+  let georisquesEnrichissement: ReturnType<typeof createMockGeoRisquesEnrichissementService>;
+  let fiabiliteCalculator: ReturnType<typeof createMockFiabiliteCalculator>;
+  let enrichissementRepository: ReturnType<typeof createMockEnrichissementRepository>;
 
   beforeEach(async () => {
-    const mockCadastreEnrichissement = { enrichir: vi.fn() };
-    const mockEnergieEnrichissement = { enrichir: vi.fn() };
-    const mockTransportEnrichissement = { enrichir: vi.fn() };
-    const mockUrbanismeEnrichissement = { enrichir: vi.fn() };
-    const mockRisquesNaturelsEnrichissement = { enrichir: vi.fn() };
-    const mockRisquesTechnologiquesEnrichissement = { enrichir: vi.fn() };
-    const mockGeoRisquesEnrichissement = { enrichir: vi.fn() };
-    const mockFiabiliteCalculator = { calculate: vi.fn() };
-    const mockRepository = { save: vi.fn() };
+    const mockCadastre = createMockCadastreEnrichissementService();
+    const mockEnergie = createMockEnergieEnrichissementService();
+    const mockTransport = createMockTransportEnrichissementService();
+    const mockUrbanisme = createMockUrbanismeEnrichissementService();
+    const mockRisquesNaturels = createMockRisquesNaturelsEnrichissementService();
+    const mockRisquesTechnologiques = createMockRisquesTechnologiquesEnrichissementService();
+    const mockGeoRisques = createMockGeoRisquesEnrichissementService();
+    const mockCalculator = createMockFiabiliteCalculator();
+    const mockRepository = createMockEnrichissementRepository();
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         EnrichissementService,
-        { provide: CadastreEnrichissementService, useValue: mockCadastreEnrichissement },
-        { provide: EnergieEnrichissementService, useValue: mockEnergieEnrichissement },
-        { provide: TransportEnrichissementService, useValue: mockTransportEnrichissement },
-        { provide: UrbanismeEnrichissementService, useValue: mockUrbanismeEnrichissement },
-        {
-          provide: RisquesNaturelsEnrichissementService,
-          useValue: mockRisquesNaturelsEnrichissement,
-        },
+        { provide: CadastreEnrichissementService, useValue: mockCadastre },
+        { provide: EnergieEnrichissementService, useValue: mockEnergie },
+        { provide: TransportEnrichissementService, useValue: mockTransport },
+        { provide: UrbanismeEnrichissementService, useValue: mockUrbanisme },
+        { provide: RisquesNaturelsEnrichissementService, useValue: mockRisquesNaturels },
         {
           provide: RisquesTechnologiquesEnrichissementService,
-          useValue: mockRisquesTechnologiquesEnrichissement,
+          useValue: mockRisquesTechnologiques,
         },
-        { provide: GeoRisquesEnrichissementService, useValue: mockGeoRisquesEnrichissement },
-        { provide: FiabiliteCalculator, useValue: mockFiabiliteCalculator },
+        { provide: GeoRisquesEnrichissementService, useValue: mockGeoRisques },
+        { provide: FiabiliteCalculator, useValue: mockCalculator },
         { provide: EnrichissementRepository, useValue: mockRepository },
       ],
     }).compile();
 
     service = module.get<EnrichissementService>(EnrichissementService);
-    cadastreEnrichissement = module.get(CadastreEnrichissementService);
-    energieEnrichissement = module.get(EnergieEnrichissementService);
-    transportEnrichissement = module.get(TransportEnrichissementService);
-    urbanismeEnrichissement = module.get(UrbanismeEnrichissementService);
-    risquesNaturelsEnrichissement = module.get(RisquesNaturelsEnrichissementService);
-    risquesTechnologiquesEnrichissement = module.get(RisquesTechnologiquesEnrichissementService);
-    georisquesEnrichissement = module.get(GeoRisquesEnrichissementService);
-    fiabiliteCalculator = module.get(FiabiliteCalculator);
-    enrichissementRepository = module.get(EnrichissementRepository);
+    cadastreEnrichissement = mockCadastre;
+    energieEnrichissement = mockEnergie;
+    transportEnrichissement = mockTransport;
+    urbanismeEnrichissement = mockUrbanisme;
+    risquesNaturelsEnrichissement = mockRisquesNaturels;
+    risquesTechnologiquesEnrichissement = mockRisquesTechnologiques;
+    georisquesEnrichissement = mockGeoRisques;
+    fiabiliteCalculator = mockCalculator;
+    enrichissementRepository = mockRepository;
   });
 
   describe("enrichir", () => {
@@ -112,7 +124,7 @@ describe("EnrichissementService", () => {
       // Act
       await service.enrichir(identifiantTest);
 
-      // Assert - Tous les sous-domaines ont été appelés
+      // Assert
       expect(cadastreEnrichissement.enrichir).toHaveBeenCalledWith(identifiantTest);
       expect(energieEnrichissement.enrichir).toHaveBeenCalledWith(parcelle);
       expect(transportEnrichissement.enrichir).toHaveBeenCalledWith(parcelle);
@@ -162,7 +174,7 @@ describe("EnrichissementService", () => {
       // Act
       const result = await service.enrichir(identifiantTest);
 
-      // Assert - Le DTO contient toutes les données
+      // Assert
       expect(result.identifiantParcelle).toBe(identifiantTest);
       expect(result.codeInsee).toBe("29232");
       expect(result.commune).toBe("Quimper");
@@ -219,7 +231,7 @@ describe("EnrichissementService", () => {
       // Act
       await service.enrichir(identifiantTest);
 
-      // Assert - Fiabilité calculée avec 6 sources et 1 champ manquant
+      // Assert
       expect(fiabiliteCalculator.calculate).toHaveBeenCalledWith(6, 1);
     });
 
@@ -324,7 +336,7 @@ describe("EnrichissementService", () => {
         // Ignoré
       }
 
-      // Assert - L'échec doit quand même être persisté
+      // Assert
       expect(enrichissementRepository.save).toHaveBeenCalledWith(
         expect.objectContaining({
           statut: StatutEnrichissement.ECHEC,
@@ -348,7 +360,7 @@ describe("EnrichissementService", () => {
       fiabiliteCalculator.calculate.mockReturnValue(9.5);
       enrichissementRepository.save.mockRejectedValue(new Error("DB error"));
 
-      // Act & Assert - Ne doit pas lancer d'erreur
+      // Act & Assert
       await expect(service.enrichir(identifiantTest)).resolves.toBeDefined();
     });
 
@@ -420,7 +432,7 @@ describe("EnrichissementService", () => {
       // Act
       await service.enrichir(identifiantTest);
 
-      // Assert - GeoRisques ne doit pas être appelé
+      // Assert
       expect(georisquesEnrichissement.enrichir).not.toHaveBeenCalled();
     });
   });
@@ -439,13 +451,15 @@ function createMockParcelle(): Parcelle {
 }
 
 interface AllMocks {
-  cadastreEnrichissement: { enrichir: ReturnType<typeof vi.fn> };
-  energieEnrichissement: { enrichir: ReturnType<typeof vi.fn> };
-  transportEnrichissement: { enrichir: ReturnType<typeof vi.fn> };
-  urbanismeEnrichissement: { enrichir: ReturnType<typeof vi.fn> };
-  risquesNaturelsEnrichissement: { enrichir: ReturnType<typeof vi.fn> };
-  risquesTechnologiquesEnrichissement: { enrichir: ReturnType<typeof vi.fn> };
-  georisquesEnrichissement: { enrichir: ReturnType<typeof vi.fn> };
+  cadastreEnrichissement: ReturnType<typeof createMockCadastreEnrichissementService>;
+  energieEnrichissement: ReturnType<typeof createMockEnergieEnrichissementService>;
+  transportEnrichissement: ReturnType<typeof createMockTransportEnrichissementService>;
+  urbanismeEnrichissement: ReturnType<typeof createMockUrbanismeEnrichissementService>;
+  risquesNaturelsEnrichissement: ReturnType<typeof createMockRisquesNaturelsEnrichissementService>;
+  risquesTechnologiquesEnrichissement: ReturnType<
+    typeof createMockRisquesTechnologiquesEnrichissementService
+  >;
+  georisquesEnrichissement: ReturnType<typeof createMockGeoRisquesEnrichissementService>;
 }
 
 function setupAllMocksSuccess(parcelle: Parcelle, mocks: AllMocks): void {

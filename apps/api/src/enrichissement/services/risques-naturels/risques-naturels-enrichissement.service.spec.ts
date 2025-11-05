@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import { Test, TestingModule } from "@nestjs/testing";
 import { RisqueNaturel, SourceEnrichissement } from "@mutafriches/shared-types";
 import { RisquesNaturelsEnrichissementService } from "./risques-naturels-enrichissement.service";
@@ -6,37 +6,28 @@ import { RisquesNaturelsCalculator } from "./risques-naturels.calculator";
 import { RgaService } from "../../adapters/georisques/rga/rga.service";
 import { CavitesService } from "../../adapters/georisques/cavites/cavites.service";
 import { Parcelle } from "../../../evaluation/entities/parcelle.entity";
+import {
+  createMockRgaService,
+  createMockCavitesService,
+  createMockRisquesNaturelsCalculator,
+} from "../../__test-helpers__/enrichissement.mocks";
 
 describe("RisquesNaturelsEnrichissementService", () => {
   let service: RisquesNaturelsEnrichissementService;
-  let rgaService: { getRga: ReturnType<typeof vi.fn> };
-  let cavitesService: { getCavites: ReturnType<typeof vi.fn> };
-  let calculator: {
-    combiner: ReturnType<typeof vi.fn>;
-    transformRgaToRisque: ReturnType<typeof vi.fn>;
-    transformCavitesToRisque: ReturnType<typeof vi.fn>;
-  };
+  let rgaService: ReturnType<typeof createMockRgaService>;
+  let cavitesService: ReturnType<typeof createMockCavitesService>;
+  let calculator: ReturnType<typeof createMockRisquesNaturelsCalculator>;
 
   beforeEach(async () => {
-    const mockRgaService = {
-      getRga: vi.fn(),
-    };
-
-    const mockCavitesService = {
-      getCavites: vi.fn(),
-    };
-
-    const mockCalculator = {
-      combiner: vi.fn(),
-      transformRgaToRisque: vi.fn(),
-      transformCavitesToRisque: vi.fn(),
-    };
+    const mockRga = createMockRgaService();
+    const mockCavites = createMockCavitesService();
+    const mockCalculator = createMockRisquesNaturelsCalculator();
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         RisquesNaturelsEnrichissementService,
-        { provide: RgaService, useValue: mockRgaService },
-        { provide: CavitesService, useValue: mockCavitesService },
+        { provide: RgaService, useValue: mockRga },
+        { provide: CavitesService, useValue: mockCavites },
         { provide: RisquesNaturelsCalculator, useValue: mockCalculator },
       ],
     }).compile();
@@ -44,9 +35,9 @@ describe("RisquesNaturelsEnrichissementService", () => {
     service = module.get<RisquesNaturelsEnrichissementService>(
       RisquesNaturelsEnrichissementService,
     );
-    rgaService = module.get(RgaService);
-    cavitesService = module.get(CavitesService);
-    calculator = module.get(RisquesNaturelsCalculator);
+    rgaService = mockRga;
+    cavitesService = mockCavites;
+    calculator = mockCalculator;
   });
 
   describe("enrichir", () => {
@@ -109,7 +100,7 @@ describe("RisquesNaturelsEnrichissementService", () => {
       });
 
       calculator.transformCavitesToRisque.mockReturnValue(RisqueNaturel.FORT);
-      calculator.combiner.mockReturnValue(RisqueNaturel.MOYEN); // AUCUN + FORT = MOYEN
+      calculator.combiner.mockReturnValue(RisqueNaturel.MOYEN);
 
       // Act
       const result = await service.enrichir(parcelle);
@@ -138,7 +129,7 @@ describe("RisquesNaturelsEnrichissementService", () => {
       });
 
       calculator.transformRgaToRisque.mockReturnValue(RisqueNaturel.MOYEN);
-      calculator.combiner.mockReturnValue(RisqueNaturel.MOYEN); // MOYEN + AUCUN = MOYEN
+      calculator.combiner.mockReturnValue(RisqueNaturel.MOYEN);
 
       // Act
       const result = await service.enrichir(parcelle);
@@ -222,9 +213,9 @@ describe("RisquesNaturelsEnrichissementService", () => {
       // Act
       await service.enrichir(parcelle);
 
-      // Assert - Les deux appels doivent avoir été lancés presque en même temps
+      // Assert
       const timeDiff = Math.abs(rgaCallTime - cavitesCallTime);
-      expect(timeDiff).toBeLessThan(5); // Moins de 5ms de différence
+      expect(timeDiff).toBeLessThan(5);
     });
   });
 });

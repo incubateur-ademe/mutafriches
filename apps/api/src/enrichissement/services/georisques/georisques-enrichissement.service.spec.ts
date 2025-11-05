@@ -1,16 +1,15 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import { Test, TestingModule } from "@nestjs/testing";
 import { GeoRisquesEnrichissementService } from "./georisques-enrichissement.service";
 import { GeoRisquesOrchestrator } from "./georisques.orchestrator";
+import { createMockGeoRisquesOrchestrator } from "../../__test-helpers__/enrichissement.mocks";
 
 describe("GeoRisquesEnrichissementService", () => {
   let service: GeoRisquesEnrichissementService;
-  let orchestrator: { fetchAll: ReturnType<typeof vi.fn> };
+  let orchestrator: ReturnType<typeof createMockGeoRisquesOrchestrator>;
 
   beforeEach(async () => {
-    const mockOrchestrator = {
-      fetchAll: vi.fn(),
-    };
+    const mockOrchestrator = createMockGeoRisquesOrchestrator();
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -20,7 +19,7 @@ describe("GeoRisquesEnrichissementService", () => {
     }).compile();
 
     service = module.get<GeoRisquesEnrichissementService>(GeoRisquesEnrichissementService);
-    orchestrator = module.get(GeoRisquesOrchestrator);
+    orchestrator = mockOrchestrator;
   });
 
   describe("enrichir", () => {

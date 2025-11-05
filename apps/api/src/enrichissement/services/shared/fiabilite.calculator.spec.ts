@@ -1,16 +1,11 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { Test, TestingModule } from "@nestjs/testing";
 import { FiabiliteCalculator } from "./fiabilite.calculator";
 
 describe("FiabiliteCalculator", () => {
   let calculator: FiabiliteCalculator;
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [FiabiliteCalculator],
-    }).compile();
-
-    calculator = module.get<FiabiliteCalculator>(FiabiliteCalculator);
+  beforeEach(() => {
+    calculator = new FiabiliteCalculator();
   });
 
   describe("calculate", () => {

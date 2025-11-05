@@ -1,18 +1,13 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { Test, TestingModule } from "@nestjs/testing";
-import { CalculService } from "./calcul.service";
 import { RaccordementEau, UsageType } from "@mutafriches/shared-types";
+import { CalculService } from "./calcul.service";
 import { Parcelle } from "../entities/parcelle.entity";
 
 describe("CalculService", () => {
   let service: CalculService;
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [CalculService],
-    }).compile();
-
-    service = module.get<CalculService>(CalculService);
+  beforeEach(() => {
+    service = new CalculService();
   });
 
   describe("calculer", () => {
