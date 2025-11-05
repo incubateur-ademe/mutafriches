@@ -1,0 +1,2 @@
+CREATE TYPE "public"."type_evenement_enum" AS ENUM('feedback_pertinence_classement', 'interet_multi_parcelles', 'interet_mise_en_relation', 'interet_export_resultats');
+ALTER TABLE "evenements_utilisateur" ALTER COLUMN "type_evenement" SET DATA TYPE "public"."type_evenement_enum" USING "type_evenement"::"public"."type_evenement_enum";

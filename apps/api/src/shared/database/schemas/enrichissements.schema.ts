@@ -18,21 +18,14 @@ export const enrichissements = pgTable(
     sourceUtilisation: varchar("source_utilisation", { length: 20 }),
     integrateur: varchar("integrateur", { length: 255 }),
     versionApi: varchar("version_api", { length: 20 }),
-
-    // Informations géométriques
     centroidLatitude: numeric("centroid_latitude", { precision: 10, scale: 7 }),
     centroidLongitude: numeric("centroid_longitude", { precision: 10, scale: 7 }),
     geometrie: jsonb("geometrie"),
   },
-  (table) => {
-    return {
-      identifiantIdx: index("idx_enrichissements_identifiant").on(table.identifiantCadastral),
-      statutIdx: index("idx_enrichissements_statut").on(table.statut),
-      dateIdx: index("idx_enrichissements_date").on(table.dateEnrichissement),
-      centroidIdx: index("idx_enrichissements_centroid").on(
-        table.centroidLatitude,
-        table.centroidLongitude,
-      ),
-    };
-  },
+  (table) => [
+    index("idx_enrichissements_identifiant").on(table.identifiantCadastral),
+    index("idx_enrichissements_statut").on(table.statut),
+    index("idx_enrichissements_date").on(table.dateEnrichissement),
+    index("idx_enrichissements_centroid").on(table.centroidLatitude, table.centroidLongitude),
+  ],
 );
