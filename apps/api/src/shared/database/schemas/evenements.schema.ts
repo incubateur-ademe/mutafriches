@@ -20,11 +20,9 @@ export const evenements_utilisateur = pgTable(
     userAgent: varchar("user_agent", { length: 500 }),
     sessionId: varchar("session_id", { length: 100 }),
   },
-  (table) => {
-    return {
-      typeEvenementIdx: index("idx_type_evenement").on(table.typeEvenement),
-      evaluationIdIdx: index("idx_evaluation_id").on(table.evaluationId),
-      dateCreationIdx: index("idx_date_creation").on(table.dateCreation),
-    };
-  },
+  (table) => [
+    index("idx_type_evenement").on(table.typeEvenement),
+    index("idx_evaluation_id").on(table.evaluationId),
+    index("idx_date_creation").on(table.dateCreation),
+  ],
 );

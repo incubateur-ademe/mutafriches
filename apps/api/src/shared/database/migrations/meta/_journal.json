@@ -22,6 +22,13 @@
       "when": 1760694265519,
       "tag": "0002_right_roughhouse",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1762351902300,
+      "tag": "0003_wonderful_gladiator",
+      "breakpoints": true
     }
   ]
 }

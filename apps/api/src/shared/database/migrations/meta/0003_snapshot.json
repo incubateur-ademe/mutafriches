@@ -1,0 +1,432 @@
+{
+  "id": "023193f5-1a38-47b2-a3b8-615da6787619",
+  "prevId": "fdbb7a5b-020b-415e-b23c-8fab1c0425dc",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.enrichissements": {
+      "name": "enrichissements",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar(50)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "identifiant_cadastral": {
+          "name": "identifiant_cadastral",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "code_insee": {
+          "name": "code_insee",
+          "type": "varchar(5)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "commune": {
+          "name": "commune",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "statut": {
+          "name": "statut",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "donnees": {
+          "name": "donnees",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "message_erreur": {
+          "name": "message_erreur",
+          "type": "varchar(1000)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "code_erreur": {
+          "name": "code_erreur",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "sources_reussies": {
+          "name": "sources_reussies",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "sources_echouees": {
+          "name": "sources_echouees",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "date_enrichissement": {
+          "name": "date_enrichissement",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "duree_ms": {
+          "name": "duree_ms",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "source_utilisation": {
+          "name": "source_utilisation",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "integrateur": {
+          "name": "integrateur",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "version_api": {
+          "name": "version_api",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "centroid_latitude": {
+          "name": "centroid_latitude",
+          "type": "numeric(10, 7)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "centroid_longitude": {
+          "name": "centroid_longitude",
+          "type": "numeric(10, 7)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "geometrie": {
+          "name": "geometrie",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "idx_enrichissements_identifiant": {
+          "name": "idx_enrichissements_identifiant",
+          "columns": [
+            {
+              "expression": "identifiant_cadastral",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_enrichissements_statut": {
+          "name": "idx_enrichissements_statut",
+          "columns": [
+            {
+              "expression": "statut",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_enrichissements_date": {
+          "name": "idx_enrichissements_date",
+          "columns": [
+            {
+              "expression": "date_enrichissement",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_enrichissements_centroid": {
+          "name": "idx_enrichissements_centroid",
+          "columns": [
+            {
+              "expression": "centroid_latitude",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "centroid_longitude",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.evaluations": {
+      "name": "evaluations",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar(50)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "parcelle_id": {
+          "name": "parcelle_id",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "code_insee": {
+          "name": "code_insee",
+          "type": "varchar(5)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "date_calcul": {
+          "name": "date_calcul",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "donnees_enrichissement": {
+          "name": "donnees_enrichissement",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "donnees_complementaires": {
+          "name": "donnees_complementaires",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "resultats": {
+          "name": "resultats",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "fiabilite": {
+          "name": "fiabilite",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "version_algorithme": {
+          "name": "version_algorithme",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "source_utilisation": {
+          "name": "source_utilisation",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "integrateur": {
+          "name": "integrateur",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "utilisateur_id": {
+          "name": "utilisateur_id",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "commentaire": {
+          "name": "commentaire",
+          "type": "varchar(1000)",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.evenements_utilisateur": {
+      "name": "evenements_utilisateur",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar(50)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "type_evenement": {
+          "name": "type_evenement",
+          "type": "type_evenement_enum",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "evaluation_id": {
+          "name": "evaluation_id",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "identifiant_cadastral": {
+          "name": "identifiant_cadastral",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "donnees": {
+          "name": "donnees",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "date_creation": {
+          "name": "date_creation",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "source_utilisation": {
+          "name": "source_utilisation",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "integrateur": {
+          "name": "integrateur",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "user_agent": {
+          "name": "user_agent",
+          "type": "varchar(500)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "session_id": {
+          "name": "session_id",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "idx_type_evenement": {
+          "name": "idx_type_evenement",
+          "columns": [
+            {
+              "expression": "type_evenement",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_evaluation_id": {
+          "name": "idx_evaluation_id",
+          "columns": [
+            {
+              "expression": "evaluation_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_date_creation": {
+          "name": "idx_date_creation",
+          "columns": [
+            {
+              "expression": "date_creation",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {
+    "public.type_evenement_enum": {
+      "name": "type_evenement_enum",
+      "schema": "public",
+      "values": [
+        "feedback_pertinence_classement",
+        "interet_multi_parcelles",
+        "interet_mise_en_relation",
+        "interet_export_resultats"
+      ]
+    }
+  },
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}
