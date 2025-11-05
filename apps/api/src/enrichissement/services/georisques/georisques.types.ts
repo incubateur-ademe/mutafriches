@@ -2,7 +2,7 @@
  * Types pour le sous-domaine georisques
  */
 
-import { GeoRisquesResult } from "../external/georisques/georisques.types";
+import { GeoRisquesResult } from "../../adapters/georisques/georisques.types";
 
 /**
  * Résultat de l'orchestration GeoRisques

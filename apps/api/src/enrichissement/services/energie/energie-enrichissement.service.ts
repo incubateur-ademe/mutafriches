@@ -1,7 +1,7 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { SourceEnrichissement } from "@mutafriches/shared-types";
 import { Parcelle } from "../../../evaluation/entities/parcelle.entity";
-import { EnedisService } from "../external/enedis/enedis.service";
+import { EnedisService } from "../../adapters/enedis/enedis.service";
 import { EnrichmentResult } from "../shared/enrichissement.types";
 
 /**

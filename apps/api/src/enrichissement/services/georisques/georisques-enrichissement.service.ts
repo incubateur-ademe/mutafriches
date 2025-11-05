@@ -1,7 +1,7 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { GeoRisquesResult } from "../external/georisques/georisques.types";
+import { GeoRisquesResult } from "../../adapters/georisques/georisques.types";
 import { EnrichmentResult } from "../shared/enrichissement.types";
-import { GeoRisquesOrchestrator } from "./georisques-orchestrator";
+import { GeoRisquesOrchestrator } from "./georisques.orchestrator";
 
 /**
  * Service d'enrichissement du sous-domaine GeoRisques

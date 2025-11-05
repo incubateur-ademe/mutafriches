@@ -1,9 +1,9 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { SourceEnrichissement } from "@mutafriches/shared-types";
 import { Parcelle } from "../../../evaluation/entities/parcelle.entity";
-import { SisService } from "../external/georisques/sis/sis.service";
-import { IcpeService } from "../external/georisques/icpe/icpe.service";
-import { GEORISQUES_RAYONS_DEFAUT } from "../external/georisques/georisques.constants";
+import { SisService } from "../../adapters/georisques/sis/sis.service";
+import { IcpeService } from "../../adapters/georisques/icpe/icpe.service";
+import { GEORISQUES_RAYONS_DEFAUT } from "../../adapters/georisques/georisques.constants";
 import { EnrichmentResult } from "../shared/enrichissement.types";
 import { RisquesTechnologiquesCalculator } from "./risques-technologiques.calculator";
 import { EvaluationRisquesTechnologiques } from "./risques-technologiques.types";

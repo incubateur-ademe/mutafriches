@@ -7,23 +7,23 @@ import { EnrichissementRepository } from "./repositories/enrichissement.reposito
 import { DatabaseModule } from "../shared/database/database.module";
 
 // Import des services externes
-import { CadastreService } from "./services/external/cadastre/cadastre.service";
-import { BdnbService } from "./services/external/bdnb/bdnb.service";
-import { EnedisService } from "./services/external/enedis/enedis.service";
+import { BdnbService } from "./adapters/bdnb/bdnb.service";
+import { EnedisService } from "./adapters/enedis/enedis.service";
+import { CadastreService } from "./adapters/cadastre/cadastre.service";
 // Import tous les services GeoRisques
-import { RgaService } from "./services/external/georisques/rga/rga.service";
-import { CatnatService } from "./services/external/georisques/catnat/catnat.service";
-import { TriService } from "./services/external/georisques/tri/tri.service";
-import { TriZonageService } from "./services/external/georisques/tri-zonage/tri-zonage.service";
-import { MvtService } from "./services/external/georisques/mvt/mvt.service";
-import { ZonageSismiqueService } from "./services/external/georisques/zonage-sismique/zonage-sismique.service";
-import { CavitesService } from "./services/external/georisques/cavites/cavites.service";
-import { OldService } from "./services/external/georisques/old/old.service";
-import { SisService } from "./services/external/georisques/sis/sis.service";
-import { IcpeService } from "./services/external/georisques/icpe/icpe.service";
-import { AziService } from "./services/external/georisques/azi/azi.service";
-import { PapiService } from "./services/external/georisques/papi/papi.service";
-import { PprService } from "./services/external/georisques/ppr/ppr.service";
+import { RgaService } from "./adapters/georisques/rga/rga.service";
+import { CatnatService } from "./adapters/georisques/catnat/catnat.service";
+import { TriService } from "./adapters/georisques/tri/tri.service";
+import { TriZonageService } from "./adapters/georisques/tri-zonage/tri-zonage.service";
+import { MvtService } from "./adapters/georisques/mvt/mvt.service";
+import { ZonageSismiqueService } from "./adapters/georisques/zonage-sismique/zonage-sismique.service";
+import { CavitesService } from "./adapters/georisques/cavites/cavites.service";
+import { OldService } from "./adapters/georisques/old/old.service";
+import { SisService } from "./adapters/georisques/sis/sis.service";
+import { IcpeService } from "./adapters/georisques/icpe/icpe.service";
+import { AziService } from "./adapters/georisques/azi/azi.service";
+import { PapiService } from "./adapters/georisques/papi/papi.service";
+import { PprService } from "./adapters/georisques/ppr/ppr.service";
 
 @Module({
   imports: [DatabaseModule, HttpModule],

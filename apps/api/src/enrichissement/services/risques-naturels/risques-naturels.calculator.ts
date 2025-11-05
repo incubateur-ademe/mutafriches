@@ -1,6 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { RisqueNaturel } from "@mutafriches/shared-types";
-import { CavitesResultNormalized } from "../external/georisques/cavites/cavites.types";
+import { CavitesResultNormalized } from "../../adapters/georisques/cavites/cavites.types";
 
 /**
  * Calculator du sous-domaine Risques Naturels

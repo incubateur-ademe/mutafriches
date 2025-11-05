@@ -1,8 +1,8 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { GeometrieParcelle, SourceEnrichissement } from "@mutafriches/shared-types";
 import { Parcelle } from "../../../evaluation/entities/parcelle.entity";
-import { CadastreService } from "../external/cadastre/cadastre.service";
-import { BdnbService } from "../external/bdnb/bdnb.service";
+import { CadastreService } from "../../adapters/cadastre/cadastre.service";
+import { BdnbService } from "../../adapters/bdnb/bdnb.service";
 import { EnrichmentResult } from "../shared/enrichissement.types";
 import { ParcelleInitiale } from "./cadastre-enrichissement.types";
 

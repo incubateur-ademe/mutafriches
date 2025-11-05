@@ -1,9 +1,9 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { RisqueNaturel, SourceEnrichissement } from "@mutafriches/shared-types";
 import { Parcelle } from "../../../evaluation/entities/parcelle.entity";
-import { RgaService } from "../external/georisques/rga/rga.service";
-import { CavitesService } from "../external/georisques/cavites/cavites.service";
-import { GEORISQUES_RAYONS_DEFAUT } from "../external/georisques/georisques.constants";
+import { RgaService } from "../../adapters/georisques/rga/rga.service";
+import { CavitesService } from "../../adapters/georisques/cavites/cavites.service";
+import { GEORISQUES_RAYONS_DEFAUT } from "../../adapters/georisques/georisques.constants";
 import { EnrichmentResult } from "../shared/enrichissement.types";
 import { RisquesNaturelsCalculator } from "./risques-naturels.calculator";
 import { EvaluationRisquesNaturels } from "./risques-naturels.types";

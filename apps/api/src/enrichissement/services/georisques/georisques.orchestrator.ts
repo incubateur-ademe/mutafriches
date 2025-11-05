@@ -1,21 +1,21 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { SourceEnrichissement } from "@mutafriches/shared-types";
-import { GeoRisquesResult } from "../external/georisques/georisques.types";
-import { RgaService } from "../external/georisques/rga/rga.service";
-import { CatnatService } from "../external/georisques/catnat/catnat.service";
-import { TriZonageService } from "../external/georisques/tri-zonage/tri-zonage.service";
-import { TriService } from "../external/georisques/tri/tri.service";
-import { MvtService } from "../external/georisques/mvt/mvt.service";
-import { ZonageSismiqueService } from "../external/georisques/zonage-sismique/zonage-sismique.service";
-import { CavitesService } from "../external/georisques/cavites/cavites.service";
-import { OldService } from "../external/georisques/old/old.service";
-import { SisService } from "../external/georisques/sis/sis.service";
-import { IcpeService } from "../external/georisques/icpe/icpe.service";
-import { AziService } from "../external/georisques/azi/azi.service";
-import { PapiService } from "../external/georisques/papi/papi.service";
-import { PprService } from "../external/georisques/ppr/ppr.service";
-import { GEORISQUES_RAYONS_DEFAUT } from "../external/georisques/georisques.constants";
+import { GeoRisquesResult } from "../../adapters/georisques/georisques.types";
+import { RgaService } from "../../adapters/georisques/rga/rga.service";
+import { CatnatService } from "../../adapters/georisques/catnat/catnat.service";
+import { TriZonageService } from "../../adapters/georisques/tri-zonage/tri-zonage.service";
+import { TriService } from "../../adapters/georisques/tri/tri.service";
+import { MvtService } from "../../adapters/georisques/mvt/mvt.service";
+import { ZonageSismiqueService } from "../../adapters/georisques/zonage-sismique/zonage-sismique.service";
+import { CavitesService } from "../../adapters/georisques/cavites/cavites.service";
+import { OldService } from "../../adapters/georisques/old/old.service";
+import { SisService } from "../../adapters/georisques/sis/sis.service";
+import { IcpeService } from "../../adapters/georisques/icpe/icpe.service";
+import { AziService } from "../../adapters/georisques/azi/azi.service";
+import { PapiService } from "../../adapters/georisques/papi/papi.service";
+import { GEORISQUES_RAYONS_DEFAUT } from "../../adapters/georisques/georisques.constants";
 import { ResultatOrchestrationGeoRisques } from "./georisques.types";
+import { PprService } from "../../adapters/georisques/ppr/ppr.service";
 
 const PROMISE_FULFILLED = "fulfilled" as const;
 
