@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import { Test, TestingModule } from "@nestjs/testing";
 import { RisquesTechnologiquesCalculator } from "./risques-technologiques.calculator";
 
@@ -6,8 +6,6 @@ describe("RisquesTechnologiquesCalculator", () => {
   let calculator: RisquesTechnologiquesCalculator;
 
   beforeEach(async () => {
-    vi.clearAllMocks();
-
     const module: TestingModule = await Test.createTestingModule({
       providers: [RisquesTechnologiquesCalculator],
     }).compile();

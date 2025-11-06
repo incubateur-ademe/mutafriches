@@ -9,8 +9,6 @@ describe("GeoRisquesEnrichissementService", () => {
   let orchestrator: ReturnType<typeof createMockGeoRisquesOrchestrator>;
 
   beforeEach(async () => {
-    vi.clearAllMocks();
-
     const mockOrchestrator = createMockGeoRisquesOrchestrator();
 
     const module: TestingModule = await Test.createTestingModule({

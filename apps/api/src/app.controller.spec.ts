@@ -8,8 +8,6 @@ describe("AppController", () => {
   let databaseService: DatabaseService;
 
   beforeEach(async () => {
-    vi.clearAllMocks();
-
     const mockDatabaseService = {
       db: {
         execute: vi.fn().mockResolvedValue([{ test: 1 }]),

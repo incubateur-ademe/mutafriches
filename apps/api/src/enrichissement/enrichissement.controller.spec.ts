@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import { HttpException, HttpStatus } from "@nestjs/common";
 import { EnrichissementController } from "./enrichissement.controller";
 import { EnrichissementService } from "./services/enrichissement.service";
@@ -10,8 +10,6 @@ describe("EnrichissementController", () => {
   let service: ReturnType<typeof createMockEnrichissementService>;
 
   beforeEach(async () => {
-    vi.clearAllMocks();
-
     const setup = await createTestingModuleWithService(
       EnrichissementController,
       EnrichissementService,

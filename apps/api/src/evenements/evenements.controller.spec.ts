@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import { TypeEvenement } from "@mutafriches/shared-types";
 import { createTestingModuleWithService } from "../shared/__test-helpers__/test-module.factory";
 import { createMockEvenementService } from "./__test-helpers__/evenement.mocks";
@@ -10,8 +10,6 @@ describe("EvenementsController", () => {
   let service: ReturnType<typeof createMockEvenementService>;
 
   beforeEach(async () => {
-    vi.clearAllMocks();
-
     const setup = await createTestingModuleWithService(
       EvenementsController,
       EvenementService,

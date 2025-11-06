@@ -1,35 +1,24 @@
 import { defineConfig } from "vitest/config";
-import path from "path";
+import swc from "unplugin-swc";
 
 export default defineConfig({
+  plugins: [swc.vite()],
   test: {
     globals: true,
     environment: "node",
+    silent: !process.env.VERBOSE,
     setupFiles: ["./test/setup.ts"],
-
-    // En CI : isolation maximale avec plusieurs forks
-    pool: process.env.CI ? "forks" : "threads",
-    poolOptions: process.env.CI
-      ? {
-          forks: {
-            singleFork: false, // Plusieurs processus pour isoler les tests
-            minForks: 1,
-            maxForks: 3, // Limiter le parallélisme pour éviter surcharge
-          },
-        }
-      : {
-          threads: {
-            singleThread: false,
-          },
-        },
-
-    // Timeouts augmentés pour CI
-    testTimeout: process.env.CI ? 30000 : 5000,
-    hookTimeout: process.env.CI ? 30000 : 5000,
+    reporters: process.env.VERBOSE ? "verbose" : "default",
+    include: ["src/**/*.spec.ts", "test/**/*.e2e-spec.ts"],
+    coverage: {
+      provider: "v8",
+      reporter: ["text", "json", "html"],
+      exclude: ["node_modules/", "dist/", "coverage/"],
+    },
   },
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src"),
+      "@": "/src",
     },
   },
 });

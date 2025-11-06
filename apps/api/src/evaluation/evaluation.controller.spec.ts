@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import { NotFoundException, HttpException, HttpStatus } from "@nestjs/common";
 import {
   SourceUtilisation,
@@ -27,21 +27,10 @@ describe("EvaluationController", () => {
   let orchestrateurService: ReturnType<typeof createMockOrchestrateurService>;
 
   beforeEach(async () => {
-    vi.clearAllMocks();
-
-    const mockOrchestrateurService = createMockOrchestrateurService();
-
-    mockOrchestrateurService.calculerMutabilite.mockResolvedValue({
-      identifiantParcelle: "default",
-      usages: [],
-      fiabilite: 0,
-    });
-    mockOrchestrateurService.recupererEvaluation.mockResolvedValue(null);
-
     const setup = await createTestingModuleWithService(
       EvaluationController,
       OrchestrateurService,
-      mockOrchestrateurService,
+      createMockOrchestrateurService(),
     );
 
     controller = setup.controller;

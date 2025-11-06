@@ -19,8 +19,6 @@ describe("RisquesNaturelsEnrichissementService", () => {
   let calculator: ReturnType<typeof createMockRisquesNaturelsCalculator>;
 
   beforeEach(async () => {
-    vi.clearAllMocks();
-
     const mockRga = createMockRgaService();
     const mockCavites = createMockCavitesService();
     const mockCalculator = createMockRisquesNaturelsCalculator();

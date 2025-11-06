@@ -33,8 +33,6 @@ describe("GeoRisquesOrchestrator", () => {
   let pprService: { getPpr: ReturnType<typeof vi.fn> };
 
   beforeEach(async () => {
-    vi.clearAllMocks();
-
     const mockRgaService = { getRga: vi.fn() };
     const mockCatnatService = { getCatnat: vi.fn() };
     const mockTriZonageService = { getTri: vi.fn() };
