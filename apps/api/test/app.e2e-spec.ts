@@ -8,6 +8,8 @@ describe("AppController (Integration)", () => {
   let appController: AppController;
 
   beforeEach(async () => {
+    vi.clearAllMocks();
+
     // Mock du DatabaseService
     const mockDatabaseService = {
       db: {

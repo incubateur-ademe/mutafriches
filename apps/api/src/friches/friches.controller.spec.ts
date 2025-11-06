@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import { Test, TestingModule } from "@nestjs/testing";
 import { NotFoundException } from "@nestjs/common";
 import {
@@ -30,6 +30,8 @@ describe("FrichesController", () => {
   let orchestrateurService: ReturnType<typeof createMockOrchestrateurService>;
 
   beforeEach(async () => {
+    vi.clearAllMocks();
+
     const mockEnrichissement = createMockEnrichissementService();
     const mockOrchestrateur = createMockOrchestrateurService();
 

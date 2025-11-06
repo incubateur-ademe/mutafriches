@@ -1,10 +1,12 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import { FiabiliteCalculator } from "./fiabilite.calculator";
 
 describe("FiabiliteCalculator", () => {
   let calculator: FiabiliteCalculator;
 
   beforeEach(() => {
+    vi.clearAllMocks();
+
     calculator = new FiabiliteCalculator();
   });
 

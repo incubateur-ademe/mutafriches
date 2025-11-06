@@ -10,6 +10,8 @@ describe("EnergieEnrichissementService", () => {
   let enedisService: { getDistanceRaccordement: ReturnType<typeof vi.fn> };
 
   beforeEach(async () => {
+    vi.clearAllMocks();
+
     const mockEnedisService = {
       getDistanceRaccordement: vi.fn(),
     };

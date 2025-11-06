@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import { Test, TestingModule } from "@nestjs/testing";
 import { SourceEnrichissement } from "@mutafriches/shared-types";
 import { EnergieEnrichissementService } from "./energie-enrichissement.service";
@@ -11,6 +11,8 @@ describe("EnergieEnrichissementService", () => {
   let enedisService: ReturnType<typeof createMockEnedisService>;
 
   beforeEach(async () => {
+    vi.clearAllMocks();
+
     const mockEnedis = createMockEnedisService();
 
     const module: TestingModule = await Test.createTestingModule({

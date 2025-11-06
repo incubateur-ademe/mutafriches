@@ -18,6 +18,8 @@ describe("OrchestrateurService", () => {
   let evaluationRepository: ReturnType<typeof createMockEvaluationRepository>;
 
   beforeEach(async () => {
+    vi.clearAllMocks();
+
     const mockEnrichissement = createMockEnrichissementService();
     const mockCalcul = createMockCalculService();
     const mockRepository = createMockEvaluationRepository();

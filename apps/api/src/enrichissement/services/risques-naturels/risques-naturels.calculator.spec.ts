@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import { Test, TestingModule } from "@nestjs/testing";
 import { RisqueNaturel } from "@mutafriches/shared-types";
 import { RisquesNaturelsCalculator } from "./risques-naturels.calculator";
@@ -8,6 +8,8 @@ describe("RisquesNaturelsCalculator", () => {
   let calculator: RisquesNaturelsCalculator;
 
   beforeEach(async () => {
+    vi.clearAllMocks();
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [RisquesNaturelsCalculator],
     }).compile();

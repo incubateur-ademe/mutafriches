@@ -13,6 +13,8 @@ describe("CalculService - Validation des fixtures", () => {
   let calculService: CalculService;
 
   beforeEach(() => {
+    vi.clearAllMocks();
+
     calculService = new CalculService();
   });
 
@@ -39,6 +41,8 @@ describe("CalculService - Validation des fixtures", () => {
     let allValidations: TestCaseValidation[];
 
     beforeEach(async () => {
+      vi.clearAllMocks();
+
       // Exécuter tous les tests en une fois
       allValidations = await Promise.all(
         testCases.map((testCase) => executeTestCase(calculService, testCase)),

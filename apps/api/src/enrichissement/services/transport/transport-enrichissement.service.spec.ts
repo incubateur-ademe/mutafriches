@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import { SourceEnrichissement } from "@mutafriches/shared-types";
 import { TransportEnrichissementService } from "./transport-enrichissement.service";
 import { Parcelle } from "../../../evaluation/entities/parcelle.entity";
@@ -7,6 +7,8 @@ describe("TransportEnrichissementService", () => {
   let service: TransportEnrichissementService;
 
   beforeEach(() => {
+    vi.clearAllMocks();
+
     service = new TransportEnrichissementService();
   });
 

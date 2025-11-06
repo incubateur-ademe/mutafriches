@@ -41,6 +41,8 @@ describe("EnrichissementService", () => {
   let enrichissementRepository: ReturnType<typeof createMockEnrichissementRepository>;
 
   beforeEach(async () => {
+    vi.clearAllMocks();
+
     const mockCadastre = createMockCadastreEnrichissementService();
     const mockEnergie = createMockEnergieEnrichissementService();
     const mockTransport = createMockTransportEnrichissementService();
