@@ -1,7 +1,6 @@
-import type { EnrichissementOutputDto } from "@mutafriches/shared-types";
+import { isValidParcelId, type EnrichissementOutputDto } from "@mutafriches/shared-types";
 import { apiClient } from "./api.client";
 import { ApiError } from "./api.types";
-import { isValidParcelId } from "../../utils/parcelle.utils";
 import { API_CONFIG } from "./api.config";
 
 class EnrichissementService {

@@ -5,43 +5,36 @@ import { CalculService } from "./calcul.service";
 import { EnrichissementService } from "../../enrichissement/services/enrichissement.service";
 import { EvaluationRepository } from "../repositories/evaluation.repository";
 import { Parcelle } from "../entities/parcelle.entity";
+import { createMockEnrichissementService } from "../../enrichissement/__test-helpers__/enrichissement.mocks";
+import {
+  createMockCalculService,
+  createMockEvaluationRepository,
+} from "../__test-helpers__/evaluation.mocks";
 
 describe("OrchestrateurService", () => {
   let service: OrchestrateurService;
-  let enrichissementService: EnrichissementService;
-  let calculService: CalculService;
-  let evaluationRepository: EvaluationRepository;
+  let enrichissementService: ReturnType<typeof createMockEnrichissementService>;
+  let calculService: ReturnType<typeof createMockCalculService>;
+  let evaluationRepository: ReturnType<typeof createMockEvaluationRepository>;
 
   beforeEach(async () => {
+    const mockEnrichissement = createMockEnrichissementService();
+    const mockCalcul = createMockCalculService();
+    const mockRepository = createMockEvaluationRepository();
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         OrchestrateurService,
-        {
-          provide: EnrichissementService,
-          useValue: {
-            enrichir: vi.fn(),
-          },
-        },
-        {
-          provide: CalculService,
-          useValue: {
-            calculer: vi.fn(),
-          },
-        },
-        {
-          provide: EvaluationRepository,
-          useValue: {
-            save: vi.fn(),
-            findById: vi.fn(),
-          },
-        },
+        { provide: EnrichissementService, useValue: mockEnrichissement },
+        { provide: CalculService, useValue: mockCalcul },
+        { provide: EvaluationRepository, useValue: mockRepository },
       ],
     }).compile();
 
     service = module.get<OrchestrateurService>(OrchestrateurService);
-    enrichissementService = module.get<EnrichissementService>(EnrichissementService);
-    calculService = module.get<CalculService>(CalculService);
-    evaluationRepository = module.get<EvaluationRepository>(EvaluationRepository);
+    enrichissementService = mockEnrichissement;
+    calculService = mockCalcul;
+    evaluationRepository = mockRepository;
   });
 
   describe("enrichirParcelle", () => {
@@ -55,7 +48,7 @@ describe("OrchestrateurService", () => {
         fiabilite: 8.5,
       } as any;
 
-      vi.mocked(enrichissementService.enrichir).mockResolvedValue(mockEnrichissement);
+      enrichissementService.enrichir.mockResolvedValue(mockEnrichissement);
 
       const result = await service.enrichirParcelle(input);
 
@@ -93,8 +86,8 @@ describe("OrchestrateurService", () => {
       vi.spyOn(Parcelle, "fromEnrichissement").mockReturnValue(mockParcelle);
       vi.spyOn(mockParcelle, "estComplete").mockReturnValue(true);
 
-      vi.mocked(calculService.calculer).mockResolvedValue(mockResultatCalcul);
-      vi.mocked(evaluationRepository.save).mockResolvedValue("eval-123");
+      calculService.calculer.mockResolvedValue(mockResultatCalcul);
+      evaluationRepository.save.mockResolvedValue("eval-123");
 
       const result = await service.calculerMutabilite(input);
 
@@ -151,8 +144,8 @@ describe("OrchestrateurService", () => {
         resultats: [],
       } as any;
 
-      vi.mocked(calculService.calculer).mockResolvedValue(mockResultat);
-      vi.mocked(evaluationRepository.save).mockResolvedValue("eval-456");
+      calculService.calculer.mockResolvedValue(mockResultat);
+      evaluationRepository.save.mockResolvedValue("eval-456");
 
       await service.calculerMutabilite(input, options);
 
@@ -179,12 +172,12 @@ describe("OrchestrateurService", () => {
         evaluationId: "eval-789",
       } as any;
 
-      vi.mocked(enrichissementService.enrichir).mockResolvedValue(mockEnrichissement);
+      enrichissementService.enrichir.mockResolvedValue(mockEnrichissement);
 
       // Mock de la méthode calculerMutabilite
       vi.spyOn(service, "calculerMutabilite").mockResolvedValue(mockMutabilite);
 
-      vi.mocked(evaluationRepository.save).mockResolvedValue("eval-final");
+      evaluationRepository.save.mockResolvedValue("eval-final");
 
       const result = await service.evaluerParcelle(identifiant, donneesComplementaires);
 
@@ -209,7 +202,7 @@ describe("OrchestrateurService", () => {
         identifiantParcelle: "490055000AI0001",
       } as any;
 
-      vi.mocked(evaluationRepository.findById).mockResolvedValue(mockEvaluation);
+      evaluationRepository.findById.mockResolvedValue(mockEvaluation);
 
       const result = await service.recupererEvaluation(evaluationId);
 
@@ -218,7 +211,7 @@ describe("OrchestrateurService", () => {
     });
 
     it("devrait retourner null si l'évaluation n'existe pas", async () => {
-      vi.mocked(evaluationRepository.findById).mockResolvedValue(null);
+      evaluationRepository.findById.mockResolvedValue(null);
 
       const result = await service.recupererEvaluation("inexistant");
 

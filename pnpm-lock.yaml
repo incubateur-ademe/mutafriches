@@ -89,6 +89,9 @@ importers:
       drizzle-orm:
         specifier: ^0.44.2
         version: 0.44.5(@types/pg@8.15.5)(postgres@3.4.7)
+      express:
+        specifier: ^5.1.0
+        version: 5.1.0
       postgres:
         specifier: ^3.4.7
         version: 3.4.7

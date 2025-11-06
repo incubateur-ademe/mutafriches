@@ -30,5 +30,5 @@
       "@shared-types/*": ["../../packages/shared-types/src/*"]
     }
   },
-  "include": ["src", "vite.config.ts"]
+  "include": ["src", "vite.config.ts", "../../packages/shared-types/src/shared/parcelle.utils.ts"]
 }

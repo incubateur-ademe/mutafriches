@@ -2,11 +2,10 @@ import { Injectable, Logger } from "@nestjs/common";
 import { HttpService } from "@nestjs/axios";
 import { firstValueFrom } from "rxjs";
 import { centroid } from "@turf/centroid";
-import { GeometrieParcelle, Coordonnees } from "@mutafriches/shared-types";
+import { GeometrieParcelle, Coordonnees, isValidParcelId } from "@mutafriches/shared-types";
 import type { Geometry } from "geojson";
 
 import { ApiResponse } from "../shared/api-response.types";
-import { isValidParcelId } from "../../../../evaluation/utils/validation.utils";
 import {
   CadastreServiceResponse,
   IGNLocalisantFeature,

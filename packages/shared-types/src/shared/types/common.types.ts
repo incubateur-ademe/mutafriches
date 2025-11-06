@@ -2,7 +2,7 @@
  * Types communs partagés
  */
 
-import { SourceUtilisation } from "../evaluation";
+import { SourceUtilisation } from "../../evaluation";
 
 /**
  * Coordonnées géographiques GPS
