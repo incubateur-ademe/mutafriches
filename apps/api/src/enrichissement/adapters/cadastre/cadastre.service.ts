@@ -2,7 +2,12 @@ import { Injectable, Logger } from "@nestjs/common";
 import { HttpService } from "@nestjs/axios";
 import { firstValueFrom } from "rxjs";
 import { centroid } from "@turf/centroid";
-import { GeometrieParcelle, Coordonnees, isValidParcelId } from "@mutafriches/shared-types";
+import {
+  GeometrieParcelle,
+  Coordonnees,
+  isValidParcelId,
+  normalizeParcelId,
+} from "@mutafriches/shared-types";
 import type { Geometry } from "geojson";
 
 import { ApiResponse } from "../shared/api-response.types";
@@ -24,11 +29,13 @@ export class CadastreService {
 
   /**
    * Récupère les informations d'une parcelle par son identifiant
+   * Normalise automatiquement l'IDU avant traitement
    */
   async getParcelleInfo(identifiant: string): Promise<ApiResponse<CadastreServiceResponse>> {
     const startTime = Date.now();
 
     try {
+      // Valider l'IDU brut
       if (!isValidParcelId(identifiant)) {
         return {
           success: false,
@@ -38,16 +45,24 @@ export class CadastreService {
         };
       }
 
-      const parcelComponents = this.parseParcelId(identifiant);
+      // Normaliser l'IDU (retire zéros superflus avant section)
+      const normalizedIdentifiant = normalizeParcelId(identifiant);
+      if (normalizedIdentifiant !== identifiant) {
+        this.logger.debug(`IDU normalisé: ${identifiant} → ${normalizedIdentifiant}`);
+      }
+
+      // Parser l'IDU normalisé
+      const parcelComponents = this.parseParcelId(normalizedIdentifiant);
       if (!parcelComponents) {
         return {
           success: false,
-          error: `Impossible de parser l'identifiant: ${identifiant}`,
+          error: `Impossible de parser l'identifiant: ${normalizedIdentifiant}`,
           source: "IGN Cadastre",
           responseTimeMs: Date.now() - startTime,
         };
       }
 
+      // Récupérer les données en parallèle
       const [parcelleResult, localisantResult] = await Promise.all([
         this.fetchParcelle(parcelComponents),
         this.fetchLocalisant(parcelComponents),
@@ -64,8 +79,14 @@ export class CadastreService {
 
       const parcelle = parcelleResult.data;
 
-      if (parcelle.properties.idu !== identifiant) {
-        this.logger.warn(`IDU mismatch: demandé ${identifiant}, reçu ${parcelle.properties.idu}`);
+      // Vérifier que l'IDU retourné correspond après normalisation
+      const iduReturned = parcelle.properties.idu as string;
+      const normalizedIduReturned = normalizeParcelId(iduReturned);
+
+      if (normalizedIduReturned !== normalizedIdentifiant) {
+        this.logger.warn(
+          `IDU mismatch: demandé ${normalizedIdentifiant}, reçu ${normalizedIduReturned}`,
+        );
       }
 
       // Coordonnées depuis localisant ou fallback
@@ -77,7 +98,7 @@ export class CadastreService {
       const responseTimeMs = Date.now() - startTime;
 
       this.logger.log(
-        `Parcelle ${identifiant}: surface=${Math.round(parcelle.properties.contenance)}m², ` +
+        `Parcelle ${normalizedIdentifiant}: surface=${Math.round(parcelle.properties.contenance)}m², ` +
           `centroid=${coordonnees ? `lat=${coordonnees.latitude.toFixed(5)}, lon=${coordonnees.longitude.toFixed(5)}` : "KO"}, ` +
           `geometrie=${geometrie ? "OK" : "KO"}`,
       );
@@ -85,10 +106,10 @@ export class CadastreService {
       return {
         success: true,
         data: {
-          identifiant,
-          codeInsee: parcelle.properties.code_insee,
-          commune: parcelle.properties.nom_com,
-          surface: Math.round(parcelle.properties.contenance),
+          identifiant: normalizedIdentifiant,
+          codeInsee: parcelle.properties.code_insee as string,
+          commune: parcelle.properties.nom_com as string,
+          surface: Math.round(parcelle.properties.contenance as number),
           coordonnees,
           geometrie,
         },
@@ -112,31 +133,100 @@ export class CadastreService {
   }
 
   /**
-   * Parse un identifiant parcellaire
+   * Parse un identifiant parcellaire normalisé
+   *
+   * Format après normalisation :
+   * - DEPT(2-3) + COMMUNE(3) + COM_ABS(3) + SECTION(1-2) + NUMERO(4)
+   * - Longueur totale : 13-15 caractères
+   *
+   * IMPORTANT:
+   * 1. L'API IGN exige que la section fasse TOUJOURS 2 caractères (padding avec zéro si besoin)
+   * 2. Pour Paris, l'IDU contient 75101-75120 mais le code_insee réel est 75056
    */
   private parseParcelId(identifiant: string): {
     codeInsee: string;
     section: string;
     numero: string;
+    iduComplet: string;
   } | null {
     if (!isValidParcelId(identifiant)) {
+      this.logger.warn(`IDU invalide: ${identifiant}`);
       return null;
     }
 
+    // Identifier la longueur du département
+    let deptLen = 2;
+    if (identifiant[0] === "9" && (identifiant[1] === "7" || identifiant[1] === "8")) {
+      deptLen = 3; // DOM (971-976)
+    } else if (
+      (identifiant[0] === "2" || identifiant[0] === "9") &&
+      (identifiant[1] === "A" || identifiant[1] === "B")
+    ) {
+      deptLen = 2; // Corse (2A, 2B)
+    }
+
+    // Code INSEE = département + commune (toujours 3 chiffres)
+    let codeInsee = identifiant.substring(0, deptLen + 3);
+
+    // FIX PARIS: Convertir 75101-75120 → 75056
+    if (codeInsee.startsWith("751")) {
+      const arrNum = parseInt(codeInsee.substring(2), 10);
+      if (arrNum >= 101 && arrNum <= 120) {
+        codeInsee = "75056";
+        this.logger.debug(`Paris: code ${identifiant.substring(0, 5)} → code_insee ${codeInsee}`);
+      }
+    }
+
+    // Numéro de parcelle = toujours les 4 derniers caractères
+    const numero = identifiant.substring(identifiant.length - 4);
+
+    // COM_ABS + SECTION = tout ce qui reste entre commune et numéro
+    const comAbsAndSection = identifiant.substring(deptLen + 3, identifiant.length - 4);
+
+    // COM_ABS fait toujours 3 caractères
+    // SECTION fait 1 ou 2 caractères (le reste après COM_ABS)
+    if (comAbsAndSection.length < 4) {
+      this.logger.warn(
+        `Format IDU invalide: comAbsAndSection trop court (${comAbsAndSection.length} car)`,
+      );
+      return null;
+    }
+
+    let section = comAbsAndSection.substring(3); // Section = après les 3 premiers caractères du COM_ABS
+
+    // CRITIQUE: L'API IGN exige que la section fasse TOUJOURS 2 caractères
+    // Si section = 1 caractère, padder avec un zéro devant
+    if (section.length === 1) {
+      section = `0${section}`;
+    }
+
+    // Log pour debug
+    if (process.env.NODE_ENV !== "production") {
+      this.logger.debug(
+        `IDU parsé: ${identifiant} → codeInsee=${codeInsee}, section=${section}, numero=${numero}`,
+      );
+    }
+
     return {
-      codeInsee: identifiant.substring(0, 5),
-      section: identifiant.substring(8, 10),
-      numero: identifiant.substring(10, 14),
+      codeInsee,
+      section,
+      numero,
+      iduComplet: identifiant,
     };
   }
 
   /**
    * Récupère une parcelle depuis l'API IGN
+   *
+   * IMPORTANT: Pour Paris, plusieurs parcelles peuvent avoir le même code_insee/section/numero
+   * mais des IDU différents (car plusieurs arrondissements partagent le code_insee 75056).
+   * On filtre donc les résultats pour trouver l'IDU exact.
    */
   private async fetchParcelle(components: {
     codeInsee: string;
     section: string;
     numero: string;
+    iduComplet: string;
   }): Promise<ApiResponse<IGNParcelleFeature>> {
     try {
       const url = `${this.baseUrl}/parcelle`;
@@ -161,9 +251,41 @@ export class CadastreService {
         };
       }
 
+      // Si une seule parcelle, la retourner directement
+      if (data.features.length === 1) {
+        return {
+          success: true,
+          data: data.features[0],
+          source: "IGN Cadastre",
+        };
+      }
+
+      // Plusieurs résultats: filtrer par IDU exact (cas Paris)
+      const normalizedIduSearch = normalizeParcelId(components.iduComplet);
+      const matchingFeature = data.features.find((f) => {
+        const iduReturned = f.properties.idu as string;
+        const normalizedIduReturned = normalizeParcelId(iduReturned);
+        return normalizedIduReturned === normalizedIduSearch;
+      });
+
+      if (!matchingFeature) {
+        this.logger.warn(
+          `Aucune parcelle avec IDU exact ${normalizedIduSearch} parmi ${data.features.length} résultats`,
+        );
+        return {
+          success: false,
+          error: "Parcelle non trouvée dans le cadastre",
+          source: "IGN Cadastre",
+        };
+      }
+
+      this.logger.debug(
+        `Parcelle trouvée: ${matchingFeature.properties.idu} parmi ${data.features.length} résultats`,
+      );
+
       return {
         success: true,
-        data: data.features[0],
+        data: matchingFeature,
         source: "IGN Cadastre",
       };
     } catch (error) {
@@ -178,11 +300,14 @@ export class CadastreService {
 
   /**
    * Récupère le centroïde depuis l'API localisant
+   *
+   * Même logique que fetchParcelle pour gérer les cas multiples (Paris)
    */
   private async fetchLocalisant(components: {
     codeInsee: string;
     section: string;
     numero: string;
+    iduComplet: string;
   }): Promise<ApiResponse<IGNLocalisantFeature>> {
     try {
       const url = `${this.baseUrl}/localisant`;
@@ -207,9 +332,34 @@ export class CadastreService {
         };
       }
 
+      // Si une seule parcelle, la retourner directement
+      if (data.features.length === 1) {
+        return {
+          success: true,
+          data: data.features[0],
+          source: "IGN Cadastre",
+        };
+      }
+
+      // Plusieurs résultats: filtrer par IDU exact
+      const normalizedIduSearch = normalizeParcelId(components.iduComplet);
+      const matchingFeature = data.features.find((f) => {
+        const iduReturned = f.properties.idu as string;
+        const normalizedIduReturned = normalizeParcelId(iduReturned);
+        return normalizedIduReturned === normalizedIduSearch;
+      });
+
+      if (!matchingFeature) {
+        return {
+          success: false,
+          error: "Localisant non trouvé",
+          source: "IGN Cadastre",
+        };
+      }
+
       return {
         success: true,
-        data: data.features[0],
+        data: matchingFeature,
         source: "IGN Cadastre",
       };
     } catch (error) {
@@ -231,13 +381,19 @@ export class CadastreService {
   ): Coordonnees {
     // Priorité 1: Utiliser le localisant si disponible
     if (localisantResult.success && localisantResult.data) {
-      const [longitude, latitude] = localisantResult.data.geometry.coordinates[0];
+      const coords = localisantResult.data.geometry.coordinates[0] as [number, number];
+      const [longitude, latitude] = coords;
       return { latitude, longitude };
     }
 
     // Fallback: Calculer avec turf.js (plus précis)
     this.logger.warn("Localisant non disponible, calcul centroïde avec turf.js");
-    return this.calculateCentroidWithTurf(parcelle.geometry);
+    return this.calculateCentroidWithTurf(
+      parcelle.geometry as {
+        type: "MultiPolygon" | "Polygon";
+        coordinates: number[][][] | number[][][][];
+      },
+    );
   }
 
   /**
@@ -256,7 +412,8 @@ export class CadastreService {
       };
 
       const center = centroid(feature);
-      const [longitude, latitude] = center.geometry.coordinates;
+      const coords = center.geometry.coordinates as [number, number];
+      const [longitude, latitude] = coords;
 
       // Validation
       if (!this.isValidLatLon(latitude, longitude)) {

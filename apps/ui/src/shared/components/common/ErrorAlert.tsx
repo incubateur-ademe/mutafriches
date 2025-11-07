@@ -39,14 +39,30 @@ export function ErrorAlert({
 
     const defaultSuggestions: string[] = [];
 
-    if (message.toLowerCase().includes("cadastrales introuvables")) {
-      // TODO message dans packages/shared ?
+    // Messages d'erreur pour identifiant invalide
+    if (message.toLowerCase().includes("format") && message.toLowerCase().includes("invalide")) {
+      defaultSuggestions.push(
+        "Vérifiez que l'identifiant de parcelle est au bon format",
+        "Format : département (2-3 chiffres) + commune (3 chiffres) + préfixe (3 chiffres) + section (1-2 lettres) + numéro (4 chiffres)",
+        "Exemples valides :",
+        "  • 070190000B2188 (Aubenas, section B)",
+        "  • 75113000DL0052 (Paris 13e, section DL)",
+        "  • 972090000O0498 (Martinique, section O)",
+      );
+    }
+    // Messages pour parcelle introuvable
+    else if (
+      message.toLowerCase().includes("introuvable") ||
+      message.toLowerCase().includes("non trouvé")
+    ) {
       defaultSuggestions.push(
         "Vérifiez que l'identifiant de parcelle est correct",
-        "Format attendu : code commune (5-6 caractères) + préfixe (0-3 caractères) + section (1-2 lettres majuscules) + numéro (4 chiffres). ",
-        "Exemples : 25056000IK0102 ou 972090000O0498",
+        "Utilisez la carte interactive pour sélectionner une parcelle",
+        "Consultez le cadastre sur cadastre.gouv.fr pour vérifier les références",
       );
-    } else if (message.toLowerCase().includes("connexion")) {
+    }
+    // Messages pour problème de connexion
+    else if (message.toLowerCase().includes("connexion")) {
       defaultSuggestions.push(
         "Vérifiez votre connexion Internet",
         "Réessayez dans quelques instants",

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { extractIdu } from "../utils/geo.utils";
+import { extractIdu, normalizeParcelId } from "../utils/geo.utils";
 import { searchParcelWithFallback } from "../services/cadastre/api.cadastre.service";
 import { OnParcelleSelectedCallback } from "../types/callbacks.types";
 
@@ -109,9 +109,12 @@ export function useLeafletMap({
 
         const feature = result.features[0];
         const p = feature.properties;
-        const idu = extractIdu(p);
+        let idu = extractIdu(p);
 
-        // Appel du callback avec les données de la parcelle
+        // Normaliser l'IDU avant le callback
+        idu = normalizeParcelId(idu);
+
+        // Appel du callback avec les données de la parcelle normalisées
         if (callbackRef.current) {
           callbackRef.current(idu);
         }

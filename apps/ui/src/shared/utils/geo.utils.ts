@@ -1,3 +1,5 @@
+import { normalizeParcelId as normalizeParcelIdFromShared } from "@mutafriches/shared-types";
+
 /**
  * Représentation d'un polygone GeoJSON
  */
@@ -65,3 +67,11 @@ export function extractIdu(properties: Record<string, unknown>): string {
     p.idu || p.id || `${p.code_dep || ""}${p.code_com || ""}${p.section || ""}${p.numero || ""}`
   );
 }
+
+/**
+ * Normalise un identifiant parcellaire cadastral
+ * Re-export depuis @mutafriches/shared-types pour centraliser les utilitaires géographiques
+ *
+ * @see normalizeParcelId dans shared-types pour la documentation complète
+ */
+export const normalizeParcelId = normalizeParcelIdFromShared;
