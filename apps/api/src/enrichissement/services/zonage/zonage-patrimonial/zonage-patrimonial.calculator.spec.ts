@@ -1,14 +1,10 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { Test, TestingModule } from '@nestjs/testing';
-import { ZonagePatrimonial } from '@mutafriches/shared-types';
-import { ZonagePatrimonialCalculator } from './zonage-patrimonial.calculator';
-import {
-  ResultatAC1,
-  ResultatAC2,
-  ResultatAC4,
-} from './zonage-patrimonial.types';
+import { describe, it, expect, beforeEach } from "vitest";
+import { Test, TestingModule } from "@nestjs/testing";
+import { ZonagePatrimonial } from "@mutafriches/shared-types";
+import { ZonagePatrimonialCalculator } from "./zonage-patrimonial.calculator";
+import { ResultatAC1, ResultatAC2, ResultatAC4 } from "./zonage-patrimonial.types";
 
-describe('ZonagePatrimonialCalculator', () => {
+describe("ZonagePatrimonialCalculator", () => {
   let calculator: ZonagePatrimonialCalculator;
 
   beforeEach(async () => {
@@ -16,19 +12,17 @@ describe('ZonagePatrimonialCalculator', () => {
       providers: [ZonagePatrimonialCalculator],
     }).compile();
 
-    calculator = module.get<ZonagePatrimonialCalculator>(
-      ZonagePatrimonialCalculator,
-    );
+    calculator = module.get<ZonagePatrimonialCalculator>(ZonagePatrimonialCalculator);
   });
 
-  describe('evaluer', () => {
-    describe('Priorité 1 - AC1 Monuments', () => {
-      it('devrait retourner MONUMENT_HISTORIQUE si AC1 type monument', () => {
+  describe("evaluer", () => {
+    describe("Priorité 1 - AC1 Monuments", () => {
+      it("devrait retourner MONUMENT_HISTORIQUE si AC1 type monument", () => {
         // Arrange
         const ac1: ResultatAC1 = {
           present: true,
           nombreZones: 1,
-          type: 'monument',
+          type: "monument",
         };
 
         // Act
@@ -38,12 +32,12 @@ describe('ZonagePatrimonialCalculator', () => {
         expect(result).toBe(ZonagePatrimonial.MONUMENT_HISTORIQUE);
       });
 
-      it('devrait retourner PERIMETRE_ABF si AC1 type perimetre', () => {
+      it("devrait retourner PERIMETRE_ABF si AC1 type perimetre", () => {
         // Arrange
         const ac1: ResultatAC1 = {
           present: true,
           nombreZones: 1,
-          type: 'perimetre',
+          type: "perimetre",
         };
 
         // Act
@@ -53,15 +47,15 @@ describe('ZonagePatrimonialCalculator', () => {
         expect(result).toBe(ZonagePatrimonial.PERIMETRE_ABF);
       });
 
-      it('devrait ignorer AC2 et AC4 si AC1 monument présent', () => {
+      it("devrait ignorer AC2 et AC4 si AC1 monument présent", () => {
         // Arrange
         const ac1: ResultatAC1 = {
           present: true,
           nombreZones: 1,
-          type: 'monument',
+          type: "monument",
         };
         const ac2: ResultatAC2 = { present: true, nombreZones: 1 };
-        const ac4: ResultatAC4 = { present: true, nombreZones: 1, type: 'spr' };
+        const ac4: ResultatAC4 = { present: true, nombreZones: 1, type: "spr" };
 
         // Act
         const result = calculator.evaluer(ac1, ac2, ac4);
@@ -71,8 +65,8 @@ describe('ZonagePatrimonialCalculator', () => {
       });
     });
 
-    describe('Priorité 2 - AC2 Sites', () => {
-      it('devrait retourner SITE_INSCRIT_CLASSE si AC2 présent', () => {
+    describe("Priorité 2 - AC2 Sites", () => {
+      it("devrait retourner SITE_INSCRIT_CLASSE si AC2 présent", () => {
         // Arrange
         const ac2: ResultatAC2 = { present: true, nombreZones: 1 };
 
@@ -83,10 +77,10 @@ describe('ZonagePatrimonialCalculator', () => {
         expect(result).toBe(ZonagePatrimonial.SITE_INSCRIT_CLASSE);
       });
 
-      it('devrait ignorer AC4 si AC2 présent', () => {
+      it("devrait ignorer AC4 si AC2 présent", () => {
         // Arrange
         const ac2: ResultatAC2 = { present: true, nombreZones: 1 };
-        const ac4: ResultatAC4 = { present: true, nombreZones: 1, type: 'zppaup' };
+        const ac4: ResultatAC4 = { present: true, nombreZones: 1, type: "zppaup" };
 
         // Act
         const result = calculator.evaluer(null, ac2, ac4);
@@ -96,13 +90,13 @@ describe('ZonagePatrimonialCalculator', () => {
       });
     });
 
-    describe('Priorité 3 - AC4 SPR/ZPPAUP/AVAP', () => {
-      it('devrait retourner ZPPAUP si AC4 type zppaup', () => {
+    describe("Priorité 3 - AC4 SPR/ZPPAUP/AVAP", () => {
+      it("devrait retourner ZPPAUP si AC4 type zppaup", () => {
         // Arrange
         const ac4: ResultatAC4 = {
           present: true,
           nombreZones: 1,
-          type: 'zppaup',
+          type: "zppaup",
         };
 
         // Act
@@ -112,12 +106,12 @@ describe('ZonagePatrimonialCalculator', () => {
         expect(result).toBe(ZonagePatrimonial.ZPPAUP);
       });
 
-      it('devrait retourner AVAP si AC4 type avap', () => {
+      it("devrait retourner AVAP si AC4 type avap", () => {
         // Arrange
         const ac4: ResultatAC4 = {
           present: true,
           nombreZones: 1,
-          type: 'avap',
+          type: "avap",
         };
 
         // Act
@@ -127,12 +121,12 @@ describe('ZonagePatrimonialCalculator', () => {
         expect(result).toBe(ZonagePatrimonial.AVAP);
       });
 
-      it('devrait retourner SPR si AC4 type spr', () => {
+      it("devrait retourner SPR si AC4 type spr", () => {
         // Arrange
         const ac4: ResultatAC4 = {
           present: true,
           nombreZones: 1,
-          type: 'spr',
+          type: "spr",
         };
 
         // Act
@@ -143,8 +137,8 @@ describe('ZonagePatrimonialCalculator', () => {
       });
     });
 
-    describe('Aucun zonage', () => {
-      it('devrait retourner NON_CONCERNE si toutes les données sont null', () => {
+    describe("Aucun zonage", () => {
+      it("devrait retourner NON_CONCERNE si toutes les données sont null", () => {
         // Act
         const result = calculator.evaluer(null, null, null);
 
@@ -152,7 +146,7 @@ describe('ZonagePatrimonialCalculator', () => {
         expect(result).toBe(ZonagePatrimonial.NON_CONCERNE);
       });
 
-      it('devrait retourner NON_CONCERNE si aucune zone présente', () => {
+      it("devrait retourner NON_CONCERNE si aucune zone présente", () => {
         // Arrange
         const ac1: ResultatAC1 = { present: false, nombreZones: 0 };
         const ac2: ResultatAC2 = { present: false, nombreZones: 0 };
@@ -167,17 +161,17 @@ describe('ZonagePatrimonialCalculator', () => {
     });
   });
 
-  describe('mapAC1Features', () => {
-    it('devrait retourner monument si typeass contient monument', () => {
+  describe("mapAC1Features", () => {
+    it("devrait retourner monument si typeass contient monument", () => {
       // Arrange
       const features = [
         {
-          type: 'Feature',
-          id: '1',
+          type: "Feature",
+          id: "1",
           geometry: {},
           properties: {
-            typeass: 'Monument historique classé',
-            nomass: 'Château',
+            typeass: "Monument historique classé",
+            nomass: "Château",
           },
         },
       ];
@@ -186,19 +180,19 @@ describe('ZonagePatrimonialCalculator', () => {
       const result = calculator.mapAC1Features(features as any);
 
       // Assert
-      expect(result).toBe('monument');
+      expect(result).toBe("monument");
     });
 
-    it('devrait retourner perimetre si typeass contient périmètre', () => {
+    it("devrait retourner perimetre si typeass contient périmètre", () => {
       // Arrange
       const features = [
         {
-          type: 'Feature',
-          id: '1',
+          type: "Feature",
+          id: "1",
           geometry: {},
           properties: {
-            typeass: 'Périmètre de protection',
-            nomass: 'Abords du château',
+            typeass: "Périmètre de protection",
+            nomass: "Abords du château",
           },
         },
       ];
@@ -207,19 +201,19 @@ describe('ZonagePatrimonialCalculator', () => {
       const result = calculator.mapAC1Features(features as any);
 
       // Assert
-      expect(result).toBe('perimetre');
+      expect(result).toBe("perimetre");
     });
 
-    it('devrait retourner perimetre par défaut', () => {
+    it("devrait retourner perimetre par défaut", () => {
       // Arrange
       const features = [
         {
-          type: 'Feature',
-          id: '1',
+          type: "Feature",
+          id: "1",
           geometry: {},
           properties: {
-            typeass: 'Zone protégée',
-            nomass: 'Secteur historique',
+            typeass: "Zone protégée",
+            nomass: "Secteur historique",
           },
         },
       ];
@@ -228,10 +222,10 @@ describe('ZonagePatrimonialCalculator', () => {
       const result = calculator.mapAC1Features(features as any);
 
       // Assert
-      expect(result).toBe('perimetre');
+      expect(result).toBe("perimetre");
     });
 
-    it('devrait retourner null si features vide', () => {
+    it("devrait retourner null si features vide", () => {
       // Act
       const result = calculator.mapAC1Features([]);
 
@@ -240,17 +234,17 @@ describe('ZonagePatrimonialCalculator', () => {
     });
   });
 
-  describe('mapAC4Features', () => {
-    it('devrait retourner zppaup si combined contient zppaup', () => {
+  describe("mapAC4Features", () => {
+    it("devrait retourner zppaup si combined contient zppaup", () => {
       // Arrange
       const features = [
         {
-          type: 'Feature',
-          id: '1',
+          type: "Feature",
+          id: "1",
           geometry: {},
           properties: {
-            typeass: 'ZPPAUP',
-            nomass: 'Centre historique',
+            typeass: "ZPPAUP",
+            nomass: "Centre historique",
           },
         },
       ];
@@ -259,19 +253,19 @@ describe('ZonagePatrimonialCalculator', () => {
       const result = calculator.mapAC4Features(features as any);
 
       // Assert
-      expect(result).toBe('zppaup');
+      expect(result).toBe("zppaup");
     });
 
-    it('devrait retourner avap si combined contient avap', () => {
+    it("devrait retourner avap si combined contient avap", () => {
       // Arrange
       const features = [
         {
-          type: 'Feature',
-          id: '1',
+          type: "Feature",
+          id: "1",
           geometry: {},
           properties: {
-            typeass: 'AVAP',
-            nomass: 'Quartier ancien',
+            typeass: "AVAP",
+            nomass: "Quartier ancien",
           },
         },
       ];
@@ -280,19 +274,19 @@ describe('ZonagePatrimonialCalculator', () => {
       const result = calculator.mapAC4Features(features as any);
 
       // Assert
-      expect(result).toBe('avap');
+      expect(result).toBe("avap");
     });
 
-    it('devrait retourner spr si combined contient spr', () => {
+    it("devrait retourner spr si combined contient spr", () => {
       // Arrange
       const features = [
         {
-          type: 'Feature',
-          id: '1',
+          type: "Feature",
+          id: "1",
           geometry: {},
           properties: {
-            typeass: 'SPR',
-            nomass: 'Site patrimonial remarquable',
+            typeass: "SPR",
+            nomass: "Site patrimonial remarquable",
           },
         },
       ];
@@ -301,19 +295,19 @@ describe('ZonagePatrimonialCalculator', () => {
       const result = calculator.mapAC4Features(features as any);
 
       // Assert
-      expect(result).toBe('spr');
+      expect(result).toBe("spr");
     });
 
-    it('devrait retourner spr par défaut', () => {
+    it("devrait retourner spr par défaut", () => {
       // Arrange
       const features = [
         {
-          type: 'Feature',
-          id: '1',
+          type: "Feature",
+          id: "1",
           geometry: {},
           properties: {
-            typeass: 'Zone patrimoniale',
-            nomass: 'Secteur sauvegardé',
+            typeass: "Zone patrimoniale",
+            nomass: "Secteur sauvegardé",
           },
         },
       ];
@@ -322,10 +316,10 @@ describe('ZonagePatrimonialCalculator', () => {
       const result = calculator.mapAC4Features(features as any);
 
       // Assert
-      expect(result).toBe('spr');
+      expect(result).toBe("spr");
     });
 
-    it('devrait retourner null si features vide', () => {
+    it("devrait retourner null si features vide", () => {
       // Act
       const result = calculator.mapAC4Features([]);
 

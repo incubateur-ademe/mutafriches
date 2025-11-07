@@ -14,6 +14,7 @@ import { RisquesNaturelsEnrichissementService } from "./risques-naturels/risques
 import { RisquesTechnologiquesEnrichissementService } from "./risques-technologiques/risques-technologiques-enrichissement.service";
 import { GeoRisquesEnrichissementService } from "./georisques/georisques-enrichissement.service";
 import { FiabiliteCalculator } from "./shared/fiabilite.calculator";
+import { ZonageOrchestratorService } from "./zonage";
 
 /**
  * Service principal d'enrichissement - Orchestrateur
@@ -39,6 +40,7 @@ export class EnrichissementService {
     private readonly risquesNaturelsEnrichissement: RisquesNaturelsEnrichissementService,
     private readonly risquesTechnologiquesEnrichissement: RisquesTechnologiquesEnrichissementService,
     private readonly georisquesEnrichissement: GeoRisquesEnrichissementService,
+    private readonly zonageOrchestrator: ZonageOrchestratorService,
 
     // Utilitaires
     private readonly fiabiliteCalculator: FiabiliteCalculator,
@@ -141,13 +143,33 @@ export class EnrichissementService {
         risquesGeorisques = georisquesResult.data;
       }
 
-      // 8. CALCULER LA FIABILITÉ
+      // 8. ZONAGES (Environnemental, Patrimonial, Réglementaire)
+      let zonagesResult;
+      if (parcelle.geometrie && parcelle.codeInsee) {
+        zonagesResult = await this.zonageOrchestrator.enrichirZonages(
+          parcelle.geometrie,
+          parcelle.codeInsee,
+        );
+        this.mergeEnrichmentResult(
+          zonagesResult.result,
+          sourcesUtilisees,
+          champsManquants,
+          sourcesEchouees,
+        );
+
+        // Affecter les zonages à la parcelle
+        parcelle.zonageEnvironnemental = zonagesResult.zonageEnvironnemental;
+        parcelle.zonagePatrimonial = zonagesResult.zonagePatrimonial;
+        parcelle.zonageReglementaire = zonagesResult.zonageReglementaire;
+      }
+
+      // 9. CALCULER LA FIABILITÉ
       const fiabilite = this.fiabiliteCalculator.calculate(
         sourcesUtilisees.length,
         champsManquants.length,
       );
 
-      // 9. DÉTERMINER LE STATUT
+      // 10. DÉTERMINER LE STATUT
       if (sourcesEchouees.length === 0) {
         statut = StatutEnrichissement.SUCCES;
       } else if (sourcesUtilisees.length > 0) {
@@ -156,7 +178,7 @@ export class EnrichissementService {
         statut = StatutEnrichissement.ECHEC;
       }
 
-      // 10. CONSTRUIRE LE DTO DE SORTIE
+      // 11. CONSTRUIRE LE DTO DE SORTIE
       result = {
         // Données déduites automatiquement de la parcelle
         identifiantParcelle: parcelle.identifiantParcelle,

@@ -25,7 +25,7 @@ export interface ResultatZnieff {
  */
 export interface ResultatParcNaturel {
   present: boolean;
-  type: 'regional' | 'national' | null;
+  type: "regional" | "national" | null;
   nom?: string;
 }
 

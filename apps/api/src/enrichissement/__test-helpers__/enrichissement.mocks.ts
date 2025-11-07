@@ -186,3 +186,12 @@ export function createMockEnrichissementRepository() {
     findById: vi.fn(),
   };
 }
+
+/**
+ * Mock du ZonageOrchestratorService
+ */
+export function createMockZonageOrchestratorService() {
+  return {
+    enrichirZonages: vi.fn(),
+  };
+}

@@ -1,29 +1,29 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { Test, TestingModule } from '@nestjs/testing';
+import { describe, it, expect, beforeEach, vi } from "vitest";
+import { Test, TestingModule } from "@nestjs/testing";
 import {
   ZonageEnvironnemental,
   ZonagePatrimonial,
   ZonageReglementaire,
   SourceEnrichissement,
-} from '@mutafriches/shared-types';
-import { ZonageOrchestratorService } from './zonage-orchestrator.service';
-import { ZonageEnvironnementalService } from './zonage-environnemental/zonage-environnemental.service';
-import { ZonagePatrimonialService } from './zonage-patrimonial/zonage-patrimonial.service';
-import { ZonageReglementaireService } from './zonage-reglementaire/zonage-reglementaire.service';
-import { ParcelleGeometry } from '../shared/geometry.types';
+} from "@mutafriches/shared-types";
+import { ZonageOrchestratorService } from "./zonage-orchestrator.service";
+import { ZonageEnvironnementalService } from "./zonage-environnemental/zonage-environnemental.service";
+import { ZonagePatrimonialService } from "./zonage-patrimonial/zonage-patrimonial.service";
+import { ZonageReglementaireService } from "./zonage-reglementaire/zonage-reglementaire.service";
+import { ParcelleGeometry } from "../shared/geometry.types";
 
-describe('ZonageOrchestratorService', () => {
+describe("ZonageOrchestratorService", () => {
   let orchestrator: ZonageOrchestratorService;
   let zonageEnvironnementalService: any;
   let zonagePatrimonialService: any;
   let zonageReglementaireService: any;
 
   const mockGeometry: ParcelleGeometry = {
-    type: 'Point',
+    type: "Point",
     coordinates: [2.3522, 48.8566],
   };
 
-  const mockCodeInsee = '75056';
+  const mockCodeInsee = "75056";
 
   beforeEach(async () => {
     zonageEnvironnementalService = {
@@ -56,13 +56,11 @@ describe('ZonageOrchestratorService', () => {
       ],
     }).compile();
 
-    orchestrator = module.get<ZonageOrchestratorService>(
-      ZonageOrchestratorService,
-    );
+    orchestrator = module.get<ZonageOrchestratorService>(ZonageOrchestratorService);
   });
 
-  describe('enrichirZonages', () => {
-    it('devrait enrichir avec tous les zonages détectés', async () => {
+  describe("enrichirZonages", () => {
+    it("devrait enrichir avec tous les zonages détectés", async () => {
       // Arrange
       zonageEnvironnementalService.enrichir.mockResolvedValue({
         result: {
@@ -86,7 +84,7 @@ describe('ZonageOrchestratorService', () => {
           sourcesEchouees: [],
         },
         evaluation: {
-          ac1: { present: true, nombreZones: 1, type: 'monument' },
+          ac1: { present: true, nombreZones: 1, type: "monument" },
           ac2: { present: false, nombreZones: 0 },
           ac4: { present: false, nombreZones: 0 },
           zonageFinal: ZonagePatrimonial.MONUMENT_HISTORIQUE,
@@ -103,40 +101,31 @@ describe('ZonageOrchestratorService', () => {
           zoneUrba: {
             present: true,
             nombreZones: 1,
-            typezone: 'U',
-            libelle: 'Zone urbaine',
+            typezone: "U",
+            libelle: "Zone urbaine",
           },
           secteurCC: { present: false, nombreSecteurs: 0 },
-          commune: { insee: '75056', name: 'Paris', is_rnu: false },
+          commune: { insee: "75056", name: "Paris", is_rnu: false },
           zonageFinal: ZonageReglementaire.ZONE_URBAINE_U,
         },
       });
 
       // Act
-      const result = await orchestrator.enrichirZonages(
-        mockGeometry,
-        mockCodeInsee,
-      );
+      const result = await orchestrator.enrichirZonages(mockGeometry, mockCodeInsee);
 
       // Assert
       expect(result.result.success).toBe(true);
-      expect(result.result.sourcesUtilisees).toContain(
-        SourceEnrichissement.API_CARTO_NATURE,
-      );
-      expect(result.result.sourcesUtilisees).toContain(
-        SourceEnrichissement.API_CARTO_GPU,
-      );
+      expect(result.result.sourcesUtilisees).toContain(SourceEnrichissement.API_CARTO_NATURE);
+      expect(result.result.sourcesUtilisees).toContain(SourceEnrichissement.API_CARTO_GPU);
       expect(result.zonageEnvironnemental).toBe(ZonageEnvironnemental.NATURA_2000);
-      expect(result.zonagePatrimonial).toBe(
-        ZonagePatrimonial.MONUMENT_HISTORIQUE,
-      );
+      expect(result.zonagePatrimonial).toBe(ZonagePatrimonial.MONUMENT_HISTORIQUE);
       expect(result.zonageReglementaire).toBe(ZonageReglementaire.ZONE_URBAINE_U);
       expect(result.evaluations.environnemental).toBeTruthy();
       expect(result.evaluations.patrimonial).toBeTruthy();
       expect(result.evaluations.reglementaire).toBeTruthy();
     });
 
-    it('devrait gérer les zonages HORS_ZONE / NON_CONCERNE / NE_SAIT_PAS', async () => {
+    it("devrait gérer les zonages HORS_ZONE / NON_CONCERNE / NE_SAIT_PAS", async () => {
       // Arrange
       zonageEnvironnementalService.enrichir.mockResolvedValue({
         result: {
@@ -176,16 +165,13 @@ describe('ZonageOrchestratorService', () => {
         evaluation: {
           zoneUrba: { present: false, nombreZones: 0 },
           secteurCC: { present: false, nombreSecteurs: 0 },
-          commune: { insee: '12345', name: 'Village', is_rnu: true },
+          commune: { insee: "12345", name: "Village", is_rnu: true },
           zonageFinal: ZonageReglementaire.NE_SAIT_PAS,
         },
       });
 
       // Act
-      const result = await orchestrator.enrichirZonages(
-        mockGeometry,
-        mockCodeInsee,
-      );
+      const result = await orchestrator.enrichirZonages(mockGeometry, mockCodeInsee);
 
       // Assert
       expect(result.zonageEnvironnemental).toBe(ZonageEnvironnemental.HORS_ZONE);
@@ -193,11 +179,9 @@ describe('ZonageOrchestratorService', () => {
       expect(result.zonageReglementaire).toBe(ZonageReglementaire.NE_SAIT_PAS);
     });
 
-    it('devrait continuer si un service échoue', async () => {
+    it("devrait continuer si un service échoue", async () => {
       // Arrange
-      zonageEnvironnementalService.enrichir.mockRejectedValue(
-        new Error('Service indisponible'),
-      );
+      zonageEnvironnementalService.enrichir.mockRejectedValue(new Error("Service indisponible"));
 
       zonagePatrimonialService.enrichir.mockResolvedValue({
         result: {
@@ -223,26 +207,21 @@ describe('ZonageOrchestratorService', () => {
           zoneUrba: {
             present: true,
             nombreZones: 1,
-            typezone: 'A',
-            libelle: 'Zone agricole',
+            typezone: "A",
+            libelle: "Zone agricole",
           },
           secteurCC: { present: false, nombreSecteurs: 0 },
-          commune: { insee: '12345', name: 'Commune', is_rnu: false },
+          commune: { insee: "12345", name: "Commune", is_rnu: false },
           zonageFinal: ZonageReglementaire.ZONE_AGRICOLE_A,
         },
       });
 
       // Act
-      const result = await orchestrator.enrichirZonages(
-        mockGeometry,
-        mockCodeInsee,
-      );
+      const result = await orchestrator.enrichirZonages(mockGeometry, mockCodeInsee);
 
       // Assert
       expect(result.result.success).toBe(true);
-      expect(result.result.sourcesEchouees).toContain(
-        SourceEnrichissement.API_CARTO_NATURE,
-      );
+      expect(result.result.sourcesEchouees).toContain(SourceEnrichissement.API_CARTO_NATURE);
       expect(result.zonageEnvironnemental).toBeNull();
       expect(result.zonagePatrimonial).toBe(ZonagePatrimonial.NON_CONCERNE);
       expect(result.zonageReglementaire).toBe(ZonageReglementaire.ZONE_AGRICOLE_A);
@@ -250,7 +229,7 @@ describe('ZonageOrchestratorService', () => {
       expect(result.evaluations.patrimonial).toBeTruthy();
     });
 
-    it('devrait consolider les sources utilisées sans doublons', async () => {
+    it("devrait consolider les sources utilisées sans doublons", async () => {
       // Arrange - Les 3 services utilisent API_CARTO_GPU
       zonageEnvironnementalService.enrichir.mockResolvedValue({
         result: {
@@ -286,22 +265,15 @@ describe('ZonageOrchestratorService', () => {
       });
 
       // Act
-      const result = await orchestrator.enrichirZonages(
-        mockGeometry,
-        mockCodeInsee,
-      );
+      const result = await orchestrator.enrichirZonages(mockGeometry, mockCodeInsee);
 
       // Assert
       expect(result.result.sourcesUtilisees).toHaveLength(2);
-      expect(result.result.sourcesUtilisees).toContain(
-        SourceEnrichissement.API_CARTO_NATURE,
-      );
-      expect(result.result.sourcesUtilisees).toContain(
-        SourceEnrichissement.API_CARTO_GPU,
-      );
+      expect(result.result.sourcesUtilisees).toContain(SourceEnrichissement.API_CARTO_NATURE);
+      expect(result.result.sourcesUtilisees).toContain(SourceEnrichissement.API_CARTO_GPU);
     });
 
-    it('devrait appeler les 3 services en parallèle', async () => {
+    it("devrait appeler les 3 services en parallèle", async () => {
       // Arrange
       const startTimes: Record<string, number> = {};
 
@@ -341,21 +313,14 @@ describe('ZonageOrchestratorService', () => {
       expect(maxDiff).toBeLessThan(10);
     });
 
-    it('devrait retourner success false si tous les services échouent', async () => {
+    it("devrait retourner success false si tous les services échouent", async () => {
       // Arrange
-      zonageEnvironnementalService.enrichir.mockRejectedValue(
-        new Error('Erreur 1'),
-      );
-      zonagePatrimonialService.enrichir.mockRejectedValue(new Error('Erreur 2'));
-      zonageReglementaireService.enrichir.mockRejectedValue(
-        new Error('Erreur 3'),
-      );
+      zonageEnvironnementalService.enrichir.mockRejectedValue(new Error("Erreur 1"));
+      zonagePatrimonialService.enrichir.mockRejectedValue(new Error("Erreur 2"));
+      zonageReglementaireService.enrichir.mockRejectedValue(new Error("Erreur 3"));
 
       // Act
-      const result = await orchestrator.enrichirZonages(
-        mockGeometry,
-        mockCodeInsee,
-      );
+      const result = await orchestrator.enrichirZonages(mockGeometry, mockCodeInsee);
 
       // Assert
       expect(result.result.success).toBe(false);

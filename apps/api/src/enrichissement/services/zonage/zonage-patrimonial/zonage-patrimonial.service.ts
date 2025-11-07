@@ -1,15 +1,15 @@
-import { Injectable, Logger } from '@nestjs/common';
-import {  SourceEnrichissement } from '@mutafriches/shared-types';
-import { ApiCartoGpuService } from '../../../adapters/api-carto/gpu/api-carto-gpu.service';
-import { ParcelleGeometry } from '../../shared/geometry.types';
-import { EnrichmentResult } from '../../shared/enrichissement.types';
-import { ZonagePatrimonialCalculator } from './zonage-patrimonial.calculator';
+import { Injectable, Logger } from "@nestjs/common";
+import { SourceEnrichissement } from "@mutafriches/shared-types";
+import { ApiCartoGpuService } from "../../../adapters/api-carto/gpu/api-carto-gpu.service";
+import { ParcelleGeometry } from "../../shared/geometry.types";
+import { EnrichmentResult } from "../../shared/enrichissement.types";
+import { ZonagePatrimonialCalculator } from "./zonage-patrimonial.calculator";
 import {
   EvaluationZonagePatrimonial,
   ResultatAC1,
   ResultatAC2,
   ResultatAC4,
-} from './zonage-patrimonial.types';
+} from "./zonage-patrimonial.types";
 
 /**
  * Service d'enrichissement du sous-domaine Zonage Patrimonial
@@ -54,35 +54,33 @@ export class ZonagePatrimonialService {
     let ac4Data: ResultatAC4 | null = null;
 
     // 1. Traiter AC1
-    if (ac1Result.status === 'fulfilled' && ac1Result.value) {
+    if (ac1Result.status === "fulfilled" && ac1Result.value) {
       ac1Data = ac1Result.value;
       sourcesUtilisees.push(SourceEnrichissement.API_CARTO_GPU);
       this.logger.debug(
-        `AC1: ${ac1Data.present ? `${ac1Data.nombreZones} zone(s) - ${ac1Data.type}` : 'aucune'}`,
+        `AC1: ${ac1Data.present ? `${ac1Data.nombreZones} zone(s) - ${ac1Data.type}` : "aucune"}`,
       );
     } else {
       sourcesEchouees.push(SourceEnrichissement.API_CARTO_GPU);
     }
 
     // 2. Traiter AC2
-    if (ac2Result.status === 'fulfilled' && ac2Result.value) {
+    if (ac2Result.status === "fulfilled" && ac2Result.value) {
       ac2Data = ac2Result.value;
       if (!sourcesUtilisees.includes(SourceEnrichissement.API_CARTO_GPU)) {
         sourcesUtilisees.push(SourceEnrichissement.API_CARTO_GPU);
       }
-      this.logger.debug(
-        `AC2: ${ac2Data.present ? `${ac2Data.nombreZones} zone(s)` : 'aucune'}`,
-      );
+      this.logger.debug(`AC2: ${ac2Data.present ? `${ac2Data.nombreZones} zone(s)` : "aucune"}`);
     }
 
     // 3. Traiter AC4
-    if (ac4Result.status === 'fulfilled' && ac4Result.value) {
+    if (ac4Result.status === "fulfilled" && ac4Result.value) {
       ac4Data = ac4Result.value;
       if (!sourcesUtilisees.includes(SourceEnrichissement.API_CARTO_GPU)) {
         sourcesUtilisees.push(SourceEnrichissement.API_CARTO_GPU);
       }
       this.logger.debug(
-        `AC4: ${ac4Data.present ? `${ac4Data.nombreZones} zone(s) - ${ac4Data.type}` : 'aucune'}`,
+        `AC4: ${ac4Data.present ? `${ac4Data.nombreZones} zone(s) - ${ac4Data.type}` : "aucune"}`,
       );
     }
 
@@ -125,7 +123,7 @@ export class ZonagePatrimonialService {
         type: type || undefined,
       };
     } catch (error) {
-      this.logger.error('Erreur lors de la recuperation AC1:', error);
+      this.logger.error("Erreur lors de la recuperation AC1:", error);
       return null;
     }
   }
@@ -146,7 +144,7 @@ export class ZonagePatrimonialService {
         nombreZones: result.data.totalFeatures,
       };
     } catch (error) {
-      this.logger.error('Erreur lors de la recuperation AC2:', error);
+      this.logger.error("Erreur lors de la recuperation AC2:", error);
       return null;
     }
   }
@@ -170,7 +168,7 @@ export class ZonagePatrimonialService {
         type: type || undefined,
       };
     } catch (error) {
-      this.logger.error('Erreur lors de la recuperation AC4:', error);
+      this.logger.error("Erreur lors de la recuperation AC4:", error);
       return null;
     }
   }

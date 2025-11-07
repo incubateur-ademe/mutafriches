@@ -1,10 +1,10 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { SourceEnrichissement } from '@mutafriches/shared-types';
-import { ParcelleGeometry } from '../shared/geometry.types';
-import { ZonageEnvironnementalService } from './zonage-environnemental/zonage-environnemental.service';
-import { ZonagePatrimonialService } from './zonage-patrimonial/zonage-patrimonial.service';
-import { ZonageReglementaireService } from './zonage-reglementaire/zonage-reglementaire.service';
-import { ResultatEnrichissementZonage } from './zonage-orchestrator.types';
+import { Injectable, Logger } from "@nestjs/common";
+import { SourceEnrichissement } from "@mutafriches/shared-types";
+import { ParcelleGeometry } from "../shared/geometry.types";
+import { ZonageEnvironnementalService } from "./zonage-environnemental/zonage-environnemental.service";
+import { ZonagePatrimonialService } from "./zonage-patrimonial/zonage-patrimonial.service";
+import { ZonageReglementaireService } from "./zonage-reglementaire/zonage-reglementaire.service";
+import { ResultatEnrichissementZonage } from "./zonage-orchestrator.types";
 
 /**
  * Orchestrateur des services de zonage
@@ -53,10 +53,7 @@ export class ZonageOrchestratorService {
     let evalEnvironnemental = null;
     let zonageEnvironnementalFinal = null;
 
-    if (
-      environnementalResult.status === 'fulfilled' &&
-      environnementalResult.value
-    ) {
+    if (environnementalResult.status === "fulfilled" && environnementalResult.value) {
       const envResult = environnementalResult.value;
       evalEnvironnemental = envResult.evaluation;
       zonageEnvironnementalFinal = envResult.evaluation.zonageFinal;
@@ -64,11 +61,9 @@ export class ZonageOrchestratorService {
       envResult.result.sourcesUtilisees.forEach((s) => sourcesUtilisees.add(s));
       envResult.result.sourcesEchouees.forEach((s) => sourcesEchouees.add(s));
 
-      this.logger.debug(
-        `Zonage environnemental: ${zonageEnvironnementalFinal}`,
-      );
+      this.logger.debug(`Zonage environnemental: ${zonageEnvironnementalFinal}`);
     } else {
-      this.logger.warn('Échec enrichissement zonage environnemental');
+      this.logger.warn("Échec enrichissement zonage environnemental");
       sourcesEchouees.add(SourceEnrichissement.API_CARTO_NATURE);
     }
 
@@ -76,19 +71,17 @@ export class ZonageOrchestratorService {
     let evalPatrimonial = null;
     let zonagePatrimonialFinal = null;
 
-    if (patrimonialResult.status === 'fulfilled' && patrimonialResult.value) {
+    if (patrimonialResult.status === "fulfilled" && patrimonialResult.value) {
       const patriResult = patrimonialResult.value;
       evalPatrimonial = patriResult.evaluation;
       zonagePatrimonialFinal = patriResult.evaluation.zonageFinal;
 
-      patriResult.result.sourcesUtilisees.forEach((s) =>
-        sourcesUtilisees.add(s),
-      );
+      patriResult.result.sourcesUtilisees.forEach((s) => sourcesUtilisees.add(s));
       patriResult.result.sourcesEchouees.forEach((s) => sourcesEchouees.add(s));
 
       this.logger.debug(`Zonage patrimonial: ${zonagePatrimonialFinal}`);
     } else {
-      this.logger.warn('Échec enrichissement zonage patrimonial');
+      this.logger.warn("Échec enrichissement zonage patrimonial");
       sourcesEchouees.add(SourceEnrichissement.API_CARTO_GPU);
     }
 
@@ -96,22 +89,17 @@ export class ZonageOrchestratorService {
     let evalReglementaire = null;
     let zonageReglementaireFinal = null;
 
-    if (
-      reglementaireResult.status === 'fulfilled' &&
-      reglementaireResult.value
-    ) {
+    if (reglementaireResult.status === "fulfilled" && reglementaireResult.value) {
       const reglResult = reglementaireResult.value;
       evalReglementaire = reglResult.evaluation;
       zonageReglementaireFinal = reglResult.evaluation.zonageFinal;
 
-      reglResult.result.sourcesUtilisees.forEach((s) =>
-        sourcesUtilisees.add(s),
-      );
+      reglResult.result.sourcesUtilisees.forEach((s) => sourcesUtilisees.add(s));
       reglResult.result.sourcesEchouees.forEach((s) => sourcesEchouees.add(s));
 
       this.logger.debug(`Zonage réglementaire: ${zonageReglementaireFinal}`);
     } else {
-      this.logger.warn('Échec enrichissement zonage réglementaire');
+      this.logger.warn("Échec enrichissement zonage réglementaire");
       sourcesEchouees.add(SourceEnrichissement.API_CARTO_GPU);
     }
 

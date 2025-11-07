@@ -1,4 +1,4 @@
-import { Coordonnees, GeometrieParcelle } from '@mutafriches/shared-types';
+import { Coordonnees, GeometrieParcelle } from "@mutafriches/shared-types";
 
 /**
  * Extension du type GeometrieParcelle pour inclure Point
@@ -7,7 +7,7 @@ import { Coordonnees, GeometrieParcelle } from '@mutafriches/shared-types';
 export type ParcelleGeometry =
   | GeometrieParcelle
   | {
-      type: 'Point';
+      type: "Point";
       coordinates: [number, number];
     };
 
@@ -19,10 +19,8 @@ export type Coordinates = Coordonnees;
 /**
  * Convertit une géométrie en point (centroid approximatif)
  */
-export function geometryToPoint(
-  geometry: ParcelleGeometry,
-): Coordinates | null {
-  if (geometry.type === 'Point') {
+export function geometryToPoint(geometry: ParcelleGeometry): Coordinates | null {
+  if (geometry.type === "Point") {
     const coords = geometry.coordinates as [number, number];
     return { longitude: coords[0], latitude: coords[1] };
   }

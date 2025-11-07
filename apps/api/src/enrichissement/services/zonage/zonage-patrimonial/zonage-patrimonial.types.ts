@@ -8,7 +8,7 @@
 export interface ResultatAC1 {
   present: boolean;
   nombreZones: number;
-  type?: 'monument' | 'perimetre';
+  type?: "monument" | "perimetre";
 }
 
 /**
@@ -25,7 +25,7 @@ export interface ResultatAC2 {
 export interface ResultatAC4 {
   present: boolean;
   nombreZones: number;
-  type?: 'zppaup' | 'avap' | 'spr';
+  type?: "zppaup" | "avap" | "spr";
 }
 
 /**

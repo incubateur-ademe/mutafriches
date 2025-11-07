@@ -1,14 +1,10 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { Test, TestingModule } from '@nestjs/testing';
-import { ZonageReglementaire } from '@mutafriches/shared-types';
-import { ZonageReglementaireCalculator } from './zonage-reglementaire.calculator';
-import {
-  ResultatZoneUrba,
-  ResultatSecteurCC,
-  InfoCommune,
-} from './zonage-reglementaire.types';
+import { describe, it, expect, beforeEach } from "vitest";
+import { Test, TestingModule } from "@nestjs/testing";
+import { ZonageReglementaire } from "@mutafriches/shared-types";
+import { ZonageReglementaireCalculator } from "./zonage-reglementaire.calculator";
+import { ResultatZoneUrba, ResultatSecteurCC, InfoCommune } from "./zonage-reglementaire.types";
 
-describe('ZonageReglementaireCalculator', () => {
+describe("ZonageReglementaireCalculator", () => {
   let calculator: ZonageReglementaireCalculator;
 
   beforeEach(async () => {
@@ -16,20 +12,18 @@ describe('ZonageReglementaireCalculator', () => {
       providers: [ZonageReglementaireCalculator],
     }).compile();
 
-    calculator = module.get<ZonageReglementaireCalculator>(
-      ZonageReglementaireCalculator,
-    );
+    calculator = module.get<ZonageReglementaireCalculator>(ZonageReglementaireCalculator);
   });
 
-  describe('evaluer', () => {
-    describe('Priorité 1 - Zone PLU', () => {
-      it('devrait retourner ZONE_URBAINE_U si typezone commence par U', () => {
+  describe("evaluer", () => {
+    describe("Priorité 1 - Zone PLU", () => {
+      it("devrait retourner ZONE_URBAINE_U si typezone commence par U", () => {
         // Arrange
         const zoneUrba: ResultatZoneUrba = {
           present: true,
           nombreZones: 1,
-          typezone: 'U',
-          libelle: 'Zone urbaine',
+          typezone: "U",
+          libelle: "Zone urbaine",
         };
 
         // Act
@@ -39,28 +33,26 @@ describe('ZonageReglementaireCalculator', () => {
         expect(result).toBe(ZonageReglementaire.ZONE_URBAINE_U);
       });
 
-      it('devrait retourner ZONE_URBAINE_U pour UA, UB, UC', () => {
+      it("devrait retourner ZONE_URBAINE_U pour UA, UB, UC", () => {
         // Arrange & Act & Assert
-        const zones = ['UA', 'UB', 'UC', 'Ue'];
+        const zones = ["UA", "UB", "UC", "Ue"];
         zones.forEach((typezone) => {
           const zoneUrba: ResultatZoneUrba = {
             present: true,
             nombreZones: 1,
             typezone,
           };
-          expect(calculator.evaluer(zoneUrba, null, null)).toBe(
-            ZonageReglementaire.ZONE_URBAINE_U,
-          );
+          expect(calculator.evaluer(zoneUrba, null, null)).toBe(ZonageReglementaire.ZONE_URBAINE_U);
         });
       });
 
-      it('devrait retourner ZONE_A_URBANISER_AU si typezone commence par AU', () => {
+      it("devrait retourner ZONE_A_URBANISER_AU si typezone commence par AU", () => {
         // Arrange
         const zoneUrba: ResultatZoneUrba = {
           present: true,
           nombreZones: 1,
-          typezone: 'AU',
-          libelle: 'Zone à urbaniser',
+          typezone: "AU",
+          libelle: "Zone à urbaniser",
         };
 
         // Act
@@ -70,13 +62,13 @@ describe('ZonageReglementaireCalculator', () => {
         expect(result).toBe(ZonageReglementaire.ZONE_A_URBANISER_AU);
       });
 
-      it('devrait retourner ZONE_AGRICOLE_A si typezone commence par A', () => {
+      it("devrait retourner ZONE_AGRICOLE_A si typezone commence par A", () => {
         // Arrange
         const zoneUrba: ResultatZoneUrba = {
           present: true,
           nombreZones: 1,
-          typezone: 'A',
-          libelle: 'Zone agricole',
+          typezone: "A",
+          libelle: "Zone agricole",
         };
 
         // Act
@@ -86,13 +78,13 @@ describe('ZonageReglementaireCalculator', () => {
         expect(result).toBe(ZonageReglementaire.ZONE_AGRICOLE_A);
       });
 
-      it('devrait retourner ZONE_NATURELLE_N si typezone commence par N', () => {
+      it("devrait retourner ZONE_NATURELLE_N si typezone commence par N", () => {
         // Arrange
         const zoneUrba: ResultatZoneUrba = {
           present: true,
           nombreZones: 1,
-          typezone: 'N',
-          libelle: 'Zone naturelle',
+          typezone: "N",
+          libelle: "Zone naturelle",
         };
 
         // Act
@@ -102,13 +94,13 @@ describe('ZonageReglementaireCalculator', () => {
         expect(result).toBe(ZonageReglementaire.ZONE_NATURELLE_N);
       });
 
-      it('devrait retourner ZONE_VOCATION_ACTIVITES si destdomi contient activité', () => {
+      it("devrait retourner ZONE_VOCATION_ACTIVITES si destdomi contient activité", () => {
         // Arrange
         const zoneUrba: ResultatZoneUrba = {
           present: true,
           nombreZones: 1,
-          typezone: 'UX',
-          destdomi: 'Activités économiques',
+          typezone: "UX",
+          destdomi: "Activités économiques",
         };
 
         // Act
@@ -118,21 +110,21 @@ describe('ZonageReglementaireCalculator', () => {
         expect(result).toBe(ZonageReglementaire.ZONE_VOCATION_ACTIVITES);
       });
 
-      it('devrait ignorer secteurCC et commune si zoneUrba présente', () => {
+      it("devrait ignorer secteurCC et commune si zoneUrba présente", () => {
         // Arrange
         const zoneUrba: ResultatZoneUrba = {
           present: true,
           nombreZones: 1,
-          typezone: 'U',
+          typezone: "U",
         };
         const secteurCC: ResultatSecteurCC = {
           present: true,
           nombreSecteurs: 1,
-          typesect: 'constructible',
+          typesect: "constructible",
         };
         const commune: InfoCommune = {
-          insee: '75056',
-          name: 'Paris',
+          insee: "75056",
+          name: "Paris",
           is_rnu: true,
         };
 
@@ -144,68 +136,62 @@ describe('ZonageReglementaireCalculator', () => {
       });
     });
 
-    describe('Priorité 2 - Secteur Carte Communale', () => {
-      it('devrait retourner SECTEUR_OUVERT_A_LA_CONSTRUCTION si constructible', () => {
+    describe("Priorité 2 - Secteur Carte Communale", () => {
+      it("devrait retourner SECTEUR_OUVERT_A_LA_CONSTRUCTION si constructible", () => {
         // Arrange
         const secteurCC: ResultatSecteurCC = {
           present: true,
           nombreSecteurs: 1,
-          typesect: 'constructible',
+          typesect: "constructible",
         };
 
         // Act
         const result = calculator.evaluer(null, secteurCC, null);
 
         // Assert
-        expect(result).toBe(
-          ZonageReglementaire.SECTEUR_OUVERT_A_LA_CONSTRUCTION,
-        );
+        expect(result).toBe(ZonageReglementaire.SECTEUR_OUVERT_A_LA_CONSTRUCTION);
       });
 
-      it('devrait retourner SECTEUR_NON_OUVERT si non constructible', () => {
+      it("devrait retourner SECTEUR_NON_OUVERT si non constructible", () => {
         // Arrange
         const secteurCC: ResultatSecteurCC = {
           present: true,
           nombreSecteurs: 1,
-          typesect: 'non constructible',
+          typesect: "non constructible",
         };
 
         // Act
         const result = calculator.evaluer(null, secteurCC, null);
 
         // Assert
-        expect(result).toBe(
-          ZonageReglementaire.SECTEUR_NON_OUVERT_A_LA_CONSTRUCTION,
-        );
+        expect(result).toBe(ZonageReglementaire.SECTEUR_NON_OUVERT_A_LA_CONSTRUCTION);
       });
 
-      it('devrait retourner SECTEUR_NON_OUVERT si inconstructible', () => {
+      it("devrait retourner SECTEUR_NON_OUVERT si inconstructible", () => {
         // Arrange
         const secteurCC: ResultatSecteurCC = {
           present: true,
           nombreSecteurs: 1,
-          typesect: 'inconstructible',
+          typesect: "inconstructible",
         };
 
         // Act
         const result = calculator.evaluer(null, secteurCC, null);
 
         // Assert
-        expect(result).toBe(
-          ZonageReglementaire.SECTEUR_NON_OUVERT_A_LA_CONSTRUCTION,
-        );
+        expect(result).toBe(ZonageReglementaire.SECTEUR_NON_OUVERT_A_LA_CONSTRUCTION);
       });
 
-      it('devrait ignorer commune si secteurCC présent', () => {
+      it("devrait ignorer commune si secteurCC présent", () => {
         // Arrange
         const secteurCC: ResultatSecteurCC = {
           present: true,
           nombreSecteurs: 1,
-          typesect: 'constructible',
+          typesect: "constructible",
         };
         const commune: InfoCommune = {
-          insee: '75056',
-          name: 'Paris',
+          insee: "75056",
+          name: "Paris",
           is_rnu: true,
         };
 
@@ -213,18 +199,16 @@ describe('ZonageReglementaireCalculator', () => {
         const result = calculator.evaluer(null, secteurCC, commune);
 
         // Assert
-        expect(result).toBe(
-          ZonageReglementaire.SECTEUR_OUVERT_A_LA_CONSTRUCTION,
-        );
+        expect(result).toBe(ZonageReglementaire.SECTEUR_OUVERT_A_LA_CONSTRUCTION);
       });
     });
 
-    describe('Priorité 3 - RNU', () => {
-      it('devrait retourner NE_SAIT_PAS si commune en RNU', () => {
+    describe("Priorité 3 - RNU", () => {
+      it("devrait retourner NE_SAIT_PAS si commune en RNU", () => {
         // Arrange
         const commune: InfoCommune = {
-          insee: '75056',
-          name: 'Paris',
+          insee: "75056",
+          name: "Paris",
           is_rnu: true,
         };
 
@@ -235,11 +219,11 @@ describe('ZonageReglementaireCalculator', () => {
         expect(result).toBe(ZonageReglementaire.NE_SAIT_PAS);
       });
 
-      it('devrait retourner NE_SAIT_PAS si commune non RNU sans PLU/CC', () => {
+      it("devrait retourner NE_SAIT_PAS si commune non RNU sans PLU/CC", () => {
         // Arrange
         const commune: InfoCommune = {
-          insee: '75056',
-          name: 'Paris',
+          insee: "75056",
+          name: "Paris",
           is_rnu: false,
         };
 
@@ -251,8 +235,8 @@ describe('ZonageReglementaireCalculator', () => {
       });
     });
 
-    describe('Aucune donnée', () => {
-      it('devrait retourner NE_SAIT_PAS si tout est null', () => {
+    describe("Aucune donnée", () => {
+      it("devrait retourner NE_SAIT_PAS si tout est null", () => {
         // Act
         const result = calculator.evaluer(null, null, null);
 
@@ -260,7 +244,7 @@ describe('ZonageReglementaireCalculator', () => {
         expect(result).toBe(ZonageReglementaire.NE_SAIT_PAS);
       });
 
-      it('devrait retourner NE_SAIT_PAS si rien de présent', () => {
+      it("devrait retourner NE_SAIT_PAS si rien de présent", () => {
         // Arrange
         const zoneUrba: ResultatZoneUrba = {
           present: false,
@@ -279,13 +263,13 @@ describe('ZonageReglementaireCalculator', () => {
       });
     });
 
-    describe('Cas limites', () => {
-      it('devrait gérer les typezones en minuscules', () => {
+    describe("Cas limites", () => {
+      it("devrait gérer les typezones en minuscules", () => {
         // Arrange
         const zoneUrba: ResultatZoneUrba = {
           present: true,
           nombreZones: 1,
-          typezone: 'u',
+          typezone: "u",
         };
 
         // Act
@@ -295,12 +279,12 @@ describe('ZonageReglementaireCalculator', () => {
         expect(result).toBe(ZonageReglementaire.ZONE_URBAINE_U);
       });
 
-      it('devrait retourner NE_SAIT_PAS pour typezone inconnu', () => {
+      it("devrait retourner NE_SAIT_PAS pour typezone inconnu", () => {
         // Arrange
         const zoneUrba: ResultatZoneUrba = {
           present: true,
           nombreZones: 1,
-          typezone: 'X',
+          typezone: "X",
         };
 
         // Act
@@ -310,12 +294,12 @@ describe('ZonageReglementaireCalculator', () => {
         expect(result).toBe(ZonageReglementaire.NE_SAIT_PAS);
       });
 
-      it('devrait retourner NE_SAIT_PAS pour typesect inconnu', () => {
+      it("devrait retourner NE_SAIT_PAS pour typesect inconnu", () => {
         // Arrange
         const secteurCC: ResultatSecteurCC = {
           present: true,
           nombreSecteurs: 1,
-          typesect: 'autre',
+          typesect: "autre",
         };
 
         // Act

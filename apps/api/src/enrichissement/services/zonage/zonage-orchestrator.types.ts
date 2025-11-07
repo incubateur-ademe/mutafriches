@@ -1,10 +1,14 @@
-import { ZonageEnvironnemental, ZonagePatrimonial, ZonageReglementaire } from '@mutafriches/shared-types';
-import { EnrichmentResult } from '../shared/enrichissement.types';
+import {
+  ZonageEnvironnemental,
+  ZonagePatrimonial,
+  ZonageReglementaire,
+} from "@mutafriches/shared-types";
+import { EnrichmentResult } from "../shared/enrichissement.types";
 import {
   EvaluationZonageEnvironnemental,
   EvaluationZonagePatrimonial,
   EvaluationZonageReglementaire,
-} from './index';
+} from "./index";
 
 /**
  * Résultat complet de l'enrichissement zonage

@@ -1,95 +1,112 @@
 import { Module } from "@nestjs/common";
 import { HttpModule } from "@nestjs/axios";
-import { DatabaseModule } from "../shared/database/database.module";
-
-// Controller
 import { EnrichissementController } from "./enrichissement.controller";
-
-// Repository
+import { EnrichissementService } from "./services/enrichissement.service";
 import { EnrichissementRepository } from "./repositories/enrichissement.repository";
 
-// Service principal
-import { EnrichissementService } from "./services/enrichissement.service";
-
-// Sous-domaines d'enrichissement
+// Services de domaine
 import { CadastreEnrichissementService } from "./services/cadastre/cadastre-enrichissement.service";
 import { EnergieEnrichissementService } from "./services/energie/energie-enrichissement.service";
 import { TransportEnrichissementService } from "./services/transport/transport-enrichissement.service";
 import { UrbanismeEnrichissementService } from "./services/urbanisme/urbanisme-enrichissement.service";
 import { RisquesNaturelsEnrichissementService } from "./services/risques-naturels/risques-naturels-enrichissement.service";
 import { RisquesTechnologiquesEnrichissementService } from "./services/risques-technologiques/risques-technologiques-enrichissement.service";
-import { GeoRisquesEnrichissementService } from "./services/georisques/georisques-enrichissement.service";
 
 // Calculators
-import { FiabiliteCalculator } from "./services/shared/fiabilite.calculator";
 import { RisquesNaturelsCalculator } from "./services/risques-naturels/risques-naturels.calculator";
 import { RisquesTechnologiquesCalculator } from "./services/risques-technologiques/risques-technologiques.calculator";
+import { FiabiliteCalculator } from "./services/shared/fiabilite.calculator";
 
-// Orchestrateurs
-import { GeoRisquesOrchestrator } from "./services/georisques/georisques.orchestrator";
+// Services Zonage
+import { ZonageOrchestratorService } from "./services/zonage/zonage-orchestrator.service";
+import { ZonageEnvironnementalService } from "./services/zonage/zonage-environnemental/zonage-environnemental.service";
+import { ZonageEnvironnementalCalculator } from "./services/zonage/zonage-environnemental/zonage-environnemental.calculator";
+import { ZonagePatrimonialService } from "./services/zonage/zonage-patrimonial/zonage-patrimonial.service";
+import { ZonagePatrimonialCalculator } from "./services/zonage/zonage-patrimonial/zonage-patrimonial.calculator";
+import { ZonageReglementaireService } from "./services/zonage/zonage-reglementaire/zonage-reglementaire.service";
+import { ZonageReglementaireCalculator } from "./services/zonage/zonage-reglementaire/zonage-reglementaire.calculator";
 
-// Adapters (APIs externes)
+// Adapters
 import { CadastreService } from "./adapters/cadastre/cadastre.service";
 import { BdnbService } from "./adapters/bdnb/bdnb.service";
 import { EnedisService } from "./adapters/enedis/enedis.service";
-import { RgaService } from "./adapters/georisques/rga/rga.service";
+
+// Adapters GeoRisques
+import { GeoRisquesOrchestrator } from "./services/georisques/georisques.orchestrator";
+import { GeoRisquesEnrichissementService } from "./services/georisques/georisques-enrichissement.service";
 import { CatnatService } from "./adapters/georisques/catnat/catnat.service";
-import { TriZonageService } from "./adapters/georisques/tri-zonage/tri-zonage.service";
+import { RgaService } from "./adapters/georisques/rga/rga.service";
 import { TriService } from "./adapters/georisques/tri/tri.service";
-import { MvtService } from "./adapters/georisques/mvt/mvt.service";
-import { ZonageSismiqueService } from "./adapters/georisques/zonage-sismique/zonage-sismique.service";
-import { CavitesService } from "./adapters/georisques/cavites/cavites.service";
-import { OldService } from "./adapters/georisques/old/old.service";
-import { SisService } from "./adapters/georisques/sis/sis.service";
-import { IcpeService } from "./adapters/georisques/icpe/icpe.service";
+import { TriZonageService } from "./adapters/georisques/tri-zonage/tri-zonage.service";
 import { AziService } from "./adapters/georisques/azi/azi.service";
 import { PapiService } from "./adapters/georisques/papi/papi.service";
+import { CavitesService } from "./adapters/georisques/cavites/cavites.service";
+import { MvtService } from "./adapters/georisques/mvt/mvt.service";
+import { ZonageSismiqueService } from "./adapters/georisques/zonage-sismique/zonage-sismique.service";
 import { PprService } from "./adapters/georisques/ppr/ppr.service";
+import { SisService } from "./adapters/georisques/sis/sis.service";
+import { IcpeService } from "./adapters/georisques/icpe/icpe.service";
+import { OldService } from "./adapters/georisques/old/old.service";
+
+// Adapters API Carto
+import { ApiCartoNatureService } from "./adapters/api-carto/nature/api-carto-nature.service";
+import { ApiCartoGpuService } from "./adapters/api-carto/gpu/api-carto-gpu.service";
 
 @Module({
-  imports: [HttpModule, DatabaseModule],
+  imports: [HttpModule],
   controllers: [EnrichissementController],
   providers: [
-    // Repository
+    // Service principal
+    EnrichissementService,
     EnrichissementRepository,
 
-    // Service principal (orchestrateur)
-    EnrichissementService,
-
-    // Sous-domaines d'enrichissement
+    // Services de domaine
     CadastreEnrichissementService,
     EnergieEnrichissementService,
     TransportEnrichissementService,
     UrbanismeEnrichissementService,
     RisquesNaturelsEnrichissementService,
     RisquesTechnologiquesEnrichissementService,
-    GeoRisquesEnrichissementService,
 
     // Calculators
-    FiabiliteCalculator,
     RisquesNaturelsCalculator,
     RisquesTechnologiquesCalculator,
+    FiabiliteCalculator,
 
-    // Orchestrateurs
-    GeoRisquesOrchestrator,
+    // Services Zonage
+    ZonageOrchestratorService,
+    ZonageEnvironnementalService,
+    ZonageEnvironnementalCalculator,
+    ZonagePatrimonialService,
+    ZonagePatrimonialCalculator,
+    ZonageReglementaireService,
+    ZonageReglementaireCalculator,
 
-    // Adapters (APIs externes)
+    // Adapters
     CadastreService,
     BdnbService,
     EnedisService,
-    RgaService,
+
+    // Adapters GeoRisques
+    GeoRisquesOrchestrator,
+    GeoRisquesEnrichissementService,
     CatnatService,
-    TriZonageService,
+    RgaService,
     TriService,
-    MvtService,
-    ZonageSismiqueService,
-    CavitesService,
-    OldService,
-    SisService,
-    IcpeService,
+    TriZonageService,
     AziService,
     PapiService,
+    CavitesService,
+    MvtService,
+    ZonageSismiqueService,
     PprService,
+    SisService,
+    IcpeService,
+    OldService,
+
+    // Adapters API Carto
+    ApiCartoNatureService,
+    ApiCartoGpuService,
   ],
   exports: [EnrichissementService],
 })
