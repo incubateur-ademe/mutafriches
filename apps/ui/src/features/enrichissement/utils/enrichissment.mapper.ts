@@ -35,6 +35,11 @@ export const transformEnrichmentToUiData = (
           : "Non"
         : nonAccessibleVersion,
 
+    // Zonages
+    zonageEnviro: enrichmentData.zonageEnvironnemental || nonAccessibleVersion,
+    zonageUrba: enrichmentData.zonageReglementaire || nonAccessibleVersion,
+    zonagePatrimonial: enrichmentData.zonagePatrimonial || nonAccessibleVersion,
+
     // Champs non disponibles dans l'enrichissement actuel
     typeProprietaire: nonAccessibleVersion,
     centreVille: nonAccessibleVersion,
@@ -42,9 +47,7 @@ export const transformEnrichmentToUiData = (
     distanceTrain: nonAccessibleVersion,
     proximiteCommerces: nonAccessibleVersion,
     tauxLV: nonAccessibleVersion,
-    zonageEnviro: nonAccessibleVersion,
-    zonageUrba: nonAccessibleVersion,
-    zonagePatrimonial: nonAccessibleVersion,
+
     tvb: nonAccessibleVersion,
     potentielEcologique: nonAccessibleVersion,
   };

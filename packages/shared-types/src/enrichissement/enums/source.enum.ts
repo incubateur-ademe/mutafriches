@@ -1,4 +1,6 @@
 export enum SourceEnrichissement {
+  API_CARTO_NATURE = "ApiCartoNature",
+  API_CARTO_GPU = "ApiCartoGPU",
   CADASTRE = "Cadastre",
   BDNB = "BDNB",
   BDNB_SURFACE_BATIE = "BDNB-SurfaceBatie",

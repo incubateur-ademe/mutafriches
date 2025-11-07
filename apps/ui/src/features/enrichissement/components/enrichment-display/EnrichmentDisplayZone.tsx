@@ -169,31 +169,31 @@ export const EnrichmentDisplayZone: React.FC<EnrichmentDisplayZoneProps> = ({
               id="presence-risques-technologiques"
               label="Présence de risques technologiques"
               value={data.risquesTechno}
-              tooltip="Donnée de test, pas de récupération réelle pour l'instant"
+              tooltip="Récupéré depuis API Georisques : https://www.georisques.gouv.fr/doc-api"
             />
             <EnrichmentInfoField
               id="presence-risques-naturels"
               label="Présence de risques naturels"
               value={data.risquesNaturels}
-              tooltip="Récupéré depuis API BDNB : https://api.bdnb.io/v1/bdnb"
+              tooltip={`Récupéré depuis API Georisques : https://www.georisques.gouv.fr/doc-api. En l'absence de la numérisation des plans de prévention des risques, cette donnée est susceptible d'être faussée`}
             />
             <EnrichmentInfoField
               id="type-zonage-environnemental"
               label="Type de zonage environnemental"
               value={data.zonageEnviro}
-              tooltip="Donnée de test, pas de récupération réelle pour l'instant"
+              tooltip="Données enrichies via les API Carto Nature et GPU de l'IGN"
             />
             <EnrichmentInfoField
               id="zonage-reglementaire"
               label="Zonage réglementaire"
               value={data.zonageUrba}
-              tooltip="Donnée de test, pas de récupération réelle pour l'instant"
+              tooltip="Données enrichies via les API Carto Nature et GPU de l'IGN"
             />
             <EnrichmentInfoField
               id="type-zonage-patrimonial"
               label="Type de zonage patrimonial"
               value={data.zonagePatrimonial}
-              tooltip="Donnée de test, pas de récupération réelle pour l'instant"
+              tooltip="Données enrichies via les API Carto Nature et GPU de l'IGN"
             />
             <EnrichmentInfoField
               id="continuité-ecologique"

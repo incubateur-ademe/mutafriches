@@ -22,7 +22,9 @@ import {
   createMockGeoRisquesEnrichissementService,
   createMockFiabiliteCalculator,
   createMockEnrichissementRepository,
+  createMockZonageOrchestratorService,
 } from "../__test-helpers__/enrichissement.mocks";
+import { ZonageOrchestratorService } from "./zonage";
 
 describe("EnrichissementService", () => {
   let service: EnrichissementService;
@@ -37,6 +39,7 @@ describe("EnrichissementService", () => {
     typeof createMockRisquesTechnologiquesEnrichissementService
   >;
   let georisquesEnrichissement: ReturnType<typeof createMockGeoRisquesEnrichissementService>;
+  let zonageOrchestrator: ReturnType<typeof createMockZonageOrchestratorService>;
   let fiabiliteCalculator: ReturnType<typeof createMockFiabiliteCalculator>;
   let enrichissementRepository: ReturnType<typeof createMockEnrichissementRepository>;
 
@@ -48,6 +51,7 @@ describe("EnrichissementService", () => {
     const mockRisquesNaturels = createMockRisquesNaturelsEnrichissementService();
     const mockRisquesTechnologiques = createMockRisquesTechnologiquesEnrichissementService();
     const mockGeoRisques = createMockGeoRisquesEnrichissementService();
+    const mockZonageOrchestrator = createMockZonageOrchestratorService();
     const mockCalculator = createMockFiabiliteCalculator();
     const mockRepository = createMockEnrichissementRepository();
 
@@ -64,6 +68,7 @@ describe("EnrichissementService", () => {
           useValue: mockRisquesTechnologiques,
         },
         { provide: GeoRisquesEnrichissementService, useValue: mockGeoRisques },
+        { provide: ZonageOrchestratorService, useValue: mockZonageOrchestrator },
         { provide: FiabiliteCalculator, useValue: mockCalculator },
         { provide: EnrichissementRepository, useValue: mockRepository },
       ],
@@ -77,6 +82,7 @@ describe("EnrichissementService", () => {
     risquesNaturelsEnrichissement = mockRisquesNaturels;
     risquesTechnologiquesEnrichissement = mockRisquesTechnologiques;
     georisquesEnrichissement = mockGeoRisques;
+    zonageOrchestrator = mockZonageOrchestrator;
     fiabiliteCalculator = mockCalculator;
     enrichissementRepository = mockRepository;
   });
@@ -117,6 +123,13 @@ describe("EnrichissementService", () => {
       georisquesEnrichissement.enrichir.mockResolvedValue({
         result: { success: true, sourcesUtilisees: ["georisques"], sourcesEchouees: [] },
         data: undefined,
+      });
+      zonageOrchestrator.enrichirZonages.mockResolvedValue({
+        result: { success: true, sourcesUtilisees: ["API_CARTO_GPU"], sourcesEchouees: [] },
+        zonageEnvironnemental: "hors-zone",
+        zonagePatrimonial: "non-concerne",
+        zonageReglementaire: "zone-urbaine-u",
+        evaluations: { environnemental: null, patrimonial: null, reglementaire: null },
       });
       fiabiliteCalculator.calculate.mockReturnValue(9.5);
       enrichissementRepository.save.mockResolvedValue({});
@@ -168,6 +181,13 @@ describe("EnrichissementService", () => {
         result: { success: true, sourcesUtilisees: ["georisques"], sourcesEchouees: [] },
         data: { metadata: { sourcesUtilisees: [], sourcesEchouees: [], fiabilite: 10 } },
       });
+      zonageOrchestrator.enrichirZonages.mockResolvedValue({
+        result: { success: true, sourcesUtilisees: ["API_CARTO_GPU"], sourcesEchouees: [] },
+        zonageEnvironnemental: "hors-zone",
+        zonagePatrimonial: "non-concerne",
+        zonageReglementaire: "zone-urbaine-u",
+        evaluations: { environnemental: null, patrimonial: null, reglementaire: null },
+      });
       fiabiliteCalculator.calculate.mockReturnValue(9.5);
       enrichissementRepository.save.mockResolvedValue({});
 
@@ -179,7 +199,7 @@ describe("EnrichissementService", () => {
       expect(result.codeInsee).toBe("29232");
       expect(result.commune).toBe("Quimper");
       expect(result.surfaceSite).toBe(1000);
-      expect(result.sourcesUtilisees).toHaveLength(7);
+      expect(result.sourcesUtilisees).toHaveLength(8);
       expect(result.fiabilite).toBe(9.5);
     });
 
@@ -225,6 +245,13 @@ describe("EnrichissementService", () => {
         result: { success: true, sourcesUtilisees: ["georisques"], sourcesEchouees: [] },
         data: undefined,
       });
+      zonageOrchestrator.enrichirZonages.mockResolvedValue({
+        result: { success: true, sourcesUtilisees: ["API_CARTO_GPU"], sourcesEchouees: [] },
+        zonageEnvironnemental: "hors-zone",
+        zonagePatrimonial: "non-concerne",
+        zonageReglementaire: "zone-urbaine-u",
+        evaluations: { environnemental: null, patrimonial: null, reglementaire: null },
+      });
       fiabiliteCalculator.calculate.mockReturnValue(8.5);
       enrichissementRepository.save.mockResolvedValue({});
 
@@ -232,7 +259,7 @@ describe("EnrichissementService", () => {
       await service.enrichir(identifiantTest);
 
       // Assert
-      expect(fiabiliteCalculator.calculate).toHaveBeenCalledWith(6, 1);
+      expect(fiabiliteCalculator.calculate).toHaveBeenCalledWith(7, 1);
     });
 
     it("devrait persister l'enrichissement avec statut SUCCES", async () => {
@@ -246,6 +273,7 @@ describe("EnrichissementService", () => {
         risquesNaturelsEnrichissement,
         risquesTechnologiquesEnrichissement,
         georisquesEnrichissement,
+        zonageOrchestrator,
       });
       fiabiliteCalculator.calculate.mockReturnValue(9.5);
       enrichissementRepository.save.mockResolvedValue({});
@@ -297,6 +325,13 @@ describe("EnrichissementService", () => {
       georisquesEnrichissement.enrichir.mockResolvedValue({
         result: { success: true, sourcesUtilisees: ["georisques"], sourcesEchouees: [] },
         data: undefined,
+      });
+      zonageOrchestrator.enrichirZonages.mockResolvedValue({
+        result: { success: true, sourcesUtilisees: ["API_CARTO_GPU"], sourcesEchouees: [] },
+        zonageEnvironnemental: "hors-zone",
+        zonagePatrimonial: "non-concerne",
+        zonageReglementaire: "zone-urbaine-u",
+        evaluations: { environnemental: null, patrimonial: null, reglementaire: null },
       });
       fiabiliteCalculator.calculate.mockReturnValue(8.0);
       enrichissementRepository.save.mockResolvedValue({});
@@ -356,6 +391,7 @@ describe("EnrichissementService", () => {
         risquesNaturelsEnrichissement,
         risquesTechnologiquesEnrichissement,
         georisquesEnrichissement,
+        zonageOrchestrator,
       });
       fiabiliteCalculator.calculate.mockReturnValue(9.5);
       enrichissementRepository.save.mockRejectedValue(new Error("DB error"));
@@ -375,6 +411,7 @@ describe("EnrichissementService", () => {
         risquesNaturelsEnrichissement,
         risquesTechnologiquesEnrichissement,
         georisquesEnrichissement,
+        zonageOrchestrator,
       });
       fiabiliteCalculator.calculate.mockReturnValue(9.5);
       enrichissementRepository.save.mockResolvedValue({});
@@ -426,6 +463,13 @@ describe("EnrichissementService", () => {
         result: { success: true, sourcesUtilisees: [], sourcesEchouees: [] },
         evaluation: { sis: null, icpe: null, risqueFinal: false },
       });
+      zonageOrchestrator.enrichirZonages.mockResolvedValue({
+        result: { success: true, sourcesUtilisees: ["API_CARTO_GPU"], sourcesEchouees: [] },
+        zonageEnvironnemental: "hors-zone",
+        zonagePatrimonial: "non-concerne",
+        zonageReglementaire: "zone-urbaine-u",
+        evaluations: { environnemental: null, patrimonial: null, reglementaire: null },
+      });
       fiabiliteCalculator.calculate.mockReturnValue(7.0);
       enrichissementRepository.save.mockResolvedValue({});
 
@@ -460,6 +504,7 @@ interface AllMocks {
     typeof createMockRisquesTechnologiquesEnrichissementService
   >;
   georisquesEnrichissement: ReturnType<typeof createMockGeoRisquesEnrichissementService>;
+  zonageOrchestrator: ReturnType<typeof createMockZonageOrchestratorService>;
 }
 
 function setupAllMocksSuccess(parcelle: Parcelle, mocks: AllMocks): void {
@@ -493,5 +538,20 @@ function setupAllMocksSuccess(parcelle: Parcelle, mocks: AllMocks): void {
   mocks.georisquesEnrichissement.enrichir.mockResolvedValue({
     result: { success: true, sourcesUtilisees: ["georisques"], sourcesEchouees: [] },
     data: undefined,
+  });
+  mocks.zonageOrchestrator.enrichirZonages.mockResolvedValue({
+    result: {
+      success: true,
+      sourcesUtilisees: ["API_CARTO_NATURE", "API_CARTO_GPU"],
+      sourcesEchouees: [],
+    },
+    zonageEnvironnemental: "hors-zone",
+    zonagePatrimonial: "non-concerne",
+    zonageReglementaire: "zone-urbaine-u",
+    evaluations: {
+      environnemental: null,
+      patrimonial: null,
+      reglementaire: null,
+    },
   });
 }
