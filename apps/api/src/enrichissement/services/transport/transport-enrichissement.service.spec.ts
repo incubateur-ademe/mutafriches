@@ -1,12 +1,15 @@
+// apps/api/src/enrichissement/services/transport/transport-enrichissement.service.spec.ts
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { SourceEnrichissement } from "@mutafriches/shared-types";
 import { TransportEnrichissementService } from "./transport-enrichissement.service";
 import { ServicePublicService } from "../../adapters/service-public/service-public.service";
+import { IgnWfsService } from "../../adapters/ign-wfs/ign-wfs.service";
 import { Parcelle } from "../../../evaluation/entities/parcelle.entity";
 
 describe("TransportEnrichissementService", () => {
   let service: TransportEnrichissementService;
   let servicePublicService: ServicePublicService;
+  let ignWfsService: IgnWfsService;
 
   beforeEach(() => {
     // Mock du ServicePublicService
@@ -14,7 +17,12 @@ describe("TransportEnrichissementService", () => {
       getMairieCoordonnees: vi.fn(),
     } as unknown as ServicePublicService;
 
-    service = new TransportEnrichissementService(servicePublicService);
+    // Mock du IgnWfsService
+    ignWfsService = {
+      getDistanceVoieGrandeCirculation: vi.fn(),
+    } as unknown as IgnWfsService;
+
+    service = new TransportEnrichissementService(servicePublicService, ignWfsService);
   });
 
   describe("enrichir - Centre-ville", () => {
@@ -26,16 +34,26 @@ describe("TransportEnrichissementService", () => {
       parcelle.commune = "Test Commune";
       parcelle.coordonnees = { latitude: 48.0, longitude: -4.0 };
 
-      // Mock : mairie à 500m
+      // Mock mairie
       vi.mocked(servicePublicService.getMairieCoordonnees).mockResolvedValue({
         success: true,
         data: {
           codeInsee: "29232",
           nomCommune: "Test Commune",
-          coordonnees: { latitude: 48.0045, longitude: -4.0 }, // ~500m
+          coordonnees: { latitude: 48.0045, longitude: -4.0 },
           adresse: "Mairie, Place de la Mairie 29232 Test Commune",
         },
         source: "API Service Public",
+      });
+
+      // Mock autoroute
+      vi.mocked(ignWfsService.getDistanceVoieGrandeCirculation).mockResolvedValue({
+        success: true,
+        data: {
+          distanceMetres: 3500,
+          nombreTronconsProches: 2,
+        },
+        source: "IGN WFS",
       });
 
       // Act
@@ -45,6 +63,7 @@ describe("TransportEnrichissementService", () => {
       expect(parcelle.siteEnCentreVille).toBe(true);
       expect(result.success).toBe(true);
       expect(result.sourcesUtilisees).toContain(SourceEnrichissement.SERVICE_PUBLIC);
+      expect(result.sourcesUtilisees).toContain(SourceEnrichissement.IGN_WFS);
       expect(result.sourcesUtilisees).toContain(SourceEnrichissement.TRANSPORT);
       expect(servicePublicService.getMairieCoordonnees).toHaveBeenCalledWith("29232");
     });
@@ -57,16 +76,21 @@ describe("TransportEnrichissementService", () => {
       parcelle.commune = "Test Commune";
       parcelle.coordonnees = { latitude: 48.0, longitude: -4.0 };
 
-      // Mock : mairie à 2km
       vi.mocked(servicePublicService.getMairieCoordonnees).mockResolvedValue({
         success: true,
         data: {
           codeInsee: "29232",
           nomCommune: "Test Commune",
-          coordonnees: { latitude: 48.018, longitude: -4.0 }, // ~2000m
-          adresse: "Mairie, Place de la Mairie 29232 Test Commune",
+          coordonnees: { latitude: 48.018, longitude: -4.0 },
+          adresse: "Mairie",
         },
         source: "API Service Public",
+      });
+
+      vi.mocked(ignWfsService.getDistanceVoieGrandeCirculation).mockResolvedValue({
+        success: true,
+        data: { distanceMetres: 1500, nombreTronconsProches: 1 },
+        source: "IGN WFS",
       });
 
       // Act
@@ -86,21 +110,27 @@ describe("TransportEnrichissementService", () => {
       parcelle.commune = "Test Commune";
       parcelle.coordonnees = { latitude: 48.0, longitude: -4.0 };
 
-      // Mock : erreur API Service Public
       vi.mocked(servicePublicService.getMairieCoordonnees).mockResolvedValue({
         success: false,
         error: "Mairie non trouvée",
         source: "API Service Public",
       });
 
+      vi.mocked(ignWfsService.getDistanceVoieGrandeCirculation).mockResolvedValue({
+        success: true,
+        data: { distanceMetres: 2000, nombreTronconsProches: 1 },
+        source: "IGN WFS",
+      });
+
       // Act
       const result = await service.enrichir(parcelle);
 
       // Assert
-      expect(parcelle.siteEnCentreVille).toBe(false); // Valeur par défaut
+      expect(parcelle.siteEnCentreVille).toBe(false);
       expect(result.sourcesEchouees).toContain(SourceEnrichissement.SERVICE_PUBLIC);
       expect(result.champsManquants).toContain("siteEnCentreVille");
-      // Transport temporaire devrait quand même fonctionner
+      // IGN WFS et Transport devraient quand même fonctionner
+      expect(result.sourcesUtilisees).toContain(SourceEnrichissement.IGN_WFS);
       expect(result.sourcesUtilisees).toContain(SourceEnrichissement.TRANSPORT);
     });
 
@@ -112,25 +142,137 @@ describe("TransportEnrichissementService", () => {
       parcelle.commune = "Trélazé";
       parcelle.coordonnees = { latitude: 47.4484, longitude: -0.4768 };
 
-      // Mock : vraie mairie de Trélazé
       vi.mocked(servicePublicService.getMairieCoordonnees).mockResolvedValue({
         success: true,
         data: {
           codeInsee: "49007",
           nomCommune: "Trélazé",
-          coordonnees: { latitude: 47.447, longitude: -0.474 }, // ~200m de la parcelle
+          coordonnees: { latitude: 47.447, longitude: -0.474 },
           adresse: "Mairie, Place Leclerc 49800 Trélazé",
         },
         source: "API Service Public",
+      });
+
+      vi.mocked(ignWfsService.getDistanceVoieGrandeCirculation).mockResolvedValue({
+        success: true,
+        data: { distanceMetres: 4200, nombreTronconsProches: 3 },
+        source: "IGN WFS",
       });
 
       // Act
       const result = await service.enrichir(parcelle);
 
       // Assert
-      expect(parcelle.siteEnCentreVille).toBe(true); // < 1km
+      expect(parcelle.siteEnCentreVille).toBe(true);
       expect(result.success).toBe(true);
       expect(result.sourcesUtilisees).toContain(SourceEnrichissement.SERVICE_PUBLIC);
+    });
+  });
+
+  describe("enrichir - Distance autoroute", () => {
+    it("devrait calculer la distance a l'autoroute la plus proche", async () => {
+      // Arrange
+      const parcelle = new Parcelle();
+      parcelle.identifiantParcelle = "29232000AB0123";
+      parcelle.codeInsee = "29232";
+      parcelle.commune = "Test Commune";
+      parcelle.coordonnees = { latitude: 48.0, longitude: -4.0 };
+
+      vi.mocked(servicePublicService.getMairieCoordonnees).mockResolvedValue({
+        success: true,
+        data: {
+          codeInsee: "29232",
+          nomCommune: "Test",
+          coordonnees: { latitude: 48.0045, longitude: -4.0 },
+          adresse: "Mairie",
+        },
+        source: "API Service Public",
+      });
+
+      // Mock : autoroute à 3.5km
+      vi.mocked(ignWfsService.getDistanceVoieGrandeCirculation).mockResolvedValue({
+        success: true,
+        data: {
+          distanceMetres: 3500,
+          nombreTronconsProches: 2,
+        },
+        source: "IGN WFS",
+      });
+
+      // Act
+      const result = await service.enrichir(parcelle);
+
+      // Assert
+      expect(parcelle.distanceAutoroute).toBe(3500);
+      expect(result.success).toBe(true);
+      expect(result.sourcesUtilisees).toContain(SourceEnrichissement.IGN_WFS);
+      expect(ignWfsService.getDistanceVoieGrandeCirculation).toHaveBeenCalledWith(
+        48.0,
+        -4.0,
+        15000, // RAYON_RECHERCHE_AUTOROUTE_M
+      );
+    });
+
+    it("devrait gerer le cas ou aucune autoroute n'est trouvee", async () => {
+      // Arrange
+      const parcelle = new Parcelle();
+      parcelle.identifiantParcelle = "RURAL123";
+      parcelle.codeInsee = "12345";
+      parcelle.commune = "Village Isolé";
+      parcelle.coordonnees = { latitude: 45.0, longitude: 2.0 };
+
+      vi.mocked(servicePublicService.getMairieCoordonnees).mockResolvedValue({
+        success: true,
+        data: {
+          codeInsee: "12345",
+          nomCommune: "Village",
+          coordonnees: { latitude: 45.0, longitude: 2.0 },
+          adresse: "Mairie",
+        },
+        source: "API Service Public",
+      });
+
+      // Mock : aucune voie dans le rayon
+      vi.mocked(ignWfsService.getDistanceVoieGrandeCirculation).mockResolvedValue({
+        success: false,
+        error: "Aucune voie dans un rayon de 15000m",
+        source: "IGN WFS",
+      });
+
+      // Act
+      const result = await service.enrichir(parcelle);
+
+      // Assert
+      expect(parcelle.distanceAutoroute).toBeUndefined();
+      expect(result.sourcesEchouees).toContain(SourceEnrichissement.IGN_WFS);
+      expect(result.champsManquants).toContain("distanceAutoroute");
+      // Les autres enrichissements devraient quand même fonctionner
+      expect(result.sourcesUtilisees).toContain(SourceEnrichissement.SERVICE_PUBLIC);
+      expect(result.sourcesUtilisees).toContain(SourceEnrichissement.TRANSPORT);
+    });
+
+    it("devrait enrichir meme sans code INSEE (IGN WFS fonctionne)", async () => {
+      // Arrange
+      const parcelle = new Parcelle();
+      parcelle.identifiantParcelle = "TEST";
+      parcelle.codeInsee = undefined; // Pas de code INSEE
+      parcelle.coordonnees = { latitude: 48.0, longitude: -4.0 };
+
+      // Mock : IGN WFS fonctionne sans code INSEE
+      vi.mocked(ignWfsService.getDistanceVoieGrandeCirculation).mockResolvedValue({
+        success: true,
+        data: { distanceMetres: 1200, nombreTronconsProches: 1 },
+        source: "IGN WFS",
+      });
+
+      // Act
+      const result = await service.enrichir(parcelle);
+
+      // Assert
+      expect(parcelle.distanceAutoroute).toBe(1200);
+      expect(result.sourcesUtilisees).toContain(SourceEnrichissement.IGN_WFS);
+      // Service Public devrait échouer (pas de code INSEE)
+      expect(result.sourcesEchouees).toContain(SourceEnrichissement.SERVICE_PUBLIC);
     });
   });
 
@@ -143,7 +285,6 @@ describe("TransportEnrichissementService", () => {
       parcelle.commune = "Test Commune";
       parcelle.coordonnees = { latitude: 48.0, longitude: -4.0 };
 
-      // Mock centre-ville
       vi.mocked(servicePublicService.getMairieCoordonnees).mockResolvedValue({
         success: true,
         data: {
@@ -153,6 +294,12 @@ describe("TransportEnrichissementService", () => {
           adresse: "Mairie",
         },
         source: "API Service Public",
+      });
+
+      vi.mocked(ignWfsService.getDistanceVoieGrandeCirculation).mockResolvedValue({
+        success: true,
+        data: { distanceMetres: 2500, nombreTronconsProches: 1 },
+        source: "IGN WFS",
       });
 
       // Act
@@ -182,14 +329,18 @@ describe("TransportEnrichissementService", () => {
       // Assert
       expect(parcelle.distanceTransportCommun).toBeUndefined();
       expect(parcelle.siteEnCentreVille).toBeUndefined();
+      expect(parcelle.distanceAutoroute).toBeUndefined();
       expect(result.success).toBe(false);
       expect(result.sourcesEchouees).toContain(SourceEnrichissement.SERVICE_PUBLIC);
+      expect(result.sourcesEchouees).toContain(SourceEnrichissement.IGN_WFS);
       expect(result.champsManquants).toContain("siteEnCentreVille");
-      // Ne doit pas appeler l'API
+      expect(result.champsManquants).toContain("distanceAutoroute");
+      // Ne doit pas appeler les APIs
       expect(servicePublicService.getMairieCoordonnees).not.toHaveBeenCalled();
+      expect(ignWfsService.getDistanceVoieGrandeCirculation).not.toHaveBeenCalled();
     });
 
-    it("devrait retourner echec si pas de code INSEE", async () => {
+    it("devrait retourner echec si pas de code INSEE (seulement pour mairie)", async () => {
       // Arrange
       const parcelle = new Parcelle();
       parcelle.identifiantParcelle = "29232000AB0123";
@@ -197,20 +348,28 @@ describe("TransportEnrichissementService", () => {
       parcelle.commune = "Test Commune";
       parcelle.coordonnees = { latitude: 48.0, longitude: -4.0 };
 
+      vi.mocked(ignWfsService.getDistanceVoieGrandeCirculation).mockResolvedValue({
+        success: true,
+        data: { distanceMetres: 5000, nombreTronconsProches: 2 },
+        source: "IGN WFS",
+      });
+
       // Act
       const result = await service.enrichir(parcelle);
 
       // Assert
-      expect(result.success).toBe(false);
       expect(result.sourcesEchouees).toContain(SourceEnrichissement.SERVICE_PUBLIC);
       expect(result.champsManquants).toContain("siteEnCentreVille");
-      // Ne doit pas appeler l'API
+      // IGN WFS devrait fonctionner
+      expect(result.sourcesUtilisees).toContain(SourceEnrichissement.IGN_WFS);
+      expect(parcelle.distanceAutoroute).toBe(5000);
+      // Ne doit pas appeler Service Public
       expect(servicePublicService.getMairieCoordonnees).not.toHaveBeenCalled();
     });
   });
 
   describe("enrichir - Succès partiel", () => {
-    it("devrait continuer meme si centre-ville echoue (transport temporaire fonctionne)", async () => {
+    it("devrait continuer meme si centre-ville echoue", async () => {
       // Arrange
       const parcelle = new Parcelle();
       parcelle.identifiantParcelle = "29232000AB0123";
@@ -218,19 +377,26 @@ describe("TransportEnrichissementService", () => {
       parcelle.commune = "Test Commune";
       parcelle.coordonnees = { latitude: 48.0, longitude: -4.0 };
 
-      // Mock : erreur API Service Public (timeout)
       vi.mocked(servicePublicService.getMairieCoordonnees).mockRejectedValue(
         new Error("Timeout API"),
       );
+
+      vi.mocked(ignWfsService.getDistanceVoieGrandeCirculation).mockResolvedValue({
+        success: true,
+        data: { distanceMetres: 3000, nombreTronconsProches: 1 },
+        source: "IGN WFS",
+      });
 
       // Act
       const result = await service.enrichir(parcelle);
 
       // Assert
-      expect(result.success).toBe(true); // Succès partiel (transport fonctionne)
+      expect(result.success).toBe(true); // Succès partiel
+      expect(result.sourcesUtilisees).toContain(SourceEnrichissement.IGN_WFS);
       expect(result.sourcesUtilisees).toContain(SourceEnrichissement.TRANSPORT);
       expect(result.sourcesEchouees).toContain(SourceEnrichissement.SERVICE_PUBLIC);
-      expect(parcelle.siteEnCentreVille).toBe(false); // Valeur par défaut
+      expect(parcelle.siteEnCentreVille).toBe(false);
+      expect(parcelle.distanceAutoroute).toBe(3000);
       expect(parcelle.distanceTransportCommun).toBeDefined();
     });
   });
@@ -244,16 +410,21 @@ describe("TransportEnrichissementService", () => {
       parcelle.commune = "Test";
       parcelle.coordonnees = { latitude: 48.0, longitude: -4.0 };
 
-      // Distance ~900m
       vi.mocked(servicePublicService.getMairieCoordonnees).mockResolvedValue({
         success: true,
         data: {
           codeInsee: "12345",
           nomCommune: "Test",
-          coordonnees: { latitude: 48.0081, longitude: -4.0 }, // ~900m
+          coordonnees: { latitude: 48.0081, longitude: -4.0 },
           adresse: "Mairie",
         },
         source: "API Service Public",
+      });
+
+      vi.mocked(ignWfsService.getDistanceVoieGrandeCirculation).mockResolvedValue({
+        success: true,
+        data: { distanceMetres: 1000, nombreTronconsProches: 1 },
+        source: "IGN WFS",
       });
 
       // Act
@@ -271,16 +442,21 @@ describe("TransportEnrichissementService", () => {
       parcelle.commune = "Test";
       parcelle.coordonnees = { latitude: 48.0, longitude: -4.0 };
 
-      // Distance ~1100m
       vi.mocked(servicePublicService.getMairieCoordonnees).mockResolvedValue({
         success: true,
         data: {
           codeInsee: "12345",
           nomCommune: "Test",
-          coordonnees: { latitude: 48.01, longitude: -4.0 }, // ~1112m
+          coordonnees: { latitude: 48.01, longitude: -4.0 },
           adresse: "Mairie",
         },
         source: "API Service Public",
+      });
+
+      vi.mocked(ignWfsService.getDistanceVoieGrandeCirculation).mockResolvedValue({
+        success: true,
+        data: { distanceMetres: 1000, nombreTronconsProches: 1 },
+        source: "IGN WFS",
       });
 
       // Act

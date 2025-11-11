@@ -57,8 +57,14 @@ export interface IgnWfsTronconProperties {
   id: string;
 
   // Classification de la route
-  NATURE: string; // "Type autoroutier" | "Route à 2 chaussées" | "Bretelle" | "Route empierrée" | ...
-  IMPORTANCE: number; // 1 = très structurant, 2 = structurant, 3-5 = moins important
+  nature: string; // "Type autoroutier" | "Route à 2 chaussées" | ...
+  importance: string; // "1" | "2" | "3" | "4" | "5" | "6" (STRING, pas number)
+
+  // Caractéristiques (tout en minuscules)
+  cpx_classement_administratif?: string;
+  cpx_numero?: string;
+  nom_collaboratif_gauche?: string;
+  nom_collaboratif_droite?: string;
 
   // Caractéristiques
   CL_ADMIN?: string; // Classe administrative (ex: "Autoroute", "Nationale")

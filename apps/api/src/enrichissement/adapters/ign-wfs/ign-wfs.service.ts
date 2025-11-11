@@ -8,7 +8,7 @@ import {
   IgnWfsFeatureCollection,
   IgnWfsTronconRoute,
 } from "./ign-wfs.types";
-import { convertWgs84ToEpsg3857, distancePointToSegment } from "../shared/distance.utils";
+import { distancePointToSegment } from "../shared/distance.utils";
 
 /**
  * Adapter pour l'API WFS IGN Géoplateforme
@@ -32,6 +32,7 @@ export class IgnWfsService {
    * @param rayonMetres - Rayon de recherche en mètres (défaut: 15000m = 15km)
    * @returns Distance en mètres à la voie la plus proche
    */
+
   async getDistanceVoieGrandeCirculation(
     latitude: number,
     longitude: number,
@@ -40,31 +41,36 @@ export class IgnWfsService {
     const startTime = Date.now();
 
     try {
-      // Convertir WGS84 (lat/lon) en Web Mercator EPSG:3857 pour DWITHIN
-      const { x, y } = convertWgs84ToEpsg3857(longitude, latitude);
+      // Calculer une BBOX approximative
+      const kmParDegre = 111;
+      const deltaLat = rayonMetres / 1000 / kmParDegre;
+      const deltaLon = rayonMetres / 1000 / (kmParDegre * Math.cos((latitude * Math.PI) / 180));
+
+      const bbox = [
+        latitude - deltaLat, // minLat
+        longitude - deltaLon, // minLon
+        latitude + deltaLat, // maxLat
+        longitude + deltaLon, // maxLon
+      ].join(",");
 
       this.logger.debug(
-        `Recherche voies circulation: lat=${latitude.toFixed(5)}, lon=${longitude.toFixed(5)} ` +
-          `(EPSG:3857: x=${x.toFixed(2)}, y=${y.toFixed(2)}), rayon=${rayonMetres}m`,
+        `Recherche voies circulation: lat=${latitude.toFixed(5)}, lon=${longitude.toFixed(5)}, rayon=${rayonMetres}m`,
       );
 
-      // Construction de la requête WFS avec filtre CQL
       const url = this.baseUrl;
       const params = {
         SERVICE: "WFS",
         VERSION: "2.0.0",
         REQUEST: "GetFeature",
         TYPENAMES: "BDTOPO_V3:troncon_de_route",
-        SRSNAME: "EPSG:3857", // Web Mercator pour DWITHIN en mètres
+        SRSNAME: "EPSG:4326",
         OUTPUTFORMAT: "application/json",
-        // Filtre : voies grande circulation (autoroutes, 2 chaussées) + rayon
-        CQL_FILTER:
-          `(NATURE IN ('Type autoroutier','Route à 2 chaussées','Bretelle') ` +
-          `OR IMPORTANCE IN (1,2)) ` +
-          `AND DWITHIN(geom, SRID=3857;POINT(${x} ${y}), ${rayonMetres}, meters)`,
+        BBOX: bbox,
       };
 
-      this.logger.debug(`Requête WFS: ${this.formatParams(params)}`);
+      this.logger.debug(`Requête WFS BBOX: ${bbox}`);
+
+      this.logger.debug(`URL complète: ${url}?${new URLSearchParams(params as any).toString()}`);
 
       const response = await firstValueFrom(
         this.httpService.get<IgnWfsFeatureCollection>(url, { params }),
@@ -73,7 +79,7 @@ export class IgnWfsService {
       const data = response.data;
 
       if (!data.features || data.features.length === 0) {
-        this.logger.warn(`Aucune voie grande circulation dans un rayon de ${rayonMetres}m`);
+        this.logger.warn(`Aucun tronçon dans la BBOX (rayon ${rayonMetres}m)`);
         return {
           success: false,
           error: `Aucune voie dans un rayon de ${rayonMetres}m`,
@@ -82,23 +88,40 @@ export class IgnWfsService {
         };
       }
 
-      this.logger.debug(`API WFS retourne ${data.features.length} tronçon(s) dans le rayon`);
+      this.logger.debug(`API WFS retourne ${data.features.length} tronçon(s) dans la BBOX`);
 
-      // Calculer la distance minimale à tous les tronçons retournés
-      const distanceMinimale = this.calculerDistanceMinimale(longitude, latitude, data.features);
+      // Filtrer par NATURE/IMPORTANCE + calculer distance
+      const { distanceMinimale, tronconsInRadius } = this.calculerDistanceMinimaleAvecFiltre(
+        longitude,
+        latitude,
+        data.features,
+        rayonMetres,
+      );
+
+      if (distanceMinimale === Infinity || tronconsInRadius === 0) {
+        this.logger.warn(
+          `Aucune voie grande circulation dans le rayon de ${rayonMetres}m après filtrage`,
+        );
+        return {
+          success: false,
+          error: `Aucune voie grande circulation dans un rayon de ${rayonMetres}m`,
+          source: "IGN WFS",
+          responseTimeMs: Date.now() - startTime,
+        };
+      }
 
       const responseTimeMs = Date.now() - startTime;
 
       this.logger.log(
         `Voie grande circulation la plus proche: ${Math.round(distanceMinimale)}m ` +
-          `(lat=${latitude.toFixed(5)}, lon=${longitude.toFixed(5)})`,
+          `(${tronconsInRadius} tronçons dans rayon)`,
       );
 
       return {
         success: true,
         data: {
           distanceMetres: distanceMinimale,
-          nombreTronconsProches: data.features.length,
+          nombreTronconsProches: tronconsInRadius,
         },
         source: "IGN WFS",
         responseTimeMs,
@@ -120,15 +143,18 @@ export class IgnWfsService {
   }
 
   /**
-   * Calcule la distance minimale entre un point et un ensemble de tronçons
-   * Utilise la formule de Haversine pour chaque segment
+   * Calcule distance minimale + filtre par NATURE/IMPORTANCE + rayon
    */
-  private calculerDistanceMinimale(
+  private calculerDistanceMinimaleAvecFiltre(
     lonPoint: number,
     latPoint: number,
     troncons: IgnWfsTronconRoute[],
-  ): number {
+    rayonMetres: number,
+  ): { distanceMinimale: number; tronconsInRadius: number } {
     let distanceMin = Infinity;
+    let tronconsInRadius = 0;
+
+    const naturesAcceptees = new Set(["Type autoroutier", "Route à 2 chaussées", "Bretelle"]);
 
     for (const troncon of troncons) {
       if (
@@ -139,31 +165,37 @@ export class IgnWfsService {
         continue;
       }
 
-      // Pour chaque segment de la LineString, calculer la distance
+      const props = troncon.properties;
+
+      const isGrandeCirculation =
+        naturesAcceptees.has(props.nature) || props.importance === "1" || props.importance === "2";
+
+      if (!isGrandeCirculation) {
+        continue;
+      }
+
       const coords = troncon.geometry.coordinates as number[][];
+      let tronconInRadius = false;
 
       for (let i = 0; i < coords.length - 1; i++) {
         const [lon1, lat1] = coords[i];
         const [lon2, lat2] = coords[i + 1];
 
-        // Distance au segment
         const dist = distancePointToSegment(lonPoint, latPoint, lon1, lat1, lon2, lat2);
 
-        if (dist < distanceMin) {
-          distanceMin = dist;
+        if (dist <= rayonMetres) {
+          tronconInRadius = true;
+          if (dist < distanceMin) {
+            distanceMin = dist;
+          }
         }
+      }
+
+      if (tronconInRadius) {
+        tronconsInRadius++;
       }
     }
 
-    return distanceMin;
-  }
-
-  /**
-   * Formate les paramètres pour le log
-   */
-  private formatParams(params: Record<string, string>): string {
-    return Object.entries(params)
-      .map(([key, value]) => `${key}=${value}`)
-      .join("&");
+    return { distanceMinimale: distanceMin, tronconsInRadius };
   }
 }

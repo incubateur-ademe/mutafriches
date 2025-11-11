@@ -19,24 +19,6 @@ export function calculateDistance(lat1: number, lon1: number, lat2: number, lon2
 }
 
 /**
- * Convertit des coordonnées WGS84 (lat/lon) en EPSG:3857 (Web Mercator)
- * Utilisé pour les requêtes spatiales qui nécessitent des coordonnées métriques
- *
- * @param lon - Longitude WGS84
- * @param lat - Latitude WGS84
- * @returns Coordonnées x,y en EPSG:3857 (mètres)
- */
-export function convertWgs84ToEpsg3857(lon: number, lat: number): { x: number; y: number } {
-  const R = 6378137; // Rayon de la Terre en mètres (Web Mercator)
-
-  const x = ((lon * Math.PI) / 180) * R;
-  const latRad = (lat * Math.PI) / 180;
-  const y = Math.log(Math.tan(Math.PI / 4 + latRad / 2)) * R;
-
-  return { x, y };
-}
-
-/**
  * Calcule la distance d'un point à un segment de droite (géodésique)
  *
  * @param px - Longitude du point

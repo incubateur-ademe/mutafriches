@@ -47,10 +47,12 @@ export const transformEnrichmentToUiData = (
         ? "Non"
         : nonAccessibleVersion,
 
+    // Distance autoroute en mètres avec "m" suffixé
+    distanceAutoroute: String(enrichmentData.distanceAutoroute + "m" || "NC"),
+
     // Champs non disponibles dans l'enrichissement actuel
     typeProprietaire: nonAccessibleVersion,
 
-    distanceAutoroute: nonAccessibleVersion,
     distanceTrain: nonAccessibleVersion,
     proximiteCommerces: nonAccessibleVersion,
     tauxLV: nonAccessibleVersion,
