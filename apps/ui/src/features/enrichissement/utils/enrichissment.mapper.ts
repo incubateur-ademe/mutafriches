@@ -1,5 +1,6 @@
 import { EnrichissementOutputDto } from "@mutafriches/shared-types";
 import { ParcelleUiModel } from "../../../shared/types/parcelle.models";
+import { formatDistance, formatSurface } from "../../../shared/utils/distance.formatter";
 
 /**
  * Transforme les données d'enrichissement brutes en format UI
@@ -14,17 +15,11 @@ export const transformEnrichmentToUiData = (
     commune: enrichmentData.commune || nonAccessibleVersion,
 
     // Surfaces formatées
-    surfaceParcelle: enrichmentData.surfaceSite
-      ? `${enrichmentData.surfaceSite.toLocaleString("fr-FR")} m²`
-      : nonAccessibleVersion,
-    surfaceBatie: enrichmentData.surfaceBati
-      ? `${enrichmentData.surfaceBati.toLocaleString("fr-FR")} m²`
-      : nonAccessibleVersion,
+    surfaceParcelle: formatSurface(enrichmentData.surfaceSite),
+    surfaceBatie: formatSurface(enrichmentData.surfaceBati),
 
-    // Données électriques
-    distanceRaccordement: enrichmentData.distanceRaccordementElectrique
-      ? `${enrichmentData.distanceRaccordementElectrique.toFixed(2)} m`
-      : nonAccessibleVersion,
+    // Données électriques formatées
+    distanceRaccordement: formatDistance(enrichmentData.distanceRaccordementElectrique),
 
     // Risques
     risquesNaturels: enrichmentData.presenceRisquesNaturels || nonAccessibleVersion,
@@ -47,16 +42,14 @@ export const transformEnrichmentToUiData = (
         ? "Non"
         : nonAccessibleVersion,
 
-    // Distance autoroute en mètres avec "m" suffixé
-    distanceAutoroute: String(enrichmentData.distanceAutoroute + "m" || "NC"),
+    // Distance autoroute formatée
+    distanceAutoroute: formatDistance(enrichmentData.distanceAutoroute),
 
     // Champs non disponibles dans l'enrichissement actuel
     typeProprietaire: nonAccessibleVersion,
-
     distanceTrain: nonAccessibleVersion,
     proximiteCommerces: nonAccessibleVersion,
     tauxLV: nonAccessibleVersion,
-
     tvb: nonAccessibleVersion,
     potentielEcologique: nonAccessibleVersion,
   };
