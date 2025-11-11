@@ -27,13 +27,12 @@ export const Step1EnrichmentPage: React.FC = () => {
   const handleEnrichir = async (identifiant: string) => {
     setIsLoading(true);
     setError(null);
+    scrollToResultsZone();
 
     try {
       const enrichmentResult = await enrichissementService.enrichirParcelle(identifiant);
       const uiData = transformEnrichmentToUiData(enrichmentResult);
       setEnrichmentData(enrichmentResult, uiData, identifiant);
-
-      scrollToEnrichmentZone();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Une erreur est survenue");
     } finally {
@@ -49,9 +48,9 @@ export const Step1EnrichmentPage: React.FC = () => {
     navigate(ROUTES.STEP2);
   };
 
-  const scrollToEnrichmentZone = () => {
+  const scrollToResultsZone = () => {
     setTimeout(() => {
-      const element = document.getElementById("enrichment-display-zone");
+      const element = document.getElementById("results-zone");
       if (element) {
         element.scrollIntoView({
           behavior: "smooth",
@@ -109,22 +108,25 @@ export const Step1EnrichmentPage: React.FC = () => {
 
         <ParcelleSelection onAnalyze={handleEnrichir} />
 
-        {isLoading && (
-          <LoadingCallout
-            title="Enrichissement en cours"
-            message="Récupération des informations de la parcelle..."
-          />
-        )}
+        {/* Zone de résultats avec id fixe pour le scroll */}
+        <div id="results-zone">
+          {isLoading && (
+            <LoadingCallout
+              title="Enrichissement en cours"
+              message="Récupération des informations de la parcelle..."
+            />
+          )}
 
-        {error && !isLoading && <ErrorAlert message={error} />}
+          {error && !isLoading && <ErrorAlert message={error} />}
 
-        {state.uiData && (
-          <EnrichmentDisplayZone
-            data={state.uiData}
-            onNext={handleNext}
-            isLoadingNext={isLoading}
-          />
-        )}
+          {state.uiData && (
+            <EnrichmentDisplayZone
+              data={state.uiData}
+              onNext={handleNext}
+              isLoadingNext={isLoading}
+            />
+          )}
+        </div>
       </div>
     </Layout>
   );
