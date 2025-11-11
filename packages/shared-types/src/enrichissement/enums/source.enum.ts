@@ -26,4 +26,5 @@ export enum SourceEnrichissement {
   GEORISQUES_PAPI = "GeoRisques-PAPI",
   GEORISQUES_PPR = "GeoRisques-PPR",
   SERVICE_PUBLIC = "API Service Public",
+  IGN_WFS = "IGN WFS",
 }
