@@ -30,6 +30,8 @@ import { ZonageReglementaireCalculator } from "./services/zonage/zonage-reglemen
 import { CadastreService } from "./adapters/cadastre/cadastre.service";
 import { BdnbService } from "./adapters/bdnb/bdnb.service";
 import { EnedisService } from "./adapters/enedis/enedis.service";
+import { ServicePublicService } from "./adapters/service-public/service-public.service";
+import { IgnWfsService } from "./adapters/ign-wfs/ign-wfs.service";
 
 // Adapters GeoRisques
 import { GeoRisquesOrchestrator } from "./services/georisques/georisques.orchestrator";
@@ -67,6 +69,8 @@ import { ApiCartoGpuService } from "./adapters/api-carto/gpu/api-carto-gpu.servi
     UrbanismeEnrichissementService,
     RisquesNaturelsEnrichissementService,
     RisquesTechnologiquesEnrichissementService,
+    ServicePublicService,
+    IgnWfsService,
 
     // Calculators
     RisquesNaturelsCalculator,

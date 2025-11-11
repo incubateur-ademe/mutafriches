@@ -154,11 +154,6 @@ export class UrbanismeEnrichissementService {
         parcelle.siteEnCentreVille = Math.random() > 0.6; // 40% de chance d'être en centre-ville
       }
 
-      // Données temporaires pour distance autoroute
-      if (parcelle.distanceAutoroute === undefined) {
-        parcelle.distanceAutoroute = Math.floor(Math.random() * 20) + 1; // Entre 1 et 20 km
-      }
-
       sourcesUtilisees.push(SourceEnrichissement.DONNEES_TEMPORAIRES);
 
       this.logger.debug(

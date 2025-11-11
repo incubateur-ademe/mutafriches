@@ -32,7 +32,7 @@ class EnrichissementService {
     const normalizedIdentifiant = normalizeParcelId(identifiant);
 
     if (normalizedIdentifiant !== identifiant) {
-      console.debug(`IDU normalisé: ${identifiant} → ${normalizedIdentifiant}`);
+      console.warn(`IDU normalisé: ${identifiant} → ${normalizedIdentifiant}`);
     }
 
     return apiClient.post<EnrichissementOutputDto>(API_CONFIG.endpoints.enrichissement.enrichir, {
