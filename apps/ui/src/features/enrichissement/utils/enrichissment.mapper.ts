@@ -40,9 +40,16 @@ export const transformEnrichmentToUiData = (
     zonageUrba: enrichmentData.zonageReglementaire || nonAccessibleVersion,
     zonagePatrimonial: enrichmentData.zonagePatrimonial || nonAccessibleVersion,
 
+    // Transport
+    centreVille: enrichmentData.siteEnCentreVille
+      ? "Oui"
+      : enrichmentData.siteEnCentreVille === false
+        ? "Non"
+        : nonAccessibleVersion,
+
     // Champs non disponibles dans l'enrichissement actuel
     typeProprietaire: nonAccessibleVersion,
-    centreVille: nonAccessibleVersion,
+
     distanceAutoroute: nonAccessibleVersion,
     distanceTrain: nonAccessibleVersion,
     proximiteCommerces: nonAccessibleVersion,
