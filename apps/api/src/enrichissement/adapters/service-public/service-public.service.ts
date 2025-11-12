@@ -161,7 +161,10 @@ export class ServicePublicService {
         const pivotData = JSON.parse(record.pivot) as ServicePublicPivotItem[];
         return pivotData.some((p) => p.type_service_local === "mairie");
       } catch (error) {
-        this.logger.warn(`Impossible de parser pivot pour ${record.nom}`);
+        this.logger.warn(
+          `Impossible de parser pivot pour ${record.nom} :`,
+          (error as Error).message,
+        );
       }
     }
 
