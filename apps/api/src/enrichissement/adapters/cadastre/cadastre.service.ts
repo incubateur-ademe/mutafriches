@@ -7,6 +7,7 @@ import {
   Coordonnees,
   isValidParcelId,
   normalizeParcelId,
+  resolveCodeInseeArrondissement,
 } from "@mutafriches/shared-types";
 import type { Geometry } from "geojson";
 
@@ -133,7 +134,7 @@ export class CadastreService {
   }
 
   /**
-   * Parse un identifiant parcellaire normalisé
+   * Parse un identifiant parcellaire normalisé pour l'appel à l'API IGN Cadastre
    *
    * Format après normalisation :
    * - DEPT(2-3) + COMMUNE(3) + COM_ABS(3) + SECTION(1-2) + NUMERO(4)
@@ -141,7 +142,11 @@ export class CadastreService {
    *
    * IMPORTANT:
    * 1. L'API IGN exige que la section fasse TOUJOURS 2 caractères (padding avec zéro si besoin)
-   * 2. Pour Paris, l'IDU contient 75101-75120 mais le code_insee réel est 75056
+   * 2. Les codes INSEE d'arrondissements sont résolus en codes communes uniques :
+   *    - Paris : 75101-75120 → 75056
+   *    - Marseille : 13201-13216 → 13055
+   *    - Lyon : 69381-69389 → 69123
+   *    (Voir resolveCodeInseeArrondissement dans shared-types)
    */
   private parseParcelId(identifiant: string): {
     codeInsee: string;
@@ -168,13 +173,13 @@ export class CadastreService {
     // Code INSEE = département + commune (toujours 3 chiffres)
     let codeInsee = identifiant.substring(0, deptLen + 3);
 
-    // FIX PARIS: Convertir 75101-75120 → 75056
-    if (codeInsee.startsWith("751")) {
-      const arrNum = parseInt(codeInsee.substring(2), 10);
-      if (arrNum >= 101 && arrNum <= 120) {
-        codeInsee = "75056";
-        this.logger.debug(`Paris: code ${identifiant.substring(0, 5)} → code_insee ${codeInsee}`);
-      }
+    // Résoudre les arrondissements (Paris, Lyon, Marseille)
+    const resolution = resolveCodeInseeArrondissement(codeInsee);
+    if (resolution.wasTransformed) {
+      this.logger.debug(
+        `${resolution.ville}: code ${codeInsee} → code_insee ${resolution.resolved}`,
+      );
+      codeInsee = resolution.resolved;
     }
 
     // Numéro de parcelle = toujours les 4 derniers caractères
