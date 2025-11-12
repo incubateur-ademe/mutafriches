@@ -43,8 +43,7 @@ export const transformEnrichmentToUiData = (
         : nonAccessibleVersion,
 
     // Distance autoroute formatée
-    distanceAutoroute: nonAccessibleVersion,
-    // distanceAutoroute: formatDistance(enrichmentData.distanceAutoroute),
+    distanceAutoroute: formatDistance(enrichmentData.distanceAutoroute),
 
     // Champs non disponibles dans l'enrichissement actuel
     typeProprietaire: nonAccessibleVersion,
