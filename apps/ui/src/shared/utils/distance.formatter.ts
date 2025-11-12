@@ -1,5 +1,3 @@
-// apps/ui/src/shared/utils/distance.formatter.ts
-
 /**
  * Formate une distance en mètres pour un affichage lisible
  *
