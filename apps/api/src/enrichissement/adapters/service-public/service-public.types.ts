@@ -19,37 +19,48 @@ export interface IServicePublicService {
 }
 
 /**
- * Réponse brute de l'API Annuaire Service Public (format GeoJSON)
+ * Réponse brute de l'API Annuaire Service Public (OpenDataSoft v2.1)
+ * https://api-lannuaire.service-public.gouv.fr/api/explore/v2.1/console
  */
-export interface ServicePublicMairieResponse {
-  type: "FeatureCollection";
-  features: ServicePublicFeature[];
+export interface ServicePublicApiResponse {
+  total_count: number;
+  results: ServicePublicRecord[];
 }
 
-export interface ServicePublicFeature {
-  type: "Feature";
-  geometry: {
-    type: "Point";
-    coordinates: [number, number]; // [longitude, latitude]
-  };
-  properties: {
-    id: string;
-    nom: string;
-    pivot: string; // Code INSEE
-    adresses: ServicePublicAdresse[];
-    horaires?: any;
-    email?: string;
-    telephone?: string;
-    url?: string;
-    zonage?: {
-      communes: string[];
-    };
-  };
+export interface ServicePublicRecord {
+  id: string;
+  nom: string;
+  code_insee_commune: string | null;
+  pivot: string | null;
+  adresse: string | null;
+  type_organisme: string | null;
+  telephone?: string | null;
+  adresse_courriel?: string | null;
+  site_internet?: string | null;
+  plage_ouverture?: string | null;
 }
 
-export interface ServicePublicAdresse {
-  type: "géopostale" | "postale" | "physique";
-  lignes: string[];
+/**
+ * Structure parsée du champ adresse
+ */
+export interface ServicePublicAdresseItem {
+  type_adresse: "Adresse" | "Adresse postale";
+  complement1: string;
+  complement2: string;
+  numero_voie: string;
+  service_distribution: string;
   code_postal: string;
-  commune?: string;
+  nom_commune: string;
+  pays: string;
+  continent: string;
+  longitude: string;
+  latitude: string;
+}
+
+/**
+ * Structure parsée du champ pivot
+ */
+export interface ServicePublicPivotItem {
+  type_service_local: string;
+  code_insee_commune: string[];
 }
