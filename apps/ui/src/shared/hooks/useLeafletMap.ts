@@ -4,7 +4,7 @@ import "leaflet/dist/leaflet.css";
 import { extractIdu, normalizeParcelId } from "../utils/geo.utils";
 import { searchParcelWithFallback } from "../services/cadastre/api.cadastre.service";
 import { OnParcelleSelectedCallback } from "../types/callbacks.types";
-import { padParcelleSection } from "@mutafriches/shared-types/src";
+import { padParcelleSection } from "@mutafriches/shared-types";
 
 // Fix Leaflet : Réinitialisation des icônes par défaut
 // @ts-expect-error - Suppression nécessaire pour le fix Leaflet

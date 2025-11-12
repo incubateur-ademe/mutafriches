@@ -1,5 +1,9 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { GeometrieParcelle, SourceEnrichissement } from "@mutafriches/shared-types";
+import {
+  GeometrieParcelle,
+  padParcelleSection,
+  SourceEnrichissement,
+} from "@mutafriches/shared-types";
 import { Parcelle } from "../../../evaluation/entities/parcelle.entity";
 import { CadastreService } from "../../adapters/cadastre/cadastre.service";
 import { BdnbService } from "../../adapters/bdnb/bdnb.service";
@@ -69,7 +73,7 @@ export class CadastreEnrichissementService {
     );
 
     // 3. Récupérer la surface bâtie depuis BDNB (OPTIONNEL)
-    const surfaceBatie = await this.getSurfaceBatie(identifiantParcelle);
+    const surfaceBatie = await this.getSurfaceBatie(parcelle.identifiantParcelle);
 
     if (surfaceBatie !== null) {
       parcelle.surfaceBati = surfaceBatie;
@@ -105,7 +109,7 @@ export class CadastreEnrichissementService {
       }
 
       return {
-        identifiantParcelle: result.data.identifiant,
+        identifiantParcelle: padParcelleSection(result.data.identifiant),
         codeInsee: result.data.codeInsee,
         commune: result.data.commune,
         surfaceSite: result.data.surface,
