@@ -1,5 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { normalizeParcelId, isValidParcelId, sanitizeParcelIdForApi } from "./parcelle.utils";
+import {
+  normalizeParcelId,
+  isValidParcelId,
+  sanitizeParcelIdForApi,
+  padParcelleSection,
+} from "./parcelle.utils";
 
 describe("Parcelle ID Validation", () => {
   describe("normalizeParcelId", () => {
@@ -151,6 +156,160 @@ describe("Parcelle ID Validation", () => {
       const normalized = "07019000B2188";
       const result = sanitizeParcelIdForApi(normalized);
       expect(result).toBe(normalized);
+    });
+  });
+
+  describe("padParcelleSection", () => {
+    describe("Métropole - Cas réels problématiques", () => {
+      it("should pad Morlaix parcelle with section C", () => {
+        // Cas problématique signalé : section à 1 caractère
+        const result = padParcelleSection("29151000C2489");
+        expect(result).toBe("291510000C2489");
+        expect(result.length).toBe(14);
+      });
+
+      it("should not modify Morlaix parcelle with section BP (already 2 chars)", () => {
+        const result = padParcelleSection("29151000BP0675");
+        expect(result).toBe("29151000BP0675");
+        expect(result.length).toBe(14);
+      });
+
+      it("should pad section A", () => {
+        const result = padParcelleSection("01020000A1234");
+        expect(result).toBe("010200000A1234");
+        expect(result.length).toBe(14);
+      });
+
+      it("should pad section Z", () => {
+        const result = padParcelleSection("93065000Z9999");
+        expect(result).toBe("930650000Z9999");
+        expect(result.length).toBe(14);
+      });
+
+      it("should not modify section with 2 letters (Doubs case)", () => {
+        const result = padParcelleSection("25056000HZ0346");
+        expect(result).toBe("25056000HZ0346");
+        expect(result.length).toBe(14);
+      });
+
+      it("should not modify Paris parcelle with 2-letter section", () => {
+        const result = padParcelleSection("75113000DL0052");
+        expect(result).toBe("75113000DL0052");
+        expect(result.length).toBe(14);
+      });
+    });
+
+    describe("DOM-TOM", () => {
+      it("should pad Martinique parcelle with section O", () => {
+        const result = padParcelleSection("972090000O0498");
+        expect(result).toBe("9720900000O0498");
+        expect(result.length).toBe(15);
+      });
+
+      it("should pad Guadeloupe parcelle with section A", () => {
+        const result = padParcelleSection("971230000A1234");
+        expect(result).toBe("9712300000A1234");
+        expect(result.length).toBe(15);
+      });
+
+      it("should not modify DOM parcelle with 2-letter section", () => {
+        const result = padParcelleSection("971230000AB1234");
+        expect(result).toBe("971230000AB1234");
+        expect(result.length).toBe(15);
+      });
+    });
+
+    describe("Corse", () => {
+      it("should pad Corse 2A parcelle with section A", () => {
+        const result = padParcelleSection("2A004000A0045");
+        expect(result).toBe("2A0040000A0045");
+        expect(result.length).toBe(14);
+      });
+
+      it("should pad Corse 2B parcelle with section B", () => {
+        const result = padParcelleSection("2B123000B5678");
+        expect(result).toBe("2B1230000B5678");
+        expect(result.length).toBe(14);
+      });
+
+      it("should not modify Corse parcelle with 2-letter section", () => {
+        const result = padParcelleSection("2A004000AC0045");
+        expect(result).toBe("2A004000AC0045");
+        expect(result.length).toBe(14);
+      });
+    });
+
+    describe("Edge cases", () => {
+      it("should return unchanged if too short", () => {
+        const short = "12345";
+        const result = padParcelleSection(short);
+        expect(result).toBe(short);
+      });
+
+      it("should return unchanged if empty", () => {
+        const result = padParcelleSection("");
+        expect(result).toBe("");
+      });
+
+      it("should handle all single letters A-Z", () => {
+        const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+        letters.forEach((letter) => {
+          const input = `07019000${letter}2188`;
+          const expected = `070190000${letter}2188`;
+          expect(padParcelleSection(input)).toBe(expected);
+        });
+      });
+
+      it("should not pad if section is empty (invalid case)", () => {
+        // Cas théorique invalide : pas de section entre COM_ABS et numéro
+        const result = padParcelleSection("070190001234");
+        expect(result).toBe("070190001234");
+      });
+    });
+
+    describe("Round-trip with normalizeParcelId", () => {
+      it("should be reversible: pad then normalize", () => {
+        const original = "29151000C2489";
+        const padded = padParcelleSection(original);
+        const normalized = normalizeParcelId(padded);
+
+        expect(padded).toBe("291510000C2489");
+        expect(normalized).toBe("29151000C2489");
+        expect(normalized).toBe(original);
+      });
+
+      it("should be idempotent with 2-letter sections", () => {
+        const original = "29151000BP0675";
+        const padded = padParcelleSection(original);
+        const normalized = normalizeParcelId(padded);
+
+        expect(padded).toBe(original);
+        expect(normalized).toBe(original);
+      });
+    });
+
+    describe("Integration avec isValidParcelId", () => {
+      it("should produce valid IDU after padding", () => {
+        const unpadded = "29151000C2489";
+        const padded = padParcelleSection(unpadded);
+
+        expect(isValidParcelId(unpadded)).toBe(true);
+        expect(isValidParcelId(padded)).toBe(true);
+      });
+
+      it("should validate both forms (padded and unpadded)", () => {
+        const testCases = [
+          { unpadded: "01020000A1234", padded: "010200000A1234" },
+          { unpadded: "972090000O0498", padded: "9720900000O0498" },
+          { unpadded: "2A004000A0045", padded: "2A0040000A0045" },
+        ];
+
+        testCases.forEach(({ unpadded, padded }) => {
+          expect(isValidParcelId(unpadded)).toBe(true);
+          expect(isValidParcelId(padded)).toBe(true);
+          expect(padParcelleSection(unpadded)).toBe(padded);
+        });
+      });
     });
   });
 

@@ -142,3 +142,68 @@ export function sanitizeParcelIdForApi(id: string): string | null {
   }
   return normalizeParcelId(id);
 }
+
+/**
+ * Pad la section d'un IDU cadastral à 2 caractères si nécessaire
+ *
+ * CONTEXTE :
+ * - L'API Carto IGN retourne parfois des sections à 1 caractère (ex: 29151000C2489)
+ * - L'API IGN Cadastre exige toujours des sections à 2 caractères (ex: 291510000C2489)
+ * - Cette fonction fait l'inverse de normalizeParcelId() qui retire les zéros préfixes
+ *
+ * RÈGLE :
+ * Si la section fait 1 caractère, ajouter un zéro devant pour obtenir 2 caractères.
+ * Cette fonction doit être appelée APRÈS extraction de l'IDU depuis l'API Carto
+ * et AVANT normalisation avec normalizeParcelId().
+ *
+ * EXEMPLES :
+ * - "29151000C2489" (13 car) → "291510000C2489" (14 car) Section "C" → "0C"
+ * - "29151000BP0675" (14 car) → "29151000BP0675" (inchangé) Section "BP" déjà 2 car
+ * - "972090000O0498" (14 car) → "9720900000O0498" (15 car) Section "O" → "0O"
+ * - "2A004000A0045" (13 car) → "2A0040000A0045" (14 car) Section "A" → "0A"
+ *
+ * @param idu - Identifiant parcellaire brut (13-15 caractères)
+ * @returns IDU avec section paddée à 2 caractères
+ */
+export function padParcelleSection(idu: string): string {
+  if (!idu || idu.length < 13) {
+    return idu;
+  }
+
+  // Identifier la longueur du département
+  let deptLen = 2;
+  if (idu[0] === "9" && (idu[1] === "7" || idu[1] === "8")) {
+    deptLen = 3; // DOM-TOM (971-976)
+  } else if ((idu[0] === "2" || idu[0] === "9") && (idu[1] === "A" || idu[1] === "B")) {
+    deptLen = 2; // Corse (2A, 2B)
+  }
+
+  // Code commune = département + 3 chiffres
+  const communeEnd = deptLen + 3;
+
+  // COM_ABS = toujours 3 caractères après commune
+  const comAbsEnd = communeEnd + 3;
+
+  // Numéro = toujours 4 derniers caractères
+  const numero = idu.substring(idu.length - 4);
+
+  // Section = tout ce qui reste entre COM_ABS et numéro
+  const sectionStart = comAbsEnd;
+  const sectionEnd = idu.length - 4;
+  const section = idu.substring(sectionStart, sectionEnd);
+
+  // Si la section fait déjà 2 caractères ou plus, ne rien faire
+  if (section.length >= 2) {
+    return idu;
+  }
+
+  // Si la section fait 1 caractère, la padder avec un zéro
+  if (section.length === 1) {
+    const prefix = idu.substring(0, sectionStart);
+    const paddedSection = `0${section}`;
+    return `${prefix}${paddedSection}${numero}`;
+  }
+
+  // Cas invalide : section vide (ne devrait pas arriver)
+  return idu;
+}
