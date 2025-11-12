@@ -4,6 +4,7 @@ import "leaflet/dist/leaflet.css";
 import { extractIdu, normalizeParcelId } from "../utils/geo.utils";
 import { searchParcelWithFallback } from "../services/cadastre/api.cadastre.service";
 import { OnParcelleSelectedCallback } from "../types/callbacks.types";
+import { padParcelleSection } from "@mutafriches/shared-types/src";
 
 // Fix Leaflet : Réinitialisation des icônes par défaut
 // @ts-expect-error - Suppression nécessaire pour le fix Leaflet
@@ -109,9 +110,15 @@ export function useLeafletMap({
 
         const feature = result.features[0];
         const p = feature.properties;
+
+        // Extraire l'IDU brut depuis l'API Carto
         let idu = extractIdu(p);
 
-        // Normaliser l'IDU avant le callback
+        // ÉTAPE 1 : Padder la section à 2 caractères si nécessaire
+        // (L'API Carto retourne parfois des sections à 1 caractère)
+        idu = padParcelleSection(idu);
+
+        // ÉTAPE 2 : Normaliser l'IDU (retire les zéros préfixes des sections)
         idu = normalizeParcelId(idu);
 
         // Appel du callback avec les données de la parcelle normalisées

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { SelectParcelleById } from "./SelectParcelleById";
 import { ParcelleSelectionMap } from "../parcelle-map/ParcelleSelectionMap";
+import { isValidParcelId } from "@mutafriches/shared-types";
 
 interface ParcelleSelectionProps {
   onAnalyze?: (identifiant: string) => void;
@@ -32,7 +33,7 @@ export const ParcelleSelection: React.FC<ParcelleSelectionProps> = ({ onAnalyze 
     }
   };
 
-  const isAnalyzeDisabled = !selectedParcelId || selectedParcelId.length < 14;
+  const isAnalyzeDisabled = !selectedParcelId || !isValidParcelId(selectedParcelId);
 
   return (
     <div>
