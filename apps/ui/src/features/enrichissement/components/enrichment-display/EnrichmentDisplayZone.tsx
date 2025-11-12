@@ -121,7 +121,7 @@ export const EnrichmentDisplayZone: React.FC<EnrichmentDisplayZoneProps> = ({
               id="site-centre-ville"
               label="Site en centre ville"
               value={data.centreVille}
-              tooltip="Donnée de test, pas de récupération réelle pour l'instant"
+              tooltip="Récupéré depuis https://api-lannuaire.service-public.gouv.fr"
             />
             <EnrichmentInfoField
               id="distance-voie-grande-circulation"
@@ -133,13 +133,13 @@ export const EnrichmentDisplayZone: React.FC<EnrichmentDisplayZoneProps> = ({
               id="distance-transport-commun"
               label="Distance au transport en commun"
               value={data.distanceTrain}
-              tooltip="Donnée de test, pas de récupération réelle pour l'instant"
+              tooltip="Pas de récupération pour l'instant"
             />
             <EnrichmentInfoField
               id="proximite-commerces-services"
               label="Proximité des commerces et services"
               value={data.proximiteCommerces}
-              tooltip="Donnée de test, pas de récupération réelle pour l'instant"
+              tooltip="Pas de récupération pour l'instant"
             />
             <EnrichmentInfoField
               id="distance-raccordement-electrique"
@@ -151,7 +151,7 @@ export const EnrichmentDisplayZone: React.FC<EnrichmentDisplayZoneProps> = ({
               id="taux-logements-vacants"
               label="Taux de logements vacants"
               value={data.tauxLV}
-              tooltip="Donnée de test, pas de récupération réelle pour l'instant"
+              tooltip="Pas de récupération pour l'instant"
             />
           </div>
         </div>
@@ -199,7 +199,7 @@ export const EnrichmentDisplayZone: React.FC<EnrichmentDisplayZoneProps> = ({
               id="continuité-ecologique"
               label="Continuité écologique (trame verte et bleue)"
               value={data.tvb}
-              tooltip="Donnée de test, pas de récupération réelle pour l'instant"
+              tooltip="Pas de récupération pour l'instant"
             />
           </div>
         </div>

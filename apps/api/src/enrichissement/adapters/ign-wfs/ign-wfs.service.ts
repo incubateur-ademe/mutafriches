@@ -14,8 +14,10 @@ import { distancePointToSegment } from "../shared/distance.utils";
  * Adapter pour l'API WFS IGN Géoplateforme
  * https://geoservices.ign.fr/services-web-essentiels
  *
- * Récupère les tronçons de routes (autoroutes, voies rapides)
- * depuis la BD TOPO v3
+ * Récupère les tronçons de routes (autoroutes, voies rapides) depuis la BD TOPO v3
+ * Documentation https://geoservices.ign.fr/sites/default/files/2024-08/DC_BDTOPO_3-4.pdf
+ * Types de routes : page 336 : Valeurs autorisées : "Bretelle" ; "Chemin" ; "Escalier" ; "Bac ou liaison maritime" ; "Rond-point" ; "Route empierrée"
+; "Route à 1 chaussée" ; "Route à 2 chaussées" ; "Sentier" ; "Type autoroutier
  */
 @Injectable()
 export class IgnWfsService {
