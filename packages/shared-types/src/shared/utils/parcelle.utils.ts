@@ -119,11 +119,12 @@ export function isValidParcelId(id: string): boolean {
 
   const patterns = [
     // Métropole : dept(2) + commune(3) + comAbs(3) + section(1-2) + parcelle(4) = 13-14 car
-    /^[0-9]{2}[0-9]{3}[0-9]{3}[A-Z]{1,2}[0-9]{4}$/,
+    // Section peut être : lettres (A, AB), chiffres (01, 38), ou alphanum (A1)
+    /^[0-9]{2}[0-9]{3}[0-9]{3}[A-Z0-9]{1,2}[0-9]{4}$/,
     // DOM (971-976) : dept(3) + commune(3) + comAbs(3) + section(1-2) + parcelle(4) = 14-15 car
-    /^97[1-6][0-9]{3}[0-9]{3}[A-Z]{1,2}[0-9]{4}$/,
+    /^97[1-6][0-9]{3}[0-9]{3}[A-Z0-9]{1,2}[0-9]{4}$/,
     // Corse (2A, 2B) : dept(2) + commune(3) + comAbs(3) + section(1-2) + parcelle(4) = 13-14 car
-    /^2[AB][0-9]{3}[0-9]{3}[A-Z]{1,2}[0-9]{4}$/,
+    /^2[AB][0-9]{3}[0-9]{3}[A-Z0-9]{1,2}[0-9]{4}$/,
   ];
 
   return patterns.some((pattern) => pattern.test(normalizedId));

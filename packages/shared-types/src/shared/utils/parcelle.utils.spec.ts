@@ -131,6 +131,25 @@ describe("Parcelle ID Validation", () => {
     });
   });
 
+  describe("Sections numériques", () => {
+    it("should validate parcelle with numeric section (2 digits)", () => {
+      expect(isValidParcelId("67324000380079")).toBe(true);
+    });
+
+    it("should validate parcelle with numeric section (1 digit)", () => {
+      expect(isValidParcelId("6732400080079")).toBe(true); // Section = "8" (13 car)
+    });
+
+    it("should validate parcelle with alphanumeric section", () => {
+      expect(isValidParcelId("67324000A10079")).toBe(true);
+    });
+
+    it("should pad numeric section if needed", () => {
+      const padded = padParcelleSection("6732400080079"); // Section "8" (13 car)
+      expect(padded).toBe("67324000080079"); // Section "08" (14 car)
+    });
+  });
+
   describe("sanitizeParcelIdForApi", () => {
     it("should sanitize Aubenas problematic case", () => {
       const result = sanitizeParcelIdForApi("070190000B2188");
