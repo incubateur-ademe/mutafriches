@@ -16,6 +16,8 @@ export class EvenementRepository {
       donnees: evenement.donnees || null,
       dateCreation: evenement.dateCreation,
       sourceUtilisation: evenement.sourceUtilisation || null,
+      modeUtilisation: evenement.modeUtilisation || null,
+      ref: evenement.ref || null,
       integrateur: evenement.integrateur || null,
       userAgent: evenement.userAgent || null,
       sessionId: evenement.sessionId || null,
