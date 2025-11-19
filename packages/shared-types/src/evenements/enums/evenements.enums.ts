@@ -1,4 +1,9 @@
 export enum TypeEvenement {
+  VISITE = "visite",
+  ENRICHISSEMENT_TERMINE = "enrichissement_termine",
+  DONNEES_COMPLEMENTAIRES_SAISIES = "donnees_complementaires_saisies",
+  EVALUATION_TERMINEE = "evaluation_terminee",
+
   // Feedback sur résultats
   FEEDBACK_PERTINENCE_CLASSEMENT = "feedback_pertinence_classement",
 

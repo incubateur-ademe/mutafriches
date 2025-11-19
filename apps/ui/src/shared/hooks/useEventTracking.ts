@@ -7,17 +7,39 @@ export function useEventTracking() {
   const isIframeMode = useIsIframeMode();
   const { integrator } = useIframe();
 
+  // Capture source et ref depuis l'URL ou le sessionStorage
+  const captureSourceRef = useCallback(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const sourceParam = urlParams.get("source");
+    const refParam = urlParams.get("ref");
+
+    // Stocker en sessionStorage si présent dans l'URL
+    if (sourceParam) sessionStorage.setItem("mutafriches_source", sourceParam);
+    if (refParam) sessionStorage.setItem("mutafriches_ref", refParam);
+
+    // Récupérer depuis sessionStorage
+    const source = sessionStorage.getItem("mutafriches_source");
+    const ref = sessionStorage.getItem("mutafriches_ref");
+
+    return { source, ref };
+  }, []);
+
+  // Fonction pour suivre les événements avec source et ref capturés
   const track = useCallback(
     async (
       typeEvenement: TypeEvenement,
       data?: Omit<EvenementInputDto, "typeEvenement" | "sessionId">,
     ) => {
+      const { source, ref } = captureSourceRef();
+
       await evenementsService.enregistrerEvenement(
         {
           typeEvenement,
           evaluationId: data?.evaluationId,
           identifiantCadastral: data?.identifiantCadastral,
           donnees: data?.donnees,
+          sourceUtilisation: source || undefined,
+          ref: ref || undefined,
         },
         {
           isIframe: isIframeMode,
@@ -25,7 +47,7 @@ export function useEventTracking() {
         },
       );
     },
-    [isIframeMode, integrator],
+    [isIframeMode, integrator, captureSourceRef],
   );
 
   const trackFeedback = useCallback(
@@ -67,11 +89,22 @@ export function useEventTracking() {
     [track],
   );
 
+  const trackEvaluationTerminee = useCallback(
+    (evaluationId: string, identifiantCadastral?: string) => {
+      return track(TypeEvenement.EVALUATION_TERMINEE, {
+        evaluationId,
+        identifiantCadastral,
+      });
+    },
+    [track],
+  );
+
   return {
     track,
     trackFeedback,
     trackInteretMultiParcelles,
     trackInteretMiseEnRelation,
     trackExporterResultats,
+    trackEvaluationTerminee,
   };
 }

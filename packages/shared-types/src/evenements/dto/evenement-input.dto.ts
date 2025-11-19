@@ -6,6 +6,9 @@ export interface EvenementInputDto {
   identifiantCadastral?: string;
   donnees?: Record<string, unknown>;
   sessionId?: string;
+  sourceUtilisation?: string;
+  ref?: string;
+  integrateur?: string;
 }
 
 export interface FeedbackPertinenceDto extends EvenementInputDto {

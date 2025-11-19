@@ -6,10 +6,14 @@ import { Stepper } from "../../../shared/components/layout";
 import { Layout } from "../../../shared/components/layout/Layout";
 import { ManualDataForm } from "../components/ManualDataForm";
 import { useFormContext } from "../../../shared/form/useFormContext";
+import { useEventTracking } from "../../../shared/hooks/useEventTracking";
+import { TypeEvenement } from "@mutafriches/shared-types/dist/evenements/enums/evenements.enums";
 
 export const Step2DonneesComplementairesPage: React.FC = () => {
   const navigate = useNavigate();
   const { state, setManualData, setCurrentStep, canAccessStep } = useFormContext();
+  const { track } = useEventTracking();
+
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Vérifier l'accès à cette étape
@@ -41,6 +45,14 @@ export const Step2DonneesComplementairesPage: React.FC = () => {
 
       // Sauvegarder dans le contexte
       setManualData(dataToSave);
+
+      // Tracker l'événement de saisie des données complémentaires
+      await track(TypeEvenement.DONNEES_COMPLEMENTAIRES_SAISIES, {
+        identifiantCadastral: state.identifiantParcelle || undefined,
+        donnees: {
+          nombreChampsSaisis: Object.keys(dataToSave).length,
+        },
+      });
 
       // Navigation vers l'étape 3
       navigate(ROUTES.STEP3);

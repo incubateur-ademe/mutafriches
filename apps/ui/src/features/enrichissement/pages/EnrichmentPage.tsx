@@ -11,10 +11,13 @@ import { EnrichmentDisplayZone } from "../components/enrichment-display/Enrichme
 import { transformEnrichmentToUiData } from "../utils/enrichissment.mapper";
 import { useFormContext } from "../../../shared/form/useFormContext";
 import { enrichissementService } from "../../../shared/services/api/api.enrichissement.service";
+import { TypeEvenement } from "@mutafriches/shared-types/dist/evenements/enums/evenements.enums";
+import { useEventTracking } from "../../../shared/hooks/useEventTracking";
 
 export const Step1EnrichmentPage: React.FC = () => {
   const navigate = useNavigate();
   const { state, setEnrichmentData, setCurrentStep, resetForm } = useFormContext();
+  const { track } = useEventTracking();
 
   const [isMultiParcelle, setIsMultiParcelle] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -33,6 +36,11 @@ export const Step1EnrichmentPage: React.FC = () => {
       const enrichmentResult = await enrichissementService.enrichirParcelle(identifiant);
       const uiData = transformEnrichmentToUiData(enrichmentResult);
       setEnrichmentData(enrichmentResult, uiData, identifiant);
+
+      // Tracker l'événement d'enrichissement terminé
+      await track(TypeEvenement.ENRICHISSEMENT_TERMINE, {
+        identifiantCadastral: identifiant,
+      });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Une erreur est survenue");
     } finally {

@@ -30,7 +30,7 @@ export const Step3ResultatsPage: React.FC = () => {
   const { parentOrigin, integrator } = useIframe();
 
   // Hook tracking
-  const { trackFeedback, trackExporterResultats } = useEventTracking();
+  const { trackFeedback, trackExporterResultats, trackEvaluationTerminee } = useEventTracking();
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -106,6 +106,12 @@ export const Step3ResultatsPage: React.FC = () => {
       setMutabilityResult(result);
       setMutabilityData(result);
       sendIframeMessages(result);
+
+      // Tracker l'événement d'évaluation terminée
+      await trackEvaluationTerminee(
+        result.evaluationId || "ERROR_NO_ID",
+        state.identifiantParcelle || undefined,
+      );
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "Erreur lors du calcul de mutabilité";
@@ -125,6 +131,8 @@ export const Step3ResultatsPage: React.FC = () => {
     isIframeMode,
     iframeCommunicator,
     integrator,
+    state.identifiantParcelle,
+    trackEvaluationTerminee,
   ]);
 
   // useEffect principal pour l'initialisation

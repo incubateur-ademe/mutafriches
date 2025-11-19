@@ -16,6 +16,7 @@ export const evenements_utilisateur = pgTable(
     donnees: jsonb("donnees"),
     dateCreation: timestamp("date_creation").notNull().defaultNow(),
     sourceUtilisation: varchar("source_utilisation", { length: 20 }),
+    ref: varchar("ref", { length: 100 }),
     integrateur: varchar("integrateur", { length: 255 }),
     userAgent: varchar("user_agent", { length: 500 }),
     sessionId: varchar("session_id", { length: 100 }),

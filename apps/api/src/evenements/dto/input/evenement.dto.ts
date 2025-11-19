@@ -34,4 +34,19 @@ export class EvenementInputDto implements IEvenementInput {
     message: "sessionId contient des caractères non autorisés",
   })
   sessionId?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(20)
+  sourceUtilisation?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  ref?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(255)
+  integrateur?: string;
 }

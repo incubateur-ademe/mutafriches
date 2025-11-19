@@ -11,8 +11,17 @@ import { TestMutability } from "./features/tests/test-mutabilite/pages/TestMutab
 import { TestIframe } from "./features/tests/test-iframe/pages/TestIframe";
 import { TestCallback } from "./features/tests/test-iframe/pages/TestCallback";
 import { Step1EnrichmentPage } from "./features/enrichissement/pages/EnrichmentPage";
+import { useEventTracking } from "./shared/hooks/useEventTracking";
+import { useEffect } from "react";
+import { TypeEvenement } from "../../../packages/shared-types/src";
 
 function App() {
+  const { track } = useEventTracking();
+
+  useEffect(() => {
+    track(TypeEvenement.VISITE);
+  }, [track]);
+
   return (
     <IframeProvider>
       <FormProvider>

@@ -1,0 +1,1 @@
+ALTER TABLE "evenements_utilisateur" ADD COLUMN "ref" varchar(100);
