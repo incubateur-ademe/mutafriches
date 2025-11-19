@@ -36,6 +36,13 @@
       "when": 1763570539364,
       "tag": "0004_brave_sunspot",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1763572596171,
+      "tag": "0005_fair_millenium_guard",
+      "breakpoints": true
     }
   ]
 }

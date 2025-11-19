@@ -1,9 +1,14 @@
 import { pgTable, varchar, jsonb, timestamp, index, pgEnum } from "drizzle-orm/pg-core";
-import { TypeEvenement } from "@mutafriches/shared-types";
+import { ModeUtilisation, TypeEvenement } from "@mutafriches/shared-types";
 
 export const typeEvenementEnum = pgEnum(
   "type_evenement_enum",
   Object.values(TypeEvenement) as [string, ...string[]],
+);
+
+export const modeUtilisationEnum = pgEnum(
+  "mode_utilisation_enum",
+  Object.values(ModeUtilisation) as [string, ...string[]],
 );
 
 export const evenements_utilisateur = pgTable(
@@ -16,6 +21,7 @@ export const evenements_utilisateur = pgTable(
     donnees: jsonb("donnees"),
     dateCreation: timestamp("date_creation").notNull().defaultNow(),
     sourceUtilisation: varchar("source_utilisation", { length: 20 }),
+    modeUtilisation: modeUtilisationEnum("mode_utilisation"),
     ref: varchar("ref", { length: 100 }),
     integrateur: varchar("integrateur", { length: 255 }),
     userAgent: varchar("user_agent", { length: 500 }),

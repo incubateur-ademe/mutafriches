@@ -1,7 +1,7 @@
 import { Controller, Post, Body, Query, Req } from "@nestjs/common";
 import { ApiExcludeController } from "@nestjs/swagger";
 import { Request } from "express";
-import { EvenementInputDto, EvenementOutputDto } from "@mutafriches/shared-types";
+import { EvenementInputDto, EvenementOutputDto, ModeUtilisation } from "@mutafriches/shared-types";
 import { EvenementService } from "./services/evenement.service";
 
 @ApiExcludeController()
@@ -21,10 +21,10 @@ export class EvenementsController {
 
     return await this.evenementService.enregistrerEvenement(input, {
       sourceUtilisation: input.sourceUtilisation,
+      modeUtilisation: iframeMode ? ModeUtilisation.IFRAME : ModeUtilisation.STANDALONE,
       integrateur: integrateur || undefined,
       userAgent,
       ref: input.ref,
-      isIframe: iframeMode,
     });
   }
 }

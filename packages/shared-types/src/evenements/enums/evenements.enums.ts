@@ -12,3 +12,8 @@ export enum TypeEvenement {
   INTERET_MISE_EN_RELATION = "interet_mise_en_relation",
   INTERET_EXPORT_RESULTATS = "interet_export_resultats",
 }
+
+export enum ModeUtilisation {
+  STANDALONE = "standalone",
+  IFRAME = "iframe",
+}

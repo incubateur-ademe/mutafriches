@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { Test, TestingModule } from "@nestjs/testing";
-import { TypeEvenement } from "@mutafriches/shared-types";
+import { TypeEvenement, ModeUtilisation } from "@mutafriches/shared-types";
 import { EvenementService } from "./evenement.service";
 import { EvenementRepository } from "../repositories/evenement.repository";
 
@@ -92,6 +92,86 @@ describe("EvenementService - Sécurité", () => {
       expect(savedEvent.evaluationId).toBeUndefined();
       expect(savedEvent.identifiantCadastral).toBeUndefined();
     });
+
+    it("devrait nettoyer sourceUtilisation", async () => {
+      const input = {
+        typeEvenement: TypeEvenement.VISITE,
+        sourceUtilisation: "urbanvitaliz<script>",
+      };
+
+      await service.enregistrerEvenement(input, {
+        sourceUtilisation: "urbanvitaliz<script>",
+      });
+
+      const savedEvent = vi.mocked(mockRepository.enregistrerEvenement).mock.calls[0][0];
+      expect(savedEvent.sourceUtilisation).not.toContain("<script>");
+    });
+
+    it("devrait nettoyer ref", async () => {
+      const input = {
+        typeEvenement: TypeEvenement.VISITE,
+      };
+
+      await service.enregistrerEvenement(input, {
+        ref: "page-accueil<script>alert(1)</script>",
+      });
+
+      const savedEvent = vi.mocked(mockRepository.enregistrerEvenement).mock.calls[0][0];
+      expect(savedEvent.ref).not.toContain("<script>");
+    });
+  });
+
+  describe("Tracking des intégrateurs", () => {
+    it("devrait enregistrer sourceUtilisation et ref", async () => {
+      const input = {
+        typeEvenement: TypeEvenement.VISITE,
+      };
+
+      await service.enregistrerEvenement(input, {
+        sourceUtilisation: "urbanvitaliz",
+        ref: "page-accueil",
+        modeUtilisation: ModeUtilisation.STANDALONE,
+      });
+
+      const savedEvent = vi.mocked(mockRepository.enregistrerEvenement).mock.calls[0][0];
+      expect(savedEvent.sourceUtilisation).toBe("urbanvitaliz");
+      expect(savedEvent.ref).toBe("page-accueil");
+      expect(savedEvent.modeUtilisation).toBe(ModeUtilisation.STANDALONE);
+    });
+
+    it("devrait enregistrer le mode iframe", async () => {
+      const input = {
+        typeEvenement: TypeEvenement.VISITE,
+      };
+
+      await service.enregistrerEvenement(input, {
+        sourceUtilisation: "benefriches",
+        ref: "simulateur",
+        modeUtilisation: ModeUtilisation.IFRAME,
+        integrateur: "benefriches",
+      });
+
+      const savedEvent = vi.mocked(mockRepository.enregistrerEvenement).mock.calls[0][0];
+      expect(savedEvent.sourceUtilisation).toBe("benefriches");
+      expect(savedEvent.ref).toBe("simulateur");
+      expect(savedEvent.modeUtilisation).toBe(ModeUtilisation.IFRAME);
+      expect(savedEvent.integrateur).toBe("benefriches");
+    });
+
+    it("devrait accepter sourceUtilisation et ref undefined", async () => {
+      const input = {
+        typeEvenement: TypeEvenement.VISITE,
+      };
+
+      await service.enregistrerEvenement(input, {
+        modeUtilisation: ModeUtilisation.STANDALONE,
+      });
+
+      const savedEvent = vi.mocked(mockRepository.enregistrerEvenement).mock.calls[0][0];
+      expect(savedEvent.sourceUtilisation).toBeUndefined();
+      expect(savedEvent.ref).toBeUndefined();
+      expect(savedEvent.modeUtilisation).toBe(ModeUtilisation.STANDALONE);
+    });
   });
 
   describe("Sanitisation du User-Agent", () => {
@@ -154,6 +234,20 @@ describe("EvenementService - Sécurité", () => {
       expect(savedEvent.donnees).toHaveProperty("contexte");
       expect(savedEvent.donnees).not.toHaveProperty("cleNonAutorisee");
       expect(savedEvent.donnees).not.toHaveProperty("autreCleMalveillante");
+    });
+
+    it("devrait autoriser nombreChampsSaisis dans donnees", async () => {
+      const input = {
+        typeEvenement: TypeEvenement.DONNEES_COMPLEMENTAIRES_SAISIES,
+        donnees: {
+          nombreChampsSaisis: 5,
+        },
+      };
+
+      await service.enregistrerEvenement(input);
+
+      const savedEvent = vi.mocked(mockRepository.enregistrerEvenement).mock.calls[0][0];
+      expect(savedEvent.donnees?.nombreChampsSaisis).toBe(5);
     });
 
     it("devrait nettoyer template injection ${}", async () => {
@@ -361,6 +455,66 @@ describe("EvenementService - Sécurité", () => {
       expect(result).toHaveProperty("typeEvenement", TypeEvenement.INTERET_MULTI_PARCELLES);
       expect(result).toHaveProperty("dateCreation");
       expect(result).toHaveProperty("success", true);
+    });
+  });
+
+  describe("Nouveaux événements de tracking", () => {
+    it("devrait enregistrer un événement VISITE", async () => {
+      const input = {
+        typeEvenement: TypeEvenement.VISITE,
+      };
+
+      await service.enregistrerEvenement(input, {
+        sourceUtilisation: "urbanvitaliz",
+        ref: "page-accueil",
+        modeUtilisation: ModeUtilisation.STANDALONE,
+      });
+
+      const savedEvent = vi.mocked(mockRepository.enregistrerEvenement).mock.calls[0][0];
+      expect(savedEvent.typeEvenement).toBe(TypeEvenement.VISITE);
+    });
+
+    it("devrait enregistrer un événement ENRICHISSEMENT_TERMINE", async () => {
+      const input = {
+        typeEvenement: TypeEvenement.ENRICHISSEMENT_TERMINE,
+        identifiantCadastral: "49007000AB0123",
+      };
+
+      await service.enregistrerEvenement(input);
+
+      const savedEvent = vi.mocked(mockRepository.enregistrerEvenement).mock.calls[0][0];
+      expect(savedEvent.typeEvenement).toBe(TypeEvenement.ENRICHISSEMENT_TERMINE);
+      expect(savedEvent.identifiantCadastral).toBe("49007000AB0123");
+    });
+
+    it("devrait enregistrer un événement DONNEES_COMPLEMENTAIRES_SAISIES", async () => {
+      const input = {
+        typeEvenement: TypeEvenement.DONNEES_COMPLEMENTAIRES_SAISIES,
+        identifiantCadastral: "49007000AB0123",
+        donnees: {
+          nombreChampsSaisis: 8,
+        },
+      };
+
+      await service.enregistrerEvenement(input);
+
+      const savedEvent = vi.mocked(mockRepository.enregistrerEvenement).mock.calls[0][0];
+      expect(savedEvent.typeEvenement).toBe(TypeEvenement.DONNEES_COMPLEMENTAIRES_SAISIES);
+      expect(savedEvent.donnees?.nombreChampsSaisis).toBe(8);
+    });
+
+    it("devrait enregistrer un événement EVALUATION_TERMINEE", async () => {
+      const input = {
+        typeEvenement: TypeEvenement.EVALUATION_TERMINEE,
+        evaluationId: "eval-123",
+        identifiantCadastral: "49007000AB0123",
+      };
+
+      await service.enregistrerEvenement(input);
+
+      const savedEvent = vi.mocked(mockRepository.enregistrerEvenement).mock.calls[0][0];
+      expect(savedEvent.typeEvenement).toBe(TypeEvenement.EVALUATION_TERMINEE);
+      expect(savedEvent.evaluationId).toBe("eval-123");
     });
   });
 });

@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { EvenementInputDto, EvenementOutputDto } from "@mutafriches/shared-types";
+import { EvenementInputDto, EvenementOutputDto, ModeUtilisation } from "@mutafriches/shared-types";
 import { EvenementUtilisateur } from "../entities/evenement.entity";
 import { EvenementRepository } from "../repositories/evenement.repository";
 
@@ -11,10 +11,10 @@ export class EvenementService {
     input: EvenementInputDto,
     metadata?: {
       sourceUtilisation?: string;
+      modeUtilisation?: ModeUtilisation;
       integrateur?: string;
       userAgent?: string;
       ref?: string;
-      isIframe?: boolean;
     },
   ): Promise<EvenementOutputDto> {
     const evenement = new EvenementUtilisateur({
@@ -25,6 +25,7 @@ export class EvenementService {
       donnees: this.sanitizeDonnees(input.donnees),
       dateCreation: new Date(),
       sourceUtilisation: this.sanitizeString(metadata?.sourceUtilisation),
+      modeUtilisation: metadata?.modeUtilisation,
       ref: this.sanitizeString(metadata?.ref),
       integrateur: this.sanitizeString(metadata?.integrateur),
       userAgent: this.sanitizeUserAgent(metadata?.userAgent),
@@ -80,7 +81,14 @@ export class EvenementService {
     if (!donnees) return undefined;
 
     const sanitized: Record<string, unknown> = {};
-    const allowedKeys = ["contexte", "pertinent", "commentaire", "usageConcerne", "metadata"];
+    const allowedKeys = [
+      "contexte",
+      "pertinent",
+      "commentaire",
+      "usageConcerne",
+      "metadata",
+      "nombreChampsSaisis",
+    ];
 
     for (const [key, value] of Object.entries(donnees)) {
       if (!allowedKeys.includes(key)) {

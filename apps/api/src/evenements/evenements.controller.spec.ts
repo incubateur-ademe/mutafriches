@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { TypeEvenement } from "@mutafriches/shared-types";
+import { TypeEvenement, ModeUtilisation } from "@mutafriches/shared-types";
 import { createTestingModuleWithService } from "../shared/__test-helpers__/test-module.factory";
 import { createMockEvenementService } from "./__test-helpers__/evenement.mocks";
 import { EvenementsController } from "./evenements.controller";
@@ -28,7 +28,7 @@ describe("EvenementsController", () => {
       success: true,
     };
 
-    it("devrait enregistrer un evenement basique", async () => {
+    it("devrait enregistrer un evenement basique en mode standalone", async () => {
       // Arrange
       const input = {
         typeEvenement: TypeEvenement.INTERET_MULTI_PARCELLES,
@@ -41,7 +41,9 @@ describe("EvenementsController", () => {
 
       // Assert
       expect(service.enregistrerEvenement).toHaveBeenCalledWith(input, {
-        sourceUtilisation: "standalone",
+        sourceUtilisation: undefined,
+        ref: undefined,
+        modeUtilisation: ModeUtilisation.STANDALONE,
         integrateur: undefined,
         userAgent: undefined,
       });
@@ -60,7 +62,9 @@ describe("EvenementsController", () => {
 
       // Assert
       expect(service.enregistrerEvenement).toHaveBeenCalledWith(input, {
-        sourceUtilisation: "iframe",
+        sourceUtilisation: undefined,
+        ref: undefined,
+        modeUtilisation: ModeUtilisation.IFRAME,
         integrateur: undefined,
         userAgent: undefined,
       });
@@ -78,7 +82,31 @@ describe("EvenementsController", () => {
 
       // Assert
       expect(service.enregistrerEvenement).toHaveBeenCalledWith(input, {
-        sourceUtilisation: "standalone",
+        sourceUtilisation: undefined,
+        ref: undefined,
+        modeUtilisation: ModeUtilisation.STANDALONE,
+        integrateur: undefined,
+        userAgent: undefined,
+      });
+    });
+
+    it("devrait passer sourceUtilisation et ref depuis le body", async () => {
+      // Arrange
+      const input = {
+        typeEvenement: TypeEvenement.VISITE,
+        sourceUtilisation: "urbanvitaliz",
+        ref: "page-accueil",
+      };
+      service.enregistrerEvenement.mockResolvedValue(mockOutput);
+
+      // Act
+      await controller.enregistrerEvenement(input);
+
+      // Assert
+      expect(service.enregistrerEvenement).toHaveBeenCalledWith(input, {
+        sourceUtilisation: "urbanvitaliz",
+        ref: "page-accueil",
+        modeUtilisation: ModeUtilisation.STANDALONE,
         integrateur: undefined,
         userAgent: undefined,
       });
@@ -96,7 +124,9 @@ describe("EvenementsController", () => {
 
       // Assert
       expect(service.enregistrerEvenement).toHaveBeenCalledWith(input, {
-        sourceUtilisation: "standalone",
+        sourceUtilisation: undefined,
+        ref: undefined,
+        modeUtilisation: ModeUtilisation.STANDALONE,
         integrateur: "cartofriches",
         userAgent: undefined,
       });
@@ -106,16 +136,20 @@ describe("EvenementsController", () => {
       // Arrange
       const input = {
         typeEvenement: TypeEvenement.INTERET_MULTI_PARCELLES,
+        sourceUtilisation: "benefriches",
+        ref: "simulateur",
       };
       service.enregistrerEvenement.mockResolvedValue(mockOutput);
 
       // Act
-      await controller.enregistrerEvenement(input, true, "cartofriches");
+      await controller.enregistrerEvenement(input, true, "benefriches");
 
       // Assert
       expect(service.enregistrerEvenement).toHaveBeenCalledWith(input, {
-        sourceUtilisation: "iframe",
-        integrateur: "cartofriches",
+        sourceUtilisation: "benefriches",
+        ref: "simulateur",
+        modeUtilisation: ModeUtilisation.IFRAME,
+        integrateur: "benefriches",
         userAgent: undefined,
       });
     });
@@ -137,7 +171,9 @@ describe("EvenementsController", () => {
 
       // Assert
       expect(service.enregistrerEvenement).toHaveBeenCalledWith(input, {
-        sourceUtilisation: "standalone",
+        sourceUtilisation: undefined,
+        ref: undefined,
+        modeUtilisation: ModeUtilisation.STANDALONE,
         integrateur: undefined,
         userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
       });
@@ -158,7 +194,9 @@ describe("EvenementsController", () => {
 
       // Assert
       expect(service.enregistrerEvenement).toHaveBeenCalledWith(input, {
-        sourceUtilisation: "standalone",
+        sourceUtilisation: undefined,
+        ref: undefined,
+        modeUtilisation: ModeUtilisation.STANDALONE,
         integrateur: undefined,
         userAgent: undefined,
       });
@@ -183,7 +221,9 @@ describe("EvenementsController", () => {
 
       // Assert
       expect(service.enregistrerEvenement).toHaveBeenCalledWith(input, {
-        sourceUtilisation: "standalone",
+        sourceUtilisation: undefined,
+        ref: undefined,
+        modeUtilisation: ModeUtilisation.STANDALONE,
         integrateur: undefined,
         userAgent: undefined,
       });
@@ -233,7 +273,9 @@ describe("EvenementsController", () => {
 
       // Assert
       expect(service.enregistrerEvenement).toHaveBeenCalledWith(input, {
-        sourceUtilisation: "iframe",
+        sourceUtilisation: undefined,
+        ref: undefined,
+        modeUtilisation: ModeUtilisation.IFRAME,
         integrateur: undefined,
         userAgent: undefined,
       });
@@ -251,7 +293,9 @@ describe("EvenementsController", () => {
 
       // Assert
       expect(service.enregistrerEvenement).toHaveBeenCalledWith(input, {
-        sourceUtilisation: "standalone",
+        sourceUtilisation: undefined,
+        ref: undefined,
+        modeUtilisation: ModeUtilisation.STANDALONE,
         integrateur: undefined,
         userAgent: undefined,
       });
@@ -269,7 +313,74 @@ describe("EvenementsController", () => {
 
       // Assert
       expect(service.enregistrerEvenement).toHaveBeenCalledWith(input, {
-        sourceUtilisation: "standalone",
+        sourceUtilisation: undefined,
+        ref: undefined,
+        modeUtilisation: ModeUtilisation.STANDALONE,
+        integrateur: undefined,
+        userAgent: undefined,
+      });
+    });
+  });
+
+  describe("Tracking des intégrateurs", () => {
+    const mockOutput = {
+      id: "evt-123",
+      typeEvenement: TypeEvenement.VISITE,
+      dateCreation: new Date().toISOString(),
+      success: true,
+    };
+
+    it("devrait tracker une visite depuis Urbanvitaliz", async () => {
+      const input = {
+        typeEvenement: TypeEvenement.VISITE,
+        sourceUtilisation: "urbanvitaliz",
+        ref: "page-accueil",
+      };
+      service.enregistrerEvenement.mockResolvedValue(mockOutput);
+
+      await controller.enregistrerEvenement(input);
+
+      expect(service.enregistrerEvenement).toHaveBeenCalledWith(input, {
+        sourceUtilisation: "urbanvitaliz",
+        ref: "page-accueil",
+        modeUtilisation: ModeUtilisation.STANDALONE,
+        integrateur: undefined,
+        userAgent: undefined,
+      });
+    });
+
+    it("devrait tracker une visite en iframe depuis Benefriches", async () => {
+      const input = {
+        typeEvenement: TypeEvenement.VISITE,
+        sourceUtilisation: "benefriches",
+        ref: "simulateur",
+      };
+      service.enregistrerEvenement.mockResolvedValue(mockOutput);
+
+      await controller.enregistrerEvenement(input, true, "benefriches");
+
+      expect(service.enregistrerEvenement).toHaveBeenCalledWith(input, {
+        sourceUtilisation: "benefriches",
+        ref: "simulateur",
+        modeUtilisation: ModeUtilisation.IFRAME,
+        integrateur: "benefriches",
+        userAgent: undefined,
+      });
+    });
+
+    it("devrait accepter sourceUtilisation sans ref", async () => {
+      const input = {
+        typeEvenement: TypeEvenement.VISITE,
+        sourceUtilisation: "cartofriches",
+      };
+      service.enregistrerEvenement.mockResolvedValue(mockOutput);
+
+      await controller.enregistrerEvenement(input);
+
+      expect(service.enregistrerEvenement).toHaveBeenCalledWith(input, {
+        sourceUtilisation: "cartofriches",
+        ref: undefined,
+        modeUtilisation: ModeUtilisation.STANDALONE,
         integrateur: undefined,
         userAgent: undefined,
       });
@@ -283,6 +394,57 @@ describe("EvenementsController", () => {
       dateCreation: new Date().toISOString(),
       success: true,
     };
+
+    it("devrait gerer VISITE", async () => {
+      const input = {
+        typeEvenement: TypeEvenement.VISITE,
+        sourceUtilisation: "urbanvitaliz",
+        ref: "page-accueil",
+      };
+      service.enregistrerEvenement.mockResolvedValue(mockOutput);
+
+      await controller.enregistrerEvenement(input);
+
+      expect(service.enregistrerEvenement).toHaveBeenCalled();
+    });
+
+    it("devrait gerer ENRICHISSEMENT_TERMINE", async () => {
+      const input = {
+        typeEvenement: TypeEvenement.ENRICHISSEMENT_TERMINE,
+        identifiantCadastral: "49007000AB0123",
+      };
+      service.enregistrerEvenement.mockResolvedValue(mockOutput);
+
+      await controller.enregistrerEvenement(input);
+
+      expect(service.enregistrerEvenement).toHaveBeenCalledWith(input, expect.any(Object));
+    });
+
+    it("devrait gerer DONNEES_COMPLEMENTAIRES_SAISIES", async () => {
+      const input = {
+        typeEvenement: TypeEvenement.DONNEES_COMPLEMENTAIRES_SAISIES,
+        identifiantCadastral: "49007000AB0123",
+        donnees: { nombreChampsSaisis: 5 },
+      };
+      service.enregistrerEvenement.mockResolvedValue(mockOutput);
+
+      await controller.enregistrerEvenement(input);
+
+      expect(service.enregistrerEvenement).toHaveBeenCalledWith(input, expect.any(Object));
+    });
+
+    it("devrait gerer EVALUATION_TERMINEE", async () => {
+      const input = {
+        typeEvenement: TypeEvenement.EVALUATION_TERMINEE,
+        evaluationId: "eval-123",
+        identifiantCadastral: "49007000AB0123",
+      };
+      service.enregistrerEvenement.mockResolvedValue(mockOutput);
+
+      await controller.enregistrerEvenement(input);
+
+      expect(service.enregistrerEvenement).toHaveBeenCalledWith(input, expect.any(Object));
+    });
 
     it("devrait gerer FEEDBACK_PERTINENCE_CLASSEMENT", async () => {
       const input = {
