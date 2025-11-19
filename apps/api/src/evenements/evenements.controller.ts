@@ -20,9 +20,11 @@ export class EvenementsController {
     const userAgent = req?.headers["user-agent"] as string | undefined;
 
     return await this.evenementService.enregistrerEvenement(input, {
-      sourceUtilisation: iframeMode ? "iframe" : "standalone",
+      sourceUtilisation: input.sourceUtilisation,
       integrateur: integrateur || undefined,
       userAgent,
+      ref: input.ref,
+      isIframe: iframeMode,
     });
   }
 }

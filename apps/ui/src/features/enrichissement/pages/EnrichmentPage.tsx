@@ -11,7 +11,7 @@ import { EnrichmentDisplayZone } from "../components/enrichment-display/Enrichme
 import { transformEnrichmentToUiData } from "../utils/enrichissment.mapper";
 import { useFormContext } from "../../../shared/form/useFormContext";
 import { enrichissementService } from "../../../shared/services/api/api.enrichissement.service";
-import { TypeEvenement } from "@mutafriches/shared-types/dist/evenements/enums/evenements.enums";
+import { TypeEvenement } from "@mutafriches/shared-types";  
 import { useEventTracking } from "../../../shared/hooks/useEventTracking";
 
 export const Step1EnrichmentPage: React.FC = () => {

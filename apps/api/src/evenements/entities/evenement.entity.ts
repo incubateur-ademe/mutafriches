@@ -7,6 +7,7 @@ export class EvenementUtilisateur {
   donnees?: Record<string, unknown>;
   dateCreation: Date;
   sourceUtilisation?: string;
+  ref?: string;
   integrateur?: string;
   userAgent?: string;
   sessionId?: string;
@@ -19,6 +20,7 @@ export class EvenementUtilisateur {
     donnees?: Record<string, unknown>;
     dateCreation: Date;
     sourceUtilisation?: string;
+    ref?: string;
     integrateur?: string;
     userAgent?: string;
     sessionId?: string;

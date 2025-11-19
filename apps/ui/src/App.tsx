@@ -13,7 +13,7 @@ import { TestCallback } from "./features/tests/test-iframe/pages/TestCallback";
 import { Step1EnrichmentPage } from "./features/enrichissement/pages/EnrichmentPage";
 import { useEventTracking } from "./shared/hooks/useEventTracking";
 import { useEffect } from "react";
-import { TypeEvenement } from "../../../packages/shared-types/src";
+import { TypeEvenement } from "@mutafriches/shared-types";
 
 function App() {
   const { track } = useEventTracking();

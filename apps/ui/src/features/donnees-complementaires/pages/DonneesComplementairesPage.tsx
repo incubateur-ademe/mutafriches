@@ -7,7 +7,7 @@ import { Layout } from "../../../shared/components/layout/Layout";
 import { ManualDataForm } from "../components/ManualDataForm";
 import { useFormContext } from "../../../shared/form/useFormContext";
 import { useEventTracking } from "../../../shared/hooks/useEventTracking";
-import { TypeEvenement } from "@mutafriches/shared-types/dist/evenements/enums/evenements.enums";
+import { TypeEvenement } from "@mutafriches/shared-types";
 
 export const Step2DonneesComplementairesPage: React.FC = () => {
   const navigate = useNavigate();

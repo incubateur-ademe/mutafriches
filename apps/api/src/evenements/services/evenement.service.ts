@@ -13,6 +13,8 @@ export class EvenementService {
       sourceUtilisation?: string;
       integrateur?: string;
       userAgent?: string;
+      ref?: string;
+      isIframe?: boolean;
     },
   ): Promise<EvenementOutputDto> {
     const evenement = new EvenementUtilisateur({
@@ -23,6 +25,7 @@ export class EvenementService {
       donnees: this.sanitizeDonnees(input.donnees),
       dateCreation: new Date(),
       sourceUtilisation: this.sanitizeString(metadata?.sourceUtilisation),
+      ref: this.sanitizeString(metadata?.ref),
       integrateur: this.sanitizeString(metadata?.integrateur),
       userAgent: this.sanitizeUserAgent(metadata?.userAgent),
       sessionId: this.sanitizeString(input.sessionId),
