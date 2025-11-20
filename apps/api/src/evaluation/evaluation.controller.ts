@@ -39,6 +39,7 @@ import {
   ZonageReglementaire,
   OrigineUtilisation,
   SourceUtilisation,
+  VERSION_ALGO,
 } from "@mutafriches/shared-types";
 import { Request } from "express";
 import { OrchestrateurService } from "./services/orchestrateur.service";
@@ -47,6 +48,7 @@ import { MutabiliteSwaggerDto } from "./dto/output/mutabilite.dto";
 import { MetadataSwaggerDto } from "./dto/output/metadata.dto";
 import { EvaluationSwaggerDto } from "./dto/output/evaluation.dto";
 import { Evaluation } from "./entities/evaluation.entity";
+import packageJson from "./../../../../package.json";
 
 @ApiTags("evaluation")
 @Controller("evaluation")
@@ -161,7 +163,7 @@ export class EvaluationController {
         },
         usages: Object.values(UsageType),
       },
-      version: { api: "1.0.0", algorithme: "1.1.0" },
+      version: { api: packageJson.version, algorithme: VERSION_ALGO },
     };
   }
 

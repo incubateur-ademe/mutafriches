@@ -15,6 +15,7 @@ import { RisquesTechnologiquesEnrichissementService } from "./risques-technologi
 import { GeoRisquesEnrichissementService } from "./georisques/georisques-enrichissement.service";
 import { FiabiliteCalculator } from "./shared/fiabilite.calculator";
 import { ZonageOrchestratorService } from "./zonage";
+import packageJson from "./../../../package.json";
 
 /**
  * Service principal d'enrichissement - Orchestrateur
@@ -312,7 +313,7 @@ export class EnrichissementService {
         dureeMs,
         sourceUtilisation,
         integrateur,
-        versionApi: "1.0",
+        versionApi: packageJson.version,
       })
       .catch((error) => {
         // Ne pas bloquer si le log échoue, juste logger l'erreur

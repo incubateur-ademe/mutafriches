@@ -2,6 +2,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { AppController } from "./app.controller";
 import { DatabaseService } from "./shared/database/database.service";
+import packageJSON from "./../../../package.json";
 
 describe("AppController", () => {
   let appController: AppController;
@@ -34,7 +35,7 @@ describe("AppController", () => {
 
       expect(result).toHaveProperty("status", "OK");
       expect(result).toHaveProperty("timestamp");
-      expect(result).toHaveProperty("version", "1.0.0");
+      expect(result).toHaveProperty("version", packageJSON.version);
       expect(result).toHaveProperty("service", "Mutafriches API");
       expect(result.checks).toHaveProperty("api", "OK");
       expect(result.checks).toHaveProperty("database", "OK");

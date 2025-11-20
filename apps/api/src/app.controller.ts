@@ -2,6 +2,7 @@ import { Controller, Get } from "@nestjs/common";
 import { DatabaseService } from "./shared/database/database.service";
 import { HealthResponse } from "./shared/types/common.types";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import packageJson from "./../../../package.json";
 
 @ApiTags("health")
 @Controller()
@@ -18,7 +19,7 @@ export class AppController {
       status: "OK",
       timestamp,
       service: "Mutafriches API",
-      version: "1.0.0", // À synchroniser avec la version dans package.json
+      version: packageJson.version,
       checks: {
         api: "OK",
         database: "OK",

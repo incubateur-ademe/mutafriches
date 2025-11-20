@@ -12,6 +12,7 @@ import {
   ValeurArchitecturale,
   QualitePaysage,
   QualiteVoieDesserte,
+  VERSION_ALGO,
 } from "@mutafriches/shared-types";
 
 /**
@@ -28,7 +29,7 @@ export class EvaluationBuilder {
   private id = "eval-123";
   private parcelleId = "29232000AB0123";
   private codeInsee = "29232";
-  private versionAlgorithme = "1.1.0";
+  private versionAlgorithme = VERSION_ALGO;
 
   private enrichissement: EnrichissementOutputDto = {
     identifiantParcelle: "29232000AB0123",

@@ -15,12 +15,14 @@ import {
   ZonagePatrimonial,
   TrameVerteEtBleue,
   ZonageReglementaire,
+  VERSION_ALGO,
 } from "@mutafriches/shared-types";
 import { EvaluationController } from "./evaluation.controller";
 import { OrchestrateurService } from "./services/orchestrateur.service";
 import { createTestingModuleWithService } from "../shared/__test-helpers__/test-module.factory";
 import { createMockOrchestrateurService } from "./__test-helpers__/evaluation.mocks";
 import { EvaluationBuilder } from "./__test-helpers__/evaluation.builder";
+import packageJson from "./../../../../package.json";
 
 describe("EvaluationController", () => {
   let controller: EvaluationController;
@@ -420,7 +422,7 @@ describe("EvaluationController", () => {
         .withParcelleId("29232000AB0123")
         .withCodeInsee("29232")
         .withCommune("Quimper")
-        .withVersionAlgorithme("1.1.0")
+        .withVersionAlgorithme(VERSION_ALGO)
         .build();
 
       orchestrateurService.recupererEvaluation.mockResolvedValue(mockEvaluation);
@@ -438,7 +440,7 @@ describe("EvaluationController", () => {
         enrichissement: mockEvaluation.donneesEnrichissement,
         donneesComplementaires: mockEvaluation.donneesComplementaires,
         mutabilite: mockEvaluation.resultats,
-        metadata: { versionAlgorithme: "1.1.0", source: "api" },
+        metadata: { versionAlgorithme: VERSION_ALGO, source: "api" },
       });
     });
 
@@ -522,7 +524,7 @@ describe("EvaluationController", () => {
           },
           usages: Object.values(UsageType),
         },
-        version: { api: "1.0.0", algorithme: "1.1.0" },
+        version: { api: packageJson.version, algorithme: VERSION_ALGO },
       });
     });
 
@@ -531,8 +533,8 @@ describe("EvaluationController", () => {
       const result = controller.getMetadata();
 
       // Assert
-      expect(result.version.api).toBe("1.0.0");
-      expect(result.version.algorithme).toBe("1.1.0");
+      expect(result.version.api).toBe(packageJson.version);
+      expect(result.version.algorithme).toBe(VERSION_ALGO);
     });
 
     it("devrait inclure tous les enums enrichissement", () => {
