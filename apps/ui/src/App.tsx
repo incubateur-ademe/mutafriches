@@ -12,13 +12,16 @@ import { TestIframe } from "./features/tests/test-iframe/pages/TestIframe";
 import { TestCallback } from "./features/tests/test-iframe/pages/TestCallback";
 import { Step1EnrichmentPage } from "./features/enrichissement/pages/EnrichmentPage";
 import { useEventTracking } from "./shared/hooks/useEventTracking";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { TypeEvenement } from "@mutafriches/shared-types";
 
 function App() {
   const { track } = useEventTracking();
+  const hasTrackedVisit = useRef(false);
 
   useEffect(() => {
+    if (hasTrackedVisit.current) return;
+    hasTrackedVisit.current = true;
     track(TypeEvenement.VISITE);
   }, [track]);
 
