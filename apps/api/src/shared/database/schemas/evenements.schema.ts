@@ -31,5 +31,6 @@ export const evenements_utilisateur = pgTable(
     index("idx_type_evenement").on(table.typeEvenement),
     index("idx_evaluation_id").on(table.evaluationId),
     index("idx_date_creation").on(table.dateCreation),
+    index("idx_session_id").on(table.sessionId),
   ],
 );

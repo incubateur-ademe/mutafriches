@@ -1,0 +1,1 @@
+CREATE INDEX "idx_session_id" ON "evenements_utilisateur" USING btree ("session_id");
