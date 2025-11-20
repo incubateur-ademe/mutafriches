@@ -85,25 +85,25 @@ export const EnrichmentDisplayZone: React.FC<EnrichmentDisplayZoneProps> = ({
               id="commune"
               label="Commune"
               value={data.commune}
-              tooltip="Récupéré depuis API IGN Cadastre : https://apicarto.ign.fr/api/doc/cadastre"
+              tooltip="Récupéré depuis l'API IGN Cadastre : https://apicarto.ign.fr/api/doc/cadastre"
             />
             <EnrichmentInfoField
               id="identifiant-parcelle"
               label="Identifiant parcelle"
               value={data.identifiantParcelle}
-              tooltip="Récupéré depuis API IGN Cadastre : https://apicarto.ign.fr/api/doc/cadastre"
+              tooltip="Récupéré depuis l'API IGN Cadastre : https://apicarto.ign.fr/api/doc/cadastre"
             />
             <EnrichmentInfoField
               id="surface-site"
               label="Surface du site"
               value={data.surfaceParcelle}
-              tooltip="Récupéré depuis API IGN Cadastre : https://apicarto.ign.fr/api/doc/cadastre"
+              tooltip="Récupéré depuis l'API IGN Cadastre : https://apicarto.ign.fr/api/doc/cadastre"
             />
             <EnrichmentInfoField
               id="surface-batie"
               label="Surface bâtie"
               value={data.surfaceBatie}
-              tooltip="Récupéré depuis API BDNB : https://api.bdnb.io/v1/bdnb"
+              tooltip="Récupéré depuis l'API BDNB : https://api.bdnb.io/v1/bdnb"
             />
           </div>
         </div>
@@ -121,7 +121,7 @@ export const EnrichmentDisplayZone: React.FC<EnrichmentDisplayZoneProps> = ({
               id="site-centre-ville"
               label="Site en centre ville"
               value={data.centreVille}
-              tooltip="Récupéré depuis https://api-lannuaire.service-public.gouv.fr"
+              tooltip="Récupéré depuis l'API de l'annuaire du Service public : https://api-lannuaire.service-public.gouv.fr"
             />
             <EnrichmentInfoField
               id="distance-voie-grande-circulation"
@@ -145,13 +145,13 @@ export const EnrichmentDisplayZone: React.FC<EnrichmentDisplayZoneProps> = ({
               id="distance-raccordement-electrique"
               label="Distance au raccordement électrique"
               value={data.distanceRaccordement}
-              tooltip="Récupéré depuis API Enedis : https://data.enedis.fr/api/explore/v2.1/catalog/datasets"
+              tooltip="Récupéré depuis l'API Enedis : https://data.enedis.fr/api/explore/v2.1/catalog/datasets"
             />
             <EnrichmentInfoField
               id="taux-logements-vacants"
               label="Taux de logements vacants"
               value={data.tauxLV}
-              tooltip="Pas de récupération pour l'instant"
+              tooltip="Récupéré depuis l'API tabulaire de data.gouv.fr : https://www.data.gouv.fr/datasets/logements-vacants-du-parc-prive-en-france-et-par-commune-departement-region"
             />
           </div>
         </div>
@@ -169,13 +169,13 @@ export const EnrichmentDisplayZone: React.FC<EnrichmentDisplayZoneProps> = ({
               id="presence-risques-technologiques"
               label="Présence de risques technologiques"
               value={data.risquesTechno}
-              tooltip="Récupéré depuis API Georisques : https://www.georisques.gouv.fr/doc-api"
+              tooltip="Récupéré depuis l'API Georisques : https://www.georisques.gouv.fr/doc-api"
             />
             <EnrichmentInfoField
               id="presence-risques-naturels"
               label="Présence de risques naturels"
               value={data.risquesNaturels}
-              tooltip={`Récupéré depuis API Georisques : https://www.georisques.gouv.fr/doc-api. En l'absence de la numérisation des plans de prévention des risques, cette donnée est susceptible d'être faussée`}
+              tooltip={`Récupéré depuis l'API Georisques : https://www.georisques.gouv.fr/doc-api. En l'absence de la numérisation des plans de prévention des risques, cette donnée est susceptible d'être faussée`}
             />
             <EnrichmentInfoField
               id="type-zonage-environnemental"

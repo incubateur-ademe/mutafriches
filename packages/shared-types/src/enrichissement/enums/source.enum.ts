@@ -10,8 +10,6 @@ export enum SourceEnrichissement {
   OVERPASS = "Overpass",
   OVERPASS_TEMPORAIRE = "Overpass-Temporaire",
   LOVAC = "Lovac",
-  LOVAC_TEMPORAIRE = "Lovac-Temporaire",
-  DONNEES_TEMPORAIRES = "Données-Temporaires",
   GEORISQUES_RGA = "GeoRisques-RGA",
   GEORISQUES_CATNAT = "GeoRisques-CATNAT",
   GEORISQUES_TRI = "GeoRisques-TRI",
