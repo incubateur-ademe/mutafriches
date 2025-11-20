@@ -45,11 +45,17 @@ export const transformEnrichmentToUiData = (
     // Distance autoroute formatée
     distanceAutoroute: formatDistance(enrichmentData.distanceAutoroute),
 
+    // Taux de logements vacants formaté
+    tauxLV:
+      enrichmentData.tauxLogementsVacants !== undefined
+        ? `${enrichmentData.tauxLogementsVacants.toString()} %`
+        : nonAccessibleVersion,
+
     // Champs non disponibles dans l'enrichissement actuel
     typeProprietaire: nonAccessibleVersion,
     distanceTrain: nonAccessibleVersion,
     proximiteCommerces: nonAccessibleVersion,
-    tauxLV: nonAccessibleVersion,
+
     tvb: nonAccessibleVersion,
     potentielEcologique: nonAccessibleVersion,
   };

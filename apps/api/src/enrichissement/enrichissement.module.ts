@@ -54,6 +54,9 @@ import { OldService } from "./adapters/georisques/old/old.service";
 import { ApiCartoNatureService } from "./adapters/api-carto/nature/api-carto-nature.service";
 import { ApiCartoGpuService } from "./adapters/api-carto/gpu/api-carto-gpu.service";
 
+// Adapters data.gouv.fr
+import { DatagouvLovacService } from "./adapters/datagouv-lovac/datagouv-lovac.service";
+
 @Module({
   imports: [HttpModule],
   controllers: [EnrichissementController],
@@ -111,6 +114,9 @@ import { ApiCartoGpuService } from "./adapters/api-carto/gpu/api-carto-gpu.servi
     // Adapters API Carto
     ApiCartoNatureService,
     ApiCartoGpuService,
+
+    // Adapters data.gouv.fr
+    DatagouvLovacService,
   ],
   exports: [EnrichissementService],
 })

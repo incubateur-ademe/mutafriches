@@ -2,25 +2,28 @@ import { Injectable, Logger } from "@nestjs/common";
 import { SourceEnrichissement } from "@mutafriches/shared-types";
 import { Parcelle } from "../../../evaluation/entities/parcelle.entity";
 import { EnrichmentResult } from "../shared/enrichissement.types";
+import { DatagouvLovacService } from "../../adapters/datagouv-lovac/datagouv-lovac.service";
+import { LovacCalculator } from "./lovac.calculator";
 
 /**
  * Service d'enrichissement du sous-domaine Urbanisme
  *
  * Responsabilités :
  * - Récupérer la proximité des commerces/services via Overpass
- * - Récupérer le taux de logements vacants via Lovac
+ * - Récupérer le taux de logements vacants via LOVAC (data.gouv.fr)
  * - Déterminer si le site est en centre-ville
  * - Calculer la distance à l'autoroute
  *
- * TODO: Implémenter les vrais services (remplacer les données temporaires)
+ * TODO: Implémenter les vrais services restants
  * - OverpassService pour commerces/services
- * - LovacService pour logements vacants
  * - Service pour détection centre-ville
  * - Service pour distance autoroute
  */
 @Injectable()
 export class UrbanismeEnrichissementService {
   private readonly logger = new Logger(UrbanismeEnrichissementService.name);
+
+  constructor(private readonly lovacService: DatagouvLovacService) {}
 
   /**
    * Enrichit une parcelle avec les données d'urbanisme
@@ -33,15 +36,7 @@ export class UrbanismeEnrichissementService {
     const sourcesEchouees: string[] = [];
     const champsManquants: string[] = [];
 
-    // 1. Proximité commerces/services (Overpass)
-    await this.enrichProximiteCommercesServices(
-      parcelle,
-      sourcesUtilisees,
-      sourcesEchouees,
-      champsManquants,
-    );
-
-    // 2. Taux de logements vacants (Lovac)
+    // Taux de logements vacants (LOVAC via data.gouv.fr)
     await this.enrichTauxLogementsVacants(
       parcelle,
       sourcesUtilisees,
@@ -49,8 +44,13 @@ export class UrbanismeEnrichissementService {
       champsManquants,
     );
 
-    // 3. Centre-ville et distance autoroute (données temporaires)
-    await this.enrichDonneesTemporaires(parcelle, sourcesUtilisees);
+    // Proximité commerces/services (Overpass)
+    await this.enrichProximiteCommercesServices(
+      parcelle,
+      sourcesUtilisees,
+      sourcesEchouees,
+      champsManquants,
+    );
 
     return {
       success: sourcesUtilisees.length > 0,
@@ -103,8 +103,7 @@ export class UrbanismeEnrichissementService {
   }
 
   /**
-   * Enrichit le taux de logements vacants
-   * TODO: Implémenter le vrai service Lovac
+   * Enrichit le taux de logements vacants via l'API LOVAC (data.gouv.fr)
    */
   private async enrichTauxLogementsVacants(
     parcelle: Parcelle,
@@ -112,56 +111,73 @@ export class UrbanismeEnrichissementService {
     sourcesEchouees: string[],
     champsManquants: string[],
   ): Promise<void> {
-    if (!parcelle.commune) {
-      this.logger.warn(`Pas de commune pour Lovac - parcelle ${parcelle.identifiantParcelle}`);
+    // Vérifier qu'on a soit le code INSEE, soit le nom de la commune
+    if (!parcelle.codeInsee && !parcelle.commune) {
+      this.logger.warn(
+        `Pas de code INSEE ni de commune pour LOVAC - parcelle ${parcelle.identifiantParcelle}`,
+      );
       sourcesEchouees.push(SourceEnrichissement.LOVAC);
       champsManquants.push("tauxLogementsVacants");
       return;
     }
 
     try {
-      // TODO: Remplacer par le vrai service Lovac
-      // const result = await this.lovacService.getTauxLogementsVacants(
-      //   parcelle.commune
-      // );
+      // Appel à l'API LOVAC via data.gouv.fr
+      const lovacData = await this.lovacService.getLovacByCommune({
+        codeInsee: parcelle.codeInsee,
+        nomCommune: !parcelle.codeInsee ? parcelle.commune : undefined,
+      });
 
-      // Données temporaires - taux de logements vacants aléatoire entre 2% et 15%
-      const tauxTemporaire = Math.floor(Math.random() * 13) + 2;
-      parcelle.tauxLogementsVacants = tauxTemporaire;
-      sourcesUtilisees.push(SourceEnrichissement.LOVAC_TEMPORAIRE);
-
-      this.logger.debug(
-        `Taux logements vacants (TEMPORAIRE): ${tauxTemporaire}% pour ${parcelle.commune}`,
-      );
-    } catch (error) {
-      this.logger.error("Erreur lors de la recuperation Lovac:", error);
-      sourcesEchouees.push(SourceEnrichissement.LOVAC);
-      champsManquants.push("tauxLogementsVacants");
-    }
-  }
-
-  /**
-   * Enrichit les données temporaires (centre-ville, distance autoroute)
-   * TODO: Implémenter les vrais services
-   */
-  private async enrichDonneesTemporaires(
-    parcelle: Parcelle,
-    sourcesUtilisees: string[],
-  ): Promise<void> {
-    try {
-      // Données temporaires pour centre-ville
-      if (parcelle.siteEnCentreVille === undefined) {
-        parcelle.siteEnCentreVille = Math.random() > 0.6; // 40% de chance d'être en centre-ville
+      if (!lovacData) {
+        this.logger.warn(
+          `Aucune donnee LOVAC trouvee pour ${parcelle.codeInsee || parcelle.commune}`,
+        );
+        sourcesEchouees.push(SourceEnrichissement.LOVAC);
+        champsManquants.push("tauxLogementsVacants");
+        return;
       }
 
-      sourcesUtilisees.push(SourceEnrichissement.DONNEES_TEMPORAIRES);
+      // Vérifier si les données sont exploitables avec le calculator
+      if (
+        !LovacCalculator.sontDonneesExploitables(
+          lovacData.nombreLogementsVacants,
+          lovacData.nombreLogementsTotal,
+        )
+      ) {
+        this.logger.warn(`Donnees LOVAC secretisees ou manquantes pour ${lovacData.commune}`);
+        sourcesEchouees.push(SourceEnrichissement.LOVAC);
+        champsManquants.push("tauxLogementsVacants");
+        return;
+      }
 
-      this.logger.debug(
-        `Donnees temporaires: centre-ville=${parcelle.siteEnCentreVille}, ` +
-          `autoroute=${parcelle.distanceAutoroute}km pour ${parcelle.identifiantParcelle}`,
+      // Calculer le taux avec le calculator
+      const tauxVacance = LovacCalculator.calculerTauxVacance(
+        lovacData.nombreLogementsVacants,
+        lovacData.nombreLogementsTotal,
       );
+
+      if (tauxVacance !== null) {
+        parcelle.tauxLogementsVacants = tauxVacance;
+        sourcesUtilisees.push(SourceEnrichissement.LOVAC);
+
+        const categorie = LovacCalculator.categoriserTauxVacance(tauxVacance);
+
+        this.logger.debug(
+          `Taux logements vacants (LOVAC): ${tauxVacance}% (${categorie}) ` +
+            `pour ${lovacData.commune} (millesime ${lovacData.millesime})`,
+        );
+      } else {
+        // Cas où le calcul a échoué (normalement géré par sontDonneesExploitables)
+        sourcesEchouees.push(SourceEnrichissement.LOVAC);
+        champsManquants.push("tauxLogementsVacants");
+      }
     } catch (error) {
-      this.logger.error("Erreur lors de l'ajout des donnees temporaires:", error);
+      this.logger.error(
+        `Erreur lors de la recuperation LOVAC pour ${parcelle.codeInsee || parcelle.commune}:`,
+        error,
+      );
+      sourcesEchouees.push(SourceEnrichissement.LOVAC);
+      champsManquants.push("tauxLogementsVacants");
     }
   }
 }
