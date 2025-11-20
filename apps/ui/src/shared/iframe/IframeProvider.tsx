@@ -23,6 +23,30 @@ export function IframeProvider({ children }: IframeProviderProps) {
 
     const inIframe = window.self !== window.top;
 
+    // Gérer le tracking source/ref
+    if (integratorParam && INTEGRATORS[integratorParam]) {
+      // Mode iframe : stocker dans sessionStorage
+      sessionStorage.setItem("mutafriches_source", integratorParam);
+      const refParam = params.get("ref") || `iframe-${integratorParam}`;
+      sessionStorage.setItem("mutafriches_ref", refParam);
+    } else {
+      // Mode standalone sans intégrateur
+      const sourceParam = params.get("source");
+      const refParam = params.get("ref");
+
+      if (sourceParam) {
+        sessionStorage.setItem("mutafriches_source", sourceParam);
+      } else {
+        sessionStorage.removeItem("mutafriches_source");
+      }
+
+      if (refParam) {
+        sessionStorage.setItem("mutafriches_ref", refParam);
+      } else {
+        sessionStorage.removeItem("mutafriches_ref");
+      }
+    }
+
     // Si pas d'intégrateur, on est en mode standalone
     if (!integratorParam) {
       return DEFAULT_IFRAME_CONTEXT;
@@ -96,6 +120,7 @@ export function IframeProvider({ children }: IframeProviderProps) {
       callbackUrl: validCallbackUrl,
       callbackLabel: finalCallbackLabel,
       parentOrigin,
+      isReady: true,
     };
 
     // Log en développement

@@ -37,7 +37,10 @@ export function useEventTracking() {
           typeEvenement,
           evaluationId: data?.evaluationId,
           identifiantCadastral: data?.identifiantCadastral,
-          donnees: data?.donnees,
+          donnees: {
+            ...data?.donnees,
+            page: window.location.pathname, // Ajouter la page courante aux données
+          },
           sourceUtilisation: source || undefined,
           ref: ref || undefined,
         },

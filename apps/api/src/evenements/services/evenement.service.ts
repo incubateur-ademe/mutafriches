@@ -88,6 +88,7 @@ export class EvenementService {
       "usageConcerne",
       "metadata",
       "nombreChampsSaisis",
+      "page",
     ];
 
     for (const [key, value] of Object.entries(donnees)) {

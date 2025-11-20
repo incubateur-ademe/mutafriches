@@ -14,16 +14,21 @@ import { Step1EnrichmentPage } from "./features/enrichissement/pages/EnrichmentP
 import { useEventTracking } from "./shared/hooks/useEventTracking";
 import { useEffect, useRef } from "react";
 import { TypeEvenement } from "@mutafriches/shared-types";
+import { useIframe } from "./shared/iframe/useIframe";
 
-function App() {
+function AppContent() {
   const { track } = useEventTracking();
   const hasTrackedVisit = useRef(false);
+  const { isReady } = useIframe();
 
+  // Tracker la visite une seule fois
   useEffect(() => {
+    if (!isReady) return;
     if (hasTrackedVisit.current) return;
+
     hasTrackedVisit.current = true;
     track(TypeEvenement.VISITE);
-  }, [track]);
+  }, [track, isReady]);
 
   return (
     <IframeProvider>
@@ -42,6 +47,16 @@ function App() {
           <Route path={ROUTES.TEST_IFRAME} element={<TestIframe />} />
           <Route path={ROUTES.TEST_CALLBACK} element={<TestCallback />} />
         </Routes>
+      </FormProvider>
+    </IframeProvider>
+  );
+}
+
+function App() {
+  return (
+    <IframeProvider>
+      <FormProvider>
+        <AppContent />
       </FormProvider>
     </IframeProvider>
   );

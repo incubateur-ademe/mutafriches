@@ -33,4 +33,5 @@ export const DEFAULT_IFRAME_CONTEXT = {
   callbackUrl: null,
   callbackLabel: null,
   parentOrigin: null,
+  isReady: true,
 };

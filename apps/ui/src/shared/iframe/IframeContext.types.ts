@@ -24,4 +24,7 @@ export interface IframeContextValue {
 
   // Domaine parent autorisé pour postMessage
   parentOrigin: string | null;
+
+  // Indique si le contexte iframe est prêt
+  isReady: boolean;
 }
