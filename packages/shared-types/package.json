@@ -16,7 +16,7 @@
     "excel-to-fixture:all:format": "tsx src/test-cases/scripts/excel-to-fixture.ts --all && prettier --write src/test-cases/fixtures/**/*.json"
   },
   "devDependencies": {
-    "@types/node": "^22.18.1",
+    "@types/node": "^24.10.0",
     "@vitest/ui": "^3.2.4",
     "tsx": "^4.20.5",
     "typescript": "^5.3.3",
