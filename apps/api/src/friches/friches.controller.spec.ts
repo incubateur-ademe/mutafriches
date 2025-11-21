@@ -16,7 +16,6 @@ import {
   TrameVerteEtBleue,
   UsageType,
   ZonageReglementaire,
-  APP_CONFIG,
 } from "@mutafriches/shared-types";
 import { FrichesController } from "./friches.controller";
 import { EnrichissementService } from "../enrichissement/services/enrichissement.service";
@@ -264,7 +263,7 @@ describe("FrichesController", () => {
         donneesComplementaires: mockEvaluation.donneesComplementaires,
         mutabilite: mockEvaluation.resultats,
         metadata: {
-          versionAlgorithme: APP_CONFIG.versionAlgo,
+          versionAlgorithme: "1.1.0",
           source: "api",
         },
       });
@@ -320,7 +319,7 @@ describe("FrichesController", () => {
           },
           usages: Object.values(UsageType),
         },
-        version: { api: APP_CONFIG.version, algorithme: APP_CONFIG.versionAlgo },
+        version: { api: "1.0.0", algorithme: "1.1.0" },
       });
     });
 
@@ -361,8 +360,8 @@ describe("FrichesController", () => {
       const result = controller.getMetadata();
 
       // Assert
-      expect(result.version.api).toBe(APP_CONFIG.version);
-      expect(result.version.algorithme).toBe(APP_CONFIG.versionAlgo);
+      expect(result.version.api).toBe("1.0.0");
+      expect(result.version.algorithme).toBe("1.1.0");
     });
   });
 });

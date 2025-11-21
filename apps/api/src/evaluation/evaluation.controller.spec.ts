@@ -15,7 +15,6 @@ import {
   ZonagePatrimonial,
   TrameVerteEtBleue,
   ZonageReglementaire,
-  APP_CONFIG,
 } from "@mutafriches/shared-types";
 import { EvaluationController } from "./evaluation.controller";
 import { OrchestrateurService } from "./services/orchestrateur.service";
@@ -421,7 +420,7 @@ describe("EvaluationController", () => {
         .withParcelleId("29232000AB0123")
         .withCodeInsee("29232")
         .withCommune("Quimper")
-        .withVersionAlgorithme(APP_CONFIG.versionAlgo)
+        .withVersionAlgorithme("1.1.0")
         .build();
 
       orchestrateurService.recupererEvaluation.mockResolvedValue(mockEvaluation);
@@ -439,7 +438,7 @@ describe("EvaluationController", () => {
         enrichissement: mockEvaluation.donneesEnrichissement,
         donneesComplementaires: mockEvaluation.donneesComplementaires,
         mutabilite: mockEvaluation.resultats,
-        metadata: { versionAlgorithme: APP_CONFIG.versionAlgo, source: "api" },
+        metadata: { versionAlgorithme: "1.1.0", source: "api" },
       });
     });
 
@@ -523,7 +522,7 @@ describe("EvaluationController", () => {
           },
           usages: Object.values(UsageType),
         },
-        version: { api: APP_CONFIG.version, algorithme: APP_CONFIG.versionAlgo },
+        version: { api: "1.0.0", algorithme: "1.1.0" },
       });
     });
 
@@ -532,8 +531,8 @@ describe("EvaluationController", () => {
       const result = controller.getMetadata();
 
       // Assert
-      expect(result.version.api).toBe(APP_CONFIG.version);
-      expect(result.version.algorithme).toBe(APP_CONFIG.versionAlgo);
+      expect(result.version.api).toBe("1.0.0");
+      expect(result.version.algorithme).toBe("1.1.0");
     });
 
     it("devrait inclure tous les enums enrichissement", () => {

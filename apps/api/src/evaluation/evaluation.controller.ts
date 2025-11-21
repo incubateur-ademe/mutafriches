@@ -39,7 +39,6 @@ import {
   ZonageReglementaire,
   OrigineUtilisation,
   SourceUtilisation,
-  APP_CONFIG,
 } from "@mutafriches/shared-types";
 import { Request } from "express";
 import { OrchestrateurService } from "./services/orchestrateur.service";
@@ -162,7 +161,7 @@ export class EvaluationController {
         },
         usages: Object.values(UsageType),
       },
-      version: { api: APP_CONFIG.version, algorithme: APP_CONFIG.versionAlgo },
+      version: { api: "1.0.0", algorithme: "1.1.0" },
     };
   }
 

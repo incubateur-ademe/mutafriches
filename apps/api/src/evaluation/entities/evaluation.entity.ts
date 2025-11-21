@@ -3,8 +3,8 @@ import {
   DonneesComplementairesInputDto,
   MutabiliteOutputDto,
   OrigineUtilisation,
-  APP_CONFIG,
 } from "@mutafriches/shared-types";
+import { VERSION_ALGO } from "@mutafriches/shared-types";
 
 /**
  * Entité métier Evaluation
@@ -42,7 +42,7 @@ export class Evaluation {
     this.donneesComplementaires = donneesComplementaires;
     this.resultats = resultats;
     this.origine = origine;
-    this.versionAlgorithme = APP_CONFIG.versionAlgo;
+    this.versionAlgorithme = VERSION_ALGO;
   }
 
   /**
