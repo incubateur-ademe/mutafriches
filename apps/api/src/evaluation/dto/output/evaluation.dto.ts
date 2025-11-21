@@ -3,6 +3,7 @@ import {
   EnrichissementOutputDto,
   MutabiliteOutputDto,
   DonneesComplementairesInputDto,
+  APP_CONFIG,
 } from "@mutafriches/shared-types";
 
 /**
@@ -57,7 +58,7 @@ export class EvaluationSwaggerDto {
   @ApiProperty({
     description: "Métadonnées de l'évaluation",
     example: {
-      versionAlgorithme: "1.0.0",
+      versionAlgorithme: APP_CONFIG.versionAlgo,
       source: "iframe",
       integrator: "urbanvitaliz",
       dureeCalculMs: 1250,

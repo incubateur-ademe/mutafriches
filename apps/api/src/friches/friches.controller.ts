@@ -20,6 +20,7 @@ import {
   ZonageReglementaire,
   OrigineUtilisation,
   SourceUtilisation,
+  APP_CONFIG,
 } from "@mutafriches/shared-types";
 import { EnrichissementService } from "../enrichissement/services/enrichissement.service";
 import { OrchestrateurService } from "../evaluation/services/orchestrateur.service";
@@ -95,7 +96,7 @@ export class FrichesController {
         },
         usages: Object.values(UsageType),
       },
-      version: { api: "1.0.0", algorithme: "1.1.0" },
+      version: { api: APP_CONFIG.version, algorithme: APP_CONFIG.versionAlgo },
     };
   }
 

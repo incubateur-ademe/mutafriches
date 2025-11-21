@@ -1,5 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import {
+  APP_CONFIG,
   CodeErreurEnrichissement,
   EnrichissementOutputDto,
   MessagesErreurEnrichissement,
@@ -312,7 +313,7 @@ export class EnrichissementService {
         dureeMs,
         sourceUtilisation,
         integrateur,
-        versionApi: "1.0",
+        versionApi: APP_CONFIG.version,
       })
       .catch((error) => {
         // Ne pas bloquer si le log échoue, juste logger l'erreur
