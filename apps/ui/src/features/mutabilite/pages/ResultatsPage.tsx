@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useEventTracking } from "../../../shared/hooks/useEventTracking";
-import { APP_CONFIG, MutabiliteOutputDto } from "../../../../../../packages/shared-types/src";
+import { MutabiliteOutputDto } from "../../../../../../packages/shared-types/src";
 import { buildMutabilityInput } from "../utils/mutability.mapper";
 import { ROUTES } from "../../../shared/config/routes.config";
 import { Stepper } from "../../../shared/components/layout";
@@ -77,7 +77,6 @@ export const Step3ResultatsPage: React.FC = () => {
         })),
         metadata: {
           dateAnalyse: new Date().toISOString(),
-          versionAlgorithme: APP_CONFIG.versionAlgo,
         },
       };
 
