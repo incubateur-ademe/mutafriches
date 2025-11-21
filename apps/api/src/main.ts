@@ -5,7 +5,7 @@ import { NestExpressApplication } from "@nestjs/platform-express";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { Request, Response, NextFunction } from "express";
 import { ValidationPipe, Logger } from "@nestjs/common";
-import packageJson from "./../../../package.json";
+import { APP_CONFIG } from "@mutafriches/shared-types";
 
 async function bootstrap() {
   const logger = new Logger("Bootstrap");
@@ -23,7 +23,7 @@ async function bootstrap() {
     const config = new DocumentBuilder()
       .setTitle("Mutafriches API")
       .setDescription("API pour analyser la mutabilité des friches urbaines")
-      .setVersion(packageJson.version)
+      .setVersion(APP_CONFIG.version)
       .addTag("enrichissement", "Module d'enrichissement des parcelles")
       .addTag("evaluation", "Module d'évaluation de la mutabilité")
       .addTag("friches", "Routes de compatibilité (deprecated)")

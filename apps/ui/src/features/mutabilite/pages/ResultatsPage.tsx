@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useEventTracking } from "../../../shared/hooks/useEventTracking";
-import { MutabiliteOutputDto } from "../../../../../../packages/shared-types/src";
+import { APP_CONFIG, MutabiliteOutputDto } from "../../../../../../packages/shared-types/src";
 import { buildMutabilityInput } from "../utils/mutability.mapper";
 import { ROUTES } from "../../../shared/config/routes.config";
 import { Stepper } from "../../../shared/components/layout";
@@ -18,7 +18,6 @@ import { createIframeCommunicator } from "../../../shared/iframe/iframeCommunica
 import { IframeEvaluationSummaryDto } from "../../../shared/iframe/iframe.types";
 import { evaluationService } from "../../../shared/services/api/api.evaluation.service";
 import { ModalInfo } from "../../../shared/components/common/ModalInfo";
-import { VERSION_ALGO } from "@mutafriches/shared-types";
 
 export const Step3ResultatsPage: React.FC = () => {
   const navigate = useNavigate();
@@ -78,7 +77,7 @@ export const Step3ResultatsPage: React.FC = () => {
         })),
         metadata: {
           dateAnalyse: new Date().toISOString(),
-          versionAlgorithme: VERSION_ALGO,
+          versionAlgorithme: APP_CONFIG.versionAlgo,
         },
       };
 

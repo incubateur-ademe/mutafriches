@@ -1,5 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import {
+  APP_CONFIG,
   CodeErreurEnrichissement,
   EnrichissementOutputDto,
   MessagesErreurEnrichissement,
@@ -15,7 +16,6 @@ import { RisquesTechnologiquesEnrichissementService } from "./risques-technologi
 import { GeoRisquesEnrichissementService } from "./georisques/georisques-enrichissement.service";
 import { FiabiliteCalculator } from "./shared/fiabilite.calculator";
 import { ZonageOrchestratorService } from "./zonage";
-import packageJson from "./../../../package.json";
 
 /**
  * Service principal d'enrichissement - Orchestrateur
@@ -313,7 +313,7 @@ export class EnrichissementService {
         dureeMs,
         sourceUtilisation,
         integrateur,
-        versionApi: packageJson.version,
+        versionApi: APP_CONFIG.version,
       })
       .catch((error) => {
         // Ne pas bloquer si le log échoue, juste logger l'erreur

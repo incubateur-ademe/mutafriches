@@ -16,7 +16,7 @@ import {
   TrameVerteEtBleue,
   UsageType,
   ZonageReglementaire,
-  VERSION_ALGO,
+  APP_CONFIG,
 } from "@mutafriches/shared-types";
 import { FrichesController } from "./friches.controller";
 import { EnrichissementService } from "../enrichissement/services/enrichissement.service";
@@ -24,7 +24,6 @@ import { OrchestrateurService } from "../evaluation/services/orchestrateur.servi
 import { createMockEnrichissementService } from "../enrichissement/__test-helpers__/enrichissement.mocks";
 import { createMockOrchestrateurService } from "../evaluation/__test-helpers__/evaluation.mocks";
 import { EvaluationBuilder } from "../evaluation/__test-helpers__/evaluation.builder";
-import packageJson from "./../../../../package.json";
 
 describe("FrichesController", () => {
   let controller: FrichesController;
@@ -265,7 +264,7 @@ describe("FrichesController", () => {
         donneesComplementaires: mockEvaluation.donneesComplementaires,
         mutabilite: mockEvaluation.resultats,
         metadata: {
-          versionAlgorithme: VERSION_ALGO,
+          versionAlgorithme: APP_CONFIG.versionAlgo,
           source: "api",
         },
       });
@@ -321,7 +320,7 @@ describe("FrichesController", () => {
           },
           usages: Object.values(UsageType),
         },
-        version: { api: packageJson.version, algorithme: VERSION_ALGO },
+        version: { api: APP_CONFIG.version, algorithme: APP_CONFIG.versionAlgo },
       });
     });
 
@@ -362,8 +361,8 @@ describe("FrichesController", () => {
       const result = controller.getMetadata();
 
       // Assert
-      expect(result.version.api).toBe(packageJson.version);
-      expect(result.version.algorithme).toBe(VERSION_ALGO);
+      expect(result.version.api).toBe(APP_CONFIG.version);
+      expect(result.version.algorithme).toBe(APP_CONFIG.versionAlgo);
     });
   });
 });

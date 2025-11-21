@@ -20,14 +20,13 @@ import {
   ZonageReglementaire,
   OrigineUtilisation,
   SourceUtilisation,
-  VERSION_ALGO,
+  APP_CONFIG,
 } from "@mutafriches/shared-types";
 import { EnrichissementService } from "../enrichissement/services/enrichissement.service";
 import { OrchestrateurService } from "../evaluation/services/orchestrateur.service";
 import { EvaluationSwaggerDto } from "../evaluation/dto/output/evaluation.dto";
 import { MetadataSwaggerDto } from "../evaluation/dto/output/metadata.dto";
 import { Evaluation } from "../evaluation/entities/evaluation.entity";
-import packageJson from "./../../../../package.json";
 
 @ApiTags("friches (deprecated)")
 @Controller("friches")
@@ -97,7 +96,7 @@ export class FrichesController {
         },
         usages: Object.values(UsageType),
       },
-      version: { api: packageJson.version, algorithme: VERSION_ALGO },
+      version: { api: APP_CONFIG.version, algorithme: APP_CONFIG.versionAlgo },
     };
   }
 
