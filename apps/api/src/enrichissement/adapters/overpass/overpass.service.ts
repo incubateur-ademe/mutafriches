@@ -89,9 +89,9 @@ const OVERPASS_CONFIG = {
   /** URL de l'API Overpass (instance principale) */
   BASE_URL: "https://overpass-api.de/api/interpreter",
   /** Timeout par défaut en secondes pour les requêtes */
-  DEFAULT_TIMEOUT_SECONDS: 25,
+  DEFAULT_TIMEOUT_SECONDS: 45,
   /** Timeout HTTP en millisecondes */
-  HTTP_TIMEOUT_MS: 30000,
+  HTTP_TIMEOUT_MS: 50000,
 } as const;
 
 @Injectable()
