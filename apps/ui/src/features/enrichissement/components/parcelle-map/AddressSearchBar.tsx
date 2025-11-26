@@ -33,9 +33,13 @@ export function AddressSearchBar({ onAddressSelected }: AddressSearchBarProps) {
       clearTimeout(debounceTimerRef.current);
     }
 
+    // Pas de recherche si query trop courte ou selection récente
     if (query.length < 3 || justSelected) {
-      setSuggestions([]);
-      setShowSuggestions(false);
+      // Déplacer le reset dans le timer pour éviter l'appel synchrone
+      debounceTimerRef.current = window.setTimeout(() => {
+        setSuggestions([]);
+        setShowSuggestions(false);
+      }, 0);
       return;
     }
 
@@ -90,7 +94,7 @@ export function AddressSearchBar({ onAddressSelected }: AddressSearchBarProps) {
           value={query}
           onChange={(e) => {
             setQuery(e.target.value);
-            setJustSelected(false); // Reset justSelected
+            setJustSelected(false);
           }}
           onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
           autoComplete="off"
