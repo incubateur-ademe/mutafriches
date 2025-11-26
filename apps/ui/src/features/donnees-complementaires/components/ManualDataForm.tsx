@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useMemo } from "react";
 import { FormSection } from "./FormSection";
 import { DEFAULT_FORM_VALUES, ManualFormValues, validateForm, ValidationErrors } from "../config";
 
@@ -23,15 +23,15 @@ export const ManualDataForm: React.FC<ManualDataFormProps> = ({
   });
 
   // État de validation
-  const [errors, setErrors] = useState<ValidationErrors>({});
   const [hasTriedSubmit, setHasTriedSubmit] = useState(false);
 
-  // Validation en temps réel après la première tentative de soumission
-  useEffect(() => {
-    if (hasTriedSubmit) {
-      const { errors: validationErrors } = validateForm(values);
-      setErrors(validationErrors);
+  // Calcul des erreurs via useMemo (état dérivé)
+  const errors: ValidationErrors = useMemo(() => {
+    if (!hasTriedSubmit) {
+      return {};
     }
+    const { errors: validationErrors } = validateForm(values);
+    return validationErrors;
   }, [values, hasTriedSubmit]);
 
   // Handler pour les changements de valeur
@@ -48,7 +48,6 @@ export const ManualDataForm: React.FC<ManualDataFormProps> = ({
     setHasTriedSubmit(true);
 
     const validation = validateForm(values);
-    setErrors(validation.errors);
 
     if (validation.isValid) {
       onSubmit(values);
