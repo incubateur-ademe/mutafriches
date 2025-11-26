@@ -1,14 +1,32 @@
-import { vi } from "vitest";
+import { vi, type Mock } from "vitest";
 
 /**
  * Mocks de services partagés entre tous les domaines
  */
 
+interface MockDb {
+  execute: Mock;
+  select: Mock;
+  insert: Mock;
+  update: Mock;
+  delete: Mock;
+  values: Mock;
+  where: Mock;
+  set: Mock;
+  returning: Mock;
+}
+
+interface MockDatabaseService {
+  db: MockDb;
+  onModuleInit: Mock;
+  onModuleDestroy: Mock;
+}
+
 /**
  * Mock du DatabaseService
  * Utilisé dans pratiquement tous les tests d'intégration
  */
-export function createMockDatabaseService() {
+export function createMockDatabaseService(): MockDatabaseService {
   return {
     db: {
       execute: vi.fn().mockResolvedValue([{ test: 1 }]),
@@ -33,14 +51,12 @@ export function createMockDatabaseService() {
  * @example
  * const mockService = createGenericMock(['method1', 'method2']);
  */
-export function createGenericMock<T extends string[]>(
-  methods: T,
-): Record<T[number], ReturnType<typeof vi.fn>> {
-  const mock: Record<string, ReturnType<typeof vi.fn>> = {};
+export function createGenericMock<T extends string[]>(methods: T): Record<T[number], Mock> {
+  const mock: Record<string, Mock> = {};
 
   for (const method of methods) {
     mock[method] = vi.fn();
   }
 
-  return mock as Record<T[number], ReturnType<typeof vi.fn>>;
+  return mock as Record<T[number], Mock>;
 }

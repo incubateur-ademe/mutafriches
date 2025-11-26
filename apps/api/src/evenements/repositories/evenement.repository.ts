@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
-import { DatabaseService } from "src/shared/database/database.service";
-import { evenements_utilisateur } from "src/shared/database/schemas/evenements.schema";
+import { DatabaseService } from "../../shared/database/database.service";
+import { evenements_utilisateur } from "../../shared/database/schemas/evenements.schema";
 import { EvenementUtilisateur } from "../entities/evenement.entity";
 
 @Injectable()

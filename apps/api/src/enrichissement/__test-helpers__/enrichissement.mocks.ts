@@ -1,13 +1,100 @@
-import { vi } from "vitest";
+import { vi, type Mock } from "vitest";
 
 /**
  * Mocks spécifiques au domaine Enrichissement
  */
 
+interface MockEnrichissementService {
+  enrichir: Mock;
+}
+
+interface MockCadastreEnrichissementService {
+  enrichir: Mock;
+}
+
+interface MockCadastreService {
+  getParcelleInfo: Mock;
+}
+
+interface MockBdnbService {
+  getSurfaceBatie: Mock;
+}
+
+interface MockEnergieEnrichissementService {
+  enrichir: Mock;
+}
+
+interface MockEnedisService {
+  getDistanceRaccordement: Mock;
+}
+
+interface MockTransportEnrichissementService {
+  enrichir: Mock;
+}
+
+interface MockUrbanismeEnrichissementService {
+  enrichir: Mock;
+}
+
+interface MockRisquesNaturelsEnrichissementService {
+  enrichir: Mock;
+}
+
+interface MockRisquesNaturelsCalculator {
+  combiner: Mock;
+  transformRgaToRisque: Mock;
+  transformCavitesToRisque: Mock;
+}
+
+interface MockRgaService {
+  getRga: Mock;
+}
+
+interface MockCavitesService {
+  getCavites: Mock;
+}
+
+interface MockRisquesTechnologiquesEnrichissementService {
+  enrichir: Mock;
+}
+
+interface MockRisquesTechnologiquesCalculator {
+  evaluer: Mock;
+}
+
+interface MockSisService {
+  getSisByLatLon: Mock;
+}
+
+interface MockIcpeService {
+  getIcpeByLatLon: Mock;
+}
+
+interface MockGeoRisquesEnrichissementService {
+  enrichir: Mock;
+}
+
+interface MockGeoRisquesOrchestrator {
+  fetchAll: Mock;
+}
+
+interface MockFiabiliteCalculator {
+  calculate: Mock;
+}
+
+interface MockEnrichissementRepository {
+  save: Mock;
+  findById: Mock;
+}
+
+interface MockZonageOrchestratorService {
+  enrichirZonages: Mock;
+}
+
 /**
  * Mock du EnrichissementService (orchestrateur principal)
  */
-export function createMockEnrichissementService() {
+export function createMockEnrichissementService(): MockEnrichissementService {
   return {
     enrichir: vi.fn(),
   };
@@ -16,7 +103,7 @@ export function createMockEnrichissementService() {
 /**
  * Mock du CadastreEnrichissementService
  */
-export function createMockCadastreEnrichissementService() {
+export function createMockCadastreEnrichissementService(): MockCadastreEnrichissementService {
   return {
     enrichir: vi.fn(),
   };
@@ -25,7 +112,7 @@ export function createMockCadastreEnrichissementService() {
 /**
  * Mock du CadastreService (adapter)
  */
-export function createMockCadastreService() {
+export function createMockCadastreService(): MockCadastreService {
   return {
     getParcelleInfo: vi.fn(),
   };
@@ -34,7 +121,7 @@ export function createMockCadastreService() {
 /**
  * Mock du BdnbService
  */
-export function createMockBdnbService() {
+export function createMockBdnbService(): MockBdnbService {
   return {
     getSurfaceBatie: vi.fn(),
   };
@@ -43,7 +130,7 @@ export function createMockBdnbService() {
 /**
  * Mock du EnergieEnrichissementService
  */
-export function createMockEnergieEnrichissementService() {
+export function createMockEnergieEnrichissementService(): MockEnergieEnrichissementService {
   return {
     enrichir: vi.fn(),
   };
@@ -52,7 +139,7 @@ export function createMockEnergieEnrichissementService() {
 /**
  * Mock du EnedisService
  */
-export function createMockEnedisService() {
+export function createMockEnedisService(): MockEnedisService {
   return {
     getDistanceRaccordement: vi.fn(),
   };
@@ -61,7 +148,7 @@ export function createMockEnedisService() {
 /**
  * Mock du TransportEnrichissementService
  */
-export function createMockTransportEnrichissementService() {
+export function createMockTransportEnrichissementService(): MockTransportEnrichissementService {
   return {
     enrichir: vi.fn(),
   };
@@ -70,7 +157,7 @@ export function createMockTransportEnrichissementService() {
 /**
  * Mock du UrbanismeEnrichissementService
  */
-export function createMockUrbanismeEnrichissementService() {
+export function createMockUrbanismeEnrichissementService(): MockUrbanismeEnrichissementService {
   return {
     enrichir: vi.fn(),
   };
@@ -79,7 +166,7 @@ export function createMockUrbanismeEnrichissementService() {
 /**
  * Mock du RisquesNaturelsEnrichissementService
  */
-export function createMockRisquesNaturelsEnrichissementService() {
+export function createMockRisquesNaturelsEnrichissementService(): MockRisquesNaturelsEnrichissementService {
   return {
     enrichir: vi.fn(),
   };
@@ -88,7 +175,7 @@ export function createMockRisquesNaturelsEnrichissementService() {
 /**
  * Mock du RisquesNaturelsCalculator
  */
-export function createMockRisquesNaturelsCalculator() {
+export function createMockRisquesNaturelsCalculator(): MockRisquesNaturelsCalculator {
   return {
     combiner: vi.fn(),
     transformRgaToRisque: vi.fn(),
@@ -99,7 +186,7 @@ export function createMockRisquesNaturelsCalculator() {
 /**
  * Mock du RgaService
  */
-export function createMockRgaService() {
+export function createMockRgaService(): MockRgaService {
   return {
     getRga: vi.fn(),
   };
@@ -108,7 +195,7 @@ export function createMockRgaService() {
 /**
  * Mock du CavitesService
  */
-export function createMockCavitesService() {
+export function createMockCavitesService(): MockCavitesService {
   return {
     getCavites: vi.fn(),
   };
@@ -117,7 +204,7 @@ export function createMockCavitesService() {
 /**
  * Mock du RisquesTechnologiquesEnrichissementService
  */
-export function createMockRisquesTechnologiquesEnrichissementService() {
+export function createMockRisquesTechnologiquesEnrichissementService(): MockRisquesTechnologiquesEnrichissementService {
   return {
     enrichir: vi.fn(),
   };
@@ -126,7 +213,7 @@ export function createMockRisquesTechnologiquesEnrichissementService() {
 /**
  * Mock du RisquesTechnologiquesCalculator
  */
-export function createMockRisquesTechnologiquesCalculator() {
+export function createMockRisquesTechnologiquesCalculator(): MockRisquesTechnologiquesCalculator {
   return {
     evaluer: vi.fn(),
   };
@@ -135,7 +222,7 @@ export function createMockRisquesTechnologiquesCalculator() {
 /**
  * Mock du SisService
  */
-export function createMockSisService() {
+export function createMockSisService(): MockSisService {
   return {
     getSisByLatLon: vi.fn(),
   };
@@ -144,7 +231,7 @@ export function createMockSisService() {
 /**
  * Mock du IcpeService
  */
-export function createMockIcpeService() {
+export function createMockIcpeService(): MockIcpeService {
   return {
     getIcpeByLatLon: vi.fn(),
   };
@@ -153,7 +240,7 @@ export function createMockIcpeService() {
 /**
  * Mock du GeoRisquesEnrichissementService
  */
-export function createMockGeoRisquesEnrichissementService() {
+export function createMockGeoRisquesEnrichissementService(): MockGeoRisquesEnrichissementService {
   return {
     enrichir: vi.fn(),
   };
@@ -162,7 +249,7 @@ export function createMockGeoRisquesEnrichissementService() {
 /**
  * Mock du GeoRisquesOrchestrator
  */
-export function createMockGeoRisquesOrchestrator() {
+export function createMockGeoRisquesOrchestrator(): MockGeoRisquesOrchestrator {
   return {
     fetchAll: vi.fn(),
   };
@@ -171,7 +258,7 @@ export function createMockGeoRisquesOrchestrator() {
 /**
  * Mock du FiabiliteCalculator
  */
-export function createMockFiabiliteCalculator() {
+export function createMockFiabiliteCalculator(): MockFiabiliteCalculator {
   return {
     calculate: vi.fn(),
   };
@@ -180,7 +267,7 @@ export function createMockFiabiliteCalculator() {
 /**
  * Mock du EnrichissementRepository
  */
-export function createMockEnrichissementRepository() {
+export function createMockEnrichissementRepository(): MockEnrichissementRepository {
   return {
     save: vi.fn(),
     findById: vi.fn(),
@@ -190,7 +277,7 @@ export function createMockEnrichissementRepository() {
 /**
  * Mock du ZonageOrchestratorService
  */
-export function createMockZonageOrchestratorService() {
+export function createMockZonageOrchestratorService(): MockZonageOrchestratorService {
   return {
     enrichirZonages: vi.fn(),
   };
