@@ -301,3 +301,33 @@ Le projet s'appuie sur plusieurs APIs publiques pour enrichir les données :
 - **[ENEDIS](./docs/external-apis/api-enedis.md)** - API Enedis
 - **Transport Data Gouv** - Accessibilité transports (à venir)
 - **Géorisques** - Risques et contraintes (à venir)
+
+## 🔗 Intégration partenaires
+
+### Liens trackés
+
+Pour permettre le suivi des conversions, les partenaires peuvent utiliser des liens avec paramètres UTM :
+
+```
+https://mutafriches.beta.gouv.fr/?source={partenaire}&ref={contexte}
+```
+
+| Paramètre | Description | Exemple |
+|-----------|-------------|---------|
+| `source` | Nom du partenaire | `urbanvitaliz`, `benefriches`, `cartofriches` |
+| `ref` | Point d'entrée / contexte | `page-friches`, `newsletter`, `widget` |
+
+**Exemples :**
+
+- `https://mutafriches.beta.gouv.fr/?source=urbanvitaliz&ref=page-friches`
+- `https://mutafriches.beta.gouv.fr/?source=benefriches&ref=simulateur`
+
+### Intégration iframe
+
+Pour une intégration en iframe avec callback :
+
+```
+https://mutafriches.beta.gouv.fr/?integrator={partenaire}&ref={contexte}&callbackUrl={url_retour}
+```
+
+Les intégrateurs autorisés sont définis dans `IframeContext.constants.ts`.
