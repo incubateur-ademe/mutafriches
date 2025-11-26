@@ -32,6 +32,7 @@ import { BdnbService } from "./adapters/bdnb/bdnb.service";
 import { EnedisService } from "./adapters/enedis/enedis.service";
 import { ServicePublicService } from "./adapters/service-public/service-public.service";
 import { IgnWfsService } from "./adapters/ign-wfs/ign-wfs.service";
+import { OverpassService } from "./adapters/overpass/overpass.service";
 
 // Adapters GeoRisques
 import { GeoRisquesOrchestrator } from "./services/georisques/georisques.orchestrator";
@@ -74,6 +75,7 @@ import { DatagouvLovacService } from "./adapters/datagouv-lovac/datagouv-lovac.s
     RisquesTechnologiquesEnrichissementService,
     ServicePublicService,
     IgnWfsService,
+    OverpassService,
 
     // Calculators
     RisquesNaturelsCalculator,

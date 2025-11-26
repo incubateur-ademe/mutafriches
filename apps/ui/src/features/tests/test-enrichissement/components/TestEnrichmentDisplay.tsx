@@ -37,7 +37,7 @@ export const TestEnrichmentDisplay: React.FC<TestEnrichmentDisplayProps> = ({ da
     {
       id: "transport",
       label: "Transport",
-      visible: hasSource(data.sourcesUtilisees, SourceEnrichissement.TRANSPORT),
+      visible: hasSource(data.sourcesUtilisees, SourceEnrichissement.BDNB),
     },
     {
       id: "georisques",

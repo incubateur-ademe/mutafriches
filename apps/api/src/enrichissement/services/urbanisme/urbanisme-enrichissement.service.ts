@@ -3,33 +3,39 @@ import { SourceEnrichissement } from "@mutafriches/shared-types";
 import { Parcelle } from "../../../evaluation/entities/parcelle.entity";
 import { EnrichmentResult } from "../shared/enrichissement.types";
 import { DatagouvLovacService } from "../../adapters/datagouv-lovac/datagouv-lovac.service";
+import { OverpassService } from "../../adapters/overpass/overpass.service";
 import { LovacCalculator } from "./lovac.calculator";
+
+/**
+ * Rayon de recherche pour les commerces/services (en metres)
+ *
+ * Defini a 500m car :
+ * - C'est la distance de marche standard (5-7 min)
+ * - Correspond au critere Excel "Commerces / services a proximite"
+ */
+const RAYON_RECHERCHE_COMMERCES_M = 500;
 
 /**
  * Service d'enrichissement du sous-domaine Urbanisme
  *
- * Responsabilités :
- * - Récupérer la proximité des commerces/services via Overpass
- * - Récupérer le taux de logements vacants via LOVAC (data.gouv.fr)
- * - Déterminer si le site est en centre-ville
- * - Calculer la distance à l'autoroute
- *
- * TODO: Implémenter les vrais services restants
- * - OverpassService pour commerces/services
- * - Service pour détection centre-ville
- * - Service pour distance autoroute
+ * Responsabilites :
+ * - Recuperer la proximite des commerces/services via Overpass (OSM)
+ * - Recuperer le taux de logements vacants via LOVAC (data.gouv.fr)
  */
 @Injectable()
 export class UrbanismeEnrichissementService {
   private readonly logger = new Logger(UrbanismeEnrichissementService.name);
 
-  constructor(private readonly lovacService: DatagouvLovacService) {}
+  constructor(
+    private readonly lovacService: DatagouvLovacService,
+    private readonly overpassService: OverpassService,
+  ) {}
 
   /**
-   * Enrichit une parcelle avec les données d'urbanisme
+   * Enrichit une parcelle avec les donnees d'urbanisme
    *
-   * @param parcelle - Parcelle à enrichir
-   * @returns Résultat de l'enrichissement
+   * @param parcelle - Parcelle a enrichir
+   * @returns Resultat de l'enrichissement
    */
   async enrichir(parcelle: Parcelle): Promise<EnrichmentResult> {
     const sourcesUtilisees: string[] = [];
@@ -44,7 +50,7 @@ export class UrbanismeEnrichissementService {
       champsManquants,
     );
 
-    // Proximité commerces/services (Overpass)
+    // Proximite commerces/services (Overpass)
     await this.enrichProximiteCommercesServices(
       parcelle,
       sourcesUtilisees,
@@ -61,8 +67,12 @@ export class UrbanismeEnrichissementService {
   }
 
   /**
-   * Enrichit la proximité des commerces et services
-   * TODO: Implémenter le vrai service Overpass
+   * Enrichit la proximite des commerces et services via Overpass (OSM)
+   *
+   * Types de commerces/services recherches :
+   * - Alimentation : supermarche, epicerie, boulangerie, boucherie
+   * - Sante : pharmacie, medecin
+   * - Services publics : poste, banque
    */
   private async enrichProximiteCommercesServices(
     parcelle: Parcelle,
@@ -80,21 +90,36 @@ export class UrbanismeEnrichissementService {
     }
 
     try {
-      // TODO: Remplacer par le vrai service Overpass
-      // const result = await this.overpassService.hasCommercesServices(
-      //   parcelle.coordonnees.latitude,
-      //   parcelle.coordonnees.longitude,
-      //   rayon: 500
-      // );
-
-      // Données temporaires - présence aléatoire de commerces/services
-      const hasCommercesServices = Math.random() > 0.5;
-      parcelle.proximiteCommercesServices = hasCommercesServices;
-      sourcesUtilisees.push(SourceEnrichissement.OVERPASS_TEMPORAIRE);
-
-      this.logger.debug(
-        `Commerces/services (TEMPORAIRE): ${hasCommercesServices} pour ${parcelle.identifiantParcelle}`,
+      const overpassResult = await this.overpassService.hasCommercesServices(
+        parcelle.coordonnees.latitude,
+        parcelle.coordonnees.longitude,
+        RAYON_RECHERCHE_COMMERCES_M,
       );
+
+      if (!overpassResult.success || !overpassResult.data) {
+        throw new Error(overpassResult.error || "Erreur Overpass");
+      }
+
+      const result = overpassResult.data;
+      parcelle.proximiteCommercesServices = result.presenceCommercesServices;
+      sourcesUtilisees.push(SourceEnrichissement.OVERPASS);
+
+      if (result.presenceCommercesServices) {
+        this.logger.log(
+          `Commerces/services: OUI (${result.nombreCommercesServices} trouves, ` +
+            `plus proche a ${result.distancePlusProche}m) ` +
+            `pour ${parcelle.identifiantParcelle}`,
+        );
+
+        if (result.categoriesTrouvees && result.categoriesTrouvees.length > 0) {
+          this.logger.debug(`Categories trouvees: ${result.categoriesTrouvees.join(", ")}`);
+        }
+      } else {
+        this.logger.log(
+          `Commerces/services: NON (aucun dans un rayon de ${RAYON_RECHERCHE_COMMERCES_M}m) ` +
+            `pour ${parcelle.identifiantParcelle}`,
+        );
+      }
     } catch (error) {
       this.logger.error("Erreur lors de la recuperation Overpass:", error);
       sourcesEchouees.push(SourceEnrichissement.OVERPASS);
@@ -111,7 +136,7 @@ export class UrbanismeEnrichissementService {
     sourcesEchouees: string[],
     champsManquants: string[],
   ): Promise<void> {
-    // Vérifier qu'on a soit le code INSEE, soit le nom de la commune
+    // Verifier qu'on a soit le code INSEE, soit le nom de la commune
     if (!parcelle.codeInsee && !parcelle.commune) {
       this.logger.warn(
         `Pas de code INSEE ni de commune pour LOVAC - parcelle ${parcelle.identifiantParcelle}`,
@@ -122,7 +147,7 @@ export class UrbanismeEnrichissementService {
     }
 
     try {
-      // Appel à l'API LOVAC via data.gouv.fr
+      // Appel a l'API LOVAC via data.gouv.fr
       const lovacData = await this.lovacService.getLovacByCommune({
         codeInsee: parcelle.codeInsee,
         nomCommune: !parcelle.codeInsee ? parcelle.commune : undefined,
@@ -137,7 +162,7 @@ export class UrbanismeEnrichissementService {
         return;
       }
 
-      // Vérifier si les données sont exploitables avec le calculator
+      // Verifier si les donnees sont exploitables avec le calculator
       if (
         !LovacCalculator.sontDonneesExploitables(
           lovacData.nombreLogementsVacants,
@@ -167,7 +192,7 @@ export class UrbanismeEnrichissementService {
             `pour ${lovacData.commune} (millesime ${lovacData.millesime})`,
         );
       } else {
-        // Cas où le calcul a échoué (normalement géré par sontDonneesExploitables)
+        // Cas ou le calcul a echoue (normalement gere par sontDonneesExploitables)
         sourcesEchouees.push(SourceEnrichissement.LOVAC);
         champsManquants.push("tauxLogementsVacants");
       }

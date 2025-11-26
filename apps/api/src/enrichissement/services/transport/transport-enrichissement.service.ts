@@ -4,17 +4,21 @@ import { Parcelle } from "../../../evaluation/entities/parcelle.entity";
 import { EnrichmentResult } from "../shared/enrichissement.types";
 import { ServicePublicService } from "../../adapters/service-public/service-public.service";
 import { IgnWfsService } from "../../adapters/ign-wfs/ign-wfs.service";
+import { OverpassService } from "../../adapters/overpass/overpass.service";
 import { calculateDistance } from "../../adapters/shared/distance.utils";
 import { TransportCalculator } from "./transport-enrichissement.calculator";
-import { RAYON_RECHERCHE_AUTOROUTE_M } from "./transport-enrichissement.constants";
+import {
+  RAYON_RECHERCHE_AUTOROUTE_M,
+  RAYON_RECHERCHE_TRANSPORT_M,
+} from "./transport-enrichissement.constants";
 
 /**
  * Service d'enrichissement du sous-domaine Transport
  *
  * Responsabilités :
- * - Déterminer si la parcelle est en centre-ville (distance à la mairie)
- * - Calculer la distance à la voie de grande circulation la plus proche
- * - Récupérer la distance au transport en commun le plus proche (TODO)
+ * - Determiner si la parcelle est en centre-ville (distance a la mairie)
+ * - Calculer la distance a la voie de grande circulation la plus proche
+ * - Recuperer la distance au transport en commun le plus proche (Overpass)
  */
 @Injectable()
 export class TransportEnrichissementService {
@@ -23,6 +27,7 @@ export class TransportEnrichissementService {
   constructor(
     private readonly servicePublicService: ServicePublicService,
     private readonly ignWfsService: IgnWfsService,
+    private readonly overpassService: OverpassService,
   ) {}
 
   async enrichir(parcelle: Parcelle): Promise<EnrichmentResult> {
@@ -30,13 +35,17 @@ export class TransportEnrichissementService {
     const sourcesEchouees: string[] = [];
     const champsManquants: string[] = [];
 
-    // Vérifications préliminaires
+    // Verifications preliminaires
     if (!parcelle.coordonnees) {
       this.logger.warn(
         `Pas de coordonnees disponibles pour la parcelle ${parcelle.identifiantParcelle}`,
       );
-      sourcesEchouees.push(SourceEnrichissement.SERVICE_PUBLIC, SourceEnrichissement.IGN_WFS);
-      champsManquants.push("siteEnCentreVille", "distanceAutoroute");
+      sourcesEchouees.push(
+        SourceEnrichissement.SERVICE_PUBLIC,
+        SourceEnrichissement.IGN_WFS,
+        SourceEnrichissement.OVERPASS,
+      );
+      champsManquants.push("siteEnCentreVille", "distanceAutoroute", "distanceTransportCommun");
       return { success: false, sourcesUtilisees, sourcesEchouees, champsManquants };
     }
 
@@ -44,7 +53,7 @@ export class TransportEnrichissementService {
       this.logger.warn(`Code INSEE manquant pour la parcelle ${parcelle.identifiantParcelle}`);
       sourcesEchouees.push(SourceEnrichissement.SERVICE_PUBLIC);
       champsManquants.push("siteEnCentreVille");
-      // IGN WFS peut quand même fonctionner sans code INSEE
+      // IGN WFS et Overpass peuvent quand meme fonctionner sans code INSEE
     }
 
     // Enrichissements
@@ -71,7 +80,7 @@ export class TransportEnrichissementService {
   }
 
   /**
-   * Détermine si la parcelle est en centre-ville via l'API Service Public
+   * Determine si la parcelle est en centre-ville via l'API Service Public
    */
   private async enrichirCentreVille(
     parcelle: Parcelle,
@@ -81,7 +90,7 @@ export class TransportEnrichissementService {
   ): Promise<void> {
     try {
       if (!parcelle.coordonnees || !parcelle.codeInsee) {
-        throw new Error("Coordonnées ou code INSEE non disponibles");
+        throw new Error("Coordonnees ou code INSEE non disponibles");
       }
 
       this.logger.debug(
@@ -92,7 +101,7 @@ export class TransportEnrichissementService {
       const mairieResult = await this.servicePublicService.getMairieCoordonnees(parcelle.codeInsee);
 
       if (!mairieResult.success || !mairieResult.data) {
-        throw new Error(mairieResult.error || "Mairie non trouvée");
+        throw new Error(mairieResult.error || "Mairie non trouvee");
       }
 
       const coordonneesMairie = mairieResult.data.coordonnees;
@@ -109,7 +118,7 @@ export class TransportEnrichissementService {
         coordonneesMairie.longitude,
       );
 
-      this.logger.debug(`Distance calculée: ${Math.round(distanceMetres)}m`);
+      this.logger.debug(`Distance calculee: ${Math.round(distanceMetres)}m`);
 
       parcelle.siteEnCentreVille = TransportCalculator.isCentreVille(distanceMetres);
       sourcesUtilisees.push(SourceEnrichissement.SERVICE_PUBLIC);
@@ -128,7 +137,7 @@ export class TransportEnrichissementService {
   }
 
   /**
-   * Calcule la distance à la voie de grande circulation la plus proche via IGN WFS
+   * Calcule la distance a la voie de grande circulation la plus proche via IGN WFS
    */
   private async enrichirDistanceAutoroute(
     parcelle: Parcelle,
@@ -138,7 +147,7 @@ export class TransportEnrichissementService {
   ): Promise<void> {
     try {
       if (!parcelle.coordonnees) {
-        throw new Error("Coordonnées non disponibles");
+        throw new Error("Coordonnees non disponibles");
       }
 
       this.logger.debug(`Recherche voie grande circulation pour ${parcelle.identifiantParcelle}`);
@@ -150,12 +159,12 @@ export class TransportEnrichissementService {
       );
 
       if (!wfsResult.success || !wfsResult.data) {
-        throw new Error(wfsResult.error || "Aucune voie trouvée");
+        throw new Error(wfsResult.error || "Aucune voie trouvee");
       }
 
       const distanceMetres = wfsResult.data.distanceMetres;
 
-      // Stocker la distance brute et la catégorie
+      // Stocker la distance brute et la categorie
       parcelle.distanceAutoroute = Math.round(distanceMetres);
 
       sourcesUtilisees.push(SourceEnrichissement.IGN_WFS);
@@ -170,12 +179,17 @@ export class TransportEnrichissementService {
       sourcesEchouees.push(SourceEnrichissement.IGN_WFS);
       champsManquants.push("distanceAutoroute");
       parcelle.distanceAutoroute = undefined;
-      // Pas de valeur par défaut pour distanceAutoroute
     }
   }
 
   /**
-   * Récupère la distance au transport en commun (TODO - temporaire)
+   * Recupere la distance au transport en commun le plus proche via Overpass (OSM)
+   *
+   * Types de transports recherches :
+   * - Gares ferroviaires (SNCF, TER, TGV)
+   * - Stations de metro
+   * - Arrets de tramway
+   * - Arrets de bus et gares routieres
    */
   private async enrichirTransportCommun(
     parcelle: Parcelle,
@@ -184,17 +198,47 @@ export class TransportEnrichissementService {
     champsManquants: string[],
   ): Promise<void> {
     try {
-      const distanceTemporaire = Math.floor(Math.random() * 1900) + 100;
-      parcelle.distanceTransportCommun = distanceTemporaire;
-      sourcesUtilisees.push(SourceEnrichissement.TRANSPORT);
+      if (!parcelle.coordonnees) {
+        throw new Error("Coordonnees non disponibles");
+      }
 
-      this.logger.debug(
-        `Distance transport (TEMPORAIRE): ${distanceTemporaire}m pour ${parcelle.identifiantParcelle}`,
+      this.logger.debug(`Recherche transport en commun pour ${parcelle.identifiantParcelle}`);
+
+      const overpassResult = await this.overpassService.getDistanceTransportCommun(
+        parcelle.coordonnees.latitude,
+        parcelle.coordonnees.longitude,
+        RAYON_RECHERCHE_TRANSPORT_M,
+      );
+
+      if (!overpassResult.success || !overpassResult.data) {
+        throw new Error(overpassResult.error || "Erreur Overpass");
+      }
+
+      const result = overpassResult.data;
+
+      // -1 signifie aucun transport trouve dans le rayon
+      if (result.distanceMetres === -1) {
+        // On stocke la valeur max du rayon pour indiquer "au-dela du rayon"
+        parcelle.distanceTransportCommun = RAYON_RECHERCHE_TRANSPORT_M;
+        this.logger.debug(
+          `Aucun transport dans un rayon de ${RAYON_RECHERCHE_TRANSPORT_M}m pour ${parcelle.identifiantParcelle}`,
+        );
+      } else {
+        parcelle.distanceTransportCommun = result.distanceMetres;
+      }
+
+      sourcesUtilisees.push(SourceEnrichissement.OVERPASS);
+
+      this.logger.log(
+        `Distance transport: ${parcelle.distanceTransportCommun}m ` +
+          `(${result.typeTransport}${result.nomArret ? ` - ${result.nomArret}` : ""}) ` +
+          `pour ${parcelle.identifiantParcelle}`,
       );
     } catch (error) {
       this.logger.error("Erreur lors de la recuperation transport:", error);
-      sourcesEchouees.push(SourceEnrichissement.TRANSPORT);
+      sourcesEchouees.push(SourceEnrichissement.OVERPASS);
       champsManquants.push("distanceTransportCommun");
+      parcelle.distanceTransportCommun = undefined;
     }
   }
 }
