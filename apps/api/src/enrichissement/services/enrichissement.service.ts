@@ -164,10 +164,19 @@ export class EnrichissementService {
       }
 
       // 9. CALCULER LA FIABILITÉ
+      const sourcesUniques = [...new Set(sourcesUtilisees)];
+      const champsManquantsUniques = [...new Set(champsManquants)];
+
+      this.logger.debug(`Sources uniques (${sourcesUniques.length}): ${sourcesUniques.join(", ")}`);
+      this.logger.debug(
+        `Champs manquants uniques (${champsManquantsUniques.length}): ${champsManquantsUniques.join(", ")}`,
+      );
+
       const fiabilite = this.fiabiliteCalculator.calculate(
         sourcesUtilisees.length,
         champsManquants.length,
       );
+      this.logger.debug(`Fiabilite calculee: ${fiabilite}/10`);
 
       // 10. DÉTERMINER LE STATUT
       if (sourcesEchouees.length === 0) {
@@ -207,8 +216,8 @@ export class EnrichissementService {
         risquesGeorisques,
 
         // Métadonnées d'enrichissement
-        sourcesUtilisees,
-        champsManquants,
+        sourcesUtilisees: sourcesUniques,
+        champsManquants: champsManquantsUniques,
         fiabilite,
       } as EnrichissementOutputDto;
 
