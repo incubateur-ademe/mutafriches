@@ -132,14 +132,14 @@ export const EnrichmentDisplayZone: React.FC<EnrichmentDisplayZoneProps> = ({
             <EnrichmentInfoField
               id="distance-transport-commun"
               label="Distance au transport en commun"
-              value={data.distanceTrain}
-              tooltip="Pas de récupération pour l'instant"
+              value={data.distanceTransportsEnCommun}
+              tooltip="Récupéré depuis l'API Overpass d'OpenStreetMap : https://dev.overpass-api.de/overpass-doc/fr"
             />
             <EnrichmentInfoField
               id="proximite-commerces-services"
               label="Proximité des commerces et services"
               value={data.proximiteCommerces}
-              tooltip="Pas de récupération pour l'instant"
+              tooltip="Récupéré depuis l'API Overpass d'OpenStreetMap : https://dev.overpass-api.de/overpass-doc/fr"
             />
             <EnrichmentInfoField
               id="distance-raccordement-electrique"

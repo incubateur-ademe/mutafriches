@@ -51,11 +51,22 @@ export const transformEnrichmentToUiData = (
         ? `${enrichmentData.tauxLogementsVacants.toString()} %`
         : nonAccessibleVersion,
 
+    // Proximité commerces
+    proximiteCommerces:
+      enrichmentData.proximiteCommercesServices !== undefined
+        ? enrichmentData.proximiteCommercesServices
+          ? "Oui"
+          : "Non"
+        : nonAccessibleVersion,
+
+    // Distance transports en commun formatée
+    distanceTransportsEnCommun:
+      enrichmentData.distanceTransportCommun !== undefined
+        ? formatDistance(enrichmentData.distanceTransportCommun)
+        : nonAccessibleVersion,
+
     // Champs non disponibles dans l'enrichissement actuel
     typeProprietaire: nonAccessibleVersion,
-    distanceTrain: nonAccessibleVersion,
-    proximiteCommerces: nonAccessibleVersion,
-
     tvb: nonAccessibleVersion,
     potentielEcologique: nonAccessibleVersion,
   };
