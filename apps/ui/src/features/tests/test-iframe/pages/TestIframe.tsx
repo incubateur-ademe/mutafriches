@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Layout } from "../../../../shared/components/layout/Layout";
 import { ConfigPanel, IframeViewer, MessageConsole } from "../components";
@@ -11,35 +11,27 @@ interface MessageLog {
 }
 
 export function TestIframe() {
-  // États pour la configuration
   const [integrator, setIntegrator] = useState<string>("mutafriches");
   const [callbackUrl, setCallbackUrl] = useState<string>(
     "https://mutafriches.beta.gouv.fr/test/callback",
   );
   const [callbackLabel, setCallbackLabel] = useState<string>("Aller vers la page de callback");
-  const [iframeUrl, setIframeUrl] = useState<string>("");
   const [showIframe, setShowIframe] = useState<boolean>(false);
 
-  // États pour les messages
   const [messages, setMessages] = useState<MessageLog[]>([]);
   const [isListening, setIsListening] = useState<boolean>(false);
 
-  // Référence pour l'iframe
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
-  // Mettre à jour l'URL quand les paramètres changent
-  useEffect(() => {
-    const buildIframeUrl = () => {
-      const baseUrl = window.location.origin;
-      const params = new URLSearchParams({
-        integrator,
-        callbackUrl,
-        callbackLabel,
-      });
-      return `${baseUrl}?${params.toString()}`;
-    };
-
-    setIframeUrl(buildIframeUrl());
+  // Calcul de l'URL via useMemo (état dérivé)
+  const iframeUrl = useMemo(() => {
+    const baseUrl = window.location.origin;
+    const params = new URLSearchParams({
+      integrator,
+      callbackUrl,
+      callbackLabel,
+    });
+    return `${baseUrl}?${params.toString()}`;
   }, [integrator, callbackUrl, callbackLabel]);
 
   // Écouter les messages de l'iframe
