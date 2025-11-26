@@ -35,7 +35,6 @@ export function AddressSearchBar({ onAddressSelected }: AddressSearchBarProps) {
 
     // Pas de recherche si query trop courte ou selection récente
     if (query.length < 3 || justSelected) {
-      // Déplacer le reset dans le timer pour éviter l'appel synchrone
       debounceTimerRef.current = window.setTimeout(() => {
         setSuggestions([]);
         setShowSuggestions(false);
