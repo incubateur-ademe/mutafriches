@@ -16,23 +16,19 @@ describe("CalculService - Validation des fixtures", () => {
     calculService = new CalculService();
   });
 
-  describe("Validation individuelle des test cases", () => {
-    it.each(testCases)(
-      "$id - écart < 1.5% pour tous les usages",
-      async (testCase) => {
-        // Exécuter le test
-        const validation = await executeTestCase(calculService, testCase);
+  describe("Validation individuelle des test cases", { timeout: 10000 }, () => {
+    it.each(testCases)("$id - écart < 1.5% pour tous les usages", async (testCase) => {
+      // Exécuter le test
+      const validation = await executeTestCase(calculService, testCase);
 
-        // Vérifier qu'il n'y a pas de problèmes
-        if (validation.problems.length > 0) {
-          console.error(`\nProblèmes détectés pour ${testCase.id}:`);
-          validation.problems.forEach((problem) => console.error(`  - ${problem}`));
-        }
+      // Vérifier qu'il n'y a pas de problèmes
+      if (validation.problems.length > 0) {
+        console.error(`\nProblèmes détectés pour ${testCase.id}:`);
+        validation.problems.forEach((problem) => console.error(`  - ${problem}`));
+      }
 
-        expect(validation.problems).toHaveLength(0);
-      },
-      { timeout: 10000 },
-    );
+      expect(validation.problems).toHaveLength(0);
+    });
   });
 
   describe("Analyse globale", () => {
