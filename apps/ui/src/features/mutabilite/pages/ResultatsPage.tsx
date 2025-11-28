@@ -41,6 +41,9 @@ export const Step3ResultatsPage: React.FC = () => {
   // Modal export
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
 
+  // Modal nouvelle analyse
+  const [isNewAnalysisModalOpen, setIsNewAnalysisModalOpen] = useState(false);
+
   // Un seul ref pour tracker si on a déjà initialisé
   const hasInitializedRef = React.useRef(false);
 
@@ -185,14 +188,14 @@ export const Step3ResultatsPage: React.FC = () => {
 
   // Handler pour nouvelle analyse
   const handleNewAnalysis = () => {
-    if (
-      confirm(
-        "Voulez-vous vraiment démarrer une nouvelle analyse ? Les données actuelles seront perdues.",
-      )
-    ) {
-      resetForm();
-      navigate(ROUTES.STEP1);
-    }
+    setIsNewAnalysisModalOpen(true);
+  };
+
+  // Handler pour confirmer nouvelle analyse
+  const handleConfirmNewAnalysis = () => {
+    setIsNewAnalysisModalOpen(false);
+    resetForm();
+    navigate(ROUTES.STEP1);
   };
 
   // Handler pour modifier les données
@@ -403,6 +406,31 @@ export const Step3ResultatsPage: React.FC = () => {
           Vous pourrez exporter vos résultats d'analyse en format PDF pour les partager ou les
           conserver.
         </p>
+      </ModalInfo>
+
+      {/* Modal de confirmation nouvelle analyse */}
+      <ModalInfo
+        id="modal-new-analysis"
+        title="Nouvelle analyse"
+        isOpen={isNewAnalysisModalOpen}
+        onClose={() => setIsNewAnalysisModalOpen(false)}
+        icon="fr-icon-refresh-line"
+        actions={
+          <>
+            <button
+              className="fr-btn fr-btn--secondary"
+              onClick={() => setIsNewAnalysisModalOpen(false)}
+            >
+              Annuler
+            </button>
+            <button className="fr-btn" onClick={handleConfirmNewAnalysis}>
+              Oui, nouvelle analyse
+            </button>
+          </>
+        }
+      >
+        <p>Voulez-vous vraiment démarrer une nouvelle analyse ?</p>
+        <p className="fr-text--sm">Les données actuelles seront perdues.</p>
       </ModalInfo>
     </Layout>
   );

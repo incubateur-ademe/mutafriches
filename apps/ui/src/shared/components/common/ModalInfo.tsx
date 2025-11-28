@@ -8,6 +8,7 @@ interface ModalInfoProps {
   onClose: () => void;
   icon?: string;
   size?: "sm" | "md" | "lg";
+  actions?: React.ReactNode;
 }
 
 export const ModalInfo: React.FC<ModalInfoProps> = ({
@@ -18,6 +19,7 @@ export const ModalInfo: React.FC<ModalInfoProps> = ({
   onClose,
   icon = "fr-icon-info-line",
   size = "md",
+  actions,
 }) => {
   const dialogRef = useRef<HTMLDialogElement>(null);
 
@@ -69,33 +71,38 @@ export const ModalInfo: React.FC<ModalInfoProps> = ({
   }, [onClose]);
 
   return (
-    <>
-      <dialog ref={dialogRef} id={id} className="fr-modal" aria-labelledby={`${id}-title`}>
-        <div className="fr-container fr-container--fluid fr-container-md">
-          <div className="fr-grid-row fr-grid-row--center">
-            <div className={getColumnClasses()}>
-              <div className="fr-modal__body">
-                <div className="fr-modal__header">
-                  <button
-                    aria-controls={id}
-                    title="Fermer"
-                    type="button"
-                    className="fr-btn--close fr-btn"
-                  >
-                    Fermer
-                  </button>
-                </div>
-                <div className="fr-modal__content">
-                  <h2 id={`${id}-title`} className="fr-modal__title">
-                    <span className={`${icon} fr-icon--lg`} aria-hidden="true"></span> {title}
-                  </h2>
-                  {children}
-                </div>
+    <dialog ref={dialogRef} id={id} className="fr-modal" aria-labelledby={`${id}-title`}>
+      <div className="fr-container fr-container--fluid fr-container-md">
+        <div className="fr-grid-row fr-grid-row--center">
+          <div className={getColumnClasses()}>
+            <div className="fr-modal__body">
+              <div className="fr-modal__header">
+                <button
+                  aria-controls={id}
+                  title="Fermer"
+                  type="button"
+                  className="fr-btn--close fr-btn"
+                >
+                  Fermer
+                </button>
               </div>
+              <div className="fr-modal__content">
+                <h2 id={`${id}-title`} className="fr-modal__title">
+                  <span className={`${icon} fr-icon--lg`} aria-hidden="true"></span> {title}
+                </h2>
+                {children}
+              </div>
+              {actions && (
+                <div className="fr-modal__footer">
+                  <div className="fr-btns-group fr-btns-group--right fr-btns-group--inline-lg">
+                    {actions}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
-      </dialog>
-    </>
+      </div>
+    </dialog>
   );
 };
