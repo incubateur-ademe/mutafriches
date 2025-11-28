@@ -7,6 +7,7 @@ export const ROUTES = {
   STEP2: "/donnees-complementaires",
   STEP3: "/resultats",
   DEBUG: "/debug",
+  API: "/api",
   TESTS: "/tests",
   TEST_CARTE_PARCELLE: "/test/carte-parcelle",
   TEST_ENRICHISSEMENT: "/test/enrichissement-parcelle",
