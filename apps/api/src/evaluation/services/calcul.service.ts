@@ -11,9 +11,8 @@ import {
 } from "@mutafriches/shared-types";
 import { Parcelle } from "../entities/parcelle.entity";
 import { MATRICE_SCORING, POIDS_CRITERES } from "./algorithme/algorithme.config";
-import { NIVEAUX_FIABILITE } from "@mutafriches/shared-types";
 import { ScoreParUsage } from "./algorithme/algorithme.types";
-import { NOMBRE_CRITERES_UTILISES } from "./algorithme/algorithme.constants";
+import { FiabiliteCalculator } from "./algorithme/fiabilite.calculator";
 
 // Structure pour les calculs intermédiaires
 interface CalculIntermediaire {
@@ -31,6 +30,8 @@ export interface CalculOptions {
 
 @Injectable()
 export class CalculService {
+  constructor(private readonly fiabiliteCalculator: FiabiliteCalculator) {}
+
   /**
    * Calcule la mutabilité d'une parcelle pour différents types d'usage
    */
@@ -340,29 +341,7 @@ export class CalculService {
    */
   protected calculerFiabilite(parcelle: Parcelle): Fiabilite {
     const criteres = this.extraireCriteres(parcelle);
-
-    // Compter les critères non null/undefined
-    const criteresRenseignes = Object.entries(criteres).filter(
-      ([, valeur]) => valeur !== null && valeur !== undefined && valeur !== "ne-sait-pas",
-    ).length;
-
-    // Calculer le pourcentage sur le nombre de critères mappés
-    const pourcentage = (criteresRenseignes / NOMBRE_CRITERES_UTILISES) * 100;
-
-    // Note sur 10 arrondie à 0.5 près
-    const note = Math.round((pourcentage / 10) * 2) / 2;
-
-    // Déterminer le niveau de fiabilité
-    const niveau = NIVEAUX_FIABILITE.find((n) => note >= n.seuilMin);
-
-    return {
-      note,
-      text: niveau?.text || NIVEAUX_FIABILITE[NIVEAUX_FIABILITE.length - 1].text,
-      description:
-        niveau?.description || NIVEAUX_FIABILITE[NIVEAUX_FIABILITE.length - 1].description,
-      criteresRenseignes,
-      criteresTotal: NOMBRE_CRITERES_UTILISES,
-    };
+    return this.fiabiliteCalculator.calculer(criteres);
   }
 
   /**
