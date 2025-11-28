@@ -23,24 +23,23 @@ describe("FiabiliteCalculator", () => {
 
       expect(result.note).toBe(0);
       expect(result.criteresRenseignes).toBe(0);
+      expect(result.poidsRenseignes).toBe(0);
+      expect(result.poidsTotal).toBe(poidsTotal);
     });
 
     it("devrait calculer la note proportionnellement aux poids", () => {
-      // surfaceSite a un poids de 2
       const criteres = {
-        surfaceSite: 10000,
+        surfaceSite: 10000, // poids 2
       };
 
       const result = calculator.calculer(criteres);
 
-      // poids renseignes = 2, poids total = 26
-      // pourcentage = (2/26) * 100 = 7.69%
-      // note = 7.69 / 10 = 0.77 -> arrondi a 0.5 pres = 1
       const expectedPourcentage = (2 / poidsTotal) * 100;
       const expectedNote = Math.round((expectedPourcentage / 10) * 2) / 2;
 
       expect(result.note).toBe(expectedNote);
       expect(result.criteresRenseignes).toBe(1);
+      expect(result.poidsRenseignes).toBe(2);
     });
 
     it("devrait retourner 10 si tous les criteres sont renseignes", () => {
@@ -53,6 +52,7 @@ describe("FiabiliteCalculator", () => {
 
       expect(result.note).toBe(10);
       expect(result.criteresRenseignes).toBe(Object.keys(POIDS_CRITERES).length);
+      expect(result.poidsRenseignes).toBe(poidsTotal);
     });
 
     it("devrait ignorer les valeurs null, undefined et ne-sait-pas", () => {
@@ -66,12 +66,12 @@ describe("FiabiliteCalculator", () => {
 
       const result = calculator.calculer(criteres);
 
-      // Seuls surfaceSite (2) et distanceAutoroute (0.5) comptent
       const expectedPourcentage = (2.5 / poidsTotal) * 100;
       const expectedNote = Math.round((expectedPourcentage / 10) * 2) / 2;
 
       expect(result.note).toBe(expectedNote);
       expect(result.criteresRenseignes).toBe(2);
+      expect(result.poidsRenseignes).toBe(2.5);
     });
 
     it("devrait favoriser les criteres a poids eleve", () => {
@@ -92,21 +92,12 @@ describe("FiabiliteCalculator", () => {
       const resultEleves = calculator.calculer(criteresPoidsEleves);
       const resultFaibles = calculator.calculer(criteresPoidsFaibles);
 
-      // 2 criteres de poids total 4 > 4 criteres de poids total 3
       expect(resultEleves.note).toBeGreaterThan(resultFaibles.note);
+      expect(resultEleves.poidsRenseignes).toBe(4);
+      expect(resultFaibles.poidsRenseignes).toBe(3);
     });
 
     it("devrait arrondir la note a 0.5 pres", () => {
-      // On va tester plusieurs cas d'arrondi
-      // Note brute 7.3 -> 7.5
-      // Note brute 7.7 -> 8
-      // Note brute 7.25 -> 7.5
-      // Note brute 7.24 -> 7
-
-      const calculator = new FiabiliteCalculator();
-
-      // Test via des criteres specifiques
-      // Pour avoir une note precise, on calcule a rebours
       const criteres = {
         surfaceSite: 10000, // 2
         surfaceBati: 5000, // 2
@@ -115,16 +106,13 @@ describe("FiabiliteCalculator", () => {
         presenceRisquesNaturels: "faible", // 2
         zonageReglementaire: "U", // 2
       };
-      // Total = 12, pourcentage = 12/26 * 100 = 46.15%, note = 4.615 -> 4.5
 
       const result = calculator.calculer(criteres);
 
-      // Verifier que c'est un multiple de 0.5
       expect(result.note % 0.5).toBe(0);
     });
 
     it("devrait retourner le bon niveau de fiabilite selon la note", () => {
-      // Note >= 8 -> Excellente
       const criteresExcellent: Record<string, unknown> = {};
       Object.keys(POIDS_CRITERES).forEach((key) => {
         criteresExcellent[key] = "valeur";
@@ -134,7 +122,6 @@ describe("FiabiliteCalculator", () => {
       expect(resultExcellent.text).toBeDefined();
       expect(resultExcellent.description).toBeDefined();
 
-      // Note faible
       const criteresFaible = {
         surfaceSite: 10000,
       };
@@ -148,6 +135,70 @@ describe("FiabiliteCalculator", () => {
       const result = calculator.calculer({});
 
       expect(result.criteresTotal).toBe(Object.keys(POIDS_CRITERES).length);
+    });
+  });
+
+  describe("calculer avec detail", () => {
+    it("devrait inclure le detail des criteres si demande", () => {
+      const criteres = {
+        surfaceSite: 10000,
+        surfaceBati: null,
+      };
+
+      const result = calculator.calculer(criteres, { inclureDetail: true });
+
+      expect(result.detailCriteres).toBeDefined();
+      expect(result.detailCriteres).toBeInstanceOf(Array);
+      expect(result.detailCriteres!.length).toBe(Object.keys(POIDS_CRITERES).length);
+
+      const surfaceSiteDetail = result.detailCriteres!.find((d) => d.critere === "surfaceSite");
+      expect(surfaceSiteDetail).toBeDefined();
+      expect(surfaceSiteDetail!.poids).toBe(2);
+      expect(surfaceSiteDetail!.renseigne).toBe(true);
+
+      const surfaceBatiDetail = result.detailCriteres!.find((d) => d.critere === "surfaceBati");
+      expect(surfaceBatiDetail).toBeDefined();
+      expect(surfaceBatiDetail!.poids).toBe(2);
+      expect(surfaceBatiDetail!.renseigne).toBe(false);
+    });
+
+    it("ne devrait pas inclure le detail si explicitement desactive", () => {
+      const criteres = { surfaceSite: 10000 };
+
+      const result = calculator.calculer(criteres, { inclureDetail: false });
+
+      expect(result.detailCriteres).toBeUndefined();
+    });
+
+    it("devrait inclure le detail par defaut", () => {
+      const criteres = { surfaceSite: 10000 };
+
+      const result = calculator.calculer(criteres);
+
+      expect(result.detailCriteres).toBeDefined();
+      expect(result.detailCriteres).toBeInstanceOf(Array);
+    });
+
+    it("devrait lister tous les criteres de POIDS_CRITERES dans le detail", () => {
+      const criteres = {
+        surfaceSite: 10000,
+      };
+
+      const result = calculator.calculer(criteres, { inclureDetail: true });
+
+      const criteresInDetail = result.detailCriteres!.map((d) => d.critere);
+      const criteresInConfig = Object.keys(POIDS_CRITERES);
+
+      expect(criteresInDetail.sort()).toEqual(criteresInConfig.sort());
+    });
+
+    it("devrait avoir les bons poids dans le detail", () => {
+      const result = calculator.calculer({}, { inclureDetail: true });
+
+      result.detailCriteres!.forEach((detail) => {
+        const expectedPoids = POIDS_CRITERES[detail.critere as keyof typeof POIDS_CRITERES];
+        expect(detail.poids).toBe(expectedPoids);
+      });
     });
   });
 

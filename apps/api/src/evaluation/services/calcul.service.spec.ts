@@ -97,9 +97,11 @@ describe("CalculService", () => {
       expect(result).toBeDefined();
       expect(result.resultats.length).toBe(7);
 
-      // La fiabilite devrait etre faible (basee sur les poids)
-      expect(result.fiabilite.note).toBeLessThanOrEqual(1);
+      // La fiabilite devrait etre a 0 (aucun critere renseigne)
+      expect(result.fiabilite.note).toBe(0);
       expect(result.fiabilite.criteresRenseignes).toBe(0);
+      expect(result.fiabilite.poidsRenseignes).toBe(0);
+      expect(result.fiabilite.poidsTotal).toBeGreaterThan(0);
     });
 
     it("devrait calculer une meilleure fiabilite avec plus de criteres ponderes", async () => {

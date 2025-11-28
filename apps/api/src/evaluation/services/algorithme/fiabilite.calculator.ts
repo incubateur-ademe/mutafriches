@@ -1,7 +1,11 @@
 import { Injectable } from "@nestjs/common";
-import { Fiabilite, NIVEAUX_FIABILITE } from "@mutafriches/shared-types";
+import { Fiabilite, DetailCritereFiabilite, NIVEAUX_FIABILITE } from "@mutafriches/shared-types";
 import { POIDS_CRITERES } from "./algorithme.config";
 import { NOMBRE_CRITERES_UTILISES } from "./algorithme.constants";
+
+export interface FiabiliteOptions {
+  inclureDetail?: boolean;
+}
 
 /**
  * Calculateur de fiabilité pour l'évaluation de mutabilité
@@ -21,43 +25,65 @@ export class FiabiliteCalculator {
    * Calcule la fiabilité à partir des critères extraits d'une parcelle
    *
    * @param criteres - Record des critères avec leurs valeurs
+   * @param options - Options de calcul (inclureDetail pour avoir le detail par critere, actif par défaut)
    * @returns Objet Fiabilite avec note sur 10
    */
-  calculer(criteres: Record<string, unknown>): Fiabilite {
-    const { poidsRenseignes, criteresRenseignes } = this.calculerPoidsRenseignes(criteres);
+  calculer(criteres: Record<string, unknown>, options: FiabiliteOptions = {}): Fiabilite {
+    const { inclureDetail = true } = options;
+    const { poidsRenseignes, criteresRenseignes, detailCriteres } =
+      this.calculerPoidsRenseignes(criteres);
 
     const pourcentage = this.poidsTotal > 0 ? (poidsRenseignes / this.poidsTotal) * 100 : 0;
     const note = this.arrondirNote(pourcentage / 10);
     const niveau = this.determinerNiveau(note);
 
-    return {
+    const fiabilite: Fiabilite = {
       note,
       text: niveau.text,
       description: niveau.description,
       criteresRenseignes,
       criteresTotal: NOMBRE_CRITERES_UTILISES,
+      poidsRenseignes,
+      poidsTotal: this.poidsTotal,
     };
+
+    if (inclureDetail) {
+      fiabilite.detailCriteres = detailCriteres;
+    }
+
+    return fiabilite;
   }
 
   /**
-   * Calcule la somme des poids des critères renseignés
+   * Calcule la somme des poids des criteres renseignes
    */
   private calculerPoidsRenseignes(criteres: Record<string, unknown>): {
     poidsRenseignes: number;
     criteresRenseignes: number;
+    detailCriteres: DetailCritereFiabilite[];
   } {
     let poidsRenseignes = 0;
     let criteresRenseignes = 0;
+    const detailCriteres: DetailCritereFiabilite[] = [];
 
-    Object.entries(criteres).forEach(([champDTO, valeur]) => {
-      if (this.estRenseigne(valeur)) {
-        const poids = POIDS_CRITERES[champDTO as keyof typeof POIDS_CRITERES] ?? 0;
+    // Parcourir tous les criteres definis dans POIDS_CRITERES
+    Object.entries(POIDS_CRITERES).forEach(([champDTO, poids]) => {
+      const valeur = criteres[champDTO];
+      const renseigne = this.estRenseigne(valeur);
+
+      if (renseigne) {
         poidsRenseignes += poids;
         criteresRenseignes++;
       }
+
+      detailCriteres.push({
+        critere: champDTO,
+        poids,
+        renseigne,
+      });
     });
 
-    return { poidsRenseignes, criteresRenseignes };
+    return { poidsRenseignes, criteresRenseignes, detailCriteres };
   }
 
   /**

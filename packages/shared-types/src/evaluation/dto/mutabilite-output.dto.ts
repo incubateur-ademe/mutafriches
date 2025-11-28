@@ -44,14 +44,26 @@ export interface UsageResultatDetaille extends UsageResultat {
 }
 
 /**
+ * Détail d'un critère pour le calcul de fiabilité
+ */
+export interface DetailCritereFiabilite {
+  critere: string; // Nom du critère
+  poids: number; // Coefficient de pondération
+  renseigne: boolean; // true si le critère a une valeur
+}
+
+/**
  * Évaluation de la fiabilité du calcul
  */
 export interface Fiabilite {
   note: number; // 0-10
   text: string; // "Très fiable", "Fiable", etc.
   description: string; // Description détaillée
-  criteresRenseignes?: number; // Nombre de critères avec données
-  criteresTotal?: number; // Nombre total de critères
+  criteresRenseignes: number; // Nombre de critères avec données
+  criteresTotal: number; // Nombre total de critères
+  poidsRenseignes: number; // Somme des poids des critères renseignés
+  poidsTotal: number; // Somme totale des poids
+  detailCriteres?: DetailCritereFiabilite[]; // Détail par critère (optionnel)
 }
 
 /**

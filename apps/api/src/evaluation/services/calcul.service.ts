@@ -341,9 +341,11 @@ export class CalculService {
    */
   protected calculerFiabilite(parcelle: Parcelle): Fiabilite {
     const criteres = this.extraireCriteres(parcelle);
-    return this.fiabiliteCalculator.calculer(criteres);
+    // Toujours inclure le détail pour la fiabilité (stocké en BDD)
+    return this.fiabiliteCalculator.calculer(criteres, {
+      inclureDetail: true,
+    });
   }
-
   /**
    * Détermine le niveau de potentiel en fonction de l'indice
    */
