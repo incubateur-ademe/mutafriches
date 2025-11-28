@@ -150,7 +150,6 @@ export class Parcelle {
     // Métadonnées
     parcelle.sourcesUtilisees = donneesEnrichies.sourcesUtilisees || [];
     parcelle.champsManquants = donneesEnrichies.champsManquants || [];
-    parcelle.fiabilite = donneesEnrichies.fiabilite || 0;
 
     // Copier les données complémentaires si présentes
     if (donneesComplementaires) {

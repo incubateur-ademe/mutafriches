@@ -48,7 +48,6 @@ export function buildCalculerMutabiliteFromFormData(formData: any): CalculerMuta
     // Métadonnées
     sourcesUtilisees: ["Saisie manuelle"],
     champsManquants: getFieldsMissing(formData),
-    fiabilite: calculateReliability(formData),
   };
 
   // Construction des données complémentaires
@@ -101,15 +100,4 @@ function getFieldsMissing(formData: any): string[] {
   }
 
   return missing;
-}
-
-/**
- * Calcule la fiabilité basée sur le nombre de champs renseignés
- */
-function calculateReliability(formData: any): number {
-  const totalFields = 26; // Nombre total de champs possibles
-  const missingFields = getFieldsMissing(formData).length;
-  const filledFields = totalFields - missingFields;
-
-  return Math.round((filledFields / totalFields) * 10 * 10) / 10; // Arrondi à 0.1 près
 }

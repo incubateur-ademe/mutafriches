@@ -13,7 +13,6 @@ import { UrbanismeEnrichissementService } from "./urbanisme/urbanisme-enrichisse
 import { RisquesNaturelsEnrichissementService } from "./risques-naturels/risques-naturels-enrichissement.service";
 import { RisquesTechnologiquesEnrichissementService } from "./risques-technologiques/risques-technologiques-enrichissement.service";
 import { GeoRisquesEnrichissementService } from "./georisques/georisques-enrichissement.service";
-import { FiabiliteCalculator } from "./shared/fiabilite.calculator";
 import { ZonageOrchestratorService } from "./zonage";
 
 /**
@@ -43,7 +42,6 @@ export class EnrichissementService {
     private readonly zonageOrchestrator: ZonageOrchestratorService,
 
     // Utilitaires
-    private readonly fiabiliteCalculator: FiabiliteCalculator,
     private readonly enrichissementRepository: EnrichissementRepository,
   ) {}
 
@@ -172,12 +170,6 @@ export class EnrichissementService {
         `Champs manquants uniques (${champsManquantsUniques.length}): ${champsManquantsUniques.join(", ")}`,
       );
 
-      const fiabilite = this.fiabiliteCalculator.calculate(
-        sourcesUtilisees.length,
-        champsManquants.length,
-      );
-      this.logger.debug(`Fiabilite calculee: ${fiabilite}/10`);
-
       // 10. DÉTERMINER LE STATUT
       if (sourcesEchouees.length === 0) {
         statut = StatutEnrichissement.SUCCES;
@@ -218,12 +210,9 @@ export class EnrichissementService {
         // Métadonnées d'enrichissement
         sourcesUtilisees: sourcesUniques,
         champsManquants: champsManquantsUniques,
-        fiabilite,
       } as EnrichissementOutputDto;
 
-      this.logger.log(
-        `Enrichissement termine: ${identifiantParcelle} (statut: ${statut}, fiabilite: ${fiabilite}/10)`,
-      );
+      this.logger.log(`Enrichissement termine: ${identifiantParcelle} (statut: ${statut}`);
     } catch (error) {
       statut = StatutEnrichissement.ECHEC;
       messageErreur =

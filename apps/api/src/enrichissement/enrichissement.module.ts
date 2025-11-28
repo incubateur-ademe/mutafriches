@@ -15,7 +15,6 @@ import { RisquesTechnologiquesEnrichissementService } from "./services/risques-t
 // Calculators
 import { RisquesNaturelsCalculator } from "./services/risques-naturels/risques-naturels.calculator";
 import { RisquesTechnologiquesCalculator } from "./services/risques-technologiques/risques-technologiques.calculator";
-import { FiabiliteCalculator } from "./services/shared/fiabilite.calculator";
 
 // Services Zonage
 import { ZonageOrchestratorService } from "./services/zonage/zonage-orchestrator.service";
@@ -80,7 +79,6 @@ import { DatagouvLovacService } from "./adapters/datagouv-lovac/datagouv-lovac.s
     // Calculators
     RisquesNaturelsCalculator,
     RisquesTechnologiquesCalculator,
-    FiabiliteCalculator,
 
     // Services Zonage
     ZonageOrchestratorService,
