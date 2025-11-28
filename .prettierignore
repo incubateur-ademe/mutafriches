@@ -33,3 +33,6 @@ Thumbs.db
 **/migrations/meta/*.json
 **/migrations/schema.ts
 **/migrations/relations.ts
+
+# RAW data files
+apps/api/data/raw/

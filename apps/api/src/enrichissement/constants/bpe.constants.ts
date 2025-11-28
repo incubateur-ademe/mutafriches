@@ -68,7 +68,7 @@ export const BPE_CONFIG = {
   /** Séparateur CSV */
   SEPARATOR: ";",
   /** Encodage du fichier source */
-  ENCODING: "latin1" as BufferEncoding,
+  ENCODING: "latin1" as const,
   /** Taille du batch pour les insertions DB */
   BATCH_SIZE: 1000,
   /** Nom du dataset pour les logs */

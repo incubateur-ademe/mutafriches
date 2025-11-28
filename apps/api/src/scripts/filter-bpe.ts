@@ -1,4 +1,5 @@
-/* eslint-disable no-console */
+/* eslint-disable no-console, @typescript-eslint/no-non-null-assertion */
+
 /**
  * Script de filtrage du CSV BPE
  *

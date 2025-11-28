@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+/* eslint-disable no-console, @typescript-eslint/no-non-null-assertion */
 /**
  * Script d'import du CSV BPE filtré en base de données
  *
@@ -7,7 +7,7 @@
  *
  * Prérequis:
  *   - Le fichier apps/api/data/bpe-filtered.csv doit exister
- *   - La migration 0007_create_raw_bpe_tables.sql doit avoir été exécutée
+ *   - La migration 0007_premium_malice.sql doit avoir été exécutée
  *   - PostGIS doit être activé sur la base
  *
  * Comportement:
