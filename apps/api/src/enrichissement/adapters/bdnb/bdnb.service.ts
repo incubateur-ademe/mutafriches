@@ -15,9 +15,8 @@ import {
 
 @Injectable()
 export class BdnbService {
-  private readonly baseUrl = process.env.BDNB_API_BASE_URL || "https://api.bdnb.io/v1/bdnb";
-
-  private readonly timeout = parseInt(process.env.BDNB_API_TIMEOUT || "10000", 10);
+  private readonly baseUrl = "https://api.bdnb.io/v1/bdnb";
+  private readonly timeout = 10000; // 10 secondes
 
   constructor(private readonly httpService: HttpService) {}
 

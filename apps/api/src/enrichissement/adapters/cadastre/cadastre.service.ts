@@ -23,8 +23,7 @@ import {
 @Injectable()
 export class CadastreService {
   private readonly logger = new Logger(CadastreService.name);
-  private readonly baseUrl =
-    process.env.IGN_CADASTRE_API_URL || "https://apicarto.ign.fr/api/cadastre";
+  private readonly baseUrl = "https://apicarto.ign.fr/api/cadastre";
 
   constructor(private readonly httpService: HttpService) {}
 

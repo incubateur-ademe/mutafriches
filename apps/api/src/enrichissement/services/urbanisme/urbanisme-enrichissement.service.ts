@@ -3,7 +3,6 @@ import { SourceEnrichissement } from "@mutafriches/shared-types";
 import { Parcelle } from "../../../evaluation/entities/parcelle.entity";
 import { EnrichmentResult } from "../shared/enrichissement.types";
 import { DatagouvLovacService } from "../../adapters/datagouv-lovac/datagouv-lovac.service";
-import { OverpassService } from "../../adapters/overpass/overpass.service";
 import { LovacCalculator } from "./lovac.calculator";
 
 /**
@@ -26,10 +25,7 @@ const RAYON_RECHERCHE_COMMERCES_M = 500;
 export class UrbanismeEnrichissementService {
   private readonly logger = new Logger(UrbanismeEnrichissementService.name);
 
-  constructor(
-    private readonly lovacService: DatagouvLovacService,
-    private readonly overpassService: OverpassService,
-  ) {}
+  constructor(private readonly lovacService: DatagouvLovacService) {}
 
   /**
    * Enrichit une parcelle avec les donnees d'urbanisme

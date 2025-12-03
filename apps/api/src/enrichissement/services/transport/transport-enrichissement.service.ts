@@ -4,7 +4,6 @@ import { Parcelle } from "../../../evaluation/entities/parcelle.entity";
 import { EnrichmentResult } from "../shared/enrichissement.types";
 import { ServicePublicService } from "../../adapters/service-public/service-public.service";
 import { IgnWfsService } from "../../adapters/ign-wfs/ign-wfs.service";
-import { OverpassService } from "../../adapters/overpass/overpass.service";
 import { calculateDistance } from "../../adapters/shared/distance.utils";
 import { TransportCalculator } from "./transport-enrichissement.calculator";
 import {
@@ -27,7 +26,6 @@ export class TransportEnrichissementService {
   constructor(
     private readonly servicePublicService: ServicePublicService,
     private readonly ignWfsService: IgnWfsService,
-    private readonly overpassService: OverpassService,
   ) {}
 
   async enrichir(parcelle: Parcelle): Promise<EnrichmentResult> {
