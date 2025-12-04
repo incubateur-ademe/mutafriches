@@ -127,7 +127,7 @@ export const EnrichmentDisplayZone: React.FC<EnrichmentDisplayZoneProps> = ({
               id="distance-voie-grande-circulation"
               label="Distance voie à grande circulation"
               value={data.distanceAutoroute}
-              tooltip="Donnée de test, pas de récupération réelle pour l'instant"
+              tooltip="Récupéré depuis l'API IGN Géoplateforme WFS : https://geoservices.ign.fr/services-web-essentiels"
             />
             <EnrichmentInfoField
               id="distance-transport-commun"
@@ -139,7 +139,7 @@ export const EnrichmentDisplayZone: React.FC<EnrichmentDisplayZoneProps> = ({
               id="proximite-commerces-services"
               label="Proximité des commerces et services"
               value={data.proximiteCommerces}
-              tooltip="Récupéré depuis l'API Overpass d'OpenStreetMap : https://dev.overpass-api.de/overpass-doc/fr"
+              tooltip="Récupéré depuis la base permanente des équipements (BPE) : https://www.data.gouv.fr/fr/datasets/base-permanente-des-equipements-bpe"
             />
             <EnrichmentInfoField
               id="distance-raccordement-electrique"

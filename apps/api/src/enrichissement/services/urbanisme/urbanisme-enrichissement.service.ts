@@ -3,12 +3,13 @@ import { SourceEnrichissement } from "@mutafriches/shared-types";
 import { Parcelle } from "../../../evaluation/entities/parcelle.entity";
 import { EnrichmentResult } from "../shared/enrichissement.types";
 import { DatagouvLovacService } from "../../adapters/datagouv-lovac/datagouv-lovac.service";
+import { BpeRepository } from "../../repositories/bpe.repository";
 import { LovacCalculator } from "./lovac.calculator";
 
 /**
  * Rayon de recherche pour les commerces/services (en metres)
  *
- * Defini a 500m car :
+ * Défini à 500m car :
  * - C'est la distance de marche standard (5-7 min)
  * - Correspond au critere Excel "Commerces / services a proximite"
  */
@@ -18,14 +19,17 @@ const RAYON_RECHERCHE_COMMERCES_M = 500;
  * Service d'enrichissement du sous-domaine Urbanisme
  *
  * Responsabilites :
- * - Recuperer la proximite des commerces/services via Overpass (OSM)
+ * - Recuperer la proximite des commerces/services via BPE (donnees locales)
  * - Recuperer le taux de logements vacants via LOVAC (data.gouv.fr)
  */
 @Injectable()
 export class UrbanismeEnrichissementService {
   private readonly logger = new Logger(UrbanismeEnrichissementService.name);
 
-  constructor(private readonly lovacService: DatagouvLovacService) {}
+  constructor(
+    private readonly lovacService: DatagouvLovacService,
+    private readonly bpeRepository: BpeRepository,
+  ) {}
 
   /**
    * Enrichit une parcelle avec les donnees d'urbanisme
@@ -46,7 +50,7 @@ export class UrbanismeEnrichissementService {
       champsManquants,
     );
 
-    // Proximite commerces/services (Overpass)
+    // Proximite commerces/services (BPE)
     await this.enrichProximiteCommercesServices(
       parcelle,
       sourcesUtilisees,
@@ -63,12 +67,11 @@ export class UrbanismeEnrichissementService {
   }
 
   /**
-   * Enrichit la proximite des commerces et services via Overpass (OSM)
+   * Enrichit la proximite des commerces et services via BPE (donnees locales)
    *
-   * Types de commerces/services recherches :
-   * - Alimentation : supermarche, epicerie, boulangerie, boucherie
-   * - Sante : pharmacie, medecin
-   * - Services publics : poste, banque
+   * Types de commerces/services recherches (codes BPE) :
+   * - Alimentation : B104-B207 (hypermarche, supermarche, epicerie, boulangerie, boucherie, poissonnerie)
+   * - Services : A203 (banque), A206-A208 (poste), D307 (pharmacie)
    */
   private async enrichProximiteCommercesServices(
     parcelle: Parcelle,
@@ -77,28 +80,21 @@ export class UrbanismeEnrichissementService {
     champsManquants: string[],
   ): Promise<void> {
     if (!parcelle.coordonnees) {
-      this.logger.warn(
-        `Pas de coordonnees pour Overpass - parcelle ${parcelle.identifiantParcelle}`,
-      );
-      sourcesEchouees.push(SourceEnrichissement.OVERPASS);
+      this.logger.warn(`Pas de coordonnees pour BPE - parcelle ${parcelle.identifiantParcelle}`);
+      sourcesEchouees.push(SourceEnrichissement.BPE);
       champsManquants.push("proximiteCommercesServices");
       return;
     }
 
     try {
-      const overpassResult = await this.overpassService.hasCommercesServices(
+      const result = await this.bpeRepository.findCommercesServicesProximite(
         parcelle.coordonnees.latitude,
         parcelle.coordonnees.longitude,
         RAYON_RECHERCHE_COMMERCES_M,
       );
 
-      if (!overpassResult.success || !overpassResult.data) {
-        throw new Error(overpassResult.error || "Erreur Overpass");
-      }
-
-      const result = overpassResult.data;
       parcelle.proximiteCommercesServices = result.presenceCommercesServices;
-      sourcesUtilisees.push(SourceEnrichissement.OVERPASS);
+      sourcesUtilisees.push(SourceEnrichissement.BPE);
 
       if (result.presenceCommercesServices) {
         this.logger.log(
@@ -107,8 +103,8 @@ export class UrbanismeEnrichissementService {
             `pour ${parcelle.identifiantParcelle}`,
         );
 
-        if (result.categoriesTrouvees && result.categoriesTrouvees.length > 0) {
-          this.logger.debug(`Categories trouvees: ${result.categoriesTrouvees.join(", ")}`);
+        if (result.categoriesTrouvees.length > 0) {
+          this.logger.debug(`Codes BPE trouves: ${result.categoriesTrouvees.join(", ")}`);
         }
       } else {
         this.logger.log(
@@ -117,8 +113,8 @@ export class UrbanismeEnrichissementService {
         );
       }
     } catch (error) {
-      this.logger.error("Erreur lors de la recuperation Overpass:", error);
-      sourcesEchouees.push(SourceEnrichissement.OVERPASS);
+      this.logger.error("Erreur lors de la recherche BPE:", error);
+      sourcesEchouees.push(SourceEnrichissement.BPE);
       champsManquants.push("proximiteCommercesServices");
     }
   }

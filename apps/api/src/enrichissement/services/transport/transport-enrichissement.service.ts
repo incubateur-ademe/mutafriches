@@ -6,18 +6,15 @@ import { ServicePublicService } from "../../adapters/service-public/service-publ
 import { IgnWfsService } from "../../adapters/ign-wfs/ign-wfs.service";
 import { calculateDistance } from "../../adapters/shared/distance.utils";
 import { TransportCalculator } from "./transport-enrichissement.calculator";
-import {
-  RAYON_RECHERCHE_AUTOROUTE_M,
-  RAYON_RECHERCHE_TRANSPORT_M,
-} from "./transport-enrichissement.constants";
+import { RAYON_RECHERCHE_AUTOROUTE_M } from "./transport-enrichissement.constants";
 
 /**
  * Service d'enrichissement du sous-domaine Transport
  *
- * Responsabilités :
+ * Responsabilites :
  * - Determiner si la parcelle est en centre-ville (distance a la mairie)
  * - Calculer la distance a la voie de grande circulation la plus proche
- * - Recuperer la distance au transport en commun le plus proche (Overpass)
+ * - TODO: Calculer la distance au transport en commun via BPE (gares)
  */
 @Injectable()
 export class TransportEnrichissementService {
@@ -38,11 +35,7 @@ export class TransportEnrichissementService {
       this.logger.warn(
         `Pas de coordonnees disponibles pour la parcelle ${parcelle.identifiantParcelle}`,
       );
-      sourcesEchouees.push(
-        SourceEnrichissement.SERVICE_PUBLIC,
-        SourceEnrichissement.IGN_WFS,
-        SourceEnrichissement.OVERPASS,
-      );
+      sourcesEchouees.push(SourceEnrichissement.SERVICE_PUBLIC, SourceEnrichissement.IGN_WFS);
       champsManquants.push("siteEnCentreVille", "distanceAutoroute", "distanceTransportCommun");
       return { success: false, sourcesUtilisees, sourcesEchouees, champsManquants };
     }
@@ -51,7 +44,6 @@ export class TransportEnrichissementService {
       this.logger.warn(`Code INSEE manquant pour la parcelle ${parcelle.identifiantParcelle}`);
       sourcesEchouees.push(SourceEnrichissement.SERVICE_PUBLIC);
       champsManquants.push("siteEnCentreVille");
-      // IGN WFS et Overpass peuvent quand meme fonctionner sans code INSEE
     }
 
     // Enrichissements
@@ -62,12 +54,10 @@ export class TransportEnrichissementService {
       sourcesEchouees,
       champsManquants,
     );
-    await this.enrichirTransportCommun(
-      parcelle,
-      sourcesUtilisees,
-      sourcesEchouees,
-      champsManquants,
-    );
+
+    // TODO: Implémenter via BPE (codes E107, E108, E109)
+    // Pour l'instant, on marque le champ comme manquant
+    champsManquants.push("distanceTransportCommun");
 
     return {
       success: sourcesUtilisees.length > 0,
@@ -180,63 +170,7 @@ export class TransportEnrichissementService {
     }
   }
 
-  /**
-   * Recupere la distance au transport en commun le plus proche via Overpass (OSM)
-   *
-   * Types de transports recherches :
-   * - Gares ferroviaires (SNCF, TER, TGV)
-   * - Stations de metro
-   * - Arrets de tramway
-   * - Arrets de bus et gares routieres
-   */
-  private async enrichirTransportCommun(
-    parcelle: Parcelle,
-    sourcesUtilisees: string[],
-    sourcesEchouees: string[],
-    champsManquants: string[],
-  ): Promise<void> {
-    try {
-      if (!parcelle.coordonnees) {
-        throw new Error("Coordonnees non disponibles");
-      }
-
-      this.logger.debug(`Recherche transport en commun pour ${parcelle.identifiantParcelle}`);
-
-      const overpassResult = await this.overpassService.getDistanceTransportCommun(
-        parcelle.coordonnees.latitude,
-        parcelle.coordonnees.longitude,
-        RAYON_RECHERCHE_TRANSPORT_M,
-      );
-
-      if (!overpassResult.success || !overpassResult.data) {
-        throw new Error(overpassResult.error || "Erreur Overpass");
-      }
-
-      const result = overpassResult.data;
-
-      // -1 signifie aucun transport trouve dans le rayon
-      if (result.distanceMetres === -1) {
-        // On stocke la valeur max du rayon pour indiquer "au-dela du rayon"
-        parcelle.distanceTransportCommun = RAYON_RECHERCHE_TRANSPORT_M;
-        this.logger.debug(
-          `Aucun transport dans un rayon de ${RAYON_RECHERCHE_TRANSPORT_M}m pour ${parcelle.identifiantParcelle}`,
-        );
-      } else {
-        parcelle.distanceTransportCommun = result.distanceMetres;
-      }
-
-      sourcesUtilisees.push(SourceEnrichissement.OVERPASS);
-
-      this.logger.log(
-        `Distance transport: ${parcelle.distanceTransportCommun}m ` +
-          `(${result.typeTransport}${result.nomArret ? ` - ${result.nomArret}` : ""}) ` +
-          `pour ${parcelle.identifiantParcelle}`,
-      );
-    } catch (error) {
-      this.logger.error("Erreur lors de la recuperation transport:", error);
-      sourcesEchouees.push(SourceEnrichissement.OVERPASS);
-      champsManquants.push("distanceTransportCommun");
-      parcelle.distanceTransportCommun = undefined;
-    }
-  }
+  // TODO: Implementer enrichirTransportCommun via BpeRepository
+  // Utiliser les codes BPE: E107 (gare nationale), E108 (gare regionale), E109 (gare locale)
+  // Methode a ajouter: bpeRepository.findGaresProximite(lat, lon, rayonMetres)
 }

@@ -55,6 +55,7 @@ import { ApiCartoGpuService } from "./adapters/api-carto/gpu/api-carto-gpu.servi
 
 // Adapters data.gouv.fr
 import { DatagouvLovacService } from "./adapters/datagouv-lovac/datagouv-lovac.service";
+import { BpeRepository } from "./repositories/bpe.repository";
 
 @Module({
   imports: [HttpModule],
@@ -63,6 +64,7 @@ import { DatagouvLovacService } from "./adapters/datagouv-lovac/datagouv-lovac.s
     // Service principal
     EnrichissementService,
     EnrichissementRepository,
+    BpeRepository,
 
     // Services de domaine
     CadastreEnrichissementService,

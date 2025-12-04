@@ -6,7 +6,7 @@ export enum SourceEnrichissement {
   BDNB_SURFACE_BATIE = "BDNB-SurfaceBatie",
   BDNB_RISQUES = "BDNB-Risques",
   ENEDIS_RACCORDEMENT = "Enedis-Raccordement",
-  OVERPASS = "Overpass",
+  BPE = "bpe",
   LOVAC = "Lovac",
   GEORISQUES_RGA = "GeoRisques-RGA",
   GEORISQUES_CATNAT = "GeoRisques-CATNAT",
