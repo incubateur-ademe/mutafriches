@@ -47,7 +47,6 @@ export class EvaluationBuilder {
     zonageReglementaire: "U",
     sourcesUtilisees: ["cadastre"],
     champsManquants: [],
-    fiabilite: 9.0,
   };
 
   private complementaires: DonneesComplementairesInputDto = {
@@ -64,9 +63,11 @@ export class EvaluationBuilder {
     fiabilite: {
       note: 8.5,
       text: "Fiable",
-      description: "Calcul basé sur des données complètes",
+      description: "Calcul base sur des donnees completes",
       criteresRenseignes: 15,
-      criteresTotal: 18,
+      criteresTotal: 21,
+      poidsRenseignes: 22,
+      poidsTotal: 26,
     },
     resultats: [
       {
@@ -83,7 +84,7 @@ export class EvaluationBuilder {
   };
 
   /**
-   * Définir l'ID de l'évaluation
+   * Definir l'ID de l'evaluation
    */
   withId(id: string): this {
     this.id = id;
@@ -91,7 +92,7 @@ export class EvaluationBuilder {
   }
 
   /**
-   * Créer une évaluation sans ID (pour tester les erreurs)
+   * Creer une evaluation sans ID (pour tester les erreurs)
    */
   withoutId(): this {
     this.id = undefined as any;
@@ -99,7 +100,7 @@ export class EvaluationBuilder {
   }
 
   /**
-   * Définir l'identifiant de parcelle
+   * Definir l'identifiant de parcelle
    */
   withParcelleId(parcelleId: string): this {
     this.parcelleId = parcelleId;
@@ -108,7 +109,7 @@ export class EvaluationBuilder {
   }
 
   /**
-   * Définir le code INSEE
+   * Definir le code INSEE
    */
   withCodeInsee(codeInsee: string): this {
     this.codeInsee = codeInsee;
@@ -117,7 +118,7 @@ export class EvaluationBuilder {
   }
 
   /**
-   * Définir la commune
+   * Definir la commune
    */
   withCommune(commune: string): this {
     this.enrichissement.commune = commune;
@@ -125,7 +126,7 @@ export class EvaluationBuilder {
   }
 
   /**
-   * Surcharger partiellement les données d'enrichissement
+   * Surcharger partiellement les donnees d'enrichissement
    */
   withEnrichissement(enrichissement: Partial<EnrichissementOutputDto>): this {
     this.enrichissement = { ...this.enrichissement, ...enrichissement };
@@ -133,7 +134,7 @@ export class EvaluationBuilder {
   }
 
   /**
-   * Surcharger partiellement les données complémentaires
+   * Surcharger partiellement les donnees complementaires
    */
   withDonneesComplementaires(complementaires: Partial<DonneesComplementairesInputDto>): this {
     this.complementaires = { ...this.complementaires, ...complementaires };
@@ -141,7 +142,7 @@ export class EvaluationBuilder {
   }
 
   /**
-   * Surcharger partiellement les résultats
+   * Surcharger partiellement les resultats
    */
   withResultats(resultats: Partial<MutabiliteOutputDto>): this {
     this.resultats = { ...this.resultats, ...resultats };
@@ -149,7 +150,7 @@ export class EvaluationBuilder {
   }
 
   /**
-   * Définir l'origine de l'évaluation
+   * Definir l'origine de l'evaluation
    */
   withOrigine(source: SourceUtilisation, integrateur?: string): this {
     this.origine = { source, integrateur };
@@ -157,7 +158,7 @@ export class EvaluationBuilder {
   }
 
   /**
-   * Définir la version de l'algorithme
+   * Definir la version de l'algorithme
    */
   withVersionAlgorithme(version: string): this {
     this.versionAlgorithme = version;
@@ -188,7 +189,7 @@ export class EvaluationBuilder {
 }
 
 /**
- * Factory function pour créer rapidement une évaluation avec des valeurs par défaut
+ * Factory function pour creer rapidement une evaluation avec des valeurs par defaut
  *
  * @example
  * const evaluation = createMockEvaluation({ id: "custom-id" });

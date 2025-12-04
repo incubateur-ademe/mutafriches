@@ -331,3 +331,66 @@ https://mutafriches.beta.gouv.fr/?integrator={partenaire}&ref={contexte}&callbac
 ```
 
 Les intégrateurs autorisés sont définis dans `IframeContext.constants.ts`.
+
+## 📊 Import des données BPE (Base Permanente des Équipements)
+
+Les données BPE de l'INSEE sont utilisées pour calculer la proximité des transports et commerces.
+
+### Données importées
+
+- **15 codes équipements** : gares (E107-E109), commerces alimentaires (B104-B207), services (A203, A206-A208, D307)
+- **182K enregistrements** géolocalisés (filtrage de 2.8M → 182K, réduction 99%)
+
+### Scripts disponibles
+
+```bash
+# Depuis apps/api
+
+# 1. Filtrer le fichier BPE brut (si besoin de régénérer)
+pnpm db:bpe:filter
+
+# 2. Importer en base de données
+pnpm db:bpe:import
+```
+
+### Prérequis
+
+- PostGIS activé sur la base
+- Migration `0007_create_raw_bpe_tables.sql` appliquée
+- Fichier `data/bpe-filtered.csv` présent (committé dans le repo)
+
+### Activer PostGIS
+
+**Local (Docker)** : utiliser l'image `postgis/postgis:16-3.4` dans docker-compose.yml
+
+**Staging/Production (Scalingo)** :
+
+```bash
+# Staging
+scalingo -a mutafriches-staging pgsql-console
+CREATE EXTENSION IF NOT EXISTS postgis;
+SELECT PostGIS_Version();
+\q
+
+# Production
+scalingo -a mutafriches pgsql-console
+CREATE EXTENSION IF NOT EXISTS postgis;
+SELECT PostGIS_Version();
+\q
+```
+
+### Importer sur Scalingo
+
+```bash
+# Staging
+scalingo -a mutafriches-staging run "pnpm --filter api db:bpe:import"
+
+# Production
+scalingo -a mutafriches run "pnpm --filter api db:bpe:import"
+```
+
+### Régénérer le fichier filtré
+
+1. Télécharger le ZIP BPE depuis <https://www.insee.fr/fr/statistiques/8217537>
+2. Dézipper dans `apps/api/data/raw/bpe24.csv` (gitignored)
+3. Lancer `pnpm db:bpe:filter`

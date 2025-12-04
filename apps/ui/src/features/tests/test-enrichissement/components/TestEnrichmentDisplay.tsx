@@ -37,7 +37,7 @@ export const TestEnrichmentDisplay: React.FC<TestEnrichmentDisplayProps> = ({ da
     {
       id: "transport",
       label: "Transport",
-      visible: hasSource(data.sourcesUtilisees, SourceEnrichissement.TRANSPORT),
+      visible: hasSource(data.sourcesUtilisees, SourceEnrichissement.BDNB),
     },
     {
       id: "georisques",
@@ -57,7 +57,6 @@ export const TestEnrichmentDisplay: React.FC<TestEnrichmentDisplayProps> = ({ da
           <strong>Parcelle :</strong> {data.identifiantParcelle}
           <br />
           <strong>Commune :</strong> {data.commune} ({data.codeInsee})<br />
-          <strong>Fiabilité :</strong> {data.fiabilite}/10
           <br />
           <strong>Sources utilisées :</strong> {data.sourcesUtilisees?.length || 0} source(s)
         </p>
@@ -138,35 +137,6 @@ export const TestEnrichmentDisplay: React.FC<TestEnrichmentDisplayProps> = ({ da
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
-
-          {/* Section Fiabilité */}
-          <div className="fr-mb-3w">
-            <h5>Indice de fiabilité</h5>
-            <div
-              className={`fr-callout ${
-                data.fiabilite >= 8
-                  ? "fr-callout--green-emeraude"
-                  : data.fiabilite >= 6
-                    ? "fr-callout--blue-ecume"
-                    : data.fiabilite >= 4
-                      ? "fr-callout--yellow-moutarde"
-                      : "fr-callout--pink-tuile"
-              }`}
-            >
-              <p className="fr-callout__text">
-                <strong style={{ fontSize: "1.5rem" }}>{data.fiabilite}/10</strong>
-                <br />
-                <span className="fr-text--sm">
-                  {data.fiabilite >= 8 && "Excellent - Données très fiables"}
-                  {data.fiabilite >= 6 && data.fiabilite < 8 && "Bon - Données fiables"}
-                  {data.fiabilite >= 4 &&
-                    data.fiabilite < 6 &&
-                    "Moyen - Quelques données manquantes"}
-                  {data.fiabilite < 4 && "Faible - Beaucoup de données manquantes"}
-                </span>
-              </p>
             </div>
           </div>
         </div>

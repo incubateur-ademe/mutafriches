@@ -91,7 +91,6 @@ export function convertTestCaseToMutabilityInput(
     coordonnees: input.coordonnees,
     sourcesUtilisees: ["Test"],
     champsManquants: [],
-    fiabilite: 10,
   };
 
   // Données complémentaires

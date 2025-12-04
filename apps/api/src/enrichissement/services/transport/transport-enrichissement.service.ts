@@ -11,10 +11,10 @@ import { RAYON_RECHERCHE_AUTOROUTE_M } from "./transport-enrichissement.constant
 /**
  * Service d'enrichissement du sous-domaine Transport
  *
- * Responsabilités :
- * - Déterminer si la parcelle est en centre-ville (distance à la mairie)
- * - Calculer la distance à la voie de grande circulation la plus proche
- * - Récupérer la distance au transport en commun le plus proche (TODO)
+ * Responsabilites :
+ * - Determiner si la parcelle est en centre-ville (distance a la mairie)
+ * - Calculer la distance a la voie de grande circulation la plus proche
+ * - TODO: Calculer la distance au transport en commun via BPE (gares)
  */
 @Injectable()
 export class TransportEnrichissementService {
@@ -30,13 +30,13 @@ export class TransportEnrichissementService {
     const sourcesEchouees: string[] = [];
     const champsManquants: string[] = [];
 
-    // Vérifications préliminaires
+    // Verifications preliminaires
     if (!parcelle.coordonnees) {
       this.logger.warn(
         `Pas de coordonnees disponibles pour la parcelle ${parcelle.identifiantParcelle}`,
       );
       sourcesEchouees.push(SourceEnrichissement.SERVICE_PUBLIC, SourceEnrichissement.IGN_WFS);
-      champsManquants.push("siteEnCentreVille", "distanceAutoroute");
+      champsManquants.push("siteEnCentreVille", "distanceAutoroute", "distanceTransportCommun");
       return { success: false, sourcesUtilisees, sourcesEchouees, champsManquants };
     }
 
@@ -44,7 +44,6 @@ export class TransportEnrichissementService {
       this.logger.warn(`Code INSEE manquant pour la parcelle ${parcelle.identifiantParcelle}`);
       sourcesEchouees.push(SourceEnrichissement.SERVICE_PUBLIC);
       champsManquants.push("siteEnCentreVille");
-      // IGN WFS peut quand même fonctionner sans code INSEE
     }
 
     // Enrichissements
@@ -55,12 +54,10 @@ export class TransportEnrichissementService {
       sourcesEchouees,
       champsManquants,
     );
-    await this.enrichirTransportCommun(
-      parcelle,
-      sourcesUtilisees,
-      sourcesEchouees,
-      champsManquants,
-    );
+
+    // TODO: Implémenter via BPE (codes E107, E108, E109)
+    // Pour l'instant, on marque le champ comme manquant
+    champsManquants.push("distanceTransportCommun");
 
     return {
       success: sourcesUtilisees.length > 0,
@@ -71,7 +68,7 @@ export class TransportEnrichissementService {
   }
 
   /**
-   * Détermine si la parcelle est en centre-ville via l'API Service Public
+   * Determine si la parcelle est en centre-ville via l'API Service Public
    */
   private async enrichirCentreVille(
     parcelle: Parcelle,
@@ -81,7 +78,7 @@ export class TransportEnrichissementService {
   ): Promise<void> {
     try {
       if (!parcelle.coordonnees || !parcelle.codeInsee) {
-        throw new Error("Coordonnées ou code INSEE non disponibles");
+        throw new Error("Coordonnees ou code INSEE non disponibles");
       }
 
       this.logger.debug(
@@ -92,7 +89,7 @@ export class TransportEnrichissementService {
       const mairieResult = await this.servicePublicService.getMairieCoordonnees(parcelle.codeInsee);
 
       if (!mairieResult.success || !mairieResult.data) {
-        throw new Error(mairieResult.error || "Mairie non trouvée");
+        throw new Error(mairieResult.error || "Mairie non trouvee");
       }
 
       const coordonneesMairie = mairieResult.data.coordonnees;
@@ -109,7 +106,7 @@ export class TransportEnrichissementService {
         coordonneesMairie.longitude,
       );
 
-      this.logger.debug(`Distance calculée: ${Math.round(distanceMetres)}m`);
+      this.logger.debug(`Distance calculee: ${Math.round(distanceMetres)}m`);
 
       parcelle.siteEnCentreVille = TransportCalculator.isCentreVille(distanceMetres);
       sourcesUtilisees.push(SourceEnrichissement.SERVICE_PUBLIC);
@@ -128,7 +125,7 @@ export class TransportEnrichissementService {
   }
 
   /**
-   * Calcule la distance à la voie de grande circulation la plus proche via IGN WFS
+   * Calcule la distance a la voie de grande circulation la plus proche via IGN WFS
    */
   private async enrichirDistanceAutoroute(
     parcelle: Parcelle,
@@ -138,7 +135,7 @@ export class TransportEnrichissementService {
   ): Promise<void> {
     try {
       if (!parcelle.coordonnees) {
-        throw new Error("Coordonnées non disponibles");
+        throw new Error("Coordonnees non disponibles");
       }
 
       this.logger.debug(`Recherche voie grande circulation pour ${parcelle.identifiantParcelle}`);
@@ -150,12 +147,12 @@ export class TransportEnrichissementService {
       );
 
       if (!wfsResult.success || !wfsResult.data) {
-        throw new Error(wfsResult.error || "Aucune voie trouvée");
+        throw new Error(wfsResult.error || "Aucune voie trouvee");
       }
 
       const distanceMetres = wfsResult.data.distanceMetres;
 
-      // Stocker la distance brute et la catégorie
+      // Stocker la distance brute et la categorie
       parcelle.distanceAutoroute = Math.round(distanceMetres);
 
       sourcesUtilisees.push(SourceEnrichissement.IGN_WFS);
@@ -170,31 +167,10 @@ export class TransportEnrichissementService {
       sourcesEchouees.push(SourceEnrichissement.IGN_WFS);
       champsManquants.push("distanceAutoroute");
       parcelle.distanceAutoroute = undefined;
-      // Pas de valeur par défaut pour distanceAutoroute
     }
   }
 
-  /**
-   * Récupère la distance au transport en commun (TODO - temporaire)
-   */
-  private async enrichirTransportCommun(
-    parcelle: Parcelle,
-    sourcesUtilisees: string[],
-    sourcesEchouees: string[],
-    champsManquants: string[],
-  ): Promise<void> {
-    try {
-      const distanceTemporaire = Math.floor(Math.random() * 1900) + 100;
-      parcelle.distanceTransportCommun = distanceTemporaire;
-      sourcesUtilisees.push(SourceEnrichissement.TRANSPORT);
-
-      this.logger.debug(
-        `Distance transport (TEMPORAIRE): ${distanceTemporaire}m pour ${parcelle.identifiantParcelle}`,
-      );
-    } catch (error) {
-      this.logger.error("Erreur lors de la recuperation transport:", error);
-      sourcesEchouees.push(SourceEnrichissement.TRANSPORT);
-      champsManquants.push("distanceTransportCommun");
-    }
-  }
+  // TODO: Implementer enrichirTransportCommun via BpeRepository
+  // Utiliser les codes BPE: E107 (gare nationale), E108 (gare regionale), E109 (gare locale)
+  // Methode a ajouter: bpeRepository.findGaresProximite(lat, lon, rayonMetres)
 }

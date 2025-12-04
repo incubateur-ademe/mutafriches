@@ -9,7 +9,6 @@ import { UrbanismeEnrichissementService } from "./urbanisme/urbanisme-enrichisse
 import { RisquesNaturelsEnrichissementService } from "./risques-naturels/risques-naturels-enrichissement.service";
 import { RisquesTechnologiquesEnrichissementService } from "./risques-technologiques/risques-technologiques-enrichissement.service";
 import { GeoRisquesEnrichissementService } from "./georisques/georisques-enrichissement.service";
-import { FiabiliteCalculator } from "./shared/fiabilite.calculator";
 import { EnrichissementRepository } from "../repositories/enrichissement.repository";
 import { Parcelle } from "../../evaluation/entities/parcelle.entity";
 import {
@@ -20,7 +19,6 @@ import {
   createMockRisquesNaturelsEnrichissementService,
   createMockRisquesTechnologiquesEnrichissementService,
   createMockGeoRisquesEnrichissementService,
-  createMockFiabiliteCalculator,
   createMockEnrichissementRepository,
   createMockZonageOrchestratorService,
 } from "../__test-helpers__/enrichissement.mocks";
@@ -40,7 +38,6 @@ describe("EnrichissementService", () => {
   >;
   let georisquesEnrichissement: ReturnType<typeof createMockGeoRisquesEnrichissementService>;
   let zonageOrchestrator: ReturnType<typeof createMockZonageOrchestratorService>;
-  let fiabiliteCalculator: ReturnType<typeof createMockFiabiliteCalculator>;
   let enrichissementRepository: ReturnType<typeof createMockEnrichissementRepository>;
 
   beforeEach(async () => {
@@ -52,7 +49,6 @@ describe("EnrichissementService", () => {
     const mockRisquesTechnologiques = createMockRisquesTechnologiquesEnrichissementService();
     const mockGeoRisques = createMockGeoRisquesEnrichissementService();
     const mockZonageOrchestrator = createMockZonageOrchestratorService();
-    const mockCalculator = createMockFiabiliteCalculator();
     const mockRepository = createMockEnrichissementRepository();
 
     const module: TestingModule = await Test.createTestingModule({
@@ -69,7 +65,6 @@ describe("EnrichissementService", () => {
         },
         { provide: GeoRisquesEnrichissementService, useValue: mockGeoRisques },
         { provide: ZonageOrchestratorService, useValue: mockZonageOrchestrator },
-        { provide: FiabiliteCalculator, useValue: mockCalculator },
         { provide: EnrichissementRepository, useValue: mockRepository },
       ],
     }).compile();
@@ -83,7 +78,6 @@ describe("EnrichissementService", () => {
     risquesTechnologiquesEnrichissement = mockRisquesTechnologiques;
     georisquesEnrichissement = mockGeoRisques;
     zonageOrchestrator = mockZonageOrchestrator;
-    fiabiliteCalculator = mockCalculator;
     enrichissementRepository = mockRepository;
   });
 
@@ -131,7 +125,6 @@ describe("EnrichissementService", () => {
         zonageReglementaire: "zone-urbaine-u",
         evaluations: { environnemental: null, patrimonial: null, reglementaire: null },
       });
-      fiabiliteCalculator.calculate.mockReturnValue(9.5);
       enrichissementRepository.save.mockResolvedValue({});
 
       // Act
@@ -179,7 +172,7 @@ describe("EnrichissementService", () => {
       });
       georisquesEnrichissement.enrichir.mockResolvedValue({
         result: { success: true, sourcesUtilisees: ["georisques"], sourcesEchouees: [] },
-        data: { metadata: { sourcesUtilisees: [], sourcesEchouees: [], fiabilite: 10 } },
+        data: { metadata: { sourcesUtilisees: [], sourcesEchouees: [] } },
       });
       zonageOrchestrator.enrichirZonages.mockResolvedValue({
         result: { success: true, sourcesUtilisees: ["API_CARTO_GPU"], sourcesEchouees: [] },
@@ -188,7 +181,6 @@ describe("EnrichissementService", () => {
         zonageReglementaire: "zone-urbaine-u",
         evaluations: { environnemental: null, patrimonial: null, reglementaire: null },
       });
-      fiabiliteCalculator.calculate.mockReturnValue(9.5);
       enrichissementRepository.save.mockResolvedValue({});
 
       // Act
@@ -200,66 +192,6 @@ describe("EnrichissementService", () => {
       expect(result.commune).toBe("Quimper");
       expect(result.surfaceSite).toBe(1000);
       expect(result.sourcesUtilisees).toHaveLength(8);
-      expect(result.fiabilite).toBe(9.5);
-    });
-
-    it("devrait calculer la fiabilite avec les bonnes donnees", async () => {
-      // Arrange
-      const parcelle = createMockParcelle();
-      cadastreEnrichissement.enrichir.mockResolvedValue({
-        parcelle,
-        result: {
-          success: true,
-          sourcesUtilisees: ["cadastre"],
-          sourcesEchouees: [],
-          champsManquants: [],
-        },
-      });
-      energieEnrichissement.enrichir.mockResolvedValue({
-        success: true,
-        sourcesUtilisees: ["enedis"],
-        sourcesEchouees: [],
-        champsManquants: [],
-      });
-      transportEnrichissement.enrichir.mockResolvedValue({
-        success: false,
-        sourcesUtilisees: [],
-        sourcesEchouees: ["transport"],
-        champsManquants: ["distanceTransport"],
-      });
-      urbanismeEnrichissement.enrichir.mockResolvedValue({
-        success: true,
-        sourcesUtilisees: ["overpass"],
-        sourcesEchouees: [],
-        champsManquants: [],
-      });
-      risquesNaturelsEnrichissement.enrichir.mockResolvedValue({
-        result: { success: true, sourcesUtilisees: ["rga"], sourcesEchouees: [] },
-        evaluation: { rga: null, cavites: null, risqueFinal: RisqueNaturel.AUCUN },
-      });
-      risquesTechnologiquesEnrichissement.enrichir.mockResolvedValue({
-        result: { success: true, sourcesUtilisees: ["sis"], sourcesEchouees: [] },
-        evaluation: { sis: null, icpe: null, risqueFinal: false },
-      });
-      georisquesEnrichissement.enrichir.mockResolvedValue({
-        result: { success: true, sourcesUtilisees: ["georisques"], sourcesEchouees: [] },
-        data: undefined,
-      });
-      zonageOrchestrator.enrichirZonages.mockResolvedValue({
-        result: { success: true, sourcesUtilisees: ["API_CARTO_GPU"], sourcesEchouees: [] },
-        zonageEnvironnemental: "hors-zone",
-        zonagePatrimonial: "non-concerne",
-        zonageReglementaire: "zone-urbaine-u",
-        evaluations: { environnemental: null, patrimonial: null, reglementaire: null },
-      });
-      fiabiliteCalculator.calculate.mockReturnValue(8.5);
-      enrichissementRepository.save.mockResolvedValue({});
-
-      // Act
-      await service.enrichir(identifiantTest);
-
-      // Assert
-      expect(fiabiliteCalculator.calculate).toHaveBeenCalledWith(7, 1);
     });
 
     it("devrait persister l'enrichissement avec statut SUCCES", async () => {
@@ -275,7 +207,6 @@ describe("EnrichissementService", () => {
         georisquesEnrichissement,
         zonageOrchestrator,
       });
-      fiabiliteCalculator.calculate.mockReturnValue(9.5);
       enrichissementRepository.save.mockResolvedValue({});
 
       // Act
@@ -333,7 +264,6 @@ describe("EnrichissementService", () => {
         zonageReglementaire: "zone-urbaine-u",
         evaluations: { environnemental: null, patrimonial: null, reglementaire: null },
       });
-      fiabiliteCalculator.calculate.mockReturnValue(8.0);
       enrichissementRepository.save.mockResolvedValue({});
 
       // Act
@@ -393,7 +323,6 @@ describe("EnrichissementService", () => {
         georisquesEnrichissement,
         zonageOrchestrator,
       });
-      fiabiliteCalculator.calculate.mockReturnValue(9.5);
       enrichissementRepository.save.mockRejectedValue(new Error("DB error"));
 
       // Act & Assert
@@ -413,7 +342,6 @@ describe("EnrichissementService", () => {
         georisquesEnrichissement,
         zonageOrchestrator,
       });
-      fiabiliteCalculator.calculate.mockReturnValue(9.5);
       enrichissementRepository.save.mockResolvedValue({});
 
       const sourceUtilisation = "cartofriches";
@@ -470,7 +398,6 @@ describe("EnrichissementService", () => {
         zonageReglementaire: "zone-urbaine-u",
         evaluations: { environnemental: null, patrimonial: null, reglementaire: null },
       });
-      fiabiliteCalculator.calculate.mockReturnValue(7.0);
       enrichissementRepository.save.mockResolvedValue({});
 
       // Act

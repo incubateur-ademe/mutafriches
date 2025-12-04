@@ -47,6 +47,11 @@ export function Footer() {
                 </button>
               </li>
               <li className="fr-footer__bottom-item">
+                <a className="fr-footer__bottom-link" href={ROUTES.API}>
+                  API & Documentation intégrateurs
+                </a>
+              </li>
+              <li className="fr-footer__bottom-item">
                 <a className="fr-footer__bottom-link" href={ROUTES.TESTS}>
                   Pages de tests
                 </a>

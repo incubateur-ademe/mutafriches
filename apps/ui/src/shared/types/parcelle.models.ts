@@ -15,7 +15,7 @@ export interface ParcelleUiModel {
   // Environnement
   centreVille: string;
   distanceAutoroute: string;
-  distanceTrain: string;
+  distanceTransportsEnCommun: string;
   proximiteCommerces: string;
   distanceRaccordement: string;
   tauxLV: string;

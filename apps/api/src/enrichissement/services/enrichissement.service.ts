@@ -13,7 +13,6 @@ import { UrbanismeEnrichissementService } from "./urbanisme/urbanisme-enrichisse
 import { RisquesNaturelsEnrichissementService } from "./risques-naturels/risques-naturels-enrichissement.service";
 import { RisquesTechnologiquesEnrichissementService } from "./risques-technologiques/risques-technologiques-enrichissement.service";
 import { GeoRisquesEnrichissementService } from "./georisques/georisques-enrichissement.service";
-import { FiabiliteCalculator } from "./shared/fiabilite.calculator";
 import { ZonageOrchestratorService } from "./zonage";
 
 /**
@@ -43,7 +42,6 @@ export class EnrichissementService {
     private readonly zonageOrchestrator: ZonageOrchestratorService,
 
     // Utilitaires
-    private readonly fiabiliteCalculator: FiabiliteCalculator,
     private readonly enrichissementRepository: EnrichissementRepository,
   ) {}
 
@@ -164,9 +162,12 @@ export class EnrichissementService {
       }
 
       // 9. CALCULER LA FIABILITÉ
-      const fiabilite = this.fiabiliteCalculator.calculate(
-        sourcesUtilisees.length,
-        champsManquants.length,
+      const sourcesUniques = [...new Set(sourcesUtilisees)];
+      const champsManquantsUniques = [...new Set(champsManquants)];
+
+      this.logger.debug(`Sources uniques (${sourcesUniques.length}): ${sourcesUniques.join(", ")}`);
+      this.logger.debug(
+        `Champs manquants uniques (${champsManquantsUniques.length}): ${champsManquantsUniques.join(", ")}`,
       );
 
       // 10. DÉTERMINER LE STATUT
@@ -207,14 +208,11 @@ export class EnrichissementService {
         risquesGeorisques,
 
         // Métadonnées d'enrichissement
-        sourcesUtilisees,
-        champsManquants,
-        fiabilite,
+        sourcesUtilisees: sourcesUniques,
+        champsManquants: champsManquantsUniques,
       } as EnrichissementOutputDto;
 
-      this.logger.log(
-        `Enrichissement termine: ${identifiantParcelle} (statut: ${statut}, fiabilite: ${fiabilite}/10)`,
-      );
+      this.logger.log(`Enrichissement termine: ${identifiantParcelle} (statut: ${statut}`);
     } catch (error) {
       statut = StatutEnrichissement.ECHEC;
       messageErreur =

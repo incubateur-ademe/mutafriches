@@ -8,12 +8,14 @@ import {
   VALIDATION_THRESHOLDS,
   type TestCaseValidation,
 } from "../__test-helpers__/fixtures.helpers";
+import { FiabiliteCalculator } from "./algorithme/fiabilite.calculator";
 
 describe("CalculService - Validation des fixtures", () => {
   let calculService: CalculService;
 
   beforeEach(() => {
-    calculService = new CalculService();
+    const fiabiliteCalculator = new FiabiliteCalculator();
+    calculService = new CalculService(fiabiliteCalculator);
   });
 
   describe("Validation individuelle des test cases", { timeout: 10000 }, () => {

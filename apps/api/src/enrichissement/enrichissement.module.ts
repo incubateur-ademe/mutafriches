@@ -15,7 +15,6 @@ import { RisquesTechnologiquesEnrichissementService } from "./services/risques-t
 // Calculators
 import { RisquesNaturelsCalculator } from "./services/risques-naturels/risques-naturels.calculator";
 import { RisquesTechnologiquesCalculator } from "./services/risques-technologiques/risques-technologiques.calculator";
-import { FiabiliteCalculator } from "./services/shared/fiabilite.calculator";
 
 // Services Zonage
 import { ZonageOrchestratorService } from "./services/zonage/zonage-orchestrator.service";
@@ -56,6 +55,7 @@ import { ApiCartoGpuService } from "./adapters/api-carto/gpu/api-carto-gpu.servi
 
 // Adapters data.gouv.fr
 import { DatagouvLovacService } from "./adapters/datagouv-lovac/datagouv-lovac.service";
+import { BpeRepository } from "./repositories/bpe.repository";
 
 @Module({
   imports: [HttpModule],
@@ -64,6 +64,7 @@ import { DatagouvLovacService } from "./adapters/datagouv-lovac/datagouv-lovac.s
     // Service principal
     EnrichissementService,
     EnrichissementRepository,
+    BpeRepository,
 
     // Services de domaine
     CadastreEnrichissementService,
@@ -78,7 +79,6 @@ import { DatagouvLovacService } from "./adapters/datagouv-lovac/datagouv-lovac.s
     // Calculators
     RisquesNaturelsCalculator,
     RisquesTechnologiquesCalculator,
-    FiabiliteCalculator,
 
     // Services Zonage
     ZonageOrchestratorService,
