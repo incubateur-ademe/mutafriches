@@ -26,7 +26,7 @@ import * as postgres from "postgres";
 // Configuration
 const SEPARATOR = ";";
 const BATCH_SIZE = 1000;
-const DATASET_NAME = "bpe";
+const DATASET_NAME = "donnees-bpe-2024";
 
 interface ImportStats {
   totalLines: number;
@@ -46,7 +46,7 @@ interface BpeRow {
 
 async function importBpe(): Promise<void> {
   const dataDir = path.resolve(__dirname, "../../data");
-  const inputPath = path.resolve(dataDir, "bpe-filtered.csv");
+  const inputPath = path.resolve(dataDir, "donnees-bpe-2024-filtered.csv");
 
   console.log("=".repeat(60));
   console.log("Import BPE en base de donnees");

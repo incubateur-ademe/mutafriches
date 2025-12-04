@@ -61,8 +61,8 @@ interface FilterStats {
 
 async function filterBpeCsv(): Promise<void> {
   const dataDir = path.resolve(__dirname, "../../data");
-  const inputPath = path.resolve(dataDir, "raw/bpe24.csv");
-  const outputPath = path.resolve(dataDir, "bpe-filtered.csv");
+  const inputPath = path.resolve(dataDir, "raw/donnees-bpe-2024.csv");
+  const outputPath = path.resolve(dataDir, "donnees-bpe-2024-filtered.csv");
 
   console.log("=".repeat(60));
   console.log("Filtrage du fichier BPE INSEE");
