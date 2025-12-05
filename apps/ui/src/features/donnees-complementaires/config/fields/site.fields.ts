@@ -95,9 +95,9 @@ export const SITE_FIELDS = {
     ] as SelectOption<ValeurArchitecturale>[],
   },
 
-  tvb: {
+  trameVerteEtBleue: {
     id: "continuité-ecologique",
-    name: "tvb",
+    name: "trameVerteEtBleue",
     label: "Localisation du site par rapport aux continuités écologiques (trame verte et bleue)",
     required: true,
     section: "site" as const,

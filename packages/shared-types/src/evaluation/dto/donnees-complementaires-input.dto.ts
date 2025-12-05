@@ -32,5 +32,5 @@ export interface DonneesComplementairesInputDto {
   qualiteVoieDesserte: QualiteVoieDesserte;
 
   // Trame verte et bleue
-  tvb: TrameVerteEtBleue;
+  trameVerteEtBleue: TrameVerteEtBleue;
 }

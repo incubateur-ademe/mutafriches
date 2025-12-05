@@ -40,7 +40,7 @@ export type ManualFormValues = {
   valeurArchitecturale: ValeurArchitecturale | "";
   qualitePaysagere: QualitePaysage | "";
   qualiteDesserte: QualiteVoieDesserte | "";
-  tvb: TrameVerteEtBleue | "";
+  trameVerteEtBleue: TrameVerteEtBleue | "";
 };
 
 /**
@@ -54,5 +54,5 @@ export const DEFAULT_FORM_VALUES: ManualFormValues = {
   valeurArchitecturale: "",
   qualitePaysagere: "",
   qualiteDesserte: "",
-  tvb: "",
+  trameVerteEtBleue: "",
 };
