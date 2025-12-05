@@ -50,15 +50,15 @@ export const SITE_FIELDS = {
     options: [
       { value: "", label: "Sélectionner une option" },
       {
-        value: EtatBatiInfrastructure.DEGRADATION_TRES_IMPORTANTE,
-        label: "Dégradation très importante",
-      },
-      { value: EtatBatiInfrastructure.DEGRADATION_MOYENNE, label: "Dégradation moyenne" },
-      {
         value: EtatBatiInfrastructure.DEGRADATION_INEXISTANTE,
         label: "Dégradation inexistante ou faible",
       },
+      { value: EtatBatiInfrastructure.DEGRADATION_MOYENNE, label: "Dégradation moyenne" },
       { value: EtatBatiInfrastructure.DEGRADATION_HETEROGENE, label: "Dégradation hétérogène" },
+      {
+        value: EtatBatiInfrastructure.DEGRADATION_TRES_IMPORTANTE,
+        label: "Dégradation très importante",
+      },
       { value: EtatBatiInfrastructure.NE_SAIT_PAS, label: "Ne sait pas" },
     ] as SelectOption<EtatBatiInfrastructure>[],
   },
@@ -71,10 +71,10 @@ export const SITE_FIELDS = {
     section: "site" as const,
     options: [
       { value: "", label: "Sélectionner une option" },
-      { value: PresencePollution.NON, label: "Non" },
-      { value: PresencePollution.DEJA_GEREE, label: "Déjà gérée" },
       { value: PresencePollution.OUI_COMPOSES_VOLATILS, label: "Oui - composés volatils" },
       { value: PresencePollution.OUI_AUTRES_COMPOSES, label: "Oui - autres composés" },
+      { value: PresencePollution.DEJA_GEREE, label: "Déjà gérée" },
+      { value: PresencePollution.NON, label: "Non" },
       { value: PresencePollution.NE_SAIT_PAS, label: "Ne sait pas" },
     ] as SelectOption<PresencePollution>[],
   },
