@@ -7,10 +7,12 @@ import {
   QualitePaysage,
   QualiteVoieDesserte,
   RaccordementEau,
+  TrameVerteEtBleue,
 } from "@mutafriches/shared-types";
 import { ApiProperty } from "@nestjs/swagger";
 
 export class DonneesComplementairesSwaggerDto implements IDonneesComplementaires {
+  tvb: TrameVerteEtBleue;
   @ApiProperty({
     enum: TypeProprietaire,
     description: "Type de propriétaire de la parcelle",
@@ -59,4 +61,11 @@ export class DonneesComplementairesSwaggerDto implements IDonneesComplementaires
     example: QualiteVoieDesserte.ACCESSIBLE,
   })
   qualiteVoieDesserte: QualiteVoieDesserte;
+
+  @ApiProperty({
+    enum: ["HORS_TRAME", "ZONE_DE_CONNEXION", "NOUE", "COULOIR_DE_PASSAGE", "NOEUD_HYDROGRAPHIQUE"],
+    description: "Intégration de la parcelle dans la trame verte et bleue",
+    example: "HORS_TRAME",
+  })
+  trameVerteEtBleue: TrameVerteEtBleue;
 }

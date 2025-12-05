@@ -28,9 +28,9 @@ export const ENVIRONNEMENT_FIELDS = {
     section: "environnement" as const,
     options: [
       { value: "", label: "Sélectionner une option" },
-      { value: QualiteVoieDesserte.ACCESSIBLE, label: "Accessible" },
       { value: QualiteVoieDesserte.DEGRADEE, label: "Dégradée" },
       { value: QualiteVoieDesserte.PEU_ACCESSIBLE, label: "Peu accessible" },
+      { value: QualiteVoieDesserte.ACCESSIBLE, label: "Accessible" },
       { value: QualiteVoieDesserte.NE_SAIT_PAS, label: "Ne sait pas" },
     ] as SelectOption<QualiteVoieDesserte>[],
   },

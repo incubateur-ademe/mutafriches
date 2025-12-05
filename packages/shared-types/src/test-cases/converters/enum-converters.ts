@@ -1,3 +1,4 @@
+import { TrameVerteEtBleue } from "../../enrichissement";
 import {
   EtatBatiInfrastructure,
   PresencePollution,
@@ -27,6 +28,7 @@ export function toEtatBati(value: string | undefined): EtatBatiInfrastructure {
     "degradation-inexistante": EtatBatiInfrastructure.DEGRADATION_INEXISTANTE,
     "degradation-heterogene": EtatBatiInfrastructure.DEGRADATION_HETEROGENE,
     "ne-sait-pas": EtatBatiInfrastructure.NE_SAIT_PAS,
+    "-": EtatBatiInfrastructure.NE_SAIT_PAS,
   };
 
   // Essayer d'abord avec la valeur normalisée
@@ -227,4 +229,46 @@ export function toQualiteVoieDesserte(value: string | undefined): QualiteVoieDes
   if (value === "NE_SAIT_PAS") return QualiteVoieDesserte.NE_SAIT_PAS;
 
   return QualiteVoieDesserte.NE_SAIT_PAS;
+}
+
+export function toTrameVerteEtBleue(value: string | undefined): TrameVerteEtBleue {
+  if (!value) return TrameVerteEtBleue.NE_SAIT_PAS;
+
+  const normalizedValue = value.toLowerCase().replace(/_/g, "-");
+
+  const mapping: Record<string, TrameVerteEtBleue> = {
+    // Formats test case (kebab-case)
+    "hors-trame": TrameVerteEtBleue.HORS_TRAME,
+    "reservoir-biodiversite": TrameVerteEtBleue.RESERVOIR_BIODIVERSITE,
+    "corridor-a-restaurer": TrameVerteEtBleue.CORRIDOR_A_RESTAURER,
+    "corridor-a-preserver": TrameVerteEtBleue.CORRIDOR_A_PRESERVER,
+    "ne-sait-pas": TrameVerteEtBleue.NE_SAIT_PAS,
+
+    // Formats Excel (avec accents et espaces)
+    "hors trame": TrameVerteEtBleue.HORS_TRAME,
+    "situé en réservoir de biodiversité": TrameVerteEtBleue.RESERVOIR_BIODIVERSITE,
+    "situe en reservoir de biodiversite": TrameVerteEtBleue.RESERVOIR_BIODIVERSITE,
+    "présence corridor à préserver": TrameVerteEtBleue.CORRIDOR_A_PRESERVER,
+    "presence corridor a preserver": TrameVerteEtBleue.CORRIDOR_A_PRESERVER,
+    "présence corridor à restaurer": TrameVerteEtBleue.CORRIDOR_A_RESTAURER,
+    "presence corridor a restaurer": TrameVerteEtBleue.CORRIDOR_A_RESTAURER,
+    "ne sait pas": TrameVerteEtBleue.NE_SAIT_PAS,
+
+    // Anciens formats (pour backward compatibility)
+    presente: TrameVerteEtBleue.CORRIDOR_A_PRESERVER,
+    absente: TrameVerteEtBleue.HORS_TRAME,
+  };
+
+  if (mapping[normalizedValue]) {
+    return mapping[normalizedValue];
+  }
+
+  // Essayer avec la valeur originale si c'est déjà un enum
+  if (value === "HORS_TRAME") return TrameVerteEtBleue.HORS_TRAME;
+  if (value === "RESERVOIR_BIODIVERSITE") return TrameVerteEtBleue.RESERVOIR_BIODIVERSITE;
+  if (value === "CORRIDOR_A_RESTAURER") return TrameVerteEtBleue.CORRIDOR_A_RESTAURER;
+  if (value === "CORRIDOR_A_PRESERVER") return TrameVerteEtBleue.CORRIDOR_A_PRESERVER;
+  if (value === "NE_SAIT_PAS") return TrameVerteEtBleue.NE_SAIT_PAS;
+
+  return TrameVerteEtBleue.NE_SAIT_PAS;
 }

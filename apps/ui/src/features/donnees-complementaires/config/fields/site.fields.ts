@@ -4,6 +4,7 @@ import {
   PresencePollution,
   ValeurArchitecturale,
   RaccordementEau,
+  TrameVerteEtBleue,
 } from "@mutafriches/shared-types";
 import { SelectOption } from "../types";
 
@@ -50,15 +51,15 @@ export const SITE_FIELDS = {
     options: [
       { value: "", label: "Sélectionner une option" },
       {
-        value: EtatBatiInfrastructure.DEGRADATION_TRES_IMPORTANTE,
-        label: "Dégradation très importante",
-      },
-      { value: EtatBatiInfrastructure.DEGRADATION_MOYENNE, label: "Dégradation moyenne" },
-      {
         value: EtatBatiInfrastructure.DEGRADATION_INEXISTANTE,
         label: "Dégradation inexistante ou faible",
       },
+      { value: EtatBatiInfrastructure.DEGRADATION_MOYENNE, label: "Dégradation moyenne" },
       { value: EtatBatiInfrastructure.DEGRADATION_HETEROGENE, label: "Dégradation hétérogène" },
+      {
+        value: EtatBatiInfrastructure.DEGRADATION_TRES_IMPORTANTE,
+        label: "Dégradation très importante",
+      },
       { value: EtatBatiInfrastructure.NE_SAIT_PAS, label: "Ne sait pas" },
     ] as SelectOption<EtatBatiInfrastructure>[],
   },
@@ -71,10 +72,10 @@ export const SITE_FIELDS = {
     section: "site" as const,
     options: [
       { value: "", label: "Sélectionner une option" },
-      { value: PresencePollution.NON, label: "Non" },
-      { value: PresencePollution.DEJA_GEREE, label: "Déjà gérée" },
       { value: PresencePollution.OUI_COMPOSES_VOLATILS, label: "Oui - composés volatils" },
       { value: PresencePollution.OUI_AUTRES_COMPOSES, label: "Oui - autres composés" },
+      { value: PresencePollution.DEJA_GEREE, label: "Déjà gérée" },
+      { value: PresencePollution.NON, label: "Non" },
       { value: PresencePollution.NE_SAIT_PAS, label: "Ne sait pas" },
     ] as SelectOption<PresencePollution>[],
   },
@@ -92,5 +93,21 @@ export const SITE_FIELDS = {
       { value: ValeurArchitecturale.INTERET_REMARQUABLE, label: "Intérêt remarquable" },
       { value: ValeurArchitecturale.NE_SAIT_PAS, label: "Ne sait pas" },
     ] as SelectOption<ValeurArchitecturale>[],
+  },
+
+  trameVerteEtBleue: {
+    id: "continuité-ecologique",
+    name: "trameVerteEtBleue",
+    label: "Localisation du site par rapport aux continuités écologiques (trame verte et bleue)",
+    required: true,
+    section: "site" as const,
+    options: [
+      { value: "", label: "Sélectionner une option" },
+      { value: TrameVerteEtBleue.HORS_TRAME, label: "Hors trame" },
+      { value: TrameVerteEtBleue.RESERVOIR_BIODIVERSITE, label: "Réservoir de biodiversité" },
+      { value: TrameVerteEtBleue.CORRIDOR_A_PRESERVER, label: "Corridor à préserver" },
+      { value: TrameVerteEtBleue.CORRIDOR_A_RESTAURER, label: "Corridor à restaurer" },
+      { value: TrameVerteEtBleue.NE_SAIT_PAS, label: "Ne sait pas" },
+    ] as SelectOption<TrameVerteEtBleue>[],
   },
 } as const;

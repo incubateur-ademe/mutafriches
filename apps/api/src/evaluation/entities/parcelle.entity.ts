@@ -88,9 +88,6 @@ export class Parcelle {
       zonageReglementaire: enrichissement.zonageReglementaire
         ? (enrichissement.zonageReglementaire as ZonageReglementaire)
         : undefined,
-      trameVerteEtBleue: enrichissement.trameVerteEtBleue
-        ? (enrichissement.trameVerteEtBleue as TrameVerteEtBleue)
-        : undefined,
       // Copie des données géographiques
       coordonnees: enrichissement.coordonnees,
       geometrie: enrichissement.geometrie,
@@ -143,9 +140,6 @@ export class Parcelle {
     parcelle.zonageReglementaire = donneesEnrichies.zonageReglementaire
       ? (donneesEnrichies.zonageReglementaire as ZonageReglementaire)
       : undefined;
-    parcelle.trameVerteEtBleue = donneesEnrichies.trameVerteEtBleue
-      ? (donneesEnrichies.trameVerteEtBleue as TrameVerteEtBleue)
-      : undefined;
 
     // Métadonnées
     parcelle.sourcesUtilisees = donneesEnrichies.sourcesUtilisees || [];
@@ -161,6 +155,7 @@ export class Parcelle {
         donneesComplementaires.valeurArchitecturaleHistorique;
       parcelle.qualitePaysage = donneesComplementaires.qualitePaysage;
       parcelle.qualiteVoieDesserte = donneesComplementaires.qualiteVoieDesserte;
+      parcelle.trameVerteEtBleue = donneesComplementaires.trameVerteEtBleue;
     }
 
     return parcelle;
@@ -181,7 +176,8 @@ export class Parcelle {
         v !== PresencePollution.NE_SAIT_PAS &&
         v !== ValeurArchitecturale.NE_SAIT_PAS &&
         v !== QualitePaysage.NE_SAIT_PAS &&
-        v !== QualiteVoieDesserte.NE_SAIT_PAS,
+        v !== QualiteVoieDesserte.NE_SAIT_PAS &&
+        v !== TrameVerteEtBleue.NE_SAIT_PAS,
     ).length;
 
     return Math.round((champsRemplis / champsTotal) * 100);
@@ -201,7 +197,8 @@ export class Parcelle {
       this.presencePollution &&
       this.valeurArchitecturaleHistorique &&
       this.qualitePaysage &&
-      this.qualiteVoieDesserte
+      this.qualiteVoieDesserte &&
+      this.trameVerteEtBleue
     );
   }
 }

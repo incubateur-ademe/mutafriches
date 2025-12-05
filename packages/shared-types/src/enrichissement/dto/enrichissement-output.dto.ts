@@ -36,7 +36,6 @@ export interface EnrichissementOutputDto {
   zonageReglementaire?: string;
   zonageEnvironnemental?: string; // Enum ZonageEnvironnemental
   zonagePatrimonial?: string; // Enum ZonagePatrimonial
-  trameVerteEtBleue?: string; // Enum TrameVerteEtBleue
 
   // Métadonnées
   sourcesUtilisees: string[];

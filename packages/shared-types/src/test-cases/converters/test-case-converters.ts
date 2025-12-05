@@ -86,7 +86,6 @@ export function convertTestCaseToMutabilityInput(
     zonageEnvironnemental: input.zonageEnvironnemental,
     zonageReglementaire: input.zonageReglementaire,
     zonagePatrimonial: input.zonagePatrimonial,
-    trameVerteEtBleue: input.trameVerteEtBleu,
 
     coordonnees: input.coordonnees,
     sourcesUtilisees: ["Test"],
@@ -106,6 +105,7 @@ export function convertTestCaseToMutabilityInput(
     ),
     qualitePaysage: enumConverters.toQualitePaysage(input.qualitePaysage),
     qualiteVoieDesserte: enumConverters.toQualiteVoieDesserte(input.qualiteVoieDesserte),
+    trameVerteEtBleue: enumConverters.toTrameVerteEtBleue(input.trameVerteEtBleu),
   };
 
   return {

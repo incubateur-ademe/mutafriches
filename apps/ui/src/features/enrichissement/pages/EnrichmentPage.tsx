@@ -5,7 +5,6 @@ import { Layout } from "../../../shared/components/layout/Layout";
 import { Stepper } from "../../../shared/components/layout";
 import { MultiParcelleToggle } from "../components/parcelle-selection/MultiParcelleToggle";
 import { ParcelleSelection } from "../components/parcelle-selection/ParcelleSelection";
-import { LoadingCallout } from "../../../shared/components/common/LoadingCallout";
 import { ErrorAlert } from "../../../shared/components/common/ErrorAlert";
 import { EnrichmentDisplayZone } from "../components/enrichment-display/EnrichmentDisplayZone";
 import { transformEnrichmentToUiData } from "../utils/enrichissment.mapper";
@@ -13,6 +12,9 @@ import { useFormContext } from "../../../shared/form/useFormContext";
 import { enrichissementService } from "../../../shared/services/api/api.enrichissement.service";
 import { TypeEvenement } from "@mutafriches/shared-types";
 import { useEventTracking } from "../../../shared/hooks/useEventTracking";
+import { EnrichmentLoadingCallout } from "../components/enrichment-display/EnrichmentLoadingCallout";
+
+const MIN_LOADING_TIME = 3000; // 3 secondes minimum
 
 export const Step1EnrichmentPage: React.FC = () => {
   const navigate = useNavigate();
@@ -32,9 +34,19 @@ export const Step1EnrichmentPage: React.FC = () => {
     setError(null);
     scrollToResultsZone();
 
+    const startTime = Date.now();
+
     try {
       const enrichmentResult = await enrichissementService.enrichirParcelle(identifiant);
       const uiData = transformEnrichmentToUiData(enrichmentResult);
+
+      // Calculer le temps écoulé
+      const elapsedTime = Date.now() - startTime;
+      const remainingTime = Math.max(0, MIN_LOADING_TIME - elapsedTime);
+
+      // Attendre le temps restant pour atteindre 3 secondes minimum
+      await new Promise((resolve) => setTimeout(resolve, remainingTime));
+
       setEnrichmentData(enrichmentResult, uiData, identifiant);
 
       // Tracker l'événement d'enrichissement terminé
@@ -42,6 +54,11 @@ export const Step1EnrichmentPage: React.FC = () => {
         identifiantCadastral: identifiant,
       });
     } catch (err) {
+      // Même en cas d'erreur, respecter le temps minimum
+      const elapsedTime = Date.now() - startTime;
+      const remainingTime = Math.max(0, MIN_LOADING_TIME - elapsedTime);
+      await new Promise((resolve) => setTimeout(resolve, remainingTime));
+
       setError(err instanceof Error ? err.message : "Une erreur est survenue");
     } finally {
       setIsLoading(false);
@@ -118,12 +135,7 @@ export const Step1EnrichmentPage: React.FC = () => {
 
         {/* Zone de résultats avec id fixe pour le scroll */}
         <div id="results-zone">
-          {isLoading && (
-            <LoadingCallout
-              title="Enrichissement en cours"
-              message="Récupération des informations de la parcelle..."
-            />
-          )}
+          {isLoading && <EnrichmentLoadingCallout />}
 
           {error && !isLoading && <ErrorAlert message={error} />}
 

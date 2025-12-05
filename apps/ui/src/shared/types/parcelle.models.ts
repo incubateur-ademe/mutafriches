@@ -6,7 +6,6 @@ export interface ParcelleUiModel {
   // Données de base
   surfaceParcelle: string;
   surfaceBatie: string;
-  typeProprietaire: string;
 
   // Informations parcelle
   commune: string;
@@ -26,6 +25,4 @@ export interface ParcelleUiModel {
   zonageEnviro: string;
   zonageUrba: string;
   zonagePatrimonial: string;
-  tvb: string;
-  potentielEcologique: string;
 }

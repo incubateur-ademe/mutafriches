@@ -64,10 +64,5 @@ export const transformEnrichmentToUiData = (
       enrichmentData.distanceTransportCommun !== undefined
         ? formatDistance(enrichmentData.distanceTransportCommun)
         : nonAccessibleVersion,
-
-    // Champs non disponibles dans l'enrichissement actuel
-    typeProprietaire: nonAccessibleVersion,
-    tvb: nonAccessibleVersion,
-    potentielEcologique: nonAccessibleVersion,
   };
 };

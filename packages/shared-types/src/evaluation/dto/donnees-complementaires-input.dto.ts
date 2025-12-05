@@ -1,3 +1,4 @@
+import { TrameVerteEtBleue } from "../../enrichissement";
 import {
   EtatBatiInfrastructure,
   PresencePollution,
@@ -29,4 +30,7 @@ export interface DonneesComplementairesInputDto {
 
   // Accessibilité
   qualiteVoieDesserte: QualiteVoieDesserte;
+
+  // Trame verte et bleue
+  trameVerteEtBleue: TrameVerteEtBleue;
 }
