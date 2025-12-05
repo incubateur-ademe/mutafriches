@@ -366,12 +366,6 @@ export const EnrichmentDisplayZone: React.FC<EnrichmentDisplayZoneProps> = ({
                 </>
               }
             />
-            <EnrichmentInfoField
-              id="continuité-ecologique"
-              label="Continuité écologique (trame verte et bleue)"
-              value={data.tvb}
-              tooltip="Pas de récupération pour l'instant"
-            />
           </div>
         </div>
       </div>

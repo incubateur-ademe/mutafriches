@@ -6,6 +6,7 @@ import {
   QualitePaysage,
   QualiteVoieDesserte,
   RaccordementEau,
+  TrameVerteEtBleue,
 } from "@mutafriches/shared-types";
 
 /**
@@ -39,6 +40,7 @@ export type ManualFormValues = {
   valeurArchitecturale: ValeurArchitecturale | "";
   qualitePaysagere: QualitePaysage | "";
   qualiteDesserte: QualiteVoieDesserte | "";
+  tvb: TrameVerteEtBleue | "";
 };
 
 /**
@@ -52,4 +54,5 @@ export const DEFAULT_FORM_VALUES: ManualFormValues = {
   valeurArchitecturale: "",
   qualitePaysagere: "",
   qualiteDesserte: "",
+  tvb: "",
 };
