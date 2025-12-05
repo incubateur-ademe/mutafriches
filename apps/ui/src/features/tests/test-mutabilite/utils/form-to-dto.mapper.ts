@@ -59,6 +59,7 @@ export function buildCalculerMutabiliteFromFormData(formData: any): CalculerMuta
     valeurArchitecturaleHistorique: formData.valeurArchitecturaleHistorique || "NE_SAIT_PAS",
     qualitePaysage: formData.qualitePaysage || "NE_SAIT_PAS",
     qualiteVoieDesserte: formData.qualiteVoieDesserte || "NE_SAIT_PAS",
+    tvb: formData.tvb || "NE_SAIT_PAS",
   };
 
   return {
@@ -90,6 +91,7 @@ function getFieldsMissing(formData: any): string[] {
     "valeurArchitecturaleHistorique",
     "qualitePaysage",
     "qualiteVoieDesserte",
+    "tvb",
   ];
 
   const missing: string[] = [];
