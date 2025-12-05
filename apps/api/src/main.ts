@@ -37,6 +37,11 @@ async function bootstrap() {
       },
     });
 
+    // Route pour récupérer le document OpenAPI en JSON
+    app.use("/api-json", (req: Request, res: Response) => {
+      res.json(document);
+    });
+
     // Trust proxy pour Scalingo et autres environnements
     if (process.env.NODE_ENV === "production") {
       app.set("trust proxy", 1);

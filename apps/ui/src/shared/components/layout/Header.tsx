@@ -1,3 +1,6 @@
+import { Link } from "react-router-dom";
+import { ROUTES } from "../../config/routes.config";
+
 export function Header() {
   return (
     <header role="banner" className="fr-header" id="header-3">
@@ -7,7 +10,7 @@ export function Header() {
             <div className="fr-header__brand fr-enlarge-link">
               <div className="fr-header__brand-top">
                 <div className="fr-header__logo">
-                  <p className="fr-logo">test</p>
+                  <p className="fr-logo">Mutafriches</p>
                 </div>
                 <div className="fr-header__navbar">
                   <button
@@ -35,6 +38,21 @@ export function Header() {
                 <p className="fr-header__service-tagline">
                   Trouvez le meilleur usage pour votre site en friche
                 </p>
+              </div>
+            </div>
+            <div className="fr-header__tools">
+              <div className="fr-header__tools-links">
+                <ul className="fr-btns-group">
+                  <li>
+                    <Link
+                      to={ROUTES.DOCUMENTATION_INTEGRATION}
+                      className="fr-btn fr-icon-book-2-line fr-btn--icon-left"
+                      title="API & Documentation Intégrateurs"
+                    >
+                      Documentation
+                    </Link>
+                  </li>
+                </ul>
               </div>
             </div>
           </div>

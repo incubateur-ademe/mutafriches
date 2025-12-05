@@ -15,6 +15,7 @@ import { useEventTracking } from "./shared/hooks/useEventTracking";
 import { useEffect, useRef } from "react";
 import { TypeEvenement } from "@mutafriches/shared-types";
 import { useIframe } from "./shared/iframe/useIframe";
+import { DocumentationIntegrationPage } from "./features/doc/pages/DocumentationIntegrationPage";
 
 function AppContent() {
   const { track } = useEventTracking();
@@ -38,6 +39,12 @@ function AppContent() {
           <Route path={ROUTES.STEP1} element={<Step1EnrichmentPage />} />
           <Route path={ROUTES.STEP2} element={<Step2DonneesComplementairesPage />} />
           <Route path={ROUTES.STEP3} element={<Step3ResultatsPage />} />
+
+          {/* Documentation */}
+          <Route
+            path={ROUTES.DOCUMENTATION_INTEGRATION}
+            element={<DocumentationIntegrationPage />}
+          />
 
           {/* Routes pour les tests */}
           <Route path={ROUTES.TESTS} element={<Tests />} />
