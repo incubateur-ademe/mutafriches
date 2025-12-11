@@ -4,10 +4,9 @@ interface EnrichmentInfoFieldProps {
   id: string;
   label: string;
   value: string;
-  tooltip: string;
+  tooltip: string | React.ReactNode;
 }
 
-// Composant pour afficher un champ d'information
 export const EnrichmentInfoField: React.FC<EnrichmentInfoFieldProps> = ({
   id,
   label,
