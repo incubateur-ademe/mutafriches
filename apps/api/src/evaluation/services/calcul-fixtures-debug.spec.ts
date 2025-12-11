@@ -93,21 +93,11 @@ describe("Debug - Génération des logs détaillés", () => {
         modeDetaille: true,
       });
 
-      // Transformer le résultat pour matcher le format attendu
-      const transformedResult = {
-        usages: result.resultats.map((r) => ({
-          usage: r.usage,
-          indiceMutabilite: r.indiceMutabilite,
-          rang: r.rang,
-        })),
-        fiabilite: result.fiabilite,
-      };
-
       // Log: Résultat du calcul
-      logger.logOutput(transformedResult as any);
+      logger.logOutput(result);
 
       // Log: Comparaison avec les valeurs attendues
-      logger.logComparison(testCase, transformedResult as any);
+      logger.logComparison(testCase, result);
 
       // Terminer le log pour ce test case
       logger.endTestCase();

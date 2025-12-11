@@ -23,6 +23,36 @@ function compareFixtureLogs(goodLogPath, badLogPath) {
       return;
     }
 
+    // NOUVEAU : Comparer les fixtures elles-mêmes
+    if (goodLog.fixtureSnapshot && badLog.fixtureSnapshot) {
+      // Comparer les hash
+      if (goodLog.fixtureSnapshot.inputHash !== badLog.fixtureSnapshot.inputHash) {
+        differences.push({
+          testCaseId: goodLog.testCaseId,
+          type: "FIXTURE_INPUT_CHANGED",
+          details: compareObjects(
+            goodLog.fixtureSnapshot.fullTestCase.input,
+            badLog.fixtureSnapshot.fullTestCase.input,
+          ),
+          oldHash: goodLog.fixtureSnapshot.inputHash,
+          newHash: badLog.fixtureSnapshot.inputHash,
+        });
+      }
+
+      if (goodLog.fixtureSnapshot.expectedHash !== badLog.fixtureSnapshot.expectedHash) {
+        differences.push({
+          testCaseId: goodLog.testCaseId,
+          type: "FIXTURE_EXPECTED_CHANGED",
+          details: compareExpectedUsages(
+            goodLog.fixtureSnapshot.fullTestCase.expected.usages,
+            badLog.fixtureSnapshot.fullTestCase.expected.usages,
+          ),
+          oldHash: goodLog.fixtureSnapshot.expectedHash,
+          newHash: badLog.fixtureSnapshot.expectedHash,
+        });
+      }
+    }
+
     // Comparer les inputs
     const inputDiff = compareObjects(goodLog.input, badLog.input);
     if (inputDiff.length > 0) {
@@ -67,6 +97,43 @@ function compareFixtureLogs(goodLogPath, badLogPath) {
   });
 
   return differences;
+}
+
+function compareExpectedUsages(usages1, usages2) {
+  const diffs = [];
+
+  usages1.forEach((usage1) => {
+    const usage2 = usages2.find((u) => u.usage === usage1.usage);
+
+    if (!usage2) {
+      diffs.push({
+        usage: usage1.usage,
+        type: "MISSING_USAGE",
+      });
+      return;
+    }
+
+    if (usage1.indiceMutabilite !== usage2.indiceMutabilite) {
+      diffs.push({
+        usage: usage1.usage,
+        type: "EXPECTED_SCORE_CHANGED",
+        oldScore: usage1.indiceMutabilite,
+        newScore: usage2.indiceMutabilite,
+        delta: usage2.indiceMutabilite - usage1.indiceMutabilite,
+      });
+    }
+
+    if (usage1.rang !== usage2.rang) {
+      diffs.push({
+        usage: usage1.usage,
+        type: "EXPECTED_RANK_CHANGED",
+        oldRank: usage1.rang,
+        newRank: usage2.rang,
+      });
+    }
+  });
+
+  return diffs;
 }
 
 function compareObjects(obj1, obj2, path = "") {
@@ -261,7 +328,31 @@ function formatDifferences(differences) {
     diffs.forEach((diff) => {
       lines.push(`Test Case: ${diff.testCaseId}`);
 
-      if (diff.type === "INPUT_DIFF") {
+      if (diff.type === "FIXTURE_INPUT_CHANGED") {
+        lines.push("  ⚠️ LA FIXTURE INPUT A CHANGÉ:");
+        lines.push(`    Hash ancien: ${diff.oldHash}`);
+        lines.push(`    Hash nouveau: ${diff.newHash}`);
+        lines.push("  Différences détaillées:");
+        diff.details.forEach((d) => {
+          lines.push(
+            `    ${d.path}: ${JSON.stringify(d.oldValue)} → ${JSON.stringify(d.newValue)} (${d.type})`,
+          );
+        });
+      } else if (diff.type === "FIXTURE_EXPECTED_CHANGED") {
+        lines.push("  ⚠️ LES VALEURS ATTENDUES DE LA FIXTURE ONT CHANGÉ:");
+        lines.push(`    Hash ancien: ${diff.oldHash}`);
+        lines.push(`    Hash nouveau: ${diff.newHash}`);
+        lines.push("  Différences détaillées:");
+        diff.details.forEach((d) => {
+          if (d.type === "EXPECTED_SCORE_CHANGED") {
+            lines.push(
+              `    ${d.usage}: score attendu ${d.oldScore}% → ${d.newScore}% (Δ ${d.delta > 0 ? "+" : ""}${d.delta}%)`,
+            );
+          } else if (d.type === "EXPECTED_RANK_CHANGED") {
+            lines.push(`    ${d.usage}: rang attendu ${d.oldRank} → ${d.newRank}`);
+          }
+        });
+      } else if (diff.type === "INPUT_DIFF") {
         lines.push("  Différences dans les inputs:");
         diff.details.forEach((d) => {
           lines.push(`    ${d.path}: ${d.oldValue} → ${d.newValue} (${d.type})`);
