@@ -44,7 +44,7 @@ export const SITE_FIELDS = {
 
   etatBati: {
     id: "etat-bati",
-    name: "etatBati",
+    name: "etatBatiInfrastructure",
     label: "État des constructions",
     required: true,
     section: "site" as const,
@@ -82,7 +82,7 @@ export const SITE_FIELDS = {
 
   valeurArchitecturale: {
     id: "valeur-architecturale",
-    name: "valeurArchitecturale",
+    name: "valeurArchitecturaleHistorique",
     label: "Intérêt architectural et historique des constructions",
     required: true,
     section: "site" as const,

@@ -29,11 +29,12 @@ export const validateForm = (values: ManualFormValues): ValidationResult => {
   const errors: ValidationErrors = {};
 
   // Parcourir tous les champs
-  Object.entries(ALL_FIELDS).forEach(([key, field]) => {
+  Object.entries(ALL_FIELDS).forEach(([, field]) => {
     if (field.required) {
-      const value = values[key as keyof ManualFormValues];
+      const fieldName = field.name as keyof ManualFormValues;
+      const value = values[fieldName];
       if (!value) {
-        errors[key as keyof ManualFormValues] = `${field.label} est obligatoire`;
+        errors[fieldName] = `${field.label} est obligatoire`;
       }
     }
   });
