@@ -75,7 +75,7 @@ export class EvaluationBuilder {
       {
         usage: UsageType.RESIDENTIEL,
         indiceMutabilite: 75,
-        rang: 7,
+        rang: 1,
         potentiel: "Favorable",
       },
     ],
