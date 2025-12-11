@@ -40,7 +40,6 @@ export function buildCalculerMutabiliteFromFormData(formData: any): CalculerMuta
     zonageReglementaire: formData.zonageReglementaire,
     zonageEnvironnemental: formData.zonageEnvironnemental,
     zonagePatrimonial: formData.zonagePatrimonial,
-    trameVerteEtBleue: formData.trameVerteEtBleue,
 
     // Autres
     coordonnees: formData.coordonnees,
@@ -59,6 +58,7 @@ export function buildCalculerMutabiliteFromFormData(formData: any): CalculerMuta
     valeurArchitecturaleHistorique: formData.valeurArchitecturaleHistorique || "NE_SAIT_PAS",
     qualitePaysage: formData.qualitePaysage || "NE_SAIT_PAS",
     qualiteVoieDesserte: formData.qualiteVoieDesserte || "NE_SAIT_PAS",
+    trameVerteEtBleue: formData.trameVerteEtBleue || "NE_SAIT_PAS",
   };
 
   return {
@@ -90,6 +90,7 @@ function getFieldsMissing(formData: any): string[] {
     "valeurArchitecturaleHistorique",
     "qualitePaysage",
     "qualiteVoieDesserte",
+    "trameVerteEtBleue",
   ];
 
   const missing: string[] = [];

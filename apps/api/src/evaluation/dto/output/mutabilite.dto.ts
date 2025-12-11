@@ -40,14 +40,14 @@ export class MutabiliteSwaggerDto implements IMutabiliteOutput {
     },
     example: [
       {
-        rang: 7,
+        rang: 1,
         usage: UsageType.RESIDENTIEL,
         indiceMutabilite: 68,
         potentiel: "Favorable",
         explication: "Site favorable grâce à sa localisation en centre-ville",
       },
       {
-        rang: 6,
+        rang: 2,
         usage: UsageType.EQUIPEMENTS,
         indiceMutabilite: 63,
         potentiel: "Favorable",
@@ -69,7 +69,7 @@ export class MutabiliteSwaggerDto implements IMutabiliteOutput {
  * DTO Swagger pour un résultat détaillé avec calculs
  */
 export class UsageResultatDetailleSwaggerDto {
-  @ApiProperty({ example: 7, minimum: 1, maximum: 7 })
+  @ApiProperty({ example: 1, minimum: 1, maximum: 7 })
   rang: number;
 
   @ApiProperty({ enum: UsageType })

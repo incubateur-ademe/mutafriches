@@ -220,12 +220,18 @@ export function TestMutability() {
 
 /**
  * Mappe les valeurs spéciales de etatBatiInfrastructure
+ * Retourne undefined si la valeur est absente
  */
-function mapEtatBati(value: string): string {
+function mapEtatBati(value: string | undefined): string | undefined {
+  if (!value) {
+    return undefined;
+  }
+
   const mapping: Record<string, string> = {
     "batiments-heterogenes": "degradation-heterogene",
     "batiments-homogenes": "degradation-moyenne",
     "absence-batiments": "degradation-inexistante",
   };
+
   return mapping[value] || value;
 }

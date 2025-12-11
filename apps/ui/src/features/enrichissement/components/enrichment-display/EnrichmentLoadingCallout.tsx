@@ -31,15 +31,15 @@ export const EnrichmentLoadingCallout: React.FC<EnrichmentLoadingCalloutProps> =
         <img
           src="/illustrations/undraw_file-search_cbur.svg"
           alt="Illustration de recherche de fichier"
-          width="300px"
+          width="200px"
           className="fr-mb-4w fr-mt-4w"
         />
 
-        <h3 className="fr-h4 fr-mb-4w">{title}</h3>
+        <h3 className="fr-h6 fr-mb-4w">{title}</h3>
 
         <blockquote className="mx-auto fr-px-4w" style={{ maxWidth: "800px" }}>
           <p
-            className="fr-text--regular"
+            className="fr-text--lead"
             style={{
               lineHeight: "1.8",
               whiteSpace: "pre-line",

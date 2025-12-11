@@ -49,7 +49,7 @@ export class Evaluation {
    * Retourne un résumé de l'évaluation
    */
   getResume(): string {
-    const meilleurUsage = this.resultats.resultats.find((r) => r.rang === 7);
+    const meilleurUsage = this.resultats.resultats.find((r) => r.rang === 1);
     return `Évaluation du ${this.dateCalcul.toLocaleDateString()} - ${meilleurUsage?.usage || "N/A"} (${meilleurUsage?.indiceMutabilite || 0}%)`;
   }
 }

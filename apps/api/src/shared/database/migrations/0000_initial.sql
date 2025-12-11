@@ -1,5 +1,8 @@
 -- Migration initiale
--- On crée uniquement les nouvelles tables
+
+-- Enable PostGIS extension (must be first)
+CREATE EXTENSION IF NOT EXISTS postgis;
+
 
 CREATE TABLE IF NOT EXISTS "evenements_utilisateur" (
 	"id" varchar(50) PRIMARY KEY NOT NULL,

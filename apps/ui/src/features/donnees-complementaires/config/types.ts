@@ -6,6 +6,7 @@ import {
   QualitePaysage,
   QualiteVoieDesserte,
   RaccordementEau,
+  TrameVerteEtBleue,
 } from "@mutafriches/shared-types";
 
 /**
@@ -34,11 +35,12 @@ export type FormFieldConfig<T = string> = {
 export type ManualFormValues = {
   typeProprietaire: TypeProprietaire | "";
   raccordementEau: RaccordementEau | "";
-  etatBati: EtatBatiInfrastructure | "";
+  etatBatiInfrastructure: EtatBatiInfrastructure | "";
   presencePollution: PresencePollution | "";
-  valeurArchitecturale: ValeurArchitecturale | "";
-  qualitePaysagere: QualitePaysage | "";
-  qualiteDesserte: QualiteVoieDesserte | "";
+  valeurArchitecturaleHistorique: ValeurArchitecturale | "";
+  qualitePaysage: QualitePaysage | "";
+  qualiteVoieDesserte: QualiteVoieDesserte | "";
+  trameVerteEtBleue: TrameVerteEtBleue | "";
 };
 
 /**
@@ -47,9 +49,10 @@ export type ManualFormValues = {
 export const DEFAULT_FORM_VALUES: ManualFormValues = {
   typeProprietaire: "",
   raccordementEau: "",
-  etatBati: "",
+  etatBatiInfrastructure: "",
   presencePollution: "",
-  valeurArchitecturale: "",
-  qualitePaysagere: "",
-  qualiteDesserte: "",
+  valeurArchitecturaleHistorique: "",
+  qualitePaysage: "",
+  qualiteVoieDesserte: "",
+  trameVerteEtBleue: "",
 };

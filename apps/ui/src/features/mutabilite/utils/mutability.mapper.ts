@@ -9,6 +9,7 @@ import {
   QualitePaysage,
   QualiteVoieDesserte,
   RaccordementEau,
+  TrameVerteEtBleue,
 } from "@mutafriches/shared-types";
 
 export function buildMutabilityInput(
@@ -29,6 +30,8 @@ export function buildMutabilityInput(
     qualitePaysage: (manualData.qualitePaysage || QualitePaysage.NE_SAIT_PAS) as QualitePaysage,
     qualiteVoieDesserte: (manualData.qualiteVoieDesserte ||
       QualiteVoieDesserte.NE_SAIT_PAS) as QualiteVoieDesserte,
+    trameVerteEtBleue: (manualData.trameVerteEtBleue ||
+      TrameVerteEtBleue.NE_SAIT_PAS) as TrameVerteEtBleue,
   };
 
   return {

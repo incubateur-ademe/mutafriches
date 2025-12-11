@@ -7,7 +7,7 @@ import { SelectOption } from "../types";
 export const ENVIRONNEMENT_FIELDS = {
   qualitePaysagere: {
     id: "qualite-paysagere",
-    name: "qualitePaysagere",
+    name: "qualitePaysage",
     label: "Intérêt du paysage environnant",
     required: true,
     section: "environnement" as const,
@@ -22,7 +22,7 @@ export const ENVIRONNEMENT_FIELDS = {
 
   qualiteDesserte: {
     id: "qualite-desserte",
-    name: "qualiteDesserte",
+    name: "qualiteVoieDesserte",
     label: "Accessibilité par les voies de circulation",
     required: true,
     section: "environnement" as const,

@@ -83,11 +83,8 @@ export class OrchestrateurService {
       origine,
     );
 
-    // Sauvegarde l'évaluation et retourne l'ID si mode non détaillé
-    let evaluationId: string | undefined = undefined;
-    if (!options?.modeDetaille) {
-      evaluationId = await this.evaluationRepository.save(evaluation);
-    }
+    // Sauvegarde l'évaluation et retourne l'id
+    const evaluationId = await this.evaluationRepository.save(evaluation);
 
     return {
       ...resultats,

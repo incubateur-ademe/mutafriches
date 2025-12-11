@@ -12,6 +12,7 @@ import {
   ValeurArchitecturale,
   QualitePaysage,
   QualiteVoieDesserte,
+  TrameVerteEtBleue,
 } from "@mutafriches/shared-types";
 
 /**
@@ -57,6 +58,7 @@ export class EvaluationBuilder {
     valeurArchitecturaleHistorique: ValeurArchitecturale.ORDINAIRE,
     qualitePaysage: QualitePaysage.ORDINAIRE,
     qualiteVoieDesserte: QualiteVoieDesserte.ACCESSIBLE,
+    trameVerteEtBleue: TrameVerteEtBleue.HORS_TRAME,
   };
 
   private resultats: MutabiliteOutputDto = {
@@ -73,7 +75,7 @@ export class EvaluationBuilder {
       {
         usage: UsageType.RESIDENTIEL,
         indiceMutabilite: 75,
-        rang: 7,
+        rang: 1,
         potentiel: "Favorable",
       },
     ],
