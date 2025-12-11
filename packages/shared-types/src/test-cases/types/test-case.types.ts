@@ -17,7 +17,7 @@ export interface TestCaseInput {
   surfaceBati?: number;
 
   // État du site
-  etatBatiInfrastructure: string;
+  etatBatiInfrastructure?: string; // Optionnel
   presencePollution: string;
 
   // Localisation et accessibilité
