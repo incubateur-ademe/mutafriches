@@ -247,37 +247,3 @@ describe("CalculService - Validation des fixtures", () => {
     });
   });
 });
-
-describe("Debug - Analyse détaillée", () => {
-  it.only("devrait afficher les détails de test-08-thouars", async () => {
-    const fiabiliteCalculator = new FiabiliteCalculator();
-    const calculService = new CalculService(fiabiliteCalculator);
-
-    const testCase = testCases.find((tc) => tc.id === "test-08-thouars");
-    if (!testCase) throw new Error("Test case not found");
-
-    const validation = await executeTestCase(calculService, testCase);
-
-    process.stdout.write("\n=== DÉTAILS test-08-thouars ===\n\n");
-    process.stdout.write("Comparaisons par usage:\n");
-
-    validation.usageComparisons.forEach((comparison) => {
-      process.stdout.write(`\n${comparison.usage}:\n`);
-      process.stdout.write(`  Attendu: ${comparison.expected}% (rang ${comparison.rangAttendu})\n`);
-      process.stdout.write(
-        `  Calculé: ${comparison.calculated}% (rang ${comparison.rangCalcule})\n`,
-      );
-      process.stdout.write(`  Écart: ${comparison.ecart.toFixed(2)}%\n`);
-      if (comparison.ecart > VALIDATION_THRESHOLDS.MAX_ECART_USAGE) {
-        process.stdout.write(`  ⚠️ PROBLÉMATIQUE (> ${VALIDATION_THRESHOLDS.MAX_ECART_USAGE}%)\n`);
-      }
-    });
-
-    process.stdout.write("\n=== INPUT DU TEST CASE ===\n");
-    process.stdout.write(JSON.stringify(testCase.input, null, 2) + "\n");
-
-    process.stdout.write("\n=================================\n\n");
-
-    expect(true).toBe(true);
-  });
-});

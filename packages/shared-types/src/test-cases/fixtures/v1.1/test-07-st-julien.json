@@ -16,7 +16,7 @@
     "presencePollution": "ne-sait-pas",
     "siteEnCentreVille": true,
     "tauxLogementsVacants": 16.3,
-    "terrainViabilise": true,
+    "raccordementEau": true,
     "qualiteVoieDesserte": "degradee",
     "distanceAutoroute": "plus-de-5km",
     "distanceTransportCommun": "plus-de-500m",
