@@ -1,6 +1,6 @@
 ================================================================================
 RAPPORT DE DEBUG DES FIXTURES
-Date: 2025-12-11T14:09:51.885Z
+Date: 2025-12-11T14:22:27.081Z
 Nombre de test cases: 10
 ================================================================================
 
@@ -12,7 +12,7 @@ TEST CASE: test-01-allegre
 FIXTURE SNAPSHOT:
   Version algorithme: 1.1
   Source: v1.1_test-01_allegre.xlsx
-  Input Hash: 8866d72b5d842f010904fe12c9f09547
+  Input Hash: 34b05a1fc96ee66002fee5ec1e8a09f8
   Expected Hash: 273253b0305c7468537bb72af39095f5
 
 INPUT:
@@ -29,7 +29,7 @@ INPUT:
   "presencePollution": "oui-autres-composes",
   "siteEnCentreVille": true,
   "tauxLogementsVacants": 19.8,
-  "terrainViabilise": true,
+  "raccordementEau": true,
   "qualiteVoieDesserte": "accessible",
   "distanceAutoroute": "plus-de-5km",
   "distanceTransportCommun": "plus-de-500m",
@@ -124,7 +124,7 @@ TEST CASE: test-02-montbeugny
 FIXTURE SNAPSHOT:
   Version algorithme: 1.1
   Source: v1.1_test-02_montbeugny.xlsx
-  Input Hash: b7ebd743a033f72a26834ba1948fa9c1
+  Input Hash: 83fdeab9c16880ff191c21be425ecdda
   Expected Hash: 273253b0305c7468537bb72af39095f5
 
 INPUT:
@@ -141,7 +141,7 @@ INPUT:
   "presencePollution": "oui-composes-volatils",
   "siteEnCentreVille": true,
   "tauxLogementsVacants": 4.1,
-  "terrainViabilise": true,
+  "raccordementEau": true,
   "qualiteVoieDesserte": "peu-accessible",
   "distanceAutoroute": "entre-2-et-5km",
   "distanceTransportCommun": "moins-de-500m",
@@ -236,7 +236,7 @@ TEST CASE: test-03-oyonnax
 FIXTURE SNAPSHOT:
   Version algorithme: 1.1
   Source: v1.1_test-03_oyonnax.xlsx
-  Input Hash: a568090f46c380fe5d50af3c6f341934
+  Input Hash: 7d1dc72df1721229e840366b6946a42e
   Expected Hash: 273253b0305c7468537bb72af39095f5
 
 INPUT:
@@ -253,7 +253,7 @@ INPUT:
   "presencePollution": "oui-autres-composes",
   "siteEnCentreVille": false,
   "tauxLogementsVacants": 12.4,
-  "terrainViabilise": true,
+  "raccordementEau": true,
   "qualiteVoieDesserte": "accessible",
   "distanceAutoroute": "entre-2-et-5km",
   "distanceTransportCommun": "plus-de-500m",
@@ -348,7 +348,7 @@ TEST CASE: test-04-port-brillet
 FIXTURE SNAPSHOT:
   Version algorithme: 1.1
   Source: v1.1_test-04_port-brillet.xlsx
-  Input Hash: 454436322b20bcc86e5346228d6ba3d0
+  Input Hash: 78d98a92063b178668d55a1bc5b57b84
   Expected Hash: 273253b0305c7468537bb72af39095f5
 
 INPUT:
@@ -364,7 +364,7 @@ INPUT:
   "presencePollution": "oui-autres-composes",
   "siteEnCentreVille": true,
   "tauxLogementsVacants": 7.3,
-  "terrainViabilise": true,
+  "raccordementEau": true,
   "qualiteVoieDesserte": "accessible",
   "distanceAutoroute": "plus-de-5km",
   "distanceTransportCommun": "moins-de-500m",
@@ -459,7 +459,7 @@ TEST CASE: test-05-renaison
 FIXTURE SNAPSHOT:
   Version algorithme: 1.1
   Source: v1.1_test-05_renaison.xlsx
-  Input Hash: 0422d83cad39e55b1b3ee63b7e131810
+  Input Hash: 0a3c4816bcb65515769ec45303347f0f
   Expected Hash: 273253b0305c7468537bb72af39095f5
 
 INPUT:
@@ -476,7 +476,7 @@ INPUT:
   "presencePollution": "oui-autres-composes",
   "siteEnCentreVille": false,
   "tauxLogementsVacants": 7.2,
-  "terrainViabilise": true,
+  "raccordementEau": true,
   "qualiteVoieDesserte": "peu-accessible",
   "distanceAutoroute": "plus-de-5km",
   "distanceTransportCommun": "plus-de-500m",
@@ -571,7 +571,7 @@ TEST CASE: test-06-segre
 FIXTURE SNAPSHOT:
   Version algorithme: 1.1
   Source: v1.1_test-06_segre.xlsx
-  Input Hash: c931f60690b722867e04343b50725644
+  Input Hash: e11f417ae7da0172ea8150284f74c2d3
   Expected Hash: 273253b0305c7468537bb72af39095f5
 
 INPUT:
@@ -588,7 +588,7 @@ INPUT:
   "presencePollution": "non",
   "siteEnCentreVille": false,
   "tauxLogementsVacants": 8.4,
-  "terrainViabilise": true,
+  "raccordementEau": true,
   "qualiteVoieDesserte": "accessible",
   "distanceAutoroute": "plus-de-5km",
   "distanceTransportCommun": "plus-de-500m",
@@ -683,7 +683,7 @@ TEST CASE: test-06-segre
 FIXTURE SNAPSHOT:
   Version algorithme: 1.1
   Source: v1.1_test-06_segre.xlsx
-  Input Hash: c931f60690b722867e04343b50725644
+  Input Hash: e11f417ae7da0172ea8150284f74c2d3
   Expected Hash: 273253b0305c7468537bb72af39095f5
 
 INPUT:
@@ -700,7 +700,7 @@ INPUT:
   "presencePollution": "non",
   "siteEnCentreVille": false,
   "tauxLogementsVacants": 8.4,
-  "terrainViabilise": true,
+  "raccordementEau": true,
   "qualiteVoieDesserte": "accessible",
   "distanceAutoroute": "plus-de-5km",
   "distanceTransportCommun": "plus-de-500m",
@@ -795,7 +795,7 @@ TEST CASE: test-08-thouars
 FIXTURE SNAPSHOT:
   Version algorithme: 1.1
   Source: v1.1_test-08_thouars.xlsx
-  Input Hash: ae4a16889d34ada99a0cf67d4b9419b8
+  Input Hash: 735196063ba6168e01e2634455a3647e
   Expected Hash: 273253b0305c7468537bb72af39095f5
 
 INPUT:
@@ -810,7 +810,7 @@ INPUT:
   "presencePollution": "oui-composes-volatils",
   "siteEnCentreVille": false,
   "tauxLogementsVacants": 11.3,
-  "terrainViabilise": true,
+  "raccordementEau": true,
   "qualiteVoieDesserte": "accessible",
   "distanceAutoroute": "plus-de-5km",
   "distanceTransportCommun": "moins-de-500m",
@@ -905,7 +905,7 @@ TEST CASE: test-09-trelaze
 FIXTURE SNAPSHOT:
   Version algorithme: 1.1
   Source: v1.1_test-09_trelaze.xlsx
-  Input Hash: a95f0b751f60e1bb8b9dd945da9bac42
+  Input Hash: 2941d0ed794d981b39b83a3eee0e6311
   Expected Hash: 273253b0305c7468537bb72af39095f5
 
 INPUT:
@@ -922,7 +922,7 @@ INPUT:
   "presencePollution": "ne-sait-pas",
   "siteEnCentreVille": true,
   "tauxLogementsVacants": 4.9,
-  "terrainViabilise": true,
+  "raccordementEau": true,
   "qualiteVoieDesserte": "accessible",
   "distanceAutoroute": "entre-1-et-2km",
   "distanceTransportCommun": "moins-de-500m",
@@ -1017,7 +1017,7 @@ TEST CASE: test-10-villeurbanne
 FIXTURE SNAPSHOT:
   Version algorithme: 1.1
   Source: v1.1_test-10_villeurbanne.xlsx
-  Input Hash: d82b377768b9c80e4295b6cb7c97820f
+  Input Hash: 7179be8c04077c717911d788689ab656
   Expected Hash: 273253b0305c7468537bb72af39095f5
 
 INPUT:
@@ -1034,7 +1034,7 @@ INPUT:
   "presencePollution": "oui-composes-volatils",
   "siteEnCentreVille": true,
   "tauxLogementsVacants": 8.5,
-  "terrainViabilise": true,
+  "raccordementEau": true,
   "qualiteVoieDesserte": "accessible",
   "distanceAutoroute": "entre-1-et-2km",
   "distanceTransportCommun": "moins-de-500m",

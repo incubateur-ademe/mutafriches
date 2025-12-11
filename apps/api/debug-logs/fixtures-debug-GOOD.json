@@ -1,7 +1,7 @@
 [
   {
     "testCaseId": "test-01-allegre",
-    "timestamp": "2025-12-11T14:09:51.863Z",
+    "timestamp": "2025-12-11T14:22:27.057Z",
     "fixtureSnapshot": {
       "fullTestCase": {
         "id": "test-01-allegre",
@@ -22,7 +22,7 @@
           "presencePollution": "oui-autres-composes",
           "siteEnCentreVille": true,
           "tauxLogementsVacants": 19.8,
-          "terrainViabilise": true,
+          "raccordementEau": true,
           "qualiteVoieDesserte": "accessible",
           "distanceAutoroute": "plus-de-5km",
           "distanceTransportCommun": "plus-de-500m",
@@ -82,7 +82,7 @@
           }
         }
       },
-      "inputHash": "8866d72b5d842f010904fe12c9f09547",
+      "inputHash": "34b05a1fc96ee66002fee5ec1e8a09f8",
       "expectedHash": "273253b0305c7468537bb72af39095f5"
     },
     "input": {
@@ -99,7 +99,7 @@
         "presencePollution": "oui-autres-composes",
         "siteEnCentreVille": true,
         "tauxLogementsVacants": 19.8,
-        "terrainViabilise": true,
+        "raccordementEau": true,
         "qualiteVoieDesserte": "accessible",
         "distanceAutoroute": "plus-de-5km",
         "distanceTransportCommun": "plus-de-500m",
@@ -128,7 +128,7 @@
           "presencePollution": "oui-autres-composes",
           "siteEnCentreVille": true,
           "tauxLogementsVacants": 19.8,
-          "terrainViabilise": true,
+          "raccordementEau": true,
           "qualiteVoieDesserte": "accessible",
           "distanceAutoroute": "plus-de-5km",
           "distanceTransportCommun": "plus-de-500m",
@@ -161,6 +161,7 @@
           "zonagePatrimonial": "non-concerne",
           "trameVerteEtBleue": "ne-sait-pas",
           "typeProprietaire": "public",
+          "raccordementEau": true,
           "etatBatiInfrastructure": "degradation-moyenne",
           "presencePollution": "oui-autres-composes",
           "valeurArchitecturaleHistorique": "ordinaire",
@@ -179,6 +180,7 @@
           "surfaceSite": 11427,
           "surfaceBati": 337,
           "typeProprietaire": "public",
+          "raccordementEau": true,
           "etatBatiInfrastructure": "degradation-moyenne",
           "presencePollution": "oui-autres-composes",
           "valeurArchitecturaleHistorique": "ordinaire",
@@ -407,13 +409,6 @@
             }
           ],
           "detailsCriteresVides": [
-            {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            },
             {
               "critere": "trameVerteEtBleue",
               "valeur": null,
@@ -647,13 +642,6 @@
             }
           ],
           "detailsCriteresVides": [
-            {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            },
             {
               "critere": "trameVerteEtBleue",
               "valeur": null,
@@ -930,13 +918,6 @@
           ],
           "detailsCriteresVides": [
             {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            },
-            {
               "critere": "trameVerteEtBleue",
               "valeur": null,
               "scoreBrut": 0,
@@ -1184,13 +1165,6 @@
           ],
           "detailsCriteresVides": [
             {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            },
-            {
               "critere": "trameVerteEtBleue",
               "valeur": null,
               "scoreBrut": 0,
@@ -1416,13 +1390,6 @@
             }
           ],
           "detailsCriteresVides": [
-            {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            },
             {
               "critere": "trameVerteEtBleue",
               "valeur": null,
@@ -1657,13 +1624,6 @@
           ],
           "detailsCriteresVides": [
             {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            },
-            {
               "critere": "trameVerteEtBleue",
               "valeur": null,
               "scoreBrut": 0,
@@ -1868,13 +1828,6 @@
             }
           ],
           "detailsCriteresVides": [
-            {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            },
             {
               "critere": "trameVerteEtBleue",
               "valeur": null,
@@ -2158,13 +2111,6 @@
             ],
             "detailsCriteresVides": [
               {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              },
-              {
                 "critere": "trameVerteEtBleue",
                 "valeur": null,
                 "scoreBrut": 0,
@@ -2382,13 +2328,6 @@
               }
             ],
             "detailsCriteresVides": [
-              {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              },
               {
                 "critere": "trameVerteEtBleue",
                 "valeur": null,
@@ -2621,13 +2560,6 @@
               }
             ],
             "detailsCriteresVides": [
-              {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              },
               {
                 "critere": "trameVerteEtBleue",
                 "valeur": null,
@@ -2874,13 +2806,6 @@
               }
             ],
             "detailsCriteresVides": [
-              {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              },
               {
                 "critere": "trameVerteEtBleue",
                 "valeur": null,
@@ -3156,13 +3081,6 @@
             ],
             "detailsCriteresVides": [
               {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              },
-              {
                 "critere": "trameVerteEtBleue",
                 "valeur": null,
                 "scoreBrut": 0,
@@ -3388,13 +3306,6 @@
             ],
             "detailsCriteresVides": [
               {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              },
-              {
                 "critere": "trameVerteEtBleue",
                 "valeur": null,
                 "scoreBrut": 0,
@@ -3599,13 +3510,6 @@
             ],
             "detailsCriteresVides": [
               {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              },
-              {
                 "critere": "trameVerteEtBleue",
                 "valeur": null,
                 "scoreBrut": 0,
@@ -3619,12 +3523,12 @@
         }
       ],
       "metadata": {
-        "note": 9,
+        "note": 9.5,
         "text": "Très fiable",
         "description": "Analyse complète avec toutes les données disponibles.",
-        "criteresRenseignes": 19,
+        "criteresRenseignes": 20,
         "criteresTotal": 21,
-        "poidsRenseignes": 24,
+        "poidsRenseignes": 25,
         "poidsTotal": 26,
         "detailCriteres": [
           {
@@ -3705,7 +3609,7 @@
           {
             "critere": "raccordementEau",
             "poids": 1,
-            "renseigne": false
+            "renseigne": true
           },
           {
             "critere": "etatBatiInfrastructure",
@@ -4007,13 +3911,6 @@
               ],
               "detailsCriteresVides": [
                 {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                },
-                {
                   "critere": "trameVerteEtBleue",
                   "valeur": null,
                   "scoreBrut": 0,
@@ -4235,13 +4132,6 @@
                 }
               ],
               "detailsCriteresVides": [
-                {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                },
                 {
                   "critere": "trameVerteEtBleue",
                   "valeur": null,
@@ -4478,13 +4368,6 @@
                 }
               ],
               "detailsCriteresVides": [
-                {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                },
                 {
                   "critere": "trameVerteEtBleue",
                   "valeur": null,
@@ -4735,13 +4618,6 @@
                 }
               ],
               "detailsCriteresVides": [
-                {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                },
                 {
                   "critere": "trameVerteEtBleue",
                   "valeur": null,
@@ -5021,13 +4897,6 @@
               ],
               "detailsCriteresVides": [
                 {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                },
-                {
                   "critere": "trameVerteEtBleue",
                   "valeur": null,
                   "scoreBrut": 0,
@@ -5257,13 +5126,6 @@
               ],
               "detailsCriteresVides": [
                 {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                },
-                {
                   "critere": "trameVerteEtBleue",
                   "valeur": null,
                   "scoreBrut": 0,
@@ -5472,13 +5334,6 @@
               ],
               "detailsCriteresVides": [
                 {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                },
-                {
                   "critere": "trameVerteEtBleue",
                   "valeur": null,
                   "scoreBrut": 0,
@@ -5554,7 +5409,7 @@
   },
   {
     "testCaseId": "test-02-montbeugny",
-    "timestamp": "2025-12-11T14:09:51.866Z",
+    "timestamp": "2025-12-11T14:22:27.060Z",
     "fixtureSnapshot": {
       "fullTestCase": {
         "id": "test-02-montbeugny",
@@ -5575,7 +5430,7 @@
           "presencePollution": "oui-composes-volatils",
           "siteEnCentreVille": true,
           "tauxLogementsVacants": 4.1,
-          "terrainViabilise": true,
+          "raccordementEau": true,
           "qualiteVoieDesserte": "peu-accessible",
           "distanceAutoroute": "entre-2-et-5km",
           "distanceTransportCommun": "moins-de-500m",
@@ -5635,7 +5490,7 @@
           }
         }
       },
-      "inputHash": "b7ebd743a033f72a26834ba1948fa9c1",
+      "inputHash": "83fdeab9c16880ff191c21be425ecdda",
       "expectedHash": "273253b0305c7468537bb72af39095f5"
     },
     "input": {
@@ -5652,7 +5507,7 @@
         "presencePollution": "oui-composes-volatils",
         "siteEnCentreVille": true,
         "tauxLogementsVacants": 4.1,
-        "terrainViabilise": true,
+        "raccordementEau": true,
         "qualiteVoieDesserte": "peu-accessible",
         "distanceAutoroute": "entre-2-et-5km",
         "distanceTransportCommun": "moins-de-500m",
@@ -5681,7 +5536,7 @@
           "presencePollution": "oui-composes-volatils",
           "siteEnCentreVille": true,
           "tauxLogementsVacants": 4.1,
-          "terrainViabilise": true,
+          "raccordementEau": true,
           "qualiteVoieDesserte": "peu-accessible",
           "distanceAutoroute": "entre-2-et-5km",
           "distanceTransportCommun": "moins-de-500m",
@@ -5714,6 +5569,7 @@
           "zonagePatrimonial": "non-concerne",
           "trameVerteEtBleue": "ne-sait-pas",
           "typeProprietaire": "public",
+          "raccordementEau": true,
           "etatBatiInfrastructure": "degradation-tres-importante",
           "presencePollution": "oui-composes-volatils",
           "valeurArchitecturaleHistorique": "ordinaire",
@@ -5732,6 +5588,7 @@
           "surfaceSite": 775,
           "surfaceBati": 0,
           "typeProprietaire": "public",
+          "raccordementEau": true,
           "etatBatiInfrastructure": "degradation-tres-importante",
           "presencePollution": "oui-composes-volatils",
           "valeurArchitecturaleHistorique": "ordinaire",
@@ -5939,13 +5796,6 @@
             }
           ],
           "detailsCriteresVides": [
-            {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            },
             {
               "critere": "trameVerteEtBleue",
               "valeur": null,
@@ -6158,13 +6008,6 @@
             }
           ],
           "detailsCriteresVides": [
-            {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            },
             {
               "critere": "trameVerteEtBleue",
               "valeur": null,
@@ -6413,13 +6256,6 @@
           ],
           "detailsCriteresVides": [
             {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            },
-            {
               "critere": "trameVerteEtBleue",
               "valeur": null,
               "scoreBrut": 0,
@@ -6646,13 +6482,6 @@
           ],
           "detailsCriteresVides": [
             {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            },
-            {
               "critere": "trameVerteEtBleue",
               "valeur": null,
               "scoreBrut": 0,
@@ -6857,13 +6686,6 @@
             }
           ],
           "detailsCriteresVides": [
-            {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            },
             {
               "critere": "trameVerteEtBleue",
               "valeur": null,
@@ -7091,13 +6913,6 @@
           ],
           "detailsCriteresVides": [
             {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            },
-            {
               "critere": "trameVerteEtBleue",
               "valeur": null,
               "scoreBrut": 0,
@@ -7288,13 +7103,6 @@
             }
           ],
           "detailsCriteresVides": [
-            {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            },
             {
               "critere": "trameVerteEtBleue",
               "valeur": null,
@@ -7571,13 +7379,6 @@
             ],
             "detailsCriteresVides": [
               {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              },
-              {
                 "critere": "trameVerteEtBleue",
                 "valeur": null,
                 "scoreBrut": 0,
@@ -7774,13 +7575,6 @@
               }
             ],
             "detailsCriteresVides": [
-              {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              },
               {
                 "critere": "trameVerteEtBleue",
                 "valeur": null,
@@ -7993,13 +7787,6 @@
             ],
             "detailsCriteresVides": [
               {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              },
-              {
                 "critere": "trameVerteEtBleue",
                 "valeur": null,
                 "scoreBrut": 0,
@@ -8189,13 +7976,6 @@
               }
             ],
             "detailsCriteresVides": [
-              {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              },
               {
                 "critere": "trameVerteEtBleue",
                 "valeur": null,
@@ -8421,13 +8201,6 @@
               }
             ],
             "detailsCriteresVides": [
-              {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              },
               {
                 "critere": "trameVerteEtBleue",
                 "valeur": null,
@@ -8675,13 +8448,6 @@
             ],
             "detailsCriteresVides": [
               {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              },
-              {
                 "critere": "trameVerteEtBleue",
                 "valeur": null,
                 "scoreBrut": 0,
@@ -8886,13 +8652,6 @@
             ],
             "detailsCriteresVides": [
               {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              },
-              {
                 "critere": "trameVerteEtBleue",
                 "valeur": null,
                 "scoreBrut": 0,
@@ -8906,12 +8665,12 @@
         }
       ],
       "metadata": {
-        "note": 9,
+        "note": 9.5,
         "text": "Très fiable",
         "description": "Analyse complète avec toutes les données disponibles.",
-        "criteresRenseignes": 19,
+        "criteresRenseignes": 20,
         "criteresTotal": 21,
-        "poidsRenseignes": 24,
+        "poidsRenseignes": 25,
         "poidsTotal": 26,
         "detailCriteres": [
           {
@@ -8992,7 +8751,7 @@
           {
             "critere": "raccordementEau",
             "poids": 1,
-            "renseigne": false
+            "renseigne": true
           },
           {
             "critere": "etatBatiInfrastructure",
@@ -9287,13 +9046,6 @@
               ],
               "detailsCriteresVides": [
                 {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                },
-                {
                   "critere": "trameVerteEtBleue",
                   "valeur": null,
                   "scoreBrut": 0,
@@ -9494,13 +9246,6 @@
                 }
               ],
               "detailsCriteresVides": [
-                {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                },
                 {
                   "critere": "trameVerteEtBleue",
                   "valeur": null,
@@ -9717,13 +9462,6 @@
               ],
               "detailsCriteresVides": [
                 {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                },
-                {
                   "critere": "trameVerteEtBleue",
                   "valeur": null,
                   "scoreBrut": 0,
@@ -9917,13 +9655,6 @@
                 }
               ],
               "detailsCriteresVides": [
-                {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                },
                 {
                   "critere": "trameVerteEtBleue",
                   "valeur": null,
@@ -10153,13 +9884,6 @@
                 }
               ],
               "detailsCriteresVides": [
-                {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                },
                 {
                   "critere": "trameVerteEtBleue",
                   "valeur": null,
@@ -10411,13 +10135,6 @@
               ],
               "detailsCriteresVides": [
                 {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                },
-                {
                   "critere": "trameVerteEtBleue",
                   "valeur": null,
                   "scoreBrut": 0,
@@ -10626,13 +10343,6 @@
               ],
               "detailsCriteresVides": [
                 {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                },
-                {
                   "critere": "trameVerteEtBleue",
                   "valeur": null,
                   "scoreBrut": 0,
@@ -10708,7 +10418,7 @@
   },
   {
     "testCaseId": "test-03-oyonnax",
-    "timestamp": "2025-12-11T14:09:51.867Z",
+    "timestamp": "2025-12-11T14:22:27.061Z",
     "fixtureSnapshot": {
       "fullTestCase": {
         "id": "test-03-oyonnax",
@@ -10729,7 +10439,7 @@
           "presencePollution": "oui-autres-composes",
           "siteEnCentreVille": false,
           "tauxLogementsVacants": 12.4,
-          "terrainViabilise": true,
+          "raccordementEau": true,
           "qualiteVoieDesserte": "accessible",
           "distanceAutoroute": "entre-2-et-5km",
           "distanceTransportCommun": "plus-de-500m",
@@ -10789,7 +10499,7 @@
           }
         }
       },
-      "inputHash": "a568090f46c380fe5d50af3c6f341934",
+      "inputHash": "7d1dc72df1721229e840366b6946a42e",
       "expectedHash": "273253b0305c7468537bb72af39095f5"
     },
     "input": {
@@ -10806,7 +10516,7 @@
         "presencePollution": "oui-autres-composes",
         "siteEnCentreVille": false,
         "tauxLogementsVacants": 12.4,
-        "terrainViabilise": true,
+        "raccordementEau": true,
         "qualiteVoieDesserte": "accessible",
         "distanceAutoroute": "entre-2-et-5km",
         "distanceTransportCommun": "plus-de-500m",
@@ -10835,7 +10545,7 @@
           "presencePollution": "oui-autres-composes",
           "siteEnCentreVille": false,
           "tauxLogementsVacants": 12.4,
-          "terrainViabilise": true,
+          "raccordementEau": true,
           "qualiteVoieDesserte": "accessible",
           "distanceAutoroute": "entre-2-et-5km",
           "distanceTransportCommun": "plus-de-500m",
@@ -10868,6 +10578,7 @@
           "zonagePatrimonial": "non-concerne",
           "trameVerteEtBleue": "ne-sait-pas",
           "typeProprietaire": "mixte-public-et-prive",
+          "raccordementEau": true,
           "etatBatiInfrastructure": "degradation-tres-importante",
           "presencePollution": "oui-autres-composes",
           "valeurArchitecturaleHistorique": "ordinaire",
@@ -10886,6 +10597,7 @@
           "surfaceSite": 20000,
           "surfaceBati": 2000,
           "typeProprietaire": "mixte-public-et-prive",
+          "raccordementEau": true,
           "etatBatiInfrastructure": "degradation-tres-importante",
           "presencePollution": "oui-autres-composes",
           "valeurArchitecturaleHistorique": "ordinaire",
@@ -11100,13 +10812,6 @@
             }
           ],
           "detailsCriteresVides": [
-            {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            },
             {
               "critere": "trameVerteEtBleue",
               "valeur": null,
@@ -11326,13 +11031,6 @@
             }
           ],
           "detailsCriteresVides": [
-            {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            },
             {
               "critere": "trameVerteEtBleue",
               "valeur": null,
@@ -11588,13 +11286,6 @@
           ],
           "detailsCriteresVides": [
             {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            },
-            {
               "critere": "trameVerteEtBleue",
               "valeur": null,
               "scoreBrut": 0,
@@ -11814,13 +11505,6 @@
           ],
           "detailsCriteresVides": [
             {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            },
-            {
               "critere": "trameVerteEtBleue",
               "valeur": null,
               "scoreBrut": 0,
@@ -12025,13 +11709,6 @@
             }
           ],
           "detailsCriteresVides": [
-            {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            },
             {
               "critere": "trameVerteEtBleue",
               "valeur": null,
@@ -12259,13 +11936,6 @@
           ],
           "detailsCriteresVides": [
             {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            },
-            {
               "critere": "trameVerteEtBleue",
               "valeur": null,
               "scoreBrut": 0,
@@ -12463,13 +12133,6 @@
             }
           ],
           "detailsCriteresVides": [
-            {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            },
             {
               "critere": "trameVerteEtBleue",
               "valeur": null,
@@ -12746,13 +12409,6 @@
             ],
             "detailsCriteresVides": [
               {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              },
-              {
                 "critere": "trameVerteEtBleue",
                 "valeur": null,
                 "scoreBrut": 0,
@@ -12949,13 +12605,6 @@
               }
             ],
             "detailsCriteresVides": [
-              {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              },
               {
                 "critere": "trameVerteEtBleue",
                 "valeur": null,
@@ -13210,13 +12859,6 @@
             ],
             "detailsCriteresVides": [
               {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              },
-              {
                 "critere": "trameVerteEtBleue",
                 "valeur": null,
                 "scoreBrut": 0,
@@ -13435,13 +13077,6 @@
             ],
             "detailsCriteresVides": [
               {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              },
-              {
                 "critere": "trameVerteEtBleue",
                 "valeur": null,
                 "scoreBrut": 0,
@@ -13646,13 +13281,6 @@
             ],
             "detailsCriteresVides": [
               {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              },
-              {
                 "critere": "trameVerteEtBleue",
                 "valeur": null,
                 "scoreBrut": 0,
@@ -13856,13 +13484,6 @@
               }
             ],
             "detailsCriteresVides": [
-              {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              },
               {
                 "critere": "trameVerteEtBleue",
                 "valeur": null,
@@ -14082,13 +13703,6 @@
             ],
             "detailsCriteresVides": [
               {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              },
-              {
                 "critere": "trameVerteEtBleue",
                 "valeur": null,
                 "scoreBrut": 0,
@@ -14102,12 +13716,12 @@
         }
       ],
       "metadata": {
-        "note": 9,
+        "note": 9.5,
         "text": "Très fiable",
         "description": "Analyse complète avec toutes les données disponibles.",
-        "criteresRenseignes": 19,
+        "criteresRenseignes": 20,
         "criteresTotal": 21,
-        "poidsRenseignes": 24,
+        "poidsRenseignes": 25,
         "poidsTotal": 26,
         "detailCriteres": [
           {
@@ -14188,7 +13802,7 @@
           {
             "critere": "raccordementEau",
             "poids": 1,
-            "renseigne": false
+            "renseigne": true
           },
           {
             "critere": "etatBatiInfrastructure",
@@ -14483,13 +14097,6 @@
               ],
               "detailsCriteresVides": [
                 {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                },
-                {
                   "critere": "trameVerteEtBleue",
                   "valeur": null,
                   "scoreBrut": 0,
@@ -14690,13 +14297,6 @@
                 }
               ],
               "detailsCriteresVides": [
-                {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                },
                 {
                   "critere": "trameVerteEtBleue",
                   "valeur": null,
@@ -14955,13 +14555,6 @@
               ],
               "detailsCriteresVides": [
                 {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                },
-                {
                   "critere": "trameVerteEtBleue",
                   "valeur": null,
                   "scoreBrut": 0,
@@ -15184,13 +14777,6 @@
               ],
               "detailsCriteresVides": [
                 {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                },
-                {
                   "critere": "trameVerteEtBleue",
                   "valeur": null,
                   "scoreBrut": 0,
@@ -15399,13 +14985,6 @@
               ],
               "detailsCriteresVides": [
                 {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                },
-                {
                   "critere": "trameVerteEtBleue",
                   "valeur": null,
                   "scoreBrut": 0,
@@ -15613,13 +15192,6 @@
                 }
               ],
               "detailsCriteresVides": [
-                {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                },
                 {
                   "critere": "trameVerteEtBleue",
                   "valeur": null,
@@ -15843,13 +15415,6 @@
               ],
               "detailsCriteresVides": [
                 {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                },
-                {
                   "critere": "trameVerteEtBleue",
                   "valeur": null,
                   "scoreBrut": 0,
@@ -15925,7 +15490,7 @@
   },
   {
     "testCaseId": "test-04-port-brillet",
-    "timestamp": "2025-12-11T14:09:51.869Z",
+    "timestamp": "2025-12-11T14:22:27.062Z",
     "fixtureSnapshot": {
       "fullTestCase": {
         "id": "test-04-port-brillet",
@@ -15945,7 +15510,7 @@
           "presencePollution": "oui-autres-composes",
           "siteEnCentreVille": true,
           "tauxLogementsVacants": 7.3,
-          "terrainViabilise": true,
+          "raccordementEau": true,
           "qualiteVoieDesserte": "accessible",
           "distanceAutoroute": "plus-de-5km",
           "distanceTransportCommun": "moins-de-500m",
@@ -16005,7 +15570,7 @@
           }
         }
       },
-      "inputHash": "454436322b20bcc86e5346228d6ba3d0",
+      "inputHash": "78d98a92063b178668d55a1bc5b57b84",
       "expectedHash": "273253b0305c7468537bb72af39095f5"
     },
     "input": {
@@ -16021,7 +15586,7 @@
         "presencePollution": "oui-autres-composes",
         "siteEnCentreVille": true,
         "tauxLogementsVacants": 7.3,
-        "terrainViabilise": true,
+        "raccordementEau": true,
         "qualiteVoieDesserte": "accessible",
         "distanceAutoroute": "plus-de-5km",
         "distanceTransportCommun": "moins-de-500m",
@@ -16049,7 +15614,7 @@
           "presencePollution": "oui-autres-composes",
           "siteEnCentreVille": true,
           "tauxLogementsVacants": 7.3,
-          "terrainViabilise": true,
+          "raccordementEau": true,
           "qualiteVoieDesserte": "accessible",
           "distanceAutoroute": "plus-de-5km",
           "distanceTransportCommun": "moins-de-500m",
@@ -16082,6 +15647,7 @@
           "zonagePatrimonial": "non-concerne",
           "trameVerteEtBleue": "ne-sait-pas",
           "typeProprietaire": "public",
+          "raccordementEau": true,
           "etatBatiInfrastructure": "degradation-heterogene",
           "presencePollution": "oui-autres-composes",
           "valeurArchitecturaleHistorique": "interet-remarquable",
@@ -16100,6 +15666,7 @@
           "surfaceSite": 83400,
           "surfaceBati": 45000,
           "typeProprietaire": "public",
+          "raccordementEau": true,
           "etatBatiInfrastructure": "degradation-heterogene",
           "presencePollution": "oui-autres-composes",
           "valeurArchitecturaleHistorique": "interet-remarquable",
@@ -16335,13 +15902,6 @@
             }
           ],
           "detailsCriteresVides": [
-            {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            },
             {
               "critere": "trameVerteEtBleue",
               "valeur": null,
@@ -16582,13 +16142,6 @@
             }
           ],
           "detailsCriteresVides": [
-            {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            },
             {
               "critere": "trameVerteEtBleue",
               "valeur": null,
@@ -16858,13 +16411,6 @@
           ],
           "detailsCriteresVides": [
             {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            },
-            {
               "critere": "trameVerteEtBleue",
               "valeur": null,
               "scoreBrut": 0,
@@ -17112,13 +16658,6 @@
           ],
           "detailsCriteresVides": [
             {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            },
-            {
               "critere": "trameVerteEtBleue",
               "valeur": null,
               "scoreBrut": 0,
@@ -17351,13 +16890,6 @@
             }
           ],
           "detailsCriteresVides": [
-            {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            },
             {
               "critere": "trameVerteEtBleue",
               "valeur": null,
@@ -17599,13 +17131,6 @@
           ],
           "detailsCriteresVides": [
             {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            },
-            {
               "critere": "trameVerteEtBleue",
               "valeur": null,
               "scoreBrut": 0,
@@ -17810,13 +17335,6 @@
             }
           ],
           "detailsCriteresVides": [
-            {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            },
             {
               "critere": "trameVerteEtBleue",
               "valeur": null,
@@ -18107,13 +17625,6 @@
             ],
             "detailsCriteresVides": [
               {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              },
-              {
                 "critere": "trameVerteEtBleue",
                 "valeur": null,
                 "scoreBrut": 0,
@@ -18338,13 +17849,6 @@
               }
             ],
             "detailsCriteresVides": [
-              {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              },
               {
                 "critere": "trameVerteEtBleue",
                 "valeur": null,
@@ -18613,13 +18117,6 @@
             ],
             "detailsCriteresVides": [
               {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              },
-              {
                 "critere": "trameVerteEtBleue",
                 "valeur": null,
                 "scoreBrut": 0,
@@ -18866,13 +18363,6 @@
             ],
             "detailsCriteresVides": [
               {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              },
-              {
                 "critere": "trameVerteEtBleue",
                 "valeur": null,
                 "scoreBrut": 0,
@@ -19104,13 +18594,6 @@
               }
             ],
             "detailsCriteresVides": [
-              {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              },
               {
                 "critere": "trameVerteEtBleue",
                 "valeur": null,
@@ -19351,13 +18834,6 @@
             ],
             "detailsCriteresVides": [
               {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              },
-              {
                 "critere": "trameVerteEtBleue",
                 "valeur": null,
                 "scoreBrut": 0,
@@ -19562,13 +19038,6 @@
             ],
             "detailsCriteresVides": [
               {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              },
-              {
                 "critere": "trameVerteEtBleue",
                 "valeur": null,
                 "scoreBrut": 0,
@@ -19582,12 +19051,12 @@
         }
       ],
       "metadata": {
-        "note": 9,
+        "note": 9.5,
         "text": "Très fiable",
         "description": "Analyse complète avec toutes les données disponibles.",
-        "criteresRenseignes": 19,
+        "criteresRenseignes": 20,
         "criteresTotal": 21,
-        "poidsRenseignes": 24,
+        "poidsRenseignes": 25,
         "poidsTotal": 26,
         "detailCriteres": [
           {
@@ -19668,7 +19137,7 @@
           {
             "critere": "raccordementEau",
             "poids": 1,
-            "renseigne": false
+            "renseigne": true
           },
           {
             "critere": "etatBatiInfrastructure",
@@ -19977,13 +19446,6 @@
               ],
               "detailsCriteresVides": [
                 {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                },
-                {
                   "critere": "trameVerteEtBleue",
                   "valeur": null,
                   "scoreBrut": 0,
@@ -20212,13 +19674,6 @@
                 }
               ],
               "detailsCriteresVides": [
-                {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                },
                 {
                   "critere": "trameVerteEtBleue",
                   "valeur": null,
@@ -20491,13 +19946,6 @@
               ],
               "detailsCriteresVides": [
                 {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                },
-                {
                   "critere": "trameVerteEtBleue",
                   "valeur": null,
                   "scoreBrut": 0,
@@ -20748,13 +20196,6 @@
               ],
               "detailsCriteresVides": [
                 {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                },
-                {
                   "critere": "trameVerteEtBleue",
                   "valeur": null,
                   "scoreBrut": 0,
@@ -20990,13 +20431,6 @@
                 }
               ],
               "detailsCriteresVides": [
-                {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                },
                 {
                   "critere": "trameVerteEtBleue",
                   "valeur": null,
@@ -21241,13 +20675,6 @@
               ],
               "detailsCriteresVides": [
                 {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                },
-                {
                   "critere": "trameVerteEtBleue",
                   "valeur": null,
                   "scoreBrut": 0,
@@ -21456,13 +20883,6 @@
               ],
               "detailsCriteresVides": [
                 {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                },
-                {
                   "critere": "trameVerteEtBleue",
                   "valeur": null,
                   "scoreBrut": 0,
@@ -21538,7 +20958,7 @@
   },
   {
     "testCaseId": "test-05-renaison",
-    "timestamp": "2025-12-11T14:09:51.870Z",
+    "timestamp": "2025-12-11T14:22:27.063Z",
     "fixtureSnapshot": {
       "fullTestCase": {
         "id": "test-05-renaison",
@@ -21559,7 +20979,7 @@
           "presencePollution": "oui-autres-composes",
           "siteEnCentreVille": false,
           "tauxLogementsVacants": 7.2,
-          "terrainViabilise": true,
+          "raccordementEau": true,
           "qualiteVoieDesserte": "peu-accessible",
           "distanceAutoroute": "plus-de-5km",
           "distanceTransportCommun": "plus-de-500m",
@@ -21619,7 +21039,7 @@
           }
         }
       },
-      "inputHash": "0422d83cad39e55b1b3ee63b7e131810",
+      "inputHash": "0a3c4816bcb65515769ec45303347f0f",
       "expectedHash": "273253b0305c7468537bb72af39095f5"
     },
     "input": {
@@ -21636,7 +21056,7 @@
         "presencePollution": "oui-autres-composes",
         "siteEnCentreVille": false,
         "tauxLogementsVacants": 7.2,
-        "terrainViabilise": true,
+        "raccordementEau": true,
         "qualiteVoieDesserte": "peu-accessible",
         "distanceAutoroute": "plus-de-5km",
         "distanceTransportCommun": "plus-de-500m",
@@ -21665,7 +21085,7 @@
           "presencePollution": "oui-autres-composes",
           "siteEnCentreVille": false,
           "tauxLogementsVacants": 7.2,
-          "terrainViabilise": true,
+          "raccordementEau": true,
           "qualiteVoieDesserte": "peu-accessible",
           "distanceAutoroute": "plus-de-5km",
           "distanceTransportCommun": "plus-de-500m",
@@ -21698,6 +21118,7 @@
           "zonagePatrimonial": "non-concerne",
           "trameVerteEtBleue": "ne-sait-pas",
           "typeProprietaire": "public",
+          "raccordementEau": true,
           "etatBatiInfrastructure": "degradation-heterogene",
           "presencePollution": "oui-autres-composes",
           "valeurArchitecturaleHistorique": "interet-remarquable",
@@ -21716,6 +21137,7 @@
           "surfaceSite": 46333,
           "surfaceBati": 7000,
           "typeProprietaire": "public",
+          "raccordementEau": true,
           "etatBatiInfrastructure": "degradation-heterogene",
           "presencePollution": "oui-autres-composes",
           "valeurArchitecturaleHistorique": "interet-remarquable",
@@ -21937,13 +21359,6 @@
             }
           ],
           "detailsCriteresVides": [
-            {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            },
             {
               "critere": "trameVerteEtBleue",
               "valeur": null,
@@ -22170,13 +21585,6 @@
             }
           ],
           "detailsCriteresVides": [
-            {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            },
             {
               "critere": "trameVerteEtBleue",
               "valeur": null,
@@ -22432,13 +21840,6 @@
           ],
           "detailsCriteresVides": [
             {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            },
-            {
               "critere": "trameVerteEtBleue",
               "valeur": null,
               "scoreBrut": 0,
@@ -22672,13 +22073,6 @@
           ],
           "detailsCriteresVides": [
             {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            },
-            {
               "critere": "trameVerteEtBleue",
               "valeur": null,
               "scoreBrut": 0,
@@ -22890,13 +22284,6 @@
             }
           ],
           "detailsCriteresVides": [
-            {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            },
             {
               "critere": "trameVerteEtBleue",
               "valeur": null,
@@ -23117,13 +22504,6 @@
           ],
           "detailsCriteresVides": [
             {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            },
-            {
               "critere": "trameVerteEtBleue",
               "valeur": null,
               "scoreBrut": 0,
@@ -23335,13 +22715,6 @@
             }
           ],
           "detailsCriteresVides": [
-            {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            },
             {
               "critere": "trameVerteEtBleue",
               "valeur": null,
@@ -23611,13 +22984,6 @@
             ],
             "detailsCriteresVides": [
               {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              },
-              {
                 "critere": "trameVerteEtBleue",
                 "valeur": null,
                 "scoreBrut": 0,
@@ -23828,13 +23194,6 @@
               }
             ],
             "detailsCriteresVides": [
-              {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              },
               {
                 "critere": "trameVerteEtBleue",
                 "valeur": null,
@@ -24089,13 +23448,6 @@
             ],
             "detailsCriteresVides": [
               {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              },
-              {
                 "critere": "trameVerteEtBleue",
                 "valeur": null,
                 "scoreBrut": 0,
@@ -24307,13 +23659,6 @@
             ],
             "detailsCriteresVides": [
               {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              },
-              {
                 "critere": "trameVerteEtBleue",
                 "valeur": null,
                 "scoreBrut": 0,
@@ -24524,13 +23869,6 @@
               }
             ],
             "detailsCriteresVides": [
-              {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              },
               {
                 "critere": "trameVerteEtBleue",
                 "valeur": null,
@@ -24756,13 +24094,6 @@
               }
             ],
             "detailsCriteresVides": [
-              {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              },
               {
                 "critere": "trameVerteEtBleue",
                 "valeur": null,
@@ -24996,13 +24327,6 @@
             ],
             "detailsCriteresVides": [
               {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              },
-              {
                 "critere": "trameVerteEtBleue",
                 "valeur": null,
                 "scoreBrut": 0,
@@ -25016,12 +24340,12 @@
         }
       ],
       "metadata": {
-        "note": 9,
+        "note": 9.5,
         "text": "Très fiable",
         "description": "Analyse complète avec toutes les données disponibles.",
-        "criteresRenseignes": 19,
+        "criteresRenseignes": 20,
         "criteresTotal": 21,
-        "poidsRenseignes": 24,
+        "poidsRenseignes": 25,
         "poidsTotal": 26,
         "detailCriteres": [
           {
@@ -25102,7 +24426,7 @@
           {
             "critere": "raccordementEau",
             "poids": 1,
-            "renseigne": false
+            "renseigne": true
           },
           {
             "critere": "etatBatiInfrastructure",
@@ -25390,13 +24714,6 @@
               ],
               "detailsCriteresVides": [
                 {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                },
-                {
                   "critere": "trameVerteEtBleue",
                   "valeur": null,
                   "scoreBrut": 0,
@@ -25611,13 +24928,6 @@
                 }
               ],
               "detailsCriteresVides": [
-                {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                },
                 {
                   "critere": "trameVerteEtBleue",
                   "valeur": null,
@@ -25876,13 +25186,6 @@
               ],
               "detailsCriteresVides": [
                 {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                },
-                {
                   "critere": "trameVerteEtBleue",
                   "valeur": null,
                   "scoreBrut": 0,
@@ -26098,13 +25401,6 @@
               ],
               "detailsCriteresVides": [
                 {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                },
-                {
                   "critere": "trameVerteEtBleue",
                   "valeur": null,
                   "scoreBrut": 0,
@@ -26319,13 +25615,6 @@
                 }
               ],
               "detailsCriteresVides": [
-                {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                },
                 {
                   "critere": "trameVerteEtBleue",
                   "valeur": null,
@@ -26555,13 +25844,6 @@
                 }
               ],
               "detailsCriteresVides": [
-                {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                },
                 {
                   "critere": "trameVerteEtBleue",
                   "valeur": null,
@@ -26799,13 +26081,6 @@
               ],
               "detailsCriteresVides": [
                 {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                },
-                {
                   "critere": "trameVerteEtBleue",
                   "valeur": null,
                   "scoreBrut": 0,
@@ -26881,7 +26156,7 @@
   },
   {
     "testCaseId": "test-06-segre",
-    "timestamp": "2025-12-11T14:09:51.871Z",
+    "timestamp": "2025-12-11T14:22:27.064Z",
     "fixtureSnapshot": {
       "fullTestCase": {
         "id": "test-06-segre",
@@ -26902,7 +26177,7 @@
           "presencePollution": "non",
           "siteEnCentreVille": false,
           "tauxLogementsVacants": 8.4,
-          "terrainViabilise": true,
+          "raccordementEau": true,
           "qualiteVoieDesserte": "accessible",
           "distanceAutoroute": "plus-de-5km",
           "distanceTransportCommun": "plus-de-500m",
@@ -26962,7 +26237,7 @@
           }
         }
       },
-      "inputHash": "c931f60690b722867e04343b50725644",
+      "inputHash": "e11f417ae7da0172ea8150284f74c2d3",
       "expectedHash": "273253b0305c7468537bb72af39095f5"
     },
     "input": {
@@ -26979,7 +26254,7 @@
         "presencePollution": "non",
         "siteEnCentreVille": false,
         "tauxLogementsVacants": 8.4,
-        "terrainViabilise": true,
+        "raccordementEau": true,
         "qualiteVoieDesserte": "accessible",
         "distanceAutoroute": "plus-de-5km",
         "distanceTransportCommun": "plus-de-500m",
@@ -27008,7 +26283,7 @@
           "presencePollution": "non",
           "siteEnCentreVille": false,
           "tauxLogementsVacants": 8.4,
-          "terrainViabilise": true,
+          "raccordementEau": true,
           "qualiteVoieDesserte": "accessible",
           "distanceAutoroute": "plus-de-5km",
           "distanceTransportCommun": "plus-de-500m",
@@ -27041,6 +26316,7 @@
           "zonagePatrimonial": "non-concerne",
           "trameVerteEtBleue": "corridor-a-preserver",
           "typeProprietaire": "public",
+          "raccordementEau": true,
           "etatBatiInfrastructure": "degradation-moyenne",
           "presencePollution": "non",
           "valeurArchitecturaleHistorique": "interet-remarquable",
@@ -27059,6 +26335,7 @@
           "surfaceSite": 10010,
           "surfaceBati": 6600,
           "typeProprietaire": "public",
+          "raccordementEau": true,
           "etatBatiInfrastructure": "degradation-moyenne",
           "presencePollution": "non",
           "valeurArchitecturaleHistorique": "interet-remarquable",
@@ -27286,15 +26563,7 @@
               "scorePondere": 0.25
             }
           ],
-          "detailsCriteresVides": [
-            {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            }
-          ]
+          "detailsCriteresVides": []
         }
       },
       {
@@ -27519,15 +26788,7 @@
               "scorePondere": 0.25
             }
           ],
-          "detailsCriteresVides": [
-            {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            }
-          ]
+          "detailsCriteresVides": []
         }
       },
       {
@@ -27780,15 +27041,7 @@
               "scorePondere": 0.25
             }
           ],
-          "detailsCriteresVides": [
-            {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            }
-          ]
+          "detailsCriteresVides": []
         }
       },
       {
@@ -28027,15 +27280,7 @@
               "scorePondere": 0.25
             }
           ],
-          "detailsCriteresVides": [
-            {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            }
-          ]
+          "detailsCriteresVides": []
         }
       },
       {
@@ -28246,15 +27491,7 @@
               "scorePondere": 0.5
             }
           ],
-          "detailsCriteresVides": [
-            {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            }
-          ]
+          "detailsCriteresVides": []
         }
       },
       {
@@ -28479,15 +27716,7 @@
               "scorePondere": 0.25
             }
           ],
-          "detailsCriteresVides": [
-            {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            }
-          ]
+          "detailsCriteresVides": []
         }
       },
       {
@@ -28698,15 +27927,7 @@
               "scorePondere": 0.25
             }
           ],
-          "detailsCriteresVides": [
-            {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            }
-          ]
+          "detailsCriteresVides": []
         }
       },
       {
@@ -28966,15 +28187,7 @@
                 "scorePondere": 0.5
               }
             ],
-            "detailsCriteresVides": [
-              {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              }
-            ],
+            "detailsCriteresVides": [],
             "totalAvantages": 19,
             "totalContraintes": 10
           }
@@ -29198,15 +28411,7 @@
                 "scorePondere": 0.25
               }
             ],
-            "detailsCriteresVides": [
-              {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              }
-            ],
+            "detailsCriteresVides": [],
             "totalAvantages": 15.5,
             "totalContraintes": 10.5
           }
@@ -29458,15 +28663,7 @@
                 "scorePondere": 0.25
               }
             ],
-            "detailsCriteresVides": [
-              {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              }
-            ],
+            "detailsCriteresVides": [],
             "totalAvantages": 16.5,
             "totalContraintes": 11.5
           }
@@ -29704,15 +28901,7 @@
                 "scorePondere": 0.25
               }
             ],
-            "detailsCriteresVides": [
-              {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              }
-            ],
+            "detailsCriteresVides": [],
             "totalAvantages": 15.25,
             "totalContraintes": 12.75
           }
@@ -29936,15 +29125,7 @@
                 "scorePondere": 0.25
               }
             ],
-            "detailsCriteresVides": [
-              {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              }
-            ],
+            "detailsCriteresVides": [],
             "totalAvantages": 15.75,
             "totalContraintes": 13.25
           }
@@ -30154,15 +29335,7 @@
                 "scorePondere": 0.25
               }
             ],
-            "detailsCriteresVides": [
-              {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              }
-            ],
+            "detailsCriteresVides": [],
             "totalAvantages": 16.25,
             "totalContraintes": 13.75
           }
@@ -30372,27 +29545,19 @@
                 "scorePondere": 0.25
               }
             ],
-            "detailsCriteresVides": [
-              {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              }
-            ],
+            "detailsCriteresVides": [],
             "totalAvantages": 13.25,
             "totalContraintes": 16.25
           }
         }
       ],
       "metadata": {
-        "note": 9.5,
+        "note": 10,
         "text": "Très fiable",
         "description": "Analyse complète avec toutes les données disponibles.",
-        "criteresRenseignes": 20,
+        "criteresRenseignes": 21,
         "criteresTotal": 21,
-        "poidsRenseignes": 25,
+        "poidsRenseignes": 26,
         "poidsTotal": 26,
         "detailCriteres": [
           {
@@ -30473,7 +29638,7 @@
           {
             "critere": "raccordementEau",
             "poids": 1,
-            "renseigne": false
+            "renseigne": true
           },
           {
             "critere": "etatBatiInfrastructure",
@@ -30759,15 +29924,7 @@
                   "scorePondere": 0.5
                 }
               ],
-              "detailsCriteresVides": [
-                {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                }
-              ],
+              "detailsCriteresVides": [],
               "totalAvantages": 19,
               "totalContraintes": 10
             }
@@ -30995,15 +30152,7 @@
                   "scorePondere": 0.25
                 }
               ],
-              "detailsCriteresVides": [
-                {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                }
-              ],
+              "detailsCriteresVides": [],
               "totalAvantages": 15.5,
               "totalContraintes": 10.5
             }
@@ -31259,15 +30408,7 @@
                   "scorePondere": 0.25
                 }
               ],
-              "detailsCriteresVides": [
-                {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                }
-              ],
+              "detailsCriteresVides": [],
               "totalAvantages": 16.5,
               "totalContraintes": 11.5
             }
@@ -31509,15 +30650,7 @@
                   "scorePondere": 0.25
                 }
               ],
-              "detailsCriteresVides": [
-                {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                }
-              ],
+              "detailsCriteresVides": [],
               "totalAvantages": 15.25,
               "totalContraintes": 12.75
             }
@@ -31745,15 +30878,7 @@
                   "scorePondere": 0.25
                 }
               ],
-              "detailsCriteresVides": [
-                {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                }
-              ],
+              "detailsCriteresVides": [],
               "totalAvantages": 15.75,
               "totalContraintes": 13.25
             }
@@ -31967,15 +31092,7 @@
                   "scorePondere": 0.25
                 }
               ],
-              "detailsCriteresVides": [
-                {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                }
-              ],
+              "detailsCriteresVides": [],
               "totalAvantages": 16.25,
               "totalContraintes": 13.75
             }
@@ -32189,15 +31306,7 @@
                   "scorePondere": 0.25
                 }
               ],
-              "detailsCriteresVides": [
-                {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                }
-              ],
+              "detailsCriteresVides": [],
               "totalAvantages": 13.25,
               "totalContraintes": 16.25
             }
@@ -32266,7 +31375,7 @@
   },
   {
     "testCaseId": "test-06-segre",
-    "timestamp": "2025-12-11T14:09:51.872Z",
+    "timestamp": "2025-12-11T14:22:27.065Z",
     "fixtureSnapshot": {
       "fullTestCase": {
         "id": "test-06-segre",
@@ -32287,7 +31396,7 @@
           "presencePollution": "non",
           "siteEnCentreVille": false,
           "tauxLogementsVacants": 8.4,
-          "terrainViabilise": true,
+          "raccordementEau": true,
           "qualiteVoieDesserte": "accessible",
           "distanceAutoroute": "plus-de-5km",
           "distanceTransportCommun": "plus-de-500m",
@@ -32347,7 +31456,7 @@
           }
         }
       },
-      "inputHash": "c931f60690b722867e04343b50725644",
+      "inputHash": "e11f417ae7da0172ea8150284f74c2d3",
       "expectedHash": "273253b0305c7468537bb72af39095f5"
     },
     "input": {
@@ -32364,7 +31473,7 @@
         "presencePollution": "non",
         "siteEnCentreVille": false,
         "tauxLogementsVacants": 8.4,
-        "terrainViabilise": true,
+        "raccordementEau": true,
         "qualiteVoieDesserte": "accessible",
         "distanceAutoroute": "plus-de-5km",
         "distanceTransportCommun": "plus-de-500m",
@@ -32393,7 +31502,7 @@
           "presencePollution": "non",
           "siteEnCentreVille": false,
           "tauxLogementsVacants": 8.4,
-          "terrainViabilise": true,
+          "raccordementEau": true,
           "qualiteVoieDesserte": "accessible",
           "distanceAutoroute": "plus-de-5km",
           "distanceTransportCommun": "plus-de-500m",
@@ -32426,6 +31535,7 @@
           "zonagePatrimonial": "non-concerne",
           "trameVerteEtBleue": "corridor-a-preserver",
           "typeProprietaire": "public",
+          "raccordementEau": true,
           "etatBatiInfrastructure": "degradation-moyenne",
           "presencePollution": "non",
           "valeurArchitecturaleHistorique": "interet-remarquable",
@@ -32444,6 +31554,7 @@
           "surfaceSite": 10010,
           "surfaceBati": 6600,
           "typeProprietaire": "public",
+          "raccordementEau": true,
           "etatBatiInfrastructure": "degradation-moyenne",
           "presencePollution": "non",
           "valeurArchitecturaleHistorique": "interet-remarquable",
@@ -32671,15 +31782,7 @@
               "scorePondere": 0.25
             }
           ],
-          "detailsCriteresVides": [
-            {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            }
-          ]
+          "detailsCriteresVides": []
         }
       },
       {
@@ -32904,15 +32007,7 @@
               "scorePondere": 0.25
             }
           ],
-          "detailsCriteresVides": [
-            {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            }
-          ]
+          "detailsCriteresVides": []
         }
       },
       {
@@ -33165,15 +32260,7 @@
               "scorePondere": 0.25
             }
           ],
-          "detailsCriteresVides": [
-            {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            }
-          ]
+          "detailsCriteresVides": []
         }
       },
       {
@@ -33412,15 +32499,7 @@
               "scorePondere": 0.25
             }
           ],
-          "detailsCriteresVides": [
-            {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            }
-          ]
+          "detailsCriteresVides": []
         }
       },
       {
@@ -33631,15 +32710,7 @@
               "scorePondere": 0.5
             }
           ],
-          "detailsCriteresVides": [
-            {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            }
-          ]
+          "detailsCriteresVides": []
         }
       },
       {
@@ -33864,15 +32935,7 @@
               "scorePondere": 0.25
             }
           ],
-          "detailsCriteresVides": [
-            {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            }
-          ]
+          "detailsCriteresVides": []
         }
       },
       {
@@ -34083,15 +33146,7 @@
               "scorePondere": 0.25
             }
           ],
-          "detailsCriteresVides": [
-            {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            }
-          ]
+          "detailsCriteresVides": []
         }
       },
       {
@@ -34351,15 +33406,7 @@
                 "scorePondere": 0.5
               }
             ],
-            "detailsCriteresVides": [
-              {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              }
-            ],
+            "detailsCriteresVides": [],
             "totalAvantages": 19,
             "totalContraintes": 10
           }
@@ -34583,15 +33630,7 @@
                 "scorePondere": 0.25
               }
             ],
-            "detailsCriteresVides": [
-              {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              }
-            ],
+            "detailsCriteresVides": [],
             "totalAvantages": 15.5,
             "totalContraintes": 10.5
           }
@@ -34843,15 +33882,7 @@
                 "scorePondere": 0.25
               }
             ],
-            "detailsCriteresVides": [
-              {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              }
-            ],
+            "detailsCriteresVides": [],
             "totalAvantages": 16.5,
             "totalContraintes": 11.5
           }
@@ -35089,15 +34120,7 @@
                 "scorePondere": 0.25
               }
             ],
-            "detailsCriteresVides": [
-              {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              }
-            ],
+            "detailsCriteresVides": [],
             "totalAvantages": 15.25,
             "totalContraintes": 12.75
           }
@@ -35321,15 +34344,7 @@
                 "scorePondere": 0.25
               }
             ],
-            "detailsCriteresVides": [
-              {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              }
-            ],
+            "detailsCriteresVides": [],
             "totalAvantages": 15.75,
             "totalContraintes": 13.25
           }
@@ -35539,15 +34554,7 @@
                 "scorePondere": 0.25
               }
             ],
-            "detailsCriteresVides": [
-              {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              }
-            ],
+            "detailsCriteresVides": [],
             "totalAvantages": 16.25,
             "totalContraintes": 13.75
           }
@@ -35757,27 +34764,19 @@
                 "scorePondere": 0.25
               }
             ],
-            "detailsCriteresVides": [
-              {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              }
-            ],
+            "detailsCriteresVides": [],
             "totalAvantages": 13.25,
             "totalContraintes": 16.25
           }
         }
       ],
       "metadata": {
-        "note": 9.5,
+        "note": 10,
         "text": "Très fiable",
         "description": "Analyse complète avec toutes les données disponibles.",
-        "criteresRenseignes": 20,
+        "criteresRenseignes": 21,
         "criteresTotal": 21,
-        "poidsRenseignes": 25,
+        "poidsRenseignes": 26,
         "poidsTotal": 26,
         "detailCriteres": [
           {
@@ -35858,7 +34857,7 @@
           {
             "critere": "raccordementEau",
             "poids": 1,
-            "renseigne": false
+            "renseigne": true
           },
           {
             "critere": "etatBatiInfrastructure",
@@ -36144,15 +35143,7 @@
                   "scorePondere": 0.5
                 }
               ],
-              "detailsCriteresVides": [
-                {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                }
-              ],
+              "detailsCriteresVides": [],
               "totalAvantages": 19,
               "totalContraintes": 10
             }
@@ -36380,15 +35371,7 @@
                   "scorePondere": 0.25
                 }
               ],
-              "detailsCriteresVides": [
-                {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                }
-              ],
+              "detailsCriteresVides": [],
               "totalAvantages": 15.5,
               "totalContraintes": 10.5
             }
@@ -36644,15 +35627,7 @@
                   "scorePondere": 0.25
                 }
               ],
-              "detailsCriteresVides": [
-                {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                }
-              ],
+              "detailsCriteresVides": [],
               "totalAvantages": 16.5,
               "totalContraintes": 11.5
             }
@@ -36894,15 +35869,7 @@
                   "scorePondere": 0.25
                 }
               ],
-              "detailsCriteresVides": [
-                {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                }
-              ],
+              "detailsCriteresVides": [],
               "totalAvantages": 15.25,
               "totalContraintes": 12.75
             }
@@ -37130,15 +36097,7 @@
                   "scorePondere": 0.25
                 }
               ],
-              "detailsCriteresVides": [
-                {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                }
-              ],
+              "detailsCriteresVides": [],
               "totalAvantages": 15.75,
               "totalContraintes": 13.25
             }
@@ -37352,15 +36311,7 @@
                   "scorePondere": 0.25
                 }
               ],
-              "detailsCriteresVides": [
-                {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                }
-              ],
+              "detailsCriteresVides": [],
               "totalAvantages": 16.25,
               "totalContraintes": 13.75
             }
@@ -37574,15 +36525,7 @@
                   "scorePondere": 0.25
                 }
               ],
-              "detailsCriteresVides": [
-                {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                }
-              ],
+              "detailsCriteresVides": [],
               "totalAvantages": 13.25,
               "totalContraintes": 16.25
             }
@@ -37651,7 +36594,7 @@
   },
   {
     "testCaseId": "test-08-thouars",
-    "timestamp": "2025-12-11T14:09:51.873Z",
+    "timestamp": "2025-12-11T14:22:27.066Z",
     "fixtureSnapshot": {
       "fullTestCase": {
         "id": "test-08-thouars",
@@ -37670,7 +36613,7 @@
           "presencePollution": "oui-composes-volatils",
           "siteEnCentreVille": false,
           "tauxLogementsVacants": 11.3,
-          "terrainViabilise": true,
+          "raccordementEau": true,
           "qualiteVoieDesserte": "accessible",
           "distanceAutoroute": "plus-de-5km",
           "distanceTransportCommun": "moins-de-500m",
@@ -37732,7 +36675,7 @@
           }
         }
       },
-      "inputHash": "ae4a16889d34ada99a0cf67d4b9419b8",
+      "inputHash": "735196063ba6168e01e2634455a3647e",
       "expectedHash": "273253b0305c7468537bb72af39095f5"
     },
     "input": {
@@ -37747,7 +36690,7 @@
         "presencePollution": "oui-composes-volatils",
         "siteEnCentreVille": false,
         "tauxLogementsVacants": 11.3,
-        "terrainViabilise": true,
+        "raccordementEau": true,
         "qualiteVoieDesserte": "accessible",
         "distanceAutoroute": "plus-de-5km",
         "distanceTransportCommun": "moins-de-500m",
@@ -37774,7 +36717,7 @@
           "presencePollution": "oui-composes-volatils",
           "siteEnCentreVille": false,
           "tauxLogementsVacants": 11.3,
-          "terrainViabilise": true,
+          "raccordementEau": true,
           "qualiteVoieDesserte": "accessible",
           "distanceAutoroute": "plus-de-5km",
           "distanceTransportCommun": "moins-de-500m",
@@ -37807,6 +36750,7 @@
           "zonagePatrimonial": "non-concerne",
           "trameVerteEtBleue": "corridor-a-restaurer",
           "typeProprietaire": "public",
+          "raccordementEau": true,
           "presencePollution": "oui-composes-volatils",
           "valeurArchitecturaleHistorique": "interet-remarquable",
           "qualitePaysage": "sans-interet",
@@ -37824,6 +36768,7 @@
           "surfaceSite": 53700,
           "surfaceBati": 0,
           "typeProprietaire": "public",
+          "raccordementEau": true,
           "presencePollution": "oui-composes-volatils",
           "valeurArchitecturaleHistorique": "interet-remarquable",
           "qualitePaysage": "sans-interet",
@@ -38030,13 +36975,6 @@
             }
           ],
           "detailsCriteresVides": [
-            {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            },
             {
               "critere": "etatBatiInfrastructure",
               "valeur": null,
@@ -38256,13 +37194,6 @@
             }
           ],
           "detailsCriteresVides": [
-            {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            },
             {
               "critere": "etatBatiInfrastructure",
               "valeur": null,
@@ -38504,13 +37435,6 @@
           ],
           "detailsCriteresVides": [
             {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            },
-            {
               "critere": "etatBatiInfrastructure",
               "valeur": null,
               "scoreBrut": 0,
@@ -38737,13 +37661,6 @@
           ],
           "detailsCriteresVides": [
             {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            },
-            {
               "critere": "etatBatiInfrastructure",
               "valeur": null,
               "scoreBrut": 0,
@@ -38948,13 +37865,6 @@
             }
           ],
           "detailsCriteresVides": [
-            {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            },
             {
               "critere": "etatBatiInfrastructure",
               "valeur": null,
@@ -39189,13 +38099,6 @@
           ],
           "detailsCriteresVides": [
             {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            },
-            {
               "critere": "etatBatiInfrastructure",
               "valeur": null,
               "scoreBrut": 0,
@@ -39393,13 +38296,6 @@
             }
           ],
           "detailsCriteresVides": [
-            {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            },
             {
               "critere": "etatBatiInfrastructure",
               "valeur": null,
@@ -39683,13 +38579,6 @@
             ],
             "detailsCriteresVides": [
               {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              },
-              {
                 "critere": "etatBatiInfrastructure",
                 "valeur": null,
                 "scoreBrut": 0,
@@ -39886,13 +38775,6 @@
               }
             ],
             "detailsCriteresVides": [
-              {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              },
               {
                 "critere": "etatBatiInfrastructure",
                 "valeur": null,
@@ -40097,13 +38979,6 @@
               }
             ],
             "detailsCriteresVides": [
-              {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              },
               {
                 "critere": "etatBatiInfrastructure",
                 "valeur": null,
@@ -40323,13 +39198,6 @@
             ],
             "detailsCriteresVides": [
               {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              },
-              {
                 "critere": "etatBatiInfrastructure",
                 "valeur": null,
                 "scoreBrut": 0,
@@ -40533,13 +39401,6 @@
               }
             ],
             "detailsCriteresVides": [
-              {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              },
               {
                 "critere": "etatBatiInfrastructure",
                 "valeur": null,
@@ -40765,13 +39626,6 @@
               }
             ],
             "detailsCriteresVides": [
-              {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              },
               {
                 "critere": "etatBatiInfrastructure",
                 "valeur": null,
@@ -41012,13 +39866,6 @@
             ],
             "detailsCriteresVides": [
               {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              },
-              {
                 "critere": "etatBatiInfrastructure",
                 "valeur": null,
                 "scoreBrut": 0,
@@ -41039,12 +39886,12 @@
         }
       ],
       "metadata": {
-        "note": 8,
+        "note": 8.5,
         "text": "Fiable",
         "description": "Données analysées avec un niveau de confiance élevé.",
-        "criteresRenseignes": 18,
+        "criteresRenseignes": 19,
         "criteresTotal": 21,
-        "poidsRenseignes": 21,
+        "poidsRenseignes": 22,
         "poidsTotal": 26,
         "detailCriteres": [
           {
@@ -41125,7 +39972,7 @@
           {
             "critere": "raccordementEau",
             "poids": 1,
-            "renseigne": false
+            "renseigne": true
           },
           {
             "critere": "etatBatiInfrastructure",
@@ -41422,13 +40269,6 @@
               ],
               "detailsCriteresVides": [
                 {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                },
-                {
                   "critere": "etatBatiInfrastructure",
                   "valeur": null,
                   "scoreBrut": 0,
@@ -41629,13 +40469,6 @@
                 }
               ],
               "detailsCriteresVides": [
-                {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                },
                 {
                   "critere": "etatBatiInfrastructure",
                   "valeur": null,
@@ -41844,13 +40677,6 @@
                 }
               ],
               "detailsCriteresVides": [
-                {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                },
                 {
                   "critere": "etatBatiInfrastructure",
                   "valeur": null,
@@ -42074,13 +40900,6 @@
               ],
               "detailsCriteresVides": [
                 {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                },
-                {
                   "critere": "etatBatiInfrastructure",
                   "valeur": null,
                   "scoreBrut": 0,
@@ -42288,13 +41107,6 @@
                 }
               ],
               "detailsCriteresVides": [
-                {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                },
                 {
                   "critere": "etatBatiInfrastructure",
                   "valeur": null,
@@ -42524,13 +41336,6 @@
                 }
               ],
               "detailsCriteresVides": [
-                {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                },
                 {
                   "critere": "etatBatiInfrastructure",
                   "valeur": null,
@@ -42775,13 +41580,6 @@
               ],
               "detailsCriteresVides": [
                 {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                },
-                {
                   "critere": "etatBatiInfrastructure",
                   "valeur": null,
                   "scoreBrut": 0,
@@ -42864,7 +41662,7 @@
   },
   {
     "testCaseId": "test-09-trelaze",
-    "timestamp": "2025-12-11T14:09:51.873Z",
+    "timestamp": "2025-12-11T14:22:27.067Z",
     "fixtureSnapshot": {
       "fullTestCase": {
         "id": "test-09-trelaze",
@@ -42885,7 +41683,7 @@
           "presencePollution": "ne-sait-pas",
           "siteEnCentreVille": true,
           "tauxLogementsVacants": 4.9,
-          "terrainViabilise": true,
+          "raccordementEau": true,
           "qualiteVoieDesserte": "accessible",
           "distanceAutoroute": "entre-1-et-2km",
           "distanceTransportCommun": "moins-de-500m",
@@ -42945,7 +41743,7 @@
           }
         }
       },
-      "inputHash": "a95f0b751f60e1bb8b9dd945da9bac42",
+      "inputHash": "2941d0ed794d981b39b83a3eee0e6311",
       "expectedHash": "273253b0305c7468537bb72af39095f5"
     },
     "input": {
@@ -42962,7 +41760,7 @@
         "presencePollution": "ne-sait-pas",
         "siteEnCentreVille": true,
         "tauxLogementsVacants": 4.9,
-        "terrainViabilise": true,
+        "raccordementEau": true,
         "qualiteVoieDesserte": "accessible",
         "distanceAutoroute": "entre-1-et-2km",
         "distanceTransportCommun": "moins-de-500m",
@@ -42991,7 +41789,7 @@
           "presencePollution": "ne-sait-pas",
           "siteEnCentreVille": true,
           "tauxLogementsVacants": 4.9,
-          "terrainViabilise": true,
+          "raccordementEau": true,
           "qualiteVoieDesserte": "accessible",
           "distanceAutoroute": "entre-1-et-2km",
           "distanceTransportCommun": "moins-de-500m",
@@ -43024,6 +41822,7 @@
           "zonagePatrimonial": "non-concerne",
           "trameVerteEtBleue": "hors-trame",
           "typeProprietaire": "prive",
+          "raccordementEau": true,
           "etatBatiInfrastructure": "degradation-heterogene",
           "presencePollution": "ne-sait-pas",
           "valeurArchitecturaleHistorique": "interet-remarquable",
@@ -43042,6 +41841,7 @@
           "surfaceSite": 42780,
           "surfaceBati": 6600,
           "typeProprietaire": "prive",
+          "raccordementEau": true,
           "etatBatiInfrastructure": "degradation-heterogene",
           "presencePollution": "ne-sait-pas",
           "valeurArchitecturaleHistorique": "interet-remarquable",
@@ -43271,13 +42071,6 @@
           ],
           "detailsCriteresVides": [
             {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            },
-            {
               "critere": "presencePollution",
               "valeur": null,
               "scoreBrut": 0,
@@ -43503,13 +42296,6 @@
             }
           ],
           "detailsCriteresVides": [
-            {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            },
             {
               "critere": "presencePollution",
               "valeur": null,
@@ -43772,13 +42558,6 @@
           ],
           "detailsCriteresVides": [
             {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            },
-            {
               "critere": "presencePollution",
               "valeur": null,
               "scoreBrut": 0,
@@ -44012,13 +42791,6 @@
           ],
           "detailsCriteresVides": [
             {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            },
-            {
               "critere": "presencePollution",
               "valeur": null,
               "scoreBrut": 0,
@@ -44237,13 +43009,6 @@
             }
           ],
           "detailsCriteresVides": [
-            {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            },
             {
               "critere": "presencePollution",
               "valeur": null,
@@ -44499,13 +43264,6 @@
           ],
           "detailsCriteresVides": [
             {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            },
-            {
               "critere": "presencePollution",
               "valeur": null,
               "scoreBrut": 0,
@@ -44703,13 +43461,6 @@
             }
           ],
           "detailsCriteresVides": [
-            {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            },
             {
               "critere": "presencePollution",
               "valeur": null,
@@ -44979,13 +43730,6 @@
             ],
             "detailsCriteresVides": [
               {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              },
-              {
                 "critere": "presencePollution",
                 "valeur": null,
                 "scoreBrut": 0,
@@ -45210,13 +43954,6 @@
               }
             ],
             "detailsCriteresVides": [
-              {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              },
               {
                 "critere": "presencePollution",
                 "valeur": null,
@@ -45449,13 +44186,6 @@
               }
             ],
             "detailsCriteresVides": [
-              {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              },
               {
                 "critere": "presencePollution",
                 "valeur": null,
@@ -45717,13 +44447,6 @@
             ],
             "detailsCriteresVides": [
               {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              },
-              {
                 "critere": "presencePollution",
                 "valeur": null,
                 "scoreBrut": 0,
@@ -45941,13 +44664,6 @@
               }
             ],
             "detailsCriteresVides": [
-              {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              },
               {
                 "critere": "presencePollution",
                 "valeur": null,
@@ -46202,13 +44918,6 @@
             ],
             "detailsCriteresVides": [
               {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              },
-              {
                 "critere": "presencePollution",
                 "valeur": null,
                 "scoreBrut": 0,
@@ -46406,13 +45115,6 @@
             ],
             "detailsCriteresVides": [
               {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              },
-              {
                 "critere": "presencePollution",
                 "valeur": null,
                 "scoreBrut": 0,
@@ -46429,9 +45131,9 @@
         "note": 9,
         "text": "Très fiable",
         "description": "Analyse complète avec toutes les données disponibles.",
-        "criteresRenseignes": 19,
+        "criteresRenseignes": 20,
         "criteresTotal": 21,
-        "poidsRenseignes": 23,
+        "poidsRenseignes": 24,
         "poidsTotal": 26,
         "detailCriteres": [
           {
@@ -46512,7 +45214,7 @@
           {
             "critere": "raccordementEau",
             "poids": 1,
-            "renseigne": false
+            "renseigne": true
           },
           {
             "critere": "etatBatiInfrastructure",
@@ -46800,13 +45502,6 @@
               ],
               "detailsCriteresVides": [
                 {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                },
-                {
                   "critere": "presencePollution",
                   "valeur": null,
                   "scoreBrut": 0,
@@ -47035,13 +45730,6 @@
                 }
               ],
               "detailsCriteresVides": [
-                {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                },
                 {
                   "critere": "presencePollution",
                   "valeur": null,
@@ -47278,13 +45966,6 @@
                 }
               ],
               "detailsCriteresVides": [
-                {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                },
                 {
                   "critere": "presencePollution",
                   "valeur": null,
@@ -47550,13 +46231,6 @@
               ],
               "detailsCriteresVides": [
                 {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                },
-                {
                   "critere": "presencePollution",
                   "valeur": null,
                   "scoreBrut": 0,
@@ -47778,13 +46452,6 @@
                 }
               ],
               "detailsCriteresVides": [
-                {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                },
                 {
                   "critere": "presencePollution",
                   "valeur": null,
@@ -48043,13 +46710,6 @@
               ],
               "detailsCriteresVides": [
                 {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                },
-                {
                   "critere": "presencePollution",
                   "valeur": null,
                   "scoreBrut": 0,
@@ -48251,13 +46911,6 @@
               ],
               "detailsCriteresVides": [
                 {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                },
-                {
                   "critere": "presencePollution",
                   "valeur": null,
                   "scoreBrut": 0,
@@ -48333,7 +46986,7 @@
   },
   {
     "testCaseId": "test-10-villeurbanne",
-    "timestamp": "2025-12-11T14:09:51.874Z",
+    "timestamp": "2025-12-11T14:22:27.068Z",
     "fixtureSnapshot": {
       "fullTestCase": {
         "id": "test-10-villeurbanne",
@@ -48354,7 +47007,7 @@
           "presencePollution": "oui-composes-volatils",
           "siteEnCentreVille": true,
           "tauxLogementsVacants": 8.5,
-          "terrainViabilise": true,
+          "raccordementEau": true,
           "qualiteVoieDesserte": "accessible",
           "distanceAutoroute": "entre-1-et-2km",
           "distanceTransportCommun": "moins-de-500m",
@@ -48414,7 +47067,7 @@
           }
         }
       },
-      "inputHash": "d82b377768b9c80e4295b6cb7c97820f",
+      "inputHash": "7179be8c04077c717911d788689ab656",
       "expectedHash": "273253b0305c7468537bb72af39095f5"
     },
     "input": {
@@ -48431,7 +47084,7 @@
         "presencePollution": "oui-composes-volatils",
         "siteEnCentreVille": true,
         "tauxLogementsVacants": 8.5,
-        "terrainViabilise": true,
+        "raccordementEau": true,
         "qualiteVoieDesserte": "accessible",
         "distanceAutoroute": "entre-1-et-2km",
         "distanceTransportCommun": "moins-de-500m",
@@ -48460,7 +47113,7 @@
           "presencePollution": "oui-composes-volatils",
           "siteEnCentreVille": true,
           "tauxLogementsVacants": 8.5,
-          "terrainViabilise": true,
+          "raccordementEau": true,
           "qualiteVoieDesserte": "accessible",
           "distanceAutoroute": "entre-1-et-2km",
           "distanceTransportCommun": "moins-de-500m",
@@ -48493,6 +47146,7 @@
           "zonagePatrimonial": "non-concerne",
           "trameVerteEtBleue": "hors-trame",
           "typeProprietaire": "prive",
+          "raccordementEau": true,
           "etatBatiInfrastructure": "degradation-tres-importante",
           "presencePollution": "oui-composes-volatils",
           "valeurArchitecturaleHistorique": "ordinaire",
@@ -48511,6 +47165,7 @@
           "surfaceSite": 5800,
           "surfaceBati": 0,
           "typeProprietaire": "prive",
+          "raccordementEau": true,
           "etatBatiInfrastructure": "degradation-tres-importante",
           "presencePollution": "oui-composes-volatils",
           "valeurArchitecturaleHistorique": "ordinaire",
@@ -48738,15 +47393,7 @@
               "scorePondere": 0.25
             }
           ],
-          "detailsCriteresVides": [
-            {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            }
-          ]
+          "detailsCriteresVides": []
         }
       },
       {
@@ -48964,15 +47611,7 @@
               "scorePondere": 0.25
             }
           ],
-          "detailsCriteresVides": [
-            {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            }
-          ]
+          "detailsCriteresVides": []
         }
       },
       {
@@ -49232,15 +47871,7 @@
               "scorePondere": 0.25
             }
           ],
-          "detailsCriteresVides": [
-            {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            }
-          ]
+          "detailsCriteresVides": []
         }
       },
       {
@@ -49472,15 +48103,7 @@
               "scorePondere": 0.25
             }
           ],
-          "detailsCriteresVides": [
-            {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            }
-          ]
+          "detailsCriteresVides": []
         }
       },
       {
@@ -49691,15 +48314,7 @@
               "scorePondere": 0.5
             }
           ],
-          "detailsCriteresVides": [
-            {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            }
-          ]
+          "detailsCriteresVides": []
         }
       },
       {
@@ -49938,15 +48553,7 @@
               "scorePondere": 0.25
             }
           ],
-          "detailsCriteresVides": [
-            {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            }
-          ]
+          "detailsCriteresVides": []
         }
       },
       {
@@ -50143,15 +48750,7 @@
               "scorePondere": 0.25
             }
           ],
-          "detailsCriteresVides": [
-            {
-              "critere": "raccordementEau",
-              "valeur": null,
-              "scoreBrut": 0,
-              "poids": 0,
-              "scorePondere": 0
-            }
-          ]
+          "detailsCriteresVides": []
         }
       },
       {
@@ -50439,15 +49038,7 @@
                 "scorePondere": 0.25
               }
             ],
-            "detailsCriteresVides": [
-              {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              }
-            ],
+            "detailsCriteresVides": [],
             "totalAvantages": 18.5,
             "totalContraintes": 9.5
           }
@@ -50657,15 +49248,7 @@
                 "scorePondere": 0.25
               }
             ],
-            "detailsCriteresVides": [
-              {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              }
-            ],
+            "detailsCriteresVides": [],
             "totalAvantages": 18.75,
             "totalContraintes": 13.25
           }
@@ -50882,15 +49465,7 @@
                 "scorePondere": 0.25
               }
             ],
-            "detailsCriteresVides": [
-              {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              }
-            ],
+            "detailsCriteresVides": [],
             "totalAvantages": 16.75,
             "totalContraintes": 14.25
           }
@@ -51121,15 +49696,7 @@
                 "scorePondere": 0.25
               }
             ],
-            "detailsCriteresVides": [
-              {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              }
-            ],
+            "detailsCriteresVides": [],
             "totalAvantages": 13.25,
             "totalContraintes": 12.75
           }
@@ -51325,15 +49892,7 @@
                 "scorePondere": 0.25
               }
             ],
-            "detailsCriteresVides": [
-              {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              }
-            ],
+            "detailsCriteresVides": [],
             "totalAvantages": 15.75,
             "totalContraintes": 15.75
           }
@@ -51592,15 +50151,7 @@
                 "scorePondere": 0.25
               }
             ],
-            "detailsCriteresVides": [
-              {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              }
-            ],
+            "detailsCriteresVides": [],
             "totalAvantages": 11.5,
             "totalContraintes": 16.5
           }
@@ -51810,27 +50361,19 @@
                 "scorePondere": 0.5
               }
             ],
-            "detailsCriteresVides": [
-              {
-                "critere": "raccordementEau",
-                "valeur": null,
-                "scoreBrut": 0,
-                "poids": 0,
-                "scorePondere": 0
-              }
-            ],
+            "detailsCriteresVides": [],
             "totalAvantages": 11,
             "totalContraintes": 20
           }
         }
       ],
       "metadata": {
-        "note": 9.5,
+        "note": 10,
         "text": "Très fiable",
         "description": "Analyse complète avec toutes les données disponibles.",
-        "criteresRenseignes": 20,
+        "criteresRenseignes": 21,
         "criteresTotal": 21,
-        "poidsRenseignes": 25,
+        "poidsRenseignes": 26,
         "poidsTotal": 26,
         "detailCriteres": [
           {
@@ -51911,7 +50454,7 @@
           {
             "critere": "raccordementEau",
             "poids": 1,
-            "renseigne": false
+            "renseigne": true
           },
           {
             "critere": "etatBatiInfrastructure",
@@ -52225,15 +50768,7 @@
                   "scorePondere": 0.25
                 }
               ],
-              "detailsCriteresVides": [
-                {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                }
-              ],
+              "detailsCriteresVides": [],
               "totalAvantages": 18.5,
               "totalContraintes": 9.5
             }
@@ -52447,15 +50982,7 @@
                   "scorePondere": 0.25
                 }
               ],
-              "detailsCriteresVides": [
-                {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                }
-              ],
+              "detailsCriteresVides": [],
               "totalAvantages": 18.75,
               "totalContraintes": 13.25
             }
@@ -52676,15 +51203,7 @@
                   "scorePondere": 0.25
                 }
               ],
-              "detailsCriteresVides": [
-                {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                }
-              ],
+              "detailsCriteresVides": [],
               "totalAvantages": 16.75,
               "totalContraintes": 14.25
             }
@@ -52919,15 +51438,7 @@
                   "scorePondere": 0.25
                 }
               ],
-              "detailsCriteresVides": [
-                {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                }
-              ],
+              "detailsCriteresVides": [],
               "totalAvantages": 13.25,
               "totalContraintes": 12.75
             }
@@ -53127,15 +51638,7 @@
                   "scorePondere": 0.25
                 }
               ],
-              "detailsCriteresVides": [
-                {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                }
-              ],
+              "detailsCriteresVides": [],
               "totalAvantages": 15.75,
               "totalContraintes": 15.75
             }
@@ -53398,15 +51901,7 @@
                   "scorePondere": 0.25
                 }
               ],
-              "detailsCriteresVides": [
-                {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                }
-              ],
+              "detailsCriteresVides": [],
               "totalAvantages": 11.5,
               "totalContraintes": 16.5
             }
@@ -53620,15 +52115,7 @@
                   "scorePondere": 0.5
                 }
               ],
-              "detailsCriteresVides": [
-                {
-                  "critere": "raccordementEau",
-                  "valeur": null,
-                  "scoreBrut": 0,
-                  "poids": 0,
-                  "scorePondere": 0
-                }
-              ],
+              "detailsCriteresVides": [],
               "totalAvantages": 11,
               "totalContraintes": 20
             }
