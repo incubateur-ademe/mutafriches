@@ -32,14 +32,6 @@ export function ParcelleSelectionMap({
 
   return (
     <div>
-      {/* Instructions */}
-      <div className="fr-mb-2w">
-        <p className="fr-text--sm" style={{ color: "#666" }}>
-          <strong>Utilisation :</strong> Recherchez une adresse ci-dessous ou cliquez directement
-          sur la carte pour sélectionner une parcelle cadastrale.
-        </p>
-      </div>
-
       {/* Barre de recherche */}
       <div className="fr-mb-3w">
         <AddressSearchBar onAddressSelected={handleAddressSelected} />
@@ -58,13 +50,6 @@ export function ParcelleSelectionMap({
         }}
       >
         <div id={MAP_CONTAINER_ID} style={{ height: "100%", width: "100%" }} />
-      </div>
-
-      {/* Info complémentaire */}
-      <div className="fr-mt-2w">
-        <p className="fr-text--xs fr-mb-0" style={{ color: "#666", fontStyle: "italic" }}>
-          La parcelle sélectionnée sera entourée d'un liseré bleu sur la carte
-        </p>
       </div>
     </div>
   );
