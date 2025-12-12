@@ -17,10 +17,10 @@
   },
   "devDependencies": {
     "@types/node": "^24.10.0",
-    "@vitest/ui": "^4.0.8",
-    "tsx": "^4.20.5",
+    "@vitest/ui": "^4.0.15",
+    "tsx": "^4.21.0",
     "typescript": "^5.3.3",
-    "vitest": "^4.0.14",
+    "vitest": "^4.0.15",
     "xlsx": "^0.18.5"
   }
 }
