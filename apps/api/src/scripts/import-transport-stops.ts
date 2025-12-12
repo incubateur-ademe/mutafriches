@@ -1,4 +1,4 @@
-/* eslint-disable no-console, @typescript-eslint/no-non-null-assertion */
+/* eslint-disable no-console */
 /**
  * Script d'import des points d'arrêt de transport en France
  *
@@ -7,7 +7,6 @@
  *
  * Prérequis:
  *   - La migration 0008_add_transport_stops.sql doit avoir été exécutée
- *   - La migration 0009_deduplicate_transport_stops.sql doit avoir été exécutée
  *   - PostGIS doit être activé sur la base
  *   - Connexion internet pour télécharger le fichier CSV (~144 Mo)
  *
@@ -299,7 +298,7 @@ async function importTransportStops(): Promise<void> {
     console.log(`Total points d arret: ${parseInt(finalStats.total).toLocaleString()}`);
     console.log(`Types differents: ${finalStats.types_count}`);
   } catch (error) {
-    // Logger l'erreur
+    // Logger l'erreur de manière sécurisée
     const errorMessage = error instanceof Error ? error.message : String(error);
     await db.execute(sql`
       UPDATE raw_imports_log
@@ -454,8 +453,51 @@ function escapeString(value: string): string {
   return `'${value.replace(/'/g, "''")}'`;
 }
 
+/**
+ * Sanitize error message pour éviter log injection
+ *
+ * @param error - Erreur à logger (peut être Error, string, ou objet)
+ * @returns Message sanitizé et clairement délimité
+ */
+function safeLogError(error: unknown): string {
+  let message: string;
+
+  // Extraire le message selon le type
+  if (error instanceof Error) {
+    // Pour les Error objects, inclure le nom et le message
+    message = `${error.name}: ${error.message}`;
+  } else if (typeof error === "string") {
+    message = error;
+  } else {
+    // Pour les autres types, stringify
+    try {
+      message = JSON.stringify(error);
+    } catch {
+      // Si JSON.stringify échoue (circular ref, etc.)
+      message = String(error);
+    }
+  }
+
+  // 1. Supprimer les séquences ANSI escape (couleurs, formatage terminal)
+  // eslint-disable-next-line no-control-regex
+  message = message.replace(/\x1b\[[0-9;]*m/g, "");
+
+  // 2. Supprimer/remplacer les caractères de contrôle C0 et DEL
+  // eslint-disable-next-line no-control-regex
+  message = message.replace(/[\r\n\t\v\f\x00-\x08\x0B-\x1F\x7F]/g, " ");
+
+  // 3. Tronquer si le message est trop long (éviter log flooding)
+  const MAX_LENGTH = 1000;
+  if (message.length > MAX_LENGTH) {
+    message = message.substring(0, MAX_LENGTH) + "... (truncated)";
+  }
+
+  // 4. Marquer clairement le message comme input non fiable
+  return `[error: "${message}"]`;
+}
+
 // Exécution
 importTransportStops().catch((error: unknown) => {
-  console.error("\nErreur:", error);
+  console.error("\nErreur:", safeLogError(error));
   process.exit(1);
 });
