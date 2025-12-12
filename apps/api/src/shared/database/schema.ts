@@ -3,6 +3,7 @@ import { evenements_utilisateur, typeEvenementEnum } from "./schemas/evenements.
 import { enrichissements } from "./schemas/enrichissements.schema";
 import { rawBpe } from "./schemas/raw-bpe.schema";
 import { rawImportsLog } from "./schemas/raw-imports-log.schema";
+import { rawTransportStops } from "./schemas/raw-transport-stops.schema";
 
 // Export individuel pour drizzle-kit
 export {
@@ -12,6 +13,7 @@ export {
   enrichissements,
   rawBpe,
   rawImportsLog,
+  rawTransportStops,
 };
 
 // Export groupé pour drizzle ORM
@@ -21,4 +23,5 @@ export const schema = {
   enrichissements,
   rawBpe,
   rawImportsLog,
+  rawTransportStops,
 };

@@ -57,6 +57,13 @@
       "when": 1764330299944,
       "tag": "0007_premium_malice",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1765534027038,
+      "tag": "0008_regular_supernaut",
+      "breakpoints": true
     }
   ]
 }

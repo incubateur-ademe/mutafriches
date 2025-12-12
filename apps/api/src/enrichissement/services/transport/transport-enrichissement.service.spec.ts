@@ -3,12 +3,14 @@ import { SourceEnrichissement } from "@mutafriches/shared-types";
 import { TransportEnrichissementService } from "./transport-enrichissement.service";
 import { ServicePublicService } from "../../adapters/service-public/service-public.service";
 import { IgnWfsService } from "../../adapters/ign-wfs/ign-wfs.service";
+import { TransportStopsRepository } from "../../repositories/transport-stops.repository";
 import { Parcelle } from "../../../evaluation/entities/parcelle.entity";
 
 describe("TransportEnrichissementService", () => {
   let service: TransportEnrichissementService;
   let servicePublicService: ServicePublicService;
   let ignWfsService: IgnWfsService;
+  let transportStopsRepository: TransportStopsRepository;
 
   beforeEach(() => {
     // Mock du ServicePublicService
@@ -21,7 +23,16 @@ describe("TransportEnrichissementService", () => {
       getDistanceVoieGrandeCirculation: vi.fn(),
     } as unknown as IgnWfsService;
 
-    service = new TransportEnrichissementService(servicePublicService, ignWfsService);
+    // Mock du TransportStopsRepository
+    transportStopsRepository = {
+      findTransportStopProximite: vi.fn(),
+    } as unknown as TransportStopsRepository;
+
+    service = new TransportEnrichissementService(
+      servicePublicService,
+      ignWfsService,
+      transportStopsRepository,
+    );
   });
 
   describe("enrichir - Centre-ville", () => {
@@ -55,15 +66,19 @@ describe("TransportEnrichissementService", () => {
         source: "IGN WFS",
       });
 
+      // Mock transport
+      vi.mocked(transportStopsRepository.findTransportStopProximite).mockResolvedValue(450);
+
       // Act
       const result = await service.enrichir(parcelle);
 
       // Assert
       expect(parcelle.siteEnCentreVille).toBe(true);
+      expect(parcelle.distanceTransportCommun).toBe(450);
       expect(result.success).toBe(true);
       expect(result.sourcesUtilisees).toContain(SourceEnrichissement.SERVICE_PUBLIC);
       expect(result.sourcesUtilisees).toContain(SourceEnrichissement.IGN_WFS);
-      expect(result.champsManquants).toContain("distanceTransportCommun"); // TODO: BPE
+      expect(result.sourcesUtilisees).toContain(SourceEnrichissement.TRANSPORT_DATA_GOUV);
       expect(servicePublicService.getMairieCoordonnees).toHaveBeenCalledWith("29232");
     });
 
@@ -92,13 +107,17 @@ describe("TransportEnrichissementService", () => {
         source: "IGN WFS",
       });
 
+      vi.mocked(transportStopsRepository.findTransportStopProximite).mockResolvedValue(800);
+
       // Act
       const result = await service.enrichir(parcelle);
 
       // Assert
       expect(parcelle.siteEnCentreVille).toBe(false);
+      expect(parcelle.distanceTransportCommun).toBe(800);
       expect(result.success).toBe(true);
       expect(result.sourcesUtilisees).toContain(SourceEnrichissement.SERVICE_PUBLIC);
+      expect(result.sourcesUtilisees).toContain(SourceEnrichissement.TRANSPORT_DATA_GOUV);
     });
 
     it("devrait mettre centre-ville a false si erreur API Service Public", async () => {
@@ -121,15 +140,19 @@ describe("TransportEnrichissementService", () => {
         source: "IGN WFS",
       });
 
+      vi.mocked(transportStopsRepository.findTransportStopProximite).mockResolvedValue(600);
+
       // Act
       const result = await service.enrichir(parcelle);
 
       // Assert
       expect(parcelle.siteEnCentreVille).toBe(false);
+      expect(parcelle.distanceTransportCommun).toBe(600);
       expect(result.sourcesEchouees).toContain(SourceEnrichissement.SERVICE_PUBLIC);
       expect(result.champsManquants).toContain("siteEnCentreVille");
-      // IGN WFS devrait quand meme fonctionner
+      // IGN WFS et Transport devrait quand meme fonctionner
       expect(result.sourcesUtilisees).toContain(SourceEnrichissement.IGN_WFS);
+      expect(result.sourcesUtilisees).toContain(SourceEnrichissement.TRANSPORT_DATA_GOUV);
     });
 
     it("devrait determiner centre-ville avec une vraie parcelle (Trelaze)", async () => {
@@ -157,13 +180,17 @@ describe("TransportEnrichissementService", () => {
         source: "IGN WFS",
       });
 
+      vi.mocked(transportStopsRepository.findTransportStopProximite).mockResolvedValue(350);
+
       // Act
       const result = await service.enrichir(parcelle);
 
       // Assert
       expect(parcelle.siteEnCentreVille).toBe(true);
+      expect(parcelle.distanceTransportCommun).toBe(350);
       expect(result.success).toBe(true);
       expect(result.sourcesUtilisees).toContain(SourceEnrichissement.SERVICE_PUBLIC);
+      expect(result.sourcesUtilisees).toContain(SourceEnrichissement.TRANSPORT_DATA_GOUV);
     });
   });
 
@@ -196,6 +223,8 @@ describe("TransportEnrichissementService", () => {
         },
         source: "IGN WFS",
       });
+
+      vi.mocked(transportStopsRepository.findTransportStopProximite).mockResolvedValue(500);
 
       // Act
       const result = await service.enrichir(parcelle);
@@ -237,15 +266,19 @@ describe("TransportEnrichissementService", () => {
         source: "IGN WFS",
       });
 
+      vi.mocked(transportStopsRepository.findTransportStopProximite).mockResolvedValue(1200);
+
       // Act
       const result = await service.enrichir(parcelle);
 
       // Assert
       expect(parcelle.distanceAutoroute).toBeUndefined();
+      expect(parcelle.distanceTransportCommun).toBe(1200);
       expect(result.sourcesEchouees).toContain(SourceEnrichissement.IGN_WFS);
       expect(result.champsManquants).toContain("distanceAutoroute");
       // Les autres enrichissements devraient quand meme fonctionner
       expect(result.sourcesUtilisees).toContain(SourceEnrichissement.SERVICE_PUBLIC);
+      expect(result.sourcesUtilisees).toContain(SourceEnrichissement.TRANSPORT_DATA_GOUV);
     });
 
     it("devrait enrichir meme sans code INSEE (IGN WFS fonctionne)", async () => {
@@ -262,14 +295,181 @@ describe("TransportEnrichissementService", () => {
         source: "IGN WFS",
       });
 
+      vi.mocked(transportStopsRepository.findTransportStopProximite).mockResolvedValue(750);
+
       // Act
       const result = await service.enrichir(parcelle);
 
       // Assert
       expect(parcelle.distanceAutoroute).toBe(1200);
+      expect(parcelle.distanceTransportCommun).toBe(750);
       expect(result.sourcesUtilisees).toContain(SourceEnrichissement.IGN_WFS);
+      expect(result.sourcesUtilisees).toContain(SourceEnrichissement.TRANSPORT_DATA_GOUV);
       // Service Public devrait echouer (pas de code INSEE)
       expect(result.sourcesEchouees).toContain(SourceEnrichissement.SERVICE_PUBLIC);
+    });
+  });
+
+  describe("enrichir - Distance transport en commun", () => {
+    it("devrait calculer la distance au transport en commun le plus proche", async () => {
+      // Arrange
+      const parcelle = new Parcelle();
+      parcelle.identifiantParcelle = "75056000AB0001";
+      parcelle.codeInsee = "75056";
+      parcelle.commune = "Paris";
+      parcelle.coordonnees = { latitude: 48.8566, longitude: 2.3522 };
+
+      vi.mocked(servicePublicService.getMairieCoordonnees).mockResolvedValue({
+        success: true,
+        data: {
+          codeInsee: "75056",
+          nomCommune: "Paris",
+          coordonnees: { latitude: 48.8566, longitude: 2.3522 },
+          adresse: "Mairie",
+        },
+        source: "API Service Public",
+      });
+
+      vi.mocked(ignWfsService.getDistanceVoieGrandeCirculation).mockResolvedValue({
+        success: true,
+        data: { distanceMetres: 500, nombreTronconsProches: 1 },
+        source: "IGN WFS",
+      });
+
+      // Mock : arret a 250m
+      vi.mocked(transportStopsRepository.findTransportStopProximite).mockResolvedValue(250.5);
+
+      // Act
+      const result = await service.enrichir(parcelle);
+
+      // Assert
+      expect(parcelle.distanceTransportCommun).toBe(251); // Arrondi
+      expect(result.success).toBe(true);
+      expect(result.sourcesUtilisees).toContain(SourceEnrichissement.TRANSPORT_DATA_GOUV);
+      expect(transportStopsRepository.findTransportStopProximite).toHaveBeenCalledWith(
+        48.8566,
+        2.3522,
+        2000,
+      );
+    });
+
+    it("devrait gerer le cas ou aucun transport n'est trouve dans le rayon", async () => {
+      // Arrange
+      const parcelle = new Parcelle();
+      parcelle.identifiantParcelle = "RURAL456";
+      parcelle.codeInsee = "23456";
+      parcelle.commune = "Campagne Profonde";
+      parcelle.coordonnees = { latitude: 44.5, longitude: 1.5 };
+
+      vi.mocked(servicePublicService.getMairieCoordonnees).mockResolvedValue({
+        success: true,
+        data: {
+          codeInsee: "23456",
+          nomCommune: "Campagne",
+          coordonnees: { latitude: 44.5, longitude: 1.5 },
+          adresse: "Mairie",
+        },
+        source: "API Service Public",
+      });
+
+      vi.mocked(ignWfsService.getDistanceVoieGrandeCirculation).mockResolvedValue({
+        success: true,
+        data: { distanceMetres: 8000, nombreTronconsProches: 1 },
+        source: "IGN WFS",
+      });
+
+      // Mock : aucun arret dans le rayon de 2km
+      vi.mocked(transportStopsRepository.findTransportStopProximite).mockResolvedValue(null);
+
+      // Act
+      const result = await service.enrichir(parcelle);
+
+      // Assert
+      expect(parcelle.distanceTransportCommun).toBeUndefined();
+      expect(result.sourcesEchouees).toContain(SourceEnrichissement.TRANSPORT_DATA_GOUV);
+      expect(result.champsManquants).toContain("distanceTransportCommun");
+      // Les autres enrichissements devraient quand meme fonctionner
+      expect(result.sourcesUtilisees).toContain(SourceEnrichissement.SERVICE_PUBLIC);
+      expect(result.sourcesUtilisees).toContain(SourceEnrichissement.IGN_WFS);
+    });
+
+    it("devrait gerer les erreurs du repository transport", async () => {
+      // Arrange
+      const parcelle = new Parcelle();
+      parcelle.identifiantParcelle = "TEST789";
+      parcelle.codeInsee = "12345";
+      parcelle.commune = "Test";
+      parcelle.coordonnees = { latitude: 48.0, longitude: -4.0 };
+
+      vi.mocked(servicePublicService.getMairieCoordonnees).mockResolvedValue({
+        success: true,
+        data: {
+          codeInsee: "12345",
+          nomCommune: "Test",
+          coordonnees: { latitude: 48.0, longitude: -4.0 },
+          adresse: "Mairie",
+        },
+        source: "API Service Public",
+      });
+
+      vi.mocked(ignWfsService.getDistanceVoieGrandeCirculation).mockResolvedValue({
+        success: true,
+        data: { distanceMetres: 3000, nombreTronconsProches: 1 },
+        source: "IGN WFS",
+      });
+
+      // Mock : erreur repository
+      vi.mocked(transportStopsRepository.findTransportStopProximite).mockRejectedValue(
+        new Error("Database connection error"),
+      );
+
+      // Act
+      const result = await service.enrichir(parcelle);
+
+      // Assert
+      expect(parcelle.distanceTransportCommun).toBeUndefined();
+      expect(result.sourcesEchouees).toContain(SourceEnrichissement.TRANSPORT_DATA_GOUV);
+      expect(result.champsManquants).toContain("distanceTransportCommun");
+      // Les autres enrichissements devraient quand meme fonctionner
+      expect(result.success).toBe(true);
+      expect(result.sourcesUtilisees).toContain(SourceEnrichissement.SERVICE_PUBLIC);
+      expect(result.sourcesUtilisees).toContain(SourceEnrichissement.IGN_WFS);
+    });
+
+    it("devrait arrondir la distance au metre pres", async () => {
+      // Arrange
+      const parcelle = new Parcelle();
+      parcelle.identifiantParcelle = "TEST";
+      parcelle.codeInsee = "12345";
+      parcelle.commune = "Test";
+      parcelle.coordonnees = { latitude: 48.0, longitude: -4.0 };
+
+      vi.mocked(servicePublicService.getMairieCoordonnees).mockResolvedValue({
+        success: true,
+        data: {
+          codeInsee: "12345",
+          nomCommune: "Test",
+          coordonnees: { latitude: 48.0, longitude: -4.0 },
+          adresse: "Mairie",
+        },
+        source: "API Service Public",
+      });
+
+      vi.mocked(ignWfsService.getDistanceVoieGrandeCirculation).mockResolvedValue({
+        success: true,
+        data: { distanceMetres: 1000, nombreTronconsProches: 1 },
+        source: "IGN WFS",
+      });
+
+      // Mock : distance avec decimales
+      vi.mocked(transportStopsRepository.findTransportStopProximite).mockResolvedValue(456.789);
+
+      // Act
+      const result = await service.enrichir(parcelle);
+
+      // Assert
+      expect(parcelle.distanceTransportCommun).toBe(457); // Arrondi
+      expect(result.success).toBe(true);
     });
   });
 
@@ -292,12 +492,14 @@ describe("TransportEnrichissementService", () => {
       expect(result.success).toBe(false);
       expect(result.sourcesEchouees).toContain(SourceEnrichissement.SERVICE_PUBLIC);
       expect(result.sourcesEchouees).toContain(SourceEnrichissement.IGN_WFS);
+      expect(result.sourcesEchouees).toContain(SourceEnrichissement.TRANSPORT_DATA_GOUV);
       expect(result.champsManquants).toContain("siteEnCentreVille");
       expect(result.champsManquants).toContain("distanceAutoroute");
       expect(result.champsManquants).toContain("distanceTransportCommun");
       // Ne doit pas appeler les APIs
       expect(servicePublicService.getMairieCoordonnees).not.toHaveBeenCalled();
       expect(ignWfsService.getDistanceVoieGrandeCirculation).not.toHaveBeenCalled();
+      expect(transportStopsRepository.findTransportStopProximite).not.toHaveBeenCalled();
     });
 
     it("devrait retourner echec si pas de code INSEE (seulement pour mairie)", async () => {
@@ -314,15 +516,19 @@ describe("TransportEnrichissementService", () => {
         source: "IGN WFS",
       });
 
+      vi.mocked(transportStopsRepository.findTransportStopProximite).mockResolvedValue(800);
+
       // Act
       const result = await service.enrichir(parcelle);
 
       // Assert
       expect(result.sourcesEchouees).toContain(SourceEnrichissement.SERVICE_PUBLIC);
       expect(result.champsManquants).toContain("siteEnCentreVille");
-      // IGN WFS devrait fonctionner
+      // IGN WFS et Transport devraient fonctionner
       expect(result.sourcesUtilisees).toContain(SourceEnrichissement.IGN_WFS);
+      expect(result.sourcesUtilisees).toContain(SourceEnrichissement.TRANSPORT_DATA_GOUV);
       expect(parcelle.distanceAutoroute).toBe(5000);
+      expect(parcelle.distanceTransportCommun).toBe(800);
       // Ne doit pas appeler Service Public
       expect(servicePublicService.getMairieCoordonnees).not.toHaveBeenCalled();
     });
@@ -347,15 +553,60 @@ describe("TransportEnrichissementService", () => {
         source: "IGN WFS",
       });
 
+      vi.mocked(transportStopsRepository.findTransportStopProximite).mockResolvedValue(650);
+
       // Act
       const result = await service.enrichir(parcelle);
 
       // Assert
       expect(result.success).toBe(true); // Succes partiel
       expect(result.sourcesUtilisees).toContain(SourceEnrichissement.IGN_WFS);
+      expect(result.sourcesUtilisees).toContain(SourceEnrichissement.TRANSPORT_DATA_GOUV);
       expect(result.sourcesEchouees).toContain(SourceEnrichissement.SERVICE_PUBLIC);
       expect(parcelle.siteEnCentreVille).toBe(false);
       expect(parcelle.distanceAutoroute).toBe(3000);
+      expect(parcelle.distanceTransportCommun).toBe(650);
+    });
+
+    it("devrait continuer meme si transport echoue", async () => {
+      // Arrange
+      const parcelle = new Parcelle();
+      parcelle.identifiantParcelle = "29232000AB0123";
+      parcelle.codeInsee = "29232";
+      parcelle.commune = "Test Commune";
+      parcelle.coordonnees = { latitude: 48.0, longitude: -4.0 };
+
+      vi.mocked(servicePublicService.getMairieCoordonnees).mockResolvedValue({
+        success: true,
+        data: {
+          codeInsee: "29232",
+          nomCommune: "Test",
+          coordonnees: { latitude: 48.0045, longitude: -4.0 },
+          adresse: "Mairie",
+        },
+        source: "API Service Public",
+      });
+
+      vi.mocked(ignWfsService.getDistanceVoieGrandeCirculation).mockResolvedValue({
+        success: true,
+        data: { distanceMetres: 2500, nombreTronconsProches: 1 },
+        source: "IGN WFS",
+      });
+
+      // Mock : transport echoue
+      vi.mocked(transportStopsRepository.findTransportStopProximite).mockResolvedValue(null);
+
+      // Act
+      const result = await service.enrichir(parcelle);
+
+      // Assert
+      expect(result.success).toBe(true); // Succes partiel
+      expect(result.sourcesUtilisees).toContain(SourceEnrichissement.SERVICE_PUBLIC);
+      expect(result.sourcesUtilisees).toContain(SourceEnrichissement.IGN_WFS);
+      expect(result.sourcesEchouees).toContain(SourceEnrichissement.TRANSPORT_DATA_GOUV);
+      expect(parcelle.siteEnCentreVille).toBe(true);
+      expect(parcelle.distanceAutoroute).toBe(2500);
+      expect(parcelle.distanceTransportCommun).toBeUndefined();
     });
   });
 
@@ -384,6 +635,8 @@ describe("TransportEnrichissementService", () => {
         data: { distanceMetres: 1000, nombreTronconsProches: 1 },
         source: "IGN WFS",
       });
+
+      vi.mocked(transportStopsRepository.findTransportStopProximite).mockResolvedValue(400);
 
       // Act
       await service.enrichir(parcelle);
@@ -416,6 +669,8 @@ describe("TransportEnrichissementService", () => {
         data: { distanceMetres: 1000, nombreTronconsProches: 1 },
         source: "IGN WFS",
       });
+
+      vi.mocked(transportStopsRepository.findTransportStopProximite).mockResolvedValue(500);
 
       // Act
       await service.enrichir(parcelle);

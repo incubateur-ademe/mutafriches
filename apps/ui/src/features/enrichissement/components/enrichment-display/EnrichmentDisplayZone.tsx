@@ -205,7 +205,19 @@ export const EnrichmentDisplayZone: React.FC<EnrichmentDisplayZoneProps> = ({
               id="distance-transport-commun"
               label="Distance au transport en commun"
               value={data.distanceTransportsEnCommun}
-              tooltip={"Pas de données publiques disponibles pour l'instant"}
+              tooltip={
+                <>
+                  Récupéré depuis le jeu de données de Transport.data.gouv.fr :<br />
+                  <a
+                    href="https://transport.data.gouv.fr/datasets/arrets-de-transport-en-france"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="fr-link fr-text--xs"
+                  >
+                    transport.data.gouv.fr/datasets/arrets-de-transport-en-france
+                  </a>
+                </>
+              }
             />
             <EnrichmentInfoField
               id="proximite-commerces-services"
