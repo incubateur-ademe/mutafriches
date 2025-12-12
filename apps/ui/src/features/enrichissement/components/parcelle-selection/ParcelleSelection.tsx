@@ -23,8 +23,6 @@ export const ParcelleSelection: React.FC<ParcelleSelectionProps> = ({ onAnalyze 
 
   return (
     <div>
-      <h2 className="fr-h4 fr-mb-3w">Sélection de la parcelle</h2>
-
       <ParcelleSelectionMap
         onParcelleSelected={(parcelId) => handleParcelSelectedOnMap(parcelId)}
         height="500px"
