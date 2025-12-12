@@ -6,7 +6,11 @@ import { ServicePublicService } from "../../adapters/service-public/service-publ
 import { IgnWfsService } from "../../adapters/ign-wfs/ign-wfs.service";
 import { calculateDistance } from "../../adapters/shared/distance.utils";
 import { TransportCalculator } from "./transport-enrichissement.calculator";
-import { RAYON_RECHERCHE_AUTOROUTE_M } from "./transport-enrichissement.constants";
+import {
+  RAYON_RECHERCHE_AUTOROUTE_M,
+  RAYON_RECHERCHE_TRANSPORT_M,
+} from "./transport-enrichissement.constants";
+import { TransportStopsRepository } from "../../repositories/transport-stops.repository";
 
 /**
  * Service d'enrichissement du sous-domaine Transport
@@ -14,7 +18,7 @@ import { RAYON_RECHERCHE_AUTOROUTE_M } from "./transport-enrichissement.constant
  * Responsabilites :
  * - Determiner si la parcelle est en centre-ville (distance a la mairie)
  * - Calculer la distance a la voie de grande circulation la plus proche
- * - TODO: Calculer la distance au transport en commun via BPE (gares)
+ * - Calculer la distance au transport en commun le plus proche
  */
 @Injectable()
 export class TransportEnrichissementService {
@@ -23,8 +27,14 @@ export class TransportEnrichissementService {
   constructor(
     private readonly servicePublicService: ServicePublicService,
     private readonly ignWfsService: IgnWfsService,
+    private readonly transportStopsRepository: TransportStopsRepository,
   ) {}
 
+  /**
+   * Enrichit la parcelle avec les informations de transport
+   * @param parcelle
+   * @returns
+   */
   async enrichir(parcelle: Parcelle): Promise<EnrichmentResult> {
     const sourcesUtilisees: string[] = [];
     const sourcesEchouees: string[] = [];
@@ -35,7 +45,11 @@ export class TransportEnrichissementService {
       this.logger.warn(
         `Pas de coordonnees disponibles pour la parcelle ${parcelle.identifiantParcelle}`,
       );
-      sourcesEchouees.push(SourceEnrichissement.SERVICE_PUBLIC, SourceEnrichissement.IGN_WFS);
+      sourcesEchouees.push(
+        SourceEnrichissement.SERVICE_PUBLIC,
+        SourceEnrichissement.IGN_WFS,
+        SourceEnrichissement.TRANSPORT_DATA_GOUV,
+      );
       champsManquants.push("siteEnCentreVille", "distanceAutoroute", "distanceTransportCommun");
       return { success: false, sourcesUtilisees, sourcesEchouees, champsManquants };
     }
@@ -54,10 +68,12 @@ export class TransportEnrichissementService {
       sourcesEchouees,
       champsManquants,
     );
-
-    // TODO: Implémenter via BPE (codes E107, E108, E109)
-    // Pour l'instant, on marque le champ comme manquant
-    champsManquants.push("distanceTransportCommun");
+    await this.enrichirTransportCommun(
+      parcelle,
+      sourcesUtilisees,
+      sourcesEchouees,
+      champsManquants,
+    );
 
     return {
       success: sourcesUtilisees.length > 0,
@@ -170,7 +186,49 @@ export class TransportEnrichissementService {
     }
   }
 
-  // TODO: Implementer enrichirTransportCommun via BpeRepository
-  // Utiliser les codes BPE: E107 (gare nationale), E108 (gare regionale), E109 (gare locale)
-  // Methode a ajouter: bpeRepository.findGaresProximite(lat, lon, rayonMetres)
+  /**
+   * Calcule la distance au point d'arrêt de transport en commun le plus proche
+   * Utilise les données de transport.data.gouv.fr
+   */
+  private async enrichirTransportCommun(
+    parcelle: Parcelle,
+    sourcesUtilisees: string[],
+    sourcesEchouees: string[],
+    champsManquants: string[],
+  ): Promise<void> {
+    try {
+      if (!parcelle.coordonnees) {
+        throw new Error("Coordonnees non disponibles");
+      }
+
+      this.logger.debug(`Recherche transport en commun pour ${parcelle.identifiantParcelle}`);
+
+      // Recherche dans le rayon defini dans les constantes
+      const distanceMetres = await this.transportStopsRepository.findTransportStopProximite(
+        parcelle.coordonnees.latitude,
+        parcelle.coordonnees.longitude,
+        RAYON_RECHERCHE_TRANSPORT_M,
+      );
+
+      if (distanceMetres === null) {
+        throw new Error(
+          `Aucun point d'arret trouve dans un rayon de ${RAYON_RECHERCHE_TRANSPORT_M}m`,
+        );
+      }
+
+      // Stocker la distance brute
+      parcelle.distanceTransportCommun = Math.round(distanceMetres);
+
+      sourcesUtilisees.push(SourceEnrichissement.TRANSPORT_DATA_GOUV);
+
+      this.logger.log(
+        `Distance transport: ${Math.round(distanceMetres)}m pour ${parcelle.identifiantParcelle}`,
+      );
+    } catch (error) {
+      this.logger.error("Erreur lors de la recherche transport en commun:", error);
+      sourcesEchouees.push(SourceEnrichissement.TRANSPORT_DATA_GOUV);
+      champsManquants.push("distanceTransportCommun");
+      parcelle.distanceTransportCommun = undefined;
+    }
+  }
 }
