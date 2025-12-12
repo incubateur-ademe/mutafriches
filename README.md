@@ -68,8 +68,8 @@ mutafriches/
 
 ### Prérequis
 
-- Node.js `22.17.0`
-- pnpm `10.13.1`
+- Node.js `24.X.0`
+- pnpm `10.25.1`
 - Docker & Docker Compose
 
 ### Démarrage rapide
