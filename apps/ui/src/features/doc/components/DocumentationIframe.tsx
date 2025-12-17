@@ -1,3 +1,5 @@
+import { ROUTES } from "../../../shared/config/routes.config";
+
 export function DocumentationIframe() {
   return (
     <div>
@@ -16,10 +18,7 @@ export function DocumentationIframe() {
         id="checklist-iframe"
         aria-labelledby="checklist-iframe-legend"
       >
-        <legend
-          className="fr-fieldset__legend--regular fr-fieldset__legend"
-          id="checklist-iframe-legend"
-        >
+        <legend className="fr-fieldset__legend" id="checklist-iframe-legend">
           Checklist d'intégration
         </legend>
         <div className="fr-fieldset__element">
@@ -31,59 +30,19 @@ export function DocumentationIframe() {
               aria-describedby="check-demo-messages"
             />
             <label className="fr-label" htmlFor="check-demo">
-              Tester avec l'intégrateur demo
+              1. Pour comprendre le fonctionnement tester avec l'intégrateur&nbsp;
+              <strong>"Démo locale" </strong>&nbsp;
+              <a
+                id="link-4"
+                href={ROUTES.TEST_IFRAME}
+                target="_blank"
+                className="fr-link"
+                rel="noreferrer"
+              >
+                via la page de test
+              </a>
             </label>
             <div className="fr-messages-group" id="check-demo-messages" aria-live="polite"></div>
-          </div>
-        </div>
-        <div className="fr-fieldset__element">
-          <div className="fr-checkbox-group">
-            <input
-              name="check-iframe"
-              id="check-iframe"
-              type="checkbox"
-              aria-describedby="check-iframe-messages"
-            />
-            <label className="fr-label" htmlFor="check-iframe">
-              Ajouter l'iframe à votre page
-            </label>
-            <div className="fr-messages-group" id="check-iframe-messages" aria-live="polite"></div>
-          </div>
-        </div>
-        <div className="fr-fieldset__element">
-          <div className="fr-checkbox-group">
-            <input
-              name="check-listener"
-              id="check-listener"
-              type="checkbox"
-              aria-describedby="check-listener-messages"
-            />
-            <label className="fr-label" htmlFor="check-listener">
-              Configurer l'écoute des messages postMessage
-            </label>
-            <div
-              className="fr-messages-group"
-              id="check-listener-messages"
-              aria-live="polite"
-            ></div>
-          </div>
-        </div>
-        <div className="fr-fieldset__element">
-          <div className="fr-checkbox-group">
-            <input
-              name="check-security"
-              id="check-security"
-              type="checkbox"
-              aria-describedby="check-security-messages"
-            />
-            <label className="fr-label" htmlFor="check-security">
-              Vérifier l'origine des messages pour la sécurité
-            </label>
-            <div
-              className="fr-messages-group"
-              id="check-security-messages"
-              aria-live="polite"
-            ></div>
           </div>
         </div>
         <div className="fr-fieldset__element">
@@ -95,9 +54,72 @@ export function DocumentationIframe() {
               aria-describedby="check-prod-messages"
             />
             <label className="fr-label" htmlFor="check-prod">
-              Demander votre identifiant d'intégrateur officiel
+              2. Demander votre identifiant d'intégrateur officiel à l'équipe Mutafriches.
             </label>
             <div className="fr-messages-group" id="check-prod-messages" aria-live="polite"></div>
+          </div>
+        </div>
+        <div className="fr-fieldset__element">
+          <div className="fr-checkbox-group">
+            <input
+              name="check-iframe"
+              id="check-iframe"
+              type="checkbox"
+              aria-describedby="check-iframe-messages"
+            />
+            <label className="fr-label" htmlFor="check-iframe">
+              3. Ajouter l'iframe à votre page en remplaçant l'identifiant d'intégrateur&nbsp;
+              <strong>demo</strong>&nbsp;par l'identifiant qui vous a été fourni.
+            </label>
+            <div className="fr-messages-group" id="check-iframe-messages" aria-live="polite"></div>
+          </div>
+        </div>
+        <div className="fr-fieldset__element">
+          <div className="fr-checkbox-group">
+            <input
+              name="check-callback"
+              id="check-callback"
+              type="checkbox"
+              aria-describedby="check-callback-messages"
+            />
+            <label className="fr-label italic" htmlFor="check-callback">
+              4. (Optionnel) Configurer une URL de callback et son libellé pour rediriger
+              l'utilisateur après l'analyse via les paramètres&nbsp;
+              <code>callbackUrl</code>&nbsp;et&nbsp;<code>callbackLabel</code>.
+            </label>
+            <div
+              className="fr-messages-group"
+              id="check-callback-messages"
+              aria-live="polite"
+            ></div>
+          </div>
+        </div>
+        <div className="fr-fieldset__element">
+          <div className="fr-checkbox-group">
+            <input
+              name="check-listener"
+              id="check-listener"
+              type="checkbox"
+              aria-describedby="check-listener-messages"
+            />
+            <label className="fr-label italic" htmlFor="check-listener">
+              5. (Optionnel mais recommandé) Configurer un script pour l'écoute et la vérification
+              de l'origine des messages envoyés par l'iframe&nbsp;
+              <a
+                href="https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage"
+                target="_blank"
+                className="fr-link"
+                rel="noreferrer"
+              >
+                via l'API Javascript postMessage
+              </a>
+              .
+            </label>
+            <div
+              className="fr-messages-group"
+              id="check-listener-messages"
+              aria-live="polite"
+            ></div>
           </div>
         </div>
       </fieldset>

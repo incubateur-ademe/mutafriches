@@ -21,11 +21,6 @@ export const INTEGRATORS: Record<string, IntegratorConfig> = {
     ],
     defaultCallbackLabel: "Retour vers Mon Espace Collectivité",
   },
-  test: {
-    name: "Test local",
-    allowedDomains: ["localhost", "127.0.0.1"],
-    defaultCallbackLabel: "Retour vers le site test",
-  },
   demo: {
     name: "Démo locale",
     allowedDomains: ["localhost", "127.0.0.1", "0.0.0.0", "192.168.1.1", "10.0.0.1"],
