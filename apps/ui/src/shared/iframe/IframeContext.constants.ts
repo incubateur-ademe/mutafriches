@@ -17,7 +17,8 @@ export const INTEGRATORS: Record<string, IntegratorConfig> = {
     name: "Mon Espace Collectivité",
     allowedDomains: [
       "monespacecollectivite.anct.gouv.fr",
-      "monespacecollectivite-staging.anct.gouv.fr",
+      "mon-espace-collectivite-staging.osc-fr1.scalingo.io",
+      "les-communs-transition-ecologique-api-staging.osc-fr1.scalingo.io",
     ],
     defaultCallbackLabel: "Retour vers Mon Espace Collectivité",
   },
