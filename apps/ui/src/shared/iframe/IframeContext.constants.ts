@@ -13,6 +13,14 @@ export const INTEGRATORS: Record<string, IntegratorConfig> = {
     allowedDomains: ["benefriches.incubateur.ademe.dev", "benefriches.ademe.fr"],
     defaultCallbackLabel: "Retour vers Bénéfriches",
   },
+  mon_espace_collectivite: {
+    name: "Mon Espace Collectivité",
+    allowedDomains: [
+      "monespacecollectivite.anct.gouv.fr",
+      "monespacecollectivite-staging.anct.gouv.fr",
+    ],
+    defaultCallbackLabel: "Retour vers Mon Espace Collectivité",
+  },
   test: {
     name: "Test local",
     allowedDomains: ["localhost", "127.0.0.1"],
