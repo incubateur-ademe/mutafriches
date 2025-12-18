@@ -1,12 +1,10 @@
-import { Test, TestingModule } from "@nestjs/testing";
 import { INestApplication } from "@nestjs/common";
 import { describe, it, expect, beforeAll, afterAll, vi } from "vitest";
 import request from "supertest";
 import { App } from "supertest/types";
-import { ThrottlerModule, ThrottlerGuard } from "@nestjs/throttler";
-import { APP_GUARD } from "@nestjs/core";
 import { EnrichissementController } from "../src/enrichissement/enrichissement.controller";
 import { EnrichissementService } from "../src/enrichissement/services/enrichissement.service";
+import { createThrottledTestApp, describeThrottling } from "./helpers";
 
 describe("Enrichissement E2E", () => {
   let app: INestApplication;
@@ -43,30 +41,10 @@ describe("Enrichissement E2E", () => {
       enrichir: vi.fn().mockResolvedValue(mockEnrichissementOutput),
     };
 
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [
-        ThrottlerModule.forRoot([
-          {
-            ttl: 60000,
-            limit: 5, // Limite basse pour les tests
-          },
-        ]),
-      ],
-      controllers: [EnrichissementController],
-      providers: [
-        {
-          provide: APP_GUARD,
-          useClass: ThrottlerGuard,
-        },
-        {
-          provide: EnrichissementService,
-          useValue: mockEnrichissementService,
-        },
-      ],
-    }).compile();
-
-    app = moduleFixture.createNestApplication();
-    await app.init();
+    app = await createThrottledTestApp({
+      controller: EnrichissementController,
+      providers: [{ provide: EnrichissementService, useValue: mockEnrichissementService }],
+    });
   });
 
   afterAll(async () => {
@@ -94,33 +72,11 @@ describe("Enrichissement E2E", () => {
     });
   });
 
-  describe("Rate Limiter", () => {
-    it("devrait retourner 429 quand la limite est depassee", async () => {
-      const requests = Array.from({ length: 10 }, () =>
-        request(app.getHttpServer() as App)
-          .post("/enrichissement")
-          .send({ identifiant: "49007000AB0123" }),
-      );
-
-      const responses = await Promise.all(requests);
-      const blockedResponses = responses.filter((r) => r.status === 429);
-
-      expect(blockedResponses.length).toBeGreaterThan(0);
-    });
-
-    it("devrait retourner le message Too Many Requests", async () => {
-      const requests = Array.from({ length: 10 }, () =>
-        request(app.getHttpServer() as App)
-          .post("/enrichissement")
-          .send({ identifiant: "49007000AB0123" }),
-      );
-
-      const responses = await Promise.all(requests);
-      const blockedResponse = responses.find((r) => r.status === 429);
-
-      if (blockedResponse) {
-        expect(blockedResponse.body.message).toContain("Too Many Requests");
-      }
-    });
+  // Tests de limitation de débit
+  describeThrottling({
+    getApp: () => app,
+    method: "post",
+    route: "/enrichissement",
+    body: { identifiant: "49007000AB0123" },
   });
 });

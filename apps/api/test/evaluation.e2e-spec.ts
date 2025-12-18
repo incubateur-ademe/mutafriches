@@ -1,12 +1,10 @@
-import { Test, TestingModule } from "@nestjs/testing";
 import { INestApplication } from "@nestjs/common";
 import { describe, it, expect, beforeAll, afterAll, vi } from "vitest";
 import request from "supertest";
 import { App } from "supertest/types";
-import { ThrottlerModule, ThrottlerGuard } from "@nestjs/throttler";
-import { APP_GUARD } from "@nestjs/core";
 import { EvaluationController } from "../src/evaluation/evaluation.controller";
 import { OrchestrateurService } from "../src/evaluation/services/orchestrateur.service";
+import { createThrottledTestApp, describeThrottling } from "./helpers";
 
 describe("Evaluation E2E", () => {
   let app: INestApplication;
@@ -47,30 +45,10 @@ describe("Evaluation E2E", () => {
       recupererEvaluation: vi.fn().mockResolvedValue(mockEvaluation),
     };
 
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [
-        ThrottlerModule.forRoot([
-          {
-            ttl: 60000,
-            limit: 5, // Limite basse pour les tests
-          },
-        ]),
-      ],
-      controllers: [EvaluationController],
-      providers: [
-        {
-          provide: APP_GUARD,
-          useClass: ThrottlerGuard,
-        },
-        {
-          provide: OrchestrateurService,
-          useValue: mockOrchestrateurService,
-        },
-      ],
-    }).compile();
-
-    app = moduleFixture.createNestApplication();
-    await app.init();
+    app = await createThrottledTestApp({
+      controller: EvaluationController,
+      providers: [{ provide: OrchestrateurService, useValue: mockOrchestrateurService }],
+    });
   });
 
   afterAll(async () => {
@@ -146,46 +124,11 @@ describe("Evaluation E2E", () => {
     });
   });
 
-  describe("Rate Limiter", () => {
-    it("devrait retourner 429 quand la limite est depassee sur POST /calculer", async () => {
-      const requests = Array.from({ length: 10 }, () =>
-        request(app.getHttpServer() as App)
-          .post("/evaluation/calculer")
-          .send({
-            donneesEnrichies: {
-              identifiantCadastral: "49007000AB0123",
-            },
-          }),
-      );
-
-      const responses = await Promise.all(requests);
-      const blockedResponses = responses.filter((r) => r.status === 429);
-
-      expect(blockedResponses.length).toBeGreaterThan(0);
-    });
-
-    it("devrait retourner 429 quand la limite est depassee sur GET /:id", async () => {
-      const requests = Array.from({ length: 10 }, () =>
-        request(app.getHttpServer() as App).get("/evaluation/eval-test-123"),
-      );
-
-      const responses = await Promise.all(requests);
-      const blockedResponses = responses.filter((r) => r.status === 429);
-
-      expect(blockedResponses.length).toBeGreaterThan(0);
-    });
-
-    it("devrait retourner le message Too Many Requests", async () => {
-      const requests = Array.from({ length: 10 }, () =>
-        request(app.getHttpServer() as App).get("/evaluation/metadata"),
-      );
-
-      const responses = await Promise.all(requests);
-      const blockedResponse = responses.find((r) => r.status === 429);
-
-      if (blockedResponse) {
-        expect(blockedResponse.body.message).toContain("Too Many Requests");
-      }
-    });
+  // Tests de limitation de débit
+  describeThrottling({
+    getApp: () => app,
+    method: "post",
+    route: "/evaluation/calculer",
+    body: { donneesEnrichies: { identifiantCadastral: "49007000AB0123" } },
   });
 });
