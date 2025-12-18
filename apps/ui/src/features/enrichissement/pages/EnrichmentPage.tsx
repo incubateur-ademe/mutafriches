@@ -136,7 +136,9 @@ export const Step1EnrichmentPage: React.FC = () => {
 
         <ParcelleSelection onAnalyze={handleEnrichir} />
 
-        <MutabilityCalloutInfo />
+        <div className="fr-mt-4w">
+          <MutabilityCalloutInfo />
+        </div>
 
         {/* Zone de résultats avec id fixe pour le scroll */}
         <div id="results-zone">
