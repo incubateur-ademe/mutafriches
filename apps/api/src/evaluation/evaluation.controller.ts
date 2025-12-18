@@ -111,29 +111,6 @@ export class EvaluationController {
     }
   }
 
-  @Get(":id")
-  @ApiOperation({ summary: "Récupérer une évaluation complète" })
-  @ApiParam({ name: "id", description: "Identifiant unique de l'évaluation" })
-  @ApiResponse({ status: 200, description: "Évaluation trouvée", type: EvaluationSwaggerDto })
-  @ApiNotFoundResponse({ description: "Évaluation non trouvée" })
-  async recupererEvaluation(@Param("id") id: string): Promise<EvaluationSwaggerDto> {
-    try {
-      const evaluation = await this.orchestrateurService.recupererEvaluation(id);
-      if (!evaluation) {
-        throw new NotFoundException(`Évaluation ${id} non trouvée`);
-      }
-      return this.mapEvaluationToDto(evaluation);
-    } catch (error) {
-      this.logger.error(`Erreur récupération évaluation ${id}:`, error);
-      if (error instanceof NotFoundException) throw error;
-
-      throw new HttpException(
-        { statusCode: HttpStatus.INTERNAL_SERVER_ERROR, message: "Erreur lors de la récupération" },
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
-  }
-
   @Get("metadata")
   @ApiOperation({
     summary: "Récupérer les métadonnées",
@@ -163,6 +140,29 @@ export class EvaluationController {
       },
       version: { api: "1.0.0", algorithme: "1.1.0" },
     };
+  }
+
+  @Get(":id")
+  @ApiOperation({ summary: "Récupérer une évaluation complète" })
+  @ApiParam({ name: "id", description: "Identifiant unique de l'évaluation" })
+  @ApiResponse({ status: 200, description: "Évaluation trouvée", type: EvaluationSwaggerDto })
+  @ApiNotFoundResponse({ description: "Évaluation non trouvée" })
+  async recupererEvaluation(@Param("id") id: string): Promise<EvaluationSwaggerDto> {
+    try {
+      const evaluation = await this.orchestrateurService.recupererEvaluation(id);
+      if (!evaluation) {
+        throw new NotFoundException(`Évaluation ${id} non trouvée`);
+      }
+      return this.mapEvaluationToDto(evaluation);
+    } catch (error) {
+      this.logger.error(`Erreur récupération évaluation ${id}:`, error);
+      if (error instanceof NotFoundException) throw error;
+
+      throw new HttpException(
+        { statusCode: HttpStatus.INTERNAL_SERVER_ERROR, message: "Erreur lors de la récupération" },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   private mapEvaluationToDto(evaluation: Evaluation): EvaluationSwaggerDto {

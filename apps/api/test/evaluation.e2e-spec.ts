@@ -135,10 +135,7 @@ describe("Evaluation E2E", () => {
     });
   });
 
-  // Note: GET /evaluation/metadata est matchee par GET /evaluation/:id dans le controller
-  // car la route :id est declaree avant metadata. Ce test est desactive en attendant
-  // une correction de l'ordre des routes dans le controller.
-  describe.skip("GET /evaluation/metadata", () => {
+  describe("GET /evaluation/metadata", () => {
     it("devrait retourner les metadonnees", async () => {
       const response = await request(app.getHttpServer() as App)
         .get("/evaluation/metadata")
