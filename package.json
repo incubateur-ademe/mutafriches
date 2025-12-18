@@ -21,6 +21,7 @@
     "format:check": "prettier --check .",
     "typecheck": "pnpm -r typecheck",
     "test": "pnpm -r test",
+    "test:e2e": "pnpm --filter api test:e2e",
     "test:watch": "pnpm -r test:watch",
     "db:start": "cd apps/api && docker-compose up -d postgres",
     "db:stop": "cd apps/api && docker-compose down",
