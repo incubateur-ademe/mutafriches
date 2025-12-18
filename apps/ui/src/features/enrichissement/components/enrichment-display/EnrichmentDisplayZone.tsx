@@ -143,12 +143,12 @@ export const EnrichmentDisplayZone: React.FC<EnrichmentDisplayZoneProps> = ({
                 <>
                   Récupéré depuis l'API BDNB :<br />
                   <a
-                    href="https://api.bdnb.io/v1/bdnb"
+                    href="https://api-portail.bdnb.io/catalog/api/f4905edc-db58-3a3b-a8e5-c5dfc6692ee5"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="fr-link fr-text--xs"
                   >
-                    api.bdnb.io/v1/bdnb
+                    https://api-portail.bdnb.io/catalog/api/f4905edc-db58-3a3b-a8e5-c5dfc6692ee5
                   </a>
                 </>
               }
@@ -227,12 +227,12 @@ export const EnrichmentDisplayZone: React.FC<EnrichmentDisplayZoneProps> = ({
                 <>
                   Récupéré depuis la base permanente des équipements (BPE) :<br />
                   <a
-                    href="https://www.data.gouv.fr/fr/datasets/base-permanente-des-equipements-bpe"
+                    href="https://www.insee.fr/fr/metadonnees/source/serie/s1161"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="fr-link fr-text--xs"
                   >
-                    data.gouv.fr/datasets/base-permanente-des-equipements-bpe
+                    insee.fr/fr/metadonnees/source/serie/s1161
                   </a>
                 </>
               }
@@ -293,7 +293,7 @@ export const EnrichmentDisplayZone: React.FC<EnrichmentDisplayZoneProps> = ({
                 <>
                   Récupéré depuis les données de l'API Georisques :<br />
                   <a
-                    href="https://www.georisques.gouv.fr/citoyen-recherche-map"
+                    href="https://georisques.gouv.fr/doc-api"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="fr-link fr-text--xs"

@@ -13,6 +13,7 @@ import { enrichissementService } from "../../../shared/services/api/api.enrichis
 import { TypeEvenement } from "@mutafriches/shared-types";
 import { useEventTracking } from "../../../shared/hooks/useEventTracking";
 import { EnrichmentLoadingCallout } from "../components/enrichment-display/EnrichmentLoadingCallout";
+import { MutabilityCalloutInfo } from "../components/callout/MutabilityCalloutInfo";
 
 const MIN_LOADING_TIME = 3000; // 3 secondes minimum
 
@@ -118,20 +119,26 @@ export const Step1EnrichmentPage: React.FC = () => {
       <Stepper
         currentStep={1}
         totalSteps={3}
-        currentStepTitle="Sélectionner une parcelle en friche"
-        nextStepTitle="Qualifier la parcelle en friche"
+        currentStepTitle="Sélectionner un site en friche"
+        nextStepTitle="Qualifier le site"
       />
 
       <div className="fr-mb-4w">
-        <h3>Sélectionner la parcelle en friche pour analyser sa mutabilité</h3>
+        <h1>Sélectionner un site en friche</h1>
 
-        <div className="fr-grid-row fr-grid-row--gutters">
-          <div className="fr-col-12 fr-col-md-4">
-            <MultiParcelleToggle isMulti={isMultiParcelle} onChange={setIsMultiParcelle} />
-          </div>
-        </div>
+        <p className="fr-text--lead">
+          Pour démarrer l’analyse de mutabilité pour votre site, sélectionner une parcelle sur la
+          carte. Vous pouvez la rechercher en entrant son adresse exacte ou une adresse approchante.
+          Sélectionner la parcelle et cliquer sur ‘Analyser cette parcelle’.
+        </p>
+
+        <MultiParcelleToggle isMulti={isMultiParcelle} onChange={setIsMultiParcelle} />
 
         <ParcelleSelection onAnalyze={handleEnrichir} />
+
+        <div className="fr-mt-4w">
+          <MutabilityCalloutInfo />
+        </div>
 
         {/* Zone de résultats avec id fixe pour le scroll */}
         <div id="results-zone">

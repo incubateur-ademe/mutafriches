@@ -1,6 +1,32 @@
-import { EnrichissementOutputDto } from "@mutafriches/shared-types";
+import { EnrichissementOutputDto, SourceEnrichissement } from "@mutafriches/shared-types";
 import { ParcelleUiModel } from "../../../shared/types/parcelle.models";
 import { formatDistance, formatSurface } from "../../../shared/utils/distance.formatter";
+
+/**
+ * Détermine le message à afficher pour la distance au transport en commun
+ */
+const getDistanceTransportMessage = (enrichmentData: EnrichissementOutputDto): string => {
+  const nonAccessibleVersion = "Donnée non accessible";
+  const aucunArretMessage = "Aucun arrêt à moins de 2 km";
+
+  // Si une distance est disponible, la formater
+  if (enrichmentData.distanceTransportCommun !== undefined) {
+    return formatDistance(enrichmentData.distanceTransportCommun);
+  }
+
+  // Si la source a échoué (erreur technique), afficher "Donnée non accessible"
+  if (enrichmentData.sourcesEchouees?.includes(SourceEnrichissement.TRANSPORT_DATA_GOUV)) {
+    return nonAccessibleVersion;
+  }
+
+  // Si le champ est manquant mais la source n'a pas échoué = aucun arrêt trouvé dans le rayon
+  if (enrichmentData.champsManquants?.includes("distanceTransportCommun")) {
+    return aucunArretMessage;
+  }
+
+  // Cas par défaut
+  return nonAccessibleVersion;
+};
 
 /**
  * Transforme les données d'enrichissement brutes en format UI
@@ -60,9 +86,6 @@ export const transformEnrichmentToUiData = (
         : nonAccessibleVersion,
 
     // Distance transports en commun formatée
-    distanceTransportsEnCommun:
-      enrichmentData.distanceTransportCommun !== undefined
-        ? formatDistance(enrichmentData.distanceTransportCommun)
-        : nonAccessibleVersion,
+    distanceTransportsEnCommun: getDistanceTransportMessage(enrichmentData),
   };
 };

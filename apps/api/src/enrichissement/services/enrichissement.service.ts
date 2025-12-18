@@ -210,6 +210,7 @@ export class EnrichissementService {
         // Métadonnées d'enrichissement
         sourcesUtilisees: sourcesUniques,
         champsManquants: champsManquantsUniques,
+        sourcesEchouees: [...new Set(sourcesEchouees)],
       } as EnrichissementOutputDto;
 
       this.logger.log(`Enrichissement termine: ${identifiantParcelle} (statut: ${statut}`);

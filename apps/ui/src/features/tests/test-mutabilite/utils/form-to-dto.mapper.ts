@@ -47,6 +47,7 @@ export function buildCalculerMutabiliteFromFormData(formData: any): CalculerMuta
     // Métadonnées
     sourcesUtilisees: ["Saisie manuelle"],
     champsManquants: getFieldsMissing(formData),
+    sourcesEchouees: [],
   };
 
   // Construction des données complémentaires

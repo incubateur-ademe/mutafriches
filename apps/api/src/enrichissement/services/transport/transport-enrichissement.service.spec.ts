@@ -386,7 +386,9 @@ describe("TransportEnrichissementService", () => {
 
       // Assert
       expect(parcelle.distanceTransportCommun).toBeUndefined();
-      expect(result.sourcesEchouees).toContain(SourceEnrichissement.TRANSPORT_DATA_GOUV);
+      // La source est utilisée (la recherche a fonctionné) mais le champ est manquant (rien trouvé)
+      expect(result.sourcesUtilisees).toContain(SourceEnrichissement.TRANSPORT_DATA_GOUV);
+      expect(result.sourcesEchouees).not.toContain(SourceEnrichissement.TRANSPORT_DATA_GOUV);
       expect(result.champsManquants).toContain("distanceTransportCommun");
       // Les autres enrichissements devraient quand meme fonctionner
       expect(result.sourcesUtilisees).toContain(SourceEnrichissement.SERVICE_PUBLIC);
@@ -593,7 +595,7 @@ describe("TransportEnrichissementService", () => {
         source: "IGN WFS",
       });
 
-      // Mock : transport echoue
+      // Mock : aucun arret trouve dans le rayon (pas une erreur, juste pas de resultat)
       vi.mocked(transportStopsRepository.findTransportStopProximite).mockResolvedValue(null);
 
       // Act
@@ -603,7 +605,10 @@ describe("TransportEnrichissementService", () => {
       expect(result.success).toBe(true); // Succes partiel
       expect(result.sourcesUtilisees).toContain(SourceEnrichissement.SERVICE_PUBLIC);
       expect(result.sourcesUtilisees).toContain(SourceEnrichissement.IGN_WFS);
-      expect(result.sourcesEchouees).toContain(SourceEnrichissement.TRANSPORT_DATA_GOUV);
+      // Transport utilisé (la recherche a fonctionné) mais champ manquant (rien trouvé)
+      expect(result.sourcesUtilisees).toContain(SourceEnrichissement.TRANSPORT_DATA_GOUV);
+      expect(result.sourcesEchouees).not.toContain(SourceEnrichissement.TRANSPORT_DATA_GOUV);
+      expect(result.champsManquants).toContain("distanceTransportCommun");
       expect(parcelle.siteEnCentreVille).toBe(true);
       expect(parcelle.distanceAutoroute).toBe(2500);
       expect(parcelle.distanceTransportCommun).toBeUndefined();
