@@ -48,6 +48,7 @@ export class EvaluationBuilder {
     zonageReglementaire: "U",
     sourcesUtilisees: ["cadastre"],
     champsManquants: [],
+    sourcesEchouees: [],
   };
 
   private complementaires: DonneesComplementairesInputDto = {

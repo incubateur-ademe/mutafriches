@@ -1,5 +1,11 @@
 {
   "permissions": {
-    "allow": ["Bash(pnpm run test:e2e:*)"]
+    "allow": [
+      "Bash(pnpm run test:e2e:*)",
+      "Bash(pnpm build:shared:*)",
+      "Bash(pnpm typecheck:*)",
+      "Bash(pnpm test)",
+      "Bash(pnpm validate:*)"
+    ]
   }
 }

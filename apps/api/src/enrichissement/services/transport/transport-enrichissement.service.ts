@@ -210,21 +210,28 @@ export class TransportEnrichissementService {
         RAYON_RECHERCHE_TRANSPORT_M,
       );
 
+      // Source utilisée même si aucun arrêt trouvé (la recherche a fonctionné)
+      sourcesUtilisees.push(SourceEnrichissement.TRANSPORT_DATA_GOUV);
+
       if (distanceMetres === null) {
-        throw new Error(
-          `Aucun point d'arret trouve dans un rayon de ${RAYON_RECHERCHE_TRANSPORT_M}m`,
+        // Aucun arrêt trouvé dans le rayon - ce n'est pas une erreur, juste pas de résultat
+        this.logger.log(
+          `Aucun point d'arret trouve dans un rayon de ${RAYON_RECHERCHE_TRANSPORT_M}m ` +
+            `pour ${parcelle.identifiantParcelle}`,
         );
+        champsManquants.push("distanceTransportCommun");
+        parcelle.distanceTransportCommun = undefined;
+        return;
       }
 
       // Stocker la distance brute
       parcelle.distanceTransportCommun = Math.round(distanceMetres);
 
-      sourcesUtilisees.push(SourceEnrichissement.TRANSPORT_DATA_GOUV);
-
       this.logger.log(
         `Distance transport: ${Math.round(distanceMetres)}m pour ${parcelle.identifiantParcelle}`,
       );
     } catch (error) {
+      // Erreur technique lors de la recherche
       this.logger.error("Erreur lors de la recherche transport en commun:", error);
       sourcesEchouees.push(SourceEnrichissement.TRANSPORT_DATA_GOUV);
       champsManquants.push("distanceTransportCommun");

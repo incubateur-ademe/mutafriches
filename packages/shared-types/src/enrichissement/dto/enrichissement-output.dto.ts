@@ -40,6 +40,7 @@ export interface EnrichissementOutputDto {
   // Métadonnées
   sourcesUtilisees: string[];
   champsManquants: string[];
+  sourcesEchouees: string[];
 
   // TODO a supprimer Données Géorisques
   risquesGeorisques?: any;

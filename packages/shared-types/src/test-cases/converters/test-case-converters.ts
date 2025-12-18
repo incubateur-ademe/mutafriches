@@ -90,6 +90,7 @@ export function convertTestCaseToMutabilityInput(
     coordonnees: input.coordonnees,
     sourcesUtilisees: ["Test"],
     champsManquants: [],
+    sourcesEchouees: [],
   };
 
   // Données complémentaires

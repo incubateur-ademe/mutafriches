@@ -174,6 +174,13 @@ export class EnrichissementSwaggerDto implements IEnrichissementOutput {
   champsManquants: string[];
 
   @ApiProperty({
+    description: "Liste des sources de données qui ont échoué lors de l'enrichissement",
+    type: [String],
+    example: ["GeoRisques-RGA", "BDNB-Risques"],
+  })
+  sourcesEchouees: string[];
+
+  @ApiProperty({
     description: "Indice de fiabilité des données enrichies (0-10)",
     example: 8.5,
     minimum: 0,
