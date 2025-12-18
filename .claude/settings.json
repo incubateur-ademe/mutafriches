@@ -7,7 +7,11 @@
       "Bash(cat:*)",
       "Bash(ls:*)",
       "Bash(find:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(pnpm run test:e2e:*)",
+      "Bash(pnpm test*)",
+      "Bash(pnpm typecheck*)",
+      "Bash(pnpm validate*)"
     ]
   }
 }
