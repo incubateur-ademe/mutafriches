@@ -1,0 +1,1 @@
+export { RisquesEnrichedData } from "./RisquesEnrichedData";

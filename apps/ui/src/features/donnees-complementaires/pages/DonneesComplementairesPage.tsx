@@ -16,10 +16,10 @@ export const Step2DonneesComplementairesPage: React.FC = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Vérifier l'accès à cette étape
+  // Verifier l'acces a cette etape
   useEffect(() => {
     if (!canAccessStep(2)) {
-      navigate(ROUTES.STEP1);
+      navigate(ROUTES.QUALIFICATION_SITE);
       return;
     }
     setCurrentStep(2);
@@ -27,7 +27,7 @@ export const Step2DonneesComplementairesPage: React.FC = () => {
 
   // Handler pour le retour
   const handlePrevious = () => {
-    navigate(ROUTES.STEP1);
+    navigate(ROUTES.QUALIFICATION_SITE);
   };
 
   // Handler pour la soumission du formulaire
@@ -54,8 +54,8 @@ export const Step2DonneesComplementairesPage: React.FC = () => {
         },
       });
 
-      // Navigation vers l'étape 3
-      navigate(ROUTES.STEP3);
+      // Navigation vers l'etape 3
+      navigate(ROUTES.QUALIFICATION_RISQUES);
     } catch (error) {
       console.error("Erreur lors de la sauvegarde:", error);
       setIsSubmitting(false);

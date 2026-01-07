@@ -1,7 +1,5 @@
 import { Routes, Route } from "react-router-dom";
 import { ROUTES } from "./shared/config/routes.config";
-import { Step2DonneesComplementairesPage } from "./features/donnees-complementaires/pages/DonneesComplementairesPage";
-import { Step3ResultatsPage } from "./features/mutabilite/pages/ResultatsPage";
 import { Tests } from "./features/tests/pages/TestsPage";
 import { TestEnrichment } from "./features/tests/test-enrichissement/pages/TestEnrichment";
 import { IframeProvider } from "./shared/iframe/IframeProvider";
@@ -10,12 +8,19 @@ import { TestCarteParcelle } from "./features/tests/test-carte/pages/TestCartePa
 import { TestMutability } from "./features/tests/test-mutabilite/pages/TestMutability";
 import { TestIframe } from "./features/tests/test-iframe/pages/TestIframe";
 import { TestCallback } from "./features/tests/test-iframe/pages/TestCallback";
-import { SelectionParcellePage } from "./features/enrichissement/pages/SelectionParcellePage";
 import { useEventTracking } from "./shared/hooks/useEventTracking";
 import { useEffect, useRef } from "react";
 import { TypeEvenement } from "@mutafriches/shared-types";
 import { useIframe } from "./shared/iframe/useIframe";
 import { DocumentationIntegrationPage } from "./features/doc/pages/DocumentationIntegrationPage";
+
+// Nouvelles pages
+import { HomePage } from "./features/home/pages/HomePage";
+import { EnrichissementPage } from "./features/enrichissement/pages/EnrichissementPage";
+import { QualificationSitePage } from "./features/qualification/pages/QualificationSitePage";
+import { QualificationEnvironnementPage } from "./features/qualification/pages/QualificationEnvironnementPage";
+import { QualificationRisquesPage } from "./features/qualification/pages/QualificationRisquesPage";
+import { ResultatsPage } from "./features/resultats/pages/ResultatsPage";
 
 function AppContent() {
   const { track } = useEventTracking();
@@ -35,10 +40,16 @@ function AppContent() {
     <IframeProvider>
       <FormProvider>
         <Routes>
-          <Route path={ROUTES.HOME} element={<SelectionParcellePage />} />
-          <Route path={ROUTES.STEP1} element={<SelectionParcellePage />} />
-          <Route path={ROUTES.STEP2} element={<Step2DonneesComplementairesPage />} />
-          <Route path={ROUTES.STEP3} element={<Step3ResultatsPage />} />
+          {/* Parcours principal */}
+          <Route path={ROUTES.HOME} element={<HomePage />} />
+          <Route path={ROUTES.ENRICHISSEMENT} element={<EnrichissementPage />} />
+          <Route path={ROUTES.QUALIFICATION_SITE} element={<QualificationSitePage />} />
+          <Route
+            path={ROUTES.QUALIFICATION_ENVIRONNEMENT}
+            element={<QualificationEnvironnementPage />}
+          />
+          <Route path={ROUTES.QUALIFICATION_RISQUES} element={<QualificationRisquesPage />} />
+          <Route path={ROUTES.RESULTATS} element={<ResultatsPage />} />
 
           {/* Documentation */}
           <Route
