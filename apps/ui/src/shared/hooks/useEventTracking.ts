@@ -1,5 +1,10 @@
 import { useCallback } from "react";
-import { TypeEvenement, EvenementInputDto } from "@mutafriches/shared-types";
+import {
+  TypeEvenement,
+  EvenementInputDto,
+  ContexteEvenement,
+  UsageType,
+} from "@mutafriches/shared-types";
 import { useIframe, useIsIframeMode } from "../iframe/useIframe";
 import { evenementsService } from "../services/api/api.evenements.service";
 
@@ -64,7 +69,7 @@ export function useEventTracking() {
   );
 
   const trackInteretMultiParcelles = useCallback(
-    (contexte?: string) => {
+    (contexte?: ContexteEvenement) => {
       return track(TypeEvenement.INTERET_MULTI_PARCELLES, {
         donnees: { contexte },
       });
@@ -73,7 +78,7 @@ export function useEventTracking() {
   );
 
   const trackInteretMiseEnRelation = useCallback(
-    (evaluationId: string, usageConcerne?: string) => {
+    (evaluationId: string, usageConcerne?: UsageType) => {
       return track(TypeEvenement.INTERET_MISE_EN_RELATION, {
         evaluationId,
         donnees: { usageConcerne },
@@ -83,7 +88,7 @@ export function useEventTracking() {
   );
 
   const trackExporterResultats = useCallback(
-    (evaluationId: string, usageConcerne?: string) => {
+    (evaluationId: string, usageConcerne?: UsageType) => {
       return track(TypeEvenement.INTERET_EXPORT_RESULTATS, {
         evaluationId,
         donnees: { usageConcerne },
