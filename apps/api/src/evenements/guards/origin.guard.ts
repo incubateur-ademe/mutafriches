@@ -1,4 +1,10 @@
-import { CanActivate, ExecutionContext, ForbiddenException, Injectable, Logger } from "@nestjs/common";
+import {
+  CanActivate,
+  ExecutionContext,
+  ForbiddenException,
+  Injectable,
+  Logger,
+} from "@nestjs/common";
 import { Request } from "express";
 
 const DEFAULT_ALLOWED_ORIGINS = [
@@ -14,7 +20,9 @@ export class OriginGuard implements CanActivate {
 
   constructor() {
     const envOrigins = process.env.ALLOWED_ORIGINS;
-    this.allowedOrigins = envOrigins ? envOrigins.split(",").map((o) => o.trim()) : DEFAULT_ALLOWED_ORIGINS;
+    this.allowedOrigins = envOrigins
+      ? envOrigins.split(",").map((o) => o.trim())
+      : DEFAULT_ALLOWED_ORIGINS;
   }
 
   canActivate(context: ExecutionContext): boolean {
