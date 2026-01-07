@@ -166,21 +166,7 @@ export function useLeafletMap({
             <button
               id="analyze-parcel-btn"
               data-parcel-id="${idu}"
-              style="
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-                width: 100%;
-                padding: 8px 16px;
-                font-size: 14px;
-                font-weight: 500;
-                color: #fff;
-                background-color: #000091;
-                border: none;
-                cursor: pointer;
-              "
-              onmouseover="this.style.backgroundColor='#1212FF'"
-              onmouseout="this.style.backgroundColor='#000091'"
+              class="fr-btn fr-btn--lg"
             >
               Analyser cette parcelle
             </button>
