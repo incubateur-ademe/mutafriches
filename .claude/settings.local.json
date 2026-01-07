@@ -6,7 +6,8 @@
       "Bash(pnpm typecheck:*)",
       "Bash(pnpm test)",
       "Bash(pnpm validate:*)",
-      "Bash(pnpm format:*)"
+      "Bash(pnpm format:*)",
+      "Bash(pnpm build:shared:*)"
     ]
   }
 }
