@@ -38,10 +38,7 @@ export function Header() {
                 </div>
               </div>
               <div className="fr-header__service">
-                <a
-                  href="/"
-                  title="Retour a l'accueil du site - Mutafriches - Republique Francaise"
-                >
+                <a href="/" title="Retour a l'accueil du site - Mutafriches - Republique Francaise">
                   <p className="fr-header__service-title">
                     Mutafriches{" "}
                     <span className="fr-badge fr-badge--success fr-badge--no-icon">BETA</span>
