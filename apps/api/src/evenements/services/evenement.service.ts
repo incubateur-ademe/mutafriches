@@ -1,7 +1,17 @@
 import { Injectable } from "@nestjs/common";
-import { EvenementInputDto, EvenementOutputDto, ModeUtilisation } from "@mutafriches/shared-types";
+import {
+  EvenementInputDto,
+  EvenementOutputDto,
+  EvenementDonnees,
+  ModeUtilisation,
+  ContexteEvenement,
+  UsageType,
+} from "@mutafriches/shared-types";
 import { EvenementUtilisateur } from "../entities/evenement.entity";
 import { EvenementRepository } from "../repositories/evenement.repository";
+
+/** Regex pour valider les pages (pathname) */
+const PAGE_REGEX = /^\/[a-z0-9\-/]*$/i;
 
 @Injectable()
 export class EvenementService {
@@ -54,7 +64,7 @@ export class EvenementService {
 
     return value
       .replace(/[<>"'`]/g, "")
-      .replace(/javascript:/gi, "")
+      .replace(/(?:javascript|data|vbscript):/gi, "")
       .replace(/on\w+=/gi, "")
       .substring(0, 255)
       .trim();
@@ -73,52 +83,65 @@ export class EvenementService {
   }
 
   /**
-   * Nettoie le contenu JSON du champ donnees
+   * Valide et nettoie le contenu du champ donnees
+   * Applique des contraintes strictes sur chaque champ
    */
-  private sanitizeDonnees(
-    donnees: Record<string, unknown> | undefined,
-  ): Record<string, unknown> | undefined {
+  private sanitizeDonnees(donnees: EvenementDonnees | undefined): EvenementDonnees | undefined {
     if (!donnees) return undefined;
 
-    const sanitized: Record<string, unknown> = {};
-    const allowedKeys = [
-      "contexte",
-      "pertinent",
-      "commentaire",
-      "usageConcerne",
-      "metadata",
-      "nombreChampsSaisis",
-      "page",
-    ];
+    const sanitized: EvenementDonnees = {};
 
-    for (const [key, value] of Object.entries(donnees)) {
-      if (!allowedKeys.includes(key)) {
-        continue;
+    // page: doit etre un pathname valide commencant par /
+    if (donnees.page !== undefined) {
+      const page = String(donnees.page).substring(0, 100);
+      if (PAGE_REGEX.test(page)) {
+        sanitized.page = page;
       }
+      // Si invalide, on ignore silencieusement
+    }
 
-      const cleanKey = key.substring(0, 50);
-
-      if (typeof value === "string") {
-        sanitized[cleanKey] = value
-          .replace(/[<>"'`]/g, "")
-          .replace(/javascript:/gi, "")
-          .replace(/on\w+=/gi, "")
-          .replace(/http:\/\//gi, "")
-          .replace(/https:\/\//gi, "")
-          .replace(/esi:include/gi, "")
-          .replace(/\$\{/g, "")
-          .replace(/\{\{/g, "")
-          .replace(/<%/g, "")
-          .replace(/%>/g, "")
-          .substring(0, 500)
-          .trim();
-      } else if (typeof value === "boolean") {
-        sanitized[cleanKey] = value;
-      } else if (typeof value === "number") {
-        sanitized[cleanKey] = Math.max(-999999, Math.min(999999, value));
-      } else if (value === null) {
-        sanitized[cleanKey] = null;
+    // contexte: doit etre une valeur de l'enum ContexteEvenement
+    if (donnees.contexte !== undefined) {
+      const contexteValues = Object.values(ContexteEvenement) as string[];
+      if (contexteValues.includes(String(donnees.contexte))) {
+        sanitized.contexte = donnees.contexte as ContexteEvenement;
       }
+      // Si invalide, on ignore silencieusement
+    }
+
+    // pertinent: doit etre un boolean
+    if (donnees.pertinent !== undefined && typeof donnees.pertinent === "boolean") {
+      sanitized.pertinent = donnees.pertinent;
+    }
+
+    // commentaire: string sanitisee pour supprimer tout markup HTML potentiel
+    if (donnees.commentaire !== undefined && typeof donnees.commentaire === "string") {
+      let commentaire = String(donnees.commentaire).substring(0, 500);
+
+      // Supprimer explicitement tous les caracteres de markup HTML de base
+      commentaire = commentaire.replace(/[<>]/g, "");
+
+      sanitized.commentaire = commentaire.trim();
+    }
+
+    // usageConcerne: doit etre une valeur de l'enum UsageType
+    if (donnees.usageConcerne !== undefined) {
+      const usageValues = Object.values(UsageType) as string[];
+      if (usageValues.includes(String(donnees.usageConcerne))) {
+        sanitized.usageConcerne = donnees.usageConcerne as UsageType;
+      }
+      // Si invalide, on ignore silencieusement
+    }
+
+    // nombreChampsSaisis: doit etre un entier entre 0 et 100
+    if (
+      donnees.nombreChampsSaisis !== undefined &&
+      typeof donnees.nombreChampsSaisis === "number"
+    ) {
+      sanitized.nombreChampsSaisis = Math.max(
+        0,
+        Math.min(100, Math.floor(donnees.nombreChampsSaisis)),
+      );
     }
 
     return Object.keys(sanitized).length > 0 ? sanitized : undefined;

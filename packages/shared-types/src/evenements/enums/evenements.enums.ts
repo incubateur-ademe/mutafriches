@@ -7,7 +7,7 @@ export enum TypeEvenement {
   // Feedback sur résultats
   FEEDBACK_PERTINENCE_CLASSEMENT = "feedback_pertinence_classement",
 
-  // Feature flags / intérêt utilisateur
+  // Feature flags / interet utilisateur
   INTERET_MULTI_PARCELLES = "interet_multi_parcelles",
   INTERET_MISE_EN_RELATION = "interet_mise_en_relation",
   INTERET_EXPORT_RESULTATS = "interet_export_resultats",
@@ -16,4 +16,14 @@ export enum TypeEvenement {
 export enum ModeUtilisation {
   STANDALONE = "standalone",
   IFRAME = "iframe",
+}
+
+/**
+ * Contexte d'ou l'evenement a ete declenche dans le parcours utilisateur
+ */
+export enum ContexteEvenement {
+  // Etape de selection de parcelle
+  SELECTION_PARCELLE = "selection_parcelle",
+  // Retrocompatibilite avec l'ancienne valeur
+  STEP1_TOGGLE = "step1_toggle",
 }

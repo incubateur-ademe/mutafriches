@@ -34,9 +34,12 @@ describe("Evenements E2E", () => {
   });
 
   describe("POST /evenements", () => {
-    it("devrait enregistrer un evenement", async () => {
+    const VALID_ORIGIN = "https://mutafriches.beta.gouv.fr";
+
+    it("devrait enregistrer un evenement avec origine valide", async () => {
       const response = await request(app.getHttpServer() as App)
         .post("/evenements")
+        .set("Origin", VALID_ORIGIN)
         .send({ typeEvenement: TypeEvenement.VISITE })
         .expect(201);
 
@@ -47,6 +50,7 @@ describe("Evenements E2E", () => {
     it("devrait passer le mode iframe via query param", async () => {
       await request(app.getHttpServer() as App)
         .post("/evenements?iframe=true")
+        .set("Origin", VALID_ORIGIN)
         .send({ typeEvenement: TypeEvenement.VISITE })
         .expect(201);
 
@@ -59,6 +63,7 @@ describe("Evenements E2E", () => {
     it("devrait passer l'integrateur via query param", async () => {
       await request(app.getHttpServer() as App)
         .post("/evenements?integrateur=benefriches")
+        .set("Origin", VALID_ORIGIN)
         .send({ typeEvenement: TypeEvenement.VISITE })
         .expect(201);
 
@@ -67,13 +72,30 @@ describe("Evenements E2E", () => {
         expect.objectContaining({ integrateur: "benefriches" }),
       );
     });
+
+    it("devrait rejeter une requete sans origine", async () => {
+      await request(app.getHttpServer() as App)
+        .post("/evenements")
+        .send({ typeEvenement: TypeEvenement.VISITE })
+        .expect(403);
+    });
+
+    it("devrait rejeter une origine non autorisee", async () => {
+      await request(app.getHttpServer() as App)
+        .post("/evenements")
+        .set("Origin", "https://malicious-site.com")
+        .send({ typeEvenement: TypeEvenement.VISITE })
+        .expect(403);
+    });
   });
 
-  // Tests de limitation de débit
+  // Tests de limitation de débit (limite de 30 req/min pour evenements)
   describeThrottling({
     getApp: () => app,
     method: "post",
     route: "/evenements",
     body: { typeEvenement: TypeEvenement.VISITE },
+    headers: { Origin: "https://mutafriches.beta.gouv.fr" },
+    requestCount: 35,
   });
 });

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { ContexteEvenement } from "@mutafriches/shared-types";
 import { useEventTracking } from "../../../../shared/hooks/useEventTracking";
 import { ModalInfo } from "../../../../shared/components/common/ModalInfo";
 
@@ -15,7 +16,7 @@ export const MultiParcelleToggle: React.FC<MultiParcelleToggleProps> = ({ isMult
   const handleChange = async (value: string) => {
     if (value === "2") {
       if (!trackingEnvoye) {
-        await trackInteretMultiParcelles("step1_toggle");
+        await trackInteretMultiParcelles(ContexteEvenement.SELECTION_PARCELLE);
         setTrackingEnvoye(true);
       }
       setIsModalOpen(true);

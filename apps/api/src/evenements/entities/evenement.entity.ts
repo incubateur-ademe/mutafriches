@@ -1,12 +1,12 @@
-import { ModeUtilisation, TypeEvenement } from "@mutafriches/shared-types";
+import { ModeUtilisation, TypeEvenement, EvenementDonnees } from "@mutafriches/shared-types";
 
-// Classe pour représenter un événement utilisateur
+// Classe pour representer un evenement utilisateur
 export class EvenementUtilisateur {
   id: string;
   typeEvenement: TypeEvenement;
   evaluationId?: string;
   identifiantCadastral?: string;
-  donnees?: Record<string, unknown>;
+  donnees?: EvenementDonnees;
   dateCreation: Date;
   sourceUtilisation?: string;
   modeUtilisation?: ModeUtilisation;
@@ -20,7 +20,7 @@ export class EvenementUtilisateur {
     typeEvenement: TypeEvenement;
     evaluationId?: string;
     identifiantCadastral?: string;
-    donnees?: Record<string, unknown>;
+    donnees?: EvenementDonnees;
     dateCreation: Date;
     sourceUtilisation?: string;
     modeUtilisation?: ModeUtilisation;

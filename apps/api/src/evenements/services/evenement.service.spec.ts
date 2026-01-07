@@ -1,6 +1,11 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { Test, TestingModule } from "@nestjs/testing";
-import { TypeEvenement, ModeUtilisation } from "@mutafriches/shared-types";
+import {
+  TypeEvenement,
+  ModeUtilisation,
+  ContexteEvenement,
+  UsageType,
+} from "@mutafriches/shared-types";
 import { EvenementService } from "./evenement.service";
 import { EvenementRepository } from "../repositories/evenement.repository";
 
@@ -203,37 +208,48 @@ describe("EvenementService - Sécurité", () => {
     });
   });
 
-  describe("Sanitisation du champ donnees (JSONB)", () => {
-    it("devrait nettoyer XSS dans donnees.contexte", async () => {
+  describe("Validation stricte du champ donnees", () => {
+    it("devrait rejeter un contexte invalide (non dans l'enum)", async () => {
       const input = {
         typeEvenement: TypeEvenement.INTERET_MULTI_PARCELLES,
         donnees: {
-          contexte: "<script>alert(1)</script>",
+          contexte: "<script>alert(1)</script>" as ContexteEvenement,
         },
       };
 
       await service.enregistrerEvenement(input);
 
       const savedEvent = vi.mocked(mockRepository.enregistrerEvenement).mock.calls[0][0];
-      expect(savedEvent.donnees?.contexte).not.toContain("<script>");
+      // Contexte invalide est ignore silencieusement
+      expect(savedEvent.donnees?.contexte).toBeUndefined();
     });
 
-    it("devrait bloquer les clés non autorisées", async () => {
+    it("devrait accepter un contexte valide de l'enum", async () => {
       const input = {
         typeEvenement: TypeEvenement.INTERET_MULTI_PARCELLES,
         donnees: {
-          contexte: "valide",
-          cleNonAutorisee: "malveillant",
-          autreCleMalveillante: "<script>",
+          contexte: ContexteEvenement.SELECTION_PARCELLE,
         },
       };
 
       await service.enregistrerEvenement(input);
 
       const savedEvent = vi.mocked(mockRepository.enregistrerEvenement).mock.calls[0][0];
-      expect(savedEvent.donnees).toHaveProperty("contexte");
-      expect(savedEvent.donnees).not.toHaveProperty("cleNonAutorisee");
-      expect(savedEvent.donnees).not.toHaveProperty("autreCleMalveillante");
+      expect(savedEvent.donnees?.contexte).toBe(ContexteEvenement.SELECTION_PARCELLE);
+    });
+
+    it("devrait accepter le contexte retrocompatible step1_toggle", async () => {
+      const input = {
+        typeEvenement: TypeEvenement.INTERET_MULTI_PARCELLES,
+        donnees: {
+          contexte: ContexteEvenement.STEP1_TOGGLE,
+        },
+      };
+
+      await service.enregistrerEvenement(input);
+
+      const savedEvent = vi.mocked(mockRepository.enregistrerEvenement).mock.calls[0][0];
+      expect(savedEvent.donnees?.contexte).toBe(ContexteEvenement.STEP1_TOGGLE);
     });
 
     it("devrait autoriser nombreChampsSaisis dans donnees", async () => {
@@ -250,78 +266,36 @@ describe("EvenementService - Sécurité", () => {
       expect(savedEvent.donnees?.nombreChampsSaisis).toBe(5);
     });
 
-    it("devrait nettoyer template injection ${}", async () => {
+    it("devrait limiter nombreChampsSaisis entre 0 et 100", async () => {
       const input = {
-        typeEvenement: TypeEvenement.INTERET_MULTI_PARCELLES,
+        typeEvenement: TypeEvenement.DONNEES_COMPLEMENTAIRES_SAISIES,
         donnees: {
-          commentaire: "Test ${malicious}",
+          nombreChampsSaisis: 999,
         },
       };
 
       await service.enregistrerEvenement(input);
 
       const savedEvent = vi.mocked(mockRepository.enregistrerEvenement).mock.calls[0][0];
-      expect(savedEvent.donnees?.commentaire).not.toContain("${");
+      expect(savedEvent.donnees?.nombreChampsSaisis).toBe(100);
     });
 
-    it("devrait nettoyer template injection {{}}", async () => {
+    it("devrait nettoyer XSS dans commentaire", async () => {
       const input = {
-        typeEvenement: TypeEvenement.INTERET_MULTI_PARCELLES,
+        typeEvenement: TypeEvenement.FEEDBACK_PERTINENCE_CLASSEMENT,
         donnees: {
-          commentaire: "Test {{malicious}}",
+          pertinent: true,
+          commentaire: "Test <script>alert(1)</script>",
         },
       };
 
       await service.enregistrerEvenement(input);
 
       const savedEvent = vi.mocked(mockRepository.enregistrerEvenement).mock.calls[0][0];
-      expect(savedEvent.donnees?.commentaire).not.toContain("{{");
+      expect(savedEvent.donnees?.commentaire).not.toContain("<script>");
     });
 
-    it("devrait nettoyer template injection <%>", async () => {
-      const input = {
-        typeEvenement: TypeEvenement.INTERET_MULTI_PARCELLES,
-        donnees: {
-          commentaire: "Test <%malicious%>",
-        },
-      };
-
-      await service.enregistrerEvenement(input);
-
-      const savedEvent = vi.mocked(mockRepository.enregistrerEvenement).mock.calls[0][0];
-      expect(savedEvent.donnees?.commentaire).not.toContain("<%");
-      expect(savedEvent.donnees?.commentaire).not.toContain("%>");
-    });
-
-    it("devrait nettoyer ESI injection", async () => {
-      const input = {
-        typeEvenement: TypeEvenement.INTERET_MULTI_PARCELLES,
-        donnees: {
-          contexte: '<esi:include src="http://evil.com"/>',
-        },
-      };
-
-      await service.enregistrerEvenement(input);
-
-      const savedEvent = vi.mocked(mockRepository.enregistrerEvenement).mock.calls[0][0];
-      expect(savedEvent.donnees?.contexte).not.toContain("esi:include");
-    });
-
-    it("devrait nettoyer les URLs http/https", async () => {
-      const input = {
-        typeEvenement: TypeEvenement.INTERET_MULTI_PARCELLES,
-        donnees: {
-          commentaire: "Visitez http://malicious.com",
-        },
-      };
-
-      await service.enregistrerEvenement(input);
-
-      const savedEvent = vi.mocked(mockRepository.enregistrerEvenement).mock.calls[0][0];
-      expect(savedEvent.donnees?.commentaire).not.toContain("http://");
-    });
-
-    it("devrait préserver les booleans", async () => {
+    it("devrait preserver les booleans", async () => {
       const input = {
         typeEvenement: TypeEvenement.FEEDBACK_PERTINENCE_CLASSEMENT,
         donnees: {
@@ -335,56 +309,69 @@ describe("EvenementService - Sécurité", () => {
       expect(savedEvent.donnees?.pertinent).toBe(true);
     });
 
-    it("devrait limiter les nombres", async () => {
+    it("devrait accepter usageConcerne valide de l'enum", async () => {
       const input = {
-        typeEvenement: TypeEvenement.INTERET_MULTI_PARCELLES,
+        typeEvenement: TypeEvenement.INTERET_MISE_EN_RELATION,
         donnees: {
-          metadata: 99999999,
+          usageConcerne: UsageType.RESIDENTIEL,
         },
       };
 
       await service.enregistrerEvenement(input);
 
       const savedEvent = vi.mocked(mockRepository.enregistrerEvenement).mock.calls[0][0];
-      expect(savedEvent.donnees?.metadata).toBe(999999);
+      expect(savedEvent.donnees?.usageConcerne).toBe(UsageType.RESIDENTIEL);
     });
 
-    it("devrait gérer les valeurs null", async () => {
+    it("devrait rejeter usageConcerne invalide", async () => {
       const input = {
-        typeEvenement: TypeEvenement.INTERET_MULTI_PARCELLES,
+        typeEvenement: TypeEvenement.INTERET_MISE_EN_RELATION,
         donnees: {
-          commentaire: null,
+          usageConcerne: "invalid_usage" as UsageType,
         },
       };
 
       await service.enregistrerEvenement(input);
 
       const savedEvent = vi.mocked(mockRepository.enregistrerEvenement).mock.calls[0][0];
-      expect(savedEvent.donnees?.commentaire).toBeNull();
+      expect(savedEvent.donnees?.usageConcerne).toBeUndefined();
     });
 
-    it("devrait ignorer les objets imbriqués", async () => {
+    it("devrait valider page avec regex (pathname valide)", async () => {
       const input = {
-        typeEvenement: TypeEvenement.INTERET_MULTI_PARCELLES,
+        typeEvenement: TypeEvenement.VISITE,
         donnees: {
-          contexte: "valide",
-          objetImbrique: { malicious: "<script>" },
+          page: "/resultats",
         },
       };
 
       await service.enregistrerEvenement(input);
 
       const savedEvent = vi.mocked(mockRepository.enregistrerEvenement).mock.calls[0][0];
-      expect(savedEvent.donnees).toHaveProperty("contexte");
-      expect(savedEvent.donnees).not.toHaveProperty("objetImbrique");
+      expect(savedEvent.donnees?.page).toBe("/resultats");
     });
 
-    it("devrait retourner undefined si aucune clé valide", async () => {
+    it("devrait rejeter page invalide (payload injection)", async () => {
+      const input = {
+        typeEvenement: TypeEvenement.VISITE,
+        donnees: {
+          page: "/0XOR(if(now()=sysdate(),sleep(15),0))XORZ",
+        },
+      };
+
+      await service.enregistrerEvenement(input);
+
+      const savedEvent = vi.mocked(mockRepository.enregistrerEvenement).mock.calls[0][0];
+      // Page invalide est ignoree silencieusement
+      expect(savedEvent.donnees?.page).toBeUndefined();
+    });
+
+    it("devrait retourner undefined si aucune donnee valide", async () => {
       const input = {
         typeEvenement: TypeEvenement.INTERET_MULTI_PARCELLES,
         donnees: {
-          cleInvalide1: "test",
-          cleInvalide2: "test",
+          contexte: "invalid" as ContexteEvenement,
+          usageConcerne: "invalid" as UsageType,
         },
       };
 
@@ -392,37 +379,6 @@ describe("EvenementService - Sécurité", () => {
 
       const savedEvent = vi.mocked(mockRepository.enregistrerEvenement).mock.calls[0][0];
       expect(savedEvent.donnees).toBeUndefined();
-    });
-  });
-
-  describe("Cas d'attaque XSS", () => {
-    it("devrait bloquer une attaque XSS", async () => {
-      const input = {
-        typeEvenement: TypeEvenement.INTERET_MULTI_PARCELLES,
-        donnees: {
-          contexte: "'\"()&%<zzz><ScRiPt >ErKB(9677)</ScRiPt>",
-        },
-      };
-
-      await service.enregistrerEvenement(input);
-
-      const savedEvent = vi.mocked(mockRepository.enregistrerEvenement).mock.calls[0][0];
-      expect(savedEvent.donnees?.contexte).not.toContain("<ScRiPt");
-      expect(savedEvent.donnees?.contexte).not.toContain("</ScRiPt>");
-    });
-
-    it("devrait bloquer les payloads SSTI réels", async () => {
-      const input = {
-        typeEvenement: TypeEvenement.INTERET_MULTI_PARCELLES,
-        donnees: {
-          contexte: "dfb__${98991*97996}__::.x",
-        },
-      };
-
-      await service.enregistrerEvenement(input);
-
-      const savedEvent = vi.mocked(mockRepository.enregistrerEvenement).mock.calls[0][0];
-      expect(savedEvent.donnees?.contexte).not.toContain("${");
     });
   });
 
