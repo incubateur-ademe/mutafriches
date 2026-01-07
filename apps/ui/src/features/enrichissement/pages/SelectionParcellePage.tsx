@@ -128,13 +128,13 @@ export const SelectionParcellePage: React.FC = () => {
 
         <ParcelleSelectionMap onAnalyze={handleEnrichir} height="500px" />
 
-        <div className="fr-mt-8w">
+        <div className="fr-mt-8w fr-mb-4w">
           <section className="fr-accordion">
             <h3 className="fr-accordion__title">
               <button
                 type="button"
                 className="fr-accordion__btn"
-                aria-expanded="false"
+                aria-expanded="true"
                 aria-controls="accordion-mutabilite"
               >
                 Qu'est ce que la mutabilite ?
