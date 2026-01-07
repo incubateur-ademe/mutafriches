@@ -1,10 +1,14 @@
-import { Controller, Post, Body, Query, Req } from "@nestjs/common";
+import { Controller, Post, Body, Query, Req, UseGuards } from "@nestjs/common";
 import { ApiExcludeController } from "@nestjs/swagger";
+import { Throttle } from "@nestjs/throttler";
 import { Request } from "express";
 import { EvenementInputDto, EvenementOutputDto, ModeUtilisation } from "@mutafriches/shared-types";
 import { EvenementService } from "./services/evenement.service";
+import { OriginGuard } from "./guards/origin.guard";
 
 @ApiExcludeController()
+@UseGuards(OriginGuard)
+@Throttle({ default: { limit: 30, ttl: 60000 } })
 @Controller("evenements")
 export class EvenementsController {
   constructor(private readonly evenementService: EvenementService) {}

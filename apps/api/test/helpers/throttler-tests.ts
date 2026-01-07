@@ -10,6 +10,8 @@ interface ThrottlerTestConfig {
   method: HttpMethod;
   route: string;
   body?: Record<string, unknown>;
+  headers?: Record<string, string>;
+  requestCount?: number; // Nombre de requetes a envoyer pour tester le throttling (defaut: 15)
 }
 
 /**
@@ -22,12 +24,18 @@ async function sendRequestsSequentially(
   route: string,
   body: Record<string, unknown> | undefined,
   count: number,
+  headers?: Record<string, string>,
 ): Promise<{ status: number; body: Record<string, unknown> }[]> {
   const responses: { status: number; body: Record<string, unknown> }[] = [];
 
   for (let i = 0; i < count; i++) {
     try {
-      const req = request(app.getHttpServer() as App)[method](route);
+      let req = request(app.getHttpServer() as App)[method](route);
+      if (headers) {
+        for (const [key, value] of Object.entries(headers)) {
+          req = req.set(key, value);
+        }
+      }
       const response = body ? await req.send(body) : await req;
       responses.push({ status: response.status, body: response.body as Record<string, unknown> });
     } catch {
@@ -48,13 +56,19 @@ async function sendRequestsSequentially(
  * @param config.body - Body optionnel pour les requetes POST/PUT/PATCH
  */
 export function describeThrottling(config: ThrottlerTestConfig): void {
-  const { getApp, method, route, body } = config;
+  const { getApp, method, route, body, headers, requestCount = 15 } = config;
 
   describe("Rate Limiter", () => {
     it("devrait retourner 429 quand la limite est depassee", async () => {
       const app = getApp();
-      // Envoyer 15 requetes sequentiellement pour etre sur de depasser la limite de 10
-      const responses = await sendRequestsSequentially(app, method, route, body, 15);
+      const responses = await sendRequestsSequentially(
+        app,
+        method,
+        route,
+        body,
+        requestCount,
+        headers,
+      );
       const blockedResponses = responses.filter((r) => r.status === 429);
 
       expect(blockedResponses.length).toBeGreaterThan(0);
@@ -62,8 +76,14 @@ export function describeThrottling(config: ThrottlerTestConfig): void {
 
     it("devrait retourner le message Too Many Requests", async () => {
       const app = getApp();
-      // Envoyer 15 requetes sequentiellement
-      const responses = await sendRequestsSequentially(app, method, route, body, 15);
+      const responses = await sendRequestsSequentially(
+        app,
+        method,
+        route,
+        body,
+        requestCount,
+        headers,
+      );
       const blockedResponse = responses.find((r) => r.status === 429);
 
       if (blockedResponse) {

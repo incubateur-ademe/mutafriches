@@ -214,7 +214,6 @@ Le déploiement sur Scalingo utilise une architecture monolithique où NestJS se
 NODE_ENV=production
 PORT=<fourni par Scalingo>
 DATABASE_URL=<fourni par addon PostgreSQL>
-SESSION_SECRET=<clé secrète forte>
 ```
 
 ### Build et déploiement
