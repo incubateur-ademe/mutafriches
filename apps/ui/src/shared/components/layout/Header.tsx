@@ -10,7 +10,19 @@ export function Header() {
             <div className="fr-header__brand fr-enlarge-link">
               <div className="fr-header__brand-top">
                 <div className="fr-header__logo">
-                  <p className="fr-logo">Mutafriches</p>
+                  <p className="fr-logo">
+                    Republique
+                    <br />
+                    Francaise
+                  </p>
+                </div>
+                <div className="fr-header__operator">
+                  <img
+                    src="/images/logo-ademe.svg"
+                    alt="ADEME - Agence de la transition ecologique"
+                    className="fr-responsive-img"
+                    style={{ maxHeight: "5rem" }}
+                  />
                 </div>
                 <div className="fr-header__navbar">
                   <button
@@ -28,7 +40,7 @@ export function Header() {
               <div className="fr-header__service">
                 <a
                   href="/"
-                  title={`Retour à l'accueil du site - Mutafriches - République Française`}
+                  title={`Retour a l'accueil du site - Mutafriches - Republique Francaise`}
                 >
                   <span className="flex flex-row items-center">
                     <p className="fr-header__service-title fr-mr-1w">Mutafriches</p>
@@ -36,7 +48,7 @@ export function Header() {
                   </span>
                 </a>
                 <p className="fr-header__service-tagline">
-                  Trouvez le meilleur usage pour votre site en friche
+                  Le meilleur usage pour votre site en friche
                 </p>
               </div>
             </div>
