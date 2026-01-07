@@ -114,21 +114,12 @@ export class EvenementService {
       sanitized.pertinent = donnees.pertinent;
     }
 
-    // commentaire: string sanitizee avec boucle pour eviter reintroduction de patterns
+    // commentaire: string sanitisee pour supprimer tout markup HTML potentiel
     if (donnees.commentaire !== undefined && typeof donnees.commentaire === "string") {
       let commentaire = String(donnees.commentaire).substring(0, 500);
 
-      // Supprimer toutes les balises HTML simples
-      commentaire = commentaire.replace(/<[^>]*>/g, "");
-
-      // Supprimer de maniere repetee les schemas dangereux multi-caracteres
-      let previous: string;
-      do {
-        previous = commentaire;
-        commentaire = commentaire
-          .replace(/(?:javascript|data|vbscript):/gi, "")
-          .replace(/on\w+=/gi, "");
-      } while (commentaire !== previous);
+      // Supprimer explicitement tous les caracteres de markup HTML de base
+      commentaire = commentaire.replace(/[<>]/g, "");
 
       sanitized.commentaire = commentaire.trim();
     }
