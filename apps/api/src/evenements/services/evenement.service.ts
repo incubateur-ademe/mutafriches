@@ -64,7 +64,7 @@ export class EvenementService {
 
     return value
       .replace(/[<>"'`]/g, "")
-      .replace(/javascript:/gi, "")
+      .replace(/(?:javascript|data|vbscript):/gi, "")
       .replace(/on\w+=/gi, "")
       .substring(0, 255)
       .trim();
@@ -114,14 +114,23 @@ export class EvenementService {
       sanitized.pertinent = donnees.pertinent;
     }
 
-    // commentaire: string sanitizee
+    // commentaire: string sanitizee avec boucle pour eviter reintroduction de patterns
     if (donnees.commentaire !== undefined && typeof donnees.commentaire === "string") {
-      sanitized.commentaire = donnees.commentaire
-        .replace(/[<>"'`]/g, "")
-        .replace(/javascript:/gi, "")
-        .replace(/on\w+=/gi, "")
-        .substring(0, 500)
-        .trim();
+      let commentaire = String(donnees.commentaire).substring(0, 500);
+
+      // Supprimer toutes les balises HTML simples
+      commentaire = commentaire.replace(/<[^>]*>/g, "");
+
+      // Supprimer de maniere repetee les schemas dangereux multi-caracteres
+      let previous: string;
+      do {
+        previous = commentaire;
+        commentaire = commentaire
+          .replace(/(?:javascript|data|vbscript):/gi, "")
+          .replace(/on\w+=/gi, "");
+      } while (commentaire !== previous);
+
+      sanitized.commentaire = commentaire.trim();
     }
 
     // usageConcerne: doit etre une valeur de l'enum UsageType
