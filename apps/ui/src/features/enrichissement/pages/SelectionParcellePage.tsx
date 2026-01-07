@@ -2,9 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getStepRoute, ROUTES } from "../../../shared/config/routes.config";
 import { Layout } from "../../../shared/components/layout/Layout";
-import { Stepper } from "../../../shared/components/layout";
-import { MultiParcelleToggle } from "../components/parcelle-selection/MultiParcelleToggle";
-import { ParcelleSelection } from "../components/parcelle-selection/ParcelleSelection";
+import { MultiParcelleToggle } from "../components/multiparcelle/MultiParcelleToggle";
 import { ErrorAlert } from "../../../shared/components/common/ErrorAlert";
 import { EnrichmentDisplayZone } from "../components/enrichment-display/EnrichmentDisplayZone";
 import { transformEnrichmentToUiData } from "../utils/enrichissment.mapper";
@@ -13,11 +11,11 @@ import { enrichissementService } from "../../../shared/services/api/api.enrichis
 import { TypeEvenement } from "@mutafriches/shared-types";
 import { useEventTracking } from "../../../shared/hooks/useEventTracking";
 import { EnrichmentLoadingCallout } from "../components/enrichment-display/EnrichmentLoadingCallout";
-import { MutabilityCalloutInfo } from "../components/callout/MutabilityCalloutInfo";
+import { ParcelleSelectionMap } from "../components/parcelle-map/ParcelleSelectionMap";
 
 const MIN_LOADING_TIME = 3000; // 3 secondes minimum
 
-export const Step1EnrichmentPage: React.FC = () => {
+export const SelectionParcellePage: React.FC = () => {
   const navigate = useNavigate();
   const { state, setEnrichmentData, setCurrentStep, resetForm } = useFormContext();
   const { track } = useEventTracking();
@@ -116,28 +114,40 @@ export const Step1EnrichmentPage: React.FC = () => {
         </div>
       )}
 
-      <Stepper
-        currentStep={1}
-        totalSteps={3}
-        currentStepTitle="Sélectionner un site en friche"
-        nextStepTitle="Qualifier le site"
-      />
-
-      <div className="fr-mb-4w">
+      <div className="fr-mt-6w fr-mb-4w">
         <h1>Sélectionner un site en friche</h1>
 
         <p className="fr-text--lead">
-          Pour démarrer l’analyse de mutabilité pour votre site, sélectionner une parcelle sur la
-          carte. Vous pouvez la rechercher en entrant son adresse exacte ou une adresse approchante.
+          <strong>Pour démarrer l’analyse de l’usage le plus adapté à votre site en friche,</strong>{" "}
+          sélectionner une parcelle sur la carte. Vous pouvez la rechercher en entrant son adresse
+          exacte ou une adresse approchante. <br />
           Sélectionner la parcelle et cliquer sur ‘Analyser cette parcelle’.
         </p>
 
         <MultiParcelleToggle isMulti={isMultiParcelle} onChange={setIsMultiParcelle} />
 
-        <ParcelleSelection onAnalyze={handleEnrichir} />
+        <ParcelleSelectionMap onAnalyze={handleEnrichir} height="500px" />
 
-        <div className="fr-mt-4w">
-          <MutabilityCalloutInfo />
+        <div className="fr-mt-8w">
+          <section className="fr-accordion">
+            <h3 className="fr-accordion__title">
+              <button
+                type="button"
+                className="fr-accordion__btn"
+                aria-expanded="false"
+                aria-controls="accordion-mutabilite"
+              >
+                Qu'est ce que la mutabilite ?
+              </button>
+            </h3>
+            <div className="fr-collapse" id="accordion-mutabilite">
+              <p>
+                La mutabilite d'une friche, c'est l'estimation de son potentiel de reconversion vers
+                differents usages en tenant compte des contraintes du site et des opportunites de
+                son environnement.
+              </p>
+            </div>
+          </section>
         </div>
 
         {/* Zone de résultats avec id fixe pour le scroll */}

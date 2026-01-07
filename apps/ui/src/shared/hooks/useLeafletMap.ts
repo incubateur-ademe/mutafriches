@@ -20,6 +20,7 @@ interface UseLeafletMapProps {
   initialCenter?: [number, number];
   initialZoom?: number;
   onParcelleSelected?: OnParcelleSelectedCallback;
+  onAnalyze?: (identifiant: string) => void;
 }
 
 /**
@@ -31,10 +32,12 @@ export function useLeafletMap({
   initialCenter = [48.8589, 2.3469],
   initialZoom = 17,
   onParcelleSelected,
+  onAnalyze,
 }: UseLeafletMapProps) {
   const mapRef = useRef<L.Map | null>(null);
   const highlightRef = useRef<L.GeoJSON | null>(null);
   const callbackRef = useRef<OnParcelleSelectedCallback | undefined>(onParcelleSelected);
+  const analyzeCallbackRef = useRef<((identifiant: string) => void) | undefined>(onAnalyze);
 
   // Fonction exposée pour recentrer la carte
   const flyToLocation = useCallback((lat: number, lng: number, zoom = 17) => {
@@ -45,10 +48,14 @@ export function useLeafletMap({
     }
   }, []);
 
-  // Synchroniser la ref du callback
+  // Synchroniser les refs des callbacks
   useEffect(() => {
     callbackRef.current = onParcelleSelected;
   }, [onParcelleSelected]);
+
+  useEffect(() => {
+    analyzeCallbackRef.current = onAnalyze;
+  }, [onAnalyze]);
 
   useEffect(() => {
     const container = document.getElementById(containerId);
@@ -147,18 +154,36 @@ export function useLeafletMap({
           }
         }
 
-        // Popup avec les informations de la parcelle
+        // Popup avec les informations de la parcelle et bouton d'analyse
         const popupContent = `
-          <div style="min-width: 200px">
-            <h3 style="margin: 0 0 10px 0;">Parcelle Cadastrale</h3>
-            <table style="width: 100%; font-size: 12px;">
-              <tr><td><b>IDU:</b></td><td>${idu}</td></tr>
-              <tr><td><b>Commune:</b></td><td>${p.nom_com || p.commune || "-"}</td></tr>
-              <tr><td><b>Code INSEE:</b></td><td>${p.code_com || p.code_insee || "-"}</td></tr>
-              <tr><td><b>Section:</b></td><td>${p.section || "-"}</td></tr>
-              <tr><td><b>Numéro:</b></td><td>${p.numero || "-"}</td></tr>
-              <tr><td><b>Surface:</b></td><td>${p.contenance ? `${p.contenance} m²` : "-"}</td></tr>
+          <div style="min-width: 220px">
+            <h3 style="margin: 0 0 12px 0; font-size: 16px; font-weight: bold;">Parcelle Cadastrale</h3>
+            <table style="width: 100%; font-size: 13px; margin-bottom: 12px;">
+              <tr><td style="padding: 2px 0;"><b>IDU:</b></td><td style="padding: 2px 0;">${idu}</td></tr>
+              <tr><td style="padding: 2px 0;"><b>Commune:</b></td><td style="padding: 2px 0;">${p.nom_com || p.commune || "-"}</td></tr>
+              <tr><td style="padding: 2px 0;"><b>Surface:</b></td><td style="padding: 2px 0;">${p.contenance ? `${p.contenance} m\u00B2` : "-"}</td></tr>
             </table>
+            <button
+              id="analyze-parcel-btn"
+              data-parcel-id="${idu}"
+              style="
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 100%;
+                padding: 8px 16px;
+                font-size: 14px;
+                font-weight: 500;
+                color: #fff;
+                background-color: #000091;
+                border: none;
+                cursor: pointer;
+              "
+              onmouseover="this.style.backgroundColor='#1212FF'"
+              onmouseout="this.style.backgroundColor='#000091'"
+            >
+              Analyser cette parcelle
+            </button>
           </div>
         `;
 
@@ -169,6 +194,21 @@ export function useLeafletMap({
           .setLatLng(e.latlng)
           .setContent(popupContent)
           .openOn(map);
+
+        // Ajouter l'event listener sur le bouton apres ouverture du popup
+        // Utiliser setTimeout pour s'assurer que le DOM est rendu
+        setTimeout(() => {
+          const btn = document.getElementById("analyze-parcel-btn");
+          if (btn) {
+            btn.onclick = () => {
+              const parcelId = btn.getAttribute("data-parcel-id");
+              if (parcelId && analyzeCallbackRef.current) {
+                analyzeCallbackRef.current(parcelId);
+                map.closePopup();
+              }
+            };
+          }
+        }, 0);
       } catch (err) {
         console.error("Erreur lors de la recherche de parcelle:", err);
       }

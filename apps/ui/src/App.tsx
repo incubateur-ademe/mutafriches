@@ -10,7 +10,7 @@ import { TestCarteParcelle } from "./features/tests/test-carte/pages/TestCartePa
 import { TestMutability } from "./features/tests/test-mutabilite/pages/TestMutability";
 import { TestIframe } from "./features/tests/test-iframe/pages/TestIframe";
 import { TestCallback } from "./features/tests/test-iframe/pages/TestCallback";
-import { Step1EnrichmentPage } from "./features/enrichissement/pages/EnrichmentPage";
+import { SelectionParcellePage } from "./features/enrichissement/pages/SelectionParcellePage";
 import { useEventTracking } from "./shared/hooks/useEventTracking";
 import { useEffect, useRef } from "react";
 import { TypeEvenement } from "@mutafriches/shared-types";
@@ -35,8 +35,8 @@ function AppContent() {
     <IframeProvider>
       <FormProvider>
         <Routes>
-          <Route path={ROUTES.HOME} element={<Step1EnrichmentPage />} />
-          <Route path={ROUTES.STEP1} element={<Step1EnrichmentPage />} />
+          <Route path={ROUTES.HOME} element={<SelectionParcellePage />} />
+          <Route path={ROUTES.STEP1} element={<SelectionParcellePage />} />
           <Route path={ROUTES.STEP2} element={<Step2DonneesComplementairesPage />} />
           <Route path={ROUTES.STEP3} element={<Step3ResultatsPage />} />
 

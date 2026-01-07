@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { LoadingCallout } from "@/shared/components/common/LoadingCallout";
 import { ErrorAlert } from "@/shared/components/common/ErrorAlert";
 import type { EnrichissementOutputDto } from "@mutafriches/shared-types";
-import { ParcelleSelection } from "../../../enrichissement/components/parcelle-selection/ParcelleSelection";
 import { enrichissementService } from "../../../../shared/services/api/api.enrichissement.service";
+import { ParcelleSelectionMap } from "../../../enrichissement/components/parcelle-map/ParcelleSelectionMap";
 
 interface EnrichmentTestSelectionProps {
   onEnrichmentComplete: (data: EnrichissementOutputDto) => void;
@@ -31,7 +31,7 @@ export const EnrichmentTestSelection: React.FC<EnrichmentTestSelectionProps> = (
 
   return (
     <div>
-      <ParcelleSelection onAnalyze={handleEnrichir} />
+      <ParcelleSelectionMap onAnalyze={handleEnrichir} />
 
       {isLoading && (
         <LoadingCallout

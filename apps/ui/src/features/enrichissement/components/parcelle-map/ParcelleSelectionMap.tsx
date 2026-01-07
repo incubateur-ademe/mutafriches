@@ -4,6 +4,7 @@ import { AddressSearchBar } from "./AddressSearchBar";
 
 interface ParcelleSelectionMapProps {
   onParcelleSelected?: OnParcelleSelectedCallback;
+  onAnalyze?: (identifiant: string) => void;
   height?: string;
   initialCenter?: [number, number];
   initialZoom?: number;
@@ -13,6 +14,7 @@ const DEFAULT_CENTER: [number, number] = [47.4456, -0.4721];
 
 export function ParcelleSelectionMap({
   onParcelleSelected,
+  onAnalyze,
   height = "600px",
   initialCenter = DEFAULT_CENTER,
   initialZoom = 17,
@@ -24,6 +26,7 @@ export function ParcelleSelectionMap({
     initialCenter,
     initialZoom,
     onParcelleSelected,
+    onAnalyze,
   });
 
   const handleAddressSelected = (lat: number, lng: number) => {
