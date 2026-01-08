@@ -8,7 +8,8 @@ import { StepNavigation } from "../components/common/StepNavigation";
 import { SiteFormValues, DEFAULT_SITE_VALUES, ValidationErrors } from "../config/types";
 import { SITE_FIELDS } from "../config/fields/site.fields";
 import { validateSiteForm } from "../config/validators";
-import { EnrichedInfoField, FormSelectField } from "../components";
+import { EnrichedInfoField, FormSelectField, PollutionField } from "../components";
+import { PresencePollution } from "@mutafriches/shared-types";
 
 export const QualificationSitePage: React.FC = () => {
   const navigate = useNavigate();
@@ -248,14 +249,14 @@ export const QualificationSitePage: React.FC = () => {
 
         <hr className="fr-my-4w" />
 
-        {/* Zone 4 */}
+        {/* Zone 4 - Pollution */}
         <div className="fr-grid-row fr-grid-row--gutters fr-mb-8w">
-          <FormSelectField
-            field={SITE_FIELDS.presencePollution}
+          <PollutionField
             value={values.presencePollution}
-            onChange={(v) => handleChange("presencePollution", v)}
+            onChange={(v) => handleChange("presencePollution", v as PresencePollution | "")}
+            siteReferencePollue={uiData?.siteReferencePollue}
             error={touched.presencePollution ? errors.presencePollution : undefined}
-            tooltip="Entrez l’information dont vous disposez sur la présence de pollution sur votre site (sol et bâti). Si la case 'Oui' est présélectionnée, c'est que nous avons retrouvé votre site dans une base de données nationales des sites pollués."
+            tooltip="Entrez l'information dont vous disposez sur la presence de pollution sur votre site (sol et bati)."
           />
         </div>
       </form>
