@@ -34,6 +34,7 @@
     "db:introspect": "cd apps/api && pnpm drizzle-kit introspect",
     "db:bpe:import": "pnpm --filter api run db:bpe:import",
     "db:transport-stops:import": "pnpm --filter api run db:transport-stops:import",
+    "db:ademe-sites:import": "pnpm --filter api run db:ademe-sites:import",
     "validate": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test",
     "clean": "pnpm -r clean && rm -rf node_modules",
     "fresh": "rm -rf node_modules apps/*/node_modules pnpm-lock.yaml && pnpm install && pnpm start:dev"

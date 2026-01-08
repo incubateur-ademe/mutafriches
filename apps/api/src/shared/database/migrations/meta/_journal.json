@@ -64,6 +64,13 @@
       "when": 1765534027038,
       "tag": "0008_regular_supernaut",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1767880847873,
+      "tag": "0009_slow_blob",
+      "breakpoints": true
     }
   ]
 }
