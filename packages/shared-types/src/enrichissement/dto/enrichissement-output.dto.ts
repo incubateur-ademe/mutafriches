@@ -32,6 +32,9 @@ export interface EnrichissementOutputDto {
   presenceRisquesTechnologiques: boolean;
   presenceRisquesNaturels?: string; // Enum RisqueNaturel
 
+  // Pollution - site reference dans les bases ADEME (sites et sols pollues)
+  siteReferencePollue: boolean;
+
   // Zonages réglementaires
   zonageReglementaire?: string;
   zonageEnvironnemental?: string; // Enum ZonageEnvironnemental

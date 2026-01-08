@@ -80,7 +80,7 @@ export const transformEnrichmentToUiData = (
     // Distance transports en commun formatée
     distanceTransportsEnCommun: getDistanceTransportMessage(enrichmentData),
 
-    // Pollution - site reference dans les bases SIS/ICPE (derive de presenceRisquesTechnologiques)
-    siteReferencePollue: enrichmentData.presenceRisquesTechnologiques === true,
+    // Pollution - site reference dans les bases ADEME (sites et sols pollues)
+    siteReferencePollue: enrichmentData.siteReferencePollue === true,
   };
 };

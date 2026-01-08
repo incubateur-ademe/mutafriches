@@ -250,13 +250,26 @@ export const QualificationSitePage: React.FC = () => {
         <hr className="fr-my-4w" />
 
         {/* Zone 4 - Pollution */}
-        <div className="fr-grid-row fr-grid-row--gutters fr-mb-8w">
+        <div className="fr-grid-row fr-grid-row--gutters">
           <PollutionField
             value={values.presencePollution}
             onChange={(v) => handleChange("presencePollution", v as PresencePollution | "")}
             siteReferencePollue={uiData?.siteReferencePollue}
             error={touched.presencePollution ? errors.presencePollution : undefined}
-            tooltip="Entrez l'information dont vous disposez sur la presence de pollution sur votre site (sol et bati)."
+            tooltip="Entrez l'information dont vous disposez sur la présence de pollution sur votre site (sol et bâti). Si la case 'Oui' est présélectionnée, c'est que nous avons retrouvé votre site dans une base de données nationales des sites pollués."
+          />
+        </div>
+
+        <hr className="fr-my-4w" />
+
+        {/* Zone 5 - Trame verte et bleue */}
+        <div className="fr-grid-row fr-grid-row--gutters fr-mb-8w">
+          <FormSelectField
+            field={SITE_FIELDS.trameVerteEtBleue}
+            value={values.trameVerteEtBleue}
+            onChange={(v) => handleChange("trameVerteEtBleue", v)}
+            error={touched.trameVerteEtBleue ? errors.trameVerteEtBleue : undefined}
+            tooltip="Indiquez si le site est situe dans un corridor ecologique ou un reservoir de biodiversite."
           />
         </div>
       </form>

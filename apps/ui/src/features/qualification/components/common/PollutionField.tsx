@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { PresencePollution } from "@mutafriches/shared-types";
 
 /** Options pour le select Oui/Non/Ne sait pas */
@@ -6,7 +6,12 @@ type PollutionSelectValue = "oui" | "non" | "ne-sait-pas" | "";
 
 /** Types de pollution disponibles quand "Oui" est selectionne */
 const POLLUTION_TYPES = [
-  { value: PresencePollution.OUI_COMPOSES_VOLATILS, label: "Composes volatils" },
+  {
+    value: PresencePollution.OUI_COMPOSES_VOLATILS,
+    label: "Composes volatils",
+    tooltip:
+      "Les composes organiques volatils sont presents dans l'air et peuvent etre nocifs pour l'homme. Ex : benzene, dichloromethane, formaldehyde, perchloroethylene, etc.",
+  },
   { value: PresencePollution.OUI_AMIANTE, label: "Presence d'amiante" },
   { value: PresencePollution.OUI_AUTRES_COMPOSES, label: "Autres composes" },
   { value: PresencePollution.DEJA_GEREE, label: "Pollution deja geree" },
@@ -61,46 +66,31 @@ export const PollutionField: React.FC<PollutionFieldProps> = ({
   error,
   tooltip,
 }) => {
-  const [selectValue, setSelectValue] = useState<PollutionSelectValue>(getSelectValue(value));
-  const [pollutionType, setPollutionType] = useState<PresencePollution | "">(
-    isPollutionType(value) ? value : "",
-  );
+  // Calculer la valeur du select directement depuis les props (pas de state interne)
+  // Si value existe, on l'utilise. Sinon si siteReferencePollue, on affiche "oui"
+  const selectValue: PollutionSelectValue = value
+    ? getSelectValue(value)
+    : siteReferencePollue
+      ? "oui"
+      : "";
 
-  // Pre-selectionner "Oui" si le site est reference comme pollue et aucune valeur n'est deja selectionnee
-  useEffect(() => {
-    if (siteReferencePollue && !value) {
-      setSelectValue("oui");
-    }
-  }, [siteReferencePollue, value]);
-
-  // Synchroniser les valeurs internes avec la valeur externe
-  useEffect(() => {
-    setSelectValue(getSelectValue(value));
-    setPollutionType(isPollutionType(value) ? value : "");
-  }, [value]);
+  const pollutionType = isPollutionType(value) ? value : "";
 
   const handleSelectChange = (newSelectValue: PollutionSelectValue) => {
-    setSelectValue(newSelectValue);
-
     if (newSelectValue === "non") {
-      setPollutionType("");
       onChange(PresencePollution.NON);
     } else if (newSelectValue === "ne-sait-pas") {
-      setPollutionType("");
       onChange(PresencePollution.NE_SAIT_PAS);
     } else if (newSelectValue === "oui") {
       // Si "Oui" est selectionne, on attend la selection du type de pollution
       // On ne change pas encore la valeur finale
-      setPollutionType("");
       onChange("");
     } else {
-      setPollutionType("");
       onChange("");
     }
   };
 
   const handlePollutionTypeChange = (type: PresencePollution) => {
-    setPollutionType(type);
     onChange(type);
   };
 
@@ -130,12 +120,6 @@ export const PollutionField: React.FC<PollutionFieldProps> = ({
                   {tooltip}
                 </span>
               </>
-            )}
-            {siteReferencePollue && (
-              <span className="fr-hint-text">
-                Ce site est reference dans les bases de donnees nationales comme potentiellement
-                pollue (SIS/ICPE)
-              </span>
             )}
           </label>
           <select
@@ -171,8 +155,15 @@ export const PollutionField: React.FC<PollutionFieldProps> = ({
               <strong>Type de pollution *</strong>
             </legend>
             {POLLUTION_TYPES.map((type) => (
-              <div key={type.value} className="fr-fieldset__element">
-                <div className="fr-radio-group">
+              <div
+                key={type.value}
+                className="fr-fieldset__element"
+                style={{ position: "relative" }}
+              >
+                <div
+                  className="fr-radio-group"
+                  style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
+                >
                   <input
                     type="radio"
                     id={`pollution-type-${type.value}`}
@@ -184,7 +175,26 @@ export const PollutionField: React.FC<PollutionFieldProps> = ({
                   <label className="fr-label" htmlFor={`pollution-type-${type.value}`}>
                     {type.label}
                   </label>
+                  {"tooltip" in type && type.tooltip && (
+                    <button
+                      aria-describedby={`pollution-type-tooltip-${type.value}`}
+                      type="button"
+                      className="fr-btn--tooltip fr-btn"
+                      style={{ flexShrink: 0 }}
+                    >
+                      infobulle
+                    </button>
+                  )}
                 </div>
+                {"tooltip" in type && type.tooltip && (
+                  <span
+                    className="fr-tooltip fr-placement"
+                    id={`pollution-type-tooltip-${type.value}`}
+                    role="tooltip"
+                  >
+                    {type.tooltip}
+                  </span>
+                )}
               </div>
             ))}
           </fieldset>
