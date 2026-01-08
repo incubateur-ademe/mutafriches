@@ -29,7 +29,7 @@ interface UseLeafletMapProps {
  */
 export function useLeafletMap({
   containerId,
-  initialCenter = [48.8589, 2.3469],
+  initialCenter = [48.8589, 2.3469], // Centre par défaut (Paris)
   initialZoom = 17,
   onParcelleSelected,
   onAnalyze,

@@ -10,7 +10,7 @@ interface ParcelleSelectionMapProps {
   initialZoom?: number;
 }
 
-const DEFAULT_CENTER: [number, number] = [47.4456, -0.4721];
+const DEFAULT_CENTER: [number, number] = [47.4456, -0.4721]; // Centre par défaut : Trélazé
 
 export function ParcelleSelectionMap({
   onParcelleSelected,

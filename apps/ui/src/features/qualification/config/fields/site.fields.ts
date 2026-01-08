@@ -8,23 +8,24 @@ import {
 } from "@mutafriches/shared-types";
 import { FormFieldConfig, SelectOption } from "../types";
 
+const SELECT_OPTION_PLACEHOLDER: SelectOption = { value: "", label: "Sélectionner une option" };
+
 /**
  * Configuration des champs de la section "Caracteristiques du site"
- * Ces champs doivent etre remplis manuellement par l'utilisateur
  */
 export const SITE_FIELDS: Record<string, FormFieldConfig<string>> = {
   typeProprietaire: {
     id: "type-proprietaire",
     name: "typeProprietaire",
-    label: "Type de proprietaire",
+    label: "Type de propriétaire",
     required: true,
     section: "site",
     options: [
-      { value: "", label: "Selectionner une option" },
+      SELECT_OPTION_PLACEHOLDER,
       { value: TypeProprietaire.PUBLIC, label: "Public" },
-      { value: TypeProprietaire.PRIVE, label: "Prive" },
-      { value: TypeProprietaire.MIXTE, label: "Mixte public et prive" },
-      { value: TypeProprietaire.COPRO_INDIVISION, label: "Copropriete / Indivision" },
+      { value: TypeProprietaire.PRIVE, label: "Privé" },
+      { value: TypeProprietaire.MIXTE, label: "Mixte public et privé" },
+      { value: TypeProprietaire.COPRO_INDIVISION, label: "Copropriété / Indivision" },
       { value: TypeProprietaire.NE_SAIT_PAS, label: "Ne sait pas" },
     ] as SelectOption<TypeProprietaire>[],
   },
@@ -32,11 +33,11 @@ export const SITE_FIELDS: Record<string, FormFieldConfig<string>> = {
   raccordementEau: {
     id: "reseau-eaux",
     name: "raccordementEau",
-    label: "Site connecte aux reseaux d'eaux",
+    label: "Site connecté aux réseaux d'eau",
     required: true,
     section: "site",
     options: [
-      { value: "", label: "Selectionner une option" },
+      SELECT_OPTION_PLACEHOLDER,
       { value: RaccordementEau.OUI, label: "Oui" },
       { value: RaccordementEau.NON, label: "Non" },
       { value: RaccordementEau.NE_SAIT_PAS, label: "Ne sait pas" },
@@ -50,16 +51,16 @@ export const SITE_FIELDS: Record<string, FormFieldConfig<string>> = {
     required: true,
     section: "site",
     options: [
-      { value: "", label: "Selectionner une option" },
+      SELECT_OPTION_PLACEHOLDER,
       {
         value: EtatBatiInfrastructure.DEGRADATION_INEXISTANTE,
-        label: "Degradation inexistante ou faible",
+        label: "Dégradation inexistante ou faible",
       },
-      { value: EtatBatiInfrastructure.DEGRADATION_MOYENNE, label: "Degradation moyenne" },
-      { value: EtatBatiInfrastructure.DEGRADATION_HETEROGENE, label: "Degradation heterogene" },
+      { value: EtatBatiInfrastructure.DEGRADATION_MOYENNE, label: "Dégradation moyenne" },
+      { value: EtatBatiInfrastructure.DEGRADATION_HETEROGENE, label: "Dégradation hétérogène" },
       {
         value: EtatBatiInfrastructure.DEGRADATION_TRES_IMPORTANTE,
-        label: "Degradation tres importante",
+        label: "Dégradation très importante",
       },
       { value: EtatBatiInfrastructure.NE_SAIT_PAS, label: "Ne sait pas" },
     ] as SelectOption<EtatBatiInfrastructure>[],
@@ -68,14 +69,14 @@ export const SITE_FIELDS: Record<string, FormFieldConfig<string>> = {
   presencePollution: {
     id: "presence-pollution",
     name: "presencePollution",
-    label: "Presence de pollution",
+    label: "Présence de pollution",
     required: true,
     section: "site",
     options: [
-      { value: "", label: "Selectionner une option" },
-      { value: PresencePollution.OUI_COMPOSES_VOLATILS, label: "Oui - composes volatils" },
-      { value: PresencePollution.OUI_AUTRES_COMPOSES, label: "Oui - autres composes" },
-      { value: PresencePollution.DEJA_GEREE, label: "Deja geree" },
+      SELECT_OPTION_PLACEHOLDER,
+      { value: PresencePollution.OUI_COMPOSES_VOLATILS, label: "Oui - composés volatils" },
+      { value: PresencePollution.OUI_AUTRES_COMPOSES, label: "Oui - autres composés" },
+      { value: PresencePollution.DEJA_GEREE, label: "Déjà gérée" },
       { value: PresencePollution.NON, label: "Non" },
       { value: PresencePollution.NE_SAIT_PAS, label: "Ne sait pas" },
     ] as SelectOption<PresencePollution>[],
@@ -84,14 +85,14 @@ export const SITE_FIELDS: Record<string, FormFieldConfig<string>> = {
   valeurArchitecturaleHistorique: {
     id: "valeur-architecturale",
     name: "valeurArchitecturaleHistorique",
-    label: "Interet architectural et historique des constructions",
+    label: "Intérêt architectural et historique des constructions",
     required: true,
     section: "site",
     options: [
-      { value: "", label: "Selectionner une option" },
-      { value: ValeurArchitecturale.SANS_INTERET, label: "Sans interet" },
+      SELECT_OPTION_PLACEHOLDER,
+      { value: ValeurArchitecturale.SANS_INTERET, label: "Sans intérêt" },
       { value: ValeurArchitecturale.ORDINAIRE, label: "Ordinaire" },
-      { value: ValeurArchitecturale.INTERET_REMARQUABLE, label: "Interet remarquable" },
+      { value: ValeurArchitecturale.INTERET_REMARQUABLE, label: "Intérêt remarquable" },
       { value: ValeurArchitecturale.NE_SAIT_PAS, label: "Ne sait pas" },
     ] as SelectOption<ValeurArchitecturale>[],
   },
@@ -99,11 +100,11 @@ export const SITE_FIELDS: Record<string, FormFieldConfig<string>> = {
   trameVerteEtBleue: {
     id: "continuite-ecologique",
     name: "trameVerteEtBleue",
-    label: "Localisation du site par rapport aux continuites ecologiques (trame verte et bleue)",
+    label: "Localisation du site par rapport aux continuités écologiques (trame verte et bleue)",
     required: true,
     section: "site",
     options: [
-      { value: "", label: "Selectionner une option" },
+      SELECT_OPTION_PLACEHOLDER,
       { value: TrameVerteEtBleue.HORS_TRAME, label: "Hors trame" },
       { value: TrameVerteEtBleue.RESERVOIR_BIODIVERSITE, label: "Reservoir de biodiversite" },
       { value: TrameVerteEtBleue.CORRIDOR_A_PRESERVER, label: "Corridor a preserver" },

@@ -4,15 +4,33 @@ import { ROUTES } from "../../../shared/config/routes.config";
 import { Stepper } from "../../../shared/components/layout";
 import { Layout } from "../../../shared/components/layout/Layout";
 import { useFormContext } from "../../../shared/form/useFormContext";
-import { SiteEnrichedData } from "../components/site/SiteEnrichedData";
-import { SiteManualForm } from "../components/site/SiteManualForm";
 import { StepNavigation } from "../components/common/StepNavigation";
-import { SiteFormValues } from "../config/types";
+import { SiteFormValues, DEFAULT_SITE_VALUES, ValidationErrors } from "../config/types";
+import { SITE_FIELDS } from "../config/fields/site.fields";
+import { validateSiteForm } from "../config/validators";
+import { EnrichedInfoField, FormSelectField } from "../components";
 
 export const QualificationSitePage: React.FC = () => {
   const navigate = useNavigate();
   const { state, setManualData, setCurrentStep, canAccessStep } = useFormContext();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [values, setValues] = useState<SiteFormValues>({
+    ...DEFAULT_SITE_VALUES,
+    typeProprietaire:
+      (state.manualData?.typeProprietaire as SiteFormValues["typeProprietaire"]) || "",
+    raccordementEau: (state.manualData?.raccordementEau as SiteFormValues["raccordementEau"]) || "",
+    etatBatiInfrastructure:
+      (state.manualData?.etatBatiInfrastructure as SiteFormValues["etatBatiInfrastructure"]) || "",
+    presencePollution:
+      (state.manualData?.presencePollution as SiteFormValues["presencePollution"]) || "",
+    valeurArchitecturaleHistorique:
+      (state.manualData
+        ?.valeurArchitecturaleHistorique as SiteFormValues["valeurArchitecturaleHistorique"]) || "",
+    trameVerteEtBleue:
+      (state.manualData?.trameVerteEtBleue as SiteFormValues["trameVerteEtBleue"]) || "",
+  });
+  const [errors, setErrors] = useState<ValidationErrors<SiteFormValues>>({});
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
 
   // Verifier l'acces a cette etape
   useEffect(() => {
@@ -23,86 +41,233 @@ export const QualificationSitePage: React.FC = () => {
     setCurrentStep(1);
   }, [canAccessStep, navigate, setCurrentStep]);
 
-  const handleSubmit = (values: SiteFormValues) => {
+  const handleChange = (fieldName: keyof SiteFormValues, value: string) => {
+    setValues((prev) => ({ ...prev, [fieldName]: value }));
+    setTouched((prev) => ({ ...prev, [fieldName]: true }));
+
+    // Valider le champ modifie
+    if (touched[fieldName]) {
+      const newErrors = validateSiteForm({ ...values, [fieldName]: value });
+      setErrors((prev) => ({
+        ...prev,
+        [fieldName]: newErrors[fieldName],
+      }));
+    }
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
     setIsSubmitting(true);
 
-    // Fusionner avec les donnees manuelles existantes
-    const updatedManualData = {
-      ...state.manualData,
-      ...values,
-    };
+    // Marquer tous les champs comme touches
+    const allTouched: Record<string, boolean> = {};
+    Object.keys(SITE_FIELDS).forEach((key) => {
+      allTouched[key] = true;
+    });
+    setTouched(allTouched);
 
-    // Sauvegarder les donnees dans le contexte
-    setManualData(updatedManualData);
+    // Valider tous les champs
+    const validationErrors = validateSiteForm(values);
+    setErrors(validationErrors);
 
-    // Passer a l'etape suivante
-    navigate(ROUTES.QUALIFICATION_ENVIRONNEMENT);
+    if (Object.keys(validationErrors).length === 0) {
+      const updatedManualData = {
+        ...state.manualData,
+        ...values,
+      };
+      setManualData(updatedManualData);
+      navigate(ROUTES.QUALIFICATION_ENVIRONNEMENT);
+    } else {
+      setIsSubmitting(false);
+    }
   };
 
   const handlePrevious = () => {
     navigate(ROUTES.HOME);
   };
 
-  // Si pas d'acces, ne rien afficher (la redirection se fait dans useEffect)
   if (!canAccessStep(1)) {
     return null;
   }
 
-  // Extraire les valeurs initiales du formulaire site depuis manualData
-  const initialSiteValues: Partial<SiteFormValues> = {
-    typeProprietaire:
-      (state.manualData?.typeProprietaire as SiteFormValues["typeProprietaire"]) || "",
-    raccordementEau:
-      (state.manualData?.raccordementEau as SiteFormValues["raccordementEau"]) || "",
-    etatBatiInfrastructure:
-      (state.manualData?.etatBatiInfrastructure as SiteFormValues["etatBatiInfrastructure"]) || "",
-    presencePollution:
-      (state.manualData?.presencePollution as SiteFormValues["presencePollution"]) || "",
-    valeurArchitecturaleHistorique:
-      (state.manualData
-        ?.valeurArchitecturaleHistorique as SiteFormValues["valeurArchitecturaleHistorique"]) || "",
-    trameVerteEtBleue:
-      (state.manualData?.trameVerteEtBleue as SiteFormValues["trameVerteEtBleue"]) || "",
-  };
+  const uiData = state.uiData;
 
   return (
     <Layout>
       <Stepper
         currentStep={1}
         totalSteps={3}
-        currentStepTitle="Caracteristiques du site"
-        nextStepTitle="Environnement du site"
+        currentStepTitle="Qualifier le site et son bati"
+        nextStepTitle="Qualifier l'environnement du site"
       />
 
-      <div className="fr-mb-4w">
-        <h1>Caracteristiques du site</h1>
-        <p className="fr-text--lead">
-          Voici les informations que nous avons collectees sur votre parcelle. Verifiez-les et
-          completez les informations manquantes.
-        </p>
+      <form id="site-form" onSubmit={handleSubmit}>
+        {/* Zone 1 */}
+        <div className="fr-grid-row fr-grid-row--gutters">
+          <EnrichedInfoField
+            id="commune"
+            label="Commune"
+            value={uiData?.commune || "-"}
+            tooltip={
+              <>
+                Recupere depuis l'API IGN Cadastre :<br />
+                <a
+                  href="https://apicarto.ign.fr/api/doc/cadastre"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="fr-link fr-text--xs"
+                >
+                  apicarto.ign.fr/api/doc/cadastre
+                </a>
+              </>
+            }
+          />
 
-        {/* Donnees enrichies (lecture seule) */}
-        {state.uiData && <SiteEnrichedData data={state.uiData} />}
+          <EnrichedInfoField
+            id="identifiant-parcelle"
+            label="Identifiant parcelle"
+            value={uiData?.identifiantParcelle || "-"}
+            tooltip={
+              <>
+                Recupere depuis l'API IGN Cadastre :<br />
+                <a
+                  href="https://apicarto.ign.fr/api/doc/cadastre"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="fr-link fr-text--xs"
+                >
+                  apicarto.ign.fr/api/doc/cadastre
+                </a>
+              </>
+            }
+          />
 
-        <hr className="fr-mt-4w fr-mb-4w" />
+          <EnrichedInfoField
+            id="surface-site"
+            label="Surface du site"
+            value={uiData?.surfaceParcelle || "-"}
+            tooltip={
+              <>
+                Recupere depuis l'API IGN Cadastre :<br />
+                <a
+                  href="https://apicarto.ign.fr/api/doc/cadastre"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="fr-link fr-text--xs"
+                >
+                  apicarto.ign.fr/api/doc/cadastre
+                </a>
+              </>
+            }
+          />
 
-        {/* Formulaire de saisie manuelle */}
-        <SiteManualForm
-          initialValues={initialSiteValues}
-          onSubmit={handleSubmit}
-          formId="site-form"
-        />
+          <EnrichedInfoField
+            id="surface-batie"
+            label="Surface bâtie"
+            value={uiData?.surfaceBatie || "-"}
+            tooltip={
+              <>
+                Recupere depuis l'API BDNB :<br />
+                <a
+                  href="https://api-portail.bdnb.io"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="fr-link fr-text--xs"
+                >
+                  api-portail.bdnb.io
+                </a>
+              </>
+            }
+          />
 
-        {/* Boutons de navigation */}
-        <StepNavigation
-          onPrevious={handlePrevious}
-          previousLabel="Retour a l'accueil"
-          nextLabel="Continuer"
-          nextType="submit"
-          formId="site-form"
-          isLoading={isSubmitting}
-        />
-      </div>
+          <FormSelectField
+            field={SITE_FIELDS.typeProprietaire}
+            value={values.typeProprietaire}
+            onChange={(v) => handleChange("typeProprietaire", v)}
+            error={touched.typeProprietaire ? errors.typeProprietaire : undefined}
+            tooltip="Renseignez à quel type de propriétaire le site appartient. Cette donnée permet d'apprécier la dureté foncière."
+          />
+        </div>
+
+        <hr className="fr-my-4w" />
+
+        {/* Zone 2 */}
+        <div className="fr-grid-row fr-grid-row--gutters">
+          <EnrichedInfoField
+            id="distance-raccordement"
+            label="Distance au raccordement électrique"
+            value={uiData?.distanceRaccordement || "-"}
+            tooltip={
+              <>
+                Recupere depuis l'API Enedis :<br />
+                <a
+                  href="https://data.enedis.fr/api/explore/v2.1/catalog/datasets"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="fr-link fr-text--xs"
+                >
+                  data.enedis.fr/api/explore/v2.1/catalog/datasets
+                </a>
+              </>
+            }
+          />
+
+          <FormSelectField
+            field={SITE_FIELDS.raccordementEau}
+            value={values.raccordementEau}
+            onChange={(v) => handleChange("raccordementEau", v)}
+            error={touched.raccordementEau ? errors.raccordementEau : undefined}
+            tooltip="Indiquez si le site est desservi par les réseaux d'eau potable et usées."
+          />
+        </div>
+
+        <hr className="fr-my-4w" />
+
+        {/* Zone 3 */}
+        <div className="fr-grid-row fr-grid-row--gutters">
+          <FormSelectField
+            field={SITE_FIELDS.valeurArchitecturaleHistorique}
+            value={values.valeurArchitecturaleHistorique}
+            onChange={(v) => handleChange("valeurArchitecturaleHistorique", v)}
+            error={
+              touched.valeurArchitecturaleHistorique
+                ? errors.valeurArchitecturaleHistorique
+                : undefined
+            }
+            tooltip="Donnez nous votre avis sur l'intérêt architectural  et/ou patrimonial du bâti présent sur le site.  Ce critère est subjectif et relatif à votre appréciation."
+          />
+
+          <FormSelectField
+            field={SITE_FIELDS.etatBatiInfrastructure}
+            value={values.etatBatiInfrastructure}
+            onChange={(v) => handleChange("etatBatiInfrastructure", v)}
+            error={touched.etatBatiInfrastructure ? errors.etatBatiInfrastructure : undefined}
+            tooltip="Renseignez l'état des constructions présentes sur le site. Le menu déroulant vous propose une graduation de l'état de dégradation."
+          />
+        </div>
+
+        <hr className="fr-my-4w" />
+
+        {/* Zone 4 */}
+        <div className="fr-grid-row fr-grid-row--gutters fr-mb-8w">
+          <FormSelectField
+            field={SITE_FIELDS.presencePollution}
+            value={values.presencePollution}
+            onChange={(v) => handleChange("presencePollution", v)}
+            error={touched.presencePollution ? errors.presencePollution : undefined}
+            tooltip="Entrez l’information dont vous disposez sur la présence de pollution sur votre site (sol et bâti). Si la case 'Oui' est présélectionnée, c'est que nous avons retrouvé votre site dans une base de données nationales des sites pollués."
+          />
+        </div>
+      </form>
+
+      <StepNavigation
+        onPrevious={handlePrevious}
+        previousLabel="Precedent"
+        nextLabel="Suivant"
+        nextType="submit"
+        formId="site-form"
+        isLoading={isSubmitting}
+      />
     </Layout>
   );
 };
