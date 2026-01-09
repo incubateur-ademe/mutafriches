@@ -80,9 +80,7 @@ export const EnvironnementManualForm: React.FC<EnvironnementManualFormProps> = (
               key={field.id}
               field={field}
               value={values[field.name as keyof EnvironnementFormValues] || ""}
-              onChange={(value) =>
-                handleChange(field.name as keyof EnvironnementFormValues, value)
-              }
+              onChange={(value) => handleChange(field.name as keyof EnvironnementFormValues, value)}
               error={
                 touched[field.name]
                   ? errors[field.name as keyof EnvironnementFormValues]

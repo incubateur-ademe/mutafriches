@@ -18,23 +18,34 @@ import {
 } from "@mutafriches/shared-types";
 import { EvaluationController } from "./evaluation.controller";
 import { OrchestrateurService } from "./services/orchestrateur.service";
-import { createTestingModuleWithService } from "../shared/__test-helpers__/test-module.factory";
+import { OrigineDetectionService } from "../shared/services/origine-detection.service";
+import { createTestingModuleWithTwoServices } from "../shared/__test-helpers__/test-module.factory";
 import { createMockOrchestrateurService } from "./__test-helpers__/evaluation.mocks";
+import { createMockOrigineDetectionService } from "../shared/__test-helpers__/origine-detection.mocks";
 import { EvaluationBuilder } from "./__test-helpers__/evaluation.builder";
 
 describe("EvaluationController", () => {
   let controller: EvaluationController;
   let orchestrateurService: ReturnType<typeof createMockOrchestrateurService>;
+  let origineDetectionService: ReturnType<typeof createMockOrigineDetectionService>;
 
   beforeEach(async () => {
-    const setup = await createTestingModuleWithService(
+    const mockOrchestrateurService = createMockOrchestrateurService();
+    const mockOrigineDetectionService = createMockOrigineDetectionService();
+
+    const setup = await createTestingModuleWithTwoServices(
       EvaluationController,
       OrchestrateurService,
-      createMockOrchestrateurService(),
+      mockOrchestrateurService,
+      OrigineDetectionService,
+      mockOrigineDetectionService,
     );
 
     controller = setup.controller;
-    orchestrateurService = setup.service;
+    orchestrateurService = setup.service1 as ReturnType<typeof createMockOrchestrateurService>;
+    origineDetectionService = setup.service2 as ReturnType<
+      typeof createMockOrigineDetectionService
+    >;
   });
 
   describe("POST /evaluation/calculer", () => {
@@ -91,7 +102,7 @@ describe("EvaluationController", () => {
         const httpError = error as HttpException;
         expect(httpError.getStatus()).toBe(HttpStatus.BAD_REQUEST);
         const response = httpError.getResponse() as { message: string; statusCode: number };
-        expect(response.message).toBe("Données requises manquantes");
+        expect(response.message).toBe("Donnees requises manquantes");
       }
     });
 
@@ -131,14 +142,23 @@ describe("EvaluationController", () => {
       );
     });
 
-    it("devrait detecter iframe=true depuis query param", async () => {
+    it("devrait passer iframe=true au service de detection", async () => {
       // Arrange
       orchestrateurService.calculerMutabilite.mockResolvedValue(mockOutput);
+      origineDetectionService.detecterOrigine.mockReturnValue({
+        source: SourceUtilisation.IFRAME_INTEGREE,
+        integrateur: "cartofriches",
+      });
 
       // Act
       await controller.calculerMutabilite(mockInput, false, false, true, "cartofriches");
 
       // Assert
+      expect(origineDetectionService.detecterOrigine).toHaveBeenCalledWith(
+        undefined,
+        true,
+        "cartofriches",
+      );
       expect(orchestrateurService.calculerMutabilite).toHaveBeenCalledWith(mockInput, {
         modeDetaille: false,
         sansEnrichissement: false,
@@ -146,14 +166,23 @@ describe("EvaluationController", () => {
       });
     });
 
-    it("devrait utiliser 'unknown' si iframe=true sans integrateur", async () => {
+    it("devrait passer iframe=true sans integrateur au service", async () => {
       // Arrange
       orchestrateurService.calculerMutabilite.mockResolvedValue(mockOutput);
+      origineDetectionService.detecterOrigine.mockReturnValue({
+        source: SourceUtilisation.IFRAME_INTEGREE,
+        integrateur: "unknown",
+      });
 
       // Act
       await controller.calculerMutabilite(mockInput, false, false, true);
 
       // Assert
+      expect(origineDetectionService.detecterOrigine).toHaveBeenCalledWith(
+        undefined,
+        true,
+        undefined,
+      );
       expect(orchestrateurService.calculerMutabilite).toHaveBeenCalledWith(mockInput, {
         modeDetaille: false,
         sansEnrichissement: false,
@@ -161,19 +190,22 @@ describe("EvaluationController", () => {
       });
     });
 
-    it("devrait detecter iframe depuis string 'true'", async () => {
+    it("devrait gerer iframe comme string 'true'", async () => {
       // Arrange
       orchestrateurService.calculerMutabilite.mockResolvedValue(mockOutput);
+      origineDetectionService.detecterOrigine.mockReturnValue({
+        source: SourceUtilisation.IFRAME_INTEGREE,
+        integrateur: "partner",
+      });
 
       // Act
       await controller.calculerMutabilite(mockInput, false, false, "true" as any, "partner");
 
       // Assert
-      expect(orchestrateurService.calculerMutabilite).toHaveBeenCalledWith(
-        mockInput,
-        expect.objectContaining({
-          origine: { source: SourceUtilisation.IFRAME_INTEGREE, integrateur: "partner" },
-        }),
+      expect(origineDetectionService.detecterOrigine).toHaveBeenCalledWith(
+        undefined,
+        "true",
+        "partner",
       );
     });
 
@@ -205,7 +237,7 @@ describe("EvaluationController", () => {
     });
   });
 
-  describe("POST /evaluation/calculer - Detection d'origine", () => {
+  describe("POST /evaluation/calculer - Detection d'origine via service", () => {
     const mockInput = {
       donneesEnrichies: {
         identifiantParcelle: "29232000AB0123",
@@ -224,82 +256,31 @@ describe("EvaluationController", () => {
       fiabilite: 8.5,
     };
 
-    it("devrait detecter API_DIRECTE sans requete", async () => {
+    it("devrait appeler le service de detection d'origine avec les bons parametres", async () => {
       // Arrange
       orchestrateurService.calculerMutabilite.mockResolvedValue(mockOutput);
+      origineDetectionService.detecterOrigine.mockReturnValue({
+        source: SourceUtilisation.API_DIRECTE,
+      });
+      const req = { headers: {} } as any;
 
       // Act
-      await controller.calculerMutabilite(mockInput, false, false, false);
+      await controller.calculerMutabilite(mockInput, false, false, true, "partner", req);
 
       // Assert
-      expect(orchestrateurService.calculerMutabilite).toHaveBeenCalledWith(
-        mockInput,
-        expect.objectContaining({
-          origine: { source: SourceUtilisation.API_DIRECTE },
-        }),
-      );
+      expect(origineDetectionService.detecterOrigine).toHaveBeenCalledWith(req, true, "partner");
     });
 
-    it("devrait detecter API_DIRECTE avec referer contenant /api", async () => {
+    it("devrait passer l'origine detectee au service orchestrateur", async () => {
       // Arrange
       orchestrateurService.calculerMutabilite.mockResolvedValue(mockOutput);
-      const req = {
-        headers: { referer: "https://mutafriches.beta.gouv.fr/api/docs" },
-      } as any;
+      origineDetectionService.detecterOrigine.mockReturnValue({
+        source: SourceUtilisation.IFRAME_INTEGREE,
+        integrateur: "cartofriches.fr",
+      });
 
       // Act
-      await controller.calculerMutabilite(mockInput, false, false, false, undefined, req);
-
-      // Assert
-      expect(orchestrateurService.calculerMutabilite).toHaveBeenCalledWith(
-        mockInput,
-        expect.objectContaining({
-          origine: { source: SourceUtilisation.API_DIRECTE },
-        }),
-      );
-    });
-
-    it("devrait detecter SITE_STANDALONE depuis localhost", async () => {
-      // Arrange
-      orchestrateurService.calculerMutabilite.mockResolvedValue(mockOutput);
-      const req = { headers: { referer: "http://localhost:3000/iframe" } } as any;
-
-      // Act
-      await controller.calculerMutabilite(mockInput, false, false, false, undefined, req);
-
-      // Assert
-      expect(orchestrateurService.calculerMutabilite).toHaveBeenCalledWith(
-        mockInput,
-        expect.objectContaining({
-          origine: { source: SourceUtilisation.SITE_STANDALONE },
-        }),
-      );
-    });
-
-    it("devrait detecter SITE_STANDALONE depuis mutafriches.beta.gouv.fr", async () => {
-      // Arrange
-      orchestrateurService.calculerMutabilite.mockResolvedValue(mockOutput);
-      const req = { headers: { referer: "https://mutafriches.beta.gouv.fr/iframe" } } as any;
-
-      // Act
-      await controller.calculerMutabilite(mockInput, false, false, false, undefined, req);
-
-      // Assert
-      expect(orchestrateurService.calculerMutabilite).toHaveBeenCalledWith(
-        mockInput,
-        expect.objectContaining({
-          origine: { source: SourceUtilisation.SITE_STANDALONE },
-        }),
-      );
-    });
-
-    it("devrait detecter IFRAME_INTEGREE depuis domaine externe", async () => {
-      // Arrange
-      orchestrateurService.calculerMutabilite.mockResolvedValue(mockOutput);
-      const req = { headers: { referer: "https://cartofriches.fr/map" } } as any;
-
-      // Act
-      await controller.calculerMutabilite(mockInput, false, false, false, undefined, req);
+      await controller.calculerMutabilite(mockInput);
 
       // Assert
       expect(orchestrateurService.calculerMutabilite).toHaveBeenCalledWith(mockInput, {
@@ -309,106 +290,21 @@ describe("EvaluationController", () => {
       });
     });
 
-    it("devrait extraire integrateur depuis referer", async () => {
+    it("devrait utiliser API_DIRECTE par defaut (via mock)", async () => {
       // Arrange
       orchestrateurService.calculerMutabilite.mockResolvedValue(mockOutput);
-      const req = { headers: { referer: "https://urbanvitaliz.fr/projects/123" } } as any;
+      // Le mock retourne API_DIRECTE par defaut
 
       // Act
-      await controller.calculerMutabilite(mockInput, false, false, false, undefined, req);
-
-      // Assert
-      expect(orchestrateurService.calculerMutabilite).toHaveBeenCalledWith(mockInput, {
-        modeDetaille: false,
-        sansEnrichissement: false,
-        origine: { source: SourceUtilisation.IFRAME_INTEGREE, integrateur: "urbanvitaliz.fr" },
-      });
-    });
-
-    it("devrait gerer origin au lieu de referer pour SITE_STANDALONE", async () => {
-      // Arrange
-      orchestrateurService.calculerMutabilite.mockResolvedValue(mockOutput);
-      const req = { headers: { origin: "http://localhost:3000" } } as any;
-
-      // Act
-      await controller.calculerMutabilite(mockInput, false, false, false, undefined, req);
+      await controller.calculerMutabilite(mockInput);
 
       // Assert
       expect(orchestrateurService.calculerMutabilite).toHaveBeenCalledWith(
         mockInput,
         expect.objectContaining({
-          origine: { source: SourceUtilisation.SITE_STANDALONE },
+          origine: { source: SourceUtilisation.API_DIRECTE },
         }),
       );
-    });
-
-    it("devrait gerer origin pour IFRAME_INTEGREE", async () => {
-      // Arrange
-      orchestrateurService.calculerMutabilite.mockResolvedValue(mockOutput);
-      const req = { headers: { origin: "https://external-site.com" } } as any;
-
-      // Act
-      await controller.calculerMutabilite(mockInput, false, false, false, undefined, req);
-
-      // Assert
-      expect(orchestrateurService.calculerMutabilite).toHaveBeenCalledWith(mockInput, {
-        modeDetaille: false,
-        sansEnrichissement: false,
-        origine: { source: SourceUtilisation.IFRAME_INTEGREE, integrateur: "external-site.com" },
-      });
-    });
-
-    it("devrait detecter 127.0.0.1 comme SITE_STANDALONE", async () => {
-      // Arrange
-      orchestrateurService.calculerMutabilite.mockResolvedValue(mockOutput);
-      const req = { headers: { referer: "http://127.0.0.1:3000" } } as any;
-
-      // Act
-      await controller.calculerMutabilite(mockInput, false, false, false, undefined, req);
-
-      // Assert
-      expect(orchestrateurService.calculerMutabilite).toHaveBeenCalledWith(
-        mockInput,
-        expect.objectContaining({
-          origine: { source: SourceUtilisation.SITE_STANDALONE },
-        }),
-      );
-    });
-
-    it("devrait gerer referer invalide", async () => {
-      // Arrange
-      orchestrateurService.calculerMutabilite.mockResolvedValue(mockOutput);
-      const req = { headers: { referer: "not-a-valid-url" } } as any;
-
-      // Act
-      await controller.calculerMutabilite(mockInput, false, false, false, undefined, req);
-
-      // Assert
-      expect(orchestrateurService.calculerMutabilite).toHaveBeenCalledWith(
-        mockInput,
-        expect.objectContaining({
-          origine: {
-            source: SourceUtilisation.IFRAME_INTEGREE,
-            integrateur: undefined,
-          },
-        }),
-      );
-    });
-
-    it("devrait utiliser referrer au lieu de referer", async () => {
-      // Arrange
-      orchestrateurService.calculerMutabilite.mockResolvedValue(mockOutput);
-      const req = { headers: { referrer: "https://example.com" } } as any;
-
-      // Act
-      await controller.calculerMutabilite(mockInput, false, false, false, undefined, req);
-
-      // Assert
-      expect(orchestrateurService.calculerMutabilite).toHaveBeenCalledWith(mockInput, {
-        modeDetaille: false,
-        sansEnrichissement: false,
-        origine: { source: SourceUtilisation.IFRAME_INTEGREE, integrateur: "example.com" },
-      });
     });
   });
 

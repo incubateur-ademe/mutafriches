@@ -98,18 +98,18 @@ describe("EvenementService - Sécurité", () => {
       expect(savedEvent.identifiantCadastral).toBeUndefined();
     });
 
-    it("devrait nettoyer sourceUtilisation", async () => {
+    it("devrait nettoyer integrateur", async () => {
       const input = {
         typeEvenement: TypeEvenement.VISITE,
-        sourceUtilisation: "urbanvitaliz<script>",
       };
 
       await service.enregistrerEvenement(input, {
-        sourceUtilisation: "urbanvitaliz<script>",
+        integrateur: "urbanvitaliz<script>",
+        modeUtilisation: ModeUtilisation.IFRAME,
       });
 
       const savedEvent = vi.mocked(mockRepository.enregistrerEvenement).mock.calls[0][0];
-      expect(savedEvent.sourceUtilisation).not.toContain("<script>");
+      expect(savedEvent.integrateur).not.toContain("<script>");
     });
 
     it("devrait nettoyer ref", async () => {
@@ -126,44 +126,40 @@ describe("EvenementService - Sécurité", () => {
     });
   });
 
-  describe("Tracking des intégrateurs", () => {
-    it("devrait enregistrer sourceUtilisation et ref", async () => {
+  describe("Tracking des integrateurs", () => {
+    it("devrait enregistrer ref et modeUtilisation", async () => {
       const input = {
         typeEvenement: TypeEvenement.VISITE,
       };
 
       await service.enregistrerEvenement(input, {
-        sourceUtilisation: "urbanvitaliz",
         ref: "page-accueil",
         modeUtilisation: ModeUtilisation.STANDALONE,
       });
 
       const savedEvent = vi.mocked(mockRepository.enregistrerEvenement).mock.calls[0][0];
-      expect(savedEvent.sourceUtilisation).toBe("urbanvitaliz");
       expect(savedEvent.ref).toBe("page-accueil");
       expect(savedEvent.modeUtilisation).toBe(ModeUtilisation.STANDALONE);
     });
 
-    it("devrait enregistrer le mode iframe", async () => {
+    it("devrait enregistrer le mode iframe avec integrateur", async () => {
       const input = {
         typeEvenement: TypeEvenement.VISITE,
       };
 
       await service.enregistrerEvenement(input, {
-        sourceUtilisation: "benefriches",
         ref: "simulateur",
         modeUtilisation: ModeUtilisation.IFRAME,
         integrateur: "benefriches",
       });
 
       const savedEvent = vi.mocked(mockRepository.enregistrerEvenement).mock.calls[0][0];
-      expect(savedEvent.sourceUtilisation).toBe("benefriches");
       expect(savedEvent.ref).toBe("simulateur");
       expect(savedEvent.modeUtilisation).toBe(ModeUtilisation.IFRAME);
       expect(savedEvent.integrateur).toBe("benefriches");
     });
 
-    it("devrait accepter sourceUtilisation et ref undefined", async () => {
+    it("devrait accepter ref undefined", async () => {
       const input = {
         typeEvenement: TypeEvenement.VISITE,
       };
@@ -173,7 +169,6 @@ describe("EvenementService - Sécurité", () => {
       });
 
       const savedEvent = vi.mocked(mockRepository.enregistrerEvenement).mock.calls[0][0];
-      expect(savedEvent.sourceUtilisation).toBeUndefined();
       expect(savedEvent.ref).toBeUndefined();
       expect(savedEvent.modeUtilisation).toBe(ModeUtilisation.STANDALONE);
     });
@@ -414,14 +409,13 @@ describe("EvenementService - Sécurité", () => {
     });
   });
 
-  describe("Nouveaux événements de tracking", () => {
-    it("devrait enregistrer un événement VISITE", async () => {
+  describe("Nouveaux evenements de tracking", () => {
+    it("devrait enregistrer un evenement VISITE", async () => {
       const input = {
         typeEvenement: TypeEvenement.VISITE,
       };
 
       await service.enregistrerEvenement(input, {
-        sourceUtilisation: "urbanvitaliz",
         ref: "page-accueil",
         modeUtilisation: ModeUtilisation.STANDALONE,
       });

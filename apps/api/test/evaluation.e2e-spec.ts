@@ -2,8 +2,10 @@ import { INestApplication } from "@nestjs/common";
 import { describe, it, expect, beforeAll, afterAll, vi } from "vitest";
 import request from "supertest";
 import { App } from "supertest/types";
+import { SourceUtilisation } from "@mutafriches/shared-types";
 import { EvaluationController } from "../src/evaluation/evaluation.controller";
 import { OrchestrateurService } from "../src/evaluation/services/orchestrateur.service";
+import { OrigineDetectionService } from "../src/shared/services/origine-detection.service";
 import { createThrottledTestApp, describeThrottling } from "./helpers";
 
 describe("Evaluation E2E", () => {
@@ -11,6 +13,9 @@ describe("Evaluation E2E", () => {
   let mockOrchestrateurService: {
     calculerMutabilite: ReturnType<typeof vi.fn>;
     recupererEvaluation: ReturnType<typeof vi.fn>;
+  };
+  let mockOrigineDetectionService: {
+    detecterOrigine: ReturnType<typeof vi.fn>;
   };
 
   const mockMutabiliteOutput = {
@@ -44,10 +49,16 @@ describe("Evaluation E2E", () => {
       calculerMutabilite: vi.fn().mockResolvedValue(mockMutabiliteOutput),
       recupererEvaluation: vi.fn().mockResolvedValue(mockEvaluation),
     };
+    mockOrigineDetectionService = {
+      detecterOrigine: vi.fn().mockReturnValue({ source: SourceUtilisation.API_DIRECTE }),
+    };
 
     app = await createThrottledTestApp({
       controller: EvaluationController,
-      providers: [{ provide: OrchestrateurService, useValue: mockOrchestrateurService }],
+      providers: [
+        { provide: OrchestrateurService, useValue: mockOrchestrateurService },
+        { provide: OrigineDetectionService, useValue: mockOrigineDetectionService },
+      ],
     });
   });
 
@@ -67,7 +78,10 @@ describe("Evaluation E2E", () => {
         .expect(201);
 
       expect(response.body).toHaveProperty("id");
-      expect(mockOrchestrateurService.calculerMutabilite).toHaveBeenCalled();
+      expect(mockOrchestrateurService.calculerMutabilite).toHaveBeenCalledWith(
+        expect.any(Object),
+        expect.objectContaining({ origine: { source: SourceUtilisation.API_DIRECTE } }),
+      );
     });
 
     it("devrait passer le mode detaille via query param", async () => {
@@ -92,6 +106,49 @@ describe("Evaluation E2E", () => {
         .post("/evaluation/calculer")
         .send({})
         .expect(400);
+    });
+
+    it("devrait detecter le mode iframe", async () => {
+      mockOrigineDetectionService.detecterOrigine.mockReturnValueOnce({
+        source: SourceUtilisation.IFRAME_INTEGREE,
+        integrateur: "cartofriches",
+      });
+
+      await request(app.getHttpServer() as App)
+        .post("/evaluation/calculer?iframe=true&integrateur=cartofriches")
+        .send({
+          donneesEnrichies: {
+            identifiantCadastral: "49007000AB0123",
+          },
+        })
+        .expect(201);
+
+      expect(mockOrchestrateurService.calculerMutabilite).toHaveBeenCalledWith(
+        expect.any(Object),
+        expect.objectContaining({
+          origine: { source: SourceUtilisation.IFRAME_INTEGREE, integrateur: "cartofriches" },
+        }),
+      );
+    });
+
+    it("devrait detecter le mode standalone", async () => {
+      mockOrigineDetectionService.detecterOrigine.mockReturnValueOnce({
+        source: SourceUtilisation.SITE_STANDALONE,
+      });
+
+      await request(app.getHttpServer() as App)
+        .post("/evaluation/calculer")
+        .send({
+          donneesEnrichies: {
+            identifiantCadastral: "49007000AB0123",
+          },
+        })
+        .expect(201);
+
+      expect(mockOrchestrateurService.calculerMutabilite).toHaveBeenCalledWith(
+        expect.any(Object),
+        expect.objectContaining({ origine: { source: SourceUtilisation.SITE_STANDALONE } }),
+      );
     });
   });
 

@@ -252,10 +252,7 @@ async function importAdemeSites(): Promise<void> {
   }
 }
 
-async function insertBatch(
-  db: ReturnType<typeof drizzle>,
-  batch: AdemeSiteRow[],
-): Promise<void> {
+async function insertBatch(db: ReturnType<typeof drizzle>, batch: AdemeSiteRow[]): Promise<void> {
   if (batch.length === 0) return;
 
   const values = batch

@@ -41,11 +41,10 @@ describe("EvenementsController", () => {
 
       // Assert
       expect(service.enregistrerEvenement).toHaveBeenCalledWith(input, {
-        sourceUtilisation: undefined,
-        ref: undefined,
         modeUtilisation: ModeUtilisation.STANDALONE,
         integrateur: undefined,
         userAgent: undefined,
+        ref: undefined,
       });
       expect(result).toEqual(mockOutput);
     });
@@ -62,11 +61,10 @@ describe("EvenementsController", () => {
 
       // Assert
       expect(service.enregistrerEvenement).toHaveBeenCalledWith(input, {
-        sourceUtilisation: undefined,
-        ref: undefined,
         modeUtilisation: ModeUtilisation.IFRAME,
         integrateur: undefined,
         userAgent: undefined,
+        ref: undefined,
       });
     });
 
@@ -82,19 +80,17 @@ describe("EvenementsController", () => {
 
       // Assert
       expect(service.enregistrerEvenement).toHaveBeenCalledWith(input, {
-        sourceUtilisation: undefined,
-        ref: undefined,
         modeUtilisation: ModeUtilisation.STANDALONE,
         integrateur: undefined,
         userAgent: undefined,
+        ref: undefined,
       });
     });
 
-    it("devrait passer sourceUtilisation et ref depuis le body", async () => {
+    it("devrait passer ref depuis le body au service", async () => {
       // Arrange
       const input = {
         typeEvenement: TypeEvenement.VISITE,
-        sourceUtilisation: "urbanvitaliz",
         ref: "page-accueil",
       };
       service.enregistrerEvenement.mockResolvedValue(mockOutput);
@@ -104,11 +100,10 @@ describe("EvenementsController", () => {
 
       // Assert
       expect(service.enregistrerEvenement).toHaveBeenCalledWith(input, {
-        sourceUtilisation: "urbanvitaliz",
-        ref: "page-accueil",
         modeUtilisation: ModeUtilisation.STANDALONE,
         integrateur: undefined,
         userAgent: undefined,
+        ref: "page-accueil",
       });
     });
 
@@ -124,11 +119,10 @@ describe("EvenementsController", () => {
 
       // Assert
       expect(service.enregistrerEvenement).toHaveBeenCalledWith(input, {
-        sourceUtilisation: undefined,
-        ref: undefined,
         modeUtilisation: ModeUtilisation.STANDALONE,
         integrateur: "cartofriches",
         userAgent: undefined,
+        ref: undefined,
       });
     });
 
@@ -136,7 +130,6 @@ describe("EvenementsController", () => {
       // Arrange
       const input = {
         typeEvenement: TypeEvenement.INTERET_MULTI_PARCELLES,
-        sourceUtilisation: "benefriches",
         ref: "simulateur",
       };
       service.enregistrerEvenement.mockResolvedValue(mockOutput);
@@ -146,11 +139,10 @@ describe("EvenementsController", () => {
 
       // Assert
       expect(service.enregistrerEvenement).toHaveBeenCalledWith(input, {
-        sourceUtilisation: "benefriches",
-        ref: "simulateur",
         modeUtilisation: ModeUtilisation.IFRAME,
         integrateur: "benefriches",
         userAgent: undefined,
+        ref: "simulateur",
       });
     });
 
@@ -171,11 +163,10 @@ describe("EvenementsController", () => {
 
       // Assert
       expect(service.enregistrerEvenement).toHaveBeenCalledWith(input, {
-        sourceUtilisation: undefined,
-        ref: undefined,
         modeUtilisation: ModeUtilisation.STANDALONE,
         integrateur: undefined,
         userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+        ref: undefined,
       });
     });
 
@@ -194,11 +185,10 @@ describe("EvenementsController", () => {
 
       // Assert
       expect(service.enregistrerEvenement).toHaveBeenCalledWith(input, {
-        sourceUtilisation: undefined,
-        ref: undefined,
         modeUtilisation: ModeUtilisation.STANDALONE,
         integrateur: undefined,
         userAgent: undefined,
+        ref: undefined,
       });
     });
 
@@ -211,7 +201,7 @@ describe("EvenementsController", () => {
         sessionId: "session-789",
         donnees: {
           pertinent: true,
-          commentaire: "Très utile",
+          commentaire: "Tres utile",
         },
       };
       service.enregistrerEvenement.mockResolvedValue(mockOutput);
@@ -221,11 +211,10 @@ describe("EvenementsController", () => {
 
       // Assert
       expect(service.enregistrerEvenement).toHaveBeenCalledWith(input, {
-        sourceUtilisation: undefined,
-        ref: undefined,
         modeUtilisation: ModeUtilisation.STANDALONE,
         integrateur: undefined,
         userAgent: undefined,
+        ref: undefined,
       });
     });
 
@@ -273,11 +262,10 @@ describe("EvenementsController", () => {
 
       // Assert
       expect(service.enregistrerEvenement).toHaveBeenCalledWith(input, {
-        sourceUtilisation: undefined,
-        ref: undefined,
         modeUtilisation: ModeUtilisation.IFRAME,
         integrateur: undefined,
         userAgent: undefined,
+        ref: undefined,
       });
     });
 
@@ -293,11 +281,10 @@ describe("EvenementsController", () => {
 
       // Assert
       expect(service.enregistrerEvenement).toHaveBeenCalledWith(input, {
-        sourceUtilisation: undefined,
-        ref: undefined,
         modeUtilisation: ModeUtilisation.STANDALONE,
         integrateur: undefined,
         userAgent: undefined,
+        ref: undefined,
       });
     });
 
@@ -313,16 +300,15 @@ describe("EvenementsController", () => {
 
       // Assert
       expect(service.enregistrerEvenement).toHaveBeenCalledWith(input, {
-        sourceUtilisation: undefined,
-        ref: undefined,
         modeUtilisation: ModeUtilisation.STANDALONE,
         integrateur: undefined,
         userAgent: undefined,
+        ref: undefined,
       });
     });
   });
 
-  describe("Tracking des intégrateurs", () => {
+  describe("Tracking des integrateurs", () => {
     const mockOutput = {
       id: "evt-123",
       typeEvenement: TypeEvenement.VISITE,
@@ -330,10 +316,9 @@ describe("EvenementsController", () => {
       success: true,
     };
 
-    it("devrait tracker une visite depuis Urbanvitaliz", async () => {
+    it("devrait tracker une visite avec ref", async () => {
       const input = {
         typeEvenement: TypeEvenement.VISITE,
-        sourceUtilisation: "urbanvitaliz",
         ref: "page-accueil",
       };
       service.enregistrerEvenement.mockResolvedValue(mockOutput);
@@ -341,18 +326,16 @@ describe("EvenementsController", () => {
       await controller.enregistrerEvenement(input);
 
       expect(service.enregistrerEvenement).toHaveBeenCalledWith(input, {
-        sourceUtilisation: "urbanvitaliz",
-        ref: "page-accueil",
         modeUtilisation: ModeUtilisation.STANDALONE,
         integrateur: undefined,
         userAgent: undefined,
+        ref: "page-accueil",
       });
     });
 
     it("devrait tracker une visite en iframe depuis Benefriches", async () => {
       const input = {
         typeEvenement: TypeEvenement.VISITE,
-        sourceUtilisation: "benefriches",
         ref: "simulateur",
       };
       service.enregistrerEvenement.mockResolvedValue(mockOutput);
@@ -360,29 +343,26 @@ describe("EvenementsController", () => {
       await controller.enregistrerEvenement(input, true, "benefriches");
 
       expect(service.enregistrerEvenement).toHaveBeenCalledWith(input, {
-        sourceUtilisation: "benefriches",
-        ref: "simulateur",
         modeUtilisation: ModeUtilisation.IFRAME,
         integrateur: "benefriches",
         userAgent: undefined,
+        ref: "simulateur",
       });
     });
 
-    it("devrait accepter sourceUtilisation sans ref", async () => {
+    it("devrait accepter integrateur sans ref", async () => {
       const input = {
         typeEvenement: TypeEvenement.VISITE,
-        sourceUtilisation: "cartofriches",
       };
       service.enregistrerEvenement.mockResolvedValue(mockOutput);
 
-      await controller.enregistrerEvenement(input);
+      await controller.enregistrerEvenement(input, true, "cartofriches");
 
       expect(service.enregistrerEvenement).toHaveBeenCalledWith(input, {
-        sourceUtilisation: "cartofriches",
-        ref: undefined,
-        modeUtilisation: ModeUtilisation.STANDALONE,
-        integrateur: undefined,
+        modeUtilisation: ModeUtilisation.IFRAME,
+        integrateur: "cartofriches",
         userAgent: undefined,
+        ref: undefined,
       });
     });
   });
@@ -398,7 +378,6 @@ describe("EvenementsController", () => {
     it("devrait gerer VISITE", async () => {
       const input = {
         typeEvenement: TypeEvenement.VISITE,
-        sourceUtilisation: "urbanvitaliz",
         ref: "page-accueil",
       };
       service.enregistrerEvenement.mockResolvedValue(mockOutput);

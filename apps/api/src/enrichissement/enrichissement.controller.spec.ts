@@ -1,23 +1,35 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { HttpException, HttpStatus } from "@nestjs/common";
+import { SourceUtilisation } from "@mutafriches/shared-types";
 import { EnrichissementController } from "./enrichissement.controller";
 import { EnrichissementService } from "./services/enrichissement.service";
-import { createTestingModuleWithService } from "../shared/__test-helpers__/test-module.factory";
+import { OrigineDetectionService } from "../shared/services/origine-detection.service";
+import { createTestingModuleWithTwoServices } from "../shared/__test-helpers__/test-module.factory";
 import { createMockEnrichissementService } from "./__test-helpers__/enrichissement.mocks";
+import { createMockOrigineDetectionService } from "../shared/__test-helpers__/origine-detection.mocks";
 
 describe("EnrichissementController", () => {
   let controller: EnrichissementController;
-  let service: ReturnType<typeof createMockEnrichissementService>;
+  let enrichissementService: ReturnType<typeof createMockEnrichissementService>;
+  let origineDetectionService: ReturnType<typeof createMockOrigineDetectionService>;
 
   beforeEach(async () => {
-    const setup = await createTestingModuleWithService(
+    const mockEnrichissementService = createMockEnrichissementService();
+    const mockOrigineDetectionService = createMockOrigineDetectionService();
+
+    const setup = await createTestingModuleWithTwoServices(
       EnrichissementController,
       EnrichissementService,
-      createMockEnrichissementService(),
+      mockEnrichissementService,
+      OrigineDetectionService,
+      mockOrigineDetectionService,
     );
 
     controller = setup.controller;
-    service = setup.service;
+    enrichissementService = setup.service1 as ReturnType<typeof createMockEnrichissementService>;
+    origineDetectionService = setup.service2 as ReturnType<
+      typeof createMockOrigineDetectionService
+    >;
   });
 
   describe("POST /enrichissement", () => {
@@ -37,27 +49,35 @@ describe("EnrichissementController", () => {
 
     it("devrait enrichir une parcelle avec succes", async () => {
       // Arrange
-      service.enrichir.mockResolvedValue(mockOutput);
+      enrichissementService.enrichir.mockResolvedValue(mockOutput);
 
       // Act
       const result = await controller.enrichirParcelle(mockInput);
 
       // Assert
-      expect(service.enrichir).toHaveBeenCalledWith("29232000AB0123");
+      expect(enrichissementService.enrichir).toHaveBeenCalledWith(
+        "29232000AB0123",
+        SourceUtilisation.API_DIRECTE,
+        undefined,
+      );
       expect(result).toEqual(mockOutput);
     });
 
     it("devrait appeler le service avec l'identifiant correct", async () => {
       // Arrange
-      service.enrichir.mockResolvedValue(mockOutput);
+      enrichissementService.enrichir.mockResolvedValue(mockOutput);
       const customInput = { identifiant: "75101000AB9999" };
 
       // Act
       await controller.enrichirParcelle(customInput);
 
       // Assert
-      expect(service.enrichir).toHaveBeenCalledWith("75101000AB9999");
-      expect(service.enrichir).toHaveBeenCalledTimes(1);
+      expect(enrichissementService.enrichir).toHaveBeenCalledWith(
+        "75101000AB9999",
+        SourceUtilisation.API_DIRECTE,
+        undefined,
+      );
+      expect(enrichissementService.enrichir).toHaveBeenCalledTimes(1);
     });
 
     it("devrait retourner les donnees enrichies completes", async () => {
@@ -70,7 +90,7 @@ describe("EnrichissementController", () => {
         presenceRisquesNaturels: "FAIBLE",
         presenceRisquesTechnologiques: false,
       };
-      service.enrichir.mockResolvedValue(detailedOutput);
+      enrichissementService.enrichir.mockResolvedValue(detailedOutput);
 
       // Act
       const result = await controller.enrichirParcelle(mockInput);
@@ -84,7 +104,7 @@ describe("EnrichissementController", () => {
     it("devrait propager HttpException du service", async () => {
       // Arrange
       const httpError = new HttpException("Parcelle introuvable", HttpStatus.NOT_FOUND);
-      service.enrichir.mockRejectedValue(httpError);
+      enrichissementService.enrichir.mockRejectedValue(httpError);
 
       // Act & Assert
       await expect(controller.enrichirParcelle(mockInput)).rejects.toThrow(HttpException);
@@ -97,7 +117,7 @@ describe("EnrichissementController", () => {
     it("devrait transformer Error standard en HttpException 500", async () => {
       // Arrange
       const standardError = new Error("Service externe indisponible");
-      service.enrichir.mockRejectedValue(standardError);
+      enrichissementService.enrichir.mockRejectedValue(standardError);
 
       // Act & Assert
       try {
@@ -116,7 +136,7 @@ describe("EnrichissementController", () => {
 
     it("devrait gerer les erreurs non-Error avec message generique", async () => {
       // Arrange
-      service.enrichir.mockRejectedValue("String error");
+      enrichissementService.enrichir.mockRejectedValue("String error");
 
       // Act & Assert
       try {
@@ -139,7 +159,7 @@ describe("EnrichissementController", () => {
         "Format d'identifiant invalide",
         HttpStatus.BAD_REQUEST,
       );
-      service.enrichir.mockRejectedValue(badRequestError);
+      enrichissementService.enrichir.mockRejectedValue(badRequestError);
 
       // Act & Assert
       await expect(controller.enrichirParcelle(mockInput)).rejects.toThrow(HttpException);
@@ -157,7 +177,7 @@ describe("EnrichissementController", () => {
         champsManquants: ["distanceTransportCommun", "siteEnCentreVille"],
         fiabilite: 6.5,
       };
-      service.enrichir.mockResolvedValue(partialOutput);
+      enrichissementService.enrichir.mockResolvedValue(partialOutput);
 
       // Act
       const result = await controller.enrichirParcelle(mockInput);
@@ -170,7 +190,7 @@ describe("EnrichissementController", () => {
 
     it("devrait gerer plusieurs appels successifs", async () => {
       // Arrange
-      service.enrichir.mockResolvedValue(mockOutput);
+      enrichissementService.enrichir.mockResolvedValue(mockOutput);
 
       // Act
       await controller.enrichirParcelle({ identifiant: "29232000AB0001" });
@@ -178,10 +198,25 @@ describe("EnrichissementController", () => {
       await controller.enrichirParcelle({ identifiant: "29232000AB0003" });
 
       // Assert
-      expect(service.enrichir).toHaveBeenCalledTimes(3);
-      expect(service.enrichir).toHaveBeenNthCalledWith(1, "29232000AB0001");
-      expect(service.enrichir).toHaveBeenNthCalledWith(2, "29232000AB0002");
-      expect(service.enrichir).toHaveBeenNthCalledWith(3, "29232000AB0003");
+      expect(enrichissementService.enrichir).toHaveBeenCalledTimes(3);
+      expect(enrichissementService.enrichir).toHaveBeenNthCalledWith(
+        1,
+        "29232000AB0001",
+        SourceUtilisation.API_DIRECTE,
+        undefined,
+      );
+      expect(enrichissementService.enrichir).toHaveBeenNthCalledWith(
+        2,
+        "29232000AB0002",
+        SourceUtilisation.API_DIRECTE,
+        undefined,
+      );
+      expect(enrichissementService.enrichir).toHaveBeenNthCalledWith(
+        3,
+        "29232000AB0003",
+        SourceUtilisation.API_DIRECTE,
+        undefined,
+      );
     });
 
     it("devrait retourner geometrie si presente", async () => {
@@ -201,7 +236,7 @@ describe("EnrichissementController", () => {
           ],
         },
       };
-      service.enrichir.mockResolvedValue(outputWithGeometry);
+      enrichissementService.enrichir.mockResolvedValue(outputWithGeometry);
 
       // Act
       const result = await controller.enrichirParcelle(mockInput);
@@ -213,20 +248,24 @@ describe("EnrichissementController", () => {
 
     it("devrait gerer un identifiant avec espaces", async () => {
       // Arrange
-      service.enrichir.mockResolvedValue(mockOutput);
+      enrichissementService.enrichir.mockResolvedValue(mockOutput);
       const inputWithSpaces = { identifiant: " 29232000AB0123 " };
 
       // Act
       await controller.enrichirParcelle(inputWithSpaces);
 
       // Assert
-      expect(service.enrichir).toHaveBeenCalledWith(" 29232000AB0123 ");
+      expect(enrichissementService.enrichir).toHaveBeenCalledWith(
+        " 29232000AB0123 ",
+        SourceUtilisation.API_DIRECTE,
+        undefined,
+      );
     });
 
     it("devrait gerer timeout du service", async () => {
       // Arrange
-      const timeoutError = new Error("Timeout de 30 secondes dépassé");
-      service.enrichir.mockRejectedValue(timeoutError);
+      const timeoutError = new Error("Timeout de 30 secondes depassé");
+      enrichissementService.enrichir.mockRejectedValue(timeoutError);
 
       // Act & Assert
       try {
@@ -237,7 +276,7 @@ describe("EnrichissementController", () => {
         const httpError = error as HttpException;
         expect(httpError.getStatus()).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
         expect(httpError.getResponse()).toMatchObject({
-          message: "Timeout de 30 secondes dépassé",
+          message: "Timeout de 30 secondes depassé",
         });
       }
     });
@@ -256,7 +295,7 @@ describe("EnrichissementController", () => {
           },
         },
       };
-      service.enrichir.mockResolvedValue(outputWithGeorisques);
+      enrichissementService.enrichir.mockResolvedValue(outputWithGeorisques);
 
       // Act
       const result = await controller.enrichirParcelle(mockInput);
@@ -274,7 +313,7 @@ describe("EnrichissementController", () => {
     it("devrait gerer HttpException CONFLICT", async () => {
       // Arrange
       const conflictError = new HttpException("Ressource deja existante", HttpStatus.CONFLICT);
-      service.enrichir.mockRejectedValue(conflictError);
+      enrichissementService.enrichir.mockRejectedValue(conflictError);
 
       // Act & Assert
       await expect(controller.enrichirParcelle(mockInput)).rejects.toThrow(HttpException);
@@ -289,7 +328,7 @@ describe("EnrichissementController", () => {
         "Service temporairement indisponible",
         HttpStatus.SERVICE_UNAVAILABLE,
       );
-      service.enrichir.mockRejectedValue(unavailableError);
+      enrichissementService.enrichir.mockRejectedValue(unavailableError);
 
       // Act & Assert
       await expect(controller.enrichirParcelle(mockInput)).rejects.toThrow(HttpException);
@@ -301,7 +340,7 @@ describe("EnrichissementController", () => {
     it("devrait gerer Error avec message vide", async () => {
       // Arrange
       const emptyError = new Error("");
-      service.enrichir.mockRejectedValue(emptyError);
+      enrichissementService.enrichir.mockRejectedValue(emptyError);
 
       // Act & Assert
       try {
@@ -318,7 +357,7 @@ describe("EnrichissementController", () => {
 
     it("devrait gerer null comme erreur", async () => {
       // Arrange
-      service.enrichir.mockRejectedValue(null);
+      enrichissementService.enrichir.mockRejectedValue(null);
 
       // Act & Assert
       try {
@@ -335,7 +374,7 @@ describe("EnrichissementController", () => {
 
     it("devrait gerer undefined comme erreur", async () => {
       // Arrange
-      service.enrichir.mockRejectedValue(undefined);
+      enrichissementService.enrichir.mockRejectedValue(undefined);
 
       // Act & Assert
       try {
@@ -348,6 +387,90 @@ describe("EnrichissementController", () => {
           message: "Une erreur est survenue",
         });
       }
+    });
+  });
+
+  describe("POST /enrichissement - Detection d'origine", () => {
+    const mockInput = { identifiant: "29232000AB0123" };
+    const mockOutput = {
+      identifiantParcelle: "29232000AB0123",
+      codeInsee: "29232",
+      commune: "Quimper",
+      surfaceSite: 5000,
+      surfaceBati: 1000,
+      coordonnees: { latitude: 48.0, longitude: -4.0 },
+      sourcesUtilisees: ["cadastre"],
+      champsManquants: [],
+      fiabilite: 9.5,
+    };
+
+    it("devrait appeler le service de detection avec les parametres corrects", async () => {
+      // Arrange
+      enrichissementService.enrichir.mockResolvedValue(mockOutput);
+      const req = { headers: {} } as any;
+
+      // Act
+      await controller.enrichirParcelle(mockInput, true, "cartofriches", req);
+
+      // Assert
+      expect(origineDetectionService.detecterOrigine).toHaveBeenCalledWith(
+        req,
+        true,
+        "cartofriches",
+      );
+    });
+
+    it("devrait passer l'origine detectee au service enrichissement", async () => {
+      // Arrange
+      enrichissementService.enrichir.mockResolvedValue(mockOutput);
+      origineDetectionService.detecterOrigine.mockReturnValue({
+        source: SourceUtilisation.IFRAME_INTEGREE,
+        integrateur: "cartofriches.fr",
+      });
+
+      // Act
+      await controller.enrichirParcelle(mockInput);
+
+      // Assert
+      expect(enrichissementService.enrichir).toHaveBeenCalledWith(
+        "29232000AB0123",
+        SourceUtilisation.IFRAME_INTEGREE,
+        "cartofriches.fr",
+      );
+    });
+
+    it("devrait utiliser API_DIRECTE par defaut", async () => {
+      // Arrange
+      enrichissementService.enrichir.mockResolvedValue(mockOutput);
+      // Le mock retourne API_DIRECTE par defaut
+
+      // Act
+      await controller.enrichirParcelle(mockInput);
+
+      // Assert
+      expect(enrichissementService.enrichir).toHaveBeenCalledWith(
+        "29232000AB0123",
+        SourceUtilisation.API_DIRECTE,
+        undefined,
+      );
+    });
+
+    it("devrait passer SITE_STANDALONE si detecte", async () => {
+      // Arrange
+      enrichissementService.enrichir.mockResolvedValue(mockOutput);
+      origineDetectionService.detecterOrigine.mockReturnValue({
+        source: SourceUtilisation.SITE_STANDALONE,
+      });
+
+      // Act
+      await controller.enrichirParcelle(mockInput);
+
+      // Assert
+      expect(enrichissementService.enrichir).toHaveBeenCalledWith(
+        "29232000AB0123",
+        SourceUtilisation.SITE_STANDALONE,
+        undefined,
+      );
     });
   });
 });
