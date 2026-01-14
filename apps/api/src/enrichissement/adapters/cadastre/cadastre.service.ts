@@ -19,6 +19,7 @@ import {
   IGNParcelleFeature,
   IGNParcelleResponse,
 } from "./cadastre.types";
+import { isProduction } from "../../../shared/utils";
 
 @Injectable()
 export class CadastreService {
@@ -205,9 +206,9 @@ export class CadastreService {
     }
 
     // Log pour debug
-    if (process.env.NODE_ENV !== "production") {
+    if (!isProduction()) {
       this.logger.debug(
-        `IDU parsé: ${identifiant} → codeInsee=${codeInsee}, section=${section}, numero=${numero}`,
+        `IDU parse: ${identifiant} -> codeInsee=${codeInsee}, section=${section}, numero=${numero}`,
       );
     }
 
