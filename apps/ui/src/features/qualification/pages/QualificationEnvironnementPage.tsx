@@ -167,8 +167,6 @@ export const QualificationEnvironnementPage: React.FC = () => {
           />
         </div>
 
-        <hr className="fr-my-4w" />
-
         {/* Zone 2 - Taux LV */}
         <div className="fr-grid-row fr-grid-row--gutters">
           <EnrichedInfoField
