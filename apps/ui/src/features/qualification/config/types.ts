@@ -39,7 +39,6 @@ export type SiteFormValues = {
   etatBatiInfrastructure: EtatBatiInfrastructure | "";
   presencePollution: PresencePollution | "";
   valeurArchitecturaleHistorique: ValeurArchitecturale | "";
-  trameVerteEtBleue: TrameVerteEtBleue | "";
 };
 
 /**
@@ -48,6 +47,7 @@ export type SiteFormValues = {
 export type EnvironnementFormValues = {
   qualitePaysage: QualitePaysage | "";
   qualiteVoieDesserte: QualiteVoieDesserte | "";
+  trameVerteEtBleue: TrameVerteEtBleue | "";
 };
 
 /**
@@ -64,7 +64,6 @@ export const DEFAULT_SITE_VALUES: SiteFormValues = {
   etatBatiInfrastructure: "",
   presencePollution: "",
   valeurArchitecturaleHistorique: "",
-  trameVerteEtBleue: "",
 };
 
 /**
@@ -73,6 +72,7 @@ export const DEFAULT_SITE_VALUES: SiteFormValues = {
 export const DEFAULT_ENVIRONNEMENT_VALUES: EnvironnementFormValues = {
   qualitePaysage: "",
   qualiteVoieDesserte: "",
+  trameVerteEtBleue: "",
 };
 
 /**

@@ -27,8 +27,6 @@ export const QualificationSitePage: React.FC = () => {
     valeurArchitecturaleHistorique:
       (state.manualData
         ?.valeurArchitecturaleHistorique as SiteFormValues["valeurArchitecturaleHistorique"]) || "",
-    trameVerteEtBleue:
-      (state.manualData?.trameVerteEtBleue as SiteFormValues["trameVerteEtBleue"]) || "",
   });
   const [errors, setErrors] = useState<ValidationErrors<SiteFormValues>>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
@@ -250,7 +248,7 @@ export const QualificationSitePage: React.FC = () => {
         <hr className="fr-my-4w" />
 
         {/* Zone 4 - Pollution */}
-        <div className="fr-grid-row fr-grid-row--gutters">
+        <div className="fr-grid-row fr-grid-row--gutters fr-mb-8w">
           <PollutionField
             value={values.presencePollution}
             onChange={(v) => handleChange("presencePollution", v as PresencePollution | "")}
@@ -260,18 +258,6 @@ export const QualificationSitePage: React.FC = () => {
           />
         </div>
 
-        <hr className="fr-my-4w" />
-
-        {/* Zone 5 - Trame verte et bleue */}
-        <div className="fr-grid-row fr-grid-row--gutters fr-mb-8w">
-          <FormSelectField
-            field={SITE_FIELDS.trameVerteEtBleue}
-            value={values.trameVerteEtBleue}
-            onChange={(v) => handleChange("trameVerteEtBleue", v)}
-            error={touched.trameVerteEtBleue ? errors.trameVerteEtBleue : undefined}
-            tooltip="Indiquez si le site est situe dans un corridor ecologique ou un reservoir de biodiversite."
-          />
-        </div>
       </form>
 
       <StepNavigation

@@ -7,7 +7,7 @@ import { useFormContext } from "../../../shared/form/useFormContext";
 import { enrichissementService } from "../../../shared/services/api/api.enrichissement.service";
 import { TypeEvenement } from "@mutafriches/shared-types";
 import { useEventTracking } from "../../../shared/hooks/useEventTracking";
-import { EnrichmentLoadingCallout } from "../components/enrichment-display/EnrichmentLoadingCallout";
+import { EnrichmentLoadingCallout } from "../components/EnrichmentLoadingCallout";
 import { transformEnrichmentToUiData } from "../utils/enrichissment.mapper";
 
 const MIN_LOADING_TIME = 3000; // 3 secondes minimum

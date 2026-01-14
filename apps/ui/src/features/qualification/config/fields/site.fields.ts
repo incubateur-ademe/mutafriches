@@ -4,7 +4,6 @@ import {
   PresencePollution,
   ValeurArchitecturale,
   RaccordementEau,
-  TrameVerteEtBleue,
 } from "@mutafriches/shared-types";
 import { FormFieldConfig, SelectOption } from "../types";
 
@@ -95,22 +94,6 @@ export const SITE_FIELDS: Record<string, FormFieldConfig<string>> = {
       { value: ValeurArchitecturale.INTERET_REMARQUABLE, label: "Intérêt remarquable" },
       { value: ValeurArchitecturale.NE_SAIT_PAS, label: "Ne sait pas" },
     ] as SelectOption<ValeurArchitecturale>[],
-  },
-
-  trameVerteEtBleue: {
-    id: "continuite-ecologique",
-    name: "trameVerteEtBleue",
-    label: "Localisation du site par rapport aux continuités écologiques (trame verte et bleue)",
-    required: true,
-    section: "site",
-    options: [
-      SELECT_OPTION_PLACEHOLDER,
-      { value: TrameVerteEtBleue.HORS_TRAME, label: "Hors trame" },
-      { value: TrameVerteEtBleue.RESERVOIR_BIODIVERSITE, label: "Reservoir de biodiversite" },
-      { value: TrameVerteEtBleue.CORRIDOR_A_PRESERVER, label: "Corridor a preserver" },
-      { value: TrameVerteEtBleue.CORRIDOR_A_RESTAURER, label: "Corridor a restaurer" },
-      { value: TrameVerteEtBleue.NE_SAIT_PAS, label: "Ne sait pas" },
-    ] as SelectOption<TrameVerteEtBleue>[],
   },
 };
 

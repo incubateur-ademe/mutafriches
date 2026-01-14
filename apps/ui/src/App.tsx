@@ -12,15 +12,15 @@ import { useEventTracking } from "./shared/hooks/useEventTracking";
 import { useEffect, useRef } from "react";
 import { TypeEvenement } from "@mutafriches/shared-types";
 import { useIframe } from "./shared/iframe/useIframe";
-import { DocumentationIntegrationPage } from "./features/doc/pages/DocumentationIntegrationPage";
 
 // Nouvelles pages
 import { HomePage } from "./features/home/pages/HomePage";
-import { EnrichissementPage } from "./features/enrichissement/pages/EnrichissementPage";
+import { EnrichissementPage } from "./features/home/pages/EnrichissementPage";
 import { QualificationSitePage } from "./features/qualification/pages/QualificationSitePage";
 import { QualificationEnvironnementPage } from "./features/qualification/pages/QualificationEnvironnementPage";
 import { QualificationRisquesPage } from "./features/qualification/pages/QualificationRisquesPage";
 import { ResultatsPage } from "./features/resultats/pages/ResultatsPage";
+import { DocumentationIntegrationPage } from "./features/documentation/pages/DocumentationIntegrationPage";
 
 function AppContent() {
   const { track } = useEventTracking();

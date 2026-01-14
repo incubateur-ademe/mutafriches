@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { PresencePollution } from "@mutafriches/shared-types";
 
 /** Options pour le select Oui/Non/Ne sait pas */
@@ -66,26 +66,47 @@ export const PollutionField: React.FC<PollutionFieldProps> = ({
   error,
   tooltip,
 }) => {
-  // Calculer la valeur du select directement depuis les props (pas de state interne)
-  // Si value existe, on l'utilise. Sinon si siteReferencePollue, on affiche "oui"
-  const selectValue: PollutionSelectValue = value
-    ? getSelectValue(value)
-    : siteReferencePollue
-      ? "oui"
+  // Etat interne pour tracker si "Oui" est selectionne (meme sans type de pollution choisi)
+  const [ouiSelected, setOuiSelected] = useState<boolean>(false);
+
+  // Synchroniser l'etat interne avec la valeur externe
+  useEffect(() => {
+    if (isPollutionType(value)) {
+      setOuiSelected(true);
+    } else if (value === PresencePollution.NON || value === PresencePollution.NE_SAIT_PAS) {
+      setOuiSelected(false);
+    }
+  }, [value]);
+
+  // Initialiser ouiSelected si siteReferencePollue est true
+  useEffect(() => {
+    if (siteReferencePollue && !value) {
+      setOuiSelected(true);
+    }
+  }, [siteReferencePollue, value]);
+
+  // Calculer la valeur du select
+  const selectValue: PollutionSelectValue = ouiSelected
+    ? "oui"
+    : value
+      ? getSelectValue(value)
       : "";
 
   const pollutionType = isPollutionType(value) ? value : "";
 
   const handleSelectChange = (newSelectValue: PollutionSelectValue) => {
     if (newSelectValue === "non") {
+      setOuiSelected(false);
       onChange(PresencePollution.NON);
     } else if (newSelectValue === "ne-sait-pas") {
+      setOuiSelected(false);
       onChange(PresencePollution.NE_SAIT_PAS);
     } else if (newSelectValue === "oui") {
-      // Si "Oui" est selectionne, on attend la selection du type de pollution
-      // On ne change pas encore la valeur finale
-      onChange("");
+      // Marquer "Oui" comme selectionne mais ne pas changer la valeur
+      // tant que l'utilisateur n'a pas choisi un type de pollution
+      setOuiSelected(true);
     } else {
+      setOuiSelected(false);
       onChange("");
     }
   };
@@ -94,7 +115,7 @@ export const PollutionField: React.FC<PollutionFieldProps> = ({
     onChange(type);
   };
 
-  const showPollutionTypes = selectValue === "oui";
+  const showPollutionTypes = ouiSelected;
 
   return (
     <>

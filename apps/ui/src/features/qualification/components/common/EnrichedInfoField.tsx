@@ -6,7 +6,7 @@ interface EnrichedInfoFieldProps {
   /** Label du champ */
   label: string;
   /** Valeur affichee */
-  value: string;
+  value?: string;
   /** Source de la donnee (optionnel) */
   source?: string;
   /** Contenu du tooltip */
