@@ -3,7 +3,7 @@ import { LoadingCallout } from "@/shared/components/common/LoadingCallout";
 import { ErrorAlert } from "@/shared/components/common/ErrorAlert";
 import type { EnrichissementOutputDto } from "@mutafriches/shared-types";
 import { enrichissementService } from "../../../../shared/services/api/api.enrichissement.service";
-import { ParcelleSelectionMap } from "../../../enrichissement/components/parcelle-map/ParcelleSelectionMap";
+import { ParcelleSelectionMap } from "../../../home/components/parcelle-map/ParcelleSelectionMap";
 
 interface EnrichmentTestSelectionProps {
   onEnrichmentComplete: (data: EnrichissementOutputDto) => void;

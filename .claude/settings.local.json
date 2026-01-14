@@ -11,7 +11,8 @@
       "Bash(pnpm db:generate*)",
       "Bash(pnpm db:migrate:*)",
       "Bash(pnpm db:ademe-sites:import:*)",
-      "Bash(pnpm run typecheck:*)"
+      "Bash(pnpm run typecheck:*)",
+      "Bash(git checkout:*)"
     ]
   }
 }
