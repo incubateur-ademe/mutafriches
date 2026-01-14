@@ -1,8 +1,10 @@
 import { ExecutionContext, ForbiddenException } from "@nestjs/common";
+import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { OriginGuard } from "./origin.guard";
 
-describe("OriginGuard", () => {
+describe("OriginGuard (Evenements - Mutafriches uniquement)", () => {
   let guard: OriginGuard;
+  let originalNodeEnv: string | undefined;
 
   const createMockContext = (headers: Record<string, string | undefined>): ExecutionContext => {
     return {
@@ -17,28 +19,81 @@ describe("OriginGuard", () => {
   };
 
   beforeEach(() => {
+    originalNodeEnv = process.env.NODE_ENV;
     delete process.env.ALLOWED_ORIGINS;
-    guard = new OriginGuard();
   });
 
-  describe("Origines autorisees par defaut", () => {
+  afterEach(() => {
+    process.env.NODE_ENV = originalNodeEnv;
+    delete process.env.ALLOWED_ORIGINS;
+  });
+
+  describe("Origines Mutafriches (toujours autorisees)", () => {
+    beforeEach(() => {
+      process.env.NODE_ENV = "production";
+      guard = new OriginGuard();
+    });
+
     it("devrait accepter mutafriches.beta.gouv.fr", () => {
       const context = createMockContext({ origin: "https://mutafriches.beta.gouv.fr" });
       expect(guard.canActivate(context)).toBe(true);
     });
 
-    it("devrait accepter mutafriches.incubateur.ademe.dev", () => {
+    it("devrait accepter mutafriches.incubateur.ademe.dev (staging)", () => {
       const context = createMockContext({ origin: "https://mutafriches.incubateur.ademe.dev" });
-      expect(guard.canActivate(context)).toBe(true);
-    });
-
-    it("devrait accepter localhost:5173", () => {
-      const context = createMockContext({ origin: "http://localhost:5173" });
       expect(guard.canActivate(context)).toBe(true);
     });
   });
 
+  describe("Localhost en mode developpement", () => {
+    it("devrait accepter localhost:5173 en developpement", () => {
+      process.env.NODE_ENV = "development";
+      guard = new OriginGuard();
+
+      const context = createMockContext({ origin: "http://localhost:5173" });
+      expect(guard.canActivate(context)).toBe(true);
+    });
+
+    it("devrait rejeter localhost:5173 en production", () => {
+      process.env.NODE_ENV = "production";
+      guard = new OriginGuard();
+
+      const context = createMockContext({ origin: "http://localhost:5173" });
+      expect(() => guard.canActivate(context)).toThrow(ForbiddenException);
+    });
+
+    it("devrait rejeter localhost:5173 en staging", () => {
+      process.env.NODE_ENV = "staging";
+      guard = new OriginGuard();
+
+      const context = createMockContext({ origin: "http://localhost:5173" });
+      expect(() => guard.canActivate(context)).toThrow(ForbiddenException);
+    });
+  });
+
+  describe("Origines des integrateurs (NON autorisees)", () => {
+    beforeEach(() => {
+      process.env.NODE_ENV = "production";
+      guard = new OriginGuard();
+    });
+
+    it("devrait rejeter benefriches (tracking interne uniquement)", () => {
+      const context = createMockContext({ origin: "https://benefriches.ademe.fr" });
+      expect(() => guard.canActivate(context)).toThrow(ForbiddenException);
+    });
+
+    it("devrait rejeter benefriches staging", () => {
+      const context = createMockContext({ origin: "https://benefriches.incubateur.ademe.dev" });
+      expect(() => guard.canActivate(context)).toThrow(ForbiddenException);
+    });
+  });
+
   describe("Origines non autorisees", () => {
+    beforeEach(() => {
+      process.env.NODE_ENV = "production";
+      guard = new OriginGuard();
+    });
+
     it("devrait rejeter une origine inconnue", () => {
       const context = createMockContext({ origin: "https://malicious-site.com" });
       expect(() => guard.canActivate(context)).toThrow(ForbiddenException);
@@ -56,6 +111,11 @@ describe("OriginGuard", () => {
   });
 
   describe("Fallback sur Referer", () => {
+    beforeEach(() => {
+      process.env.NODE_ENV = "production";
+      guard = new OriginGuard();
+    });
+
     it("devrait utiliser Referer si Origin absent", () => {
       const context = createMockContext({
         referer: "https://mutafriches.beta.gouv.fr/parcelle/123",

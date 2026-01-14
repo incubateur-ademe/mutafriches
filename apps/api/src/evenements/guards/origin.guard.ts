@@ -6,11 +6,16 @@ import {
   Logger,
 } from "@nestjs/common";
 import { Request } from "express";
+import { isDevelopment } from "../../shared/utils";
 
-const DEFAULT_ALLOWED_ORIGINS = [
+/**
+ * Guard pour les evenements (tracking interne)
+ * N'autorise QUE les origines Mutafriches (prod + staging)
+ * Localhost est autorise uniquement en mode developpement
+ */
+const MUTAFRICHES_ORIGINS = [
   "https://mutafriches.beta.gouv.fr",
   "https://mutafriches.incubateur.ademe.dev",
-  "http://localhost:5173",
 ];
 
 @Injectable()
@@ -20,9 +25,14 @@ export class OriginGuard implements CanActivate {
 
   constructor() {
     const envOrigins = process.env.ALLOWED_ORIGINS;
-    this.allowedOrigins = envOrigins
-      ? envOrigins.split(",").map((o) => o.trim())
-      : DEFAULT_ALLOWED_ORIGINS;
+    if (envOrigins) {
+      this.allowedOrigins = envOrigins.split(",").map((o) => o.trim());
+    } else {
+      // En developpement, autoriser aussi localhost
+      this.allowedOrigins = isDevelopment()
+        ? [...MUTAFRICHES_ORIGINS, "http://localhost:5173"]
+        : MUTAFRICHES_ORIGINS;
+    }
   }
 
   canActivate(context: ExecutionContext): boolean {
