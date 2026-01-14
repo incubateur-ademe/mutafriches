@@ -164,7 +164,6 @@ describe("Evaluation E2E", () => {
         expect.objectContaining({ origine: { source: SourceUtilisation.SITE_STANDALONE } }),
       );
     });
-
   });
 
   describe("GET /evaluation/:id", () => {
@@ -179,7 +178,9 @@ describe("Evaluation E2E", () => {
     it("devrait retourner 404 si evaluation non trouvee", async () => {
       mockOrchestrateurService.recupererEvaluation.mockResolvedValueOnce(null);
 
-      await request(app.getHttpServer() as App).get("/evaluation/eval-inexistant").expect(404);
+      await request(app.getHttpServer() as App)
+        .get("/evaluation/eval-inexistant")
+        .expect(404);
     });
   });
 
