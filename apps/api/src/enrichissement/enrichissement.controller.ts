@@ -7,6 +7,7 @@ import {
   Logger,
   HttpException,
   HttpStatus,
+  UseGuards,
 } from "@nestjs/common";
 import {
   ApiTags,
@@ -16,11 +17,13 @@ import {
   ApiBadRequestResponse,
   ApiNotFoundResponse,
   ApiQuery,
+  ApiForbiddenResponse,
 } from "@nestjs/swagger";
 import { Request } from "express";
 import { EnrichissementOutputDto } from "@mutafriches/shared-types";
 import { EnrichissementService } from "./services/enrichissement.service";
 import { OrigineDetectionService } from "../shared/services/origine-detection.service";
+import { IntegrateurOriginGuard } from "../shared/guards";
 import { EnrichirParcelleSwaggerDto } from "./dto/input/enrichir-parcelle.dto";
 import { EnrichissementSwaggerDto } from "./dto/output/enrichissement.dto";
 
@@ -35,6 +38,7 @@ export class EnrichissementController {
   ) {}
 
   @Post()
+  @UseGuards(IntegrateurOriginGuard)
   @ApiOperation({
     summary: "Enrichir les donnees d'une parcelle",
     description: `
@@ -57,6 +61,7 @@ export class EnrichissementController {
   })
   @ApiBadRequestResponse({ description: "Format d'identifiant invalide" })
   @ApiNotFoundResponse({ description: "Parcelle introuvable" })
+  @ApiForbiddenResponse({ description: "Origine non autorisee" })
   async enrichirParcelle(
     @Body() input: EnrichirParcelleSwaggerDto,
     @Query("iframe") isIframe?: boolean,
