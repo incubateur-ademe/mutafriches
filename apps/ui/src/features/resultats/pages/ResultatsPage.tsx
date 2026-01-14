@@ -4,12 +4,10 @@ import { useEventTracking } from "../../../shared/hooks/useEventTracking";
 import { MutabiliteOutputDto } from "@mutafriches/shared-types";
 import { buildMutabilityInput } from "../utils/mutability.mapper";
 import { ROUTES } from "../../../shared/config/routes.config";
-import { Stepper } from "../../../shared/components/layout";
 import { Layout } from "../../../shared/components/layout/Layout";
 import { LoadingCallout } from "../../../shared/components/common/LoadingCallout";
 import { ErrorAlert } from "../../../shared/components/common/ErrorAlert";
 import { PodiumCard } from "../components/PodiumCard";
-import { ReliabilityScore } from "../components/ReliabilityScore";
 import { ResultsTable } from "../components/ResultTable";
 import { PartnerCard } from "../components/PartnerCard";
 import { useFormContext } from "../../../shared/form/useFormContext";
@@ -30,12 +28,11 @@ export const ResultatsPage: React.FC = () => {
   const { parentOrigin, integrator } = useIframe();
 
   // Hook tracking
-  const { trackFeedback, trackExporterResultats, trackEvaluationTerminee } = useEventTracking();
+  const { trackExporterResultats, trackEvaluationTerminee } = useEventTracking();
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [mutabilityData, setMutabilityData] = useState<MutabiliteOutputDto | null>(null);
-  const [feedbackEnvoye, setFeedbackEnvoye] = useState(false);
   const [trackingExporterEnvoye, setTrackingExporterEnvoye] = useState(false);
 
   // Modal export
@@ -160,18 +157,6 @@ export const ResultatsPage: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Handler pour le feedback de pertinence
-  const handlePertinenceFeedback = async (pertinent: boolean) => {
-    if (!mutabilityData?.evaluationId || feedbackEnvoye) return;
-
-    try {
-      await trackFeedback(mutabilityData.evaluationId, pertinent);
-      setFeedbackEnvoye(true);
-    } catch (err) {
-      console.error("Erreur feedback:", err);
-    }
-  };
-
   // Handler pour exporter les resultats
   const handleExport = async () => {
     if (!mutabilityData?.evaluationId || trackingExporterEnvoye) return;
@@ -200,7 +185,7 @@ export const ResultatsPage: React.FC = () => {
 
   // Handler pour modifier les donnees
   const handleModifyData = () => {
-    navigate(ROUTES.QUALIFICATION_RISQUES);
+    navigate(ROUTES.QUALIFICATION_SITE);
   };
 
   // Handler pour le bouton callback
@@ -216,18 +201,22 @@ export const ResultatsPage: React.FC = () => {
 
   return (
     <Layout>
-      <Stepper
-        currentStep={4}
-        totalSteps={4}
-        currentStepTitle="Resultats de l'analyse"
-        nextStepTitle="Analyse terminee"
-      />
+      <div className="fr-mb-4w fr-py-4w">
+        <button
+          type="button"
+          className="fr-btn fr-icon-arrow-left-s-line fr-btn--icon-left fr-btn--secondary"
+          onClick={handleModifyData}
+        >
+          Modifier les donnees
+        </button>
 
-      <div className="fr-mb-4w">
-        <h1>Resultats de l'analyse</h1>
+        <h1 className="fr-mt-4w">Analyse de mutabilité</h1>
         <p className="fr-text--lead">
-          Au regard des caracteristiques sourcees et renseignees, voici les usages les plus
-          pertinents pour votre site.
+          ⚠️ Ces résultats constituent <strong>une première orientation</strong>, fondée sur des
+          données dont la fiabilité et la précision peuvent varier. Ils doivent être{" "}
+          <strong>croisés avec votre connaissance</strong> du territoire et ne se substituent pas à
+          des études de programmation. du territoire et ne se substituent pas à des études de
+          programmation.
         </p>
 
         {isLoading && (
@@ -241,14 +230,6 @@ export const ResultatsPage: React.FC = () => {
 
         {mutabilityData && !isLoading && (
           <>
-            {/* Indice de fiabilite */}
-            <ReliabilityScore
-              note={mutabilityData.fiabilite.note}
-              text={mutabilityData.fiabilite.text}
-              description={mutabilityData.fiabilite.description}
-            />
-
-            {/* Podium des usages */}
             <div
               style={{
                 display: "flex",
@@ -257,7 +238,24 @@ export const ResultatsPage: React.FC = () => {
                 marginBottom: "1rem",
               }}
             >
-              <h2 className="fr-h4 fr-mb-0 fr-mt-4w">Usages les plus appropries a la parcelle</h2>
+              {/* Indice de fiabilite */}
+              <div style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
+                <p className="fr-text fr-mb-0">
+                  <strong>Indice de fiabilite : {mutabilityData.fiabilite.note}/10</strong>
+                </p>
+                <button
+                  aria-describedby="tooltip-fiabilite"
+                  type="button"
+                  className="fr-btn--tooltip fr-btn"
+                >
+                  infobulle
+                </button>
+                <span className="fr-tooltip fr-placement" id="tooltip-fiabilite" role="tooltip">
+                  L'indice de fiabilite reflete la completude des informations concernant la friche.
+                  Il baisse si des donnees manquent ou si vous indiquez "Je ne sais pas".
+                </span>
+              </div>
+
               <button
                 className="fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-download-line fr-btn--sm"
                 onClick={handleExport}
@@ -272,70 +270,19 @@ export const ResultatsPage: React.FC = () => {
                   key={result.usage}
                   result={result}
                   position={(index + 1) as 1 | 2 | 3}
-                  evaluationId={mutabilityData.evaluationId}
                 />
               ))}
             </div>
 
-            {/* Question pertinence */}
-            <div
-              className="fr-mt-4w fr-mb-4w"
-              style={{ display: "flex", justifyContent: "center" }}
-            >
-              <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-                {feedbackEnvoye ? (
-                  <div className="fr-alert fr-alert--success fr-alert--sm">
-                    <h3 className="fr-alert__title">Merci pour votre retour</h3>
-                  </div>
-                ) : (
-                  <>
-                    <p className="fr-text--sm" style={{ margin: 0, fontWeight: "normal" }}>
-                      Ce classement vous semble-t-il pertinent ?
-                    </p>
-                    <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
-                      <div className="fr-radio-group fr-radio-group--sm" style={{ margin: 0 }}>
-                        <input
-                          type="radio"
-                          onClick={() => handlePertinenceFeedback(true)}
-                          id="radio-pertinent-oui"
-                          name="pertinence"
-                        />
-                        <label
-                          className="fr-label fr-text--sm"
-                          htmlFor="radio-pertinent-oui"
-                          style={{ margin: 0 }}
-                        >
-                          Oui
-                        </label>
-                      </div>
-                      <div className="fr-radio-group fr-radio-group--sm" style={{ margin: 0 }}>
-                        <input
-                          type="radio"
-                          onClick={() => handlePertinenceFeedback(false)}
-                          id="radio-pertinent-non"
-                          name="pertinence"
-                        />
-                        <label
-                          className="fr-label fr-text--sm"
-                          htmlFor="radio-pertinent-non"
-                          style={{ margin: 0 }}
-                        >
-                          Non
-                        </label>
-                      </div>
-                    </div>
-                  </>
-                )}
-              </div>
-            </div>
-
+            {/* Table des résultats */}
             <ResultsTable results={mutabilityData.resultats} />
 
-            <div className="fr-accordions-group fr-mt-4w">
+            {/* Accordéon Ecosysteme friches */}
+            <div className="fr-mt-4w">
               <section className="fr-accordion">
                 <h4 className="fr-accordion__title">
                   <button className="fr-accordion__btn" aria-expanded="false" aria-controls="tools">
-                    Des outils et services pour aller plus loin
+                    Aller plus loin gràce à l'écosystème friche
                   </button>
                 </h4>
                 <div className="fr-collapse" id="tools">
@@ -343,7 +290,6 @@ export const ResultatsPage: React.FC = () => {
                     <PartnerCard
                       logo="/images/logo-urbanvitaliz.svg"
                       logoAlt="Logo Urban Vitaliz"
-                      title="Urban Vitaliz"
                       description="Pour etre accompagne dans votre projet de rehabilitation par des conseillers competents."
                       url="https://urbanvitaliz.fr"
                     />
@@ -351,7 +297,6 @@ export const ResultatsPage: React.FC = () => {
                     <PartnerCard
                       logo="/images/logo-cartofriches.svg"
                       logoAlt="Logo Cartofriches"
-                      title="Cartofriches"
                       description="Rendez votre friche visible sur l'inventaire national pour la rendre trouvable par des porteurs de projet."
                       url="https://cartofriches.cerema.fr"
                     />
@@ -369,7 +314,7 @@ export const ResultatsPage: React.FC = () => {
             disabled={isLoading}
           >
             <span className="fr-icon-arrow-left-s-line fr-icon--sm" aria-hidden="true"></span>
-            Modifier les donnees
+            Précédent
           </button>
 
           {!hasCallback && (
