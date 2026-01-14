@@ -109,7 +109,7 @@ export const QualificationSitePage: React.FC = () => {
             value={uiData?.commune || "-"}
             tooltip={
               <>
-                Recupere depuis l'API IGN Cadastre :<br />
+                Récupéré depuis l'API IGN Cadastre :<br />
                 <a
                   href="https://apicarto.ign.fr/api/doc/cadastre"
                   target="_blank"
@@ -128,7 +128,7 @@ export const QualificationSitePage: React.FC = () => {
             value={uiData?.identifiantParcelle || "-"}
             tooltip={
               <>
-                Recupere depuis l'API IGN Cadastre :<br />
+                Récupéré depuis l'API IGN Cadastre :<br />
                 <a
                   href="https://apicarto.ign.fr/api/doc/cadastre"
                   target="_blank"
@@ -147,7 +147,7 @@ export const QualificationSitePage: React.FC = () => {
             value={uiData?.surfaceParcelle || "-"}
             tooltip={
               <>
-                Recupere depuis l'API IGN Cadastre :<br />
+                Récupéré depuis l'API IGN Cadastre :<br />
                 <a
                   href="https://apicarto.ign.fr/api/doc/cadastre"
                   target="_blank"
@@ -166,7 +166,7 @@ export const QualificationSitePage: React.FC = () => {
             value={uiData?.surfaceBatie || "-"}
             tooltip={
               <>
-                Recupere depuis l'API BDNB :<br />
+                Récupéré depuis l'API BDNB :<br />
                 <a
                   href="https://api-portail.bdnb.io"
                   target="_blank"
@@ -198,7 +198,7 @@ export const QualificationSitePage: React.FC = () => {
             value={uiData?.distanceRaccordement || "-"}
             tooltip={
               <>
-                Recupere depuis l'API Enedis :<br />
+                Récupéré depuis l'API Enedis :<br />
                 <a
                   href="https://data.enedis.fr/api/explore/v2.1/catalog/datasets"
                   target="_blank"
