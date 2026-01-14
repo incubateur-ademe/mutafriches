@@ -12,9 +12,21 @@ const POLLUTION_TYPES = [
     tooltip:
       "Les composes organiques volatils sont presents dans l'air et peuvent etre nocifs pour l'homme. Ex : benzene, dichloromethane, formaldehyde, perchloroethylene, etc.",
   },
-  { value: PresencePollution.OUI_AMIANTE, label: "Presence d'amiante" },
-  { value: PresencePollution.OUI_AUTRES_COMPOSES, label: "Autres composes" },
-  { value: PresencePollution.DEJA_GEREE, label: "Pollution deja geree" },
+  {
+    value: PresencePollution.OUI_AMIANTE,
+    label: "Presence d'amiante",
+    tooltip: "A remplir XXXXXX",
+  },
+  {
+    value: PresencePollution.OUI_AUTRES_COMPOSES,
+    label: "Autres composes",
+    tooltip: "A remplir XXXXXX",
+  },
+  {
+    value: PresencePollution.DEJA_GEREE,
+    label: "Pollution deja geree",
+    tooltip: "A remplir XXXXXX",
+  },
 ] as const;
 
 interface PollutionFieldProps {

@@ -53,7 +53,10 @@ export function Header() {
               <div className="fr-header__tools-links">
                 <ul className="fr-btns-group">
                   <li>
-                    <Link to={ROUTES.DOCUMENTATION_INTEGRATION} className="fr-btn fr-btn--tertiary">
+                    <Link
+                      to={ROUTES.DOCUMENTATION_INTEGRATION}
+                      className="fr-btn fr-btn--tertiary fr-icon-book-2-fill fr-btn--icon-left"
+                    >
                       Documentation
                     </Link>
                   </li>

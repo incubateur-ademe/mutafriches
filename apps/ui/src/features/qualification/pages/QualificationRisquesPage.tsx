@@ -4,8 +4,7 @@ import { ROUTES } from "../../../shared/config/routes.config";
 import { Stepper } from "../../../shared/components/layout";
 import { Layout } from "../../../shared/components/layout/Layout";
 import { useFormContext } from "../../../shared/form/useFormContext";
-import { RisquesEnrichedData } from "../components/risques/RisquesEnrichedData";
-import { StepNavigation } from "../components/common/StepNavigation";
+import { EnrichedInfoField, StepNavigation } from "../components";
 
 export const QualificationRisquesPage: React.FC = () => {
   const navigate = useNavigate();
@@ -33,42 +32,137 @@ export const QualificationRisquesPage: React.FC = () => {
     return null;
   }
 
+  const uiData = state.uiData;
+
   return (
     <Layout>
       <Stepper
         currentStep={3}
         totalSteps={3}
-        currentStepTitle="Risques identifies"
-        nextStepTitle="Resultats"
+        currentStepTitle="Qualifier les risques et zonages du site"
+        nextStepTitle="Analyse de mutabilite"
       />
 
-      <div className="fr-mb-4w">
-        <h1>Risques identifies</h1>
-        <p className="fr-text--lead">
-          Voici les risques et zonages identifies sur votre parcelle. Ces informations sont prises
-          en compte dans le calcul de mutabilite.
-        </p>
+      {/* Zone 1 - Risques technologiques et naturels */}
+      <div className="fr-grid-row fr-grid-row--gutters">
+        <EnrichedInfoField
+          id="presence-risques-technologiques"
+          label="Presence de risques technologiques"
+          value={uiData?.risquesTechno}
+          tooltip={
+            <>
+              Recupere depuis les donnees de l'API Georisques :<br />
+              <a
+                href="https://georisques.gouv.fr/doc-api"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="fr-link fr-text--xs"
+              >
+                georisques.gouv.fr/doc-api
+              </a>
+            </>
+          }
+        />
 
-        {/* Affichage des risques depuis les donnees enrichies */}
-        {state.uiData && <RisquesEnrichedData data={state.uiData} />}
-
-        <div className="fr-callout fr-callout--blue-ecume fr-mt-4w">
-          <h3 className="fr-callout__title">Information</h3>
-          <p className="fr-callout__text">
-            Les risques et zonages sont des donnees collectees automatiquement. Elles sont prises en
-            compte dans le calcul de mutabilite pour vous proposer les usages les plus adaptes a
-            votre parcelle.
-          </p>
-        </div>
-
-        {/* Boutons de navigation */}
-        <StepNavigation
-          onPrevious={handlePrevious}
-          onNext={handleNext}
-          previousLabel="Precedent"
-          nextLabel="Calculer la mutabilite"
+        <EnrichedInfoField
+          id="niveau-risques-naturels"
+          label="Niveau de risques naturels"
+          value={uiData?.risquesNaturels}
+          tooltip={
+            <>
+              Recupere depuis les donnees de l'API Georisques :<br />
+              <a
+                href="https://www.georisques.gouv.fr/citoyen-recherche-map"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="fr-link fr-text--xs"
+              >
+                georisques.gouv.fr/citoyen-recherche-map
+              </a>
+              <br />
+              <br />
+              <em>
+                En l'absence de la numerisation des plans de prevention des risques, cette donnee
+                est susceptible d'etre faussee
+              </em>
+            </>
+          }
         />
       </div>
+
+      <hr className="fr-my-4w" />
+
+      {/* Zone 2 - Zonages environnemental et reglementaire */}
+      <div className="fr-grid-row fr-grid-row--gutters">
+        <EnrichedInfoField
+          id="type-zonage-environnemental"
+          label="Type de zonage environnemental"
+          value={uiData?.zonageEnviro}
+          tooltip={
+            <>
+              Donnees enrichies via les API Carto Nature et GPU de l'IGN :<br />
+              <a
+                href="https://apicarto.ign.fr/api/doc/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="fr-link fr-text--xs"
+              >
+                apicarto.ign.fr/api/doc/
+              </a>
+            </>
+          }
+        />
+
+        <EnrichedInfoField
+          id="type-zonage-reglementaire"
+          label="Type de zonage reglementaire"
+          value={uiData?.zonageUrba}
+          tooltip={
+            <>
+              Donnees enrichies via les API Carto Nature et GPU de l'IGN :<br />
+              <a
+                href="https://apicarto.ign.fr/api/doc/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="fr-link fr-text--xs"
+              >
+                apicarto.ign.fr/api/doc/
+              </a>
+            </>
+          }
+        />
+      </div>
+
+      <hr className="fr-my-4w" />
+
+      {/* Zone 3 - Zonage patrimonial */}
+      <div className="fr-grid-row fr-grid-row--gutters fr-mb-8w">
+        <EnrichedInfoField
+          id="type-zonage-patrimonial"
+          label="Type de zonage patrimonial"
+          value={uiData?.zonagePatrimonial}
+          tooltip={
+            <>
+              Donnees enrichies via les API Carto Nature et GPU de l'IGN :<br />
+              <a
+                href="https://apicarto.ign.fr/api/doc/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="fr-link fr-text--xs"
+              >
+                apicarto.ign.fr/api/doc/
+              </a>
+            </>
+          }
+        />
+      </div>
+
+      <StepNavigation
+        onPrevious={handlePrevious}
+        onNext={handleNext}
+        previousLabel="Precedent"
+        nextLabel="Calculer la mutabilite"
+      />
     </Layout>
   );
 };
