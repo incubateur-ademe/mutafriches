@@ -180,7 +180,8 @@ describe("IntegrateurOriginGuard", () => {
     });
 
     it("devrait ajouter des origines supplementaires via ALLOWED_INTEGRATOR_ORIGINS", () => {
-      process.env.ALLOWED_INTEGRATOR_ORIGINS = "https://cartofriches.cerema.fr,https://urbanvitaliz.fr";
+      process.env.ALLOWED_INTEGRATOR_ORIGINS =
+        "https://cartofriches.cerema.fr,https://urbanvitaliz.fr";
       const guard = new IntegrateurOriginGuard();
 
       const context1 = createMockExecutionContext({
