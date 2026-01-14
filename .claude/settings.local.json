@@ -10,7 +10,8 @@
       "Bash(pnpm build:shared:*)",
       "Bash(pnpm db:generate*)",
       "Bash(pnpm db:migrate:*)",
-      "Bash(pnpm db:ademe-sites:import:*)"
+      "Bash(pnpm db:ademe-sites:import:*)",
+      "Bash(pnpm run typecheck:*)"
     ]
   }
 }
