@@ -10,6 +10,7 @@ import {
   HttpException,
   HttpStatus,
   Logger,
+  UseGuards,
 } from "@nestjs/common";
 import {
   ApiTags,
@@ -20,6 +21,7 @@ import {
   ApiNotFoundResponse,
   ApiQuery,
   ApiParam,
+  ApiForbiddenResponse,
 } from "@nestjs/swagger";
 import {
   CalculerMutabiliteInputDto,
@@ -41,6 +43,7 @@ import {
 import { Request } from "express";
 import { OrchestrateurService } from "./services/orchestrateur.service";
 import { OrigineDetectionService } from "../shared/services/origine-detection.service";
+import { IntegrateurOriginGuard } from "../shared/guards";
 import { CalculerMutabiliteSwaggerDto } from "./dto/input/calculer-mutabilite.dto";
 import { MutabiliteSwaggerDto } from "./dto/output/mutabilite.dto";
 import { MetadataSwaggerDto } from "./dto/output/metadata.dto";
@@ -58,6 +61,7 @@ export class EvaluationController {
   ) {}
 
   @Post("calculer")
+  @UseGuards(IntegrateurOriginGuard)
   @ApiOperation({
     summary: "Calculer les indices de mutabilité",
     description: "Calcule les indices de mutabilité pour 7 usages différents d'une friche urbaine.",
@@ -67,6 +71,7 @@ export class EvaluationController {
   @ApiQuery({ name: "sansEnrichissement", required: false, type: Boolean })
   @ApiResponse({ status: 201, description: "Calcul réussi", type: MutabiliteSwaggerDto })
   @ApiBadRequestResponse({ description: "Données incomplètes" })
+  @ApiForbiddenResponse({ description: "Origine non autorisee" })
   async calculerMutabilite(
     @Body() input: CalculerMutabiliteInputDto,
     @Query("modeDetaille") modeDetaille?: boolean,
