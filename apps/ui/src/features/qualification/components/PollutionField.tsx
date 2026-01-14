@@ -15,17 +15,20 @@ const POLLUTION_TYPES = [
   {
     value: PresencePollution.OUI_AMIANTE,
     label: "Presence d'amiante",
-    tooltip: "A remplir XXXXXX",
+    tooltip:
+      "L'amiante se retrouve peu dans les sols mais principalement dans le bâti. De nombreux matériaux contenant de l'amiante peuvent subsister dans les cloisons, portes coupe-feu, faux plafonds, tuyaux, dalles de sol, toitures etc.",
   },
   {
     value: PresencePollution.OUI_AUTRES_COMPOSES,
     label: "Autres composes",
-    tooltip: "A remplir XXXXXX",
+    tooltip:
+      "On fait ici référence aux autres composés polluants retrouvés dans les sols du site. Ces polluants peuvent être à l'état solide ou liquide mais ne présentent pas de comportements volatils.",
   },
   {
     value: PresencePollution.DEJA_GEREE,
     label: "Pollution deja geree",
-    tooltip: "A remplir XXXXXX",
+    tooltip:
+      'Une opération de dépollution a déjà été menée sur le site. Attention toutefois, la méthode "sites et sols pollués" française consiste à dépolluer un site pour un usage donné. Il s\'agira de vérifier que cet usage est identique à celui du projet que vous mènerez sur le site.',
   },
 ] as const;
 

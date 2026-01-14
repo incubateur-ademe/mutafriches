@@ -6,7 +6,7 @@ import { Layout } from "../../../shared/components/layout/Layout";
 import { useFormContext } from "../../../shared/form/useFormContext";
 import { useEventTracking } from "../../../shared/hooks/useEventTracking";
 import { TypeEvenement } from "@mutafriches/shared-types";
-import { StepNavigation } from "../components/common/StepNavigation";
+import { StepNavigation } from "../components/StepNavigation";
 import { EnrichedInfoField, FormSelectField } from "../components";
 import {
   EnvironnementFormValues,

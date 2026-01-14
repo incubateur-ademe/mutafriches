@@ -4,7 +4,7 @@ import { ROUTES } from "../../../shared/config/routes.config";
 import { Stepper } from "../../../shared/components/layout";
 import { Layout } from "../../../shared/components/layout/Layout";
 import { useFormContext } from "../../../shared/form/useFormContext";
-import { StepNavigation } from "../components/common/StepNavigation";
+import { StepNavigation } from "../components/StepNavigation";
 import { SiteFormValues, DEFAULT_SITE_VALUES, ValidationErrors } from "../config/types";
 import { SITE_FIELDS } from "../config/fields/site.fields";
 import { validateSiteForm } from "../config/validators";
@@ -257,7 +257,6 @@ export const QualificationSitePage: React.FC = () => {
             tooltip="Entrez l'information dont vous disposez sur la présence de pollution sur votre site (sol et bâti). Si la case 'Oui' est présélectionnée, c'est que nous avons retrouvé votre site dans une base de données nationales des sites pollués."
           />
         </div>
-
       </form>
 
       <StepNavigation
