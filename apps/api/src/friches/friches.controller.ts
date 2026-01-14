@@ -1,5 +1,14 @@
-import { Controller, Post, Body, Query, Get, Param, NotFoundException } from "@nestjs/common";
-import { ApiTags, ApiOperation } from "@nestjs/swagger";
+import {
+  Controller,
+  Post,
+  Body,
+  Query,
+  Get,
+  Param,
+  NotFoundException,
+  UseGuards,
+} from "@nestjs/common";
+import { ApiTags, ApiOperation, ApiForbiddenResponse } from "@nestjs/swagger";
 import {
   EnrichirParcelleInputDto,
   EnrichissementOutputDto,
@@ -23,6 +32,7 @@ import {
 } from "@mutafriches/shared-types";
 import { EnrichissementService } from "../enrichissement/services/enrichissement.service";
 import { OrchestrateurService } from "../evaluation/services/orchestrateur.service";
+import { IntegrateurOriginGuard } from "../shared/guards";
 import { EvaluationSwaggerDto } from "../evaluation/dto/output/evaluation.dto";
 import { MetadataSwaggerDto } from "../evaluation/dto/output/metadata.dto";
 import { Evaluation } from "../evaluation/entities/evaluation.entity";
@@ -36,7 +46,9 @@ export class FrichesController {
   ) {}
 
   @Post("enrichir")
+  @UseGuards(IntegrateurOriginGuard)
   @ApiOperation({ summary: "DEPRECATED - utilisez POST /enrichissement", deprecated: true })
+  @ApiForbiddenResponse({ description: "Origine non autorisee" })
   async enrichirParcelle(
     @Body() input: EnrichirParcelleInputDto,
   ): Promise<EnrichissementOutputDto> {
@@ -44,7 +56,9 @@ export class FrichesController {
   }
 
   @Post("calculer")
+  @UseGuards(IntegrateurOriginGuard)
   @ApiOperation({ summary: "DEPRECATED - utilisez POST /evaluation/calculer", deprecated: true })
+  @ApiForbiddenResponse({ description: "Origine non autorisee" })
   async calculerMutabilite(
     @Body() input: CalculerMutabiliteInputDto,
     @Query("modeDetaille") modeDetaille?: boolean,
