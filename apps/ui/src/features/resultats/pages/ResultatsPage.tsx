@@ -270,12 +270,8 @@ export const ResultatsPage: React.FC = () => {
             </div>
 
             <div className="fr-grid-row fr-grid-row--gutters fr-mb-4w">
-              {mutabilityData.resultats.slice(0, 3).map((result, index) => (
-                <PodiumCard
-                  key={result.usage}
-                  result={result}
-                  position={(index + 1) as 1 | 2 | 3}
-                />
+              {mutabilityData.resultats.slice(0, 3).map((result) => (
+                <PodiumCard key={result.usage} result={result} />
               ))}
             </div>
 

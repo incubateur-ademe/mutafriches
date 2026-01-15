@@ -89,10 +89,7 @@ export const PollutionField: React.FC<PollutionFieldProps> = ({
   // - Si la valeur externe est un type de pollution
   // - OU si l'utilisateur a clique sur "Oui" (meme sans type choisi)
   // - OU si le site est reference pollue et qu'aucune valeur n'est encore choisie
-  const ouiSelected =
-    isPollutionType(value) ||
-    userSelectedOui ||
-    (siteReferencePollue && !value);
+  const ouiSelected = isPollutionType(value) || userSelectedOui || (siteReferencePollue && !value);
 
   // Calculer la valeur du select
   const selectValue: PollutionSelectValue = ouiSelected

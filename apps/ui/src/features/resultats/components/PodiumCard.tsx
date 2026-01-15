@@ -1,98 +1,57 @@
 import React from "react";
 import { UsageResultat } from "@mutafriches/shared-types";
-import { getUsageInfo } from "../utils/usagesLabels.utils";
+import { getUsageInfo, getBadgeConfig, sortTagsForDisplay } from "../utils/usagesLabels.utils";
+import "./PodiumCard.css";
 
 interface PodiumCardProps {
   result: UsageResultat;
-  position: 1 | 2 | 3;
-  evaluationId?: string;
 }
 
-export const PodiumCard: React.FC<PodiumCardProps> = ({ result, position }) => {
+export const PodiumCard: React.FC<PodiumCardProps> = ({ result }) => {
   const usageInfo = getUsageInfo(result.usage);
-
-  const getPositionStyles = () => {
-    switch (position) {
-      case 1:
-        return {
-          badge: "fr-badge--success",
-          color: "#18753c",
-          icon: "🥇",
-          potentiel: "Excellent",
-        };
-      case 2:
-        return {
-          badge: "fr-badge--info",
-          color: "#0078f3",
-          icon: "🥈",
-          potentiel: "Très bon",
-        };
-      case 3:
-        return {
-          badge: "",
-          color: "#666666",
-          icon: "🥉",
-          potentiel: "Bon",
-        };
-    }
-  };
-
-  const styles = getPositionStyles();
+  const badgeConfig = getBadgeConfig(result.indiceMutabilite);
+  const sortedTags = sortTagsForDisplay(usageInfo.tags);
 
   return (
-    <>
-      <div className="fr-col-12 fr-col-md-4">
-        <div className="fr-card fr-card--shadow">
-          <div className="fr-card__body">
-            <div style={{ textAlign: "left" }}>
-              <p
-                className={`fr-badge ${styles.badge} fr-badge--no-icon fr-badge--sm fr-mt-2w fr-mb-2w`}
-              >
-                {styles.icon} {styles.potentiel}
-              </p>
-            </div>
+    <div className="fr-col-12 fr-col-md-4">
+      <div className="podium-card">
+        {/* Badge */}
+        <div
+          className="podium-card__badge"
+          style={{
+            color: badgeConfig.textColor,
+            backgroundColor: badgeConfig.backgroundColor,
+          }}
+        >
+          {badgeConfig.label}
+        </div>
 
-            <div className="text-center">
-              <div style={{ fontSize: "3rem", marginBottom: "1rem" }}>{usageInfo.icon}</div>
-              <h5 className="fr-card__title fr-mt-2w fr-mb-2w">{usageInfo.label}</h5>
-            </div>
-            <div className="fr-card__content text-center">
-              <ul className="fr-tags-group">
-                <li>
-                  <button
-                    className="fr-tag fr-tag--défaut"
-                    id="tag-group-0"
-                    type="button"
-                    aria-pressed="false"
-                  >
-                    libellé tag 1
-                  </button>
-                </li>
-                <li>
-                  <button
-                    className="fr-tag fr-tag--défaut"
-                    id="tag-group-1"
-                    type="button"
-                    aria-pressed="false"
-                  >
-                    libellé tag 2
-                  </button>
-                </li>
-                <li>
-                  <button
-                    className="fr-tag fr-tag--défaut"
-                    id="tag-group-2"
-                    type="button"
-                    aria-pressed="false"
-                  >
-                    libellé tag 3
-                  </button>
-                </li>
-              </ul>
-            </div>
+        {/* Image */}
+        <div className="podium-card__image">
+          <img src={usageInfo.image} alt={usageInfo.label} />
+        </div>
+
+        {/* Titre */}
+        <h5 className="podium-card__title">{usageInfo.label}</h5>
+
+        {/* Tags - 2 premiers (courts) sur ligne 1, dernier (long) sur ligne 2 */}
+        <div className="podium-card__tags fr-mb-2w fr-mt-2w">
+          <div className="podium-card__tags-row">
+            {sortedTags.slice(0, 2).map((tag, index) => (
+              <a key={index} className="fr-tag fr-mb-2v" href="#">
+                {tag}
+              </a>
+            ))}
           </div>
+          {sortedTags.length > 2 && (
+            <div className="podium-card__tags-row">
+              <a className="fr-tag" href="#">
+                {sortedTags[2]}
+              </a>
+            </div>
+          )}
         </div>
       </div>
-    </>
+    </div>
   );
 };

@@ -1,6 +1,7 @@
 import { UsageResultat } from "@mutafriches/shared-types";
 import React from "react";
-import { getUsageInfo } from "../utils/usagesLabels.utils";
+import { getUsageInfo, getBadgeConfig } from "../utils/usagesLabels.utils";
+import "./ResultTable.css";
 
 interface ResultsTableProps {
   results: UsageResultat[];
@@ -10,34 +11,8 @@ interface ResultsTableProps {
  * Tableau complet des résultats de mutabilité pour tous les usages
  */
 export const ResultsTable: React.FC<ResultsTableProps> = ({ results }) => {
-  // Déterminer la couleur selon le rang
-  const getBarColor = (rang: number): string => {
-    if (rang <= 2) return "#18753c"; // Vert pour top 2
-    if (rang <= 4) return "#0078f3"; // Bleu pour 3-4
-    if (rang <= 5) return "#666666"; // Gris pour 5
-    return "#ce614a"; // Orange pour 6-7
-  };
-
-  // Déterminer le badge selon le rang
-  const getBadgeClass = (rang: number): string => {
-    if (rang <= 2) return "fr-badge--success";
-    if (rang <= 4) return "fr-badge--info";
-    if (rang >= 6) return "fr-badge--warning";
-    return "";
-  };
-
-  // Déterminer le potentiel selon l'indice
-  const getPotentiel = (indice: number): string => {
-    if (indice >= 70) return "Excellent";
-    if (indice >= 60) return "Très bon";
-    if (indice >= 50) return "Bon";
-    if (indice >= 40) return "Moyen";
-    if (indice >= 30) return "Faible";
-    return "Très faible";
-  };
-
   return (
-    <div className=" fr-mt-4w">
+    <div className="fr-mt-4w">
       <div className="fr-table fr-table--bordered">
         <div className="fr-table__wrapper">
           <div className="fr-table__container">
@@ -60,44 +35,49 @@ export const ResultsTable: React.FC<ResultsTableProps> = ({ results }) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {results.map((result) => (
-                    <tr key={result.usage}>
-                      <td>
-                        <strong>
-                          {result.rang === 1 && "1er"}
-                          {result.rang === 2 && "2e"}
-                          {result.rang === 3 && "3e"}
-                          {result.rang > 3 && `${result.rang}e`}
-                        </strong>
-                      </td>
-                      <td>
-                        <strong className={result.rang <= 3 ? "" : ""}>
-                          {getUsageInfo(result.usage).label}
-                        </strong>
-                      </td>
-                      <td>
-                        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                          <div
+                  {results.map((result) => {
+                    const badgeConfig = getBadgeConfig(result.indiceMutabilite);
+                    return (
+                      <tr key={result.usage}>
+                        <td>
+                          <strong>
+                            {result.rang === 1 && "1er"}
+                            {result.rang === 2 && "2e"}
+                            {result.rang === 3 && "3e"}
+                            {result.rang > 3 && `${result.rang}e`}
+                          </strong>
+                        </td>
+                        <td>
+                          <strong>{getUsageInfo(result.usage).label}</strong>
+                        </td>
+                        <td>
+                          <div className="result-table__bar-container">
+                            <div
+                              className="result-table__bar"
+                              style={{
+                                backgroundColor: badgeConfig.backgroundColor,
+                                width: `${result.indiceMutabilite}%`,
+                              }}
+                            />
+                            <span className="result-table__percentage">
+                              <strong>{Math.round(result.indiceMutabilite)}%</strong>
+                            </span>
+                          </div>
+                        </td>
+                        <td>
+                          <span
+                            className="result-table__badge"
                             style={{
-                              background: getBarColor(result.rang),
-                              height: "8px",
-                              width: `${result.indiceMutabilite}%`,
-                              borderRadius: "4px",
-                              minWidth: "10px",
+                              color: badgeConfig.textColor,
+                              backgroundColor: badgeConfig.backgroundColor,
                             }}
-                          />
-                          <span className="font-bold">{Math.round(result.indiceMutabilite)}%</span>
-                        </div>
-                      </td>
-                      <td>
-                        <span
-                          className={`fr-badge ${getBadgeClass(result.rang)} fr-badge--no-icon`}
-                        >
-                          {getPotentiel(result.indiceMutabilite)}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
+                          >
+                            {badgeConfig.label}
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
