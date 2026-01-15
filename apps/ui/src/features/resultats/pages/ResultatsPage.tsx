@@ -188,6 +188,11 @@ export const ResultatsPage: React.FC = () => {
     navigate(ROUTES.QUALIFICATION_SITE);
   };
 
+  // Handler pour revenir à l'étape précédente
+  const handlePreviousStep = () => {
+    navigate(ROUTES.QUALIFICATION_RISQUES);
+  };
+
   // Handler pour le bouton callback
   const handleCallback = () => {
     if (callbackUrl) {
@@ -282,7 +287,7 @@ export const ResultatsPage: React.FC = () => {
               <section className="fr-accordion">
                 <h4 className="fr-accordion__title">
                   <button className="fr-accordion__btn" aria-expanded="false" aria-controls="tools">
-                    Aller plus loin gràce à l'écosystème friche
+                    Aller plus loin gràce à l'écosystème friches
                   </button>
                 </h4>
                 <div className="fr-collapse" id="tools">
@@ -310,7 +315,7 @@ export const ResultatsPage: React.FC = () => {
         <div className="fr-mt-4w fr-btns-group fr-btns-group--inline fr-btns-group--center">
           <button
             className="fr-btn fr-btn--secondary"
-            onClick={handleModifyData}
+            onClick={handlePreviousStep}
             disabled={isLoading}
           >
             <span className="fr-icon-arrow-left-s-line fr-icon--sm" aria-hidden="true"></span>

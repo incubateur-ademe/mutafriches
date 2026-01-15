@@ -52,9 +52,43 @@ export const PodiumCard: React.FC<PodiumCardProps> = ({ result, position }) => {
               </p>
             </div>
 
-            <div className="fr-card__content text-center">
+            <div className="text-center">
               <div style={{ fontSize: "3rem", marginBottom: "1rem" }}>{usageInfo.icon}</div>
               <h5 className="fr-card__title fr-mt-2w fr-mb-2w">{usageInfo.label}</h5>
+            </div>
+            <div className="fr-card__content text-center">
+              <ul className="fr-tags-group">
+                <li>
+                  <button
+                    className="fr-tag fr-tag--défaut"
+                    id="tag-group-0"
+                    type="button"
+                    aria-pressed="false"
+                  >
+                    libellé tag 1
+                  </button>
+                </li>
+                <li>
+                  <button
+                    className="fr-tag fr-tag--défaut"
+                    id="tag-group-1"
+                    type="button"
+                    aria-pressed="false"
+                  >
+                    libellé tag 2
+                  </button>
+                </li>
+                <li>
+                  <button
+                    className="fr-tag fr-tag--défaut"
+                    id="tag-group-2"
+                    type="button"
+                    aria-pressed="false"
+                  >
+                    libellé tag 3
+                  </button>
+                </li>
+              </ul>
             </div>
           </div>
         </div>

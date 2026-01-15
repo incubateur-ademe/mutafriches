@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { PresencePollution } from "@mutafriches/shared-types";
 
 /** Options pour le select Oui/Non/Ne sait pas */
@@ -7,16 +7,16 @@ type PollutionSelectValue = "oui" | "non" | "ne-sait-pas" | "";
 /** Types de pollution disponibles quand "Oui" est selectionne */
 const POLLUTION_TYPES = [
   {
-    value: PresencePollution.OUI_COMPOSES_VOLATILS,
-    label: "Composes volatils",
-    tooltip:
-      "Les composes organiques volatils sont presents dans l'air et peuvent etre nocifs pour l'homme. Ex : benzene, dichloromethane, formaldehyde, perchloroethylene, etc.",
-  },
-  {
     value: PresencePollution.OUI_AMIANTE,
     label: "Presence d'amiante",
     tooltip:
       "L'amiante se retrouve peu dans les sols mais principalement dans le bâti. De nombreux matériaux contenant de l'amiante peuvent subsister dans les cloisons, portes coupe-feu, faux plafonds, tuyaux, dalles de sol, toitures etc.",
+  },
+  {
+    value: PresencePollution.OUI_COMPOSES_VOLATILS,
+    label: "Composes volatils",
+    tooltip:
+      "Les composes organiques volatils sont presents dans l'air et peuvent etre nocifs pour l'homme. Ex : benzene, dichloromethane, formaldehyde, perchloroethylene, etc.",
   },
   {
     value: PresencePollution.OUI_AUTRES_COMPOSES,
@@ -81,24 +81,18 @@ export const PollutionField: React.FC<PollutionFieldProps> = ({
   error,
   tooltip,
 }) => {
-  // Etat interne pour tracker si "Oui" est selectionne (meme sans type de pollution choisi)
-  const [ouiSelected, setOuiSelected] = useState<boolean>(false);
+  // Etat interne pour tracker si l'utilisateur a explicitement clique sur "Oui"
+  // (sans avoir encore choisi un type de pollution)
+  const [userSelectedOui, setUserSelectedOui] = useState<boolean>(false);
 
-  // Synchroniser l'etat interne avec la valeur externe
-  useEffect(() => {
-    if (isPollutionType(value)) {
-      setOuiSelected(true);
-    } else if (value === PresencePollution.NON || value === PresencePollution.NE_SAIT_PAS) {
-      setOuiSelected(false);
-    }
-  }, [value]);
-
-  // Initialiser ouiSelected si siteReferencePollue est true
-  useEffect(() => {
-    if (siteReferencePollue && !value) {
-      setOuiSelected(true);
-    }
-  }, [siteReferencePollue, value]);
+  // Determiner si "Oui" doit etre affiche comme selectionne :
+  // - Si la valeur externe est un type de pollution
+  // - OU si l'utilisateur a clique sur "Oui" (meme sans type choisi)
+  // - OU si le site est reference pollue et qu'aucune valeur n'est encore choisie
+  const ouiSelected =
+    isPollutionType(value) ||
+    userSelectedOui ||
+    (siteReferencePollue && !value);
 
   // Calculer la valeur du select
   const selectValue: PollutionSelectValue = ouiSelected
@@ -111,17 +105,17 @@ export const PollutionField: React.FC<PollutionFieldProps> = ({
 
   const handleSelectChange = (newSelectValue: PollutionSelectValue) => {
     if (newSelectValue === "non") {
-      setOuiSelected(false);
+      setUserSelectedOui(false);
       onChange(PresencePollution.NON);
     } else if (newSelectValue === "ne-sait-pas") {
-      setOuiSelected(false);
+      setUserSelectedOui(false);
       onChange(PresencePollution.NE_SAIT_PAS);
     } else if (newSelectValue === "oui") {
       // Marquer "Oui" comme selectionne mais ne pas changer la valeur
       // tant que l'utilisateur n'a pas choisi un type de pollution
-      setOuiSelected(true);
+      setUserSelectedOui(true);
     } else {
-      setOuiSelected(false);
+      setUserSelectedOui(false);
       onChange("");
     }
   };
