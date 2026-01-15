@@ -45,6 +45,7 @@ export class EvaluationBuilder {
     tauxLogementsVacants: 5.2,
     presenceRisquesTechnologiques: false,
     presenceRisquesNaturels: "FAIBLE",
+    siteReferencePollue: false,
     zonageReglementaire: "U",
     sourcesUtilisees: ["cadastre"],
     champsManquants: [],

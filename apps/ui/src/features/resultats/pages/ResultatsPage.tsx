@@ -18,6 +18,55 @@ import { evaluationService } from "../../../shared/services/api/api.evaluation.s
 import { ModalInfo } from "../../../shared/components/common/ModalInfo";
 import { VERSION_ALGO } from "@mutafriches/shared-types";
 
+// Seuils pour les messages contextuels
+const SEUIL_SURFACE_HECTARE = 10000; // 1 hectare en m2
+const SEUIL_ECART_FORTE_DISPARITE = 30; // 30% d'ecart entre usages successifs
+const SEUIL_ECART_FAIBLE = 10; // 10% d'ecart pour usages proches
+const NB_USAGES_PROCHES_REQUIS = 3; // Nombre d'usages proches pour declencher le message
+
+/**
+ * Analyse les resultats de mutabilite pour afficher des messages contextuels adaptés.
+ */
+function analyserResultats(
+  resultats: { indiceMutabilite: number }[],
+  surfaceSite: number,
+): {
+  messageForteDisparite: boolean;
+  messageMixteUsages: boolean;
+  messageEtudeProgrammatique: boolean;
+} {
+  // Regle 2 : Verifier s'il y a un ecart > 30% entre deux usages successifs
+  let messageForteDisparite = false;
+  for (let i = 0; i < resultats.length - 1; i++) {
+    const ecart = Math.abs(resultats[i].indiceMutabilite - resultats[i + 1].indiceMutabilite);
+    if (ecart > SEUIL_ECART_FORTE_DISPARITE) {
+      messageForteDisparite = true;
+      break;
+    }
+  }
+
+  // Regle 1 : Surface > 1 hectare (sauf si regle 2 s'applique)
+  const messageMixteUsages = !messageForteDisparite && surfaceSite > SEUIL_SURFACE_HECTARE;
+
+  // Regle 3 : Verifier si 3 usages sont eloignes de moins de 10%
+  // On cherche une sequence de 3 usages consecutifs avec ecarts < 10%
+  let messageEtudeProgrammatique = false;
+  if (resultats.length >= NB_USAGES_PROCHES_REQUIS) {
+    for (let i = 0; i <= resultats.length - NB_USAGES_PROCHES_REQUIS; i++) {
+      const groupe = resultats.slice(i, i + NB_USAGES_PROCHES_REQUIS);
+      const ecartMax =
+        Math.max(...groupe.map((r) => r.indiceMutabilite)) -
+        Math.min(...groupe.map((r) => r.indiceMutabilite));
+      if (ecartMax < SEUIL_ECART_FAIBLE) {
+        messageEtudeProgrammatique = true;
+        break;
+      }
+    }
+  }
+
+  return { messageForteDisparite, messageMixteUsages, messageEtudeProgrammatique };
+}
+
 export const ResultatsPage: React.FC = () => {
   const navigate = useNavigate();
   const { state, setMutabilityResult, setCurrentStep, canAccessStep, resetForm } = useFormContext();
@@ -107,11 +156,13 @@ export const ResultatsPage: React.FC = () => {
       setMutabilityData(result);
       sendIframeMessages(result);
 
-      // Tracker l'evenement d'evaluation terminee
-      await trackEvaluationTerminee(
-        result.evaluationId || "ERROR_NO_ID",
-        state.identifiantParcelle || undefined,
-      );
+      // Tracker l'evenement d'evaluation terminee (seulement si evaluationId valide)
+      if (result.evaluationId) {
+        await trackEvaluationTerminee(
+          result.evaluationId,
+          state.identifiantParcelle || undefined,
+        );
+      }
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "Erreur lors du calcul de mutabilite";
@@ -216,13 +267,42 @@ export const ResultatsPage: React.FC = () => {
         </button>
 
         <h1 className="fr-mt-4w">Analyse de mutabilité</h1>
-        <p className="fr-text--lead">
-          ⚠️ Ces résultats constituent <strong>une première orientation</strong>, fondée sur des
-          données dont la fiabilité et la précision peuvent varier. Ils doivent être{" "}
-          <strong>croisés avec votre connaissance</strong> du territoire et ne se substituent pas à
-          des études de programmation. du territoire et ne se substituent pas à des études de
-          programmation.
-        </p>
+        {(() => {
+          const surfaceSite = state.enrichmentData?.surfaceSite ?? 0;
+          const resultats = mutabilityData?.resultats ?? [];
+          const { messageForteDisparite, messageMixteUsages, messageEtudeProgrammatique } =
+            analyserResultats(resultats, surfaceSite);
+
+          return (
+            <p className="fr-text--lead">
+              Ces resultats constituent <strong>une premiere orientation</strong>, fondee sur des
+              donnees dont la fiabilite et la precision peuvent varier. Ils doivent etre{" "}
+              <strong>croises avec votre connaissance</strong> du territoire et ne se substituent
+              pas a des etudes de programmation.
+              {messageForteDisparite && (
+                <>
+                  {" "}
+                  Les resultats font apparaitre une forte disparite entre les usages, il semble que
+                  certains soient tres peu adaptes a votre site.
+                </>
+              )}
+              {messageMixteUsages && (
+                <>
+                  {" "}
+                  Aussi, compte tenu de la surface du site (plus d'un hectare), il vous est
+                  recommande de privilegier un mixte d'usages dans votre programmation.
+                </>
+              )}
+              {messageEtudeProgrammatique && (
+                <>
+                  {" "}
+                  Votre site semble adapte a plusieurs usages, une etude programmatique permettra de
+                  mieux qualifier le besoin et la programmation a mettre en oeuvre.
+                </>
+              )}
+            </p>
+          );
+        })()}
 
         {isLoading && (
           <LoadingCallout

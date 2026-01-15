@@ -190,4 +190,10 @@ export class EnrichissementSwaggerDto implements IEnrichissementOutput {
 
   // TODO a supprimer Données Géorisques
   risquesGeorisques?: any;
+
+  @ApiProperty({
+    description: "Indique si le site présente des risques de pollution",
+    example: false,
+  })
+  siteReferencePollue: boolean;
 }

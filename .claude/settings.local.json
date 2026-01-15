@@ -14,7 +14,8 @@
       "Bash(pnpm run typecheck:*)",
       "Bash(git checkout:*)",
       "Bash(pnpm --filter @mutafriches/ui run typecheck)",
-      "Bash(pnpm run lint:*)"
+      "Bash(pnpm run lint:*)",
+      "Bash(pnpm run build:*)"
     ]
   }
 }
