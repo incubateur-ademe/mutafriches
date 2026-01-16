@@ -10,7 +10,7 @@ export class EvenementInputDto implements IEvenementInput {
   @IsOptional()
   @IsString()
   @MaxLength(50)
-  @Matches(/^eval-[a-z0-9-]+$/, {
+  @Matches(/^(eval-)?[a-f0-9-]+$/, {
     message: "Format evaluationId invalide",
   })
   evaluationId?: string;
@@ -34,11 +34,6 @@ export class EvenementInputDto implements IEvenementInput {
     message: "sessionId contient des caractères non autorisés",
   })
   sessionId?: string;
-
-  @IsOptional()
-  @IsString()
-  @MaxLength(20)
-  sourceUtilisation?: string;
 
   @IsOptional()
   @IsString()

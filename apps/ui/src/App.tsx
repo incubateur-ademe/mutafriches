@@ -1,21 +1,24 @@
 import { Routes, Route } from "react-router-dom";
 import { ROUTES } from "./shared/config/routes.config";
-import { Step2DonneesComplementairesPage } from "./features/donnees-complementaires/pages/DonneesComplementairesPage";
-import { Step3ResultatsPage } from "./features/mutabilite/pages/ResultatsPage";
 import { Tests } from "./features/tests/pages/TestsPage";
-import { TestEnrichment } from "./features/tests/test-enrichissement/pages/TestEnrichment";
 import { IframeProvider } from "./shared/iframe/IframeProvider";
 import { FormProvider } from "./shared/form/FormProvider";
-import { TestCarteParcelle } from "./features/tests/test-carte/pages/TestCarteParcelle";
 import { TestMutability } from "./features/tests/test-mutabilite/pages/TestMutability";
 import { TestIframe } from "./features/tests/test-iframe/pages/TestIframe";
 import { TestCallback } from "./features/tests/test-iframe/pages/TestCallback";
-import { Step1EnrichmentPage } from "./features/enrichissement/pages/EnrichmentPage";
 import { useEventTracking } from "./shared/hooks/useEventTracking";
 import { useEffect, useRef } from "react";
 import { TypeEvenement } from "@mutafriches/shared-types";
 import { useIframe } from "./shared/iframe/useIframe";
-import { DocumentationIntegrationPage } from "./features/doc/pages/DocumentationIntegrationPage";
+
+// Nouvelles pages
+import { HomePage } from "./features/home/pages/HomePage";
+import { EnrichissementPage } from "./features/home/pages/EnrichissementPage";
+import { QualificationSitePage } from "./features/qualification/pages/QualificationSitePage";
+import { QualificationEnvironnementPage } from "./features/qualification/pages/QualificationEnvironnementPage";
+import { QualificationRisquesPage } from "./features/qualification/pages/QualificationRisquesPage";
+import { ResultatsPage } from "./features/resultats/pages/ResultatsPage";
+import { DocumentationIntegrationPage } from "./features/documentation/pages/DocumentationIntegrationPage";
 
 function AppContent() {
   const { track } = useEventTracking();
@@ -32,30 +35,27 @@ function AppContent() {
   }, [track, isReady]);
 
   return (
-    <IframeProvider>
-      <FormProvider>
-        <Routes>
-          <Route path={ROUTES.HOME} element={<Step1EnrichmentPage />} />
-          <Route path={ROUTES.STEP1} element={<Step1EnrichmentPage />} />
-          <Route path={ROUTES.STEP2} element={<Step2DonneesComplementairesPage />} />
-          <Route path={ROUTES.STEP3} element={<Step3ResultatsPage />} />
+    <Routes>
+      {/* Parcours principal */}
+      <Route path={ROUTES.HOME} element={<HomePage />} />
+      <Route path={ROUTES.ENRICHISSEMENT} element={<EnrichissementPage />} />
+      <Route path={ROUTES.QUALIFICATION_SITE} element={<QualificationSitePage />} />
+      <Route
+        path={ROUTES.QUALIFICATION_ENVIRONNEMENT}
+        element={<QualificationEnvironnementPage />}
+      />
+      <Route path={ROUTES.QUALIFICATION_RISQUES} element={<QualificationRisquesPage />} />
+      <Route path={ROUTES.RESULTATS} element={<ResultatsPage />} />
 
-          {/* Documentation */}
-          <Route
-            path={ROUTES.DOCUMENTATION_INTEGRATION}
-            element={<DocumentationIntegrationPage />}
-          />
+      {/* Documentation */}
+      <Route path={ROUTES.DOCUMENTATION_INTEGRATION} element={<DocumentationIntegrationPage />} />
 
-          {/* Routes pour les tests */}
-          <Route path={ROUTES.TESTS} element={<Tests />} />
-          <Route path={ROUTES.TEST_CARTE_PARCELLE} element={<TestCarteParcelle />} />
-          <Route path={ROUTES.TEST_ENRICHISSEMENT} element={<TestEnrichment />} />
-          <Route path={ROUTES.TEST_MUTABILITE} element={<TestMutability />} />
-          <Route path={ROUTES.TEST_IFRAME} element={<TestIframe />} />
-          <Route path={ROUTES.TEST_CALLBACK} element={<TestCallback />} />
-        </Routes>
-      </FormProvider>
-    </IframeProvider>
+      {/* Routes pour les tests */}
+      <Route path={ROUTES.TESTS} element={<Tests />} />
+      <Route path={ROUTES.TEST_MUTABILITE} element={<TestMutability />} />
+      <Route path={ROUTES.TEST_IFRAME} element={<TestIframe />} />
+      <Route path={ROUTES.TEST_CALLBACK} element={<TestCallback />} />
+    </Routes>
   );
 }
 

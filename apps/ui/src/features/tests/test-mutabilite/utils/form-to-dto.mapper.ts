@@ -35,6 +35,7 @@ export function buildCalculerMutabiliteFromFormData(formData: any): CalculerMuta
     // Risques
     presenceRisquesTechnologiques: formData.presenceRisquesTechnologiques || false,
     presenceRisquesNaturels: formData.presenceRisquesNaturels,
+    siteReferencePollue: false, // Pas de donnee ADEME en saisie manuelle
 
     // Zonages
     zonageReglementaire: formData.zonageReglementaire,

@@ -7,6 +7,7 @@ import { EvaluationModule } from "./evaluation/evaluation.module";
 import { FrichesModule } from "./friches/friches.module";
 import { EvenementsModule } from "./evenements/evenements.module";
 import { DatabaseModule } from "./shared/database/database.module";
+import { SharedModule } from "./shared/shared.module";
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { DatabaseModule } from "./shared/database/database.module";
         limit: 100, // 100 requêtes par minute par IP
       },
     ]),
+    SharedModule,
     DatabaseModule,
     EnrichissementModule,
     EvaluationModule,

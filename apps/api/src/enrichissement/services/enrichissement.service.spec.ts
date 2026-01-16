@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { Test, TestingModule } from "@nestjs/testing";
-import { StatutEnrichissement, RisqueNaturel } from "@mutafriches/shared-types";
+import { StatutEnrichissement, RisqueNaturel, SourceUtilisation } from "@mutafriches/shared-types";
 import { EnrichissementService } from "./enrichissement.service";
 import { CadastreEnrichissementService } from "./cadastre/cadastre-enrichissement.service";
 import { EnergieEnrichissementService } from "./energie/energie-enrichissement.service";
@@ -10,6 +10,7 @@ import { RisquesNaturelsEnrichissementService } from "./risques-naturels/risques
 import { RisquesTechnologiquesEnrichissementService } from "./risques-technologiques/risques-technologiques-enrichissement.service";
 import { GeoRisquesEnrichissementService } from "./georisques/georisques-enrichissement.service";
 import { EnrichissementRepository } from "../repositories/enrichissement.repository";
+import { AdemeSitesPolluesRepository } from "../repositories/ademe-sites-pollues.repository";
 import { Parcelle } from "../../evaluation/entities/parcelle.entity";
 import {
   createMockCadastreEnrichissementService,
@@ -50,6 +51,10 @@ describe("EnrichissementService", () => {
     const mockGeoRisques = createMockGeoRisquesEnrichissementService();
     const mockZonageOrchestrator = createMockZonageOrchestratorService();
     const mockRepository = createMockEnrichissementRepository();
+    const mockAdemeSitesPolluesRepository = {
+      findByParcelle: vi.fn().mockResolvedValue([]),
+      isSiteReferencePollue: vi.fn().mockResolvedValue(false),
+    };
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -66,6 +71,7 @@ describe("EnrichissementService", () => {
         { provide: GeoRisquesEnrichissementService, useValue: mockGeoRisques },
         { provide: ZonageOrchestratorService, useValue: mockZonageOrchestrator },
         { provide: EnrichissementRepository, useValue: mockRepository },
+        { provide: AdemeSitesPolluesRepository, useValue: mockAdemeSitesPolluesRepository },
       ],
     }).compile();
 
@@ -191,7 +197,7 @@ describe("EnrichissementService", () => {
       expect(result.codeInsee).toBe("29232");
       expect(result.commune).toBe("Quimper");
       expect(result.surfaceSite).toBe(1000);
-      expect(result.sourcesUtilisees).toHaveLength(8);
+      expect(result.sourcesUtilisees).toHaveLength(9);
     });
 
     it("devrait persister l'enrichissement avec statut SUCCES", async () => {

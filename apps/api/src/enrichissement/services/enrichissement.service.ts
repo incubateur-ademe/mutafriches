@@ -6,6 +6,7 @@ import {
   StatutEnrichissement,
 } from "@mutafriches/shared-types";
 import { EnrichissementRepository } from "../repositories/enrichissement.repository";
+import { AdemeSitesPolluesRepository } from "../repositories/ademe-sites-pollues.repository";
 import { CadastreEnrichissementService } from "./cadastre/cadastre-enrichissement.service";
 import { EnergieEnrichissementService } from "./energie/energie-enrichissement.service";
 import { TransportEnrichissementService } from "./transport/transport-enrichissement.service";
@@ -43,6 +44,7 @@ export class EnrichissementService {
 
     // Utilitaires
     private readonly enrichissementRepository: EnrichissementRepository,
+    private readonly ademeSitesPolluesRepository: AdemeSitesPolluesRepository,
   ) {}
 
   /**
@@ -161,7 +163,23 @@ export class EnrichissementService {
         parcelle.zonageReglementaire = zonagesResult.zonageReglementaire;
       }
 
-      // 9. CALCULER LA FIABILITÉ
+      // 9. POLLUTION ADEME (site reference comme potentiellement pollue)
+      let siteReferencePollue = false;
+      if (parcelle.coordonnees) {
+        try {
+          siteReferencePollue = await this.ademeSitesPolluesRepository.isSiteReferencePollue(
+            parcelle.coordonnees.latitude,
+            parcelle.coordonnees.longitude,
+            parcelle.codeInsee,
+          );
+          sourcesUtilisees.push("ADEME-Sites-Pollues");
+        } catch (error) {
+          this.logger.warn("Erreur lors de la verification ADEME:", error);
+          sourcesEchouees.push("ADEME-Sites-Pollues");
+        }
+      }
+
+      // 10. CALCULER LA FIABILITE
       const sourcesUniques = [...new Set(sourcesUtilisees)];
       const champsManquantsUniques = [...new Set(champsManquants)];
 
@@ -199,6 +217,7 @@ export class EnrichissementService {
         proximiteCommercesServices: parcelle.proximiteCommercesServices,
         tauxLogementsVacants: parcelle.tauxLogementsVacants,
         presenceRisquesTechnologiques: parcelle.presenceRisquesTechnologiques,
+        siteReferencePollue,
         zonageEnvironnemental: parcelle.zonageEnvironnemental,
         zonageReglementaire: parcelle.zonageReglementaire,
         zonagePatrimonial: parcelle.zonagePatrimonial,

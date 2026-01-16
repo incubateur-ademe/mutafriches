@@ -7,7 +7,16 @@
       "Bash(pnpm test)",
       "Bash(pnpm validate:*)",
       "Bash(pnpm format:*)",
-      "Bash(pnpm build:shared:*)"
+      "Bash(pnpm build:shared:*)",
+      "Bash(pnpm db:generate*)",
+      "Bash(pnpm db:migrate:*)",
+      "Bash(pnpm db:ademe-sites:import:*)",
+      "Bash(pnpm run typecheck:*)",
+      "Bash(git checkout:*)",
+      "Bash(pnpm --filter @mutafriches/ui run typecheck)",
+      "Bash(pnpm run lint:*)",
+      "Bash(pnpm run build:*)",
+      "Bash(find:*)"
     ]
   }
 }

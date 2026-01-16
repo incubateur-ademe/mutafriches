@@ -10,6 +10,7 @@ import {
   HttpException,
   HttpStatus,
   Logger,
+  UseGuards,
 } from "@nestjs/common";
 import {
   ApiTags,
@@ -20,6 +21,7 @@ import {
   ApiNotFoundResponse,
   ApiQuery,
   ApiParam,
+  ApiForbiddenResponse,
 } from "@nestjs/swagger";
 import {
   CalculerMutabiliteInputDto,
@@ -37,11 +39,11 @@ import {
   TrameVerteEtBleue,
   UsageType,
   ZonageReglementaire,
-  OrigineUtilisation,
-  SourceUtilisation,
 } from "@mutafriches/shared-types";
 import { Request } from "express";
 import { OrchestrateurService } from "./services/orchestrateur.service";
+import { OrigineDetectionService } from "../shared/services/origine-detection.service";
+import { IntegrateurOriginGuard } from "../shared/guards";
 import { CalculerMutabiliteSwaggerDto } from "./dto/input/calculer-mutabilite.dto";
 import { MutabiliteSwaggerDto } from "./dto/output/mutabilite.dto";
 import { MetadataSwaggerDto } from "./dto/output/metadata.dto";
@@ -53,9 +55,13 @@ import { Evaluation } from "./entities/evaluation.entity";
 export class EvaluationController {
   private readonly logger = new Logger(EvaluationController.name);
 
-  constructor(private readonly orchestrateurService: OrchestrateurService) {}
+  constructor(
+    private readonly orchestrateurService: OrchestrateurService,
+    private readonly origineDetectionService: OrigineDetectionService,
+  ) {}
 
   @Post("calculer")
+  @UseGuards(IntegrateurOriginGuard)
   @ApiOperation({
     summary: "Calculer les indices de mutabilité",
     description: "Calcule les indices de mutabilité pour 7 usages différents d'une friche urbaine.",
@@ -65,6 +71,7 @@ export class EvaluationController {
   @ApiQuery({ name: "sansEnrichissement", required: false, type: Boolean })
   @ApiResponse({ status: 201, description: "Calcul réussi", type: MutabiliteSwaggerDto })
   @ApiBadRequestResponse({ description: "Données incomplètes" })
+  @ApiForbiddenResponse({ description: "Origine non autorisee" })
   async calculerMutabilite(
     @Body() input: CalculerMutabiliteInputDto,
     @Query("modeDetaille") modeDetaille?: boolean,
@@ -74,26 +81,16 @@ export class EvaluationController {
     @Req() req?: Request,
   ): Promise<MutabiliteOutputDto> {
     try {
-      this.logger.log("Calcul de mutabilité demandé");
+      this.logger.log("Calcul de mutabilite demande");
 
       if (!input || !input.donneesEnrichies) {
         throw new HttpException(
-          { statusCode: HttpStatus.BAD_REQUEST, message: "Données requises manquantes" },
+          { statusCode: HttpStatus.BAD_REQUEST, message: "Donnees requises manquantes" },
           HttpStatus.BAD_REQUEST,
         );
       }
 
-      let origine: OrigineUtilisation;
-      const iframeMode = String(isIframe) === "true";
-
-      if (iframeMode) {
-        origine = {
-          source: SourceUtilisation.IFRAME_INTEGREE,
-          integrateur: integrateur || "unknown",
-        };
-      } else {
-        origine = this.detecterOrigine(req);
-      }
+      const origine = this.origineDetectionService.detecterOrigine(req, isIframe, integrateur);
 
       return await this.orchestrateurService.calculerMutabilite(input, {
         modeDetaille: modeDetaille || false,
@@ -178,55 +175,5 @@ export class EvaluationController {
       mutabilite: evaluation.resultats,
       metadata: { versionAlgorithme: evaluation.versionAlgorithme, source: "api" },
     };
-  }
-
-  private detecterOrigine(req?: Request): OrigineUtilisation {
-    if (!req) return { source: SourceUtilisation.API_DIRECTE };
-
-    const referrer =
-      req.headers["referer"] || req.headers["referrer"] || req.headers["origin"] || "";
-
-    if (!referrer && req.headers["origin"]) {
-      const origin = req.headers["origin"] as string;
-      const domainesStandalone = ["localhost", "127.0.0.1", "mutafriches.beta.gouv.fr"];
-      const isStandalone = domainesStandalone.some((domain) => origin.includes(domain));
-
-      return isStandalone
-        ? { source: SourceUtilisation.SITE_STANDALONE }
-        : {
-            source: SourceUtilisation.IFRAME_INTEGREE,
-            integrateur: this.extraireIntegrateur(origin),
-          };
-    }
-
-    if (referrer.includes("/api") || (typeof referrer === "string" && referrer.endsWith("/api"))) {
-      return { source: SourceUtilisation.API_DIRECTE };
-    }
-
-    const domainesStandalone = ["localhost", "127.0.0.1", "mutafriches.beta.gouv.fr"];
-    const isStandalone = domainesStandalone.some((domain) => referrer.includes(domain));
-
-    if (isStandalone && !referrer.includes("/api")) {
-      return { source: SourceUtilisation.SITE_STANDALONE };
-    }
-
-    if (referrer) {
-      return {
-        source: SourceUtilisation.IFRAME_INTEGREE,
-        integrateur: this.extraireIntegrateur(referrer as string),
-      };
-    }
-
-    return { source: SourceUtilisation.API_DIRECTE };
-  }
-
-  private extraireIntegrateur(referrer: string): string | undefined {
-    if (!referrer) return undefined;
-    try {
-      const url = new URL(referrer);
-      return url.hostname;
-    } catch {
-      return undefined;
-    }
   }
 }

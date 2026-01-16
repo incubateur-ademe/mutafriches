@@ -129,6 +129,54 @@ export async function createTestingModuleWithService<Controller, Service>(
 }
 
 /**
+ * Helper pour creer un module avec deux services
+ *
+ * @example
+ * const { controller, service1, service2 } = await createTestingModuleWithTwoServices(
+ *   EvaluationController,
+ *   OrchestrateurService,
+ *   createMockOrchestrateurService(),
+ *   OrigineDetectionService,
+ *   createMockOrigineDetectionService(),
+ * );
+ */
+export async function createTestingModuleWithTwoServices<Controller, Service1, Service2>(
+  controller: Type<Controller>,
+  serviceClass1: Type<Service1>,
+  serviceMock1: Partial<MockFactory<Service1>>,
+  serviceClass2: Type<Service2>,
+  serviceMock2: Partial<MockFactory<Service2>>,
+): Promise<{
+  module: TestingModule;
+  controller: Controller;
+  service1: Partial<MockFactory<Service1>>;
+  service2: Partial<MockFactory<Service2>>;
+}> {
+  const module = await Test.createTestingModule({
+    controllers: [controller],
+    providers: [
+      {
+        provide: serviceClass1,
+        useValue: serviceMock1,
+      },
+      {
+        provide: serviceClass2,
+        useValue: serviceMock2,
+      },
+    ],
+  }).compile();
+
+  const controllerInstance = module.get<Controller>(controller);
+
+  return {
+    module,
+    controller: controllerInstance,
+    service1: serviceMock1,
+    service2: serviceMock2,
+  };
+}
+
+/**
  * Réinitialise tous les mocks d'un objet
  *
  * @example

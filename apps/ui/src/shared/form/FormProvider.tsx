@@ -44,12 +44,12 @@ export const FormProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   // Gestion du reset du formulaire si on arrive sur la home
   useEffect(() => {
     const currentPath = window.location.pathname;
-    if (currentPath === ROUTES.HOME || currentPath === ROUTES.STEP1) {
+    if (currentPath === ROUTES.HOME) {
       const hasData = localStorage.getItem(STORAGE_KEY);
       if (hasData) {
         const stored = JSON.parse(hasData) as { completedSteps?: number[]; timestamp?: number };
         if (stored.completedSteps && stored.completedSteps.length > 0) {
-          // Il y a des données en cours, ne pas reset automatiquement
+          // Il y a des donnees en cours, ne pas reset automatiquement
           return;
         }
       }

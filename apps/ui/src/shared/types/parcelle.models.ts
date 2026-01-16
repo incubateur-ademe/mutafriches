@@ -25,4 +25,7 @@ export interface ParcelleUiModel {
   zonageEnviro: string;
   zonageUrba: string;
   zonagePatrimonial: string;
+
+  // Pollution - indique si le site est reference dans les bases SIS/ICPE/ADEME
+  siteReferencePollue: boolean;
 }

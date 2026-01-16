@@ -110,6 +110,36 @@ src/
 - CI/CD : GitHub Actions
 - Environnements : review apps par PR
 
+## Variables d'environnement
+
+### Environnement d'execution
+
+- `NODE_ENV` : `development`, `staging`, ou `production`
+  - `development` : Mode local, bypass de securite sur certains guards
+  - `staging` : Environnement de pre-production
+  - `production` : Environnement de production
+
+### Securite des origines (API)
+
+- `ALLOWED_INTEGRATOR_ORIGINS` : Liste des origines supplementaires autorisees pour les integrateurs (separees par des virgules)
+  - Origines par defaut : `mutafriches.beta.gouv.fr`, `mutafriches.incubateur.ademe.dev`, `benefriches.ademe.fr`, `benefriches.incubateur.ademe.dev`
+  - En mode `development` : localhost autorise automatiquement
+  - Exemple : `ALLOWED_INTEGRATOR_ORIGINS=https://custom-domain.fr,https://autre-domaine.fr`
+
+- `ALLOWED_ORIGINS` : Liste des origines autorisees pour les evenements (tracking interne, separees par des virgules)
+  - Origines par defaut : `mutafriches.beta.gouv.fr`, `mutafriches.incubateur.ademe.dev`
+  - Localhost autorise uniquement en mode `development`
+  - Note : Les integrateurs (Benefriches, etc.) ne doivent PAS envoyer d'evenements
+
+### Comportement des guards
+
+| Route | Guard | Dev | Staging/Prod |
+|-------|-------|-----|--------------|
+| POST /enrichissement | IntegrateurOriginGuard | Bypass | Origines whitelistees |
+| POST /evaluation/calculer | IntegrateurOriginGuard | Bypass | Origines whitelistees |
+| POST /friches/* (deprecated) | IntegrateurOriginGuard | Bypass | Origines whitelistees |
+| POST /evenements | OriginGuard | localhost + Mutafriches | Mutafriches uniquement |
+
 ## Points d'attention
 
 1. Les identifiants cadastraux francais ont des formats complexes (DOM-TOM, Corse)

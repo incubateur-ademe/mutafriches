@@ -57,6 +57,7 @@ import { ApiCartoGpuService } from "./adapters/api-carto/gpu/api-carto-gpu.servi
 import { DatagouvLovacService } from "./adapters/datagouv-lovac/datagouv-lovac.service";
 import { BpeRepository } from "./repositories/bpe.repository";
 import { TransportStopsRepository } from "./repositories/transport-stops.repository";
+import { AdemeSitesPolluesRepository } from "./repositories/ademe-sites-pollues.repository";
 
 @Module({
   imports: [HttpModule],
@@ -67,6 +68,7 @@ import { TransportStopsRepository } from "./repositories/transport-stops.reposit
     EnrichissementRepository,
     BpeRepository,
     TransportStopsRepository,
+    AdemeSitesPolluesRepository,
 
     // Services de domaine
     CadastreEnrichissementService,

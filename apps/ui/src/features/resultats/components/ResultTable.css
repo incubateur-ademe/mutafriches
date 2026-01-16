@@ -1,0 +1,27 @@
+.result-table__bar-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.result-table__bar {
+  height: 8px;
+  border-radius: 4px;
+  min-width: 10px;
+}
+
+.result-table__percentage {
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+.result-table__badge {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.125rem 0.5rem;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+}

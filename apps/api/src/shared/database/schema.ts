@@ -4,6 +4,7 @@ import { enrichissements } from "./schemas/enrichissements.schema";
 import { rawBpe } from "./schemas/raw-bpe.schema";
 import { rawImportsLog } from "./schemas/raw-imports-log.schema";
 import { rawTransportStops } from "./schemas/raw-transport-stops.schema";
+import { rawAdemeSitesPollues } from "./schemas/raw-ademe-sites-pollues.schema";
 
 // Export individuel pour drizzle-kit
 export {
@@ -14,6 +15,7 @@ export {
   rawBpe,
   rawImportsLog,
   rawTransportStops,
+  rawAdemeSitesPollues,
 };
 
 // Export groupé pour drizzle ORM
@@ -24,4 +26,5 @@ export const schema = {
   rawBpe,
   rawImportsLog,
   rawTransportStops,
+  rawAdemeSitesPollues,
 };

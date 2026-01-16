@@ -20,7 +20,6 @@ export class EvenementService {
   async enregistrerEvenement(
     input: EvenementInputDto,
     metadata?: {
-      sourceUtilisation?: string;
       modeUtilisation?: ModeUtilisation;
       integrateur?: string;
       userAgent?: string;
@@ -34,7 +33,7 @@ export class EvenementService {
       identifiantCadastral: this.sanitizeString(input.identifiantCadastral),
       donnees: this.sanitizeDonnees(input.donnees),
       dateCreation: new Date(),
-      sourceUtilisation: this.sanitizeString(metadata?.sourceUtilisation),
+      sourceUtilisation: undefined, // Deprecated
       modeUtilisation: metadata?.modeUtilisation,
       ref: this.sanitizeString(metadata?.ref),
       integrateur: this.sanitizeString(metadata?.integrateur),

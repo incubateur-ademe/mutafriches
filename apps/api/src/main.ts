@@ -5,6 +5,7 @@ import { NestExpressApplication } from "@nestjs/platform-express";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { Request, Response, NextFunction } from "express";
 import { ValidationPipe, Logger } from "@nestjs/common";
+import { isProduction } from "./shared/utils";
 
 async function bootstrap() {
   const logger = new Logger("Bootstrap");
@@ -43,22 +44,21 @@ async function bootstrap() {
     });
 
     // Trust proxy pour Scalingo et autres environnements
-    if (process.env.NODE_ENV === "production") {
+    if (isProduction()) {
       app.set("trust proxy", 1);
-      logger.log("Proxy configuré pour l'environnement de production");
+      logger.log("Proxy configure pour l'environnement de production");
     }
 
-    // Configuration CORS pour le développement
-    if (process.env.NODE_ENV !== "production") {
+    // Configuration CORS pour le developpement
+    if (!isProduction()) {
       app.enableCors({
         origin: "http://localhost:5173",
         credentials: true,
       });
-      logger.log("CORS configuré pour le développement (http://localhost:5173)");
+      logger.log("CORS configure pour le developpement (http://localhost:5173)");
     }
 
-    const isProduction = process.env.NODE_ENV === "production";
-    if (isProduction) {
+    if (isProduction()) {
       const uiPath = "/app/apps/dist-ui";
       logger.log(`Configuration UI React en production : ${uiPath}`);
 
@@ -85,14 +85,14 @@ async function bootstrap() {
     }
 
     const port = process.env.PORT || 3000;
-    const host = isProduction ? "0.0.0.0" : "localhost";
+    const host = isProduction() ? "0.0.0.0" : "localhost";
 
     await app.listen(port, host);
 
-    logger.log(`Application lancée sur : http://${host}:${port}`);
+    logger.log(`Application lancee sur : http://${host}:${port}`);
     logger.log(`Documentation Swagger sur : http://${host}:${port}/api`);
 
-    if (!isProduction) {
+    if (!isProduction()) {
       const blue = "\x1b[34m";
       const reset = "\x1b[0m";
       logger.log(`${blue}UI en dev sur : http://localhost:5173${reset}`);

@@ -2,9 +2,10 @@ import { Controller, Post, Body, Query, Req, UseGuards } from "@nestjs/common";
 import { ApiExcludeController } from "@nestjs/swagger";
 import { Throttle } from "@nestjs/throttler";
 import { Request } from "express";
-import { EvenementInputDto, EvenementOutputDto, ModeUtilisation } from "@mutafriches/shared-types";
+import { EvenementOutputDto, ModeUtilisation } from "@mutafriches/shared-types";
 import { EvenementService } from "./services/evenement.service";
 import { OriginGuard } from "./guards/origin.guard";
+import { EvenementInputDto } from "./dto/input/evenement.dto";
 
 @ApiExcludeController()
 @UseGuards(OriginGuard)
@@ -24,7 +25,6 @@ export class EvenementsController {
     const userAgent = req?.headers["user-agent"] as string | undefined;
 
     return await this.evenementService.enregistrerEvenement(input, {
-      sourceUtilisation: input.sourceUtilisation,
       modeUtilisation: iframeMode ? ModeUtilisation.IFRAME : ModeUtilisation.STANDALONE,
       integrateur: integrateur || undefined,
       userAgent,

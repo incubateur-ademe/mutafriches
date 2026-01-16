@@ -44,6 +44,7 @@ import { tmpdir } from "os";
 import { drizzle } from "drizzle-orm/postgres-js";
 import { sql } from "drizzle-orm";
 import * as postgres from "postgres";
+import { isProduction } from "../shared/utils";
 
 // Configuration
 const CSV_URL =
@@ -100,8 +101,8 @@ function parseCSVLine(line: string): string[] {
  * Obtient le répertoire temporaire approprié selon l'environnement
  */
 function getTempDirectory(): string {
-  // Sur Scalingo et autres PaaS, utiliser le répertoire tmp système
-  if (process.env.SCALINGO_POSTGRESQL_URL || process.env.NODE_ENV === "production") {
+  // Sur Scalingo et autres PaaS, utiliser le repertoire tmp systeme
+  if (process.env.SCALINGO_POSTGRESQL_URL || isProduction()) {
     return tmpdir();
   }
 

@@ -192,6 +192,24 @@ export const MATRICE_SCORING = {
       [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
       [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
     },
+    [PresencePollution.OUI_AMIANTE]: {
+      [UsageType.RESIDENTIEL]: ScoreImpact.NEGATIF,
+      [UsageType.EQUIPEMENTS]: ScoreImpact.NEGATIF,
+      [UsageType.CULTURE]: ScoreImpact.NEGATIF,
+      [UsageType.TERTIAIRE]: ScoreImpact.NEGATIF,
+      [UsageType.INDUSTRIE]: ScoreImpact.NEGATIF,
+      [UsageType.RENATURATION]: ScoreImpact.NEGATIF,
+      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEGATIF,
+    },
+    [PresencePollution.NE_SAIT_PAS]: {
+      [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
+      [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
+      [UsageType.CULTURE]: ScoreImpact.NEUTRE,
+      [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
+      [UsageType.INDUSTRIE]: ScoreImpact.NEUTRE,
+      [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
+      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
+    },
   },
 
   // En centre-ville ou centre-bourg

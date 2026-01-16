@@ -81,6 +81,7 @@ export function convertTestCaseToMutabilityInput(
     proximiteCommercesServices: input.proximiteCommercesServices,
     tauxLogementsVacants: input.tauxLogementsVacants || 5,
     presenceRisquesTechnologiques: input.presenceRisquesTechnologiques,
+    siteReferencePollue: false, // Valeur par defaut pour les tests
 
     presenceRisquesNaturels: input.presenceRisquesNaturels,
     zonageEnvironnemental: input.zonageEnvironnemental,
