@@ -152,9 +152,19 @@ async function importAdemeSites(): Promise<void> {
 
     const rows: AdemeSiteRow[] = [];
 
+    let skippedNoGeometry = 0;
+
     for (const feature of geojson.features) {
       try {
         const props = feature.properties;
+
+        // Verifier que la geometrie existe
+        if (!feature.geometry || !feature.geometry.coordinates) {
+          skippedNoGeometry++;
+          stats.errorRows++;
+          continue;
+        }
+
         const [longitude, latitude] = feature.geometry.coordinates;
 
         // Convertir le tableau de parcelles en string JSON
@@ -178,6 +188,10 @@ async function importAdemeSites(): Promise<void> {
         console.error(`Erreur sur feature:`, error);
         stats.errorRows++;
       }
+    }
+
+    if (skippedNoGeometry > 0) {
+      console.log(`\nFeatures ignorees (sans geometrie): ${skippedNoGeometry}`);
     }
 
     // Inserer par batch
