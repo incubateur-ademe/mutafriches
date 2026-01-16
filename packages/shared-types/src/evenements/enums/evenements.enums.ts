@@ -1,6 +1,16 @@
 export enum TypeEvenement {
   VISITE = "visite",
   ENRICHISSEMENT_TERMINE = "enrichissement_termine",
+
+  // Pages de qualification
+  QUALIFICATION_SITE = "qualification_site",
+  QUALIFICATION_ENVIRONNEMENT = "qualification_environnement",
+  QUALIFICATION_RISQUES = "qualification_risques",
+
+  // Resultats d'evaluation
+  RESULTATS_MUTABILITE = "resultats_mutabilite",
+
+  // Deprecated
   DONNEES_COMPLEMENTAIRES_SAISIES = "donnees_complementaires_saisies",
   EVALUATION_TERMINEE = "evaluation_terminee",
 

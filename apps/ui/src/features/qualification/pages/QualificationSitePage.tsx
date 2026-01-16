@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../../../shared/config/routes.config";
 import { Stepper } from "../../../shared/components/layout";
 import { Layout } from "../../../shared/components/layout/Layout";
 import { useFormContext } from "../../../shared/form/useFormContext";
+import { useEventTracking } from "../../../shared/hooks/useEventTracking";
+import { TypeEvenement } from "@mutafriches/shared-types";
 import { StepNavigation } from "../components/StepNavigation";
 import { SiteFormValues, DEFAULT_SITE_VALUES, ValidationErrors } from "../config/types";
 import { SITE_FIELDS } from "../config/fields/site.fields";
@@ -14,6 +16,8 @@ import { PresencePollution } from "@mutafriches/shared-types";
 export const QualificationSitePage: React.FC = () => {
   const navigate = useNavigate();
   const { state, setManualData, setCurrentStep, canAccessStep } = useFormContext();
+  const { track } = useEventTracking();
+  const hasTrackedVisit = useRef(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [values, setValues] = useState<SiteFormValues>({
     ...DEFAULT_SITE_VALUES,
@@ -38,7 +42,15 @@ export const QualificationSitePage: React.FC = () => {
       return;
     }
     setCurrentStep(1);
-  }, [canAccessStep, navigate, setCurrentStep]);
+
+    // Tracker l'arrivee sur la page
+    if (!hasTrackedVisit.current) {
+      hasTrackedVisit.current = true;
+      track(TypeEvenement.QUALIFICATION_SITE, {
+        identifiantCadastral: state.identifiantParcelle || undefined,
+      });
+    }
+  }, [canAccessStep, navigate, setCurrentStep, track, state.identifiantParcelle]);
 
   const handleChange = (fieldName: keyof SiteFormValues, value: string) => {
     setValues((prev) => ({ ...prev, [fieldName]: value }));

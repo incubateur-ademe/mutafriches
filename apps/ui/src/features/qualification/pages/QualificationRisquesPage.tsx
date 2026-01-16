@@ -1,14 +1,18 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../../../shared/config/routes.config";
 import { Stepper } from "../../../shared/components/layout";
 import { Layout } from "../../../shared/components/layout/Layout";
 import { useFormContext } from "../../../shared/form/useFormContext";
+import { useEventTracking } from "../../../shared/hooks/useEventTracking";
+import { TypeEvenement } from "@mutafriches/shared-types";
 import { EnrichedInfoField, StepNavigation } from "../components";
 
 export const QualificationRisquesPage: React.FC = () => {
   const navigate = useNavigate();
   const { state, setCurrentStep, canAccessStep } = useFormContext();
+  const { track } = useEventTracking();
+  const hasTrackedVisit = useRef(false);
 
   // Verifier l'acces a cette etape
   useEffect(() => {
@@ -17,7 +21,15 @@ export const QualificationRisquesPage: React.FC = () => {
       return;
     }
     setCurrentStep(3);
-  }, [canAccessStep, navigate, setCurrentStep]);
+
+    // Tracker l'arrivee sur la page
+    if (!hasTrackedVisit.current) {
+      hasTrackedVisit.current = true;
+      track(TypeEvenement.QUALIFICATION_RISQUES, {
+        identifiantCadastral: state.identifiantParcelle || undefined,
+      });
+    }
+  }, [canAccessStep, navigate, setCurrentStep, track, state.identifiantParcelle]);
 
   const handlePrevious = () => {
     navigate(ROUTES.QUALIFICATION_ENVIRONNEMENT);

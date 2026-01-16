@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { ROUTES } from "../../../shared/config/routes.config";
 import { Layout } from "../../../shared/components/layout/Layout";
@@ -24,6 +24,7 @@ export const EnrichissementPage: React.FC = () => {
 
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const hasStartedEnrichment = useRef(false);
 
   const locationState = location.state as LocationState | null;
   const identifiant = locationState?.identifiant;
@@ -38,6 +39,12 @@ export const EnrichissementPage: React.FC = () => {
       navigate(ROUTES.HOME);
       return;
     }
+
+    // Guard contre les doubles appels (StrictMode React)
+    if (hasStartedEnrichment.current) {
+      return;
+    }
+    hasStartedEnrichment.current = true;
 
     const enrichirParcelle = async () => {
       setIsLoading(true);

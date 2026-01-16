@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useEventTracking } from "../../../shared/hooks/useEventTracking";
-import { MutabiliteOutputDto } from "@mutafriches/shared-types";
+import { MutabiliteOutputDto, TypeEvenement } from "@mutafriches/shared-types";
 import { buildMutabilityInput } from "../utils/mutability.mapper";
 import { ROUTES } from "../../../shared/config/routes.config";
 import { Layout } from "../../../shared/components/layout/Layout";
@@ -77,7 +77,7 @@ export const ResultatsPage: React.FC = () => {
   const { parentOrigin, integrator } = useIframe();
 
   // Hook tracking
-  const { trackExporterResultats, trackEvaluationTerminee } = useEventTracking();
+  const { track, trackExporterResultats, trackEvaluationTerminee } = useEventTracking();
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -195,6 +195,11 @@ export const ResultatsPage: React.FC = () => {
 
     hasInitializedRef.current = true;
     setCurrentStep(4); // Etape 4 = resultats
+
+    // Tracker l'arrivee sur la page
+    track(TypeEvenement.RESULTATS_MUTABILITE, {
+      identifiantCadastral: state.identifiantParcelle || undefined,
+    });
 
     if (state.mutabilityResult) {
       setMutabilityData(state.mutabilityResult);

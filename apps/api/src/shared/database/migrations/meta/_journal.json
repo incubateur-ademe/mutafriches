@@ -71,6 +71,13 @@
       "when": 1767880847873,
       "tag": "0009_slow_blob",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1768552020178,
+      "tag": "0010_chubby_doctor_strange",
+      "breakpoints": true
     }
   ]
 }

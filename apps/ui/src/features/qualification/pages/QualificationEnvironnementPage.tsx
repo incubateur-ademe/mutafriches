@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../../../shared/config/routes.config";
 import { Stepper } from "../../../shared/components/layout";
@@ -20,6 +20,7 @@ export const QualificationEnvironnementPage: React.FC = () => {
   const navigate = useNavigate();
   const { state, setManualData, setCurrentStep, canAccessStep } = useFormContext();
   const { track } = useEventTracking();
+  const hasTrackedVisit = useRef(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [values, setValues] = useState<EnvironnementFormValues>({
     ...DEFAULT_ENVIRONNEMENT_VALUES,
@@ -41,7 +42,15 @@ export const QualificationEnvironnementPage: React.FC = () => {
       return;
     }
     setCurrentStep(2);
-  }, [canAccessStep, navigate, setCurrentStep]);
+
+    // Tracker l'arrivee sur la page
+    if (!hasTrackedVisit.current) {
+      hasTrackedVisit.current = true;
+      track(TypeEvenement.QUALIFICATION_ENVIRONNEMENT, {
+        identifiantCadastral: state.identifiantParcelle || undefined,
+      });
+    }
+  }, [canAccessStep, navigate, setCurrentStep, track, state.identifiantParcelle]);
 
   const handleChange = (fieldName: keyof EnvironnementFormValues, value: string) => {
     setValues((prev) => ({ ...prev, [fieldName]: value }));
