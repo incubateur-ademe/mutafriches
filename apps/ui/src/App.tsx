@@ -50,10 +50,7 @@ function AppContent() {
       <Route path={ROUTES.RESULTATS} element={<ResultatsPage />} />
 
       {/* Documentation */}
-      <Route
-        path={ROUTES.DOCUMENTATION_INTEGRATION}
-        element={<DocumentationIntegrationPage />}
-      />
+      <Route path={ROUTES.DOCUMENTATION_INTEGRATION} element={<DocumentationIntegrationPage />} />
 
       {/* Routes pour les tests */}
       <Route path={ROUTES.TESTS} element={<Tests />} />
