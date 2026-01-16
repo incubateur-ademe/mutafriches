@@ -158,10 +158,7 @@ export const ResultatsPage: React.FC = () => {
 
       // Tracker l'evenement d'evaluation terminee (seulement si evaluationId valide)
       if (result.evaluationId) {
-        await trackEvaluationTerminee(
-          result.evaluationId,
-          state.identifiantParcelle || undefined,
-        );
+        await trackEvaluationTerminee(result.evaluationId, state.identifiantParcelle || undefined);
       }
     } catch (err) {
       const errorMessage =
