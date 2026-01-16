@@ -1,10 +1,8 @@
 import { Routes, Route } from "react-router-dom";
 import { ROUTES } from "./shared/config/routes.config";
 import { Tests } from "./features/tests/pages/TestsPage";
-import { TestEnrichment } from "./features/tests/test-enrichissement/pages/TestEnrichment";
 import { IframeProvider } from "./shared/iframe/IframeProvider";
 import { FormProvider } from "./shared/form/FormProvider";
-import { TestCarteParcelle } from "./features/tests/test-carte/pages/TestCarteParcelle";
 import { TestMutability } from "./features/tests/test-mutabilite/pages/TestMutability";
 import { TestIframe } from "./features/tests/test-iframe/pages/TestIframe";
 import { TestCallback } from "./features/tests/test-iframe/pages/TestCallback";
@@ -54,8 +52,6 @@ function AppContent() {
 
       {/* Routes pour les tests */}
       <Route path={ROUTES.TESTS} element={<Tests />} />
-      <Route path={ROUTES.TEST_CARTE_PARCELLE} element={<TestCarteParcelle />} />
-      <Route path={ROUTES.TEST_ENRICHISSEMENT} element={<TestEnrichment />} />
       <Route path={ROUTES.TEST_MUTABILITE} element={<TestMutability />} />
       <Route path={ROUTES.TEST_IFRAME} element={<TestIframe />} />
       <Route path={ROUTES.TEST_CALLBACK} element={<TestCallback />} />

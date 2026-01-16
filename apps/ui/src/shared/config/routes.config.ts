@@ -20,8 +20,6 @@ export const ROUTES = {
 
   // Pages de test
   TESTS: "/tests",
-  TEST_CARTE_PARCELLE: "/test/carte-parcelle",
-  TEST_ENRICHISSEMENT: "/test/enrichissement-parcelle",
   TEST_MUTABILITE: "/test/algorithme",
   TEST_IFRAME: "/test/iframe",
   TEST_CALLBACK: "/test/callback",

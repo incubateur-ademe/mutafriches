@@ -17,20 +17,6 @@ export function Tests() {
       href: "/test/algorithme",
       image: "/illustrations/undraw_file-search_cbur.svg",
     },
-    {
-      id: "test-dsfr",
-      title: "Test Sélection de parcelle",
-      description: "Tester la sélection de parcelle et récupération de l'IDU via une carte",
-      href: "/test/carte-parcelle",
-      image: "/illustrations/undraw_map-dark_g9xq.svg",
-    },
-    {
-      id: "test-enrichissement",
-      title: "Test Enrichissement",
-      description: "Tester l'API d'enrichissement des parcelles et la récupération des données",
-      href: "/test/enrichissement-parcelle",
-      image: "/illustrations/undraw_design-components_529l.svg",
-    },
   ];
 
   return (
@@ -69,7 +55,7 @@ export function Tests() {
 
         <div className="fr-grid-row fr-grid-row--gutters fr-mb-12v">
           {testPages.map((test) => (
-            <div key={test.id} className="fr-col-12 fr-col-sm-6 fr-col-lg-3">
+            <div key={test.id} className="fr-col-12 fr-col-sm-6 fr-col-lg-6">
               <div className="fr-card fr-enlarge-link">
                 <div className="fr-card__body">
                   <div className="fr-card__content">
