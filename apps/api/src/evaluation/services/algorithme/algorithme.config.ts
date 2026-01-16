@@ -193,13 +193,13 @@ export const MATRICE_SCORING = {
       [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
     },
     [PresencePollution.OUI_AMIANTE]: {
-      [UsageType.RESIDENTIEL]: ScoreImpact.TRES_NEGATIF,
-      [UsageType.EQUIPEMENTS]: ScoreImpact.TRES_NEGATIF,
-      [UsageType.CULTURE]: ScoreImpact.TRES_NEGATIF,
+      [UsageType.RESIDENTIEL]: ScoreImpact.NEGATIF,
+      [UsageType.EQUIPEMENTS]: ScoreImpact.NEGATIF,
+      [UsageType.CULTURE]: ScoreImpact.NEGATIF,
       [UsageType.TERTIAIRE]: ScoreImpact.NEGATIF,
       [UsageType.INDUSTRIE]: ScoreImpact.NEGATIF,
-      [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
-      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
+      [UsageType.RENATURATION]: ScoreImpact.NEGATIF,
+      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEGATIF,
     },
     [PresencePollution.NE_SAIT_PAS]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
