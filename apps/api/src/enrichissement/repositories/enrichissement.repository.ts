@@ -130,7 +130,7 @@ export class EnrichissementRepository {
       return null;
     }
 
-    this.logger.log(`Cache trouve pour ${identifiantCadastral}: ${row.id}`);
+    this.logger.log(`Cache enrichissement trouve pour ${identifiantCadastral}: ${row.id}`);
 
     return {
       id: row.id,

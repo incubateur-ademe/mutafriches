@@ -61,7 +61,7 @@ export class OrchestrateurService {
     );
 
     if (cached) {
-      this.logger.log(`Cache hit evaluation pour ${parcelleId}, source: ${cached.id}`);
+      this.logger.log(`Cache evaluation hit pour ${parcelleId}, source: ${cached.id}`);
 
       // Origine par défaut si non fournie
       const origine = options?.origine || { source: SourceUtilisation.API_DIRECTE };
@@ -84,7 +84,7 @@ export class OrchestrateurService {
       };
     }
 
-    this.logger.log(`Cache miss evaluation pour ${parcelleId}, calcul complet`);
+    this.logger.log(`Cache evaluation miss pour ${parcelleId}, calcul complet`);
 
     // Crée l'entité Parcelle selon le mode
     let parcelle: Parcelle;

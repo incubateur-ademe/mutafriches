@@ -65,7 +65,7 @@ export class EnrichissementService {
     // 0. VERIFIER LE CACHE
     const cached = await this.enrichissementRepository.findValidCache(identifiantParcelle);
     if (cached) {
-      this.logger.log(`Cache hit pour ${identifiantParcelle}, source: ${cached.id}`);
+      this.logger.log(`Cache enrichissement hit pour ${identifiantParcelle}, source: ${cached.id}`);
 
       // Enregistrer l'utilisation du cache pour analytics (non-bloquant)
       this.saveCachedEnrichissement(
@@ -80,7 +80,9 @@ export class EnrichissementService {
       return cached.donnees;
     }
 
-    this.logger.log(`Cache miss pour ${identifiantParcelle}, enrichissement complet`);
+    this.logger.log(
+      `Cache enrichissement miss pour ${identifiantParcelle}, enrichissement complet`,
+    );
 
     const sourcesUtilisees: string[] = [];
     const champsManquants: string[] = [];
