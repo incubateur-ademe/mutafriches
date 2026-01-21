@@ -35,7 +35,7 @@ export const QualificationEnvironnementPage: React.FC = () => {
   const [errors, setErrors] = useState<ValidationErrors<EnvironnementFormValues>>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
 
-  // Verifier l'acces a cette etape
+  // Vérifier l'accès à cette étape
   useEffect(() => {
     if (!canAccessStep(2)) {
       navigate(ROUTES.QUALIFICATION_SITE);
@@ -43,7 +43,7 @@ export const QualificationEnvironnementPage: React.FC = () => {
     }
     setCurrentStep(2);
 
-    // Tracker l'arrivee sur la page
+    // Tracker l'arrivée sur la page
     if (!hasTrackedVisit.current) {
       hasTrackedVisit.current = true;
       track(TypeEvenement.QUALIFICATION_ENVIRONNEMENT, {
@@ -56,7 +56,7 @@ export const QualificationEnvironnementPage: React.FC = () => {
     setValues((prev) => ({ ...prev, [fieldName]: value }));
     setTouched((prev) => ({ ...prev, [fieldName]: true }));
 
-    // Valider le champ modifie
+    // Valider le champ modifié
     if (touched[fieldName]) {
       const newErrors = validateEnvironnementForm({ ...values, [fieldName]: value });
       setErrors((prev) => ({
@@ -70,7 +70,7 @@ export const QualificationEnvironnementPage: React.FC = () => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Marquer tous les champs comme touches
+    // Marquer tous les champs comme touchés
     const allTouched: Record<string, boolean> = {};
     Object.keys(ENVIRONNEMENT_FIELDS).forEach((key) => {
       allTouched[key] = true;
@@ -83,16 +83,16 @@ export const QualificationEnvironnementPage: React.FC = () => {
 
     if (Object.keys(validationErrors).length === 0) {
       try {
-        // Fusionner avec les donnees manuelles existantes
+        // Fusionner avec les données manuelles existantes
         const updatedManualData = {
           ...state.manualData,
           ...values,
         };
 
-        // Sauvegarder les donnees dans le contexte
+        // Sauvegarder les données dans le contexte
         setManualData(updatedManualData);
 
-        // Tracker l'evenement de saisie des donnees complementaires
+        // Tracker l'événement de saisie des données complémentaires
         const dataRecord = updatedManualData as Record<string, string>;
         await track(TypeEvenement.DONNEES_COMPLEMENTAIRES_SAISIES, {
           identifiantCadastral: state.identifiantParcelle || undefined,
@@ -103,7 +103,7 @@ export const QualificationEnvironnementPage: React.FC = () => {
           },
         });
 
-        // Passer a l'etape suivante
+        // Passer à l'étape suivante
         navigate(ROUTES.QUALIFICATION_RISQUES);
       } catch (error) {
         console.error("Erreur lors de la sauvegarde:", error);
@@ -118,7 +118,7 @@ export const QualificationEnvironnementPage: React.FC = () => {
     navigate(ROUTES.QUALIFICATION_SITE);
   };
 
-  // Si pas d'acces, ne rien afficher (la redirection se fait dans useEffect)
+  // Si pas d'accès, ne rien afficher (la redirection se fait dans useEffect)
   if (!canAccessStep(2)) {
     return null;
   }
@@ -135,7 +135,7 @@ export const QualificationEnvironnementPage: React.FC = () => {
       />
 
       <form id="environnement-form" onSubmit={handleSubmit}>
-        {/* Zone 1 - Donnees enrichies */}
+        {/* Zone 1 - Données enrichies */}
         <div className="fr-grid-row fr-grid-row--gutters">
           <EnrichedInfoField
             id="site-centre-ville"
@@ -143,7 +143,7 @@ export const QualificationEnvironnementPage: React.FC = () => {
             value={uiData?.centreVille}
             tooltip={
               <>
-                Recupere depuis l'API de l'annuaire du Service public :<br />
+                Récupéré depuis l'API de l'annuaire du Service public :<br />
                 <a
                   href="https://api-lannuaire.service-public.fr"
                   target="_blank"
@@ -158,11 +158,11 @@ export const QualificationEnvironnementPage: React.FC = () => {
 
           <EnrichedInfoField
             id="proximite-commerces-services"
-            label="Proximite des commerces et services"
+            label="Proximité des commerces et services"
             value={uiData?.proximiteCommerces}
             tooltip={
               <>
-                Recupere depuis la base permanente des equipements (BPE) :<br />
+                Récupéré depuis la base permanente des équipements (BPE) :<br />
                 <a
                   href="https://www.insee.fr/fr/metadonnees/source/serie/s1161"
                   target="_blank"
@@ -184,7 +184,7 @@ export const QualificationEnvironnementPage: React.FC = () => {
             value={uiData?.tauxLV}
             tooltip={
               <>
-                Recupere depuis l'API tabulaire de data.gouv.fr :<br />
+                Récupéré depuis l'API tabulaire de data.gouv.fr :<br />
                 <a
                   href="https://www.data.gouv.fr/datasets/logements-vacants-du-parc-prive-en-france-et-par-commune-departement-region"
                   target="_blank"
@@ -208,7 +208,7 @@ export const QualificationEnvironnementPage: React.FC = () => {
             value={uiData?.distanceTransportsEnCommun}
             tooltip={
               <>
-                Recupere depuis le jeu de donnees de Transport.data.gouv.fr :<br />
+                Récupéré depuis le jeu de données de Transport.data.gouv.fr :<br />
                 <a
                   href="https://transport.data.gouv.fr/datasets/arrets-de-transport-en-france"
                   target="_blank"
@@ -223,11 +223,11 @@ export const QualificationEnvironnementPage: React.FC = () => {
 
           <EnrichedInfoField
             id="distance-voie-grande-circulation"
-            label="Distance a une voie a grande circulation"
+            label="Distance à une voie à grande circulation"
             value={uiData?.distanceAutoroute}
             tooltip={
               <>
-                Recupere depuis l'API IGN Geoplateforme WFS :<br />
+                Récupéré depuis l'API IGN Géoplateforme WFS :<br />
                 <a
                   href="https://geoservices.ign.fr/services-web-essentiels"
                   target="_blank"
@@ -245,7 +245,7 @@ export const QualificationEnvironnementPage: React.FC = () => {
             value={values.qualiteVoieDesserte}
             onChange={(v) => handleChange("qualiteVoieDesserte", v)}
             error={touched.qualiteVoieDesserte ? errors.qualiteVoieDesserte : undefined}
-            tooltip="Indiquez la qualite de la desserte du site par les voies de circulation."
+            tooltip="Indiquez la qualité de la desserte du site par les voies de circulation."
           />
         </div>
 
@@ -258,7 +258,7 @@ export const QualificationEnvironnementPage: React.FC = () => {
             value={values.qualitePaysage}
             onChange={(v) => handleChange("qualitePaysage", v)}
             error={touched.qualitePaysage ? errors.qualitePaysage : undefined}
-            tooltip="Donnez nous votre avis sur l'interet paysager de l'environnement du site."
+            tooltip="Donnez nous votre avis sur l'intérêt paysager de l'environnement du site."
           />
 
           <FormSelectField
@@ -266,14 +266,14 @@ export const QualificationEnvironnementPage: React.FC = () => {
             value={values.trameVerteEtBleue}
             onChange={(v) => handleChange("trameVerteEtBleue", v)}
             error={touched.trameVerteEtBleue ? errors.trameVerteEtBleue : undefined}
-            tooltip="Indiquez si le site est situe dans un corridor ecologique ou un reservoir de biodiversite."
+            tooltip="Indiquez si le site est situé dans un corridor écologique ou un réservoir de biodiversité."
           />
         </div>
       </form>
 
       <StepNavigation
         onPrevious={handlePrevious}
-        previousLabel="Precedent"
+        previousLabel="Précédent"
         nextLabel="Suivant"
         nextType="submit"
         formId="environnement-form"

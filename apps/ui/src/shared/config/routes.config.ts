@@ -1,17 +1,17 @@
 /**
- * Configuration centralisee des routes de l'application
+ * Configuration centralisée des routes de l'application
  */
 export const ROUTES = {
   // Pages principales du parcours
   HOME: "/",
   ENRICHISSEMENT: "/enrichissement",
 
-  // Qualification (3 etapes)
+  // Qualification (3 étapes)
   QUALIFICATION_SITE: "/qualification/site",
   QUALIFICATION_ENVIRONNEMENT: "/qualification/environnement",
   QUALIFICATION_RISQUES: "/qualification/risques",
 
-  // Resultats
+  // Résultats
   RESULTATS: "/resultats",
 
   // Documentation
@@ -24,12 +24,12 @@ export const ROUTES = {
   TEST_IFRAME: "/test/iframe",
   TEST_CALLBACK: "/test/callback",
 
-  // Legacy (pour compatibilite temporaire)
+  // Legacy (pour compatibilité temporaire)
   DEBUG: "/debug",
 } as const;
 
 /**
- * Mapping des etapes de qualification
+ * Mapping des étapes de qualification
  */
 export const QUALIFICATION_STEPS = {
   1: ROUTES.QUALIFICATION_SITE,
@@ -38,14 +38,14 @@ export const QUALIFICATION_STEPS = {
 } as const;
 
 /**
- * Helper pour obtenir la route d'une etape de qualification
+ * Helper pour obtenir la route d'une étape de qualification
  */
 export const getQualificationStepRoute = (stepNumber: 1 | 2 | 3): string => {
   return QUALIFICATION_STEPS[stepNumber];
 };
 
 /**
- * Helper pour obtenir le numero d'etape depuis l'URL actuelle
+ * Helper pour obtenir le numéro d'étape depuis l'URL actuelle
  */
 export const getCurrentStepFromPath = (pathname: string): number | null => {
   switch (pathname) {
@@ -61,7 +61,7 @@ export const getCurrentStepFromPath = (pathname: string): number | null => {
 };
 
 /**
- * @deprecated Utiliser getQualificationStepRoute a la place
+ * @deprecated Utiliser getQualificationStepRoute à la place
  */
 export const getStepRoute = (stepNumber: 1 | 2 | 3): string => {
   return getQualificationStepRoute(stepNumber);

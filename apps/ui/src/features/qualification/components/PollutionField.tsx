@@ -4,29 +4,29 @@ import { PresencePollution } from "@mutafriches/shared-types";
 /** Options pour le select Oui/Non/Ne sait pas */
 type PollutionSelectValue = "oui" | "non" | "ne-sait-pas" | "";
 
-/** Types de pollution disponibles quand "Oui" est selectionne */
+/** Types de pollution disponibles quand "Oui" est sélectionné */
 const POLLUTION_TYPES = [
   {
     value: PresencePollution.OUI_AMIANTE,
-    label: "Presence d'amiante",
+    label: "Présence d'amiante",
     tooltip:
       "L'amiante se retrouve peu dans les sols mais principalement dans le bâti. De nombreux matériaux contenant de l'amiante peuvent subsister dans les cloisons, portes coupe-feu, faux plafonds, tuyaux, dalles de sol, toitures etc.",
   },
   {
     value: PresencePollution.OUI_COMPOSES_VOLATILS,
-    label: "Composes volatils",
+    label: "Composés volatils",
     tooltip:
-      "Les composes organiques volatils sont presents dans l'air et peuvent etre nocifs pour l'homme. Ex : benzene, dichloromethane, formaldehyde, perchloroethylene, etc.",
+      "Les composés organiques volatils sont présents dans l'air et peuvent être nocifs pour l'homme. Ex : benzène, dichlorométhane, formaldéhyde, perchloroéthylène, etc.",
   },
   {
     value: PresencePollution.OUI_AUTRES_COMPOSES,
-    label: "Autres composes",
+    label: "Autres composés",
     tooltip:
       "On fait ici référence aux autres composés polluants retrouvés dans les sols du site. Ces polluants peuvent être à l'état solide ou liquide mais ne présentent pas de comportements volatils.",
   },
   {
     value: PresencePollution.DEJA_GEREE,
-    label: "Pollution deja geree",
+    label: "Pollution déjà gérée",
     tooltip:
       'Une opération de dépollution a déjà été menée sur le site. Attention toutefois, la méthode "sites et sols pollués" française consiste à dépolluer un site pour un usage donné. Il s\'agira de vérifier que cet usage est identique à celui du projet que vous mènerez sur le site.',
   },
@@ -37,7 +37,7 @@ interface PollutionFieldProps {
   value: PresencePollution | "";
   /** Callback de changement */
   onChange: (value: PresencePollution | "") => void;
-  /** Site reference comme potentiellement pollue (SIS/ICPE/ADEME) */
+  /** Site référencé comme potentiellement pollué (SIS/ICPE/ADEME) */
   siteReferencePollue?: boolean;
   /** Message d'erreur */
   error?: string;
@@ -46,7 +46,7 @@ interface PollutionFieldProps {
 }
 
 /**
- * Determine la valeur du select (oui/non/ne-sait-pas) a partir de la valeur enum
+ * Détermine la valeur du select (oui/non/ne-sait-pas) à partir de la valeur enum
  */
 const getSelectValue = (enumValue: PresencePollution | ""): PollutionSelectValue => {
   if (!enumValue) return "";
@@ -57,7 +57,7 @@ const getSelectValue = (enumValue: PresencePollution | ""): PollutionSelectValue
 };
 
 /**
- * Determine si la valeur enum correspond a un type de pollution specifique
+ * Détermine si la valeur enum correspond à un type de pollution spécifique
  */
 const isPollutionType = (value: PresencePollution | ""): boolean => {
   return (
@@ -69,10 +69,10 @@ const isPollutionType = (value: PresencePollution | ""): boolean => {
 };
 
 /**
- * Composant pour la saisie de la presence de pollution
+ * Composant pour la saisie de la présence de pollution
  * - Select Oui/Non/Ne sait pas
- * - Si "Oui" selectionne, affiche les radios pour le type de pollution
- * - Pre-selectionne "Oui" si le site est reference comme pollue
+ * - Si "Oui" sélectionné, affiche les radios pour le type de pollution
+ * - Pré-sélectionne "Oui" si le site est référencé comme pollué
  */
 export const PollutionField: React.FC<PollutionFieldProps> = ({
   value,
@@ -81,14 +81,14 @@ export const PollutionField: React.FC<PollutionFieldProps> = ({
   error,
   tooltip,
 }) => {
-  // Etat interne pour tracker si l'utilisateur a explicitement clique sur "Oui"
+  // État interne pour tracker si l'utilisateur a explicitement cliqué sur "Oui"
   // (sans avoir encore choisi un type de pollution)
   const [userSelectedOui, setUserSelectedOui] = useState<boolean>(false);
 
-  // Determiner si "Oui" doit etre affiche comme selectionne :
+  // Déterminer si "Oui" doit être affiché comme sélectionné :
   // - Si la valeur externe est un type de pollution
-  // - OU si l'utilisateur a clique sur "Oui" (meme sans type choisi)
-  // - OU si le site est reference pollue et qu'aucune valeur n'est encore choisie
+  // - OU si l'utilisateur a cliqué sur "Oui" (même sans type choisi)
+  // - OU si le site est référencé pollué et qu'aucune valeur n'est encore choisie
   const ouiSelected = isPollutionType(value) || userSelectedOui || (siteReferencePollue && !value);
 
   // Calculer la valeur du select
@@ -108,7 +108,7 @@ export const PollutionField: React.FC<PollutionFieldProps> = ({
       setUserSelectedOui(false);
       onChange(PresencePollution.NE_SAIT_PAS);
     } else if (newSelectValue === "oui") {
-      // Marquer "Oui" comme selectionne mais ne pas changer la valeur
+      // Marquer "Oui" comme sélectionné mais ne pas changer la valeur
       // tant que l'utilisateur n'a pas choisi un type de pollution
       setUserSelectedOui(true);
     } else {
@@ -129,7 +129,7 @@ export const PollutionField: React.FC<PollutionFieldProps> = ({
       <div className="fr-col-12 fr-col-md-6">
         <div className={`fr-select-group ${error ? "fr-select-group--error" : ""}`}>
           <label className="fr-label" htmlFor="presence-pollution">
-            <strong>Presence de pollution *</strong>
+            <strong>Présence de pollution *</strong>
             {tooltip && (
               <>
                 <button
@@ -157,7 +157,7 @@ export const PollutionField: React.FC<PollutionFieldProps> = ({
             onChange={(e) => handleSelectChange(e.target.value as PollutionSelectValue)}
             aria-describedby={error ? "presence-pollution-error" : undefined}
           >
-            <option value="">Selectionner une option</option>
+            <option value="">Sélectionner une option</option>
             <option value="oui">Oui</option>
             <option value="non">Non</option>
             <option value="ne-sait-pas">Ne sait pas</option>
@@ -170,7 +170,7 @@ export const PollutionField: React.FC<PollutionFieldProps> = ({
         </div>
       </div>
 
-      {/* Radios pour le type de pollution (affiche uniquement si "Oui" selectionne) */}
+      {/* Radios pour le type de pollution (affiché uniquement si "Oui" sélectionné) */}
       {showPollutionTypes && (
         <div className="fr-col-12 fr-col-md-6">
           <fieldset

@@ -20,12 +20,12 @@ import { VERSION_ALGO } from "@mutafriches/shared-types";
 
 // Seuils pour les messages contextuels
 const SEUIL_SURFACE_HECTARE = 10000; // 1 hectare en m2
-const SEUIL_ECART_FORTE_DISPARITE = 30; // 30% d'ecart entre usages successifs
-const SEUIL_ECART_FAIBLE = 10; // 10% d'ecart pour usages proches
-const NB_USAGES_PROCHES_REQUIS = 3; // Nombre d'usages proches pour declencher le message
+const SEUIL_ECART_FORTE_DISPARITE = 30; // 30% d'écart entre usages successifs
+const SEUIL_ECART_FAIBLE = 10; // 10% d'écart pour usages proches
+const NB_USAGES_PROCHES_REQUIS = 3; // Nombre d'usages proches pour déclencher le message
 
 /**
- * Analyse les resultats de mutabilite pour afficher des messages contextuels adaptés.
+ * Analyse les résultats de mutabilité pour afficher des messages contextuels adaptés.
  */
 function analyserResultats(
   resultats: { indiceMutabilite: number }[],
@@ -35,7 +35,7 @@ function analyserResultats(
   messageMixteUsages: boolean;
   messageEtudeProgrammatique: boolean;
 } {
-  // Regle 2 : Verifier s'il y a un ecart > 30% entre deux usages successifs
+  // Règle 2 : Vérifier s'il y a un écart > 30% entre deux usages successifs
   let messageForteDisparite = false;
   for (let i = 0; i < resultats.length - 1; i++) {
     const ecart = Math.abs(resultats[i].indiceMutabilite - resultats[i + 1].indiceMutabilite);
@@ -45,11 +45,11 @@ function analyserResultats(
     }
   }
 
-  // Regle 1 : Surface > 1 hectare (sauf si regle 2 s'applique)
+  // Règle 1 : Surface > 1 hectare (sauf si règle 2 s'applique)
   const messageMixteUsages = !messageForteDisparite && surfaceSite > SEUIL_SURFACE_HECTARE;
 
-  // Regle 3 : Verifier si 3 usages sont eloignes de moins de 10%
-  // On cherche une sequence de 3 usages consecutifs avec ecarts < 10%
+  // Règle 3 : Vérifier si 3 usages sont éloignés de moins de 10%
+  // On cherche une séquence de 3 usages consécutifs avec écarts < 10%
   let messageEtudeProgrammatique = false;
   if (resultats.length >= NB_USAGES_PROCHES_REQUIS) {
     for (let i = 0; i <= resultats.length - NB_USAGES_PROCHES_REQUIS; i++) {
@@ -90,10 +90,10 @@ export const ResultatsPage: React.FC = () => {
   // Modal nouvelle analyse
   const [isNewAnalysisModalOpen, setIsNewAnalysisModalOpen] = useState(false);
 
-  // Un seul ref pour tracker si on a deja initialise
+  // Un seul ref pour tracker si on a déjà initialisé
   const hasInitializedRef = React.useRef(false);
 
-  // Creer le communicator une seule fois
+  // Créer le communicator une seule fois
   const iframeCommunicator = React.useMemo(() => {
     if (isIframeMode && parentOrigin) {
       return createIframeCommunicator(parentOrigin);
@@ -106,7 +106,7 @@ export const ResultatsPage: React.FC = () => {
     (results: MutabiliteOutputDto) => {
       if (!isIframeMode || !iframeCommunicator) return;
 
-      // Donnees detaillees renvoyees vers l'integrateur
+      // Données détaillées renvoyées vers l'intégrateur
       const evaluationSummary: IframeEvaluationSummaryDto = {
         evaluationId: results.evaluationId || "",
         identifiantParcelle: state.identifiantParcelle || "",
@@ -136,10 +136,10 @@ export const ResultatsPage: React.FC = () => {
     [isIframeMode, iframeCommunicator, state.identifiantParcelle],
   );
 
-  // Fonction pour calculer la mutabilite
+  // Fonction pour calculer la mutabilité
   const calculateMutability = useCallback(async () => {
     if (!state.enrichmentData || !state.manualData) {
-      setError("Donnees manquantes pour le calcul");
+      setError("Données manquantes pour le calcul");
       return;
     }
 
@@ -156,13 +156,13 @@ export const ResultatsPage: React.FC = () => {
       setMutabilityData(result);
       sendIframeMessages(result);
 
-      // Tracker l'evenement d'evaluation terminee (seulement si evaluationId valide)
+      // Tracker l'événement d'évaluation terminée (seulement si evaluationId valide)
       if (result.evaluationId) {
         await trackEvaluationTerminee(result.evaluationId, state.identifiantParcelle || undefined);
       }
     } catch (err) {
       const errorMessage =
-        err instanceof Error ? err.message : "Erreur lors du calcul de mutabilite";
+        err instanceof Error ? err.message : "Erreur lors du calcul de mutabilité";
       setError(errorMessage);
 
       if (isIframeMode && iframeCommunicator) {
@@ -185,7 +185,7 @@ export const ResultatsPage: React.FC = () => {
 
   // useEffect principal pour l'initialisation
   useEffect(() => {
-    // Protection contre les reexecutions
+    // Protection contre les réexécutions
     if (hasInitializedRef.current) return;
 
     if (!canAccessStep(3)) {
@@ -194,9 +194,9 @@ export const ResultatsPage: React.FC = () => {
     }
 
     hasInitializedRef.current = true;
-    setCurrentStep(4); // Etape 4 = resultats
+    setCurrentStep(4); // Étape 4 = résultats
 
-    // Tracker l'arrivee sur la page
+    // Tracker l'arrivée sur la page
     track(TypeEvenement.RESULTATS_MUTABILITE, {
       identifiantCadastral: state.identifiantParcelle || undefined,
     });
@@ -210,7 +210,7 @@ export const ResultatsPage: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Handler pour exporter les resultats
+  // Handler pour exporter les résultats
   const handleExport = async () => {
     if (!mutabilityData?.evaluationId || trackingExporterEnvoye) return;
 
@@ -236,7 +236,7 @@ export const ResultatsPage: React.FC = () => {
     navigate(ROUTES.HOME);
   };
 
-  // Handler pour modifier les donnees
+  // Handler pour modifier les données
   const handleModifyData = () => {
     navigate(ROUTES.QUALIFICATION_SITE);
   };
@@ -265,7 +265,7 @@ export const ResultatsPage: React.FC = () => {
           className="fr-btn fr-icon-arrow-left-s-line fr-btn--icon-left fr-btn--secondary"
           onClick={handleModifyData}
         >
-          Modifier les donnees
+          Modifier les données
         </button>
 
         <h1 className="fr-mt-4w">Analyse de mutabilité</h1>
@@ -277,29 +277,29 @@ export const ResultatsPage: React.FC = () => {
 
           return (
             <p className="fr-text--lead">
-              Ces resultats constituent <strong>une premiere orientation</strong>, fondee sur des
-              donnees dont la fiabilite et la precision peuvent varier. Ils doivent etre{" "}
-              <strong>croises avec votre connaissance</strong> du territoire et ne se substituent
-              pas a des etudes de programmation.
+              Ces résultats constituent <strong>une première orientation</strong>, fondée sur des
+              données dont la fiabilité et la précision peuvent varier. Ils doivent être{" "}
+              <strong>croisés avec votre connaissance</strong> du territoire et ne se substituent
+              pas à des études de programmation.
               {messageForteDisparite && (
                 <>
                   {" "}
-                  Les resultats font apparaitre une forte disparite entre les usages, il semble que
-                  certains soient tres peu adaptes a votre site.
+                  Les résultats font apparaître une forte disparité entre les usages, il semble que
+                  certains soient très peu adaptés à votre site.
                 </>
               )}
               {messageMixteUsages && (
                 <>
                   {" "}
                   Aussi, compte tenu de la surface du site (plus d'un hectare), il vous est
-                  recommande de privilegier un mixte d'usages dans votre programmation.
+                  recommandé de privilégier un mixte d'usages dans votre programmation.
                 </>
               )}
               {messageEtudeProgrammatique && (
                 <>
                   {" "}
-                  Votre site semble adapte a plusieurs usages, une etude programmatique permettra de
-                  mieux qualifier le besoin et la programmation a mettre en oeuvre.
+                  Votre site semble adapté à plusieurs usages, une étude programmatique permettra de
+                  mieux qualifier le besoin et la programmation à mettre en œuvre.
                 </>
               )}
             </p>
@@ -309,7 +309,7 @@ export const ResultatsPage: React.FC = () => {
         {isLoading && (
           <LoadingCallout
             title="Calcul en cours"
-            message="Analyse de la mutabilite de votre friche..."
+            message="Analyse de la mutabilité de votre friche..."
           />
         )}
 
@@ -325,10 +325,10 @@ export const ResultatsPage: React.FC = () => {
                 marginBottom: "1rem",
               }}
             >
-              {/* Indice de fiabilite */}
+              {/* Indice de fiabilité */}
               <div style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
                 <p className="fr-text fr-mb-0">
-                  <strong>Indice de fiabilite : {mutabilityData.fiabilite.note}/10</strong>
+                  <strong>Indice de fiabilité : {mutabilityData.fiabilite.note}/10</strong>
                 </p>
                 <button
                   aria-describedby="tooltip-fiabilite"
@@ -338,8 +338,8 @@ export const ResultatsPage: React.FC = () => {
                   infobulle
                 </button>
                 <span className="fr-tooltip fr-placement" id="tooltip-fiabilite" role="tooltip">
-                  L'indice de fiabilite reflete la completude des informations concernant la friche.
-                  Il baisse si des donnees manquent ou si vous indiquez "Je ne sais pas".
+                  L'indice de fiabilité reflète la complétude des informations concernant la friche.
+                  Il baisse si des données manquent ou si vous indiquez "Je ne sais pas".
                 </span>
               </div>
 
@@ -347,7 +347,7 @@ export const ResultatsPage: React.FC = () => {
                 className="fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-download-line fr-btn--sm"
                 onClick={handleExport}
               >
-                Exporter les resultats
+                Exporter les résultats
               </button>
             </div>
 
@@ -360,12 +360,12 @@ export const ResultatsPage: React.FC = () => {
             {/* Table des résultats */}
             <ResultsTable results={mutabilityData.resultats} />
 
-            {/* Accordéon Ecosysteme friches */}
+            {/* Accordéon Écosystème friches */}
             <div className="fr-mt-4w">
               <section className="fr-accordion">
                 <h4 className="fr-accordion__title">
                   <button className="fr-accordion__btn" aria-expanded="false" aria-controls="tools">
-                    Aller plus loin gràce à l'écosystème friches
+                    Aller plus loin grâce à l'écosystème friches
                   </button>
                 </h4>
                 <div className="fr-collapse" id="tools">
@@ -373,7 +373,7 @@ export const ResultatsPage: React.FC = () => {
                     <PartnerCard
                       logo="/images/logo-urbanvitaliz.svg"
                       logoAlt="Logo Urban Vitaliz"
-                      description="Pour etre accompagne dans votre projet de rehabilitation par des conseillers competents."
+                      description="Pour être accompagné dans votre projet de réhabilitation par des conseillers compétents."
                       url="https://urbanvitaliz.fr"
                     />
 
@@ -422,16 +422,16 @@ export const ResultatsPage: React.FC = () => {
       {/* Modal d'export */}
       <ModalInfo
         id="modal-export"
-        title="Export des resultats"
+        title="Export des résultats"
         isOpen={isExportModalOpen}
         onClose={() => setIsExportModalOpen(false)}
         icon="fr-icon-download-line"
       >
         <p>
-          La fonctionnalite d'export PDF est en cours de developpement et sera bientot disponible !
+          La fonctionnalité d'export PDF est en cours de développement et sera bientôt disponible !
         </p>
         <p className="fr-text--sm">
-          Vous pourrez exporter vos resultats d'analyse en format PDF pour les partager ou les
+          Vous pourrez exporter vos résultats d'analyse en format PDF pour les partager ou les
           conserver.
         </p>
       </ModalInfo>
@@ -457,8 +457,8 @@ export const ResultatsPage: React.FC = () => {
           </>
         }
       >
-        <p>Voulez-vous vraiment demarrer une nouvelle analyse ?</p>
-        <p className="fr-text--sm">Les donnees actuelles seront perdues.</p>
+        <p>Voulez-vous vraiment démarrer une nouvelle analyse ?</p>
+        <p className="fr-text--sm">Les données actuelles seront perdues.</p>
       </ModalInfo>
     </Layout>
   );

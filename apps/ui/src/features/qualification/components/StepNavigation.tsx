@@ -1,33 +1,33 @@
 import React from "react";
 
 interface StepNavigationProps {
-  /** Callback pour retourner a l'etape precedente */
+  /** Callback pour retourner à l'étape précédente */
   onPrevious?: () => void;
-  /** Callback pour passer a l'etape suivante */
+  /** Callback pour passer à l'étape suivante */
   onNext?: () => void;
-  /** Libelle du bouton precedent */
+  /** Libellé du bouton précédent */
   previousLabel?: string;
-  /** Libelle du bouton suivant */
+  /** Libellé du bouton suivant */
   nextLabel?: string;
-  /** Desactiver les boutons pendant le chargement */
+  /** Désactiver les boutons pendant le chargement */
   isLoading?: boolean;
-  /** Masquer le bouton precedent */
+  /** Masquer le bouton précédent */
   hidePrevious?: boolean;
   /** Masquer le bouton suivant */
   hideNext?: boolean;
   /** Type du bouton suivant (button ou submit) */
   nextType?: "button" | "submit";
-  /** ID du formulaire a soumettre (si nextType="submit") */
+  /** ID du formulaire à soumettre (si nextType="submit") */
   formId?: string;
 }
 
 /**
- * Composant de navigation entre les etapes de qualification
+ * Composant de navigation entre les étapes de qualification
  */
 export const StepNavigation: React.FC<StepNavigationProps> = ({
   onPrevious,
   onNext,
-  previousLabel = "Precedent",
+  previousLabel = "Précédent",
   nextLabel = "Continuer",
   isLoading = false,
   hidePrevious = false,

@@ -11,9 +11,9 @@ export function Header() {
               <div className="fr-header__brand-top">
                 <div className="fr-header__logo">
                   <p className="fr-logo">
-                    Republique
+                    République
                     <br />
-                    Francaise
+                    Française
                   </p>
                 </div>
                 <div className="fr-header__operator">
@@ -38,7 +38,7 @@ export function Header() {
                 </div>
               </div>
               <div className="fr-header__service">
-                <a href="/" title="Retour a l'accueil du site - Mutafriches - Republique Francaise">
+                <a href="/" title="Retour à l'accueil du site - Mutafriches - République Française">
                   <p className="fr-header__service-title">
                     Mutafriches{" "}
                     <span className="fr-badge fr-badge--success fr-badge--no-icon">BETA</span>

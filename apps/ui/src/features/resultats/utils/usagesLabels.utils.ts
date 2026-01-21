@@ -1,6 +1,6 @@
 import { UsageType } from "@mutafriches/shared-types";
 
-/** Configuration complete d'un usage pour l'affichage */
+/** Configuration complète d'un usage pour l'affichage */
 interface UsageConfig {
   label: string;
   image: string;
@@ -26,12 +26,12 @@ const USAGE_CONFIG: Record<UsageType, UsageConfig> = {
   [UsageType.TERTIAIRE]: {
     label: "Bureaux",
     image: "/illustrations/podium/bureaux.png",
-    tags: ["acces poids lourds", "grande surface", "non pollué"],
+    tags: ["accès poids lourds", "grande surface", "non pollué"],
   },
   [UsageType.INDUSTRIE]: {
     label: "Industrie",
     image: "/illustrations/podium/industrie.png",
-    tags: ["acces poids lourds", "grande surface", "non pollué"],
+    tags: ["accès poids lourds", "grande surface", "non pollué"],
   },
   [UsageType.RENATURATION]: {
     label: "Espace renaturé",
@@ -41,7 +41,7 @@ const USAGE_CONFIG: Record<UsageType, UsageConfig> = {
   [UsageType.PHOTOVOLTAIQUE]: {
     label: "Centrale photovoltaïque au sol",
     image: "/illustrations/podium/centrale-photovoltaique.png",
-    tags: ["acces poids lourds", "grande surface", "non pollué"],
+    tags: ["accès poids lourds", "grande surface", "non pollué"],
   },
 };
 

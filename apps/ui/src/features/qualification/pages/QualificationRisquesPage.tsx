@@ -14,7 +14,7 @@ export const QualificationRisquesPage: React.FC = () => {
   const { track } = useEventTracking();
   const hasTrackedVisit = useRef(false);
 
-  // Verifier l'acces a cette etape
+  // Vérifier l'accès à cette étape
   useEffect(() => {
     if (!canAccessStep(3)) {
       navigate(ROUTES.QUALIFICATION_ENVIRONNEMENT);
@@ -22,7 +22,7 @@ export const QualificationRisquesPage: React.FC = () => {
     }
     setCurrentStep(3);
 
-    // Tracker l'arrivee sur la page
+    // Tracker l'arrivée sur la page
     if (!hasTrackedVisit.current) {
       hasTrackedVisit.current = true;
       track(TypeEvenement.QUALIFICATION_RISQUES, {
@@ -39,7 +39,7 @@ export const QualificationRisquesPage: React.FC = () => {
     navigate(ROUTES.RESULTATS);
   };
 
-  // Si pas d'acces, ne rien afficher (la redirection se fait dans useEffect)
+  // Si pas d'accès, ne rien afficher (la redirection se fait dans useEffect)
   if (!canAccessStep(3)) {
     return null;
   }
@@ -52,18 +52,18 @@ export const QualificationRisquesPage: React.FC = () => {
         currentStep={3}
         totalSteps={3}
         currentStepTitle="Qualifier les risques et zonages du site"
-        nextStepTitle="Analyse de mutabilite"
+        nextStepTitle="Analyse de mutabilité"
       />
 
       {/* Zone 1 - Risques technologiques et naturels */}
       <div className="fr-grid-row fr-grid-row--gutters">
         <EnrichedInfoField
           id="presence-risques-technologiques"
-          label="Presence de risques technologiques"
+          label="Présence de risques technologiques"
           value={uiData?.risquesTechno}
           tooltip={
             <>
-              Recupere depuis les donnees de l'API Georisques :<br />
+              Récupéré depuis les données de l'API GéoRisques :<br />
               <a
                 href="https://georisques.gouv.fr/doc-api"
                 target="_blank"
@@ -82,7 +82,7 @@ export const QualificationRisquesPage: React.FC = () => {
           value={uiData?.risquesNaturels}
           tooltip={
             <>
-              Recupere depuis les donnees de l'API Georisques :<br />
+              Récupéré depuis les données de l'API GéoRisques :<br />
               <a
                 href="https://www.georisques.gouv.fr/citoyen-recherche-map"
                 target="_blank"
@@ -94,8 +94,8 @@ export const QualificationRisquesPage: React.FC = () => {
               <br />
               <br />
               <em>
-                En l'absence de la numerisation des plans de prevention des risques, cette donnee
-                est susceptible d'etre faussee
+                En l'absence de la numérisation des plans de prévention des risques, cette donnée
+                est susceptible d'être faussée
               </em>
             </>
           }
@@ -104,7 +104,7 @@ export const QualificationRisquesPage: React.FC = () => {
 
       <hr className="fr-my-4w" />
 
-      {/* Zone 2 - Zonages environnemental et reglementaire */}
+      {/* Zone 2 - Zonages environnemental et réglementaire */}
       <div className="fr-grid-row fr-grid-row--gutters">
         <EnrichedInfoField
           id="type-zonage-environnemental"
@@ -112,7 +112,7 @@ export const QualificationRisquesPage: React.FC = () => {
           value={uiData?.zonageEnviro}
           tooltip={
             <>
-              Donnees enrichies via les API Carto Nature et GPU de l'IGN :<br />
+              Données enrichies via les API Carto Nature et GPU de l'IGN :<br />
               <a
                 href="https://apicarto.ign.fr/api/doc/"
                 target="_blank"
@@ -127,11 +127,11 @@ export const QualificationRisquesPage: React.FC = () => {
 
         <EnrichedInfoField
           id="type-zonage-reglementaire"
-          label="Type de zonage reglementaire"
+          label="Type de zonage réglementaire"
           value={uiData?.zonageUrba}
           tooltip={
             <>
-              Donnees enrichies via les API Carto Nature et GPU de l'IGN :<br />
+              Données enrichies via les API Carto Nature et GPU de l'IGN :<br />
               <a
                 href="https://apicarto.ign.fr/api/doc/"
                 target="_blank"
@@ -155,7 +155,7 @@ export const QualificationRisquesPage: React.FC = () => {
           value={uiData?.zonagePatrimonial}
           tooltip={
             <>
-              Donnees enrichies via les API Carto Nature et GPU de l'IGN :<br />
+              Données enrichies via les API Carto Nature et GPU de l'IGN :<br />
               <a
                 href="https://apicarto.ign.fr/api/doc/"
                 target="_blank"
@@ -172,8 +172,8 @@ export const QualificationRisquesPage: React.FC = () => {
       <StepNavigation
         onPrevious={handlePrevious}
         onNext={handleNext}
-        previousLabel="Precedent"
-        nextLabel="Calculer la mutabilite"
+        previousLabel="Précédent"
+        nextLabel="Calculer la mutabilité"
       />
     </Layout>
   );
