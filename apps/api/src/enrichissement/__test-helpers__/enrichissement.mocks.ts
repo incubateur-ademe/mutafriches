@@ -91,6 +91,16 @@ interface MockZonageOrchestratorService {
   enrichirZonages: Mock;
 }
 
+interface MockAdemeSitesPolluesRepository {
+  isSiteReferencePollue: Mock;
+  findSitePlusProche: Mock;
+  count: Mock;
+}
+
+interface MockPollutionDetectionService {
+  detecterPollution: Mock;
+}
+
 /**
  * Mock du EnrichissementService (orchestrateur principal)
  */
@@ -280,5 +290,25 @@ export function createMockEnrichissementRepository(): MockEnrichissementReposito
 export function createMockZonageOrchestratorService(): MockZonageOrchestratorService {
   return {
     enrichirZonages: vi.fn(),
+  };
+}
+
+/**
+ * Mock du AdemeSitesPolluesRepository
+ */
+export function createMockAdemeSitesPolluesRepository(): MockAdemeSitesPolluesRepository {
+  return {
+    isSiteReferencePollue: vi.fn(),
+    findSitePlusProche: vi.fn(),
+    count: vi.fn(),
+  };
+}
+
+/**
+ * Mock du PollutionDetectionService
+ */
+export function createMockPollutionDetectionService(): MockPollutionDetectionService {
+  return {
+    detecterPollution: vi.fn(),
   };
 }
