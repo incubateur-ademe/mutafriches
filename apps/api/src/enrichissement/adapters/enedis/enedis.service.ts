@@ -4,41 +4,58 @@ import { firstValueFrom } from "rxjs";
 import { catchError, timeout } from "rxjs/operators";
 
 import { ApiResponse } from "../shared/api-response.types";
+import { calculateDistance } from "../shared/distance.utils";
 import {
   EnedisApiParams,
   EnedisApiResponse,
   EnedisLigneBTRecord,
   EnedisPosteElectriqueRecord,
-  EnedisRaccordement,
-} from "./enedis.types";
+} from "./enedis.api.types";
+import { EnedisRaccordement } from "./enedis.types";
+import {
+  ENEDIS_API_BASE_URL,
+  ENEDIS_RAYONS,
+  ENEDIS_SEUILS,
+  ENEDIS_NOMBRE_RESULTATS,
+  ENEDIS_SOURCE,
+  ENEDIS_TIMEOUT_MS,
+} from "./enedis.constants";
 
 @Injectable()
 export class EnedisService {
   private readonly logger = new Logger(EnedisService.name);
-  private readonly baseUrl =
-    process.env.ENEDIS_API_URL || "https://data.enedis.fr/api/explore/v2.1/catalog/datasets";
-
-  private readonly timeout = parseInt(process.env.ENEDIS_API_TIMEOUT || "10000", 10);
+  private readonly baseUrl = process.env.ENEDIS_API_URL || ENEDIS_API_BASE_URL;
+  private readonly timeoutMs = parseInt(
+    process.env.ENEDIS_API_TIMEOUT || String(ENEDIS_TIMEOUT_MS),
+    10,
+  );
 
   constructor(private readonly httpService: HttpService) {}
 
+  /**
+   * Fonction pour obtenir la distance de raccordement la plus proche
+   * @param latitude
+   * @param longitude
+   * @returns
+   */
   async getDistanceRaccordement(
     latitude: number,
     longitude: number,
   ): Promise<ApiResponse<EnedisRaccordement>> {
     try {
-      // Recherche des postes dans un rayon de 5km
-      const postesProches = await this.rechercherPostes(latitude, longitude, 5000);
-
-      // Recherche des lignes BT dans un rayon de 500m
-      const lignesBTProches = await this.rechercherLignesBT(latitude, longitude, 500);
+      const postesProches = await this.rechercherPostes(latitude, longitude, ENEDIS_RAYONS.POSTES);
+      const lignesBTProches = await this.rechercherLignesBT(
+        latitude,
+        longitude,
+        ENEDIS_RAYONS.LIGNES_BT,
+      );
 
       if (postesProches.length === 0 && lignesBTProches.length === 0) {
         return {
           success: true,
-          source: "enedis-api",
+          source: ENEDIS_SOURCE,
           data: {
-            distance: 999, // Distance très élevée pour indiquer l'absence d'infrastructure
+            distance: ENEDIS_SEUILS.DISTANCE_DEFAUT,
             type: "HTA",
             capaciteDisponible: false,
           },
@@ -51,10 +68,9 @@ export class EnedisService {
 
       let raccordementOptimal: EnedisRaccordement;
 
-      if (ligneBTProche && ligneBTProche.distance < 100) {
-        // Raccordement BT possible (moins de 100m d'une ligne BT)
+      if (ligneBTProche && ligneBTProche.distance < ENEDIS_SEUILS.RACCORDEMENT_BT) {
         raccordementOptimal = {
-          distance: ligneBTProche.distance / 1000, // conversion en km
+          distance: ligneBTProche.distance,
           type: "BT",
           capaciteDisponible: true,
           infrastructureProche: {
@@ -64,11 +80,11 @@ export class EnedisService {
           },
         };
       } else if (posteProche) {
-        // Raccordement HTA/BT depuis le poste
+        const typeTension = posteProche.distance < ENEDIS_SEUILS.TYPE_BT_VS_HTA ? "BT" : "HTA";
         raccordementOptimal = {
-          distance: posteProche.distance / 1000, // conversion en km
-          type: posteProche.distance < 200 ? "BT" : "HTA",
-          capaciteDisponible: posteProche.distance < 1000, // Estimation capacité
+          distance: posteProche.distance,
+          type: typeTension,
+          capaciteDisponible: posteProche.distance < ENEDIS_SEUILS.CAPACITE_DISPONIBLE,
           posteProche: {
             nom: `Poste ${posteProche.commune}`,
             commune: posteProche.commune,
@@ -80,13 +96,13 @@ export class EnedisService {
           infrastructureProche: {
             type: "poste",
             distance: posteProche.distance,
-            tension: posteProche.distance < 200 ? "BT" : "HTA",
+            tension: typeTension,
           },
         };
       } else {
         // Fallback - utilisation de la ligne BT la plus proche
         raccordementOptimal = {
-          distance: ligneBTProche.distance / 1000,
+          distance: ligneBTProche.distance,
           type: "HTA", // Extension de réseau nécessaire
           capaciteDisponible: false,
           infrastructureProche: {
@@ -99,21 +115,30 @@ export class EnedisService {
 
       return {
         success: true,
-        source: "enedis-api",
+        source: ENEDIS_SOURCE,
         data: raccordementOptimal,
       };
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Erreur inconnue";
-
-      this.logger.error(`Erreur calcul distance raccordement: ${errorMessage}`, (error as Error).stack);
+      this.logger.error(
+        `Erreur calcul distance raccordement: ${errorMessage}`,
+        (error as Error).stack,
+      );
       return {
         success: false,
-        source: "enedis-api",
+        source: ENEDIS_SOURCE,
         error: "Erreur lors du calcul de la distance de raccordement",
       };
     }
   }
 
+  /**
+   * Fonction pour rechercher les postes électriques proches
+   * @param latitude
+   * @param longitude
+   * @param rayonMetres
+   * @returns
+   */
   private async rechercherPostes(
     latitude: number,
     longitude: number,
@@ -127,29 +152,36 @@ export class EnedisService {
   > {
     const params: EnedisApiParams = {
       dataset: "poste-electrique",
-      rows: 50,
-      "geofilter.distance": `${latitude},${longitude},${rayonMetres}`,
+      size: ENEDIS_NOMBRE_RESULTATS.POSTES,
+      geo_distance: `${longitude},${latitude},${rayonMetres}`,
     };
 
     const response = await this.callEnedisApi<EnedisPosteElectriqueRecord>(params);
 
     return response.results
-      .map((record) => ({
-        distance: this.calculerDistance(
-          latitude,
-          longitude,
-          record.geo_point_2d.lat,
-          record.geo_point_2d.lon,
-        ),
-        commune: record.nom_commune,
-        coordonnees: {
-          latitude: record.geo_point_2d.lat,
-          longitude: record.geo_point_2d.lon,
-        },
-      }))
+      .filter((record) => record.geometry?.coordinates)
+      .map((record) => {
+        const coords = record.geometry.coordinates as [number, number];
+        return {
+          distance:
+            record._geo_distance ?? calculateDistance(latitude, longitude, coords[1], coords[0]),
+          commune: record.nom_commune,
+          coordonnees: {
+            latitude: coords[1],
+            longitude: coords[0],
+          },
+        };
+      })
       .sort((a, b) => a.distance - b.distance);
   }
 
+  /**
+   * Fonction pour rechercher les lignes BT proches
+   * @param latitude
+   * @param longitude
+   * @param rayonMetres
+   * @returns
+   */
   private async rechercherLignesBT(
     latitude: number,
     longitude: number,
@@ -157,25 +189,34 @@ export class EnedisService {
   ): Promise<Array<{ distance: number; type: string; tension: string }>> {
     const params: EnedisApiParams = {
       dataset: "reseau-bt",
-      rows: 100,
-      "geofilter.distance": `${latitude},${longitude},${rayonMetres}`,
+      size: ENEDIS_NOMBRE_RESULTATS.LIGNES_BT,
+      geo_distance: `${longitude},${latitude},${rayonMetres}`,
     };
 
     try {
       const response = await this.callEnedisApi<EnedisLigneBTRecord>(params);
 
       return response.results
-        .filter((record) => record.geo_point_2d) // Filtrer les enregistrements sans coordonnées
-        .map((record) => ({
-          distance: this.calculerDistance(
-            latitude,
-            longitude,
-            record.geo_point_2d.lat,
-            record.geo_point_2d.lon,
-          ),
-          type: record.nature || "BT",
-          tension: record.tension || "BT",
-        }))
+        .filter((record) => record.geometry?.coordinates || record._geo_distance !== undefined)
+        .map((record) => {
+          // Utiliser _geo_distance fourni par l'API si disponible
+          let distance = record._geo_distance;
+          if (distance === undefined && record.geometry?.coordinates) {
+            const coords = record.geometry.coordinates;
+            if (Array.isArray(coords[0])) {
+              const firstPoint = coords[0] as [number, number];
+              distance = calculateDistance(latitude, longitude, firstPoint[1], firstPoint[0]);
+            } else {
+              const point = coords as [number, number];
+              distance = calculateDistance(latitude, longitude, point[1], point[0]);
+            }
+          }
+          return {
+            distance: distance ?? 0,
+            type: "BT",
+            tension: "BT",
+          };
+        })
         .sort((a, b) => a.distance - b.distance);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Erreur inconnue";
@@ -184,14 +225,19 @@ export class EnedisService {
     }
   }
 
+  /**
+   * Fonction générique pour appeler l'API Enedis
+   * @param params
+   * @returns
+   */
   private async callEnedisApi<T>(params: EnedisApiParams): Promise<EnedisApiResponse<T>> {
     const { dataset, ...queryParams } = params;
-    const url = `${this.baseUrl}/${dataset}/records`;
+    const url = `${this.baseUrl}/${dataset}/lines`;
 
     try {
       const response = await firstValueFrom(
         this.httpService.get(url, { params: queryParams }).pipe(
-          timeout(this.timeout),
+          timeout(this.timeoutMs),
           catchError((error) => {
             const errorMessage = error instanceof Error ? error.message : "Erreur API inconnue";
             throw new HttpException(
@@ -208,20 +254,5 @@ export class EnedisService {
       this.logger.error(`Erreur appel API Enedis: ${errorMessage}`);
       throw error;
     }
-  }
-
-  private calculerDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
-    const R = 6371e3; // Rayon de la Terre en mètres
-    const φ1 = (lat1 * Math.PI) / 180;
-    const φ2 = (lat2 * Math.PI) / 180;
-    const Δφ = ((lat2 - lat1) * Math.PI) / 180;
-    const Δλ = ((lon2 - lon1) * Math.PI) / 180;
-
-    const a =
-      Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-      Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-    return R * c;
   }
 }
