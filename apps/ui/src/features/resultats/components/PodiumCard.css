@@ -50,3 +50,7 @@
   gap: 0.5rem;
   flex-wrap: wrap;
 }
+
+.podium-card .fr-tags-group {
+  justify-content: center;
+}
