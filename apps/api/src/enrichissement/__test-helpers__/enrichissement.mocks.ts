@@ -85,6 +85,7 @@ interface MockFiabiliteCalculator {
 interface MockEnrichissementRepository {
   save: Mock;
   findById: Mock;
+  findValidCache: Mock;
 }
 
 interface MockZonageOrchestratorService {
@@ -281,6 +282,7 @@ export function createMockEnrichissementRepository(): MockEnrichissementReposito
   return {
     save: vi.fn(),
     findById: vi.fn(),
+    findValidCache: vi.fn(),
   };
 }
 

@@ -61,6 +61,27 @@ export class EnrichissementService {
     integrateur?: string,
   ): Promise<EnrichissementOutputDto> {
     const startTime = Date.now();
+
+    // 0. VERIFIER LE CACHE
+    const cached = await this.enrichissementRepository.findValidCache(identifiantParcelle);
+    if (cached) {
+      this.logger.log(`Cache hit pour ${identifiantParcelle}, source: ${cached.id}`);
+
+      // Enregistrer l'utilisation du cache pour analytics (non-bloquant)
+      this.saveCachedEnrichissement(
+        identifiantParcelle,
+        cached.donnees,
+        cached.id,
+        Date.now() - startTime,
+        sourceUtilisation,
+        integrateur,
+      );
+
+      return cached.donnees;
+    }
+
+    this.logger.log(`Cache miss pour ${identifiantParcelle}, enrichissement complet`);
+
     const sourcesUtilisees: string[] = [];
     const champsManquants: string[] = [];
     const sourcesEchouees: string[] = [];
@@ -332,6 +353,37 @@ export class EnrichissementService {
       .catch((error) => {
         // Ne pas bloquer si le log échoue, juste logger l'erreur
         this.logger.error("Erreur lors de l'enregistrement du log enrichissement:", error);
+      });
+  }
+
+  /**
+   * Enregistre une utilisation du cache pour analytics (non-bloquant)
+   */
+  private saveCachedEnrichissement(
+    identifiantCadastral: string,
+    donnees: EnrichissementOutputDto,
+    enrichissementSourceId: string,
+    dureeMs: number,
+    sourceUtilisation: string | undefined,
+    integrateur: string | undefined,
+  ): void {
+    this.enrichissementRepository
+      .save({
+        identifiantCadastral,
+        codeInsee: donnees.codeInsee,
+        commune: donnees.commune,
+        statut: StatutEnrichissement.SUCCES,
+        donnees,
+        sourcesReussies: donnees.sourcesUtilisees,
+        sourcesEchouees: [],
+        dureeMs,
+        sourceUtilisation,
+        integrateur,
+        versionApi: "1.0",
+        enrichissementSourceId,
+      })
+      .catch((error) => {
+        this.logger.error("Erreur lors de l'enregistrement du cache enrichissement:", error);
       });
   }
 }
