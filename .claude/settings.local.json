@@ -20,7 +20,8 @@
       "Bash(dir /s /b *.ts)",
       "Bash(findstr:*)",
       "Bash(pnpm --filter api test -- --run src/enrichissement/services/enrichissement.service.spec.ts)",
-      "Bash(pnpm --filter api test:*)"
+      "Bash(pnpm --filter api test:*)",
+      "Bash(pnpm run test:*)"
     ]
   }
 }

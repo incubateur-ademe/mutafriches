@@ -7,13 +7,10 @@ import { catchError, timeout } from "rxjs/operators";
 
 import { ApiResponse } from "../shared/api-response.types";
 import {
-  EnedisAnalyseComplete,
   EnedisApiParams,
   EnedisApiResponse,
-  EnedisConnexionStatus,
   EnedisLigneBTRecord,
   EnedisPosteElectriqueRecord,
-  EnedisPoteauRecord,
   EnedisRaccordement,
 } from "./enedis.types";
 
@@ -119,176 +116,6 @@ export class EnedisService {
     }
   }
 
-  async checkConnection(
-    identifiantParcelle: string,
-    coordonnees?: { latitude: number; longitude: number },
-  ): Promise<ApiResponse<EnedisConnexionStatus>> {
-    try {
-      // Si pas de coordonnées fournies, impossible de faire la vérification
-      if (!coordonnees) {
-        return {
-          success: false,
-          source: "enedis-api",
-          error: "Coordonnées de la parcelle requises pour la vérification de connexion",
-        };
-      }
-
-      const { latitude, longitude } = coordonnees;
-
-      // Recherche dans différents rayons pour évaluer la connectivité
-      const [postesProches, lignesBT, poteaux] = await Promise.all([
-        this.rechercherPostes(latitude, longitude, 2000),
-        this.rechercherLignesBT(latitude, longitude, 100),
-        this.rechercherPoteaux(latitude, longitude, 50),
-      ]);
-
-      const isConnected = postesProches.length > 0 || lignesBT.length > 0 || poteaux.length > 0;
-
-      let confidence: "high" | "medium" | "low" = "low";
-      if (lignesBT.length > 0 || poteaux.length > 0) {
-        confidence = "high";
-      } else if (postesProches.length > 0) {
-        confidence = "medium";
-      }
-
-      const sources: string[] = [];
-      if (postesProches.length > 0) sources.push("postes-electriques");
-      if (lignesBT.length > 0) sources.push("reseau-bt");
-      if (poteaux.length > 0) sources.push("poteaux-hta-bt");
-
-      const connexionStatus: EnedisConnexionStatus = {
-        isConnected,
-        confidence,
-        sources,
-        details: {
-          postesProches: postesProches.length,
-          lignesBTProches: lignesBT.length,
-          poteauxProches: poteaux.length,
-        },
-      };
-
-      return {
-        success: true,
-        source: "enedis-api",
-        data: connexionStatus,
-      };
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Erreur inconnue";
-      const errorStack = error instanceof Error ? error.stack : undefined;
-
-      console.error(`Erreur vérification connexion: ${errorMessage}`, errorStack);
-      return {
-        success: false,
-        source: "enedis-api",
-        error: "Erreur lors de la vérification de connexion",
-      };
-    }
-  }
-
-  async analyseComplete(
-    latitude: number,
-    longitude: number,
-  ): Promise<ApiResponse<EnedisAnalyseComplete>> {
-    try {
-      // Exécution des analyses en parallèle
-      const [raccordementResult, connexionResult] = await Promise.all([
-        this.getDistanceRaccordement(latitude, longitude),
-        this.checkConnection("parcelle-temp", { latitude, longitude }), // Passer les coordonnées
-      ]);
-
-      if (!raccordementResult.success || !connexionResult.success) {
-        return {
-          success: false,
-          source: "enedis-api",
-          error: "Erreur lors de l'analyse complète",
-        };
-      }
-
-      const raccordement = raccordementResult.data;
-      const connexion = connexionResult.data;
-
-      // Génération des recommandations
-      const recommandations = this.genererRecommandations(raccordement, connexion);
-
-      // Estimation des coûts (basée sur les distances et types)
-      const coutEstime = this.estimerCouts(raccordement);
-
-      const analyseComplete: EnedisAnalyseComplete = {
-        raccordement,
-        connexion,
-        recommandations,
-        coutEstime,
-      };
-
-      return {
-        success: true,
-        source: "enedis-api",
-        data: analyseComplete,
-      };
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Erreur inconnue";
-      const errorStack = error instanceof Error ? error.stack : undefined;
-
-      console.error(`Erreur analyse complète: ${errorMessage}`, errorStack);
-      return {
-        success: false,
-        source: "enedis-api",
-        error: "Erreur lors de l'analyse complète",
-      };
-    }
-  }
-
-  async rechercherInfrastructures(
-    latitude: number,
-    longitude: number,
-    rayonMetres: number = 1000,
-  ): Promise<
-    ApiResponse<{
-      postes: Array<{ distance: number; nom: string; commune: string }>;
-      lignesBT: Array<{ distance: number; type: string; tension: string }>;
-      poteaux: Array<{ distance: number; tension: string }>;
-    }>
-  > {
-    try {
-      const [postesData, lignesData, poteauxData] = await Promise.all([
-        this.rechercherPostes(latitude, longitude, rayonMetres),
-        this.rechercherLignesBT(latitude, longitude, rayonMetres),
-        this.rechercherPoteaux(latitude, longitude, rayonMetres),
-      ]);
-
-      return {
-        success: true,
-        source: "enedis-api",
-        data: {
-          postes: postesData.map((p) => ({
-            distance: p.distance,
-            nom: `Poste ${p.commune}`,
-            commune: p.commune,
-          })),
-          lignesBT: lignesData.map((l) => ({
-            distance: l.distance,
-            type: l.type || "BT",
-            tension: l.tension || "BT",
-          })),
-          poteaux: poteauxData.map((p) => ({
-            distance: p.distance,
-            tension: p.tension || "BT",
-          })),
-        },
-      };
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Erreur inconnue";
-      const errorStack = error instanceof Error ? error.stack : undefined;
-
-      console.error(`Erreur recherche infrastructures: ${errorMessage}`, errorStack);
-      return {
-        success: false,
-        source: "enedis-api",
-        error: "Erreur lors de la recherche d'infrastructures",
-      };
-    }
-  }
-
   private async rechercherPostes(
     latitude: number,
     longitude: number,
@@ -359,39 +186,6 @@ export class EnedisService {
     }
   }
 
-  private async rechercherPoteaux(
-    latitude: number,
-    longitude: number,
-    rayonMetres: number,
-  ): Promise<Array<{ distance: number; tension: string }>> {
-    const params: EnedisApiParams = {
-      dataset: "position-geographique-des-poteaux-hta-et-bt",
-      rows: 50,
-      "geofilter.distance": `${latitude},${longitude},${rayonMetres}`,
-    };
-
-    try {
-      const response = await this.callEnedisApi<EnedisPoteauRecord>(params);
-
-      return response.results
-        .filter((record) => record.geo_point_2d)
-        .map((record) => ({
-          distance: this.calculerDistance(
-            latitude,
-            longitude,
-            record.geo_point_2d.lat,
-            record.geo_point_2d.lon,
-          ),
-          tension: record.tension || "BT",
-        }))
-        .sort((a, b) => a.distance - b.distance);
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Erreur inconnue";
-      console.warn(`Dataset poteaux non disponible: ${errorMessage}`);
-      return [];
-    }
-  }
-
   private async callEnedisApi<T>(params: EnedisApiParams): Promise<EnedisApiResponse<T>> {
     const { dataset, ...queryParams } = params;
     const url = `${this.baseUrl}/${dataset}/records`;
@@ -431,69 +225,5 @@ export class EnedisService {
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
     return R * c;
-  }
-
-  private genererRecommandations(
-    raccordement: EnedisRaccordement,
-    connexion: EnedisConnexionStatus,
-  ): string[] {
-    const recommandations: string[] = [];
-
-    if (raccordement.distance < 0.05) {
-      // Moins de 50m
-      recommandations.push("Raccordement très favorable - Infrastructure à proximité immédiate");
-    } else if (raccordement.distance < 0.2) {
-      // Moins de 200m
-      recommandations.push("Raccordement favorable - Extension courte nécessaire");
-    } else if (raccordement.distance < 1) {
-      // Moins de 1km
-      recommandations.push("Raccordement modéré - Extension moyenne du réseau nécessaire");
-    } else {
-      recommandations.push("Raccordement coûteux - Extension importante du réseau requise");
-    }
-
-    if (raccordement.type === "BT" && raccordement.capaciteDisponible) {
-      recommandations.push("Raccordement BT possible - Procédure simplifiée");
-    } else {
-      recommandations.push("Raccordement HTA nécessaire - Étude technique approfondie requise");
-    }
-
-    if (connexion.confidence === "low") {
-      recommandations.push("Données limitées - Contacter Enedis pour une pré-étude officielle");
-    }
-
-    recommandations.push("Respecter la réglementation DT-DICT avant tous travaux");
-
-    return recommandations;
-  }
-
-  private estimerCouts(raccordement: EnedisRaccordement): {
-    min: number;
-    max: number;
-    devise: "EUR";
-    commentaire: string;
-  } {
-    let coutMin = 1000; // Coût minimum de raccordement
-    let coutMax = 3000;
-
-    // Ajustement selon la distance
-    if (raccordement.distance > 0.1) {
-      const coutExtension = raccordement.distance * (raccordement.type === "BT" ? 100 : 200) * 1000;
-      coutMin += coutExtension * 0.8;
-      coutMax += coutExtension * 1.5;
-    }
-
-    // Ajustement selon le type
-    if (raccordement.type === "HTA") {
-      coutMin += 2000;
-      coutMax += 8000;
-    }
-
-    return {
-      min: Math.round(coutMin),
-      max: Math.round(coutMax),
-      devise: "EUR",
-      commentaire: "Estimation indicative - Devis officiel Enedis requis",
-    };
   }
 }
