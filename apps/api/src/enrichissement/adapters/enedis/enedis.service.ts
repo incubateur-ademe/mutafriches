@@ -1,6 +1,4 @@
-// TODO remove console logs or replace by proper logger
-
-import { Injectable, HttpException, HttpStatus } from "@nestjs/common";
+import { Injectable, Logger, HttpException, HttpStatus } from "@nestjs/common";
 import { HttpService } from "@nestjs/axios";
 import { firstValueFrom } from "rxjs";
 import { catchError, timeout } from "rxjs/operators";
@@ -16,6 +14,7 @@ import {
 
 @Injectable()
 export class EnedisService {
+  private readonly logger = new Logger(EnedisService.name);
   private readonly baseUrl =
     process.env.ENEDIS_API_URL || "https://data.enedis.fr/api/explore/v2.1/catalog/datasets";
 
@@ -105,9 +104,8 @@ export class EnedisService {
       };
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Erreur inconnue";
-      const errorStack = error instanceof Error ? error.stack : undefined;
 
-      console.error(`Erreur calcul distance raccordement: ${errorMessage}`, errorStack);
+      this.logger.error(`Erreur calcul distance raccordement: ${errorMessage}`, (error as Error).stack);
       return {
         success: false,
         source: "enedis-api",
@@ -181,7 +179,7 @@ export class EnedisService {
         .sort((a, b) => a.distance - b.distance);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Erreur inconnue";
-      console.warn(`Dataset reseau-bt non disponible: ${errorMessage}`);
+      this.logger.warn(`Dataset reseau-bt non disponible: ${errorMessage}`);
       return [];
     }
   }
@@ -207,7 +205,7 @@ export class EnedisService {
       return response.data as EnedisApiResponse<T>;
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Erreur inconnue";
-      console.error(`Erreur appel API Enedis: ${errorMessage}`);
+      this.logger.error(`Erreur appel API Enedis: ${errorMessage}`);
       throw error;
     }
   }
