@@ -47,7 +47,7 @@ console.log(`Intégrateurs: ${integrators.length}`);
 
 ### 3. Accents français OBLIGATOIRES
 
-Le code doit respecter l'orthographe française avec tous les accents appropriés :
+Le code et les commentaires doivent respecter l'orthographe française avec tous les accents appropriés :
 
 ```typescript
 // INTERDIT - accents manquants
@@ -60,6 +60,7 @@ const message = "Données récupérées avec succès";
 ```
 
 **Accents courants à respecter :**
+
 - **é** : données, récupéré, étape, créé, sélectionner, résultat, fiabilité, qualité
 - **è** : critère, accès, précédent, problème, système
 - **ê** : être, fenêtre, requête
@@ -69,6 +70,7 @@ const message = "Données récupérées avec succès";
 - **î** : maîtrise, connaître
 
 Cette règle s'applique à :
+
 - Tous les textes affichés à l'utilisateur (labels, messages, boutons)
 - Les commentaires dans le code
 - Les messages d'erreur

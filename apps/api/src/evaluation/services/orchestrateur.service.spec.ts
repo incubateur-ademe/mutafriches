@@ -10,6 +10,17 @@ import {
   createMockCalculService,
   createMockEvaluationRepository,
 } from "../__test-helpers__/evaluation.mocks";
+import {
+  TypeProprietaire,
+  RaccordementEau,
+  EtatBatiInfrastructure,
+  PresencePollution,
+  ValeurArchitecturale,
+  QualitePaysage,
+  QualiteVoieDesserte,
+  TrameVerteEtBleue,
+  DonneesComplementairesInputDto,
+} from "@mutafriches/shared-types";
 
 describe("OrchestrateurService", () => {
   let service: OrchestrateurService;
@@ -21,6 +32,9 @@ describe("OrchestrateurService", () => {
     const mockEnrichissement = createMockEnrichissementService();
     const mockCalcul = createMockCalculService();
     const mockRepository = createMockEvaluationRepository();
+
+    // Configuration par defaut du mock cache (pas de cache)
+    mockRepository.findValidCache.mockResolvedValue(null);
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -216,6 +230,139 @@ describe("OrchestrateurService", () => {
       const result = await service.recupererEvaluation("inexistant");
 
       expect(result).toBeNull();
+    });
+  });
+
+  describe("cache des evaluations", () => {
+    const mockEnrichissement = {
+      identifiantParcelle: "490055000AI0001",
+      codeInsee: "49055",
+      surfaceSite: 10000,
+      surfaceBati: 2000,
+    } as any;
+
+    const mockDonneesComplementaires: DonneesComplementairesInputDto = {
+      siteEnCentreVille: true,
+      typeProprietaire: TypeProprietaire.PUBLIC,
+      raccordementEau: RaccordementEau.OUI,
+      etatBatiInfrastructure: EtatBatiInfrastructure.EN_FRICHE,
+      presencePollution: PresencePollution.NON,
+      valeurArchitecturaleHistorique: ValeurArchitecturale.AUCUNE,
+      qualitePaysage: QualitePaysage.BONNE,
+      qualiteVoieDesserte: QualiteVoieDesserte.BONNE,
+      trameVerteEtBleue: TrameVerteEtBleue.NON,
+    };
+
+    it("devrait utiliser le cache si une evaluation valide existe", async () => {
+      const cachedResultats = {
+        fiabilite: { note: 8, text: "Tres bonne" },
+        resultats: [{ usage: "RESIDENTIEL", rang: 1, indiceMutabilite: 80 }],
+      };
+
+      const cachedEvaluation = {
+        id: "cached-eval-123",
+        resultats: cachedResultats,
+        donneesEnrichissement: mockEnrichissement,
+        donneesComplementaires: mockDonneesComplementaires,
+      };
+
+      evaluationRepository.findValidCache.mockResolvedValue(cachedEvaluation);
+      evaluationRepository.save.mockResolvedValue("new-eval-456");
+
+      const input = {
+        donneesEnrichies: mockEnrichissement,
+        donneesComplementaires: mockDonneesComplementaires,
+      };
+
+      const result = await service.calculerMutabilite(input);
+
+      // Verifie que le cache a ete consulte
+      expect(evaluationRepository.findValidCache).toHaveBeenCalledWith(
+        mockEnrichissement.identifiantParcelle,
+        mockDonneesComplementaires,
+      );
+
+      // Verifie que le calcul n'a PAS ete effectue
+      expect(calculService.calculer).not.toHaveBeenCalled();
+
+      // Verifie que save a ete appele avec l'id source pour tracabilite
+      expect(evaluationRepository.save).toHaveBeenCalled();
+      const saveCall = evaluationRepository.save.mock.calls[0] as [any, string];
+      expect(saveCall[1]).toBe("cached-eval-123");
+
+      // Verifie le resultat
+      expect(result.fiabilite).toEqual(cachedResultats.fiabilite);
+      expect(result.resultats).toEqual(cachedResultats.resultats);
+      expect(result.evaluationId).toBe("new-eval-456");
+    });
+
+    it("devrait effectuer le calcul complet si pas de cache", async () => {
+      evaluationRepository.findValidCache.mockResolvedValue(null);
+
+      const mockResultatCalcul = {
+        fiabilite: { note: 7.5, text: "Bonne" },
+        resultats: [{ usage: "RESIDENTIEL", rang: 1, indiceMutabilite: 75 }],
+      } as any;
+
+      const mockParcelle = new Parcelle();
+      mockParcelle.identifiantParcelle = "490055000AI0001";
+      vi.spyOn(Parcelle, "fromEnrichissement").mockReturnValue(mockParcelle);
+      vi.spyOn(mockParcelle, "estComplete").mockReturnValue(true);
+
+      calculService.calculer.mockResolvedValue(mockResultatCalcul);
+      evaluationRepository.save.mockResolvedValue("eval-new");
+
+      const input = {
+        donneesEnrichies: mockEnrichissement,
+        donneesComplementaires: mockDonneesComplementaires,
+      };
+
+      const result = await service.calculerMutabilite(input);
+
+      // Verifie que le cache a ete consulte
+      expect(evaluationRepository.findValidCache).toHaveBeenCalled();
+
+      // Verifie que le calcul a ete effectue
+      expect(calculService.calculer).toHaveBeenCalledWith(mockParcelle, undefined);
+
+      // Verifie que save a ete appele SANS id source
+      expect(evaluationRepository.save).toHaveBeenCalled();
+      const saveCall = evaluationRepository.save.mock.calls[0] as [any, string | undefined];
+      expect(saveCall[1]).toBeUndefined();
+
+      expect(result.evaluationId).toBe("eval-new");
+    });
+
+    it("devrait effectuer le calcul si donnees complementaires contiennent 'je ne sais pas'", async () => {
+      // findValidCache retourne null car il detecte "je ne sais pas"
+      evaluationRepository.findValidCache.mockResolvedValue(null);
+
+      const donneesAvecJeNeSaisPas: DonneesComplementairesInputDto = {
+        ...mockDonneesComplementaires,
+        presencePollution: PresencePollution.NE_SAIT_PAS,
+      };
+
+      const mockResultatCalcul = {
+        fiabilite: { note: 6, text: "Moyenne" },
+        resultats: [],
+      } as any;
+
+      const mockParcelle = new Parcelle();
+      vi.spyOn(Parcelle, "fromEnrichissement").mockReturnValue(mockParcelle);
+      vi.spyOn(mockParcelle, "estComplete").mockReturnValue(true);
+
+      calculService.calculer.mockResolvedValue(mockResultatCalcul);
+      evaluationRepository.save.mockResolvedValue("eval-new");
+
+      const input = {
+        donneesEnrichies: mockEnrichissement,
+        donneesComplementaires: donneesAvecJeNeSaisPas,
+      };
+
+      await service.calculerMutabilite(input);
+
+      // Le calcul doit etre effectue car "je ne sais pas" invalide le cache
+      expect(calculService.calculer).toHaveBeenCalled();
     });
   });
 });

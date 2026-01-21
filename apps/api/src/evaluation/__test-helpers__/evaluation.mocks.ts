@@ -19,6 +19,7 @@ interface MockEvaluationRepository {
   save: Mock;
   findById: Mock;
   findByParcelleId: Mock;
+  findValidCache: Mock;
   delete: Mock;
 }
 
@@ -53,6 +54,7 @@ export function createMockEvaluationRepository(): MockEvaluationRepository {
     save: vi.fn(),
     findById: vi.fn(),
     findByParcelleId: vi.fn(),
+    findValidCache: vi.fn(),
     delete: vi.fn(),
   };
 }
