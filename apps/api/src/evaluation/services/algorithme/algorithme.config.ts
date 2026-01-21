@@ -864,13 +864,25 @@ export const MATRICE_SCORING = {
     };
   },
 
-  // Distance aux transports en commun en mètres
+  // Distance aux transports en commun en mètres (-1 = aucun transport trouvé dans le rayon)
   distanceTransportCommun: (value: number): ScoreParUsage => {
+    // -1 signifie aucun transport trouvé dans le rayon de recherche
+    if (value < 0) {
+      return {
+        [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
+        [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
+        [UsageType.CULTURE]: ScoreImpact.NEUTRE,
+        [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
+        [UsageType.INDUSTRIE]: ScoreImpact.NEUTRE,
+        [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
+        [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
+      };
+    }
     return value < 500
       ? {
           [UsageType.RESIDENTIEL]: ScoreImpact.POSITIF,
           [UsageType.EQUIPEMENTS]: ScoreImpact.POSITIF,
-          [UsageType.CULTURE]: ScoreImpact.POSITIF, // Modifié le 18/09/2025 après revue avec Anna
+          [UsageType.CULTURE]: ScoreImpact.POSITIF,
           [UsageType.TERTIAIRE]: ScoreImpact.POSITIF,
           [UsageType.INDUSTRIE]: ScoreImpact.POSITIF,
           [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
@@ -887,9 +899,9 @@ export const MATRICE_SCORING = {
         };
   },
 
-  // Distance au réseau électrique en km
+  // Distance au réseau électrique en mètres
   distanceRaccordementElectrique: (value: number): ScoreParUsage => {
-    if (value < 1)
+    if (value < 1000)
       return {
         [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
         [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
@@ -899,7 +911,7 @@ export const MATRICE_SCORING = {
         [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
         [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
       };
-    if (value < 5)
+    if (value < 5000)
       return {
         [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
         [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
