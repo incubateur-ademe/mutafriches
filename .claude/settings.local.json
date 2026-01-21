@@ -16,7 +16,9 @@
       "Bash(pnpm --filter @mutafriches/ui run typecheck)",
       "Bash(pnpm run lint:*)",
       "Bash(pnpm run build:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(dir /s /b *.ts)",
+      "Bash(findstr:*)"
     ]
   }
 }
