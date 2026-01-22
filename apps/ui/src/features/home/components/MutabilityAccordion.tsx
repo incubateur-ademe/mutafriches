@@ -11,13 +11,13 @@ export const MutabilityAccordion: React.FC = () => {
             aria-expanded="true"
             aria-controls="accordion-mutabilite"
           >
-            Qu'est ce que la mutabilite ?
+            Qu'est ce que la mutabilité ?
           </button>
         </h3>
         <div className="fr-collapse" id="accordion-mutabilite">
           <p>
-            La mutabilite d'une friche, c'est l'estimation de son potentiel de reconversion vers
-            differents usages en tenant compte des contraintes du site et des opportunites de son
+            La mutabilité d'une friche, c'est l'estimation de son potentiel de reconversion vers
+            différents usages en tenant compte des contraintes du site et des opportunités de son
             environnement.
           </p>
         </div>
