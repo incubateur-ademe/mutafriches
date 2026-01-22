@@ -16,6 +16,11 @@ const formatBoolean = (value: boolean | undefined): string => {
 const getDistanceTransportMessage = (enrichmentData: EnrichissementOutputDto): string => {
   const aucunArretMessage = "Aucun arrêt à moins de 2 km";
 
+  // null = recherche OK, aucun arrêt trouvé dans le rayon de 2km
+  if (enrichmentData.distanceTransportCommun === null) {
+    return aucunArretMessage;
+  }
+
   // Si une distance est disponible, la formater
   if (enrichmentData.distanceTransportCommun !== undefined) {
     return formatDistance(enrichmentData.distanceTransportCommun);
@@ -26,12 +31,7 @@ const getDistanceTransportMessage = (enrichmentData: EnrichissementOutputDto): s
     return "";
   }
 
-  // Si le champ est manquant mais la source n'a pas échoué = aucun arrêt trouvé dans le rayon
-  if (enrichmentData.champsManquants?.includes("distanceTransportCommun")) {
-    return aucunArretMessage;
-  }
-
-  // Cas par défaut
+  // Cas par défaut (undefined = donnée non disponible)
   return "";
 };
 

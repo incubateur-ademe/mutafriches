@@ -19,7 +19,8 @@ export interface EnrichissementOutputDto {
   // Données de localisation et accessibilité
   siteEnCentreVille: boolean;
   distanceAutoroute: number;
-  distanceTransportCommun: number;
+  /** Distance en mètres. null = aucun arrêt trouvé dans le rayon de recherche (2km) */
+  distanceTransportCommun: number | null;
   proximiteCommercesServices: boolean;
 
   // Infrastructure

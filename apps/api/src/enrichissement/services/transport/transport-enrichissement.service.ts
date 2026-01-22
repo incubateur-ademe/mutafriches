@@ -214,13 +214,13 @@ export class TransportEnrichissementService {
       sourcesUtilisees.push(SourceEnrichissement.TRANSPORT_DATA_GOUV);
 
       if (distanceMetres === null) {
-        // Aucun arrêt trouvé dans le rayon - ce n'est pas une erreur, juste pas de résultat
+        // Aucun arrêt trouvé dans le rayon - c'est une information valide (pas un champ manquant)
+        // null = "recherche OK, aucun résultat" vs undefined = "erreur technique"
         this.logger.log(
           `Aucun point d'arret trouve dans un rayon de ${RAYON_RECHERCHE_TRANSPORT_M}m ` +
             `pour ${parcelle.identifiantParcelle}`,
         );
-        champsManquants.push("distanceTransportCommun");
-        parcelle.distanceTransportCommun = undefined;
+        parcelle.distanceTransportCommun = null;
         return;
       }
 

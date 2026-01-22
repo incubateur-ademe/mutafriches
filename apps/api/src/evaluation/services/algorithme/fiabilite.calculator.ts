@@ -88,9 +88,11 @@ export class FiabiliteCalculator {
 
   /**
    * Vérifie si une valeur est considérée comme renseignée
+   * Note : null signifie "recherche effectuée, aucun résultat" (ex: pas de transport dans le rayon)
+   * tandis que undefined signifie "donnée non disponible" (erreur technique)
    */
   private estRenseigne(valeur: unknown): boolean {
-    return valeur !== null && valeur !== undefined && valeur !== "ne-sait-pas";
+    return valeur !== undefined && valeur !== "ne-sait-pas";
   }
 
   /**
