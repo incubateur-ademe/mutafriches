@@ -21,6 +21,9 @@ export const enrichissements = pgTable(
     centroidLatitude: numeric("centroid_latitude", { precision: 10, scale: 7 }),
     centroidLongitude: numeric("centroid_longitude", { precision: 10, scale: 7 }),
     geometrie: jsonb("geometrie"),
+
+    // Cache : reference vers l'enrichissement source si servi depuis le cache
+    enrichissementSourceId: varchar("enrichissement_source_id", { length: 50 }),
   },
   (table) => [
     index("idx_enrichissements_identifiant").on(table.identifiantCadastral),

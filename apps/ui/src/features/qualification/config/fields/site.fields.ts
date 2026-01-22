@@ -10,7 +10,7 @@ import { FormFieldConfig, SelectOption } from "../types";
 const SELECT_OPTION_PLACEHOLDER: SelectOption = { value: "", label: "Sélectionner une option" };
 
 /**
- * Configuration des champs de la section "Caracteristiques du site"
+ * Configuration des champs de la section "Caractéristiques du site"
  */
 export const SITE_FIELDS: Record<string, FormFieldConfig<string>> = {
   typeProprietaire: {
@@ -46,7 +46,7 @@ export const SITE_FIELDS: Record<string, FormFieldConfig<string>> = {
   etatBatiInfrastructure: {
     id: "etat-bati",
     name: "etatBatiInfrastructure",
-    label: "Etat des constructions",
+    label: "État des constructions",
     required: true,
     section: "site",
     options: [

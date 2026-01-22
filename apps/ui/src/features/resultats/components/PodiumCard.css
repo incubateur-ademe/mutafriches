@@ -44,9 +44,25 @@
   color: #161616;
 }
 
-.podium-card__tags-row {
-  display: flex;
-  justify-content: center;
+.podium-card__tags-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: 0.5rem;
-  flex-wrap: wrap;
+  width: 100%;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.podium-card__tags-grid .fr-tag {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+  justify-content: center;
+}
+
+.podium-card .fr-tags-group {
+  justify-content: center;
 }

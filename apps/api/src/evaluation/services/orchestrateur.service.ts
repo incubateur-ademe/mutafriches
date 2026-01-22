@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import {
   EnrichirParcelleInputDto,
   EnrichissementOutputDto,
@@ -20,6 +20,8 @@ import { EvaluationRepository } from "../repositories/evaluation.repository";
  */
 @Injectable()
 export class OrchestrateurService {
+  private readonly logger = new Logger(OrchestrateurService.name);
+
   constructor(
     private readonly enrichissementService: EnrichissementService,
     private readonly calculService: CalculService,
@@ -49,6 +51,40 @@ export class OrchestrateurService {
     if (!input.donneesEnrichies) {
       throw new Error("Données enrichies manquantes dans la requête");
     }
+
+    const parcelleId = input.donneesEnrichies.identifiantParcelle;
+
+    // 0. VERIFIER LE CACHE
+    const cached = await this.evaluationRepository.findValidCache(
+      parcelleId,
+      input.donneesComplementaires,
+    );
+
+    if (cached) {
+      this.logger.log(`Cache evaluation hit pour ${parcelleId}, source: ${cached.id}`);
+
+      // Origine par défaut si non fournie
+      const origine = options?.origine || { source: SourceUtilisation.API_DIRECTE };
+
+      // Enregistrer l'utilisation du cache pour analytics
+      const evaluation = new Evaluation(
+        parcelleId,
+        input.donneesEnrichies.codeInsee,
+        input.donneesEnrichies,
+        input.donneesComplementaires,
+        cached.resultats,
+        origine,
+      );
+
+      const evaluationId = await this.evaluationRepository.save(evaluation, cached.id);
+
+      return {
+        ...cached.resultats,
+        evaluationId,
+      };
+    }
+
+    this.logger.log(`Cache evaluation miss pour ${parcelleId}, calcul complet`);
 
     // Crée l'entité Parcelle selon le mode
     let parcelle: Parcelle;

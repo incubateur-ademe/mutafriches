@@ -35,7 +35,7 @@ export const EnrichissementPage: React.FC = () => {
 
   useEffect(() => {
     if (!identifiant) {
-      // Pas d'identifiant, retour a l'accueil
+      // Pas d'identifiant, retour à l'accueil
       navigate(ROUTES.HOME);
       return;
     }
@@ -56,7 +56,7 @@ export const EnrichissementPage: React.FC = () => {
         const enrichmentResult = await enrichissementService.enrichirParcelle(identifiant);
         const uiData = transformEnrichmentToUiData(enrichmentResult);
 
-        // Calculer le temps ecoule
+        // Calculer le temps écoulé
         const elapsedTime = Date.now() - startTime;
         const remainingTime = Math.max(0, MIN_LOADING_TIME - elapsedTime);
 
@@ -65,15 +65,15 @@ export const EnrichissementPage: React.FC = () => {
 
         setEnrichmentData(enrichmentResult, uiData, identifiant);
 
-        // Tracker l'evenement d'enrichissement termine
+        // Tracker l'événement d'enrichissement terminé
         await track(TypeEvenement.ENRICHISSEMENT_TERMINE, {
           identifiantCadastral: identifiant,
         });
 
-        // Naviguer vers la premiere etape de qualification
+        // Naviguer vers la première étape de qualification
         navigate(ROUTES.QUALIFICATION_SITE);
       } catch (err) {
-        // Meme en cas d'erreur, respecter le temps minimum
+        // Même en cas d'erreur, respecter le temps minimum
         const elapsedTime = Date.now() - startTime;
         const remainingTime = Math.max(0, MIN_LOADING_TIME - elapsedTime);
         await new Promise((resolve) => setTimeout(resolve, remainingTime));
@@ -113,10 +113,10 @@ export const EnrichissementPage: React.FC = () => {
             <ErrorAlert message={error} />
             <div className="fr-mt-4w fr-btns-group">
               <button className="fr-btn" onClick={handleRetry}>
-                Reessayer
+                Réessayer
               </button>
               <button className="fr-btn fr-btn--secondary" onClick={handleBack}>
-                Retour a l'accueil
+                Retour à l'accueil
               </button>
             </div>
           </div>

@@ -6,7 +6,6 @@ import {
   StatutEnrichissement,
 } from "@mutafriches/shared-types";
 import { EnrichissementRepository } from "../repositories/enrichissement.repository";
-import { AdemeSitesPolluesRepository } from "../repositories/ademe-sites-pollues.repository";
 import { CadastreEnrichissementService } from "./cadastre/cadastre-enrichissement.service";
 import { EnergieEnrichissementService } from "./energie/energie-enrichissement.service";
 import { TransportEnrichissementService } from "./transport/transport-enrichissement.service";
@@ -15,6 +14,7 @@ import { RisquesNaturelsEnrichissementService } from "./risques-naturels/risques
 import { RisquesTechnologiquesEnrichissementService } from "./risques-technologiques/risques-technologiques-enrichissement.service";
 import { GeoRisquesEnrichissementService } from "./georisques/georisques-enrichissement.service";
 import { ZonageOrchestratorService } from "./zonage";
+import { PollutionDetectionService } from "./pollution/pollution-detection.service";
 
 /**
  * Service principal d'enrichissement - Orchestrateur
@@ -41,10 +41,10 @@ export class EnrichissementService {
     private readonly risquesTechnologiquesEnrichissement: RisquesTechnologiquesEnrichissementService,
     private readonly georisquesEnrichissement: GeoRisquesEnrichissementService,
     private readonly zonageOrchestrator: ZonageOrchestratorService,
+    private readonly pollutionDetection: PollutionDetectionService,
 
     // Utilitaires
     private readonly enrichissementRepository: EnrichissementRepository,
-    private readonly ademeSitesPolluesRepository: AdemeSitesPolluesRepository,
   ) {}
 
   /**
@@ -61,6 +61,29 @@ export class EnrichissementService {
     integrateur?: string,
   ): Promise<EnrichissementOutputDto> {
     const startTime = Date.now();
+
+    // 0. VERIFIER LE CACHE
+    const cached = await this.enrichissementRepository.findValidCache(identifiantParcelle);
+    if (cached) {
+      this.logger.log(`Cache enrichissement hit pour ${identifiantParcelle}, source: ${cached.id}`);
+
+      // Enregistrer l'utilisation du cache pour analytics (non-bloquant)
+      this.saveCachedEnrichissement(
+        identifiantParcelle,
+        cached.donnees,
+        cached.id,
+        Date.now() - startTime,
+        sourceUtilisation,
+        integrateur,
+      );
+
+      return cached.donnees;
+    }
+
+    this.logger.log(
+      `Cache enrichissement miss pour ${identifiantParcelle}, enrichissement complet`,
+    );
+
     const sourcesUtilisees: string[] = [];
     const champsManquants: string[] = [];
     const sourcesEchouees: string[] = [];
@@ -163,20 +186,17 @@ export class EnrichissementService {
         parcelle.zonageReglementaire = zonagesResult.zonageReglementaire;
       }
 
-      // 9. POLLUTION ADEME (site reference comme potentiellement pollue)
+      // 9. POLLUTION (ADEME + SIS + ICPE)
       let siteReferencePollue = false;
       if (parcelle.coordonnees) {
-        try {
-          siteReferencePollue = await this.ademeSitesPolluesRepository.isSiteReferencePollue(
-            parcelle.coordonnees.latitude,
-            parcelle.coordonnees.longitude,
-            parcelle.codeInsee,
-          );
-          sourcesUtilisees.push("ADEME-Sites-Pollues");
-        } catch (error) {
-          this.logger.warn("Erreur lors de la verification ADEME:", error);
-          sourcesEchouees.push("ADEME-Sites-Pollues");
-        }
+        const pollutionResult = await this.pollutionDetection.detecterPollution(
+          parcelle.coordonnees.latitude,
+          parcelle.coordonnees.longitude,
+          parcelle.codeInsee,
+        );
+        siteReferencePollue = pollutionResult.siteReferencePollue;
+        sourcesUtilisees.push(...pollutionResult.sourcesUtilisees);
+        sourcesEchouees.push(...pollutionResult.sourcesEchouees);
       }
 
       // 10. CALCULER LA FIABILITE
@@ -335,6 +355,37 @@ export class EnrichissementService {
       .catch((error) => {
         // Ne pas bloquer si le log échoue, juste logger l'erreur
         this.logger.error("Erreur lors de l'enregistrement du log enrichissement:", error);
+      });
+  }
+
+  /**
+   * Enregistre une utilisation du cache pour analytics (non-bloquant)
+   */
+  private saveCachedEnrichissement(
+    identifiantCadastral: string,
+    donnees: EnrichissementOutputDto,
+    enrichissementSourceId: string,
+    dureeMs: number,
+    sourceUtilisation: string | undefined,
+    integrateur: string | undefined,
+  ): void {
+    this.enrichissementRepository
+      .save({
+        identifiantCadastral,
+        codeInsee: donnees.codeInsee,
+        commune: donnees.commune,
+        statut: StatutEnrichissement.SUCCES,
+        donnees,
+        sourcesReussies: donnees.sourcesUtilisees,
+        sourcesEchouees: [],
+        dureeMs,
+        sourceUtilisation,
+        integrateur,
+        versionApi: "1.0",
+        enrichissementSourceId,
+      })
+      .catch((error) => {
+        this.logger.error("Erreur lors de l'enregistrement du cache enrichissement:", error);
       });
   }
 }

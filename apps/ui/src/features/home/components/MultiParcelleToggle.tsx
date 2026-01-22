@@ -60,14 +60,14 @@ export const MultiParcelleToggle: React.FC<MultiParcelleToggleProps> = ({ isMult
 
       <ModalInfo
         id="modal-multi-parcelles-home"
-        title="Fonctionnalite a venir"
+        title="Fonctionnalité à venir"
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         icon="fr-icon-information-line"
       >
         <p>
-          La gestion multi-parcelles n'est pas encore disponible mais le sera bientot ! Cette
-          fonctionnalite vous permettra d'analyser plusieurs parcelles simultanement.
+          La gestion multi-parcelles n'est pas encore disponible mais le sera bientôt ! Cette
+          fonctionnalité vous permettra d'analyser plusieurs parcelles simultanément.
         </p>
       </ModalInfo>
     </>

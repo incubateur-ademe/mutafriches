@@ -16,7 +16,13 @@
       "Bash(pnpm --filter @mutafriches/ui run typecheck)",
       "Bash(pnpm run lint:*)",
       "Bash(pnpm run build:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(dir /s /b *.ts)",
+      "Bash(findstr:*)",
+      "Bash(pnpm --filter api test -- --run src/enrichissement/services/enrichissement.service.spec.ts)",
+      "Bash(pnpm --filter api test:*)",
+      "Bash(pnpm run test:*)",
+      "Bash(ls:*)"
     ]
   }
 }

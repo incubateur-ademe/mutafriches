@@ -1,0 +1,1 @@
+ALTER TABLE "enrichissements" ADD COLUMN "enrichissement_source_id" varchar(50);

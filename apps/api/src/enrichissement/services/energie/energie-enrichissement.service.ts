@@ -31,7 +31,7 @@ export class EnergieEnrichissementService {
     // Vérifier la présence des coordonnées
     if (!parcelle.coordonnees) {
       this.logger.warn(
-        `Pas de coordonnees disponibles pour la parcelle ${parcelle.identifiantParcelle}`,
+        `Pas de coordonnées disponibles pour la parcelle ${parcelle.identifiantParcelle}`,
       );
       sourcesEchouees.push(SourceEnrichissement.ENEDIS_RACCORDEMENT);
       champsManquants.push("distanceRaccordementElectrique");
@@ -54,15 +54,15 @@ export class EnergieEnrichissementService {
         parcelle.distanceRaccordementElectrique = distanceResult.data.distance;
         sourcesUtilisees.push(SourceEnrichissement.ENEDIS_RACCORDEMENT);
         this.logger.log(
-          `Distance raccordement electrique: ${distanceResult.data.distance}m pour ${parcelle.identifiantParcelle}`,
+          `Distance raccordement électrique: ${Math.round(distanceResult.data.distance)}m pour ${parcelle.identifiantParcelle}`,
         );
       } else {
-        this.logger.warn(`Echec recuperation Enedis: ${distanceResult.error || "Aucune donnee"}`);
+        this.logger.warn(`Échec récupération Enedis: ${distanceResult.error || "Aucune donnée"}`);
         sourcesEchouees.push(SourceEnrichissement.ENEDIS_RACCORDEMENT);
         champsManquants.push("distanceRaccordementElectrique");
       }
     } catch (error) {
-      this.logger.error("Erreur lors de la recuperation Enedis:", error);
+      this.logger.error("Erreur lors de la récupération Enedis:", error);
       sourcesEchouees.push(SourceEnrichissement.ENEDIS_RACCORDEMENT);
       champsManquants.push("distanceRaccordementElectrique");
     }

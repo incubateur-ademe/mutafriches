@@ -1,5 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { v4 as uuidv4 } from "uuid";
+import { eq, and, gte, sql } from "drizzle-orm";
 
 import { DatabaseService } from "../../shared/database/database.service";
 import { enrichissements } from "../../shared/database/schema";
@@ -8,6 +9,9 @@ import {
   EnrichissementOutputDto,
   StatutEnrichissement,
 } from "@mutafriches/shared-types";
+
+/** Duree de validite du cache des enrichissements en heures */
+export const ENRICHISSEMENT_CACHE_TTL_HOURS = 24;
 
 export interface EnrichissementData {
   identifiantCadastral: string;
@@ -23,6 +27,14 @@ export interface EnrichissementData {
   sourceUtilisation?: string;
   integrateur?: string;
   versionApi?: string;
+  /** ID de l'enrichissement source si servi depuis le cache */
+  enrichissementSourceId?: string;
+}
+
+/** Resultat d'un enrichissement en cache */
+export interface CachedEnrichissement {
+  id: string;
+  donnees: EnrichissementOutputDto;
 }
 
 @Injectable()
@@ -71,12 +83,58 @@ export class EnrichissementRepository {
       integrateur: data.integrateur,
       versionApi: data.versionApi,
 
-      // Nouvelles colonnes géographiques
+      // Colonnes geographiques
       centroidLatitude: centroidLat?.toString(),
       centroidLongitude: centroidLon?.toString(),
       geometrie: geometrie as unknown as Record<string, unknown>,
+
+      // Cache : reference vers l'enrichissement source
+      enrichissementSourceId: data.enrichissementSourceId,
     });
 
     return id;
+  }
+
+  /**
+   * Recherche un enrichissement valide en cache pour une parcelle
+   * Criteres : statut='succes', sources_echouees vide, date < TTL
+   */
+  async findValidCache(identifiantCadastral: string): Promise<CachedEnrichissement | null> {
+    const ttlDate = new Date();
+    ttlDate.setHours(ttlDate.getHours() - ENRICHISSEMENT_CACHE_TTL_HOURS);
+
+    const result = await this.database.db
+      .select({
+        id: enrichissements.id,
+        donnees: enrichissements.donnees,
+      })
+      .from(enrichissements)
+      .where(
+        and(
+          eq(enrichissements.identifiantCadastral, identifiantCadastral),
+          eq(enrichissements.statut, StatutEnrichissement.SUCCES),
+          gte(enrichissements.dateEnrichissement, ttlDate),
+          // sources_echouees doit etre vide (null, [], ou '[]')
+          sql`(${enrichissements.sourcesEchouees} IS NULL OR ${enrichissements.sourcesEchouees} = '[]'::jsonb OR jsonb_array_length(${enrichissements.sourcesEchouees}) = 0)`,
+        ),
+      )
+      .orderBy(sql`${enrichissements.dateEnrichissement} DESC`)
+      .limit(1);
+
+    if (result.length === 0) {
+      return null;
+    }
+
+    const row = result[0];
+    if (!row.donnees) {
+      return null;
+    }
+
+    this.logger.log(`Cache enrichissement trouve pour ${identifiantCadastral}: ${row.id}`);
+
+    return {
+      id: row.id,
+      donnees: row.donnees as unknown as EnrichissementOutputDto,
+    };
   }
 }

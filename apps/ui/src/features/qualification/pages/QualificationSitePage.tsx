@@ -35,7 +35,7 @@ export const QualificationSitePage: React.FC = () => {
   const [errors, setErrors] = useState<ValidationErrors<SiteFormValues>>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
 
-  // Verifier l'acces a cette etape
+  // Vérifier l'accès à cette étape
   useEffect(() => {
     if (!canAccessStep(1)) {
       navigate(ROUTES.HOME);
@@ -43,7 +43,7 @@ export const QualificationSitePage: React.FC = () => {
     }
     setCurrentStep(1);
 
-    // Tracker l'arrivee sur la page
+    // Tracker l'arrivée sur la page
     if (!hasTrackedVisit.current) {
       hasTrackedVisit.current = true;
       track(TypeEvenement.QUALIFICATION_SITE, {
@@ -56,7 +56,7 @@ export const QualificationSitePage: React.FC = () => {
     setValues((prev) => ({ ...prev, [fieldName]: value }));
     setTouched((prev) => ({ ...prev, [fieldName]: true }));
 
-    // Valider le champ modifie
+    // Valider le champ modifié
     if (touched[fieldName]) {
       const newErrors = validateSiteForm({ ...values, [fieldName]: value });
       setErrors((prev) => ({
@@ -70,7 +70,7 @@ export const QualificationSitePage: React.FC = () => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Marquer tous les champs comme touches
+    // Marquer tous les champs comme touchés
     const allTouched: Record<string, boolean> = {};
     Object.keys(SITE_FIELDS).forEach((key) => {
       allTouched[key] = true;
@@ -108,7 +108,7 @@ export const QualificationSitePage: React.FC = () => {
       <Stepper
         currentStep={1}
         totalSteps={3}
-        currentStepTitle="Qualifier le site et son bati"
+        currentStepTitle="Qualifier le site et son bâti"
         nextStepTitle="Qualifier l'environnement du site"
       />
 
@@ -273,7 +273,7 @@ export const QualificationSitePage: React.FC = () => {
 
       <StepNavigation
         onPrevious={handlePrevious}
-        previousLabel="Precedent"
+        previousLabel="Précédent"
         nextLabel="Suivant"
         nextType="submit"
         formId="site-form"

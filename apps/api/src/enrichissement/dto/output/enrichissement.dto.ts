@@ -87,11 +87,13 @@ export class EnrichissementSwaggerDto implements IEnrichissementOutput {
   distanceAutoroute: number;
 
   @ApiProperty({
-    description: "Distance à l'arrêt de transport en commun le plus proche en mètres",
+    description:
+      "Distance à l'arrêt de transport en commun le plus proche en mètres. null si aucun arrêt trouvé dans le rayon de recherche (2km)",
     example: 250,
     minimum: 0,
+    nullable: true,
   })
-  distanceTransportCommun: number;
+  distanceTransportCommun: number | null;
 
   @ApiProperty({
     description: "Présence de commerces et services à proximité",

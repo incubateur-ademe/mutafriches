@@ -1,11 +1,11 @@
 /**
  * Configuration des champs de la section "Risques"
  *
- * Note: Pour cette etape, les donnees sont principalement issues de l'enrichissement
- * automatique (GeoRisques, API Carto, etc.). Il n'y a pas de champs a saisir
+ * Note: Pour cette étape, les données sont principalement issues de l'enrichissement
+ * automatique (GeoRisques, API Carto, etc.). Il n'y a pas de champs à saisir
  * manuellement pour le moment.
  *
- * Les donnees affichees sont:
+ * Les données affichées sont:
  * - Risques technologiques (via GeoRisques)
  * - Risques naturels (via GeoRisques)
  * - Zonage environnemental (via API Carto Nature)
@@ -14,22 +14,22 @@
  */
 
 /**
- * Configuration des informations enrichies affichees dans l'etape Risques
+ * Configuration des informations enrichies affichées dans l'étape Risques
  */
 export const RISQUES_INFO_CONFIG = {
   risquesTechno: {
     id: "risques-technologiques",
-    label: "Presence de risques technologiques",
-    source: "API GeoRisques",
+    label: "Présence de risques technologiques",
+    source: "API GéoRisques",
     sourceUrl: "https://georisques.gouv.fr/doc-api",
   },
 
   risquesNaturels: {
     id: "risques-naturels",
-    label: "Presence de risques naturels",
-    source: "API GeoRisques",
+    label: "Présence de risques naturels",
+    source: "API GéoRisques",
     sourceUrl: "https://georisques.gouv.fr/doc-api",
-    note: "En l'absence de la numerisation des plans de prevention des risques, cette donnee est susceptible d'etre faussee",
+    note: "En l'absence de la numérisation des plans de prévention des risques, cette donnée est susceptible d'être faussée",
   },
 
   zonageEnviro: {
@@ -41,7 +41,7 @@ export const RISQUES_INFO_CONFIG = {
 
   zonageUrba: {
     id: "zonage-urbanistique",
-    label: "Zonage reglementaire",
+    label: "Zonage réglementaire",
     source: "API Carto GPU (IGN)",
     sourceUrl: "https://apicarto.ign.fr/api/doc/",
   },

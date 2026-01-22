@@ -21,4 +21,7 @@ export const evaluations = pgTable("evaluations", {
   integrateur: varchar("integrateur", { length: 255 }),
   utilisateurId: varchar("utilisateur_id", { length: 50 }),
   commentaire: varchar("commentaire", { length: 1000 }),
+
+  // Cache : reference vers l'evaluation source si servie depuis le cache
+  evaluationSourceId: varchar("evaluation_source_id", { length: 50 }),
 });

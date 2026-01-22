@@ -54,11 +54,11 @@ export const HomePage: React.FC = () => {
         <h1>Trouver le bon usage pour une friche</h1>
 
         <p className="fr-text--lead">
-          <strong>Pour demarrer l'analyse de l'usage le plus adapte a votre site en friche,</strong>{" "}
-          selectionner une parcelle sur la carte. Vous pouvez la rechercher en entrant son adresse
+          <strong>Pour démarrer l'analyse de l'usage le plus adapté à votre site en friche,</strong>{" "}
+          sélectionner une parcelle sur la carte. Vous pouvez la rechercher en entrant son adresse
           exacte ou une adresse approchante.
           <br />
-          Selectionner la parcelle et cliquer sur 'Analyser cette parcelle'.
+          Sélectionner la parcelle et cliquer sur 'Analyser cette parcelle'.
         </p>
 
         <MultiParcelleToggle isMulti={isMultiParcelle} onChange={setIsMultiParcelle} />

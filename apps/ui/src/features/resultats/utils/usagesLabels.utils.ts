@@ -1,6 +1,6 @@
 import { UsageType } from "@mutafriches/shared-types";
 
-/** Configuration complete d'un usage pour l'affichage */
+/** Configuration complète d'un usage pour l'affichage */
 interface UsageConfig {
   label: string;
   image: string;
@@ -11,37 +11,86 @@ const USAGE_CONFIG: Record<UsageType, UsageConfig> = {
   [UsageType.RESIDENTIEL]: {
     label: "Habitat & commerce de proximité",
     image: "/illustrations/podium/habitats.png",
-    tags: ["centre-ville", "transports", "non pollué"],
+    tags: [
+      "taille de la parcelle",
+      "présence de pollution",
+      "distance du centre ville",
+      "proximité des commerces et services",
+      "risques naturels",
+      "zonage réglementaire",
+    ],
   },
   [UsageType.EQUIPEMENTS]: {
     label: "Équipement public",
     image: "/illustrations/podium/equipement-public.png",
-    tags: ["centre-ville", "transports", "non pollué"],
+    tags: [
+      "taille de la parcelle",
+      "présence de pollution",
+      "distance du centre ville",
+      "proximité des commerces et services",
+      "risques naturels",
+      "risques technologiques",
+    ],
   },
   [UsageType.CULTURE]: {
     label: "Équipement culturel & touristique",
     image: "/illustrations/podium/equipement-culturel.png",
-    tags: ["centre-ville", "transports", "non pollué"],
+    tags: [
+      "état du bâti",
+      "présence de pollution",
+      "desserte par les réseaux (eau et élec)",
+      "distance des transports en commun",
+      "zonage patrimonial",
+      "qualité du paysage environnant",
+    ],
   },
   [UsageType.TERTIAIRE]: {
     label: "Bureaux",
     image: "/illustrations/podium/bureaux.png",
-    tags: ["acces poids lourds", "grande surface", "non pollué"],
+    tags: [
+      "présence de pollution",
+      "distance du centre ville",
+      "desserte par les réseaux (eau et élec)",
+      "distance des transports en commun",
+      "proximité des commerces et services",
+      "zonage réglementaire",
+    ],
   },
   [UsageType.INDUSTRIE]: {
     label: "Industrie",
     image: "/illustrations/podium/industrie.png",
-    tags: ["acces poids lourds", "grande surface", "non pollué"],
+    tags: [
+      "taille de la parcelle",
+      "desserte par les réseaux (eau et élec)",
+      "qualité de la voie de desserte",
+      "zonage réglementaire",
+      "zonage environnemental",
+      "zonage patrimonial",
+    ],
   },
   [UsageType.RENATURATION]: {
     label: "Espace renaturé",
     image: "/illustrations/podium/espace-renature.png",
-    tags: ["centre-ville", "transports", "non pollué"],
+    tags: [
+      "type de propriétaire",
+      "emprise au sol du bâti",
+      "état du bâti",
+      "zonage environnemental",
+      "continuité écologique",
+      "risques naturels",
+    ],
   },
   [UsageType.PHOTOVOLTAIQUE]: {
     label: "Centrale photovoltaïque au sol",
     image: "/illustrations/podium/centrale-photovoltaique.png",
-    tags: ["acces poids lourds", "grande surface", "non pollué"],
+    tags: [
+      "taille de la parcelle",
+      "emprise au sol du bâti",
+      "desserte par les réseaux",
+      "risques naturels",
+      "valeur architecturale/patrimoniale du bâti",
+      "continuité écologique",
+    ],
   },
 };
 
@@ -102,15 +151,4 @@ export const getUsageInfo = (usage: string): UsageConfig => {
   }
 
   return config;
-};
-
-/**
- * Trie les tags pour l'affichage : 2 plus courts en premier, puis le plus long
- */
-export const sortTagsForDisplay = (tags: string[]): string[] => {
-  if (tags.length <= 2) return tags;
-
-  const sorted = [...tags].sort((a, b) => a.length - b.length);
-  // Les 2 plus courts en premier, puis le reste
-  return sorted;
 };

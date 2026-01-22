@@ -13,8 +13,10 @@ describe("FiabiliteCalculator", () => {
 
   describe("calculer", () => {
     it("devrait retourner une note de 0 si aucun critere n'est renseigne", () => {
+      // Note : null = "recherche OK, pas de résultat" donc considéré comme renseigné
+      // undefined = "donnée non disponible" donc non renseigné
       const criteres = {
-        surfaceSite: null,
+        surfaceSite: undefined,
         surfaceBati: undefined,
         siteEnCentreVille: "ne-sait-pas",
       };
@@ -55,23 +57,25 @@ describe("FiabiliteCalculator", () => {
       expect(result.poidsRenseignes).toBe(poidsTotal);
     });
 
-    it("devrait ignorer les valeurs null, undefined et ne-sait-pas", () => {
+    it("devrait ignorer les valeurs undefined et ne-sait-pas mais compter null comme renseigné", () => {
+      // null = "recherche OK, pas de résultat" (ex: pas de transport dans le rayon)
+      // undefined = "donnée non disponible" (erreur technique)
       const criteres = {
         surfaceSite: 10000, // poids 2 - compte
-        surfaceBati: null, // ignore
-        siteEnCentreVille: undefined, // ignore
+        surfaceBati: null, // poids 2 - compte (recherche OK, pas de résultat)
+        siteEnCentreVille: undefined, // ignore (erreur technique)
         typeProprietaire: "ne-sait-pas", // ignore
         distanceAutoroute: 5, // poids 0.5 - compte
       };
 
       const result = calculator.calculer(criteres);
 
-      const expectedPourcentage = (2.5 / poidsTotal) * 100;
+      const expectedPourcentage = (4.5 / poidsTotal) * 100;
       const expectedNote = Math.round((expectedPourcentage / 10) * 2) / 2;
 
       expect(result.note).toBe(expectedNote);
-      expect(result.criteresRenseignes).toBe(2);
-      expect(result.poidsRenseignes).toBe(2.5);
+      expect(result.criteresRenseignes).toBe(3);
+      expect(result.poidsRenseignes).toBe(4.5);
     });
 
     it("devrait favoriser les criteres a poids eleve", () => {
@@ -140,9 +144,11 @@ describe("FiabiliteCalculator", () => {
 
   describe("calculer avec detail", () => {
     it("devrait inclure le detail des criteres si demande", () => {
+      // null = renseigné (recherche OK, pas de résultat)
+      // undefined = non renseigné (erreur technique)
       const criteres = {
         surfaceSite: 10000,
-        surfaceBati: null,
+        surfaceBati: undefined, // non renseigné (erreur technique)
       };
 
       const result = calculator.calculer(criteres, { inclureDetail: true });
@@ -160,6 +166,22 @@ describe("FiabiliteCalculator", () => {
       expect(surfaceBatiDetail).toBeDefined();
       expect(surfaceBatiDetail!.poids).toBe(2);
       expect(surfaceBatiDetail!.renseigne).toBe(false);
+    });
+
+    it("devrait considerer null comme renseigne dans le detail", () => {
+      // null = "recherche OK, pas de résultat" donc renseigné
+      const criteres = {
+        surfaceSite: 10000,
+        distanceTransportCommun: null, // renseigné (pas de transport dans le rayon)
+      };
+
+      const result = calculator.calculer(criteres, { inclureDetail: true });
+
+      const transportDetail = result.detailCriteres!.find(
+        (d) => d.critere === "distanceTransportCommun",
+      );
+      expect(transportDetail).toBeDefined();
+      expect(transportDetail!.renseigne).toBe(true);
     });
 
     it("ne devrait pas inclure le detail si explicitement desactive", () => {

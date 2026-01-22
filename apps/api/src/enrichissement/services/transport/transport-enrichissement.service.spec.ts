@@ -385,11 +385,12 @@ describe("TransportEnrichissementService", () => {
       const result = await service.enrichir(parcelle);
 
       // Assert
-      expect(parcelle.distanceTransportCommun).toBeUndefined();
-      // La source est utilisée (la recherche a fonctionné) mais le champ est manquant (rien trouvé)
+      // null = "recherche OK, aucun arrêt dans le rayon" (information valide, pas un champ manquant)
+      expect(parcelle.distanceTransportCommun).toBeNull();
+      // La source est utilisée (la recherche a fonctionné) et le champ n'est PAS manquant
       expect(result.sourcesUtilisees).toContain(SourceEnrichissement.TRANSPORT_DATA_GOUV);
       expect(result.sourcesEchouees).not.toContain(SourceEnrichissement.TRANSPORT_DATA_GOUV);
-      expect(result.champsManquants).toContain("distanceTransportCommun");
+      expect(result.champsManquants).not.toContain("distanceTransportCommun");
       // Les autres enrichissements devraient quand meme fonctionner
       expect(result.sourcesUtilisees).toContain(SourceEnrichissement.SERVICE_PUBLIC);
       expect(result.sourcesUtilisees).toContain(SourceEnrichissement.IGN_WFS);
@@ -605,13 +606,13 @@ describe("TransportEnrichissementService", () => {
       expect(result.success).toBe(true); // Succes partiel
       expect(result.sourcesUtilisees).toContain(SourceEnrichissement.SERVICE_PUBLIC);
       expect(result.sourcesUtilisees).toContain(SourceEnrichissement.IGN_WFS);
-      // Transport utilisé (la recherche a fonctionné) mais champ manquant (rien trouvé)
+      // Transport utilisé (la recherche a fonctionné) et champ renseigné (null = "pas de transport dans le rayon")
       expect(result.sourcesUtilisees).toContain(SourceEnrichissement.TRANSPORT_DATA_GOUV);
       expect(result.sourcesEchouees).not.toContain(SourceEnrichissement.TRANSPORT_DATA_GOUV);
-      expect(result.champsManquants).toContain("distanceTransportCommun");
+      expect(result.champsManquants).not.toContain("distanceTransportCommun");
       expect(parcelle.siteEnCentreVille).toBe(true);
       expect(parcelle.distanceAutoroute).toBe(2500);
-      expect(parcelle.distanceTransportCommun).toBeUndefined();
+      expect(parcelle.distanceTransportCommun).toBeNull();
     });
   });
 

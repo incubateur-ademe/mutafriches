@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import { Test, TestingModule } from "@nestjs/testing";
-import { StatutEnrichissement, RisqueNaturel, SourceUtilisation } from "@mutafriches/shared-types";
+import { StatutEnrichissement, RisqueNaturel } from "@mutafriches/shared-types";
 import { EnrichissementService } from "./enrichissement.service";
 import { CadastreEnrichissementService } from "./cadastre/cadastre-enrichissement.service";
 import { EnergieEnrichissementService } from "./energie/energie-enrichissement.service";
@@ -10,7 +10,7 @@ import { RisquesNaturelsEnrichissementService } from "./risques-naturels/risques
 import { RisquesTechnologiquesEnrichissementService } from "./risques-technologiques/risques-technologiques-enrichissement.service";
 import { GeoRisquesEnrichissementService } from "./georisques/georisques-enrichissement.service";
 import { EnrichissementRepository } from "../repositories/enrichissement.repository";
-import { AdemeSitesPolluesRepository } from "../repositories/ademe-sites-pollues.repository";
+import { PollutionDetectionService } from "./pollution/pollution-detection.service";
 import { Parcelle } from "../../evaluation/entities/parcelle.entity";
 import {
   createMockCadastreEnrichissementService,
@@ -22,6 +22,7 @@ import {
   createMockGeoRisquesEnrichissementService,
   createMockEnrichissementRepository,
   createMockZonageOrchestratorService,
+  createMockPollutionDetectionService,
 } from "../__test-helpers__/enrichissement.mocks";
 import { ZonageOrchestratorService } from "./zonage";
 
@@ -39,6 +40,7 @@ describe("EnrichissementService", () => {
   >;
   let georisquesEnrichissement: ReturnType<typeof createMockGeoRisquesEnrichissementService>;
   let zonageOrchestrator: ReturnType<typeof createMockZonageOrchestratorService>;
+  let pollutionDetection: ReturnType<typeof createMockPollutionDetectionService>;
   let enrichissementRepository: ReturnType<typeof createMockEnrichissementRepository>;
 
   beforeEach(async () => {
@@ -50,11 +52,22 @@ describe("EnrichissementService", () => {
     const mockRisquesTechnologiques = createMockRisquesTechnologiquesEnrichissementService();
     const mockGeoRisques = createMockGeoRisquesEnrichissementService();
     const mockZonageOrchestrator = createMockZonageOrchestratorService();
+    const mockPollutionDetection = createMockPollutionDetectionService();
     const mockRepository = createMockEnrichissementRepository();
-    const mockAdemeSitesPolluesRepository = {
-      findByParcelle: vi.fn().mockResolvedValue([]),
-      isSiteReferencePollue: vi.fn().mockResolvedValue(false),
-    };
+
+    // Configuration par defaut du mock pollution
+    mockPollutionDetection.detecterPollution.mockResolvedValue({
+      siteReferencePollue: false,
+      sourcesPollution: [],
+      sourcesUtilisees: ["ADEME-Sites-Pollues"],
+      sourcesEchouees: [],
+      pollutionAdeme: false,
+      pollutionSis: false,
+      pollutionIcpe: false,
+    });
+
+    // Configuration par defaut du mock cache (pas de cache)
+    mockRepository.findValidCache.mockResolvedValue(null);
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -70,8 +83,8 @@ describe("EnrichissementService", () => {
         },
         { provide: GeoRisquesEnrichissementService, useValue: mockGeoRisques },
         { provide: ZonageOrchestratorService, useValue: mockZonageOrchestrator },
+        { provide: PollutionDetectionService, useValue: mockPollutionDetection },
         { provide: EnrichissementRepository, useValue: mockRepository },
-        { provide: AdemeSitesPolluesRepository, useValue: mockAdemeSitesPolluesRepository },
       ],
     }).compile();
 
@@ -84,6 +97,7 @@ describe("EnrichissementService", () => {
     risquesTechnologiquesEnrichissement = mockRisquesTechnologiques;
     georisquesEnrichissement = mockGeoRisques;
     zonageOrchestrator = mockZonageOrchestrator;
+    pollutionDetection = mockPollutionDetection;
     enrichissementRepository = mockRepository;
   });
 
@@ -413,6 +427,126 @@ describe("EnrichissementService", () => {
       expect(georisquesEnrichissement.enrichir).not.toHaveBeenCalled();
     });
   });
+
+  describe("cache", () => {
+    const identifiantTest = "29232000AB0123";
+
+    it("devrait retourner les donnees du cache si disponibles", async () => {
+      // Arrange
+      const cachedData = createMockCachedEnrichissement();
+      enrichissementRepository.findValidCache.mockResolvedValue({
+        id: "cached-id-123",
+        donnees: cachedData,
+      });
+      enrichissementRepository.save.mockResolvedValue({});
+
+      // Act
+      const result = await service.enrichir(identifiantTest);
+
+      // Assert
+      expect(result).toEqual(cachedData);
+      expect(enrichissementRepository.findValidCache).toHaveBeenCalledWith(identifiantTest);
+    });
+
+    it("devrait ne pas appeler les services si cache disponible", async () => {
+      // Arrange
+      const cachedData = createMockCachedEnrichissement();
+      enrichissementRepository.findValidCache.mockResolvedValue({
+        id: "cached-id-123",
+        donnees: cachedData,
+      });
+      enrichissementRepository.save.mockResolvedValue({});
+
+      // Act
+      await service.enrichir(identifiantTest);
+
+      // Assert
+      expect(cadastreEnrichissement.enrichir).not.toHaveBeenCalled();
+      expect(energieEnrichissement.enrichir).not.toHaveBeenCalled();
+      expect(transportEnrichissement.enrichir).not.toHaveBeenCalled();
+      expect(urbanismeEnrichissement.enrichir).not.toHaveBeenCalled();
+      expect(risquesNaturelsEnrichissement.enrichir).not.toHaveBeenCalled();
+      expect(risquesTechnologiquesEnrichissement.enrichir).not.toHaveBeenCalled();
+      expect(georisquesEnrichissement.enrichir).not.toHaveBeenCalled();
+      expect(pollutionDetection.detecterPollution).not.toHaveBeenCalled();
+    });
+
+    it("devrait enregistrer l'utilisation du cache avec enrichissementSourceId", async () => {
+      // Arrange
+      const cachedData = createMockCachedEnrichissement();
+      const cacheSourceId = "cached-id-123";
+      enrichissementRepository.findValidCache.mockResolvedValue({
+        id: cacheSourceId,
+        donnees: cachedData,
+      });
+      enrichissementRepository.save.mockResolvedValue({});
+
+      // Act
+      await service.enrichir(identifiantTest, "mutafriches", "test-integrateur");
+
+      // Assert
+      expect(enrichissementRepository.save).toHaveBeenCalledWith(
+        expect.objectContaining({
+          identifiantCadastral: identifiantTest,
+          statut: StatutEnrichissement.SUCCES,
+          enrichissementSourceId: cacheSourceId,
+          sourceUtilisation: "mutafriches",
+          integrateur: "test-integrateur",
+        }),
+      );
+    });
+
+    it("devrait faire un enrichissement complet si pas de cache", async () => {
+      // Arrange
+      enrichissementRepository.findValidCache.mockResolvedValue(null);
+      const parcelle = createMockParcelle();
+      setupAllMocksSuccess(parcelle, {
+        cadastreEnrichissement,
+        energieEnrichissement,
+        transportEnrichissement,
+        urbanismeEnrichissement,
+        risquesNaturelsEnrichissement,
+        risquesTechnologiquesEnrichissement,
+        georisquesEnrichissement,
+        zonageOrchestrator,
+      });
+      enrichissementRepository.save.mockResolvedValue({});
+
+      // Act
+      await service.enrichir(identifiantTest);
+
+      // Assert
+      expect(cadastreEnrichissement.enrichir).toHaveBeenCalledWith(identifiantTest);
+      expect(energieEnrichissement.enrichir).toHaveBeenCalled();
+    });
+
+    it("devrait ne pas inclure enrichissementSourceId si enrichissement complet", async () => {
+      // Arrange
+      enrichissementRepository.findValidCache.mockResolvedValue(null);
+      const parcelle = createMockParcelle();
+      setupAllMocksSuccess(parcelle, {
+        cadastreEnrichissement,
+        energieEnrichissement,
+        transportEnrichissement,
+        urbanismeEnrichissement,
+        risquesNaturelsEnrichissement,
+        risquesTechnologiquesEnrichissement,
+        georisquesEnrichissement,
+        zonageOrchestrator,
+      });
+      enrichissementRepository.save.mockResolvedValue({});
+
+      // Act
+      await service.enrichir(identifiantTest);
+
+      // Assert
+      expect(enrichissementRepository.save).toHaveBeenCalledWith(
+        expect.not.objectContaining({
+          enrichissementSourceId: expect.any(String),
+        }),
+      );
+    });
+  });
 });
 
 // Helpers
@@ -487,4 +621,31 @@ function setupAllMocksSuccess(parcelle: Parcelle, mocks: AllMocks): void {
       reglementaire: null,
     },
   });
+}
+
+function createMockCachedEnrichissement() {
+  return {
+    identifiantParcelle: "29232000AB0123",
+    codeInsee: "29232",
+    commune: "Quimper",
+    surfaceSite: 1000,
+    surfaceBati: 200,
+    distanceRaccordementElectrique: 50,
+    presenceRisquesNaturels: "aucun",
+    coordonnees: { latitude: 48.0, longitude: -4.0 },
+    geometrie: { type: "Polygon", coordinates: [] },
+    siteEnCentreVille: false,
+    distanceAutoroute: 5000,
+    distanceTransportCommun: 500,
+    proximiteCommercesServices: true,
+    tauxLogementsVacants: 0.05,
+    presenceRisquesTechnologiques: false,
+    siteReferencePollue: false,
+    zonageEnvironnemental: "hors-zone",
+    zonageReglementaire: "zone-urbaine-u",
+    zonagePatrimonial: "non-concerne",
+    sourcesUtilisees: ["cadastre", "enedis", "transport"],
+    champsManquants: [],
+    sourcesEchouees: [],
+  };
 }

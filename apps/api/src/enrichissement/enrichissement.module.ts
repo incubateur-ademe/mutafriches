@@ -16,6 +16,9 @@ import { RisquesTechnologiquesEnrichissementService } from "./services/risques-t
 import { RisquesNaturelsCalculator } from "./services/risques-naturels/risques-naturels.calculator";
 import { RisquesTechnologiquesCalculator } from "./services/risques-technologiques/risques-technologiques.calculator";
 
+// Service Pollution
+import { PollutionDetectionService } from "./services/pollution/pollution-detection.service";
+
 // Services Zonage
 import { ZonageOrchestratorService } from "./services/zonage/zonage-orchestrator.service";
 import { ZonageEnvironnementalService } from "./services/zonage/zonage-environnemental/zonage-environnemental.service";
@@ -83,6 +86,9 @@ import { AdemeSitesPolluesRepository } from "./repositories/ademe-sites-pollues.
     // Calculators
     RisquesNaturelsCalculator,
     RisquesTechnologiquesCalculator,
+
+    // Service Pollution
+    PollutionDetectionService,
 
     // Services Zonage
     ZonageOrchestratorService,

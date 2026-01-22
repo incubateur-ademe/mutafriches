@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import { UsageResultat } from "@mutafriches/shared-types";
-import { getUsageInfo, getBadgeConfig, sortTagsForDisplay } from "../utils/usagesLabels.utils";
+import { getUsageInfo, getBadgeConfig } from "../utils/usagesLabels.utils";
 import "./PodiumCard.css";
 
 interface PodiumCardProps {
@@ -8,9 +8,14 @@ interface PodiumCardProps {
 }
 
 export const PodiumCard: React.FC<PodiumCardProps> = ({ result }) => {
+  const [showTags, setShowTags] = useState(false);
   const usageInfo = getUsageInfo(result.usage);
   const badgeConfig = getBadgeConfig(result.indiceMutabilite);
-  const sortedTags = sortTagsForDisplay(usageInfo.tags);
+
+  const handleToggleTags = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setShowTags(!showTags);
+  };
 
   return (
     <div className="fr-col-12 fr-col-md-4">
@@ -34,23 +39,20 @@ export const PodiumCard: React.FC<PodiumCardProps> = ({ result }) => {
         {/* Titre */}
         <h5 className="podium-card__title">{usageInfo.label}</h5>
 
-        {/* Tags - 2 premiers (courts) sur ligne 1, dernier (long) sur ligne 2 */}
-        <div className="podium-card__tags fr-mb-2w fr-mt-2w">
-          <div className="podium-card__tags-row">
-            {sortedTags.slice(0, 2).map((tag, index) => (
-              <a key={index} className="fr-tag fr-mb-2v" href="#">
+        {/* Tags ou lien "En savoir plus" */}
+        {showTags ? (
+          <div className="fr-tags-group fr-tags-group--sm fr-mb-2w fr-mt-2w">
+            {usageInfo.tags.map((tag, index) => (
+              <a key={index} className="fr-tag fr-mt-2v" href="#">
                 {tag}
               </a>
             ))}
           </div>
-          {sortedTags.length > 2 && (
-            <div className="podium-card__tags-row">
-              <a className="fr-tag" href="#">
-                {sortedTags[2]}
-              </a>
-            </div>
-          )}
-        </div>
+        ) : (
+          <a href="#" className="fr-link fr-mt-2w fr-mb-4w" onClick={handleToggleTags}>
+            En savoir plus
+          </a>
+        )}
       </div>
     </div>
   );
