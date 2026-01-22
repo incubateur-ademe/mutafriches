@@ -283,23 +283,23 @@ export const ResultatsPage: React.FC = () => {
               pas à des études de programmation.
               {messageForteDisparite && (
                 <>
-                  {" "}
-                  Les résultats font apparaître une forte disparité entre les usages, il semble que
-                  certains soient très peu adaptés à votre site.
+                  <br />
+                  <br /> Les résultats font apparaître une forte disparité entre les usages, il
+                  semble que certains soient très peu adaptés à votre site.
                 </>
               )}
               {messageMixteUsages && (
                 <>
-                  {" "}
-                  Aussi, compte tenu de la surface du site (plus d'un hectare), il vous est
+                  <br />
+                  <br /> Aussi, compte tenu de la surface du site (plus d'un hectare), il vous est
                   recommandé de privilégier un mixte d'usages dans votre programmation.
                 </>
               )}
               {messageEtudeProgrammatique && (
                 <>
-                  {" "}
-                  Votre site semble adapté à plusieurs usages, une étude programmatique permettra de
-                  mieux qualifier le besoin et la programmation à mettre en œuvre.
+                  <br />
+                  <br /> Votre site semble adapté à plusieurs usages, une étude programmatique
+                  permettra de mieux qualifier le besoin et la programmation à mettre en œuvre.
                 </>
               )}
             </p>

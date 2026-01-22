@@ -8,7 +8,7 @@ type PollutionSelectValue = "oui" | "non" | "ne-sait-pas" | "";
 const POLLUTION_TYPES = [
   {
     value: PresencePollution.OUI_AMIANTE,
-    label: "Présence d'amiante",
+    label: "Présence d'amiante dans le bâti",
     tooltip:
       "L'amiante se retrouve peu dans les sols mais principalement dans le bâti. De nombreux matériaux contenant de l'amiante peuvent subsister dans les cloisons, portes coupe-feu, faux plafonds, tuyaux, dalles de sol, toitures etc.",
   },
