@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useEventTracking } from "../../../shared/hooks/useEventTracking";
 import { MutabiliteOutputDto, TypeEvenement } from "@mutafriches/shared-types";
-import { buildMutabilityInput } from "../utils/mutability.mapper";
+import { buildMutabilityInput, buildDonneesComplementaires } from "../utils/mutability.mapper";
 import { ROUTES } from "../../../shared/config/routes.config";
 import { Layout } from "../../../shared/components/layout/Layout";
 import { LoadingCallout } from "../../../shared/components/common/LoadingCallout";
@@ -253,6 +253,12 @@ export const ResultatsPage: React.FC = () => {
     }
   };
 
+  // Conversion des données manuelles pour les tags dynamiques
+  const donneesComplementaires = useMemo(() => {
+    if (!state.manualData) return undefined;
+    return buildDonneesComplementaires(state.manualData);
+  }, [state.manualData]);
+
   if (!canAccessStep(3)) {
     return null;
   }
@@ -353,7 +359,12 @@ export const ResultatsPage: React.FC = () => {
 
             <div className="fr-grid-row fr-grid-row--gutters fr-mb-4w">
               {mutabilityData.resultats.slice(0, 3).map((result) => (
-                <PodiumCard key={result.usage} result={result} />
+                <PodiumCard
+                  key={result.usage}
+                  result={result}
+                  enrichmentData={state.enrichmentData}
+                  manualData={donneesComplementaires}
+                />
               ))}
             </div>
 
