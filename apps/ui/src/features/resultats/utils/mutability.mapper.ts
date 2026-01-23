@@ -12,12 +12,13 @@ import {
   TrameVerteEtBleue,
 } from "@mutafriches/shared-types";
 
-export function buildMutabilityInput(
-  enrichmentData: EnrichissementOutputDto,
+/**
+ * Convertit les données manuelles (Record<string, string>) en DTO typé
+ */
+export function buildDonneesComplementaires(
   manualData: Record<string, string>,
-): CalculerMutabiliteInputDto {
-  // Mapper proprement les données manuelles
-  const donneesComplementaires: DonneesComplementairesInputDto = {
+): DonneesComplementairesInputDto {
+  return {
     typeProprietaire: (manualData.typeProprietaire ||
       TypeProprietaire.NE_SAIT_PAS) as TypeProprietaire,
     raccordementEau: (manualData.raccordementEau || RaccordementEau.NE_SAIT_PAS) as RaccordementEau,
@@ -33,9 +34,14 @@ export function buildMutabilityInput(
     trameVerteEtBleue: (manualData.trameVerteEtBleue ||
       TrameVerteEtBleue.NE_SAIT_PAS) as TrameVerteEtBleue,
   };
+}
 
+export function buildMutabilityInput(
+  enrichmentData: EnrichissementOutputDto,
+  manualData: Record<string, string>,
+): CalculerMutabiliteInputDto {
   return {
     donneesEnrichies: enrichmentData,
-    donneesComplementaires,
+    donneesComplementaires: buildDonneesComplementaires(manualData),
   };
 }

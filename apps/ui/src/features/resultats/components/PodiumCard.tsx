@@ -1,16 +1,40 @@
-import React, { useState } from "react";
-import { UsageResultat } from "@mutafriches/shared-types";
+import React, { useState, useMemo } from "react";
+import {
+  UsageResultat,
+  EnrichissementOutputDto,
+  DonneesComplementairesInputDto,
+} from "@mutafriches/shared-types";
 import { getUsageInfo, getBadgeConfig } from "../utils/usagesLabels.utils";
+import { generateTagsForUsage } from "../utils/dynamicTags.resolver";
+import { TagInputData } from "../utils/dynamicTags.types";
 import "./PodiumCard.css";
 
 interface PodiumCardProps {
   result: UsageResultat;
+  enrichmentData?: EnrichissementOutputDto;
+  manualData?: DonneesComplementairesInputDto;
 }
 
-export const PodiumCard: React.FC<PodiumCardProps> = ({ result }) => {
+export const PodiumCard: React.FC<PodiumCardProps> = ({ result, enrichmentData, manualData }) => {
   const [showTags, setShowTags] = useState(false);
   const usageInfo = getUsageInfo(result.usage);
   const badgeConfig = getBadgeConfig(result.indiceMutabilite);
+
+  // Génération des tags dynamiques basés sur les données d'entrée
+  const dynamicTags = useMemo(() => {
+    if (!enrichmentData || !manualData) {
+      // Fallback sur les tags statiques si les données ne sont pas disponibles
+      return usageInfo.tags;
+    }
+
+    const tagInputData: TagInputData = {
+      enrichmentData,
+      manualData,
+    };
+
+    const { tags } = generateTagsForUsage(result.usage, tagInputData);
+    return tags;
+  }, [enrichmentData, manualData, result.usage, usageInfo.tags]);
 
   const handleToggleTags = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -42,8 +66,8 @@ export const PodiumCard: React.FC<PodiumCardProps> = ({ result }) => {
         {/* Tags ou lien "En savoir plus" */}
         {showTags ? (
           <div className="fr-tags-group fr-tags-group--sm fr-mb-2w fr-mt-2w">
-            {usageInfo.tags.map((tag, index) => (
-              <a key={index} className="fr-tag fr-mt-2v" href="#">
+            {dynamicTags.map((tag, index) => (
+              <a href="#" key={index} className="fr-tag fr-mt-2v">
                 {tag}
               </a>
             ))}
