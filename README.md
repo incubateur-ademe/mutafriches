@@ -9,7 +9,7 @@ Mutafriches est une application web qui remplace un fichier Excel pour analyser 
 ### Backend
 
 - **Framework** : NestJS (TypeScript)
-- **Base de données** : PostgreSQL 16 + Drizzle ORM
+- **Base de données** : PostgreSQL 16 + PostGIS + Drizzle ORM
 - **Documentation API** : Swagger/OpenAPI
 
 ### Frontend
@@ -28,26 +28,36 @@ Mutafriches est une application web qui remplace un fichier Excel pour analyser 
 
 ## 🏛️ Architecture
 
-Le projet suit une architecture **monolithique modulaire** :
+Le projet suit une architecture **monorepo** :
 
 ```
 mutafriches/
-├── src/                    # API NestJS
-│   ├── analytics/          # Analytics et métriques
-│   ├── form-sessions/      # Gestion des sessions
-│   ├── friches/            # Logique métier
-│   ├── shared/             # Services partagés
-│   └── main.ts             # Point d'entrée API
-├── ui/                     # Application React
-│   ├── src/
-│   │   ├── components/     # Composants React
-│   │   ├── pages/          # Pages de l'application
-│   │   ├── services/       # Services API
-│   │   └── App.tsx         # Composant racine
-│   └── vite.config.ts      # Configuration Vite
-└── dist/                   # Build de production
-    ├── src/                # API compilée
-    └── dist-ui/            # UI React compilée
+├── apps/
+│   ├── api/                    # API NestJS
+│   │   ├── src/
+│   │   │   ├── enrichissement/ # Enrichissement parcelles (24 APIs)
+│   │   │   ├── evaluation/     # Calcul mutabilité
+│   │   │   ├── evenements/     # Tracking événements
+│   │   │   ├── friches/        # DEPRECATED (routes historiques)
+│   │   │   └── shared/         # Services partagés
+│   │   └── drizzle/            # Migrations base de données
+│   └── ui/                     # Application React
+│       ├── src/
+│       │   ├── components/     # Composants React
+│       │   ├── pages/          # Pages de l'application
+│       │   ├── services/       # Services API
+│       │   └── App.tsx         # Composant racine
+│       └── vite.config.ts      # Configuration Vite
+├── packages/
+│   └── shared-types/           # Types TypeScript partagés
+├── docs/                       # Documentation
+│   ├── README.md               # Index général
+│   ├── enrichissement.md       # Module enrichissement
+│   ├── evaluation-mutabilite.md # Algorithme mutabilité
+│   └── integration/            # Guide intégration
+└── dist/                       # Build de production
+    ├── src/                    # API compilée
+    └── dist-ui/                # UI React compilée
 ```
 
 ### Modes de fonctionnement
@@ -61,7 +71,8 @@ mutafriches/
 #### Production
 
 - **Serveur unique** : NestJS sert à la fois l'API et l'UI React compilée
-- Routes API : `/api/*`, `/friches/*`, `/health`
+- Routes API : `/api/*`, `/enrichissement`, `/evaluation/*`, `/evenements`, `/health`
+- Routes DEPRECATED : `/friches/*` (redirigent vers nouveaux endpoints)
 - UI React : Toutes les autres routes servent le SPA
 
 ## 🚀 Installation
@@ -151,11 +162,13 @@ pnpm test:coverage          # Tests avec coverage
 | Route | Méthode | Description |
 |-------|---------|-------------|
 | `/api` | GET | Documentation Swagger |
-| `/api/health` | GET | Healthcheck de l'API |
-| `/api/form-sessions` | POST | Créer une session de formulaire |
-| `/api/form-sessions/{id}` | GET, PUT | Gérer une session |
-| `/api/friches/mutability` | POST | Calculer la mutabilité |
-| `/api/friches/enrich` | POST | Enrichir les données d'une parcelle |
+| `/health` | GET | Healthcheck de l'API |
+| `/enrichissement` | POST | Enrichir une parcelle (24 APIs externes) |
+| `/evaluation/calculer` | POST | Calculer la mutabilité |
+| `/evaluation/:id` | GET | Récupérer une évaluation |
+| `/evaluation/metadata` | GET | Métadonnées (enums) |
+| `/evenements` | POST | Tracker un événement |
+| `/friches/*` | * | **DEPRECATED** - Routes historiques |
 
 ## 🎨 Interface utilisateur
 
@@ -166,13 +179,24 @@ L'UI React communique avec l'API NestJS via des services dédiés :
 ```typescript
 // ui/src/services/api.ts
 export const api = {
-  friches: {
-    calculateMutability: (data) => fetch('/api/friches/mutability', ...),
-    enrichParcel: (id) => fetch('/api/friches/enrich', ...)
+  enrichissement: {
+    enrichir: (identifiant) => fetch('/enrichissement', {
+      method: 'POST',
+      body: JSON.stringify({ identifiant })
+    })
   },
-  sessions: {
-    create: () => fetch('/api/form-sessions', ...),
-    update: (id, data) => fetch(`/api/form-sessions/${id}`, ...)
+  evaluation: {
+    calculer: (data) => fetch('/evaluation/calculer', {
+      method: 'POST',
+      body: JSON.stringify(data)
+    }),
+    recuperer: (id) => fetch(`/evaluation/${id}`)
+  },
+  evenements: {
+    tracker: (event) => fetch('/evenements', {
+      method: 'POST',
+      body: JSON.stringify(event)
+    })
   }
 }
 ```
@@ -224,7 +248,7 @@ DATABASE_URL=<fourni par addon PostgreSQL>
    - Copie l'UI vers `dist-ui/`
 
 2. **Runtime** : NestJS sert :
-   - Routes API sur `/api/*`
+   - Routes API sur `/api/*`, `/enrichissement`, `/evaluation/*`, `/evenements`
    - UI React sur toutes les autres routes
 
 ```bash
@@ -232,14 +256,19 @@ DATABASE_URL=<fourni par addon PostgreSQL>
 git push scalingo main
 ```
 
-## 📊 Analytics
+## 📊 Tracking Événements
 
-Tracking automatique des métriques d'impact :
+Système de tracking léger pour mesurer l'engagement utilisateur :
 
-- Taux d'initiation et de complétion
-- Engagement par étape
-- Demandes de contact
-- Utilisation des outils annexes
+- Événements frontend uniquement (depuis Mutafriches UI)
+- Pas de tracking intégrateurs (Benefriches, etc.)
+- Endpoint : `POST /evenements`
+- Guard : `OriginGuard` (whitelist origines Mutafriches)
+
+**Événements trackés** :
+- Étapes formulaire (progression, abandon)
+- Actions utilisateur (enrichissement, calcul)
+- Téléchargements de résultats
 
 ## 🧪 Tests
 
@@ -256,33 +285,56 @@ pnpm test:e2e
 
 ## 📚 Documentation
 
-### 🔌 Intégration dans vos applications
+Documentation complète dans le dossier [`docs/`](./docs/) :
+
+- **[Index Général](./docs/README.md)** - Vue d'ensemble et navigation
+- **[Module Enrichissement](./docs/enrichissement.md)** - 9 domaines, 24 APIs, règles de gestion
+- **[Algorithme d'Évaluation](./docs/evaluation-mutabilite.md)** - Matrice 26×7, calcul mutabilité
+- **[Guide d'Intégration](./docs/integration/README.md)** - Iframe + PostMessage
+
+### Architecture
+
+- **Monorepo** : apps/api + apps/ui + packages/shared-types
+- **Backend** : NestJS + PostgreSQL + PostGIS + Drizzle ORM
+- **Frontend** : React 19 + Vite + DSFR
+- **APIs Externes** : 21 APIs publiques + 3 bases locales PostGIS
+
+### Règles de code
+
+Voir [CLAUDE.md](./CLAUDE.md) pour les règles strictes :
+- Typage TypeScript explicite obligatoire
+- Accents français dans tout le code
+- Conventions NestJS (services, controllers, DTOs)
+
+---
+
+## 🔌 Intégration dans vos applications
 
 Mutafriches peut être intégré facilement dans vos applications existantes via iframe. Deux modes d'intégration sont disponibles :
 
-#### Intégration simple (HTML/JavaScript)
+### Intégration simple (HTML/JavaScript)
 
 Pour une intégration rapide dans n'importe quel site web :
 
 ```html
-<iframe 
-  src="https://mutafriches.beta.gouv.fr?integrator=demo" 
-  width="100%" 
-  height="800">
+<iframe
+  src="https://mutafriches.beta.gouv.fr/iframe?integrator=demo"
+  width="100%"
+  height="900">
 </iframe>
 ```
 
-#### Intégration avancée (React, Vue, etc.)
+### Intégration avancée (React, Vue, etc.)
 
 Pour une intégration avec communication bidirectionnelle via PostMessage, permettant de récupérer les résultats d'analyse dans votre application.
 
-#### 📖 Documentation complète et exemples
+### 📖 Documentation complète et exemples
 
-- **[Guide d'intégration](./docs/integration/)** - Vue d'ensemble des méthodes d'intégration
+- **[Guide d'intégration](./docs/integration/README.md)** - Vue d'ensemble des méthodes d'intégration
 - **[Exemple HTML/JavaScript](./docs/integration/html/)** - Intégration simple avec vanilla JS
 - **[Exemple React](./docs/integration/react/)** - Composant React avec hook personnalisé
 
-#### Paramètres d'intégration
+### Paramètres d'intégration
 
 | Paramètre | Description | Requis |
 |-----------|-------------|---------|
@@ -290,46 +342,46 @@ Pour une intégration avec communication bidirectionnelle via PostMessage, perme
 | `callbackUrl` | URL de retour après analyse | ❌ |
 | `callbackLabel` | Texte personnalisé du bouton de retour | ❌ |
 
-### APIs et Sources de données externes
+**Exemple complet** :
 
-Le projet s'appuie sur plusieurs APIs publiques pour enrichir les données :
+```
+https://mutafriches.beta.gouv.fr/iframe?integrator=benefriches&callbackUrl=https://benefriches.ademe.fr&callbackLabel=Retour+vers+Benefriches
+```
 
-- **[Vue d'ensemble des APIs externes](./docs/external-apis-overview.md)** - Architecture et cartographie
-- **[IGN Cadastre](./docs/external-apis/ign-cadastre.md)** - Enrichissement cadastral
-- **[BDNB](./docs/external-apis/api-bdnb.md)** - Base de données bâtiment
-- **[ENEDIS](./docs/external-apis/api-enedis.md)** - API Enedis
-- **Transport Data Gouv** - Accessibilité transports (à venir)
-- **Géorisques** - Risques et contraintes (à venir)
+---
 
 ## 🔗 Intégration partenaires
 
-### Liens trackés
+### Liens trackés (analytics)
 
-Pour permettre le suivi des conversions, les partenaires peuvent utiliser des liens avec paramètres UTM :
+Pour le tracking analytics (usage externe de Mutafriches), utiliser le paramètre `source` :
 
 ```
-https://mutafriches.beta.gouv.fr/?source={partenaire}&ref={contexte}
+https://mutafriches.beta.gouv.fr?source={partenaire}
 ```
 
 | Paramètre | Description | Exemple |
 |-----------|-------------|---------|
-| `source` | Nom du partenaire | `urbanvitaliz`, `benefriches`, `cartofriches` |
-| `ref` | Point d'entrée / contexte | `page-friches`, `newsletter`, `widget` |
+| `source` | Nom du partenaire (analytics uniquement) | `urbanvitaliz`, `benefriches` |
 
 **Exemples :**
 
-- `https://mutafriches.beta.gouv.fr/?source=urbanvitaliz&ref=page-friches`
-- `https://mutafriches.beta.gouv.fr/?source=benefriches&ref=simulateur`
+- `https://mutafriches.beta.gouv.fr?source=urbanvitaliz`
+- `https://mutafriches.beta.gouv.fr?source=benefriches`
+
+**Note** : Pour l'intégration iframe avec callback, voir section précédente avec paramètre `integrator`.
 
 ### Intégration iframe
 
 Pour une intégration en iframe avec callback :
 
 ```
-https://mutafriches.beta.gouv.fr/?integrator={partenaire}&ref={contexte}&callbackUrl={url_retour}
+https://mutafriches.beta.gouv.fr/iframe?integrator={partenaire}&callbackUrl={url_retour}&callbackLabel={label}
 ```
 
-Les intégrateurs autorisés sont définis dans `IframeContext.constants.ts`.
+Les intégrateurs autorisés sont définis dans les variables d'environnement (voir `CLAUDE.md` - Variables d'environnement).
+
+---
 
 ## 📊 Import des données BPE (Base Permanente des Équipements)
 
@@ -393,3 +445,19 @@ scalingo -a mutafriches run "pnpm --filter api db:bpe:import"
 1. Télécharger le ZIP BPE depuis <https://www.insee.fr/fr/statistiques/8217537>
 2. Dézipper dans `apps/api/data/raw/bpe24.csv` (gitignored)
 3. Lancer `pnpm db:bpe:filter`
+
+---
+
+## 🔗 Liens utiles
+
+- **Production** : https://mutafriches.beta.gouv.fr
+- **Staging** : https://mutafriches.incubateur.ademe.dev
+- **Documentation API** : https://mutafriches.beta.gouv.fr/docs
+- **Repository** : https://github.com/incubateur-ademe/mutafriches
+- **Contact** : contact@mutafriches.beta.gouv.fr
+
+---
+
+**Version** : 1.0
+**Dernière mise à jour** : 2026-01-29
+**Projet** : Mutafriches - Beta.gouv / ADEME
