@@ -6,7 +6,6 @@ import { searchParcelWithFallback } from "../services/cadastre/api.cadastre.serv
 import { OnParcelleSelectedCallback } from "../types/callbacks.types";
 import { padParcelleSection } from "@mutafriches/shared-types";
 
-// Fix Leaflet : Réinitialisation des icônes par défaut
 // @ts-expect-error - Suppression nécessaire pour le fix Leaflet
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -98,6 +97,27 @@ export function useLeafletMap({
     // LayerGroup pour gérer les parcelles sélectionnées
     const parcelLayerGroup = L.layerGroup().addTo(map);
 
+    // Event delegation pour le bouton "Analyser"
+    // Permet d'éviter les race conditions avec le setTimeout et autoClose de Leaflet
+    const handleAnalyzeClick = (event: Event) => {
+      const target = event.target as HTMLElement;
+      if (target.id === "analyze-parcel-btn") {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const parcelId = target.getAttribute("data-parcel-id");
+        if (parcelId && analyzeCallbackRef.current) {
+          analyzeCallbackRef.current(parcelId);
+          map.closePopup();
+        }
+      }
+    };
+
+    // Attacher le listener une seule fois sur le conteneur de la carte
+    // Utiliser la phase de capture (true) pour intercepter avant Leaflet
+    const mapContainer = map.getContainer();
+    mapContainer.addEventListener("click", handleAnalyzeClick, true);
+
     // Gestionnaire de clic : recherche et affichage de la parcelle
     map.on("click", async (e: L.LeafletMouseEvent) => {
       const { lat, lng } = e.latlng;
@@ -181,20 +201,8 @@ export function useLeafletMap({
           .setContent(popupContent)
           .openOn(map);
 
-        // Ajouter l'event listener sur le bouton apres ouverture du popup
-        // Utiliser setTimeout pour s'assurer que le DOM est rendu
-        setTimeout(() => {
-          const btn = document.getElementById("analyze-parcel-btn");
-          if (btn) {
-            btn.onclick = () => {
-              const parcelId = btn.getAttribute("data-parcel-id");
-              if (parcelId && analyzeCallbackRef.current) {
-                analyzeCallbackRef.current(parcelId);
-                map.closePopup();
-              }
-            };
-          }
-        }, 0);
+        // L'event listener est géré par delegation (voir handleAnalyzeClick ci-dessus)
+        // Plus besoin de setTimeout ni d'attacher manuellement le onclick
       } catch (err) {
         console.error("Erreur lors de la recherche de parcelle:", err);
       }
@@ -204,6 +212,9 @@ export function useLeafletMap({
 
     // Nettoyage à la destruction du composant
     return () => {
+      // Retirer le listener d'event delegation
+      mapContainer.removeEventListener("click", handleAnalyzeClick, true);
+
       if (mapRef.current) {
         mapRef.current.remove();
         mapRef.current = null;
