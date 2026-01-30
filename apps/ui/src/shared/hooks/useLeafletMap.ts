@@ -22,6 +22,7 @@ interface UseLeafletMapProps {
   onParcelleSelected?: OnParcelleSelectedCallback;
   onAnalyze?: (identifiant: string) => void;
   baseLayer?: MapLayerType;
+  isStacked?: boolean;
 }
 
 /**
@@ -35,9 +36,10 @@ export function useLeafletMap({
   onParcelleSelected,
   onAnalyze,
   baseLayer = "plan",
+  isStacked = false,
 }: UseLeafletMapProps) {
   const mapRef = useRef<L.Map | null>(null);
-  const baseTileLayerRef = useRef<L.TileLayer | null>(null);
+  const layersRef = useRef<Map<MapLayerType, L.TileLayer>>(new Map());
   const highlightRef = useRef<L.GeoJSON | null>(null);
   const callbackRef = useRef<OnParcelleSelectedCallback | undefined>(onParcelleSelected);
   const analyzeCallbackRef = useRef<((identifiant: string) => void) | undefined>(onAnalyze);
@@ -52,26 +54,65 @@ export function useLeafletMap({
   }, []);
 
   // Fonction exposée pour changer le fond de carte dynamiquement
-  const changeBaseLayer = useCallback((newLayer: MapLayerType) => {
-    if (!mapRef.current || !baseTileLayerRef.current) return;
+  const changeBaseLayer = useCallback((newLayer: MapLayerType, stackMode: boolean) => {
+    if (!mapRef.current) return;
 
-    const layerConfig = MAP_LAYERS[newLayer];
+    if (stackMode) {
+      // Mode superposition : afficher les 3 couches
+      const layersToShow: MapLayerType[] = ["orthophotos", "plan", "cadastre"];
 
-    // Retirer l'ancien fond de carte
-    mapRef.current.removeLayer(baseTileLayerRef.current);
+      layersToShow.forEach((layerType) => {
+        // Retirer la couche si elle existe déjà
+        const existingLayer = layersRef.current.get(layerType);
+        if (existingLayer && mapRef.current) {
+          mapRef.current.removeLayer(existingLayer);
+        }
 
-    // Créer et ajouter le nouveau fond de carte
-    const newTileLayer = L.tileLayer(
-      getGeoportalWMTSUrl(layerConfig.layerName, layerConfig.format),
-      {
-        attribution: layerConfig.attribution,
-        maxZoom: layerConfig.maxZoom,
-        minZoom: layerConfig.minZoom,
-      },
-    );
+        // Créer la nouvelle couche
+        const layerConfig = MAP_LAYERS[layerType];
+        const opacity = layerType === "cadastre" ? 0.7 : layerType === "plan" ? 0.6 : 1;
 
-    newTileLayer.addTo(mapRef.current);
-    baseTileLayerRef.current = newTileLayer;
+        const newLayer = L.tileLayer(
+          getGeoportalWMTSUrl(layerConfig.layerName, layerConfig.format),
+          {
+            attribution: layerConfig.attribution,
+            maxZoom: layerConfig.maxZoom,
+            minZoom: layerConfig.minZoom,
+            opacity,
+          },
+        );
+
+        if (mapRef.current) {
+          newLayer.addTo(mapRef.current);
+          layersRef.current.set(layerType, newLayer);
+        }
+      });
+    } else {
+      // Mode normal : une seule couche active
+      // Retirer toutes les couches existantes
+      layersRef.current.forEach((layer) => {
+        if (mapRef.current) {
+          mapRef.current.removeLayer(layer);
+        }
+      });
+      layersRef.current.clear();
+
+      // Ajouter uniquement la couche sélectionnée
+      const layerConfig = MAP_LAYERS[newLayer];
+      const newTileLayer = L.tileLayer(
+        getGeoportalWMTSUrl(layerConfig.layerName, layerConfig.format),
+        {
+          attribution: layerConfig.attribution,
+          maxZoom: layerConfig.maxZoom,
+          minZoom: layerConfig.minZoom,
+        },
+      );
+
+      if (mapRef.current) {
+        newTileLayer.addTo(mapRef.current);
+        layersRef.current.set(newLayer, newTileLayer);
+      }
+    }
   }, []);
 
   // Synchroniser les refs des callbacks
@@ -96,18 +137,39 @@ export function useLeafletMap({
       renderer: L.svg(),
     }).setView(initialCenter, initialZoom);
 
-    // Fond de carte IGN (configurable)
-    const layerConfig = MAP_LAYERS[baseLayer];
-    const baseTileLayer = L.tileLayer(
-      getGeoportalWMTSUrl(layerConfig.layerName, layerConfig.format),
-      {
-        attribution: layerConfig.attribution,
-        maxZoom: layerConfig.maxZoom,
-        minZoom: layerConfig.minZoom,
-      },
-    );
-    baseTileLayer.addTo(map);
-    baseTileLayerRef.current = baseTileLayer;
+    // Initialiser les fonds de carte selon le mode
+    if (isStacked) {
+      // Mode superposition : ajouter les 3 couches
+      const layersToShow: MapLayerType[] = ["orthophotos", "plan", "cadastre"];
+
+      layersToShow.forEach((layerType) => {
+        const layerConfig = MAP_LAYERS[layerType];
+        const opacity = layerType === "cadastre" ? 0.7 : layerType === "plan" ? 0.6 : 1;
+
+        const layer = L.tileLayer(getGeoportalWMTSUrl(layerConfig.layerName, layerConfig.format), {
+          attribution: layerConfig.attribution,
+          maxZoom: layerConfig.maxZoom,
+          minZoom: layerConfig.minZoom,
+          opacity,
+        });
+
+        layer.addTo(map);
+        layersRef.current.set(layerType, layer);
+      });
+    } else {
+      // Mode normal : une seule couche
+      const layerConfig = MAP_LAYERS[baseLayer];
+      const baseTileLayer = L.tileLayer(
+        getGeoportalWMTSUrl(layerConfig.layerName, layerConfig.format),
+        {
+          attribution: layerConfig.attribution,
+          maxZoom: layerConfig.maxZoom,
+          minZoom: layerConfig.minZoom,
+        },
+      );
+      baseTileLayer.addTo(map);
+      layersRef.current.set(baseLayer, baseTileLayer);
+    }
 
     // Couche WMS Parcellaire Express (visualisation des limites cadastrales)
     const parcelLayer = L.tileLayer.wms("https://data.geopf.fr/wms-v/ows", {
@@ -246,7 +308,7 @@ export function useLeafletMap({
         mapRef.current = null;
       }
     };
-  }, [containerId, initialCenter, initialZoom, baseLayer]);
+  }, [containerId, initialCenter, initialZoom, baseLayer, isStacked]);
 
   // Memoization des fonctions exposées pour éviter les rerenders inutiles
   return useMemo(() => ({ flyToLocation, changeBaseLayer }), [flyToLocation, changeBaseLayer]);

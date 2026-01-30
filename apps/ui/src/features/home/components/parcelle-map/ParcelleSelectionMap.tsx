@@ -24,8 +24,8 @@ export function ParcelleSelectionMap({
 }: ParcelleSelectionMapProps) {
   const MAP_CONTAINER_ID = "parcelle-selection-map";
 
-  // Gestion du fond de carte actif
-  const { activeLayer, setActiveLayer } = useMapBaseLayers();
+  // Gestion du fond de carte actif et de la superposition
+  const { activeLayer, setActiveLayer, isStacked, setIsStacked } = useMapBaseLayers();
 
   const { flyToLocation, changeBaseLayer } = useLeafletMap({
     containerId: MAP_CONTAINER_ID,
@@ -34,6 +34,7 @@ export function ParcelleSelectionMap({
     onParcelleSelected,
     onAnalyze,
     baseLayer: activeLayer,
+    isStacked,
   });
 
   const handleAddressSelected = (lat: number, lng: number) => {
@@ -42,7 +43,12 @@ export function ParcelleSelectionMap({
 
   const handleLayerChange = (newLayer: typeof activeLayer) => {
     setActiveLayer(newLayer);
-    changeBaseLayer(newLayer);
+    changeBaseLayer(newLayer, isStacked);
+  };
+
+  const handleStackedChange = (stacked: boolean) => {
+    setIsStacked(stacked);
+    changeBaseLayer(activeLayer, stacked);
   };
 
   return (
@@ -67,7 +73,12 @@ export function ParcelleSelectionMap({
         <div id={MAP_CONTAINER_ID} style={{ height: "100%", width: "100%" }} />
 
         {/* Sélecteur de fond de carte en overlay */}
-        <MapLayerSelector activeLayer={activeLayer} onLayerChange={handleLayerChange} />
+        <MapLayerSelector
+          activeLayer={activeLayer}
+          onLayerChange={handleLayerChange}
+          isStacked={isStacked}
+          onStackedChange={handleStackedChange}
+        />
       </div>
     </div>
   );

@@ -71,6 +71,7 @@ export const MAP_LAYERS: Record<MapLayerType, MapLayerConfig> = {
 export const DEFAULT_MAP_LAYER: MapLayerType = "plan";
 
 /**
- * Clé de stockage localStorage pour la persistance du choix
+ * Clés de stockage localStorage pour la persistance des choix
  */
 export const MAP_LAYER_STORAGE_KEY = "mutafriches:map-layer";
+export const MAP_LAYER_STACK_STORAGE_KEY = "mutafriches:map-layer-stack";
