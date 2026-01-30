@@ -1,3 +1,4 @@
+import React from "react";
 import { MapLayerType } from "../../../../shared/config/map-layers.config";
 
 interface MapLayerSelectorProps {

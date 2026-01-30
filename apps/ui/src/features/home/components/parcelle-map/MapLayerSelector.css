@@ -1,15 +1,16 @@
 /**
  * Styles pour le sélecteur de fond de carte
  * Positionné en overlay en haut à droite de la carte
+ * Compatible avec le dark mode DSFR
  */
 .map-layer-selector {
   position: absolute;
   top: 12px;
   right: 12px;
   z-index: 1000;
-  background: white;
+  background: var(--background-default-grey);
   border-radius: 0.25rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--overlap-shadow);
   padding: 0.5rem;
 }
 
