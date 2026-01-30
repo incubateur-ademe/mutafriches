@@ -1,0 +1,41 @@
+/**
+ * Styles pour le sélecteur de fond de carte
+ * Positionné en overlay en haut à droite de la carte
+ */
+.map-layer-selector {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 1000;
+  background: white;
+  border-radius: 0.25rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  padding: 0.5rem;
+}
+
+/* Adaptation responsive pour petits écrans */
+@media (max-width: 576px) {
+  .map-layer-selector {
+    top: 8px;
+    right: 8px;
+    font-size: 0.875rem;
+  }
+
+  .map-layer-selector .fr-segmented {
+    font-size: 0.875rem;
+  }
+}
+
+/* Assurer que le contrôle segmenté DSFR reste compact */
+.map-layer-selector .fr-segmented {
+  margin: 0;
+}
+
+.map-layer-selector .fr-segmented__elements {
+  gap: 0;
+}
+
+.map-layer-selector .fr-label {
+  font-size: 0.875rem;
+  white-space: nowrap;
+}

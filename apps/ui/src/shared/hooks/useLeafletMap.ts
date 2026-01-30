@@ -5,6 +5,7 @@ import { extractIdu, normalizeParcelId } from "../utils/geo.utils";
 import { searchParcelWithFallback } from "../services/cadastre/api.cadastre.service";
 import { OnParcelleSelectedCallback } from "../types/callbacks.types";
 import { padParcelleSection } from "@mutafriches/shared-types";
+import { MapLayerType, MAP_LAYERS, getGeoportalWMTSUrl } from "../config/map-layers.config";
 
 // @ts-expect-error - Suppression nécessaire pour le fix Leaflet
 delete L.Icon.Default.prototype._getIconUrl;
@@ -20,6 +21,7 @@ interface UseLeafletMapProps {
   initialZoom?: number;
   onParcelleSelected?: OnParcelleSelectedCallback;
   onAnalyze?: (identifiant: string) => void;
+  baseLayer?: MapLayerType;
 }
 
 /**
@@ -32,8 +34,10 @@ export function useLeafletMap({
   initialZoom = 17,
   onParcelleSelected,
   onAnalyze,
+  baseLayer = "plan",
 }: UseLeafletMapProps) {
   const mapRef = useRef<L.Map | null>(null);
+  const baseTileLayerRef = useRef<L.TileLayer | null>(null);
   const highlightRef = useRef<L.GeoJSON | null>(null);
   const callbackRef = useRef<OnParcelleSelectedCallback | undefined>(onParcelleSelected);
   const analyzeCallbackRef = useRef<((identifiant: string) => void) | undefined>(onAnalyze);
@@ -45,6 +49,29 @@ export function useLeafletMap({
         duration: 1.5,
       });
     }
+  }, []);
+
+  // Fonction exposée pour changer le fond de carte dynamiquement
+  const changeBaseLayer = useCallback((newLayer: MapLayerType) => {
+    if (!mapRef.current || !baseTileLayerRef.current) return;
+
+    const layerConfig = MAP_LAYERS[newLayer];
+
+    // Retirer l'ancien fond de carte
+    mapRef.current.removeLayer(baseTileLayerRef.current);
+
+    // Créer et ajouter le nouveau fond de carte
+    const newTileLayer = L.tileLayer(
+      getGeoportalWMTSUrl(layerConfig.layerName, layerConfig.format),
+      {
+        attribution: layerConfig.attribution,
+        maxZoom: layerConfig.maxZoom,
+        minZoom: layerConfig.minZoom,
+      }
+    );
+
+    newTileLayer.addTo(mapRef.current);
+    baseTileLayerRef.current = newTileLayer;
   }, []);
 
   // Synchroniser les refs des callbacks
@@ -69,19 +96,18 @@ export function useLeafletMap({
       renderer: L.svg(),
     }).setView(initialCenter, initialZoom);
 
-    // Tuiles IGN Plan v2 (haute résolution)
-    function getGeoportalWMTSUrl(layerName: string): string {
-      let url = "https://data.geopf.fr/wmts?SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetTile";
-      url += "&LAYER=" + layerName;
-      url += "&STYLE=normal&FORMAT=image/png";
-      url += "&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}";
-      return url;
-    }
-
-    L.tileLayer(getGeoportalWMTSUrl("GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2"), {
-      attribution: '© <a href="https://www.ign.fr/">IGN</a>',
-      maxZoom: 19,
-    }).addTo(map);
+    // Fond de carte IGN (configurable)
+    const layerConfig = MAP_LAYERS[baseLayer];
+    const baseTileLayer = L.tileLayer(
+      getGeoportalWMTSUrl(layerConfig.layerName, layerConfig.format),
+      {
+        attribution: layerConfig.attribution,
+        maxZoom: layerConfig.maxZoom,
+        minZoom: layerConfig.minZoom,
+      }
+    );
+    baseTileLayer.addTo(map);
+    baseTileLayerRef.current = baseTileLayer;
 
     // Couche WMS Parcellaire Express (visualisation des limites cadastrales)
     const parcelLayer = L.tileLayer.wms("https://data.geopf.fr/wms-v/ows", {
@@ -220,8 +246,11 @@ export function useLeafletMap({
         mapRef.current = null;
       }
     };
-  }, [containerId, initialCenter, initialZoom]);
+  }, [containerId, initialCenter, initialZoom, baseLayer]);
 
-  // Memoization de la fonction flyToLocation pour éviter les rerenders inutiles
-  return useMemo(() => ({ flyToLocation }), [flyToLocation]);
+  // Memoization des fonctions exposées pour éviter les rerenders inutiles
+  return useMemo(
+    () => ({ flyToLocation, changeBaseLayer }),
+    [flyToLocation, changeBaseLayer]
+  );
 }
