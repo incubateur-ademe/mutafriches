@@ -67,7 +67,7 @@ export function useLeafletMap({
         attribution: layerConfig.attribution,
         maxZoom: layerConfig.maxZoom,
         minZoom: layerConfig.minZoom,
-      }
+      },
     );
 
     newTileLayer.addTo(mapRef.current);
@@ -104,7 +104,7 @@ export function useLeafletMap({
         attribution: layerConfig.attribution,
         maxZoom: layerConfig.maxZoom,
         minZoom: layerConfig.minZoom,
-      }
+      },
     );
     baseTileLayer.addTo(map);
     baseTileLayerRef.current = baseTileLayer;
@@ -249,8 +249,5 @@ export function useLeafletMap({
   }, [containerId, initialCenter, initialZoom, baseLayer]);
 
   // Memoization des fonctions exposées pour éviter les rerenders inutiles
-  return useMemo(
-    () => ({ flyToLocation, changeBaseLayer }),
-    [flyToLocation, changeBaseLayer]
-  );
+  return useMemo(() => ({ flyToLocation, changeBaseLayer }), [flyToLocation, changeBaseLayer]);
 }
