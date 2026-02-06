@@ -1,30 +1,9 @@
 /**
  * Styles pour le sélecteur de fond de carte
- * Positionné en overlay en haut à droite de la carte
- * Compatible avec le dark mode DSFR
+ * Placé au-dessus de la carte, aligné à gauche
  */
 .map-layer-selector {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  z-index: 1000;
-  background: var(--background-default-grey);
-  border-radius: 0.25rem;
-  box-shadow: var(--overlap-shadow);
-  padding: 0.5rem;
-}
-
-/* Adaptation responsive pour petits écrans */
-@media (max-width: 576px) {
-  .map-layer-selector {
-    top: 8px;
-    right: 8px;
-    font-size: 0.875rem;
-  }
-
-  .map-layer-selector .fr-segmented {
-    font-size: 0.875rem;
-  }
+  margin-bottom: 0.75rem;
 }
 
 /* Assurer que le contrôle segmenté DSFR reste compact */

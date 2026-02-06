@@ -3,10 +3,14 @@
  * Utilise les flux WMTS de la Géoplateforme : https://data.geopf.fr/wmts
  */
 
-export type MapLayerType = "plan" | "orthophotos" | "cadastre";
+/** Type pour les couches de tuiles individuelles */
+export type TileLayerType = "plan" | "orthophotos" | "cadastre";
+
+/** Type pour le sélecteur de fond de carte (inclut l'option combinée) */
+export type MapLayerType = TileLayerType | "tous";
 
 export interface MapLayerConfig {
-  id: MapLayerType;
+  id: TileLayerType;
   label: string;
   description: string;
   layerName: string;
@@ -31,7 +35,7 @@ export function getGeoportalWMTSUrl(layerName: string, format = "image/png"): st
 /**
  * Configuration des fonds de carte disponibles
  */
-export const MAP_LAYERS: Record<MapLayerType, MapLayerConfig> = {
+export const MAP_LAYERS: Record<TileLayerType, MapLayerConfig> = {
   plan: {
     id: "plan",
     label: "Plan IGN",
@@ -68,10 +72,12 @@ export const MAP_LAYERS: Record<MapLayerType, MapLayerConfig> = {
 /**
  * Fond de carte par défaut
  */
-export const DEFAULT_MAP_LAYER: MapLayerType = "plan";
+export const DEFAULT_MAP_LAYER: MapLayerType = "tous";
 
 /**
  * Clés de stockage localStorage pour la persistance des choix
  */
 export const MAP_LAYER_STORAGE_KEY = "mutafriches:map-layer";
-export const MAP_LAYER_STACK_STORAGE_KEY = "mutafriches:map-layer-stack";
+
+/** Liste ordonnée des couches de tuiles (pour le mode "tous") */
+export const TILE_LAYERS: TileLayerType[] = ["orthophotos", "plan", "cadastre"];

@@ -4,18 +4,18 @@ import {
   MAP_LAYERS,
   DEFAULT_MAP_LAYER,
   MAP_LAYER_STORAGE_KEY,
-  MAP_LAYER_STACK_STORAGE_KEY,
 } from "../config/map-layers.config";
 
+const VALID_LAYERS = new Set<string>([...Object.keys(MAP_LAYERS), "tous"]);
+
 /**
- * Hook pour gérer le fond de carte actif, sa persistance et la superposition des couches
+ * Hook pour gérer le fond de carte actif et sa persistance
  */
 export function useMapBaseLayers() {
-  // Initialisation depuis localStorage ou valeur par défaut
   const [activeLayer, setActiveLayerState] = useState<MapLayerType>(() => {
     try {
       const stored = localStorage.getItem(MAP_LAYER_STORAGE_KEY);
-      if (stored && stored in MAP_LAYERS) {
+      if (stored && VALID_LAYERS.has(stored)) {
         return stored as MapLayerType;
       }
     } catch (error) {
@@ -24,18 +24,6 @@ export function useMapBaseLayers() {
     return DEFAULT_MAP_LAYER;
   });
 
-  // État pour la superposition des couches (désactivé par défaut)
-  const [isStacked, setIsStackedState] = useState<boolean>(() => {
-    try {
-      const stored = localStorage.getItem(MAP_LAYER_STACK_STORAGE_KEY);
-      return stored === "true";
-    } catch (error) {
-      console.error("Erreur lors de la lecture du mode superposition depuis localStorage:", error);
-    }
-    return false;
-  });
-
-  // Fonction pour changer le fond de carte avec persistance
   const setActiveLayer = useCallback((layer: MapLayerType) => {
     setActiveLayerState(layer);
     try {
@@ -45,27 +33,13 @@ export function useMapBaseLayers() {
     }
   }, []);
 
-  // Fonction pour activer/désactiver la superposition
-  const setIsStacked = useCallback((stacked: boolean) => {
-    setIsStackedState(stacked);
-    try {
-      localStorage.setItem(MAP_LAYER_STACK_STORAGE_KEY, String(stacked));
-    } catch (error) {
-      console.error("Erreur lors de la sauvegarde du mode superposition dans localStorage:", error);
-    }
-  }, []);
-
   // Synchroniser avec localStorage si changé dans un autre onglet
   useEffect(() => {
     const handleStorageChange = (event: StorageEvent) => {
       if (event.key === MAP_LAYER_STORAGE_KEY && event.newValue) {
-        const newLayer = event.newValue as MapLayerType;
-        if (newLayer in MAP_LAYERS) {
-          setActiveLayerState(newLayer);
+        if (VALID_LAYERS.has(event.newValue)) {
+          setActiveLayerState(event.newValue as MapLayerType);
         }
-      }
-      if (event.key === MAP_LAYER_STACK_STORAGE_KEY && event.newValue) {
-        setIsStackedState(event.newValue === "true");
       }
     };
 
@@ -76,8 +50,6 @@ export function useMapBaseLayers() {
   return {
     activeLayer,
     setActiveLayer,
-    isStacked,
-    setIsStacked,
     availableLayers: MAP_LAYERS,
   };
 }
