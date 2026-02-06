@@ -1,0 +1,42 @@
+/**
+ * Styles pour les boutons d'action sur les parcelles (ajout/suppression)
+ * Positionnés au centroid de la parcelle via Leaflet DivIcon
+ */
+
+/* Reset du conteneur DivIcon Leaflet */
+.parcelle-action-marker {
+  background: none !important;
+  border: none !important;
+}
+
+/* Bouton d'action commun */
+.parcelle-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+.parcelle-action-btn:hover {
+  transform: scale(1.1);
+}
+
+/* Bouton ajouter (+) : fond blanc, icône bleue */
+.parcelle-action-btn--add {
+  background: var(--background-default-grey, #fff);
+  border-color: var(--blue-france-sun-113-625, #000091);
+  color: var(--blue-france-sun-113-625, #000091);
+}
+
+/* Bouton supprimer (poubelle) : fond blanc, icône rouge */
+.parcelle-action-btn--remove {
+  background: var(--background-default-grey, #fff);
+  border-color: var(--error-425-625, #e1000f);
+  color: var(--error-425-625, #e1000f);
+}

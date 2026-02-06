@@ -1,12 +1,14 @@
 import { useLeafletMap } from "../../../../shared/hooks/useLeafletMap";
 import { useMapBaseLayers } from "../../../../shared/hooks/useMapBaseLayers";
 import { useParcelleSelection } from "../../../../shared/hooks/useParcelleSelection";
+import { useMapParcelleRenderer } from "../../../../shared/hooks/useMapParcelleRenderer";
 import { AddressSearchBar } from "./AddressSearchBar";
 import { MapLayerSelector } from "./MapLayerSelector";
 import { MapGuide } from "./MapGuide";
 import "./MapLayerSelector.css";
 import "./MapGuide.css";
 import "./ParcelleSelectionMap.css";
+import "./ParcelleActions.css";
 
 interface ParcelleSelectionMapProps {
   onAnalyze?: (identifiants: string[]) => void;
@@ -29,13 +31,37 @@ export function ParcelleSelectionMap({
   const { activeLayer, setActiveLayer } = useMapBaseLayers();
 
   // Gestion de la sélection multi-parcelle
-  const { selectionState, parcelleCount, canAnalyze, getSelectedIdus } = useParcelleSelection();
+  const {
+    selectedParcelles,
+    previewParcelle,
+    selectionState,
+    parcelleCount,
+    canAnalyze,
+    handleParcelleClick,
+    confirmAdd,
+    removeParcelle,
+    clearPreview,
+    getSelectedIdus,
+  } = useParcelleSelection();
 
-  const { flyToLocation, changeBaseLayer } = useLeafletMap({
+  // Initialisation de la carte Leaflet
+  const { flyToLocation, changeBaseLayer, mapRef } = useLeafletMap({
     containerId: MAP_CONTAINER_ID,
     initialCenter,
     initialZoom,
     baseLayer: activeLayer,
+    onParcelleClick: handleParcelleClick,
+    onEmptyClick: clearPreview,
+  });
+
+  // Synchronisation du rendu des parcelles sur la carte
+  useMapParcelleRenderer({
+    mapRef,
+    selectedParcelles,
+    previewParcelle,
+    selectionState,
+    onConfirmAdd: confirmAdd,
+    onRemoveParcelle: removeParcelle,
   });
 
   const handleAddressSelected = (lat: number, lng: number) => {
@@ -63,9 +89,16 @@ export function ParcelleSelectionMap({
       {/* Barre de contrôle : sélecteur de couches + bouton analyser */}
       <div className="map-toolbar fr-mb-3w">
         <MapLayerSelector activeLayer={activeLayer} onLayerChange={handleLayerChange} />
-        <button className="fr-btn fr-btn--secondary" disabled={!canAnalyze} onClick={handleAnalyze}>
-          Analyser ce site
-        </button>
+        <div className="map-toolbar__actions">
+          {parcelleCount > 0 && (
+            <span className="fr-text--sm fr-mt-3w  fr-text--bold map-toolbar__count">
+              {parcelleCount} {parcelleCount > 1 ? "parcelles ajoutées" : "parcelle ajoutée"}
+            </span>
+          )}
+          <button className="fr-btn" disabled={!canAnalyze} onClick={handleAnalyze}>
+            Analyser ce site
+          </button>
+        </div>
       </div>
 
       {/* Carte avec style arrondi */}

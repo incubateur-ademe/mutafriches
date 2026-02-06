@@ -36,10 +36,11 @@ export function MapGuide({ selectionState, parcelleCount }: MapGuideProps) {
   }
 
   return (
-    <div className={`map-guide ${isError ? "map-guide--error" : ""}`}>
-      <span className={`map-guide__text ${isError ? "fr-icon-warning-line map-guide__text--icon" : ""}`}>
+    <div className="map-guide">
+      <p className="fr-text--sm fr-mb-0">
+        {isError && <span className="fr-icon-warning-line fr-icon--sm fr-mr-1v" aria-hidden="true" />}
         {message}
-      </span>
+      </p>
     </div>
   );
 }

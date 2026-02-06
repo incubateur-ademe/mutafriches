@@ -1,10 +1,20 @@
 /**
  * Styles pour la barre de contrôle au-dessus de la carte
- * Layout flex : sélecteur de couches à gauche, bouton analyser à droite
+ * Layout flex : sélecteur de couches à gauche, compteur + bouton analyser à droite
  */
 .map-toolbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 0.75rem;
+}
+
+.map-toolbar__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.map-toolbar__count {
+  color: var(--blue-france-sun-113-625, #000091);
+  white-space: nowrap;
 }
