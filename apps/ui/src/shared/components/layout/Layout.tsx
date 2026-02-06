@@ -15,7 +15,7 @@ export function Layout({ children, showSimpleHeader = false }: LayoutProps) {
   // Mode iframe : layout minimal
   if (isInIframe) {
     return (
-      <div className="fr-container fr-py-4w">
+      <div className="fr-container fr-py-1w">
         <div className="fr-grid-row fr-grid-row--center">
           <div className="fr-col-12 fr-col-lg-10">
             <div className="fade-in">{children}</div>

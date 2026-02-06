@@ -6,10 +6,12 @@ import { MultiParcelleToggle } from "../components/MultiParcelleToggle";
 import { ParcelleSelectionMap } from "../components/parcelle-map/ParcelleSelectionMap";
 import { MutabilityAccordion } from "../components/MutabilityAccordion";
 import { useFormContext } from "../../../shared/form/useFormContext";
+import { useIsIframeMode } from "../../../shared/iframe/useIframe";
 
 export const HomePage: React.FC = () => {
   const navigate = useNavigate();
   const { resetForm, state } = useFormContext();
+  const isInIframe = useIsIframeMode();
 
   const [isMultiParcelle, setIsMultiParcelle] = useState(false);
 
@@ -50,7 +52,7 @@ export const HomePage: React.FC = () => {
         </div>
       )}
 
-      <div className="fr-mt-6w fr-mb-4w">
+      <div className={isInIframe ? "fr-mt-2w fr-mb-2w" : "fr-mt-6w fr-mb-4w"}>
         <h1>Trouver le bon usage pour une friche</h1>
 
         <p className="fr-text--lead">
