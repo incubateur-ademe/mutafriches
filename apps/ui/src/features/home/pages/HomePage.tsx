@@ -1,8 +1,7 @@
-import React, { useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Layout } from "../../../shared/components/layout/Layout";
 import { ROUTES } from "../../../shared/config/routes.config";
-import { MultiParcelleToggle } from "../components/MultiParcelleToggle";
 import { ParcelleSelectionMap } from "../components/parcelle-map/ParcelleSelectionMap";
 import { MutabilityAccordion } from "../components/MutabilityAccordion";
 import { useFormContext } from "../../../shared/form/useFormContext";
@@ -13,15 +12,15 @@ export const HomePage: React.FC = () => {
   const { resetForm, state } = useFormContext();
   const isInIframe = useIsIframeMode();
 
-  const [isMultiParcelle, setIsMultiParcelle] = useState(false);
-
-  const handleAnalyze = async (identifiant: string) => {
+  const handleAnalyze = (identifiants: string[]) => {
     // Reset le formulaire si on recommence une analyse
     if (state.enrichmentData) {
       resetForm();
     }
 
-    // Naviguer vers la page d'enrichissement (loading)
+    // Pour l'instant, on passe le premier identifiant pour garder la compatibilité
+    // TODO: adapter l'enrichissement pour gérer une liste de parcelles
+    const identifiant = identifiants.join(",");
     navigate(ROUTES.ENRICHISSEMENT, { state: { identifiant } });
   };
 
@@ -60,10 +59,8 @@ export const HomePage: React.FC = () => {
           sélectionner une parcelle sur la carte. Vous pouvez la rechercher en entrant son adresse
           exacte ou une adresse approchante.
           <br />
-          Sélectionner la parcelle et cliquer sur 'Analyser cette parcelle'.
+          Sélectionner la parcelle et cliquer sur 'Analyser ce site'.
         </p>
-
-        <MultiParcelleToggle isMulti={isMultiParcelle} onChange={setIsMultiParcelle} />
 
         <ParcelleSelectionMap onAnalyze={handleAnalyze} height="500px" />
 

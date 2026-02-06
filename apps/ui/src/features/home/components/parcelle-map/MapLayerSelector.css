@@ -3,7 +3,7 @@
  * Placé au-dessus de la carte, aligné à gauche
  */
 .map-layer-selector {
-  margin-bottom: 0.75rem;
+  margin: 0;
 }
 
 /* Assurer que le contrôle segmenté DSFR reste compact */
