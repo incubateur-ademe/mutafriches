@@ -1,7 +1,11 @@
 import type { RefObject } from "react";
 import { useEffect, useRef } from "react";
 import L from "leaflet";
-import type { SelectedParcelle, PreviewParcelle, SelectionState } from "../types/parcelle-selection.types";
+import type {
+  SelectedParcelle,
+  PreviewParcelle,
+  SelectionState,
+} from "../types/parcelle-selection.types";
 
 /** Styles visuels des parcelles sur la carte */
 const STYLES = {
@@ -29,11 +33,11 @@ const STYLES = {
 } as const;
 
 /**
- * Crée un bouton d'action (+) ou (poubelle) positionné au centroid d'une parcelle.
+ * Crée un bouton d'action (+) ou (poubelle) positionné aux coordonnées du clic.
  * Utilise un DivIcon Leaflet pour afficher un bouton HTML interactif.
  */
 function createActionMarker(
-  centroid: [number, number],
+  coords: [number, number],
   type: "add" | "remove",
   onClick: () => void,
 ): L.Marker {
@@ -49,8 +53,8 @@ function createActionMarker(
     iconAnchor: [18, 18],
   });
 
-  // Coordonnées [lat, lng] pour Leaflet (l'inverse du GeoJSON [lng, lat])
-  const marker = L.marker([centroid[1], centroid[0]], { icon, interactive: true });
+  // Coordonnées [lat, lng] pour Leaflet (l'inverse du [lng, lat] reçu)
+  const marker = L.marker([coords[1], coords[0]], { icon, interactive: true });
 
   marker.on("click", (e: L.LeafletMouseEvent) => {
     L.DomEvent.stopPropagation(e);
@@ -144,11 +148,11 @@ export function useMapParcelleRenderer({
 
     // Ajouter le bouton d'action au centroid
     if (selectionState === "previewing") {
-      const marker = createActionMarker(previewParcelle.centroid, "add", onConfirmAdd);
+      const marker = createActionMarker(previewParcelle.clickCoords, "add", onConfirmAdd);
       layerGroup.addLayer(marker);
     } else if (selectionState === "already-added") {
       const idu = previewParcelle.idu;
-      const marker = createActionMarker(previewParcelle.centroid, "remove", () => {
+      const marker = createActionMarker(previewParcelle.clickCoords, "remove", () => {
         onRemoveParcelle(idu);
       });
       layerGroup.addLayer(marker);

@@ -28,7 +28,9 @@ export function MapGuide({ selectionState, parcelleCount }: MapGuideProps) {
   let message: string;
   if (
     parcelleCount > 0 &&
-    (selectionState === "idle" || selectionState === "previewing" || selectionState === "already-added")
+    (selectionState === "idle" ||
+      selectionState === "previewing" ||
+      selectionState === "already-added")
   ) {
     message = "Cliquer sur une parcelle adjacente pour l'ajouter au site";
   } else {
@@ -38,7 +40,9 @@ export function MapGuide({ selectionState, parcelleCount }: MapGuideProps) {
   return (
     <div className="map-guide">
       <p className="fr-text--sm fr-mb-0">
-        {isError && <span className="fr-icon-warning-line fr-icon--sm fr-mr-1v" aria-hidden="true" />}
+        {isError && (
+          <span className="fr-icon-warning-line fr-icon--sm fr-mr-1v" aria-hidden="true" />
+        )}
         {message}
       </p>
     </div>

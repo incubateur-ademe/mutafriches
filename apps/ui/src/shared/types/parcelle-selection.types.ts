@@ -23,8 +23,8 @@ export interface PreviewParcelle {
   geometry: Geometry;
   properties: ParcelleProperties;
   contenance: number;
-  /** Position du centroid pour placer le bouton d'action */
-  centroid: [number, number];
+  /** Position du clic pour placer le bouton d'action [lng, lat] */
+  clickCoords: [number, number];
 }
 
 /**
@@ -36,12 +36,7 @@ export interface PreviewParcelle {
  * - non-adjacent : tentative d'ajout d'une parcelle non adjacente
  * - max-size : la taille maximale du site est atteinte (10 hectares)
  */
-export type SelectionState =
-  | "idle"
-  | "previewing"
-  | "already-added"
-  | "non-adjacent"
-  | "max-size";
+export type SelectionState = "idle" | "previewing" | "already-added" | "non-adjacent" | "max-size";
 
 /** Seuil maximal de surface cumulée en m² (10 hectares) */
 export const MAX_SITE_AREA_M2 = 100_000;

@@ -11,37 +11,6 @@ import { MAX_SITE_AREA_M2 } from "../types/parcelle-selection.types";
 import type { ParcelleProperties } from "../services/cadastre/api.cadastre.types";
 
 /**
- * Calcule le centroid approximatif d'une géométrie Polygon ou MultiPolygon.
- * Retourne les coordonnées [lng, lat].
- *
- * Note : on utilise une moyenne simple des coordonnées du premier anneau
- * plutôt que Turf centroid pour rester léger et suffisant pour le positionnement
- * d'un bouton sur la carte.
- */
-function computeCentroid(geometry: Geometry): [number, number] {
-  let coords: number[][] = [];
-
-  if (geometry.type === "Polygon") {
-    coords = (geometry as Polygon).coordinates[0];
-  } else if (geometry.type === "MultiPolygon") {
-    coords = (geometry as MultiPolygon).coordinates[0][0];
-  }
-
-  if (coords.length === 0) {
-    return [0, 0];
-  }
-
-  let sumLng = 0;
-  let sumLat = 0;
-  for (const coord of coords) {
-    sumLng += coord[0];
-    sumLat += coord[1];
-  }
-
-  return [sumLng / coords.length, sumLat / coords.length];
-}
-
-/**
  * Vérifie si une géométrie est adjacente à au moins une des parcelles déjà sélectionnées.
  *
  * Utilise booleanIntersects de Turf.js qui retourne true si les géométries
@@ -87,6 +56,7 @@ export interface UseParcelleSelectionReturn {
     geometry: Geometry,
     properties: ParcelleProperties,
     contenance: number,
+    clickCoords: [number, number],
   ) => void;
   /** Confirme l'ajout de la parcelle en preview */
   confirmAdd: () => void;
@@ -125,34 +95,36 @@ export function useParcelleSelection(): UseParcelleSelectionReturn {
   const canAnalyze = parcelleCount > 0;
 
   const handleParcelleClick = useCallback(
-    (idu: string, geometry: Geometry, properties: ParcelleProperties, contenance: number) => {
+    (
+      idu: string,
+      geometry: Geometry,
+      properties: ParcelleProperties,
+      contenance: number,
+      clickCoords: [number, number],
+    ) => {
       // Cas 1 : parcelle déjà ajoutée au site → mode suppression
       if (selectedParcelles.has(idu)) {
-        const centroid = computeCentroid(geometry);
-        setPreviewParcelle({ idu, geometry, properties, contenance, centroid });
+        setPreviewParcelle({ idu, geometry, properties, contenance, clickCoords });
         setSelectionState("already-added");
         return;
       }
 
       // Cas 2 : vérifier la surface maximale
       if (totalArea + contenance > MAX_SITE_AREA_M2) {
-        const centroid = computeCentroid(geometry);
-        setPreviewParcelle({ idu, geometry, properties, contenance, centroid });
+        setPreviewParcelle({ idu, geometry, properties, contenance, clickCoords });
         setSelectionState("max-size");
         return;
       }
 
       // Cas 3 : vérifier l'adjacence (seulement si des parcelles sont déjà ajoutées)
       if (selectedParcelles.size > 0 && !isAdjacentToSelection(geometry, selectedParcelles)) {
-        const centroid = computeCentroid(geometry);
-        setPreviewParcelle({ idu, geometry, properties, contenance, centroid });
+        setPreviewParcelle({ idu, geometry, properties, contenance, clickCoords });
         setSelectionState("non-adjacent");
         return;
       }
 
       // Cas 4 : parcelle valide → afficher la preview avec bouton (+)
-      const centroid = computeCentroid(geometry);
-      setPreviewParcelle({ idu, geometry, properties, contenance, centroid });
+      setPreviewParcelle({ idu, geometry, properties, contenance, clickCoords });
       setSelectionState("previewing");
     },
     [selectedParcelles, totalArea],

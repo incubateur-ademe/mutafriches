@@ -24,13 +24,15 @@ L.Icon.Default.mergeOptions({
 
 /**
  * Callback appelé lors du clic sur une parcelle de la carte.
- * Fournit l'IDU normalisé, la géométrie, les propriétés et la contenance.
+ * Fournit l'IDU normalisé, la géométrie, les propriétés, la contenance,
+ * et les coordonnées du clic [lng, lat] pour le positionnement du bouton d'action.
  */
 export type OnMapParcelleClickCallback = (
   idu: string,
   geometry: Geometry,
   properties: ParcelleProperties,
   contenance: number,
+  clickCoords: [number, number],
 ) => void;
 
 /**
@@ -75,7 +77,8 @@ function applyLayers(
         getGeoportalWMTSUrl(layerConfig.layerName, layerConfig.format),
         {
           attribution: layerConfig.attribution,
-          maxZoom: layerConfig.maxZoom,
+          maxNativeZoom: layerConfig.maxZoom,
+          maxZoom: 20,
           minZoom: layerConfig.minZoom,
           opacity: STACKED_OPACITY[layerType],
         },
@@ -85,14 +88,12 @@ function applyLayers(
     });
   } else {
     const layerConfig = MAP_LAYERS[layer];
-    const tileLayer = L.tileLayer(
-      getGeoportalWMTSUrl(layerConfig.layerName, layerConfig.format),
-      {
-        attribution: layerConfig.attribution,
-        maxZoom: layerConfig.maxZoom,
-        minZoom: layerConfig.minZoom,
-      },
-    );
+    const tileLayer = L.tileLayer(getGeoportalWMTSUrl(layerConfig.layerName, layerConfig.format), {
+      attribution: layerConfig.attribution,
+      maxNativeZoom: layerConfig.maxZoom,
+      maxZoom: 20,
+      minZoom: layerConfig.minZoom,
+    });
     tileLayer.addTo(map);
     layersRef.set(layer, tileLayer);
   }
@@ -117,6 +118,7 @@ export function useLeafletMap({
 }: UseLeafletMapProps) {
   const mapRef = useRef<L.Map | null>(null);
   const layersRef = useRef<Map<TileLayerType, L.TileLayer>>(new Map());
+  const baseLayerRef = useRef<MapLayerType>(baseLayer);
   const parcelleClickRef = useRef<OnMapParcelleClickCallback | undefined>(onParcelleClick);
   const emptyClickRef = useRef<OnMapEmptyClickCallback | undefined>(onEmptyClick);
 
@@ -150,9 +152,11 @@ export function useLeafletMap({
     const map = L.map(containerId, {
       preferCanvas: false,
       renderer: L.svg(),
+      doubleClickZoom: false,
+      maxZoom: 20,
     }).setView(initialCenter, initialZoom);
 
-    applyLayers(map, layersRef.current, baseLayer);
+    applyLayers(map, layersRef.current, baseLayerRef.current);
 
     // Couche WMS Parcellaire Express (limites cadastrales toujours visibles)
     const parcelLayer = L.tileLayer.wms("https://data.geopf.fr/wms-v/ows", {
@@ -162,6 +166,7 @@ export function useLeafletMap({
       version: "1.3.0",
       attribution: "© IGN - Parcellaire Express",
       opacity: 0.7,
+      maxZoom: 20,
     });
     parcelLayer.addTo(map);
 
@@ -192,7 +197,7 @@ export function useLeafletMap({
 
         // Déléguer la logique de sélection au composant parent
         if (parcelleClickRef.current && feature.geometry) {
-          parcelleClickRef.current(idu, feature.geometry, p, contenance);
+          parcelleClickRef.current(idu, feature.geometry, p, contenance, [lng, lat]);
         }
       } catch (err) {
         console.error("Erreur lors de la recherche de parcelle:", err);
@@ -207,7 +212,7 @@ export function useLeafletMap({
         mapRef.current = null;
       }
     };
-  }, [containerId, initialCenter, initialZoom, baseLayer]);
+  }, [containerId, initialCenter, initialZoom]);
 
   return useMemo(
     () => ({ flyToLocation, changeBaseLayer, mapRef }),
