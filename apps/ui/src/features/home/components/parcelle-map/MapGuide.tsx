@@ -14,7 +14,8 @@ const GUIDE_MESSAGES: Record<SelectionState, string> = {
   previewing: "Cliquer sur une parcelle pour l'ajouter à votre site",
   "already-added": "Cliquer sur une parcelle pour l'ajouter à votre site",
   "non-adjacent": "Parcelle non adjacente",
-  "max-size": "Taille de sélection maximale atteinte",
+  "max-size":
+    "La surface étudiée est trop grande (supérieure à 10ha), les résultats risquent d'étre détériorés. Nous vous recommandons de diviser votre site en 2 analyses distinctes",
 };
 
 /**

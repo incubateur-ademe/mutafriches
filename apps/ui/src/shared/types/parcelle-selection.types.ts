@@ -34,7 +34,7 @@ export interface PreviewParcelle {
  * - previewing : une parcelle est cliquée, bouton (+) affiché
  * - already-added : une parcelle déjà ajoutée est cliquée, bouton poubelle affiché
  * - non-adjacent : tentative d'ajout d'une parcelle non adjacente
- * - max-size : la taille maximale du site est atteinte (10 hectares)
+ * - max-size : la taille maximale du site est atteinte (10 hectares, uniquement en multi-parcelles)
  */
 export type SelectionState = "idle" | "previewing" | "already-added" | "non-adjacent" | "max-size";
 

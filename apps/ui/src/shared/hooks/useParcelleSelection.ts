@@ -74,7 +74,7 @@ export interface UseParcelleSelectionReturn {
  * Hook de gestion de la sélection multi-parcelle.
  *
  * Gère les états : idle, previewing, already-added, non-adjacent, max-size.
- * Vérifie l'adjacence via Turf.js et contrôle le seuil de surface (10 ha).
+ * Vérifie l'adjacence via Turf.js et contrôle le seuil de surface (10 ha, uniquement en multi-parcelles).
  */
 export function useParcelleSelection(): UseParcelleSelectionReturn {
   const [selectedParcelles, setSelectedParcelles] = useState<Map<string, SelectedParcelle>>(
@@ -109,8 +109,8 @@ export function useParcelleSelection(): UseParcelleSelectionReturn {
         return;
       }
 
-      // Cas 2 : vérifier la surface maximale
-      if (totalArea + contenance > MAX_SITE_AREA_M2) {
+      // Cas 2 : vérifier la surface maximale (uniquement en multi-parcelles)
+      if (selectedParcelles.size > 0 && totalArea + contenance > MAX_SITE_AREA_M2) {
         setPreviewParcelle({ idu, geometry, properties, contenance, clickCoords });
         setSelectionState("max-size");
         return;
