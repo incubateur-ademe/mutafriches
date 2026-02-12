@@ -6,8 +6,7 @@ import { AddressSearchBar } from "./AddressSearchBar";
 import { MapLayerSelector } from "./MapLayerSelector";
 import { MapGuide } from "./MapGuide";
 import "./MapLayerSelector.css";
-import "./MapGuide.css";
-import "./ParcelleSelectionMap.css";
+
 import "./ParcelleActions.css";
 
 interface ParcelleSelectionMapProps {
@@ -86,19 +85,13 @@ export function ParcelleSelectionMap({
         <AddressSearchBar onAddressSelected={handleAddressSelected} />
       </div>
 
-      {/* Barre de contrôle : sélecteur de couches + bouton analyser */}
-      <div className="map-toolbar fr-mb-3w">
+      {/* Barre de contrôle : sélecteur de couches + guide */}
+      <div
+        className="fr-mb-3w"
+        style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}
+      >
         <MapLayerSelector activeLayer={activeLayer} onLayerChange={handleLayerChange} />
-        <div className="map-toolbar__actions">
-          {parcelleCount > 0 && (
-            <span className="fr-text--sm fr-mt-3w  fr-text--bold map-toolbar__count">
-              {parcelleCount} {parcelleCount > 1 ? "parcelles ajoutées" : "parcelle ajoutée"}
-            </span>
-          )}
-          <button className="fr-btn" disabled={!canAnalyze} onClick={handleAnalyze}>
-            Analyser ce site
-          </button>
-        </div>
+        <MapGuide selectionState={selectionState} parcelleCount={parcelleCount} />
       </div>
 
       {/* Carte avec style arrondi */}
@@ -115,8 +108,44 @@ export function ParcelleSelectionMap({
       >
         <div id={MAP_CONTAINER_ID} style={{ height: "100%", width: "100%" }} />
 
-        {/* Message guide en overlay sur la carte */}
-        <MapGuide selectionState={selectionState} parcelleCount={parcelleCount} />
+        {/* Actions en overlay en bas à droite de la carte */}
+        <div
+          style={{
+            position: "absolute",
+            bottom: 12,
+            right: 12,
+            zIndex: 1000,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: 4,
+            background: "rgba(255, 255, 255, 0.85)",
+            borderRadius: "0.75rem",
+            padding: "16px 16px",
+            boxShadow: "0 2px 8px rgba(0, 0, 0, 0.15)",
+          }}
+        >
+          {parcelleCount > 0 && (
+            <span
+              style={{
+                fontSize: "0.875rem",
+                fontWeight: "bold",
+                color: "var(--blue-france-sun-113-625, #000091)",
+                margin: 0,
+              }}
+            >
+              {parcelleCount} {parcelleCount > 1 ? "parcelles ajoutées" : "parcelle ajoutée"}
+            </span>
+          )}
+          <button
+            className="fr-btn"
+            style={{ margin: 0 }}
+            disabled={!canAnalyze}
+            onClick={handleAnalyze}
+          >
+            Analyser ce site
+          </button>
+        </div>
       </div>
     </div>
   );

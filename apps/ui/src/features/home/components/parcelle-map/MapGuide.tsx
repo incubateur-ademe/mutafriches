@@ -1,5 +1,5 @@
+import React from "react";
 import type { SelectionState } from "../../../../shared/types/parcelle-selection.types";
-import "./MapGuide.css";
 
 interface MapGuideProps {
   selectionState: SelectionState;
@@ -26,26 +26,26 @@ export function MapGuide({ selectionState, parcelleCount }: MapGuideProps) {
   const isError = selectionState === "non-adjacent" || selectionState === "max-size";
 
   // Affiner le message idle quand des parcelles sont déjà ajoutées
-  let message: string;
+  let message: React.ReactNode;
   if (
     parcelleCount > 0 &&
     (selectionState === "idle" ||
       selectionState === "previewing" ||
       selectionState === "already-added")
   ) {
-    message = "Cliquer sur une parcelle adjacente pour l'ajouter au site";
+    message = (
+      <>
+        Cliquer sur une parcelle <strong>adjacente</strong> pour l'ajouter au site
+      </>
+    );
   } else {
     message = GUIDE_MESSAGES[selectionState];
   }
 
   return (
-    <div className="map-guide">
-      <p className="fr-text--sm fr-mb-0">
-        {isError && (
-          <span className="fr-icon-warning-line fr-icon--sm fr-mr-1v" aria-hidden="true" />
-        )}
-        {message}
-      </p>
-    </div>
+    <p className="fr-text--sm fr-mb-0" style={{ color: "var(--blue-france-sun-113-625)" }}>
+      {isError && <span className="fr-icon-warning-line fr-icon--sm fr-mr-1v" aria-hidden="true" />}
+      {message}
+    </p>
   );
 }
