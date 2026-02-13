@@ -70,13 +70,21 @@ export interface UseParcelleSelectionReturn {
   getSelectedIdus: () => string[];
 }
 
+export interface UseParcelleSelectionOptions {
+  onParcelleAdded?: (nombreParcelles: number, surfaceTotaleM2: number) => void;
+  onParcelleRemoved?: (nombreParcelles: number, surfaceTotaleM2: number) => void;
+  onMaxSizeReached?: (nombreParcelles: number, surfaceTotaleM2: number) => void;
+}
+
 /**
  * Hook de gestion de la sélection multi-parcelle.
  *
  * Gère les états : idle, previewing, already-added, non-adjacent, max-size.
  * Vérifie l'adjacence via Turf.js et contrôle le seuil de surface (10 ha, uniquement en multi-parcelles).
  */
-export function useParcelleSelection(): UseParcelleSelectionReturn {
+export function useParcelleSelection(
+  options?: UseParcelleSelectionOptions,
+): UseParcelleSelectionReturn {
   const [selectedParcelles, setSelectedParcelles] = useState<Map<string, SelectedParcelle>>(
     () => new Map(),
   );
@@ -113,6 +121,7 @@ export function useParcelleSelection(): UseParcelleSelectionReturn {
       if (selectedParcelles.size > 0 && totalArea + contenance > MAX_SITE_AREA_M2) {
         setPreviewParcelle({ idu, geometry, properties, contenance, clickCoords });
         setSelectionState("max-size");
+        options?.onMaxSizeReached?.(selectedParcelles.size, totalArea + contenance);
         return;
       }
 
@@ -138,18 +147,32 @@ export function useParcelleSelection(): UseParcelleSelectionReturn {
     setSelectedParcelles((prev) => {
       const next = new Map(prev);
       next.set(idu, { idu, geometry, properties, contenance });
+
+      let newTotalArea = 0;
+      for (const p of next.values()) {
+        newTotalArea += p.contenance;
+      }
+      options?.onParcelleAdded?.(next.size, newTotalArea);
+
       return next;
     });
 
     setPreviewParcelle(null);
     setSelectionState("idle");
-  }, [previewParcelle, selectionState]);
+  }, [previewParcelle, selectionState, options]);
 
   const removeParcelle = useCallback(
     (idu: string) => {
       setSelectedParcelles((prev) => {
         const next = new Map(prev);
         next.delete(idu);
+
+        let newTotalArea = 0;
+        for (const p of next.values()) {
+          newTotalArea += p.contenance;
+        }
+        options?.onParcelleRemoved?.(next.size, newTotalArea);
+
         return next;
       });
 
@@ -159,7 +182,7 @@ export function useParcelleSelection(): UseParcelleSelectionReturn {
       }
       setSelectionState("idle");
     },
-    [previewParcelle],
+    [previewParcelle, options],
   );
 
   const clearPreview = useCallback(() => {

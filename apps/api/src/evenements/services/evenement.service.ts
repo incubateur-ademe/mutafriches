@@ -143,6 +143,16 @@ export class EvenementService {
       );
     }
 
+    // nombreParcelles: doit etre un entier entre 0 et 50
+    if (donnees.nombreParcelles !== undefined && typeof donnees.nombreParcelles === "number") {
+      sanitized.nombreParcelles = Math.max(0, Math.min(50, Math.floor(donnees.nombreParcelles)));
+    }
+
+    // surfaceTotaleM2: doit etre un nombre entre 0 et 1 000 000
+    if (donnees.surfaceTotaleM2 !== undefined && typeof donnees.surfaceTotaleM2 === "number") {
+      sanitized.surfaceTotaleM2 = Math.max(0, Math.min(1_000_000, donnees.surfaceTotaleM2));
+    }
+
     return Object.keys(sanitized).length > 0 ? sanitized : undefined;
   }
 }

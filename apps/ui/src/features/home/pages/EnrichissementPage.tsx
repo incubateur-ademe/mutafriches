@@ -68,6 +68,9 @@ export const EnrichissementPage: React.FC = () => {
         // Tracker l'événement d'enrichissement terminé
         await track(TypeEvenement.ENRICHISSEMENT_TERMINE, {
           identifiantCadastral: identifiant,
+          donnees: {
+            nombreParcelles: identifiant.split(",").length,
+          },
         });
 
         // Naviguer vers la première étape de qualification

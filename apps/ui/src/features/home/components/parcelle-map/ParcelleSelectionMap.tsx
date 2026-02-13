@@ -2,6 +2,7 @@ import { useLeafletMap } from "../../../../shared/hooks/useLeafletMap";
 import { useMapBaseLayers } from "../../../../shared/hooks/useMapBaseLayers";
 import { useParcelleSelection } from "../../../../shared/hooks/useParcelleSelection";
 import { useMapParcelleRenderer } from "../../../../shared/hooks/useMapParcelleRenderer";
+import { useEventTracking } from "../../../../shared/hooks/useEventTracking";
 import { AddressSearchBar } from "./AddressSearchBar";
 import { MapLayerSelector } from "./MapLayerSelector";
 import { MapGuide } from "./MapGuide";
@@ -29,6 +30,8 @@ export function ParcelleSelectionMap({
   // Gestion du fond de carte actif
   const { activeLayer, setActiveLayer } = useMapBaseLayers();
 
+  const { trackParcelleAjoutee, trackParcelleSupprimee, trackJaugeDepassee } = useEventTracking();
+
   // Gestion de la sélection multi-parcelle
   const {
     selectedParcelles,
@@ -41,7 +44,11 @@ export function ParcelleSelectionMap({
     removeParcelle,
     clearPreview,
     getSelectedIdus,
-  } = useParcelleSelection();
+  } = useParcelleSelection({
+    onParcelleAdded: (n, s) => trackParcelleAjoutee(n, s),
+    onParcelleRemoved: (n, s) => trackParcelleSupprimee(n, s),
+    onMaxSizeReached: (n, s) => trackJaugeDepassee(n, s),
+  });
 
   // Initialisation de la carte Leaflet
   const { flyToLocation, changeBaseLayer, mapRef } = useLeafletMap({

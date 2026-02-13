@@ -17,6 +17,11 @@ export enum TypeEvenement {
   // Feedback sur résultats
   FEEDBACK_PERTINENCE_CLASSEMENT = "feedback_pertinence_classement",
 
+  // Sélection multi-parcelle
+  PARCELLE_AJOUTEE = "parcelle_ajoutee",
+  PARCELLE_SUPPRIMEE = "parcelle_supprimee",
+  JAUGE_DEPASSEE = "jauge_depassee",
+
   // Feature flags / interet utilisateur
   INTERET_MULTI_PARCELLES = "interet_multi_parcelles",
   INTERET_MISE_EN_RELATION = "interet_mise_en_relation",
