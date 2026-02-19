@@ -1,5 +1,5 @@
 import { Injectable, Logger } from "@nestjs/common";
-import jwt from "jsonwebtoken";
+import * as jwt from "jsonwebtoken";
 
 @Injectable()
 export class MetabaseService {

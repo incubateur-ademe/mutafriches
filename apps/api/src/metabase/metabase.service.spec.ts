@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import jwt from "jsonwebtoken";
+import * as jwt from "jsonwebtoken";
 import { MetabaseService } from "./metabase.service";
 
 describe("MetabaseService", () => {

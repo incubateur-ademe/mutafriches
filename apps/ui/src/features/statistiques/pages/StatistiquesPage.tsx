@@ -50,12 +50,6 @@ export function StatistiquesPage() {
           </div>
         </nav>
 
-        <h1>Statistiques</h1>
-        <p className="fr-text--lead fr-mb-4w">
-          Indicateurs d'utilisation de Mutafriches : analyses de mutabilite, sites qualifies,
-          communes couvertes.
-        </p>
-
         {loading && (
           <div className="fr-callout">
             <p className="fr-callout__text">Chargement du dashboard statistiques...</p>
