@@ -14,6 +14,9 @@ export const ROUTES = {
   // Résultats
   RESULTATS: "/resultats",
 
+  // Statistiques
+  STATISTIQUES: "/statistiques",
+
   // Documentation
   DOCUMENTATION_INTEGRATION: "/documentation-integration",
   API: "/api",

@@ -54,6 +54,14 @@ export function Header() {
                 <ul className="fr-btns-group">
                   <li>
                     <Link
+                      to={ROUTES.STATISTIQUES}
+                      className="fr-btn fr-btn--tertiary fr-icon-bar-chart-box-line fr-btn--icon-left"
+                    >
+                      Statistiques
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
                       to={ROUTES.DOCUMENTATION_INTEGRATION}
                       className="fr-btn fr-btn--tertiary fr-icon-book-2-fill fr-btn--icon-left"
                     >
@@ -79,6 +87,11 @@ export function Header() {
           </button>
           <div className="fr-header__menu-links">
             <ul className="fr-btns-group">
+              <li>
+                <Link to={ROUTES.STATISTIQUES} className="fr-btn">
+                  Statistiques
+                </Link>
+              </li>
               <li>
                 <Link to={ROUTES.DOCUMENTATION_INTEGRATION} className="fr-btn">
                   Documentation
