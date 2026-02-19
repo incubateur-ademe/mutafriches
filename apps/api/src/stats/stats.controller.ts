@@ -1,18 +1,5 @@
-import {
-  Controller,
-  Get,
-  All,
-  Query,
-  Req,
-  Res,
-  HttpStatus,
-} from "@nestjs/common";
-import {
-  ApiTags,
-  ApiOperation,
-  ApiQuery,
-  ApiResponse,
-} from "@nestjs/swagger";
+import { Controller, Get, All, Query, Req, Res, HttpStatus } from "@nestjs/common";
+import { ApiTags, ApiOperation, ApiQuery, ApiResponse } from "@nestjs/swagger";
 import type { Request, Response } from "express";
 import type { Periodicity, StatOutput } from "@mutafriches/shared-types";
 import { StatsService } from "./stats.service";
@@ -31,8 +18,7 @@ export class StatsController {
   @Get()
   @ApiOperation({
     summary: "KPIs publiques Mutafriches",
-    description:
-      "Retourne les statistiques d'utilisation de Mutafriches par période",
+    description: "Retourne les statistiques d'utilisation de Mutafriches par période",
   })
   @ApiQuery({
     name: "periodicity",
@@ -55,9 +41,7 @@ export class StatsController {
   ): Promise<void> {
     // Validation de la périodicité
     const periodicity: Periodicity =
-      periodicityParam && isValidPeriodicity(periodicityParam)
-        ? periodicityParam
-        : "month";
+      periodicityParam && isValidPeriodicity(periodicityParam) ? periodicityParam : "month";
 
     // Calcul de la date "since"
     let since: Date | null = null;
@@ -67,10 +51,7 @@ export class StatsController {
       since = computeSinceDate(sinceNumber, periodicity);
     }
 
-    const stats: StatOutput[] = await this.statsService.getAllStats(
-      since,
-      periodicity,
-    );
+    const stats: StatOutput[] = await this.statsService.getAllStats(since, periodicity);
 
     // Headers CORS
     const origin = req.headers.origin;

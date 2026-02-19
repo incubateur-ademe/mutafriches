@@ -8,10 +8,7 @@ import { fillGaps } from "./utils/gap-fill.utils";
 export class StatsService {
   constructor(private readonly database: DatabaseService) {}
 
-  async getAllStats(
-    since: Date | null,
-    periodicity: Periodicity,
-  ): Promise<StatOutput[]> {
+  async getAllStats(since: Date | null, periodicity: Periodicity): Promise<StatOutput[]> {
     const results = await Promise.all([
       this.getAnalysesAbouties(since, periodicity),
       this.getSurfaceAnalysee(since, periodicity),
@@ -28,13 +25,7 @@ export class StatsService {
     since: Date | null,
     periodicity: Periodicity,
   ): Promise<StatOutput> {
-    const rows = await this.queryByPeriod(
-      "evaluations",
-      "date_calcul",
-      "1=1",
-      since,
-      periodicity,
-    );
+    const rows = await this.queryByPeriod("evaluations", "date_calcul", "1=1", since, periodicity);
 
     return {
       description: "Analyses de mutabilité abouties",
@@ -70,12 +61,10 @@ export class StatsService {
       ORDER BY period
     `);
 
-    const rows = (result as unknown as { period: Date; value: number }[]).map(
-      (r) => ({
-        value: Number(r.value),
-        date: new Date(r.period).getTime(),
-      }),
-    );
+    const rows = (result as unknown as { period: Date; value: number }[]).map((r) => ({
+      value: Number(r.value),
+      date: new Date(r.period).getTime(),
+    }));
 
     return {
       description: "Surface analysée (hectares, parcelles uniques)",
@@ -88,9 +77,7 @@ export class StatsService {
     periodicity: Periodicity,
   ): Promise<StatOutput> {
     const truncExpr = this.dateTruncExpr(periodicity, "date_calcul");
-    const whereClause = since
-      ? sql`WHERE date_calcul >= ${since}`
-      : sql``;
+    const whereClause = since ? sql`WHERE date_calcul >= ${since}` : sql``;
 
     const result = await this.database.db.execute(sql`
       SELECT
@@ -102,12 +89,10 @@ export class StatsService {
       ORDER BY period
     `);
 
-    const rows = (result as unknown as { period: Date; value: number }[]).map(
-      (r) => ({
-        value: Number(r.value),
-        date: new Date(r.period).getTime(),
-      }),
-    );
+    const rows = (result as unknown as { period: Date; value: number }[]).map((r) => ({
+      value: Number(r.value),
+      date: new Date(r.period).getTime(),
+    }));
 
     return {
       description: "Communes distinctes avec analyse aboutie",
@@ -115,10 +100,7 @@ export class StatsService {
     };
   }
 
-  private async getVisites(
-    since: Date | null,
-    periodicity: Periodicity,
-  ): Promise<StatOutput> {
+  private async getVisites(since: Date | null, periodicity: Periodicity): Promise<StatOutput> {
     const rows = await this.queryByPeriod(
       "evenements_utilisateur",
       "date_creation",
@@ -156,9 +138,7 @@ export class StatsService {
     periodicity: Periodicity,
   ): Promise<StatOutput> {
     const truncExpr = this.dateTruncExpr(periodicity, "date_calcul");
-    const whereClause = since
-      ? sql`WHERE date_calcul >= ${since}`
-      : sql``;
+    const whereClause = since ? sql`WHERE date_calcul >= ${since}` : sql``;
 
     const result = await this.database.db.execute(sql`
       WITH par_commune_par_periode AS (
@@ -178,12 +158,10 @@ export class StatsService {
       ORDER BY period
     `);
 
-    const rows = (result as unknown as { period: Date; value: number }[]).map(
-      (r) => ({
-        value: Number(r.value),
-        date: new Date(r.period).getTime(),
-      }),
-    );
+    const rows = (result as unknown as { period: Date; value: number }[]).map((r) => ({
+      value: Number(r.value),
+      date: new Date(r.period).getTime(),
+    }));
 
     return {
       description: "Nombre moyen de sites analysés par commune",
@@ -201,9 +179,7 @@ export class StatsService {
     since: Date | null,
     periodicity: Periodicity,
   ): Promise<Stat[]> {
-    const sinceCondition = since
-      ? `AND ${dateColumn} >= '${since.toISOString()}'`
-      : "";
+    const sinceCondition = since ? `AND ${dateColumn} >= '${since.toISOString()}'` : "";
 
     // periodicity est validé dans le controller contre isValidPeriodicity
     const query = `
@@ -218,12 +194,10 @@ export class StatsService {
 
     const result = await this.database.db.execute(sql.raw(query));
 
-    return (result as unknown as { period: Date; value: number }[]).map(
-      (r) => ({
-        value: Number(r.value),
-        date: new Date(r.period).getTime(),
-      }),
-    );
+    return (result as unknown as { period: Date; value: number }[]).map((r) => ({
+      value: Number(r.value),
+      date: new Date(r.period).getTime(),
+    }));
   }
 
   /**

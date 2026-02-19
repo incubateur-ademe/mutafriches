@@ -8,12 +8,9 @@ import {
 } from "./period.utils";
 
 describe("isValidPeriodicity", () => {
-  it.each(["day", "week", "month", "year"])(
-    "retourne true pour '%s'",
-    (value) => {
-      expect(isValidPeriodicity(value)).toBe(true);
-    },
-  );
+  it.each(["day", "week", "month", "year"])("retourne true pour '%s'", (value) => {
+    expect(isValidPeriodicity(value)).toBe(true);
+  });
 
   it.each(["hour", "minute", "quarter", "", "Day", "MONTH", "invalid"])(
     "retourne false pour '%s'",

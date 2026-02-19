@@ -6,11 +6,7 @@ import { truncateDate, advancePeriod } from "./period.utils";
  * Génère toutes les dates de début de période entre `since` (ou la première
  * valeur existante) et maintenant, puis mappe les valeurs existantes.
  */
-export function fillGaps(
-  stats: Stat[],
-  since: Date | null,
-  periodicity: Periodicity,
-): Stat[] {
+export function fillGaps(stats: Stat[], since: Date | null, periodicity: Periodicity): Stat[] {
   if (stats.length === 0 && !since) return [];
 
   const now = new Date();

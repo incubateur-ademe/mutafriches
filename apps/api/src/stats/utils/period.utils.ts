@@ -61,10 +61,7 @@ export function advancePeriod(date: Date, periodicity: Periodicity): void {
  * Calcule la date de début à partir d'un nombre de périodes à remonter.
  * Retourne une date tronquée au début de la période correspondante.
  */
-export function computeSinceDate(
-  count: number,
-  periodicity: Periodicity,
-): Date {
+export function computeSinceDate(count: number, periodicity: Periodicity): Date {
   const now = new Date();
 
   switch (periodicity) {
@@ -114,8 +111,5 @@ export function computeCacheTtl(periodicity: Periodicity): number {
       break;
   }
 
-  return Math.max(
-    0,
-    Math.floor((endOfPeriod.getTime() - now.getTime()) / 1000),
-  );
+  return Math.max(0, Math.floor((endOfPeriod.getTime() - now.getTime()) / 1000));
 }

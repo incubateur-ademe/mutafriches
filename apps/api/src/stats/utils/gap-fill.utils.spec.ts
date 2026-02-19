@@ -60,9 +60,7 @@ describe("fillGaps", () => {
 
     expect(result).toHaveLength(3); // jan, fév, mar
     expect(result.every((s) => s.value === 0)).toBe(true);
-    expect(result[0].date).toBe(
-      new Date("2025-01-01T00:00:00Z").getTime(),
-    );
+    expect(result[0].date).toBe(new Date("2025-01-01T00:00:00Z").getTime());
   });
 
   it("comble les jours manquants", () => {
