@@ -1,5 +1,5 @@
 import { Controller, Get, All, Query, Req, Res, HttpStatus } from "@nestjs/common";
-import { ApiTags, ApiOperation, ApiQuery, ApiResponse } from "@nestjs/swagger";
+import { ApiTags, ApiOperation, ApiQuery, ApiResponse, ApiExcludeEndpoint } from "@nestjs/swagger";
 import type { Request, Response } from "express";
 import type { Periodicity, StatOutput } from "@mutafriches/shared-types";
 import { StatsService } from "./stats.service";
@@ -67,8 +67,7 @@ export class StatsController {
   }
 
   @All()
-  @ApiOperation({ summary: "Méthode non autorisée" })
-  @ApiResponse({ status: 405, description: "Méthode non autorisée" })
+  @ApiExcludeEndpoint()
   handleMethodNotAllowed(@Res() res: Response): void {
     res.setHeader("Allow", "GET, OPTIONS");
     res
