@@ -31,7 +31,7 @@ export class StatsService {
     const rows = await this.queryByPeriod(
       "evaluations",
       "date_calcul",
-      "evaluation_source_id IS NULL",
+      "1=1",
       since,
       periodicity,
     );
@@ -48,8 +48,8 @@ export class StatsService {
   ): Promise<StatOutput> {
     const truncExpr = this.dateTruncExpr(periodicity, "date_calcul");
     const whereClause = since
-      ? sql`WHERE evaluation_source_id IS NULL AND donnees_enrichissement->>'surfaceSite' IS NOT NULL AND date_calcul >= ${since}`
-      : sql`WHERE evaluation_source_id IS NULL AND donnees_enrichissement->>'surfaceSite' IS NOT NULL`;
+      ? sql`WHERE donnees_enrichissement->>'surfaceSite' IS NOT NULL AND date_calcul >= ${since}`
+      : sql`WHERE donnees_enrichissement->>'surfaceSite' IS NOT NULL`;
 
     const result = await this.database.db.execute(sql`
       WITH parcelles_par_periode AS (
@@ -89,8 +89,8 @@ export class StatsService {
   ): Promise<StatOutput> {
     const truncExpr = this.dateTruncExpr(periodicity, "date_calcul");
     const whereClause = since
-      ? sql`WHERE evaluation_source_id IS NULL AND date_calcul >= ${since}`
-      : sql`WHERE evaluation_source_id IS NULL`;
+      ? sql`WHERE date_calcul >= ${since}`
+      : sql``;
 
     const result = await this.database.db.execute(sql`
       SELECT
@@ -140,7 +140,7 @@ export class StatsService {
     const rows = await this.queryByPeriod(
       "enrichissements",
       "date_enrichissement",
-      "statut IN ('succes', 'partiel') AND enrichissement_source_id IS NULL",
+      "statut IN ('succes', 'partiel')",
       since,
       periodicity,
     );
@@ -157,8 +157,8 @@ export class StatsService {
   ): Promise<StatOutput> {
     const truncExpr = this.dateTruncExpr(periodicity, "date_calcul");
     const whereClause = since
-      ? sql`WHERE evaluation_source_id IS NULL AND date_calcul >= ${since}`
-      : sql`WHERE evaluation_source_id IS NULL`;
+      ? sql`WHERE date_calcul >= ${since}`
+      : sql``;
 
     const result = await this.database.db.execute(sql`
       WITH par_commune_par_periode AS (
