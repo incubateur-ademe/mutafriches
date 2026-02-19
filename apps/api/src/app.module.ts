@@ -6,6 +6,7 @@ import { EnrichissementModule } from "./enrichissement/enrichissement.module";
 import { EvaluationModule } from "./evaluation/evaluation.module";
 import { FrichesModule } from "./friches/friches.module";
 import { EvenementsModule } from "./evenements/evenements.module";
+import { StatsModule } from "./stats/stats.module";
 import { DatabaseModule } from "./shared/database/database.module";
 import { SharedModule } from "./shared/shared.module";
 
@@ -23,6 +24,7 @@ import { SharedModule } from "./shared/shared.module";
     EvaluationModule,
     FrichesModule, // Module de compatibilité (proxy)
     EvenementsModule,
+    StatsModule,
   ],
   controllers: [AppController],
   providers: [

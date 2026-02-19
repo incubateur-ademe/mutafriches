@@ -3,6 +3,9 @@ export * from "./enrichissement";
 export * from "./evaluation";
 export * from "./evenements";
 
+// Stats
+export * from "./stats";
+
 // Shared
 export * from "./shared";
 
