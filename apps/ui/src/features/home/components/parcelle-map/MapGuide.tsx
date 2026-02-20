@@ -9,13 +9,19 @@ interface MapGuideProps {
 /**
  * Messages guide affichés en haut de la carte selon l'état de la sélection.
  */
-const GUIDE_MESSAGES: Record<SelectionState, string> = {
+const GUIDE_MESSAGES: Record<SelectionState, React.ReactNode> = {
   idle: "Cliquer sur une parcelle pour l'ajouter à votre site",
   previewing: "Cliquer sur une parcelle pour l'ajouter à votre site",
   "already-added": "Cliquer sur une parcelle pour l'ajouter à votre site",
   "non-adjacent": "Parcelle non adjacente",
-  "max-size":
-    "La surface étudiée est trop grande (supérieure à 10ha), les résultats risquent d'étre détériorés. Nous vous recommandons de diviser votre site en 2 analyses distinctes",
+  "max-size": (
+    <>
+      La surface étudiée est trop grande (supérieure à 10ha), les résultats risquent d'être
+      détériorés.
+      <br />
+      Nous vous recommandons de diviser votre site en 2 analyses distinctes
+    </>
+  ),
 };
 
 /**
@@ -43,7 +49,14 @@ export function MapGuide({ selectionState, parcelleCount }: MapGuideProps) {
   }
 
   return (
-    <p className="fr-text--sm fr-mb-0" style={{ color: "var(--blue-france-sun-113-625)" }}>
+    <p
+      className="fr-text--sm fr-mb-0"
+      style={{
+        color: "var(--blue-france-sun-113-625)",
+        marginLeft: "1rem",
+        textAlign: "right",
+      }}
+    >
       {isError && <span className="fr-icon-warning-line fr-icon--sm fr-mr-1v" aria-hidden="true" />}
       {message}
     </p>

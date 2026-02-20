@@ -5,9 +5,9 @@ interface EnrichedInfoFieldProps {
   id: string;
   /** Label du champ */
   label: string;
-  /** Valeur affichee */
-  value?: string;
-  /** Source de la donnee (optionnel) */
+  /** Valeur affichée (chaîne unique ou tableau pour badges multiples) */
+  value?: string | string[];
+  /** Source de la donnée (optionnel) */
   source?: string;
   /** Contenu du tooltip */
   tooltip?: React.ReactNode;
@@ -26,7 +26,11 @@ export const EnrichedInfoField: React.FC<EnrichedInfoFieldProps> = ({
   value,
   tooltip,
 }) => {
-  const isNonAccessible = !value || value === NON_ACCESSIBLE_LABEL || value === "-";
+  const values = Array.isArray(value) ? value : [value];
+  const isNonAccessible =
+    !value ||
+    (typeof value === "string" && (value === NON_ACCESSIBLE_LABEL || value === "-")) ||
+    (Array.isArray(value) && value.length === 0);
 
   return (
     <div className="fr-col-12 fr-col-md-6">
@@ -49,9 +53,16 @@ export const EnrichedInfoField: React.FC<EnrichedInfoFieldProps> = ({
             {NON_ACCESSIBLE_LABEL}
           </p>
         ) : (
-          <p className="fr-badge fr-badge--green-emeraude fr-icon-checkbox-line fr-badge--icon-left">
-            {value}
-          </p>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
+            {values.map((v, index) => (
+              <p
+                key={index}
+                className="fr-badge fr-badge--green-emeraude fr-icon-checkbox-line fr-badge--icon-left"
+              >
+                {v}
+              </p>
+            ))}
+          </div>
         )}
       </div>
     </div>

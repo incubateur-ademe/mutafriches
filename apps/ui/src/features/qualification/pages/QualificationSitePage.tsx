@@ -143,7 +143,7 @@ export const QualificationSitePage: React.FC = () => {
             }
             value={
               uiData?.identifiantsParcelles && uiData.identifiantsParcelles.length > 1
-                ? uiData.identifiantsParcelles.join(", ")
+                ? uiData.identifiantsParcelles
                 : uiData?.identifiantParcelle || "-"
             }
             tooltip={
