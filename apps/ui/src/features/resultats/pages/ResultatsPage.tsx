@@ -17,6 +17,7 @@ import { IframeEvaluationSummaryDto } from "../../../shared/iframe/iframe.types"
 import { evaluationService } from "../../../shared/services/api/api.evaluation.service";
 import { ModalInfo } from "../../../shared/components/common/ModalInfo";
 import { VERSION_ALGO } from "@mutafriches/shared-types";
+import { DebugPanelGate } from "../../debug/components/DebugPanelGate";
 
 // Seuils pour les messages contextuels
 const SEUIL_SURFACE_HECTARE = 10000; // 1 hectare en m2
@@ -471,6 +472,14 @@ export const ResultatsPage: React.FC = () => {
         <p>Voulez-vous vraiment démarrer une nouvelle analyse ?</p>
         <p className="fr-text--sm">Les données actuelles seront perdues.</p>
       </ModalInfo>
+
+      {/* Panneau de diagnostic (dev/staging uniquement) */}
+      <DebugPanelGate
+        enrichmentData={state.enrichmentData}
+        manualData={state.manualData}
+        mutabilityData={mutabilityData}
+        identifiantSite={state.identifiantSite}
+      />
     </Layout>
   );
 };
