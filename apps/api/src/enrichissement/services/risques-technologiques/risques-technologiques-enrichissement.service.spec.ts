@@ -43,7 +43,7 @@ describe("RisquesTechnologiquesEnrichissementService", () => {
   describe("enrichir", () => {
     it("devrait evaluer avec SIS et ICPE", async () => {
       // Arrange
-      const site =new Site();
+      const site = new Site();
       site.identifiantParcelle = "29232000AB0123";
       site.coordonnees = { latitude: 48.0, longitude: -4.0 };
 
@@ -72,7 +72,7 @@ describe("RisquesTechnologiquesEnrichissementService", () => {
 
     it("devrait evaluer meme si SIS echoue (avec ICPE seul)", async () => {
       // Arrange
-      const site =new Site();
+      const site = new Site();
       site.identifiantParcelle = "29232000AB0123";
       site.coordonnees = { latitude: 48.0, longitude: -4.0 };
 
@@ -100,7 +100,7 @@ describe("RisquesTechnologiquesEnrichissementService", () => {
 
     it("devrait evaluer meme si ICPE echoue (avec SIS seul)", async () => {
       // Arrange
-      const site =new Site();
+      const site = new Site();
       site.identifiantParcelle = "29232000AB0123";
       site.coordonnees = { latitude: 48.0, longitude: -4.0 };
 
@@ -128,7 +128,7 @@ describe("RisquesTechnologiquesEnrichissementService", () => {
 
     it("devrait retourner false si les deux services echouent", async () => {
       // Arrange
-      const site =new Site();
+      const site = new Site();
       site.identifiantParcelle = "29232000AB0123";
       site.coordonnees = { latitude: 48.0, longitude: -4.0 };
 
@@ -156,7 +156,7 @@ describe("RisquesTechnologiquesEnrichissementService", () => {
 
     it("devrait retourner echec si pas de coordonnees", async () => {
       // Arrange
-      const site =new Site();
+      const site = new Site();
       site.identifiantParcelle = "29232000AB0123";
       site.coordonnees = undefined;
 
@@ -172,7 +172,7 @@ describe("RisquesTechnologiquesEnrichissementService", () => {
 
     it("devrait appeler les services en parallele", async () => {
       // Arrange
-      const site =new Site();
+      const site = new Site();
       site.identifiantParcelle = "29232000AB0123";
       site.coordonnees = { latitude: 48.0, longitude: -4.0 };
 
@@ -203,7 +203,7 @@ describe("RisquesTechnologiquesEnrichissementService", () => {
 
     it("devrait enrichir sans distance ICPE si aucune installation", async () => {
       // Arrange
-      const site =new Site();
+      const site = new Site();
       site.identifiantParcelle = "29232000AB0123";
       site.coordonnees = { latitude: 48.0, longitude: -4.0 };
 

@@ -30,9 +30,7 @@ export class EnergieEnrichissementService {
 
     // Vérifier la présence des coordonnées
     if (!site.coordonnees) {
-      this.logger.warn(
-        `Pas de coordonnées disponibles pour le site ${site.identifiantParcelle}`,
-      );
+      this.logger.warn(`Pas de coordonnées disponibles pour le site ${site.identifiantParcelle}`);
       sourcesEchouees.push(SourceEnrichissement.ENEDIS_RACCORDEMENT);
       champsManquants.push("distanceRaccordementElectrique");
       return {

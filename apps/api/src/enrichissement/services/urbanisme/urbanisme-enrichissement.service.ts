@@ -43,12 +43,7 @@ export class UrbanismeEnrichissementService {
     const champsManquants: string[] = [];
 
     // Taux de logements vacants (LOVAC via data.gouv.fr)
-    await this.enrichTauxLogementsVacants(
-      site,
-      sourcesUtilisees,
-      sourcesEchouees,
-      champsManquants,
-    );
+    await this.enrichTauxLogementsVacants(site, sourcesUtilisees, sourcesEchouees, champsManquants);
 
     // Proximite commerces/services (BPE)
     await this.enrichProximiteCommercesServices(
@@ -146,9 +141,7 @@ export class UrbanismeEnrichissementService {
       });
 
       if (!lovacData) {
-        this.logger.warn(
-          `Aucune donnee LOVAC trouvee pour ${site.codeInsee || site.commune}`,
-        );
+        this.logger.warn(`Aucune donnee LOVAC trouvee pour ${site.codeInsee || site.commune}`);
         sourcesEchouees.push(SourceEnrichissement.LOVAC);
         champsManquants.push("tauxLogementsVacants");
         return;

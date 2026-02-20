@@ -158,8 +158,7 @@ export class Site {
       site.raccordementEau = donneesComplementaires.raccordementEau;
       site.etatBatiInfrastructure = donneesComplementaires.etatBatiInfrastructure;
       site.presencePollution = donneesComplementaires.presencePollution;
-      site.valeurArchitecturaleHistorique =
-        donneesComplementaires.valeurArchitecturaleHistorique;
+      site.valeurArchitecturaleHistorique = donneesComplementaires.valeurArchitecturaleHistorique;
       site.qualitePaysage = donneesComplementaires.qualitePaysage;
       site.qualiteVoieDesserte = donneesComplementaires.qualiteVoieDesserte;
       site.trameVerteEtBleue = donneesComplementaires.trameVerteEtBleue;

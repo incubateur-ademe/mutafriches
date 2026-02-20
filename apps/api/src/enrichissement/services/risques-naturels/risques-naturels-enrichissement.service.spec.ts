@@ -43,7 +43,7 @@ describe("RisquesNaturelsEnrichissementService", () => {
   describe("enrichir", () => {
     it("devrait combiner RGA et Cavites avec le calculator", async () => {
       // Arrange
-      const site =new Site();
+      const site = new Site();
       site.identifiantParcelle = "29232000AB0123";
       site.coordonnees = { latitude: 48.0, longitude: -4.0 };
 
@@ -81,7 +81,7 @@ describe("RisquesNaturelsEnrichissementService", () => {
 
     it("devrait enrichir meme si RGA echoue (avec Cavites seul)", async () => {
       // Arrange
-      const site =new Site();
+      const site = new Site();
       site.identifiantParcelle = "29232000AB0123";
       site.coordonnees = { latitude: 48.0, longitude: -4.0 };
 
@@ -114,7 +114,7 @@ describe("RisquesNaturelsEnrichissementService", () => {
 
     it("devrait enrichir meme si Cavites echoue (avec RGA seul)", async () => {
       // Arrange
-      const site =new Site();
+      const site = new Site();
       site.identifiantParcelle = "29232000AB0123";
       site.coordonnees = { latitude: 48.0, longitude: -4.0 };
 
@@ -143,7 +143,7 @@ describe("RisquesNaturelsEnrichissementService", () => {
 
     it("devrait retourner AUCUN si les deux services echouent", async () => {
       // Arrange
-      const site =new Site();
+      const site = new Site();
       site.identifiantParcelle = "29232000AB0123";
       site.coordonnees = { latitude: 48.0, longitude: -4.0 };
 
@@ -171,7 +171,7 @@ describe("RisquesNaturelsEnrichissementService", () => {
 
     it("devrait retourner echec si pas de coordonnees", async () => {
       // Arrange
-      const site =new Site();
+      const site = new Site();
       site.identifiantParcelle = "29232000AB0123";
       site.coordonnees = undefined;
 
@@ -187,7 +187,7 @@ describe("RisquesNaturelsEnrichissementService", () => {
 
     it("devrait appeler les services en parallele", async () => {
       // Arrange
-      const site =new Site();
+      const site = new Site();
       site.identifiantParcelle = "29232000AB0123";
       site.coordonnees = { latitude: 48.0, longitude: -4.0 };
 

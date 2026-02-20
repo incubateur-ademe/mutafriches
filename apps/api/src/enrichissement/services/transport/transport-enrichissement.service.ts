@@ -42,9 +42,7 @@ export class TransportEnrichissementService {
 
     // Verifications preliminaires
     if (!site.coordonnees) {
-      this.logger.warn(
-        `Pas de coordonnees disponibles pour le site ${site.identifiantParcelle}`,
-      );
+      this.logger.warn(`Pas de coordonnees disponibles pour le site ${site.identifiantParcelle}`);
       sourcesEchouees.push(
         SourceEnrichissement.SERVICE_PUBLIC,
         SourceEnrichissement.IGN_WFS,
@@ -62,18 +60,8 @@ export class TransportEnrichissementService {
 
     // Enrichissements
     await this.enrichirCentreVille(site, sourcesUtilisees, sourcesEchouees, champsManquants);
-    await this.enrichirDistanceAutoroute(
-      site,
-      sourcesUtilisees,
-      sourcesEchouees,
-      champsManquants,
-    );
-    await this.enrichirTransportCommun(
-      site,
-      sourcesUtilisees,
-      sourcesEchouees,
-      champsManquants,
-    );
+    await this.enrichirDistanceAutoroute(site, sourcesUtilisees, sourcesEchouees, champsManquants);
+    await this.enrichirTransportCommun(site, sourcesUtilisees, sourcesEchouees, champsManquants);
 
     return {
       success: sourcesUtilisees.length > 0,

@@ -24,7 +24,7 @@ describe("EnergieEnrichissementService", () => {
   describe("enrichir", () => {
     it("devrait enrichir la distance de raccordement electrique", async () => {
       // Arrange
-      const site =new Site();
+      const site = new Site();
       site.identifiantParcelle = "29232000AB0123";
       site.coordonnees = { latitude: 48.0, longitude: -4.0 };
 
@@ -45,7 +45,7 @@ describe("EnergieEnrichissementService", () => {
 
     it("devrait retourner echec si pas de coordonnees", async () => {
       // Arrange
-      const site =new Site();
+      const site = new Site();
       site.identifiantParcelle = "29232000AB0123";
       site.coordonnees = undefined;
 
@@ -61,7 +61,7 @@ describe("EnergieEnrichissementService", () => {
 
     it("devrait marquer comme echec si Enedis echoue", async () => {
       // Arrange
-      const site =new Site();
+      const site = new Site();
       site.identifiantParcelle = "29232000AB0123";
       site.coordonnees = { latitude: 48.0, longitude: -4.0 };
 
@@ -82,7 +82,7 @@ describe("EnergieEnrichissementService", () => {
 
     it("devrait gerer les erreurs du service Enedis", async () => {
       // Arrange
-      const site =new Site();
+      const site = new Site();
       site.identifiantParcelle = "29232000AB0123";
       site.coordonnees = { latitude: 48.0, longitude: -4.0 };
 
@@ -99,7 +99,7 @@ describe("EnergieEnrichissementService", () => {
 
     it("devrait appeler Enedis avec les bonnes coordonnees", async () => {
       // Arrange
-      const site =new Site();
+      const site = new Site();
       site.identifiantParcelle = "29232000AB0123";
       site.coordonnees = { latitude: 48.123, longitude: -4.567 };
 

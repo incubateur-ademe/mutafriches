@@ -40,7 +40,7 @@ describe("UrbanismeEnrichissementService", () => {
   describe("enrichir - LOVAC", () => {
     it("devrait enrichir un site avec les donnees LOVAC et calculer le taux", async () => {
       // Arrange
-      const site =new Site();
+      const site = new Site();
       site.identifiantParcelle = "49007000AB0123";
       site.codeInsee = "49007";
       site.commune = "Angers";
@@ -82,7 +82,7 @@ describe("UrbanismeEnrichissementService", () => {
 
     it("devrait enrichir avec le nom de commune si pas de code INSEE", async () => {
       // Arrange
-      const site =new Site();
+      const site = new Site();
       site.identifiantParcelle = "XXXX000AB0123";
       site.codeInsee = undefined as unknown as string;
       site.commune = "Nantes";
@@ -124,7 +124,7 @@ describe("UrbanismeEnrichissementService", () => {
 
     it("devrait gerer le cas ou LOVAC ne retourne pas de donnees", async () => {
       // Arrange
-      const site =new Site();
+      const site = new Site();
       site.identifiantParcelle = "99999000AB0123";
       site.codeInsee = "99999";
       site.commune = "Commune Inconnue";
@@ -150,7 +150,7 @@ describe("UrbanismeEnrichissementService", () => {
 
     it("devrait gerer le cas ou les donnees LOVAC sont secretisees", async () => {
       // Arrange
-      const site =new Site();
+      const site = new Site();
       site.identifiantParcelle = "12345000AB0123";
       site.codeInsee = "12345";
       site.commune = "Petite Commune";
@@ -188,7 +188,7 @@ describe("UrbanismeEnrichissementService", () => {
 
     it("devrait gerer les erreurs de l'API LOVAC", async () => {
       // Arrange
-      const site =new Site();
+      const site = new Site();
       site.identifiantParcelle = "49007000AB0123";
       site.codeInsee = "49007";
       site.commune = "Angers";
@@ -216,7 +216,7 @@ describe("UrbanismeEnrichissementService", () => {
 
     it("devrait echouer si pas de code INSEE ni de commune", async () => {
       // Arrange
-      const site =new Site();
+      const site = new Site();
       site.identifiantParcelle = "XXXX000AB0123";
       site.codeInsee = undefined as unknown as string;
       site.commune = undefined as unknown as string;
@@ -240,7 +240,7 @@ describe("UrbanismeEnrichissementService", () => {
 
     it("devrait prioritiser le code INSEE sur le nom de commune", async () => {
       // Arrange
-      const site =new Site();
+      const site = new Site();
       site.identifiantParcelle = "49007000AB0123";
       site.codeInsee = "49007";
       site.commune = "Angers";
@@ -281,7 +281,7 @@ describe("UrbanismeEnrichissementService", () => {
   describe("enrichir - Commerces/Services (BPE)", () => {
     it("devrait enrichir avec presence de commerces a proximite", async () => {
       // Arrange
-      const site =new Site();
+      const site = new Site();
       site.identifiantParcelle = "49007000AB0123";
       site.codeInsee = "49007";
       site.commune = "Angers";
@@ -324,7 +324,7 @@ describe("UrbanismeEnrichissementService", () => {
 
     it("devrait enrichir avec absence de commerces a proximite", async () => {
       // Arrange
-      const site =new Site();
+      const site = new Site();
       site.identifiantParcelle = "RURAL123";
       site.codeInsee = "12345";
       site.commune = "Village Isole";
@@ -362,7 +362,7 @@ describe("UrbanismeEnrichissementService", () => {
 
     it("devrait gerer l'absence de coordonnees pour BPE", async () => {
       // Arrange
-      const site =new Site();
+      const site = new Site();
       site.identifiantParcelle = "49007000AB0123";
       site.codeInsee = "49007";
       site.commune = "Angers";
@@ -394,7 +394,7 @@ describe("UrbanismeEnrichissementService", () => {
 
     it("devrait gerer les erreurs BPE", async () => {
       // Arrange
-      const site =new Site();
+      const site = new Site();
       site.identifiantParcelle = "49007000AB0123";
       site.codeInsee = "49007";
       site.commune = "Angers";
@@ -430,7 +430,7 @@ describe("UrbanismeEnrichissementService", () => {
   describe("enrichir - Enrichissement complet", () => {
     it("devrait enrichir completement un site valide", async () => {
       // Arrange
-      const site =new Site();
+      const site = new Site();
       site.identifiantParcelle = "49007000AB0123";
       site.codeInsee = "49007";
       site.commune = "Angers";
@@ -474,7 +474,7 @@ describe("UrbanismeEnrichissementService", () => {
 
     it("devrait reussir partiellement si LOVAC echoue mais BPE reussit", async () => {
       // Arrange
-      const site =new Site();
+      const site = new Site();
       site.identifiantParcelle = "49007000AB0123";
       site.codeInsee = "49007";
       site.commune = "Angers";
@@ -502,7 +502,7 @@ describe("UrbanismeEnrichissementService", () => {
 
     it("devrait reussir partiellement si BPE echoue mais LOVAC reussit", async () => {
       // Arrange
-      const site =new Site();
+      const site = new Site();
       site.identifiantParcelle = "49007000AB0123";
       site.codeInsee = "49007";
       site.commune = "Angers";
@@ -536,7 +536,7 @@ describe("UrbanismeEnrichissementService", () => {
 
     it("devrait echouer completement si les deux sources echouent", async () => {
       // Arrange
-      const site =new Site();
+      const site = new Site();
       site.identifiantParcelle = "XXXX000AB0123";
       site.codeInsee = undefined as unknown as string;
       site.commune = undefined as unknown as string;

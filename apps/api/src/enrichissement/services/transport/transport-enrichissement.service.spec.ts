@@ -38,7 +38,7 @@ describe("TransportEnrichissementService", () => {
   describe("enrichir - Centre-ville", () => {
     it("devrait determiner que le site est en centre-ville (< 1000m)", async () => {
       // Arrange
-      const site =new Site();
+      const site = new Site();
       site.identifiantParcelle = "29232000AB0123";
       site.codeInsee = "29232";
       site.commune = "Test Commune";
@@ -84,7 +84,7 @@ describe("TransportEnrichissementService", () => {
 
     it("devrait determiner que le site n'est PAS en centre-ville (> 1000m)", async () => {
       // Arrange
-      const site =new Site();
+      const site = new Site();
       site.identifiantParcelle = "29232000AB0123";
       site.codeInsee = "29232";
       site.commune = "Test Commune";
@@ -122,7 +122,7 @@ describe("TransportEnrichissementService", () => {
 
     it("devrait mettre centre-ville a false si erreur API Service Public", async () => {
       // Arrange
-      const site =new Site();
+      const site = new Site();
       site.identifiantParcelle = "29232000AB0123";
       site.codeInsee = "29232";
       site.commune = "Test Commune";
@@ -157,7 +157,7 @@ describe("TransportEnrichissementService", () => {
 
     it("devrait determiner centre-ville avec un vrai site (Trelaze)", async () => {
       // Arrange
-      const site =new Site();
+      const site = new Site();
       site.identifiantParcelle = "49007000ZE0153";
       site.codeInsee = "49007";
       site.commune = "Trelaze";
@@ -197,7 +197,7 @@ describe("TransportEnrichissementService", () => {
   describe("enrichir - Distance autoroute", () => {
     it("devrait calculer la distance a l'autoroute la plus proche", async () => {
       // Arrange
-      const site =new Site();
+      const site = new Site();
       site.identifiantParcelle = "29232000AB0123";
       site.codeInsee = "29232";
       site.commune = "Test Commune";
@@ -242,7 +242,7 @@ describe("TransportEnrichissementService", () => {
 
     it("devrait gerer le cas ou aucune autoroute n'est trouvee", async () => {
       // Arrange
-      const site =new Site();
+      const site = new Site();
       site.identifiantParcelle = "RURAL123";
       site.codeInsee = "12345";
       site.commune = "Village Isole";
@@ -283,7 +283,7 @@ describe("TransportEnrichissementService", () => {
 
     it("devrait enrichir meme sans code INSEE (IGN WFS fonctionne)", async () => {
       // Arrange
-      const site =new Site();
+      const site = new Site();
       site.identifiantParcelle = "TEST";
       site.codeInsee = undefined; // Pas de code INSEE
       site.coordonnees = { latitude: 48.0, longitude: -4.0 };
@@ -313,7 +313,7 @@ describe("TransportEnrichissementService", () => {
   describe("enrichir - Distance transport en commun", () => {
     it("devrait calculer la distance au transport en commun le plus proche", async () => {
       // Arrange
-      const site =new Site();
+      const site = new Site();
       site.identifiantParcelle = "75056000AB0001";
       site.codeInsee = "75056";
       site.commune = "Paris";
@@ -355,7 +355,7 @@ describe("TransportEnrichissementService", () => {
 
     it("devrait gerer le cas ou aucun transport n'est trouve dans le rayon", async () => {
       // Arrange
-      const site =new Site();
+      const site = new Site();
       site.identifiantParcelle = "RURAL456";
       site.codeInsee = "23456";
       site.commune = "Campagne Profonde";
@@ -398,7 +398,7 @@ describe("TransportEnrichissementService", () => {
 
     it("devrait gerer les erreurs du repository transport", async () => {
       // Arrange
-      const site =new Site();
+      const site = new Site();
       site.identifiantParcelle = "TEST789";
       site.codeInsee = "12345";
       site.commune = "Test";
@@ -441,7 +441,7 @@ describe("TransportEnrichissementService", () => {
 
     it("devrait arrondir la distance au metre pres", async () => {
       // Arrange
-      const site =new Site();
+      const site = new Site();
       site.identifiantParcelle = "TEST";
       site.codeInsee = "12345";
       site.commune = "Test";
@@ -479,7 +479,7 @@ describe("TransportEnrichissementService", () => {
   describe("enrichir - Cas d'erreur", () => {
     it("devrait retourner echec si pas de coordonnees", async () => {
       // Arrange
-      const site =new Site();
+      const site = new Site();
       site.identifiantParcelle = "29232000AB0123";
       site.codeInsee = "29232";
       site.commune = "Test Commune";
@@ -507,7 +507,7 @@ describe("TransportEnrichissementService", () => {
 
     it("devrait retourner echec si pas de code INSEE (seulement pour mairie)", async () => {
       // Arrange
-      const site =new Site();
+      const site = new Site();
       site.identifiantParcelle = "29232000AB0123";
       site.codeInsee = undefined;
       site.commune = "Test Commune";
@@ -540,7 +540,7 @@ describe("TransportEnrichissementService", () => {
   describe("enrichir - Succes partiel", () => {
     it("devrait continuer meme si centre-ville echoue", async () => {
       // Arrange
-      const site =new Site();
+      const site = new Site();
       site.identifiantParcelle = "29232000AB0123";
       site.codeInsee = "29232";
       site.commune = "Test Commune";
@@ -573,7 +573,7 @@ describe("TransportEnrichissementService", () => {
 
     it("devrait continuer meme si transport echoue", async () => {
       // Arrange
-      const site =new Site();
+      const site = new Site();
       site.identifiantParcelle = "29232000AB0123";
       site.codeInsee = "29232";
       site.commune = "Test Commune";
@@ -619,7 +619,7 @@ describe("TransportEnrichissementService", () => {
   describe("isCentreVille - Seuil de 1000m", () => {
     it("devrait retourner true pour 900m", async () => {
       // Arrange
-      const site =new Site();
+      const site = new Site();
       site.identifiantParcelle = "TEST";
       site.codeInsee = "12345";
       site.commune = "Test";
@@ -653,7 +653,7 @@ describe("TransportEnrichissementService", () => {
 
     it("devrait retourner false pour 1100m", async () => {
       // Arrange
-      const site =new Site();
+      const site = new Site();
       site.identifiantParcelle = "TEST";
       site.codeInsee = "12345";
       site.commune = "Test";
