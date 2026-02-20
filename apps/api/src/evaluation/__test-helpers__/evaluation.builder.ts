@@ -27,8 +27,9 @@ import {
  */
 export class EvaluationBuilder {
   private id = "eval-123";
-  private parcelleId = "29232000AB0123";
+  private siteId = "29232000AB0123";
   private codeInsee = "29232";
+  private nombreParcelles?: number;
   private versionAlgorithme = "1.1.0";
 
   private enrichissement: EnrichissementOutputDto = {
@@ -104,11 +105,19 @@ export class EvaluationBuilder {
   }
 
   /**
-   * Definir l'identifiant de parcelle
+   * Définir l'identifiant du site (= identifiant parcelle pour mono, clé composite pour multi)
    */
-  withParcelleId(parcelleId: string): this {
-    this.parcelleId = parcelleId;
-    this.enrichissement.identifiantParcelle = parcelleId;
+  withSiteId(siteId: string): this {
+    this.siteId = siteId;
+    this.enrichissement.identifiantParcelle = siteId;
+    return this;
+  }
+
+  /**
+   * Définir le nombre de parcelles du site
+   */
+  withNombreParcelles(n: number): this {
+    this.nombreParcelles = n;
     return this;
   }
 
@@ -174,12 +183,13 @@ export class EvaluationBuilder {
    */
   build(): Evaluation {
     const evaluation = new Evaluation(
-      this.parcelleId,
+      this.siteId,
       this.codeInsee,
       this.enrichissement,
       this.complementaires,
       this.resultats,
       this.origine,
+      this.nombreParcelles,
     );
 
     if (this.id !== undefined) {

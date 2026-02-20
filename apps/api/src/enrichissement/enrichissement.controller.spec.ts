@@ -246,20 +246,15 @@ describe("EnrichissementController", () => {
       expect(result.geometrie?.type).toBe("Polygon");
     });
 
-    it("devrait gerer un identifiant avec espaces", async () => {
+    it("devrait rejeter un identifiant avec espaces (format invalide)", async () => {
       // Arrange
-      enrichissementService.enrichir.mockResolvedValue(mockOutput);
       const inputWithSpaces = { identifiant: " 29232000AB0123 " };
 
-      // Act
-      await controller.enrichirParcelle(inputWithSpaces);
-
-      // Assert
-      expect(enrichissementService.enrichir).toHaveBeenCalledWith(
-        " 29232000AB0123 ",
-        SourceUtilisation.API_DIRECTE,
-        undefined,
-      );
+      // Act & Assert
+      await expect(controller.enrichirParcelle(inputWithSpaces)).rejects.toThrow(HttpException);
+      await expect(controller.enrichirParcelle(inputWithSpaces)).rejects.toMatchObject({
+        status: HttpStatus.BAD_REQUEST,
+      });
     });
 
     it("devrait gerer timeout du service", async () => {

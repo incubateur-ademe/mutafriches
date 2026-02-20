@@ -51,7 +51,7 @@ describe("OrchestrateurService", () => {
     evaluationRepository = mockRepository;
   });
 
-  describe("enrichirParcelle", () => {
+  describe("enrichirSite", () => {
     it("devrait enrichir une parcelle via le service d'enrichissement", async () => {
       const input = { identifiant: "490055000AI0001" };
       const mockEnrichissement = {
@@ -64,7 +64,7 @@ describe("OrchestrateurService", () => {
 
       enrichissementService.enrichir.mockResolvedValue(mockEnrichissement);
 
-      const result = await service.enrichirParcelle(input);
+      const result = await service.enrichirSite(input);
 
       expect(enrichissementService.enrichir).toHaveBeenCalledWith(input.identifiant);
       expect(result).toBe(mockEnrichissement);
@@ -167,7 +167,7 @@ describe("OrchestrateurService", () => {
     });
   });
 
-  describe("evaluerParcelle", () => {
+  describe("evaluerSite", () => {
     it("devrait orchestrer enrichissement + calcul + sauvegarde", async () => {
       const identifiant = "490055000AI0001";
       const donneesComplementaires = {
@@ -193,7 +193,7 @@ describe("OrchestrateurService", () => {
 
       evaluationRepository.save.mockResolvedValue("eval-final");
 
-      const result = await service.evaluerParcelle(identifiant, donneesComplementaires);
+      const result = await service.evaluerSite(identifiant, donneesComplementaires);
 
       expect(enrichissementService.enrichir).toHaveBeenCalledWith(identifiant);
       expect(service.calculerMutabilite).toHaveBeenCalledWith({

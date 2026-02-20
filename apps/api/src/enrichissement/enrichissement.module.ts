@@ -3,6 +3,8 @@ import { HttpModule } from "@nestjs/axios";
 import { EnrichissementController } from "./enrichissement.controller";
 import { EnrichissementService } from "./services/enrichissement.service";
 import { EnrichissementRepository } from "./repositories/enrichissement.repository";
+import { SiteRepository } from "./repositories/site.repository";
+import { SiteGeometryService } from "./services/site/site-geometry.service";
 
 // Services de domaine
 import { CadastreEnrichissementService } from "./services/cadastre/cadastre-enrichissement.service";
@@ -69,6 +71,8 @@ import { AdemeSitesPolluesRepository } from "./repositories/ademe-sites-pollues.
     // Service principal
     EnrichissementService,
     EnrichissementRepository,
+    SiteRepository,
+    SiteGeometryService,
     BpeRepository,
     TransportStopsRepository,
     AdemeSitesPolluesRepository,

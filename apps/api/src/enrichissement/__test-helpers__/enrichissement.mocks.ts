@@ -6,10 +6,12 @@ import { vi, type Mock } from "vitest";
 
 interface MockEnrichissementService {
   enrichir: Mock;
+  enrichirSite: Mock;
 }
 
 interface MockCadastreEnrichissementService {
   enrichir: Mock;
+  enrichirMulti: Mock;
 }
 
 interface MockCadastreService {
@@ -90,6 +92,16 @@ interface MockEnrichissementRepository {
 
 interface MockZonageOrchestratorService {
   enrichirZonages: Mock;
+  enrichirZonagesSite: Mock;
+}
+
+interface MockSiteRepository {
+  save: Mock;
+  findValidCache: Mock;
+}
+
+interface MockSiteGeometryService {
+  construireSite: Mock;
 }
 
 interface MockAdemeSitesPolluesRepository {
@@ -108,6 +120,7 @@ interface MockPollutionDetectionService {
 export function createMockEnrichissementService(): MockEnrichissementService {
   return {
     enrichir: vi.fn(),
+    enrichirSite: vi.fn(),
   };
 }
 
@@ -117,6 +130,7 @@ export function createMockEnrichissementService(): MockEnrichissementService {
 export function createMockCadastreEnrichissementService(): MockCadastreEnrichissementService {
   return {
     enrichir: vi.fn(),
+    enrichirMulti: vi.fn(),
   };
 }
 
@@ -292,6 +306,7 @@ export function createMockEnrichissementRepository(): MockEnrichissementReposito
 export function createMockZonageOrchestratorService(): MockZonageOrchestratorService {
   return {
     enrichirZonages: vi.fn(),
+    enrichirZonagesSite: vi.fn(),
   };
 }
 
@@ -312,5 +327,24 @@ export function createMockAdemeSitesPolluesRepository(): MockAdemeSitesPolluesRe
 export function createMockPollutionDetectionService(): MockPollutionDetectionService {
   return {
     detecterPollution: vi.fn(),
+  };
+}
+
+/**
+ * Mock du SiteRepository
+ */
+export function createMockSiteRepository(): MockSiteRepository {
+  return {
+    save: vi.fn(),
+    findValidCache: vi.fn(),
+  };
+}
+
+/**
+ * Mock du SiteGeometryService
+ */
+export function createMockSiteGeometryService(): MockSiteGeometryService {
+  return {
+    construireSite: vi.fn(),
   };
 }

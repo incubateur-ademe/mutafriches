@@ -41,7 +41,8 @@ export class EvaluationRepository {
     await this.database.db.insert(evaluations).values({
       id: evaluation.id,
       codeInsee: evaluation.codeInsee,
-      parcelleId: evaluation.parcelleId,
+      siteId: evaluation.siteId,
+      nombreParcelles: evaluation.nombreParcelles ?? null,
       dateCalcul: evaluation.dateCalcul,
       donneesEnrichissement: evaluation.donneesEnrichissement as any,
       donneesComplementaires: evaluation.donneesComplementaires as any,
@@ -78,12 +79,13 @@ export class EvaluationRepository {
 
     // Reconstruire l'entité
     const evaluation = new Evaluation(
-      row.parcelleId,
+      row.siteId,
       row.codeInsee,
       row.donneesEnrichissement as EnrichissementOutputDto,
       row.donneesComplementaires as DonneesComplementairesInputDto,
       row.resultats as MutabiliteOutputDto,
       origine,
+      row.nombreParcelles ?? undefined,
     );
 
     // Réaffecter les propriétés manquantes
@@ -95,13 +97,13 @@ export class EvaluationRepository {
   }
 
   /**
-   * Récupère toutes les évaluations d'une parcelle
+   * Récupère toutes les évaluations d'un site
    */
-  async findByParcelleId(parcelleId: string): Promise<Evaluation[]> {
+  async findBySiteId(siteId: string): Promise<Evaluation[]> {
     const results = await this.database.db
       .select()
       .from(evaluations)
-      .where(eq(evaluations.parcelleId, parcelleId))
+      .where(eq(evaluations.siteId, siteId))
       .orderBy(desc(evaluations.dateCalcul));
 
     return results.map((row) => {
@@ -111,12 +113,13 @@ export class EvaluationRepository {
       };
 
       const evaluation = new Evaluation(
-        row.parcelleId,
+        row.siteId,
         row.codeInsee,
         row.donneesEnrichissement as EnrichissementOutputDto,
         row.donneesComplementaires as DonneesComplementairesInputDto,
         row.resultats as MutabiliteOutputDto,
         origine,
+        row.nombreParcelles ?? undefined,
       );
 
       evaluation.id = row.id;
@@ -128,11 +131,11 @@ export class EvaluationRepository {
   }
 
   /**
-   * Recherche une evaluation valide en cache pour une parcelle
-   * Criteres : meme parcelle, meme donnees complementaires (hash), pas de "je ne sais pas", date < TTL
+   * Recherche une evaluation valide en cache pour un site
+   * Criteres : meme site, memes donnees complementaires (hash), pas de "je ne sais pas", date < TTL
    */
   async findValidCache(
-    parcelleId: string,
+    siteId: string,
     donneesComplementaires: DonneesComplementairesInputDto,
   ): Promise<CachedEvaluation | null> {
     // Si les donnees complementaires contiennent "je ne sais pas", pas de cache
@@ -143,7 +146,7 @@ export class EvaluationRepository {
     const ttlDate = new Date();
     ttlDate.setHours(ttlDate.getHours() - EVALUATION_CACHE_TTL_HOURS);
 
-    // Rechercher les evaluations recentes pour cette parcelle
+    // Rechercher les evaluations recentes pour ce site
     const results = await this.database.db
       .select({
         id: evaluations.id,
@@ -152,7 +155,7 @@ export class EvaluationRepository {
         donneesComplementaires: evaluations.donneesComplementaires,
       })
       .from(evaluations)
-      .where(and(eq(evaluations.parcelleId, parcelleId), gte(evaluations.dateCalcul, ttlDate)))
+      .where(and(eq(evaluations.siteId, siteId), gte(evaluations.dateCalcul, ttlDate)))
       .orderBy(sql`${evaluations.dateCalcul} DESC`)
       .limit(10); // Limiter pour performance
 
@@ -170,7 +173,7 @@ export class EvaluationRepository {
         continue;
       }
 
-      this.logger.log(`Cache evaluation trouve pour ${parcelleId}: ${row.id}`);
+      this.logger.log(`Cache evaluation trouve pour site ${siteId}: ${row.id}`);
 
       return {
         id: row.id,

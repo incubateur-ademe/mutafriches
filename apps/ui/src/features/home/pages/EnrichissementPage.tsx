@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { ROUTES } from "../../../shared/config/routes.config";
 import { Layout } from "../../../shared/components/layout/Layout";
@@ -13,7 +13,10 @@ import { transformEnrichmentToUiData } from "../utils/enrichissment.mapper";
 const MIN_LOADING_TIME = 3000; // 3 secondes minimum
 
 interface LocationState {
+  /** Rétro-compatible : identifiant unique (ancien format) */
   identifiant?: string;
+  /** Nouveau format : tableau d'identifiants */
+  identifiants?: string[];
 }
 
 export const EnrichissementPage: React.FC = () => {
@@ -27,15 +30,22 @@ export const EnrichissementPage: React.FC = () => {
   const hasStartedEnrichment = useRef(false);
 
   const locationState = location.state as LocationState | null;
-  const identifiant = locationState?.identifiant;
+
+  // Normaliser : accepter les deux formats (identifiants[] ou identifiant string)
+  const identifiantsKey = (
+    locationState?.identifiants ?? (locationState?.identifiant ? [locationState.identifiant] : [])
+  ).join(",");
+  const identifiants = useMemo(
+    () => (identifiantsKey ? identifiantsKey.split(",") : []),
+    [identifiantsKey],
+  );
 
   useEffect(() => {
     setCurrentStep(1);
   }, [setCurrentStep]);
 
   useEffect(() => {
-    if (!identifiant) {
-      // Pas d'identifiant, retour à l'accueil
+    if (identifiants.length === 0) {
       navigate(ROUTES.HOME);
       return;
     }
@@ -46,14 +56,14 @@ export const EnrichissementPage: React.FC = () => {
     }
     hasStartedEnrichment.current = true;
 
-    const enrichirParcelle = async () => {
+    const enrichirSite = async () => {
       setIsLoading(true);
       setError(null);
 
       const startTime = Date.now();
 
       try {
-        const enrichmentResult = await enrichissementService.enrichirParcelle(identifiant);
+        const enrichmentResult = await enrichissementService.enrichirSite(identifiants);
         const uiData = transformEnrichmentToUiData(enrichmentResult);
 
         // Calculer le temps écoulé
@@ -63,13 +73,13 @@ export const EnrichissementPage: React.FC = () => {
         // Attendre le temps restant pour atteindre 3 secondes minimum
         await new Promise((resolve) => setTimeout(resolve, remainingTime));
 
-        setEnrichmentData(enrichmentResult, uiData, identifiant);
+        setEnrichmentData(enrichmentResult, uiData, identifiantsKey);
 
         // Tracker l'événement d'enrichissement terminé
         await track(TypeEvenement.ENRICHISSEMENT_TERMINE, {
-          identifiantCadastral: identifiant,
+          identifiantCadastral: identifiantsKey,
           donnees: {
-            nombreParcelles: identifiant.split(",").length,
+            nombreParcelles: identifiants.length,
           },
         });
 
@@ -86,12 +96,11 @@ export const EnrichissementPage: React.FC = () => {
       }
     };
 
-    enrichirParcelle();
-  }, [identifiant, navigate, setEnrichmentData, track]);
+    enrichirSite();
+  }, [identifiants, identifiantsKey, navigate, setEnrichmentData, track]);
 
   const handleRetry = () => {
-    if (identifiant) {
-      // Relancer l'enrichissement
+    if (identifiants.length > 0) {
       window.location.reload();
     } else {
       navigate(ROUTES.HOME);

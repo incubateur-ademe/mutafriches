@@ -65,7 +65,7 @@ export const FormProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       ...prev,
       enrichmentData: data,
       uiData: uiData,
-      identifiantParcelle: identifiant,
+      identifiantSite: identifiant,
       completedSteps: [...new Set([...prev.completedSteps, 1])],
     }));
   };

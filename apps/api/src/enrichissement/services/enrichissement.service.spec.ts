@@ -23,8 +23,10 @@ import {
   createMockEnrichissementRepository,
   createMockZonageOrchestratorService,
   createMockPollutionDetectionService,
+  createMockSiteRepository,
 } from "../__test-helpers__/enrichissement.mocks";
 import { ZonageOrchestratorService } from "./zonage";
+import { SiteRepository } from "../repositories/site.repository";
 
 describe("EnrichissementService", () => {
   let service: EnrichissementService;
@@ -54,6 +56,7 @@ describe("EnrichissementService", () => {
     const mockZonageOrchestrator = createMockZonageOrchestratorService();
     const mockPollutionDetection = createMockPollutionDetectionService();
     const mockRepository = createMockEnrichissementRepository();
+    const mockSiteRepository = createMockSiteRepository();
 
     // Configuration par defaut du mock pollution
     mockPollutionDetection.detecterPollution.mockResolvedValue({
@@ -85,6 +88,7 @@ describe("EnrichissementService", () => {
         { provide: ZonageOrchestratorService, useValue: mockZonageOrchestrator },
         { provide: PollutionDetectionService, useValue: mockPollutionDetection },
         { provide: EnrichissementRepository, useValue: mockRepository },
+        { provide: SiteRepository, useValue: mockSiteRepository },
       ],
     }).compile();
 

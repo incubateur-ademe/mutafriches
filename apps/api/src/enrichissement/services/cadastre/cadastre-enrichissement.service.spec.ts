@@ -7,7 +7,9 @@ import { BdnbService } from "../../adapters/bdnb/bdnb.service";
 import {
   createMockCadastreService,
   createMockBdnbService,
+  createMockSiteGeometryService,
 } from "../../__test-helpers__/enrichissement.mocks";
+import { SiteGeometryService } from "../site/site-geometry.service";
 
 describe("CadastreEnrichissementService", () => {
   let service: CadastreEnrichissementService;
@@ -17,12 +19,14 @@ describe("CadastreEnrichissementService", () => {
   beforeEach(async () => {
     const mockCadastre = createMockCadastreService();
     const mockBdnb = createMockBdnbService();
+    const mockSiteGeometry = createMockSiteGeometryService();
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         CadastreEnrichissementService,
         { provide: CadastreService, useValue: mockCadastre },
         { provide: BdnbService, useValue: mockBdnb },
+        { provide: SiteGeometryService, useValue: mockSiteGeometry },
       ],
     }).compile();
 

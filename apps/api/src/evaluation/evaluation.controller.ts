@@ -165,9 +165,10 @@ export class EvaluationController {
   private mapEvaluationToDto(evaluation: Evaluation): EvaluationSwaggerDto {
     if (!evaluation.id) throw new Error("Evaluation ID is missing");
 
-    return {
+    // identifiantParcelle du contrat API public = siteId interne
+    const dto: EvaluationSwaggerDto = {
       id: evaluation.id,
-      identifiantParcelle: evaluation.parcelleId,
+      identifiantParcelle: evaluation.siteId,
       dateCreation: evaluation.dateCalcul,
       dateModification: evaluation.dateCalcul,
       enrichissement: evaluation.donneesEnrichissement,
@@ -175,5 +176,17 @@ export class EvaluationController {
       mutabilite: evaluation.resultats,
       metadata: { versionAlgorithme: evaluation.versionAlgorithme, source: "api" },
     };
+
+    // Ajouter les informations multi-parcelle si disponibles
+    const enrichissement = evaluation.donneesEnrichissement;
+    if (enrichissement.identifiantsParcelles) {
+      (dto as unknown as Record<string, unknown>).identifiantsParcelles =
+        enrichissement.identifiantsParcelles;
+    }
+    if (evaluation.nombreParcelles != null) {
+      (dto as unknown as Record<string, unknown>).nombreParcelles = evaluation.nombreParcelles;
+    }
+
+    return dto;
   }
 }

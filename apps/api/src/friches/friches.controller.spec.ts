@@ -216,7 +216,7 @@ describe("FrichesController", () => {
       // Arrange
       const mockEvaluation = new EvaluationBuilder()
         .withId("eval-123")
-        .withParcelleId("29232000AB0123")
+        .withSiteId("29232000AB0123")
         .withEnrichissement({
           identifiantParcelle: "29232000AB0123",
           codeInsee: "29232",
@@ -281,7 +281,7 @@ describe("FrichesController", () => {
       // Arrange
       const evaluationSansId = new EvaluationBuilder()
         .withoutId()
-        .withParcelleId("29232000AB0123")
+        .withSiteId("29232000AB0123")
         .build();
 
       orchestrateurService.recupererEvaluation.mockResolvedValue(evaluationSansId);

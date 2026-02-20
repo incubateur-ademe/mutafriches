@@ -44,6 +44,8 @@ export const transformEnrichmentToUiData = (
 ): ParcelleUiModel => {
   return {
     identifiantParcelle: enrichmentData.identifiantParcelle,
+    identifiantsParcelles: enrichmentData.identifiantsParcelles,
+    nombreParcelles: enrichmentData.nombreParcelles,
     commune: enrichmentData.commune || "",
 
     // Surfaces formatées

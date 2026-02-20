@@ -29,6 +29,7 @@ export class Parcelle {
   commune: string;
   coordonnees?: Coordonnees; // Point d'entrée GPS de la parcelle
   geometrie?: GeometrieParcelle; // Polygone complet de la parcelle
+  nombreParcelles?: number; // Nombre de parcelles constituant le site
 
   // Données enrichies automatiquement
   surfaceSite: number;
@@ -92,6 +93,8 @@ export class Parcelle {
       // Copie des données géographiques
       coordonnees: enrichissement.coordonnees,
       geometrie: enrichissement.geometrie,
+      // Multi-parcelle
+      nombreParcelles: enrichissement.nombreParcelles,
     });
 
     if (donneesComplementaires) {
@@ -141,6 +144,9 @@ export class Parcelle {
     parcelle.zonageReglementaire = donneesEnrichies.zonageReglementaire
       ? (donneesEnrichies.zonageReglementaire as ZonageReglementaire)
       : undefined;
+
+    // Multi-parcelle
+    parcelle.nombreParcelles = donneesEnrichies.nombreParcelles;
 
     // Métadonnées
     parcelle.sourcesUtilisees = donneesEnrichies.sourcesUtilisees || [];

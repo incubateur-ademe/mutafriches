@@ -26,10 +26,10 @@ export const QualificationRisquesPage: React.FC = () => {
     if (!hasTrackedVisit.current) {
       hasTrackedVisit.current = true;
       track(TypeEvenement.QUALIFICATION_RISQUES, {
-        identifiantCadastral: state.identifiantParcelle || undefined,
+        identifiantCadastral: state.identifiantSite || undefined,
       });
     }
-  }, [canAccessStep, navigate, setCurrentStep, track, state.identifiantParcelle]);
+  }, [canAccessStep, navigate, setCurrentStep, track, state.identifiantSite]);
 
   const handlePrevious = () => {
     navigate(ROUTES.QUALIFICATION_ENVIRONNEMENT);

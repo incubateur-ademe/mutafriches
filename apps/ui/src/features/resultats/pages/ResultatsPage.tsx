@@ -109,7 +109,7 @@ export const ResultatsPage: React.FC = () => {
       // Données détaillées renvoyées vers l'intégrateur
       const evaluationSummary: IframeEvaluationSummaryDto = {
         evaluationId: results.evaluationId || "",
-        identifiantParcelle: state.identifiantParcelle || "",
+        identifiantParcelle: state.identifiantSite || "",
         retrieveUrl: `/friches/evaluations/${results.evaluationId}`,
         fiabilite: {
           note: results.fiabilite.note,
@@ -133,7 +133,7 @@ export const ResultatsPage: React.FC = () => {
 
       iframeCommunicator.sendCompleted(evaluationSummary);
     },
-    [isIframeMode, iframeCommunicator, state.identifiantParcelle],
+    [isIframeMode, iframeCommunicator, state.identifiantSite],
   );
 
   // Fonction pour calculer la mutabilité
@@ -158,7 +158,7 @@ export const ResultatsPage: React.FC = () => {
 
       // Tracker l'événement d'évaluation terminée (seulement si evaluationId valide)
       if (result.evaluationId) {
-        await trackEvaluationTerminee(result.evaluationId, state.identifiantParcelle || undefined);
+        await trackEvaluationTerminee(result.evaluationId, state.identifiantSite || undefined);
       }
     } catch (err) {
       const errorMessage =
@@ -179,7 +179,7 @@ export const ResultatsPage: React.FC = () => {
     isIframeMode,
     iframeCommunicator,
     integrator,
-    state.identifiantParcelle,
+    state.identifiantSite,
     trackEvaluationTerminee,
   ]);
 
@@ -198,7 +198,7 @@ export const ResultatsPage: React.FC = () => {
 
     // Tracker l'arrivée sur la page
     track(TypeEvenement.RESULTATS_MUTABILITE, {
-      identifiantCadastral: state.identifiantParcelle || undefined,
+      identifiantCadastral: state.identifiantSite || undefined,
     });
 
     if (state.mutabilityResult) {

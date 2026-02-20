@@ -117,7 +117,7 @@ export class FrichesController {
     if (!evaluation.id) throw new Error("Evaluation ID missing");
     return {
       id: evaluation.id,
-      identifiantParcelle: evaluation.parcelleId,
+      identifiantParcelle: evaluation.siteId,
       dateCreation: evaluation.dateCalcul,
       dateModification: evaluation.dateCalcul,
       enrichissement: evaluation.donneesEnrichissement,

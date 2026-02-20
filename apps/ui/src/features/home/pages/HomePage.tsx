@@ -18,10 +18,7 @@ export const HomePage: React.FC = () => {
       resetForm();
     }
 
-    // Pour l'instant, on passe le premier identifiant pour garder la compatibilité
-    // TODO: adapter l'enrichissement pour gérer une liste de parcelles
-    const identifiant = identifiants.join(",");
-    navigate(ROUTES.ENRICHISSEMENT, { state: { identifiant } });
+    navigate(ROUTES.ENRICHISSEMENT, { state: { identifiants } });
   };
 
   return (

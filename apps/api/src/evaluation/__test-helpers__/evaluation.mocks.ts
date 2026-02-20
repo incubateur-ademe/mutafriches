@@ -18,7 +18,7 @@ interface MockCalculService {
 interface MockEvaluationRepository {
   save: Mock;
   findById: Mock;
-  findByParcelleId: Mock;
+  findBySiteId: Mock;
   findValidCache: Mock;
   delete: Mock;
 }
@@ -53,7 +53,7 @@ export function createMockEvaluationRepository(): MockEvaluationRepository {
   return {
     save: vi.fn(),
     findById: vi.fn(),
-    findByParcelleId: vi.fn(),
+    findBySiteId: vi.fn(),
     findValidCache: vi.fn(),
     delete: vi.fn(),
   };
