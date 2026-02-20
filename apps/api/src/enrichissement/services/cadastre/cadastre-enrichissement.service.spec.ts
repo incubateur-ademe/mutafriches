@@ -61,12 +61,12 @@ describe("CadastreEnrichissementService", () => {
       const result = await service.enrichir(identifiantTest);
 
       // Assert
-      expect(result.parcelle).toBeDefined();
-      expect(result.parcelle?.identifiantParcelle).toBe(identifiantTest);
-      expect(result.parcelle?.codeInsee).toBe("29232");
-      expect(result.parcelle?.commune).toBe("Quimper");
-      expect(result.parcelle?.surfaceSite).toBe(1000);
-      expect(result.parcelle?.coordonnees).toEqual({ latitude: 48.0, longitude: -4.0 });
+      expect(result.site).toBeDefined();
+      expect(result.site?.identifiantParcelle).toBe(identifiantTest);
+      expect(result.site?.codeInsee).toBe("29232");
+      expect(result.site?.commune).toBe("Quimper");
+      expect(result.site?.surfaceSite).toBe(1000);
+      expect(result.site?.coordonnees).toEqual({ latitude: 48.0, longitude: -4.0 });
     });
 
     it("devrait ajouter la surface batie si BDNB reussit", async () => {
@@ -92,7 +92,7 @@ describe("CadastreEnrichissementService", () => {
       const result = await service.enrichir(identifiantTest);
 
       // Assert
-      expect(result.parcelle?.surfaceBati).toBe(500);
+      expect(result.site?.surfaceBati).toBe(500);
       expect(result.result.sourcesUtilisees).toContain(SourceEnrichissement.CADASTRE);
       expect(result.result.sourcesUtilisees).toContain(SourceEnrichissement.BDNB);
       expect(result.result.sourcesEchouees).toHaveLength(0);
@@ -121,7 +121,7 @@ describe("CadastreEnrichissementService", () => {
       const result = await service.enrichir(identifiantTest);
 
       // Assert
-      expect(result.parcelle?.surfaceBati).toBeUndefined();
+      expect(result.site?.surfaceBati).toBeUndefined();
       expect(result.result.sourcesUtilisees).toContain(SourceEnrichissement.CADASTRE);
       expect(result.result.sourcesUtilisees).not.toContain(SourceEnrichissement.BDNB);
       expect(result.result.sourcesEchouees).toContain(SourceEnrichissement.BDNB_SURFACE_BATIE);
@@ -139,7 +139,7 @@ describe("CadastreEnrichissementService", () => {
       const result = await service.enrichir(identifiantTest);
 
       // Assert
-      expect(result.parcelle).toBeNull();
+      expect(result.site).toBeNull();
       expect(result.result.success).toBe(false);
       expect(result.result.sourcesEchouees).toContain(SourceEnrichissement.CADASTRE);
       expect(result.result.champsManquants).toContain("toutes-donnees-cadastrales");
@@ -153,7 +153,7 @@ describe("CadastreEnrichissementService", () => {
       const result = await service.enrichir(identifiantTest);
 
       // Assert
-      expect(result.parcelle).toBeNull();
+      expect(result.site).toBeNull();
       expect(result.result.success).toBe(false);
       expect(result.result.sourcesEchouees).toContain(SourceEnrichissement.CADASTRE);
     });
@@ -178,7 +178,7 @@ describe("CadastreEnrichissementService", () => {
       const result = await service.enrichir(identifiantTest);
 
       // Assert - le cadastre doit avoir reussi
-      expect(result.parcelle).not.toBeNull();
+      expect(result.site).not.toBeNull();
       expect(result.result.success).toBe(true);
       expect(result.result.sourcesUtilisees).toContain(SourceEnrichissement.CADASTRE);
       expect(result.result.sourcesEchouees).toContain(SourceEnrichissement.BDNB_SURFACE_BATIE);

@@ -9,7 +9,7 @@ import {
   DetailCritere,
   UsageResultatDetaille,
 } from "@mutafriches/shared-types";
-import { Parcelle } from "../entities/parcelle.entity";
+import { Site } from "../entities/site.entity";
 import { MATRICE_SCORING, POIDS_CRITERES } from "./algorithme/algorithme.config";
 import { ScoreParUsage } from "./algorithme/algorithme.types";
 import { FiabiliteCalculator } from "./algorithme/fiabilite.calculator";
@@ -33,14 +33,14 @@ export class CalculService {
   constructor(private readonly fiabiliteCalculator: FiabiliteCalculator) {}
 
   /**
-   * Calcule la mutabilité d'une parcelle pour différents types d'usage
+   * Calcule la mutabilité d'un site pour différents types d'usage
    */
-  async calculer(parcelle: Parcelle, options: CalculOptions = {}): Promise<MutabiliteOutputDto> {
+  async calculer(site: Site, options: CalculOptions = {}): Promise<MutabiliteOutputDto> {
     const { modeDetaille = false } = options;
 
     // Calculer et trier les résultats par indice décroissant
     const resultatsCalcules = Object.values(UsageType)
-      .map((usage) => this.calculerIndiceMutabilite(parcelle, usage, options))
+      .map((usage) => this.calculerIndiceMutabilite(site, usage, options))
       .sort((a, b) => b.indice - a.indice);
 
     // Transformer en format de sortie avec rang
@@ -68,7 +68,7 @@ export class CalculService {
       },
     );
 
-    const fiabilite = this.calculerFiabilite(parcelle);
+    const fiabilite = this.calculerFiabilite(site);
 
     return {
       fiabilite,
@@ -80,7 +80,7 @@ export class CalculService {
    * Calcule l'indice de mutabilité pour un usage spécifique
    */
   protected calculerIndiceMutabilite(
-    parcelle: Parcelle,
+    site: Site,
     usage: UsageType,
     options: CalculOptions = {},
   ): CalculIntermediaire {
@@ -88,8 +88,8 @@ export class CalculService {
 
     // Etape 1: Calculer avantages et contraintes
     const scoreData = modeDetaille
-      ? this.calculerScorePourUsageDetaille(parcelle, usage)
-      : this.calculerScorePourUsage(parcelle, usage);
+      ? this.calculerScorePourUsageDetaille(site, usage)
+      : this.calculerScorePourUsage(site, usage);
 
     const { avantages, contraintes } = scoreData;
 
@@ -132,14 +132,14 @@ export class CalculService {
    * Version corrigée : les critères NEUTRE comptent dans avantages ET contraintes (comme dans Excel)
    */
   protected calculerScorePourUsage(
-    parcelle: Parcelle,
+    site: Site,
     usage: keyof ScoreParUsage,
   ): { avantages: number; contraintes: number } {
     let avantages = 0;
     let contraintes = 0;
 
-    // Mapper les propriétés de la parcelle aux critères
-    const criteres = this.extraireCriteres(parcelle);
+    // Mapper les propriétés du site aux critères
+    const criteres = this.extraireCriteres(site);
 
     // Pour chaque critère
     Object.entries(criteres).forEach(([champDTO, valeur]) => {
@@ -177,7 +177,7 @@ export class CalculService {
    * Version corrigée : les critères NEUTRE comptent dans avantages ET contraintes (comme dans Excel)
    */
   protected calculerScorePourUsageDetaille(
-    parcelle: Parcelle,
+    site: Site,
     usage: keyof ScoreParUsage,
   ): {
     avantages: number;
@@ -192,7 +192,7 @@ export class CalculService {
     const detailsContraintes: DetailCritere[] = [];
     const detailsCriteresVides: DetailCritere[] = [];
 
-    const criteres = this.extraireCriteres(parcelle);
+    const criteres = this.extraireCriteres(site);
 
     Object.entries(criteres).forEach(([champDTO, valeur]) => {
       // Ignorer si non renseigné
@@ -257,32 +257,32 @@ export class CalculService {
   }
 
   /**
-   * Extrait les critères de calcul depuis l'entité Parcelle
+   * Extrait les critères de calcul depuis l'entité Site
    */
-  protected extraireCriteres(parcelle: Parcelle): Record<string, unknown> {
-    // Mapper les propriétés de la parcelle vers les clés attendues par la matrice
+  protected extraireCriteres(site: Site): Record<string, unknown> {
+    // Mapper les propriétés du site vers les clés attendues par la matrice
     const criteres = {
-      surfaceSite: parcelle.surfaceSite,
-      surfaceBati: parcelle.surfaceBati,
-      typeProprietaire: parcelle.typeProprietaire,
-      raccordementEau: parcelle.raccordementEau,
-      etatBatiInfrastructure: parcelle.etatBatiInfrastructure,
-      presencePollution: parcelle.presencePollution,
-      valeurArchitecturaleHistorique: parcelle.valeurArchitecturaleHistorique,
-      qualitePaysage: parcelle.qualitePaysage,
-      qualiteVoieDesserte: parcelle.qualiteVoieDesserte,
-      siteEnCentreVille: parcelle.siteEnCentreVille,
-      distanceAutoroute: parcelle.distanceAutoroute,
-      distanceTransportCommun: parcelle.distanceTransportCommun,
-      proximiteCommercesServices: parcelle.proximiteCommercesServices,
-      distanceRaccordementElectrique: parcelle.distanceRaccordementElectrique,
-      tauxLogementsVacants: parcelle.tauxLogementsVacants,
-      presenceRisquesTechnologiques: parcelle.presenceRisquesTechnologiques,
-      presenceRisquesNaturels: parcelle.presenceRisquesNaturels,
-      zonageEnvironnemental: parcelle.zonageEnvironnemental,
-      zonageReglementaire: parcelle.zonageReglementaire,
-      zonagePatrimonial: parcelle.zonagePatrimonial,
-      trameVerteEtBleue: parcelle.trameVerteEtBleue,
+      surfaceSite: site.surfaceSite,
+      surfaceBati: site.surfaceBati,
+      typeProprietaire: site.typeProprietaire,
+      raccordementEau: site.raccordementEau,
+      etatBatiInfrastructure: site.etatBatiInfrastructure,
+      presencePollution: site.presencePollution,
+      valeurArchitecturaleHistorique: site.valeurArchitecturaleHistorique,
+      qualitePaysage: site.qualitePaysage,
+      qualiteVoieDesserte: site.qualiteVoieDesserte,
+      siteEnCentreVille: site.siteEnCentreVille,
+      distanceAutoroute: site.distanceAutoroute,
+      distanceTransportCommun: site.distanceTransportCommun,
+      proximiteCommercesServices: site.proximiteCommercesServices,
+      distanceRaccordementElectrique: site.distanceRaccordementElectrique,
+      tauxLogementsVacants: site.tauxLogementsVacants,
+      presenceRisquesTechnologiques: site.presenceRisquesTechnologiques,
+      presenceRisquesNaturels: site.presenceRisquesNaturels,
+      zonageEnvironnemental: site.zonageEnvironnemental,
+      zonageReglementaire: site.zonageReglementaire,
+      zonagePatrimonial: site.zonagePatrimonial,
+      trameVerteEtBleue: site.trameVerteEtBleue,
     };
 
     return criteres;
@@ -339,8 +339,8 @@ export class CalculService {
   /**
    * Calcule la fiabilité basée sur le nombre de critères renseignés
    */
-  protected calculerFiabilite(parcelle: Parcelle): Fiabilite {
-    const criteres = this.extraireCriteres(parcelle);
+  protected calculerFiabilite(site: Site): Fiabilite {
+    const criteres = this.extraireCriteres(site);
     // Toujours inclure le détail pour la fiabilité (stocké en BDD)
     return this.fiabiliteCalculator.calculer(criteres, {
       inclureDetail: true,

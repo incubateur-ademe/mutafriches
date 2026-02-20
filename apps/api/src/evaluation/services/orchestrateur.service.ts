@@ -10,7 +10,7 @@ import {
 } from "@mutafriches/shared-types";
 import { EnrichissementService } from "../../enrichissement/services/enrichissement.service";
 import { CalculService } from "./calcul.service";
-import { Parcelle } from "../entities/parcelle.entity";
+import { Site } from "../entities/site.entity";
 import { Evaluation } from "../entities/evaluation.entity";
 import { EvaluationRepository } from "../repositories/evaluation.repository";
 
@@ -89,25 +89,25 @@ export class OrchestrateurService {
 
     this.logger.log(`Cache evaluation miss pour site ${siteId}, calcul complet`);
 
-    // Crée l'entité Parcelle selon le mode
-    let parcelle: Parcelle;
+    // Crée l'entité Site selon le mode
+    let site: Site;
 
     if (options?.sansEnrichissement) {
       // Mode sans enrichissement : utilise directement l'input
       // Utilisé pour les tests avec des données complètes
-      parcelle = Parcelle.fromInput(input);
+      site = Site.fromInput(input);
     } else {
       // Mode normal : crée depuis l'enrichissement
-      parcelle = Parcelle.fromEnrichissement(input.donneesEnrichies, input.donneesComplementaires);
+      site = Site.fromEnrichissement(input.donneesEnrichies, input.donneesComplementaires);
     }
 
-    // Vérifie que la parcelle est complète
-    if (!parcelle.estComplete()) {
-      throw new Error("Parcelle incomplète pour le calcul");
+    // Vérifie que le site est complet
+    if (!site.estComplete()) {
+      throw new Error("Site incomplet pour le calcul");
     }
 
     // Lance le calcul
-    const resultats = await this.calculService.calculer(parcelle, options);
+    const resultats = await this.calculService.calculer(site, options);
 
     // Origine par défaut si non fournie
     const origine = options?.origine || { source: SourceUtilisation.API_DIRECTE };
@@ -115,7 +115,7 @@ export class OrchestrateurService {
     // Création d'une évaluation de mutabilité
     const evaluation = new Evaluation(
       siteId,
-      parcelle.codeInsee,
+      site.codeInsee,
       input.donneesEnrichies,
       input.donneesComplementaires,
       resultats,

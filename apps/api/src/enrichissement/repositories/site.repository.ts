@@ -101,6 +101,9 @@ export class SiteRepository {
     ttlDate.setHours(ttlDate.getHours() - SITE_CACHE_TTL_HOURS);
 
     // Recherche par correspondance exacte des identifiants cadastraux triés
+    // On utilise un cast explicite du paramètre en jsonb pour éviter les problèmes de binding
+    const sortedJson = JSON.stringify([...identifiants].sort());
+
     const result = await this.database.db
       .select({
         id: sites.id,
@@ -109,9 +112,9 @@ export class SiteRepository {
       .from(sites)
       .where(
         and(
-          // Comparer le tableau trié en JSONB
-          sql`${sites.identifiantsCadastraux}::jsonb @> ${JSON.stringify([...identifiants].sort())}::jsonb`,
-          sql`${JSON.stringify([...identifiants].sort())}::jsonb @> ${sites.identifiantsCadastraux}::jsonb`,
+          // Correspondance bidirectionnelle : le contenu en base inclut tous les identifiants demandés ET inversement
+          sql`${sites.identifiantsCadastraux} @> ${sortedJson}::jsonb`,
+          sql`${sortedJson}::jsonb @> ${sites.identifiantsCadastraux}`,
           eq(sites.statut, StatutEnrichissement.SUCCES),
           gte(sites.dateEnrichissement, ttlDate),
           sql`(${sites.sourcesEchouees} IS NULL OR ${sites.sourcesEchouees} = '[]'::jsonb OR jsonb_array_length(${sites.sourcesEchouees}) = 0)`,

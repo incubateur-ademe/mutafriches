@@ -4,7 +4,7 @@ import {
   padParcelleSection,
   SourceEnrichissement,
 } from "@mutafriches/shared-types";
-import { Parcelle } from "../../../evaluation/entities/parcelle.entity";
+import { Site as EvaluationSite } from "../../../evaluation/entities/site.entity";
 import { CadastreService } from "../../adapters/cadastre/cadastre.service";
 import { BdnbService } from "../../adapters/bdnb/bdnb.service";
 import { EnrichmentResult } from "../shared/enrichissement.types";
@@ -18,7 +18,7 @@ import { SiteGeometryService } from "../site/site-geometry.service";
  * Responsabilités :
  * - Récupérer les données cadastrales (identifiant, commune, surface, géométrie)
  * - Récupérer la surface bâtie depuis BDNB
- * - Initialiser l'objet Parcelle avec les données de base
+ * - Initialiser l'objet Site (évaluation) avec les données de base
  * - Enrichir un site multi-parcellaire (appels parallèles)
  */
 @Injectable()
@@ -32,13 +32,13 @@ export class CadastreEnrichissementService {
   ) {}
 
   /**
-   * Enrichit une parcelle avec les données cadastrales et BDNB
+   * Enrichit un site avec les données cadastrales et BDNB
    *
    * @param identifiantParcelle - Identifiant cadastral de la parcelle
-   * @returns Parcelle initialisée et résultat de l'enrichissement
+   * @returns Site initialisé et résultat de l'enrichissement
    */
   async enrichir(identifiantParcelle: string): Promise<{
-    parcelle: Parcelle | null;
+    site: EvaluationSite | null;
     result: EnrichmentResult;
   }> {
     const sourcesUtilisees: string[] = [];
@@ -51,7 +51,7 @@ export class CadastreEnrichissementService {
     if (!cadastreData) {
       this.logger.error(`Parcelle cadastrale introuvable: ${identifiantParcelle}`);
       return {
-        parcelle: null,
+        site: null,
         result: {
           success: false,
           sourcesUtilisees,
@@ -63,24 +63,24 @@ export class CadastreEnrichissementService {
 
     sourcesUtilisees.push(SourceEnrichissement.CADASTRE);
 
-    // 2. Initialiser la parcelle
-    const parcelle = new Parcelle();
-    parcelle.identifiantParcelle = cadastreData.identifiantParcelle;
-    parcelle.codeInsee = cadastreData.codeInsee;
-    parcelle.commune = cadastreData.commune;
-    parcelle.surfaceSite = cadastreData.surfaceSite;
-    parcelle.coordonnees = cadastreData.coordonnees;
-    parcelle.geometrie = cadastreData.geometrie as GeometrieParcelle;
+    // 2. Initialiser le site
+    const site = new EvaluationSite();
+    site.identifiantParcelle = cadastreData.identifiantParcelle;
+    site.codeInsee = cadastreData.codeInsee;
+    site.commune = cadastreData.commune;
+    site.surfaceSite = cadastreData.surfaceSite;
+    site.coordonnees = cadastreData.coordonnees;
+    site.geometrie = cadastreData.geometrie as GeometrieParcelle;
 
     this.logger.log(
-      `Parcelle initialisee: ${parcelle.identifiantParcelle} (${parcelle.commune}, ${parcelle.surfaceSite}m²)`,
+      `Site initialise: ${site.identifiantParcelle} (${site.commune}, ${site.surfaceSite}m²)`,
     );
 
     // 3. Récupérer la surface bâtie depuis BDNB (OPTIONNEL)
-    const surfaceBatie = await this.getSurfaceBatie(parcelle.identifiantParcelle);
+    const surfaceBatie = await this.getSurfaceBatie(site.identifiantParcelle);
 
     if (surfaceBatie !== null) {
-      parcelle.surfaceBati = surfaceBatie;
+      site.surfaceBati = surfaceBatie;
       sourcesUtilisees.push(SourceEnrichissement.BDNB);
       this.logger.debug(`Surface batie recuperee: ${surfaceBatie}m²`);
     } else {
@@ -90,7 +90,7 @@ export class CadastreEnrichissementService {
     }
 
     return {
-      parcelle,
+      site,
       result: {
         success: true,
         sourcesUtilisees,

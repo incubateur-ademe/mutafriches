@@ -3,7 +3,7 @@ import { SourceEnrichissement } from "@mutafriches/shared-types";
 import { UrbanismeEnrichissementService } from "./urbanisme-enrichissement.service";
 import { DatagouvLovacService } from "../../adapters/datagouv-lovac/datagouv-lovac.service";
 import { BpeRepository } from "../../repositories/bpe.repository";
-import { Parcelle } from "../../../evaluation/entities/parcelle.entity";
+import { Site } from "../../../evaluation/entities/site.entity";
 import { LovacData } from "../../adapters/datagouv-lovac/datagouv-lovac.types";
 import { Test, TestingModule } from "@nestjs/testing";
 
@@ -38,13 +38,13 @@ describe("UrbanismeEnrichissementService", () => {
   });
 
   describe("enrichir - LOVAC", () => {
-    it("devrait enrichir une parcelle avec les donnees LOVAC et calculer le taux", async () => {
+    it("devrait enrichir un site avec les donnees LOVAC et calculer le taux", async () => {
       // Arrange
-      const parcelle = new Parcelle();
-      parcelle.identifiantParcelle = "49007000AB0123";
-      parcelle.codeInsee = "49007";
-      parcelle.commune = "Angers";
-      parcelle.coordonnees = { latitude: 47.4784, longitude: -0.5632 };
+      const site =new Site();
+      site.identifiantParcelle = "49007000AB0123";
+      site.codeInsee = "49007";
+      site.commune = "Angers";
+      site.coordonnees = { latitude: 47.4784, longitude: -0.5632 };
 
       const mockLovacData: LovacData = {
         codeInsee: "49007",
@@ -68,12 +68,12 @@ describe("UrbanismeEnrichissementService", () => {
       });
 
       // Act
-      const result = await service.enrichir(parcelle);
+      const result = await service.enrichir(site);
 
       // Assert
       expect(result.success).toBe(true);
       expect(result.sourcesUtilisees).toContain(SourceEnrichissement.LOVAC);
-      expect(parcelle.tauxLogementsVacants).toBeCloseTo(7.9, 1);
+      expect(site.tauxLogementsVacants).toBeCloseTo(7.9, 1);
       expect(lovacService.getLovacByCommune).toHaveBeenCalledWith({
         codeInsee: "49007",
         nomCommune: undefined,
@@ -82,11 +82,11 @@ describe("UrbanismeEnrichissementService", () => {
 
     it("devrait enrichir avec le nom de commune si pas de code INSEE", async () => {
       // Arrange
-      const parcelle = new Parcelle();
-      parcelle.identifiantParcelle = "XXXX000AB0123";
-      parcelle.codeInsee = undefined as unknown as string;
-      parcelle.commune = "Nantes";
-      parcelle.coordonnees = { latitude: 47.2184, longitude: -1.5536 };
+      const site =new Site();
+      site.identifiantParcelle = "XXXX000AB0123";
+      site.codeInsee = undefined as unknown as string;
+      site.commune = "Nantes";
+      site.coordonnees = { latitude: 47.2184, longitude: -1.5536 };
 
       const mockLovacData: LovacData = {
         codeInsee: "44109",
@@ -110,12 +110,12 @@ describe("UrbanismeEnrichissementService", () => {
       });
 
       // Act
-      const result = await service.enrichir(parcelle);
+      const result = await service.enrichir(site);
 
       // Assert
       expect(result.success).toBe(true);
       expect(result.sourcesUtilisees).toContain(SourceEnrichissement.LOVAC);
-      expect(parcelle.tauxLogementsVacants).toBeCloseTo(4.9, 1);
+      expect(site.tauxLogementsVacants).toBeCloseTo(4.9, 1);
       expect(lovacService.getLovacByCommune).toHaveBeenCalledWith({
         codeInsee: undefined,
         nomCommune: "Nantes",
@@ -124,11 +124,11 @@ describe("UrbanismeEnrichissementService", () => {
 
     it("devrait gerer le cas ou LOVAC ne retourne pas de donnees", async () => {
       // Arrange
-      const parcelle = new Parcelle();
-      parcelle.identifiantParcelle = "99999000AB0123";
-      parcelle.codeInsee = "99999";
-      parcelle.commune = "Commune Inconnue";
-      parcelle.coordonnees = { latitude: 47.0, longitude: -1.0 };
+      const site =new Site();
+      site.identifiantParcelle = "99999000AB0123";
+      site.codeInsee = "99999";
+      site.commune = "Commune Inconnue";
+      site.coordonnees = { latitude: 47.0, longitude: -1.0 };
 
       lovacService.getLovacByCommune.mockResolvedValue(null);
 
@@ -140,21 +140,21 @@ describe("UrbanismeEnrichissementService", () => {
       });
 
       // Act
-      const result = await service.enrichir(parcelle);
+      const result = await service.enrichir(site);
 
       // Assert
       expect(result.sourcesEchouees).toContain(SourceEnrichissement.LOVAC);
       expect(result.champsManquants).toContain("tauxLogementsVacants");
-      expect(parcelle.tauxLogementsVacants).toBeUndefined();
+      expect(site.tauxLogementsVacants).toBeUndefined();
     });
 
     it("devrait gerer le cas ou les donnees LOVAC sont secretisees", async () => {
       // Arrange
-      const parcelle = new Parcelle();
-      parcelle.identifiantParcelle = "12345000AB0123";
-      parcelle.codeInsee = "12345";
-      parcelle.commune = "Petite Commune";
-      parcelle.coordonnees = { latitude: 47.0, longitude: -1.0 };
+      const site =new Site();
+      site.identifiantParcelle = "12345000AB0123";
+      site.codeInsee = "12345";
+      site.commune = "Petite Commune";
+      site.coordonnees = { latitude: 47.0, longitude: -1.0 };
 
       const mockLovacData: LovacData = {
         codeInsee: "12345",
@@ -178,21 +178,21 @@ describe("UrbanismeEnrichissementService", () => {
       });
 
       // Act
-      const result = await service.enrichir(parcelle);
+      const result = await service.enrichir(site);
 
       // Assert
       expect(result.sourcesEchouees).toContain(SourceEnrichissement.LOVAC);
       expect(result.champsManquants).toContain("tauxLogementsVacants");
-      expect(parcelle.tauxLogementsVacants).toBeUndefined();
+      expect(site.tauxLogementsVacants).toBeUndefined();
     });
 
     it("devrait gerer les erreurs de l'API LOVAC", async () => {
       // Arrange
-      const parcelle = new Parcelle();
-      parcelle.identifiantParcelle = "49007000AB0123";
-      parcelle.codeInsee = "49007";
-      parcelle.commune = "Angers";
-      parcelle.coordonnees = { latitude: 47.4784, longitude: -0.5632 };
+      const site =new Site();
+      site.identifiantParcelle = "49007000AB0123";
+      site.codeInsee = "49007";
+      site.commune = "Angers";
+      site.coordonnees = { latitude: 47.4784, longitude: -0.5632 };
 
       lovacService.getLovacByCommune.mockRejectedValue(new Error("API Error"));
 
@@ -204,23 +204,23 @@ describe("UrbanismeEnrichissementService", () => {
       });
 
       // Act
-      const result = await service.enrichir(parcelle);
+      const result = await service.enrichir(site);
 
       // Assert
       expect(result.sourcesEchouees).toContain(SourceEnrichissement.LOVAC);
       expect(result.champsManquants).toContain("tauxLogementsVacants");
-      expect(parcelle.tauxLogementsVacants).toBeUndefined();
+      expect(site.tauxLogementsVacants).toBeUndefined();
       // BPE devrait quand meme fonctionner
       expect(result.sourcesUtilisees).toContain(SourceEnrichissement.BPE);
     });
 
     it("devrait echouer si pas de code INSEE ni de commune", async () => {
       // Arrange
-      const parcelle = new Parcelle();
-      parcelle.identifiantParcelle = "XXXX000AB0123";
-      parcelle.codeInsee = undefined as unknown as string;
-      parcelle.commune = undefined as unknown as string;
-      parcelle.coordonnees = { latitude: 47.0, longitude: -1.0 };
+      const site =new Site();
+      site.identifiantParcelle = "XXXX000AB0123";
+      site.codeInsee = undefined as unknown as string;
+      site.commune = undefined as unknown as string;
+      site.coordonnees = { latitude: 47.0, longitude: -1.0 };
 
       bpeRepository.findCommercesServicesProximite.mockResolvedValue({
         presenceCommercesServices: true,
@@ -230,7 +230,7 @@ describe("UrbanismeEnrichissementService", () => {
       });
 
       // Act
-      const result = await service.enrichir(parcelle);
+      const result = await service.enrichir(site);
 
       // Assert
       expect(result.sourcesEchouees).toContain(SourceEnrichissement.LOVAC);
@@ -240,11 +240,11 @@ describe("UrbanismeEnrichissementService", () => {
 
     it("devrait prioritiser le code INSEE sur le nom de commune", async () => {
       // Arrange
-      const parcelle = new Parcelle();
-      parcelle.identifiantParcelle = "49007000AB0123";
-      parcelle.codeInsee = "49007";
-      parcelle.commune = "Angers";
-      parcelle.coordonnees = { latitude: 47.4784, longitude: -0.5632 };
+      const site =new Site();
+      site.identifiantParcelle = "49007000AB0123";
+      site.codeInsee = "49007";
+      site.commune = "Angers";
+      site.coordonnees = { latitude: 47.4784, longitude: -0.5632 };
 
       const mockLovacData: LovacData = {
         codeInsee: "49007",
@@ -268,7 +268,7 @@ describe("UrbanismeEnrichissementService", () => {
       });
 
       // Act
-      await service.enrichir(parcelle);
+      await service.enrichir(site);
 
       // Assert
       expect(lovacService.getLovacByCommune).toHaveBeenCalledWith({
@@ -281,11 +281,11 @@ describe("UrbanismeEnrichissementService", () => {
   describe("enrichir - Commerces/Services (BPE)", () => {
     it("devrait enrichir avec presence de commerces a proximite", async () => {
       // Arrange
-      const parcelle = new Parcelle();
-      parcelle.identifiantParcelle = "49007000AB0123";
-      parcelle.codeInsee = "49007";
-      parcelle.commune = "Angers";
-      parcelle.coordonnees = { latitude: 47.4784, longitude: -0.5632 };
+      const site =new Site();
+      site.identifiantParcelle = "49007000AB0123";
+      site.codeInsee = "49007";
+      site.commune = "Angers";
+      site.coordonnees = { latitude: 47.4784, longitude: -0.5632 };
 
       const mockLovacData: LovacData = {
         codeInsee: "49007",
@@ -309,12 +309,12 @@ describe("UrbanismeEnrichissementService", () => {
       });
 
       // Act
-      const result = await service.enrichir(parcelle);
+      const result = await service.enrichir(site);
 
       // Assert
       expect(result.success).toBe(true);
       expect(result.sourcesUtilisees).toContain(SourceEnrichissement.BPE);
-      expect(parcelle.proximiteCommercesServices).toBe(true);
+      expect(site.proximiteCommercesServices).toBe(true);
       expect(bpeRepository.findCommercesServicesProximite).toHaveBeenCalledWith(
         47.4784,
         -0.5632,
@@ -324,11 +324,11 @@ describe("UrbanismeEnrichissementService", () => {
 
     it("devrait enrichir avec absence de commerces a proximite", async () => {
       // Arrange
-      const parcelle = new Parcelle();
-      parcelle.identifiantParcelle = "RURAL123";
-      parcelle.codeInsee = "12345";
-      parcelle.commune = "Village Isole";
-      parcelle.coordonnees = { latitude: 45.0, longitude: 2.0 };
+      const site =new Site();
+      site.identifiantParcelle = "RURAL123";
+      site.codeInsee = "12345";
+      site.commune = "Village Isole";
+      site.coordonnees = { latitude: 45.0, longitude: 2.0 };
 
       const mockLovacData: LovacData = {
         codeInsee: "12345",
@@ -352,21 +352,21 @@ describe("UrbanismeEnrichissementService", () => {
       });
 
       // Act
-      const result = await service.enrichir(parcelle);
+      const result = await service.enrichir(site);
 
       // Assert
       expect(result.success).toBe(true);
       expect(result.sourcesUtilisees).toContain(SourceEnrichissement.BPE);
-      expect(parcelle.proximiteCommercesServices).toBe(false);
+      expect(site.proximiteCommercesServices).toBe(false);
     });
 
     it("devrait gerer l'absence de coordonnees pour BPE", async () => {
       // Arrange
-      const parcelle = new Parcelle();
-      parcelle.identifiantParcelle = "49007000AB0123";
-      parcelle.codeInsee = "49007";
-      parcelle.commune = "Angers";
-      parcelle.coordonnees = undefined;
+      const site =new Site();
+      site.identifiantParcelle = "49007000AB0123";
+      site.codeInsee = "49007";
+      site.commune = "Angers";
+      site.coordonnees = undefined;
 
       const mockLovacData: LovacData = {
         codeInsee: "49007",
@@ -383,22 +383,22 @@ describe("UrbanismeEnrichissementService", () => {
       lovacService.getLovacByCommune.mockResolvedValue(mockLovacData);
 
       // Act
-      const result = await service.enrichir(parcelle);
+      const result = await service.enrichir(site);
 
       // Assert
       expect(result.sourcesEchouees).toContain(SourceEnrichissement.BPE);
       expect(result.champsManquants).toContain("proximiteCommercesServices");
-      expect(parcelle.proximiteCommercesServices).toBeUndefined();
+      expect(site.proximiteCommercesServices).toBeUndefined();
       expect(bpeRepository.findCommercesServicesProximite).not.toHaveBeenCalled();
     });
 
     it("devrait gerer les erreurs BPE", async () => {
       // Arrange
-      const parcelle = new Parcelle();
-      parcelle.identifiantParcelle = "49007000AB0123";
-      parcelle.codeInsee = "49007";
-      parcelle.commune = "Angers";
-      parcelle.coordonnees = { latitude: 47.4784, longitude: -0.5632 };
+      const site =new Site();
+      site.identifiantParcelle = "49007000AB0123";
+      site.codeInsee = "49007";
+      site.commune = "Angers";
+      site.coordonnees = { latitude: 47.4784, longitude: -0.5632 };
 
       const mockLovacData: LovacData = {
         codeInsee: "49007",
@@ -416,25 +416,25 @@ describe("UrbanismeEnrichissementService", () => {
       bpeRepository.findCommercesServicesProximite.mockRejectedValue(new Error("Database error"));
 
       // Act
-      const result = await service.enrichir(parcelle);
+      const result = await service.enrichir(site);
 
       // Assert
       expect(result.sourcesEchouees).toContain(SourceEnrichissement.BPE);
       expect(result.champsManquants).toContain("proximiteCommercesServices");
-      expect(parcelle.proximiteCommercesServices).toBeUndefined();
+      expect(site.proximiteCommercesServices).toBeUndefined();
       // LOVAC devrait quand meme fonctionner
       expect(result.sourcesUtilisees).toContain(SourceEnrichissement.LOVAC);
     });
   });
 
   describe("enrichir - Enrichissement complet", () => {
-    it("devrait enrichir completement une parcelle valide", async () => {
+    it("devrait enrichir completement un site valide", async () => {
       // Arrange
-      const parcelle = new Parcelle();
-      parcelle.identifiantParcelle = "49007000AB0123";
-      parcelle.codeInsee = "49007";
-      parcelle.commune = "Angers";
-      parcelle.coordonnees = { latitude: 47.4784, longitude: -0.5632 };
+      const site =new Site();
+      site.identifiantParcelle = "49007000AB0123";
+      site.codeInsee = "49007";
+      site.commune = "Angers";
+      site.coordonnees = { latitude: 47.4784, longitude: -0.5632 };
 
       const mockLovacData: LovacData = {
         codeInsee: "49007",
@@ -458,7 +458,7 @@ describe("UrbanismeEnrichissementService", () => {
       });
 
       // Act
-      const result = await service.enrichir(parcelle);
+      const result = await service.enrichir(site);
 
       // Assert
       expect(result.success).toBe(true);
@@ -468,17 +468,17 @@ describe("UrbanismeEnrichissementService", () => {
       expect(result.sourcesEchouees).toHaveLength(0);
       expect(result.champsManquants).toHaveLength(0);
 
-      expect(parcelle.tauxLogementsVacants).toBeCloseTo(7.9, 1);
-      expect(parcelle.proximiteCommercesServices).toBe(true);
+      expect(site.tauxLogementsVacants).toBeCloseTo(7.9, 1);
+      expect(site.proximiteCommercesServices).toBe(true);
     });
 
     it("devrait reussir partiellement si LOVAC echoue mais BPE reussit", async () => {
       // Arrange
-      const parcelle = new Parcelle();
-      parcelle.identifiantParcelle = "49007000AB0123";
-      parcelle.codeInsee = "49007";
-      parcelle.commune = "Angers";
-      parcelle.coordonnees = { latitude: 47.4784, longitude: -0.5632 };
+      const site =new Site();
+      site.identifiantParcelle = "49007000AB0123";
+      site.codeInsee = "49007";
+      site.commune = "Angers";
+      site.coordonnees = { latitude: 47.4784, longitude: -0.5632 };
 
       lovacService.getLovacByCommune.mockResolvedValue(null);
 
@@ -490,23 +490,23 @@ describe("UrbanismeEnrichissementService", () => {
       });
 
       // Act
-      const result = await service.enrichir(parcelle);
+      const result = await service.enrichir(site);
 
       // Assert
       expect(result.success).toBe(true); // Succes partiel
       expect(result.sourcesUtilisees).toContain(SourceEnrichissement.BPE);
       expect(result.sourcesEchouees).toContain(SourceEnrichissement.LOVAC);
-      expect(parcelle.proximiteCommercesServices).toBe(true);
-      expect(parcelle.tauxLogementsVacants).toBeUndefined();
+      expect(site.proximiteCommercesServices).toBe(true);
+      expect(site.tauxLogementsVacants).toBeUndefined();
     });
 
     it("devrait reussir partiellement si BPE echoue mais LOVAC reussit", async () => {
       // Arrange
-      const parcelle = new Parcelle();
-      parcelle.identifiantParcelle = "49007000AB0123";
-      parcelle.codeInsee = "49007";
-      parcelle.commune = "Angers";
-      parcelle.coordonnees = { latitude: 47.4784, longitude: -0.5632 };
+      const site =new Site();
+      site.identifiantParcelle = "49007000AB0123";
+      site.codeInsee = "49007";
+      site.commune = "Angers";
+      site.coordonnees = { latitude: 47.4784, longitude: -0.5632 };
 
       const mockLovacData: LovacData = {
         codeInsee: "49007",
@@ -524,26 +524,26 @@ describe("UrbanismeEnrichissementService", () => {
       bpeRepository.findCommercesServicesProximite.mockRejectedValue(new Error("Database error"));
 
       // Act
-      const result = await service.enrichir(parcelle);
+      const result = await service.enrichir(site);
 
       // Assert
       expect(result.success).toBe(true); // Succes partiel
       expect(result.sourcesUtilisees).toContain(SourceEnrichissement.LOVAC);
       expect(result.sourcesEchouees).toContain(SourceEnrichissement.BPE);
-      expect(parcelle.tauxLogementsVacants).toBeCloseTo(7.9, 1);
-      expect(parcelle.proximiteCommercesServices).toBeUndefined();
+      expect(site.tauxLogementsVacants).toBeCloseTo(7.9, 1);
+      expect(site.proximiteCommercesServices).toBeUndefined();
     });
 
     it("devrait echouer completement si les deux sources echouent", async () => {
       // Arrange
-      const parcelle = new Parcelle();
-      parcelle.identifiantParcelle = "XXXX000AB0123";
-      parcelle.codeInsee = undefined as unknown as string;
-      parcelle.commune = undefined as unknown as string;
-      parcelle.coordonnees = undefined;
+      const site =new Site();
+      site.identifiantParcelle = "XXXX000AB0123";
+      site.codeInsee = undefined as unknown as string;
+      site.commune = undefined as unknown as string;
+      site.coordonnees = undefined;
 
       // Act
-      const result = await service.enrichir(parcelle);
+      const result = await service.enrichir(site);
 
       // Assert
       expect(result.success).toBe(false);

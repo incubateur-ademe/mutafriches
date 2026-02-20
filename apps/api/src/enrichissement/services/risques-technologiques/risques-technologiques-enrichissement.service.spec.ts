@@ -5,7 +5,7 @@ import { RisquesTechnologiquesEnrichissementService } from "./risques-technologi
 import { RisquesTechnologiquesCalculator } from "./risques-technologiques.calculator";
 import { SisService } from "../../adapters/georisques/sis/sis.service";
 import { IcpeService } from "../../adapters/georisques/icpe/icpe.service";
-import { Parcelle } from "../../../evaluation/entities/parcelle.entity";
+import { Site } from "../../../evaluation/entities/site.entity";
 import {
   createMockSisService,
   createMockIcpeService,
@@ -43,9 +43,9 @@ describe("RisquesTechnologiquesEnrichissementService", () => {
   describe("enrichir", () => {
     it("devrait evaluer avec SIS et ICPE", async () => {
       // Arrange
-      const parcelle = new Parcelle();
-      parcelle.identifiantParcelle = "29232000AB0123";
-      parcelle.coordonnees = { latitude: 48.0, longitude: -4.0 };
+      const site =new Site();
+      site.identifiantParcelle = "29232000AB0123";
+      site.coordonnees = { latitude: 48.0, longitude: -4.0 };
 
       sisService.getSisByLatLon.mockResolvedValue({
         success: true,
@@ -60,11 +60,11 @@ describe("RisquesTechnologiquesEnrichissementService", () => {
       calculator.evaluer.mockReturnValue(true);
 
       // Act
-      const result = await service.enrichir(parcelle);
+      const result = await service.enrichir(site);
 
       // Assert
       expect(calculator.evaluer).toHaveBeenCalledWith(true, 300);
-      expect(parcelle.presenceRisquesTechnologiques).toBe(true);
+      expect(site.presenceRisquesTechnologiques).toBe(true);
       expect(result.result.success).toBe(true);
       expect(result.result.sourcesUtilisees).toContain(SourceEnrichissement.GEORISQUES_SIS);
       expect(result.result.sourcesUtilisees).toContain(SourceEnrichissement.GEORISQUES_ICPE);
@@ -72,9 +72,9 @@ describe("RisquesTechnologiquesEnrichissementService", () => {
 
     it("devrait evaluer meme si SIS echoue (avec ICPE seul)", async () => {
       // Arrange
-      const parcelle = new Parcelle();
-      parcelle.identifiantParcelle = "29232000AB0123";
-      parcelle.coordonnees = { latitude: 48.0, longitude: -4.0 };
+      const site =new Site();
+      site.identifiantParcelle = "29232000AB0123";
+      site.coordonnees = { latitude: 48.0, longitude: -4.0 };
 
       sisService.getSisByLatLon.mockResolvedValue({
         success: false,
@@ -89,20 +89,20 @@ describe("RisquesTechnologiquesEnrichissementService", () => {
       calculator.evaluer.mockReturnValue(true);
 
       // Act
-      const result = await service.enrichir(parcelle);
+      const result = await service.enrichir(site);
 
       // Assert
       expect(calculator.evaluer).toHaveBeenCalledWith(false, 200);
       expect(result.result.sourcesUtilisees).toContain(SourceEnrichissement.GEORISQUES_ICPE);
       expect(result.result.sourcesEchouees).toContain(SourceEnrichissement.GEORISQUES_SIS);
-      expect(parcelle.presenceRisquesTechnologiques).toBe(true);
+      expect(site.presenceRisquesTechnologiques).toBe(true);
     });
 
     it("devrait evaluer meme si ICPE echoue (avec SIS seul)", async () => {
       // Arrange
-      const parcelle = new Parcelle();
-      parcelle.identifiantParcelle = "29232000AB0123";
-      parcelle.coordonnees = { latitude: 48.0, longitude: -4.0 };
+      const site =new Site();
+      site.identifiantParcelle = "29232000AB0123";
+      site.coordonnees = { latitude: 48.0, longitude: -4.0 };
 
       sisService.getSisByLatLon.mockResolvedValue({
         success: true,
@@ -117,20 +117,20 @@ describe("RisquesTechnologiquesEnrichissementService", () => {
       calculator.evaluer.mockReturnValue(true);
 
       // Act
-      const result = await service.enrichir(parcelle);
+      const result = await service.enrichir(site);
 
       // Assert
       expect(calculator.evaluer).toHaveBeenCalledWith(true, undefined);
       expect(result.result.sourcesUtilisees).toContain(SourceEnrichissement.GEORISQUES_SIS);
       expect(result.result.sourcesEchouees).toContain(SourceEnrichissement.GEORISQUES_ICPE);
-      expect(parcelle.presenceRisquesTechnologiques).toBe(true);
+      expect(site.presenceRisquesTechnologiques).toBe(true);
     });
 
     it("devrait retourner false si les deux services echouent", async () => {
       // Arrange
-      const parcelle = new Parcelle();
-      parcelle.identifiantParcelle = "29232000AB0123";
-      parcelle.coordonnees = { latitude: 48.0, longitude: -4.0 };
+      const site =new Site();
+      site.identifiantParcelle = "29232000AB0123";
+      site.coordonnees = { latitude: 48.0, longitude: -4.0 };
 
       sisService.getSisByLatLon.mockResolvedValue({
         success: false,
@@ -145,23 +145,23 @@ describe("RisquesTechnologiquesEnrichissementService", () => {
       calculator.evaluer.mockReturnValue(false);
 
       // Act
-      const result = await service.enrichir(parcelle);
+      const result = await service.enrichir(site);
 
       // Assert
       expect(result.result.success).toBe(false);
       expect(result.result.sourcesEchouees).toHaveLength(2);
       expect(calculator.evaluer).toHaveBeenCalledWith(false, undefined);
-      expect(parcelle.presenceRisquesTechnologiques).toBe(false);
+      expect(site.presenceRisquesTechnologiques).toBe(false);
     });
 
     it("devrait retourner echec si pas de coordonnees", async () => {
       // Arrange
-      const parcelle = new Parcelle();
-      parcelle.identifiantParcelle = "29232000AB0123";
-      parcelle.coordonnees = undefined;
+      const site =new Site();
+      site.identifiantParcelle = "29232000AB0123";
+      site.coordonnees = undefined;
 
       // Act
-      const result = await service.enrichir(parcelle);
+      const result = await service.enrichir(site);
 
       // Assert
       expect(result.result.success).toBe(false);
@@ -172,9 +172,9 @@ describe("RisquesTechnologiquesEnrichissementService", () => {
 
     it("devrait appeler les services en parallele", async () => {
       // Arrange
-      const parcelle = new Parcelle();
-      parcelle.identifiantParcelle = "29232000AB0123";
-      parcelle.coordonnees = { latitude: 48.0, longitude: -4.0 };
+      const site =new Site();
+      site.identifiantParcelle = "29232000AB0123";
+      site.coordonnees = { latitude: 48.0, longitude: -4.0 };
 
       let sisCallTime = 0;
       let icpeCallTime = 0;
@@ -194,7 +194,7 @@ describe("RisquesTechnologiquesEnrichissementService", () => {
       calculator.evaluer.mockReturnValue(true);
 
       // Act
-      await service.enrichir(parcelle);
+      await service.enrichir(site);
 
       // Assert
       const timeDiff = Math.abs(sisCallTime - icpeCallTime);
@@ -203,9 +203,9 @@ describe("RisquesTechnologiquesEnrichissementService", () => {
 
     it("devrait enrichir sans distance ICPE si aucune installation", async () => {
       // Arrange
-      const parcelle = new Parcelle();
-      parcelle.identifiantParcelle = "29232000AB0123";
-      parcelle.coordonnees = { latitude: 48.0, longitude: -4.0 };
+      const site =new Site();
+      site.identifiantParcelle = "29232000AB0123";
+      site.coordonnees = { latitude: 48.0, longitude: -4.0 };
 
       sisService.getSisByLatLon.mockResolvedValue({
         success: true,
@@ -220,11 +220,11 @@ describe("RisquesTechnologiquesEnrichissementService", () => {
       calculator.evaluer.mockReturnValue(false);
 
       // Act
-      const result = await service.enrichir(parcelle);
+      const result = await service.enrichir(site);
 
       // Assert
       expect(calculator.evaluer).toHaveBeenCalledWith(false, undefined);
-      expect(parcelle.presenceRisquesTechnologiques).toBe(false);
+      expect(site.presenceRisquesTechnologiques).toBe(false);
     });
   });
 });

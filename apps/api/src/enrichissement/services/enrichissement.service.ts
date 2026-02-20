@@ -8,7 +8,7 @@ import {
 } from "@mutafriches/shared-types";
 import { EnrichissementRepository } from "../repositories/enrichissement.repository";
 import { SiteRepository } from "../repositories/site.repository";
-import { Parcelle } from "../../evaluation/entities/parcelle.entity";
+import { Site as SiteEvaluation } from "../../evaluation/entities/site.entity";
 import { Site } from "../entities/site.entity";
 import { CadastreEnrichissementService } from "./cadastre/cadastre-enrichissement.service";
 import { EnergieEnrichissementService } from "./energie/energie-enrichissement.service";
@@ -53,9 +53,9 @@ export class EnrichissementService {
   ) {}
 
   /**
-   * Enrichit une parcelle depuis toutes les sources externes disponibles
+   * Enrichit un site (mono-parcelle) depuis toutes les sources externes disponibles
    *
-   * @param identifiantParcelle - Identifiant cadastral de la parcelle
+   * @param identifiantParcelle - Identifiant cadastral
    * @param sourceUtilisation - Source de l'utilisation (optionnel)
    * @param integrateur - Nom de l'intégrateur (optionnel)
    * @returns DTO d'enrichissement complet
@@ -99,17 +99,17 @@ export class EnrichissementService {
     let codeErreur: CodeErreurEnrichissement | undefined;
 
     try {
-      // 1. CADASTRE + BDNB (obligatoire - initialise la parcelle)
+      // 1. CADASTRE + BDNB (obligatoire - initialise les données du site)
       this.logger.log(`Debut enrichissement: ${identifiantParcelle}`);
       const cadastreResult = await this.cadastreEnrichissement.enrichir(identifiantParcelle);
 
-      if (!cadastreResult.parcelle) {
+      if (!cadastreResult.site) {
         throw new Error(
           MessagesErreurEnrichissement[CodeErreurEnrichissement.CADASTRE_INTROUVABLE],
         );
       }
 
-      const parcelle = cadastreResult.parcelle;
+      const siteEval = cadastreResult.site;
       this.mergeEnrichmentResult(
         cadastreResult.result,
         sourcesUtilisees,
@@ -118,11 +118,11 @@ export class EnrichissementService {
       );
 
       // 2. ENERGIE (distance raccordement électrique)
-      const energieResult = await this.energieEnrichissement.enrichir(parcelle);
+      const energieResult = await this.energieEnrichissement.enrichir(siteEval);
       this.mergeEnrichmentResult(energieResult, sourcesUtilisees, champsManquants, sourcesEchouees);
 
       // 3. TRANSPORT (distance transport en commun)
-      const transportResult = await this.transportEnrichissement.enrichir(parcelle);
+      const transportResult = await this.transportEnrichissement.enrichir(siteEval);
       this.mergeEnrichmentResult(
         transportResult,
         sourcesUtilisees,
@@ -131,7 +131,7 @@ export class EnrichissementService {
       );
 
       // 4. URBANISME (commerces, logements vacants, centre-ville)
-      const urbanismeResult = await this.urbanismeEnrichissement.enrichir(parcelle);
+      const urbanismeResult = await this.urbanismeEnrichissement.enrichir(siteEval);
       this.mergeEnrichmentResult(
         urbanismeResult,
         sourcesUtilisees,
@@ -140,7 +140,7 @@ export class EnrichissementService {
       );
 
       // 5. RISQUES NATURELS (RGA + Cavités)
-      const risquesNaturelsResult = await this.risquesNaturelsEnrichissement.enrichir(parcelle);
+      const risquesNaturelsResult = await this.risquesNaturelsEnrichissement.enrichir(siteEval);
       this.mergeEnrichmentResult(
         risquesNaturelsResult.result,
         sourcesUtilisees,
@@ -150,7 +150,7 @@ export class EnrichissementService {
 
       // 6. RISQUES TECHNOLOGIQUES (SIS + ICPE)
       const risquesTechnologiquesResult =
-        await this.risquesTechnologiquesEnrichissement.enrichir(parcelle);
+        await this.risquesTechnologiquesEnrichissement.enrichir(siteEval);
       this.mergeEnrichmentResult(
         risquesTechnologiquesResult.result,
         sourcesUtilisees,
@@ -160,8 +160,8 @@ export class EnrichissementService {
 
       // 7. GEORISQUES RAW (13 APIs pour intégrateurs)
       let risquesGeorisques;
-      if (parcelle.coordonnees) {
-        const georisquesResult = await this.georisquesEnrichissement.enrichir(parcelle.coordonnees);
+      if (siteEval.coordonnees) {
+        const georisquesResult = await this.georisquesEnrichissement.enrichir(siteEval.coordonnees);
         this.mergeEnrichmentResult(
           georisquesResult.result,
           sourcesUtilisees,
@@ -173,10 +173,10 @@ export class EnrichissementService {
 
       // 8. ZONAGES (Environnemental, Patrimonial, Réglementaire)
       let zonagesResult;
-      if (parcelle.geometrie && parcelle.codeInsee) {
+      if (siteEval.geometrie && siteEval.codeInsee) {
         zonagesResult = await this.zonageOrchestrator.enrichirZonages(
-          parcelle.geometrie,
-          parcelle.codeInsee,
+          siteEval.geometrie,
+          siteEval.codeInsee,
         );
         this.mergeEnrichmentResult(
           zonagesResult.result,
@@ -185,19 +185,19 @@ export class EnrichissementService {
           sourcesEchouees,
         );
 
-        // Affecter les zonages à la parcelle
-        parcelle.zonageEnvironnemental = zonagesResult.zonageEnvironnemental;
-        parcelle.zonagePatrimonial = zonagesResult.zonagePatrimonial;
-        parcelle.zonageReglementaire = zonagesResult.zonageReglementaire;
+        // Affecter les zonages au site
+        siteEval.zonageEnvironnemental = zonagesResult.zonageEnvironnemental;
+        siteEval.zonagePatrimonial = zonagesResult.zonagePatrimonial;
+        siteEval.zonageReglementaire = zonagesResult.zonageReglementaire;
       }
 
       // 9. POLLUTION (ADEME + SIS + ICPE)
       let siteReferencePollue = false;
-      if (parcelle.coordonnees) {
+      if (siteEval.coordonnees) {
         const pollutionResult = await this.pollutionDetection.detecterPollution(
-          parcelle.coordonnees.latitude,
-          parcelle.coordonnees.longitude,
-          parcelle.codeInsee,
+          siteEval.coordonnees.latitude,
+          siteEval.coordonnees.longitude,
+          siteEval.codeInsee,
         );
         siteReferencePollue = pollutionResult.siteReferencePollue;
         sourcesUtilisees.push(...pollutionResult.sourcesUtilisees);
@@ -224,29 +224,29 @@ export class EnrichissementService {
 
       // 11. CONSTRUIRE LE DTO DE SORTIE
       result = {
-        // Données déduites automatiquement de la parcelle
-        identifiantParcelle: parcelle.identifiantParcelle,
-        codeInsee: parcelle.codeInsee,
-        commune: parcelle.commune,
-        surfaceSite: parcelle.surfaceSite,
-        surfaceBati: parcelle.surfaceBati,
-        distanceRaccordementElectrique: parcelle.distanceRaccordementElectrique,
-        presenceRisquesNaturels: parcelle.presenceRisquesNaturels,
-        coordonnees: parcelle.coordonnees,
-        geometrie: parcelle.geometrie,
+        // Données déduites automatiquement du site
+        identifiantParcelle: siteEval.identifiantParcelle,
+        codeInsee: siteEval.codeInsee,
+        commune: siteEval.commune,
+        surfaceSite: siteEval.surfaceSite,
+        surfaceBati: siteEval.surfaceBati,
+        distanceRaccordementElectrique: siteEval.distanceRaccordementElectrique,
+        presenceRisquesNaturels: siteEval.presenceRisquesNaturels,
+        coordonnees: siteEval.coordonnees,
+        geometrie: siteEval.geometrie,
 
         // Données non déductibles pour le moment
-        siteEnCentreVille: parcelle.siteEnCentreVille,
-        distanceAutoroute: parcelle.distanceAutoroute,
-        distanceTransportCommun: parcelle.distanceTransportCommun,
-        proximiteCommercesServices: parcelle.proximiteCommercesServices,
-        tauxLogementsVacants: parcelle.tauxLogementsVacants,
-        presenceRisquesTechnologiques: parcelle.presenceRisquesTechnologiques,
+        siteEnCentreVille: siteEval.siteEnCentreVille,
+        distanceAutoroute: siteEval.distanceAutoroute,
+        distanceTransportCommun: siteEval.distanceTransportCommun,
+        proximiteCommercesServices: siteEval.proximiteCommercesServices,
+        tauxLogementsVacants: siteEval.tauxLogementsVacants,
+        presenceRisquesTechnologiques: siteEval.presenceRisquesTechnologiques,
         siteReferencePollue,
-        zonageEnvironnemental: parcelle.zonageEnvironnemental,
-        zonageReglementaire: parcelle.zonageReglementaire,
-        zonagePatrimonial: parcelle.zonagePatrimonial,
-        trameVerteEtBleue: parcelle.trameVerteEtBleue,
+        zonageEnvironnemental: siteEval.zonageEnvironnemental,
+        zonageReglementaire: siteEval.zonageReglementaire,
+        zonagePatrimonial: siteEval.zonagePatrimonial,
+        trameVerteEtBleue: siteEval.trameVerteEtBleue,
 
         // Risques GeoRisques Bruts
         risquesGeorisques,
@@ -371,15 +371,15 @@ export class EnrichissementService {
         sourcesEchouees,
       );
 
-      // 2. CONSTRUIRE LA PARCELLE VIRTUELLE à partir du site
-      const parcelle = this.buildVirtualParcelle(site);
+      // 2. CONSTRUIRE LE SITE D'ÉVALUATION à partir du site
+      const siteEval = this.buildVirtualSiteEval(site);
 
       // 3. ÉNERGIE (distance raccordement électrique) -> centroïde du site
-      const energieResult = await this.energieEnrichissement.enrichir(parcelle);
+      const energieResult = await this.energieEnrichissement.enrichir(siteEval);
       this.mergeEnrichmentResult(energieResult, sourcesUtilisees, champsManquants, sourcesEchouees);
 
       // 4. TRANSPORT -> centroïde du site
-      const transportResult = await this.transportEnrichissement.enrichir(parcelle);
+      const transportResult = await this.transportEnrichissement.enrichir(siteEval);
       this.mergeEnrichmentResult(
         transportResult,
         sourcesUtilisees,
@@ -388,7 +388,7 @@ export class EnrichissementService {
       );
 
       // 5. URBANISME -> LOVAC: commune prédominante, BPE: centroïde
-      const urbanismeResult = await this.urbanismeEnrichissement.enrichir(parcelle);
+      const urbanismeResult = await this.urbanismeEnrichissement.enrichir(siteEval);
       this.mergeEnrichmentResult(
         urbanismeResult,
         sourcesUtilisees,
@@ -397,21 +397,21 @@ export class EnrichissementService {
       );
 
       // 6. RISQUES NATURELS -> coordonnées de la parcelle prédominante
-      const parcelleRisquesNaturels = this.buildParcellePredominante(site);
+      const siteEvalRisquesNaturels = this.buildSiteEvalPredominante(site);
       const risquesNaturelsResult =
-        await this.risquesNaturelsEnrichissement.enrichir(parcelleRisquesNaturels);
+        await this.risquesNaturelsEnrichissement.enrichir(siteEvalRisquesNaturels);
       this.mergeEnrichmentResult(
         risquesNaturelsResult.result,
         sourcesUtilisees,
         champsManquants,
         sourcesEchouees,
       );
-      // Reporter le résultat sur la parcelle virtuelle
-      parcelle.presenceRisquesNaturels = parcelleRisquesNaturels.presenceRisquesNaturels;
+      // Reporter le résultat sur le site d'évaluation
+      siteEval.presenceRisquesNaturels = siteEvalRisquesNaturels.presenceRisquesNaturels;
 
       // 7. RISQUES TECHNOLOGIQUES -> centroïde du site
       const risquesTechnologiquesResult =
-        await this.risquesTechnologiquesEnrichissement.enrichir(parcelle);
+        await this.risquesTechnologiquesEnrichissement.enrichir(siteEval);
       this.mergeEnrichmentResult(
         risquesTechnologiquesResult.result,
         sourcesUtilisees,
@@ -421,8 +421,8 @@ export class EnrichissementService {
 
       // 8. GÉORISQUES RAW -> centroïde du site
       let risquesGeorisques;
-      if (parcelle.coordonnees) {
-        const georisquesResult = await this.georisquesEnrichissement.enrichir(parcelle.coordonnees);
+      if (siteEval.coordonnees) {
+        const georisquesResult = await this.georisquesEnrichissement.enrichir(siteEval.coordonnees);
         this.mergeEnrichmentResult(
           georisquesResult.result,
           sourcesUtilisees,
@@ -435,11 +435,11 @@ export class EnrichissementService {
       // 9. ZONAGES -> union (env/patri) + prédominante (réglementaire)
       let zonagesResult;
       const predominante = site.parcellePredominante;
-      if (site.geometrieUnion && predominante.geometrie && parcelle.codeInsee) {
+      if (site.geometrieUnion && predominante.geometrie && siteEval.codeInsee) {
         zonagesResult = await this.zonageOrchestrator.enrichirZonagesSite(
           site.geometrieUnion,
           predominante.geometrie,
-          parcelle.codeInsee,
+          siteEval.codeInsee,
         );
         this.mergeEnrichmentResult(
           zonagesResult.result,
@@ -448,18 +448,18 @@ export class EnrichissementService {
           sourcesEchouees,
         );
 
-        parcelle.zonageEnvironnemental = zonagesResult.zonageEnvironnemental;
-        parcelle.zonagePatrimonial = zonagesResult.zonagePatrimonial;
-        parcelle.zonageReglementaire = zonagesResult.zonageReglementaire;
+        siteEval.zonageEnvironnemental = zonagesResult.zonageEnvironnemental;
+        siteEval.zonagePatrimonial = zonagesResult.zonagePatrimonial;
+        siteEval.zonageReglementaire = zonagesResult.zonageReglementaire;
       }
 
       // 10. POLLUTION -> centroïde du site
       let siteReferencePollue = false;
-      if (parcelle.coordonnees) {
+      if (siteEval.coordonnees) {
         const pollutionResult = await this.pollutionDetection.detecterPollution(
-          parcelle.coordonnees.latitude,
-          parcelle.coordonnees.longitude,
-          parcelle.codeInsee,
+          siteEval.coordonnees.latitude,
+          siteEval.coordonnees.longitude,
+          siteEval.codeInsee,
         );
         siteReferencePollue = pollutionResult.siteReferencePollue;
         sourcesUtilisees.push(...pollutionResult.sourcesUtilisees);
@@ -499,19 +499,19 @@ export class EnrichissementService {
         surfaceBati: site.surfaceBatieTotale,
 
         // Données enrichies
-        distanceRaccordementElectrique: parcelle.distanceRaccordementElectrique,
-        presenceRisquesNaturels: parcelle.presenceRisquesNaturels,
-        siteEnCentreVille: parcelle.siteEnCentreVille,
-        distanceAutoroute: parcelle.distanceAutoroute,
-        distanceTransportCommun: parcelle.distanceTransportCommun,
-        proximiteCommercesServices: parcelle.proximiteCommercesServices,
-        tauxLogementsVacants: parcelle.tauxLogementsVacants,
-        presenceRisquesTechnologiques: parcelle.presenceRisquesTechnologiques,
+        distanceRaccordementElectrique: siteEval.distanceRaccordementElectrique,
+        presenceRisquesNaturels: siteEval.presenceRisquesNaturels,
+        siteEnCentreVille: siteEval.siteEnCentreVille,
+        distanceAutoroute: siteEval.distanceAutoroute,
+        distanceTransportCommun: siteEval.distanceTransportCommun,
+        proximiteCommercesServices: siteEval.proximiteCommercesServices,
+        tauxLogementsVacants: siteEval.tauxLogementsVacants,
+        presenceRisquesTechnologiques: siteEval.presenceRisquesTechnologiques,
         siteReferencePollue,
-        zonageEnvironnemental: parcelle.zonageEnvironnemental,
-        zonageReglementaire: parcelle.zonageReglementaire,
-        zonagePatrimonial: parcelle.zonagePatrimonial,
-        trameVerteEtBleue: parcelle.trameVerteEtBleue,
+        zonageEnvironnemental: siteEval.zonageEnvironnemental,
+        zonageReglementaire: siteEval.zonageReglementaire,
+        zonagePatrimonial: siteEval.zonagePatrimonial,
+        trameVerteEtBleue: siteEval.trameVerteEtBleue,
 
         risquesGeorisques,
 
@@ -574,35 +574,35 @@ export class EnrichissementService {
   }
 
   /**
-   * Construit une Parcelle virtuelle à partir d'un Site
+   * Construit un SiteEvaluation virtuel à partir d'un Site multi-parcellaire
    * Utilise le centroïde du site et la commune prédominante
    */
-  private buildVirtualParcelle(site: Site): Parcelle {
-    const parcelle = new Parcelle();
-    parcelle.identifiantParcelle = site.identifiantsParcelles.join(",");
-    parcelle.codeInsee = site.communePredominante.codeInsee;
-    parcelle.commune = site.communePredominante.commune;
-    parcelle.coordonnees = site.centroidSite;
-    parcelle.geometrie = site.geometrieUnion as GeometrieParcelle | undefined;
-    parcelle.surfaceSite = site.surfaceTotale;
-    parcelle.surfaceBati = site.surfaceBatieTotale;
-    return parcelle;
+  private buildVirtualSiteEval(site: Site): SiteEvaluation {
+    const siteEval = new SiteEvaluation();
+    siteEval.identifiantParcelle = site.identifiantsParcelles.join(",");
+    siteEval.codeInsee = site.communePredominante.codeInsee;
+    siteEval.commune = site.communePredominante.commune;
+    siteEval.coordonnees = site.centroidSite;
+    siteEval.geometrie = site.geometrieUnion as GeometrieParcelle | undefined;
+    siteEval.surfaceSite = site.surfaceTotale;
+    siteEval.surfaceBati = site.surfaceBatieTotale;
+    return siteEval;
   }
 
   /**
-   * Construit une Parcelle pour les risques naturels
+   * Construit un SiteEvaluation pour les risques naturels
    * Utilise les coordonnées de la parcelle prédominante
    */
-  private buildParcellePredominante(site: Site): Parcelle {
+  private buildSiteEvalPredominante(site: Site): SiteEvaluation {
     const predominante = site.parcellePredominante;
-    const parcelle = new Parcelle();
-    parcelle.identifiantParcelle = predominante.identifiantParcelle;
-    parcelle.codeInsee = predominante.codeInsee;
-    parcelle.commune = predominante.commune;
-    parcelle.coordonnees = predominante.coordonnees;
-    parcelle.geometrie = predominante.geometrie as GeometrieParcelle | undefined;
-    parcelle.surfaceSite = predominante.surface;
-    return parcelle;
+    const siteEval = new SiteEvaluation();
+    siteEval.identifiantParcelle = predominante.identifiantParcelle;
+    siteEval.codeInsee = predominante.codeInsee;
+    siteEval.commune = predominante.commune;
+    siteEval.coordonnees = predominante.coordonnees;
+    siteEval.geometrie = predominante.geometrie as GeometrieParcelle | undefined;
+    siteEval.surfaceSite = predominante.surface;
+    return siteEval;
   }
 
   /**

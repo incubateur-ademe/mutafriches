@@ -5,7 +5,7 @@ import { RisquesNaturelsEnrichissementService } from "./risques-naturels-enrichi
 import { RisquesNaturelsCalculator } from "./risques-naturels.calculator";
 import { RgaService } from "../../adapters/georisques/rga/rga.service";
 import { CavitesService } from "../../adapters/georisques/cavites/cavites.service";
-import { Parcelle } from "../../../evaluation/entities/parcelle.entity";
+import { Site } from "../../../evaluation/entities/site.entity";
 import {
   createMockRgaService,
   createMockCavitesService,
@@ -43,9 +43,9 @@ describe("RisquesNaturelsEnrichissementService", () => {
   describe("enrichir", () => {
     it("devrait combiner RGA et Cavites avec le calculator", async () => {
       // Arrange
-      const parcelle = new Parcelle();
-      parcelle.identifiantParcelle = "29232000AB0123";
-      parcelle.coordonnees = { latitude: 48.0, longitude: -4.0 };
+      const site =new Site();
+      site.identifiantParcelle = "29232000AB0123";
+      site.coordonnees = { latitude: 48.0, longitude: -4.0 };
 
       rgaService.getRga.mockResolvedValue({
         success: true,
@@ -66,7 +66,7 @@ describe("RisquesNaturelsEnrichissementService", () => {
       calculator.combiner.mockReturnValue(RisqueNaturel.FORT);
 
       // Act
-      const result = await service.enrichir(parcelle);
+      const result = await service.enrichir(site);
 
       // Assert
       expect(calculator.transformRgaToRisque).toHaveBeenCalledWith("Fort");
@@ -76,14 +76,14 @@ describe("RisquesNaturelsEnrichissementService", () => {
         distancePlusProche: 300,
       });
       expect(calculator.combiner).toHaveBeenCalledWith(RisqueNaturel.FORT, RisqueNaturel.FORT);
-      expect(parcelle.presenceRisquesNaturels).toBe(RisqueNaturel.FORT);
+      expect(site.presenceRisquesNaturels).toBe(RisqueNaturel.FORT);
     });
 
     it("devrait enrichir meme si RGA echoue (avec Cavites seul)", async () => {
       // Arrange
-      const parcelle = new Parcelle();
-      parcelle.identifiantParcelle = "29232000AB0123";
-      parcelle.coordonnees = { latitude: 48.0, longitude: -4.0 };
+      const site =new Site();
+      site.identifiantParcelle = "29232000AB0123";
+      site.coordonnees = { latitude: 48.0, longitude: -4.0 };
 
       rgaService.getRga.mockResolvedValue({
         success: false,
@@ -103,20 +103,20 @@ describe("RisquesNaturelsEnrichissementService", () => {
       calculator.combiner.mockReturnValue(RisqueNaturel.MOYEN);
 
       // Act
-      const result = await service.enrichir(parcelle);
+      const result = await service.enrichir(site);
 
       // Assert
       expect(result.result.sourcesUtilisees).toContain(SourceEnrichissement.GEORISQUES_CAVITES);
       expect(result.result.sourcesEchouees).toContain(SourceEnrichissement.GEORISQUES_RGA);
       expect(calculator.combiner).toHaveBeenCalledWith(RisqueNaturel.AUCUN, RisqueNaturel.FORT);
-      expect(parcelle.presenceRisquesNaturels).toBe(RisqueNaturel.MOYEN);
+      expect(site.presenceRisquesNaturels).toBe(RisqueNaturel.MOYEN);
     });
 
     it("devrait enrichir meme si Cavites echoue (avec RGA seul)", async () => {
       // Arrange
-      const parcelle = new Parcelle();
-      parcelle.identifiantParcelle = "29232000AB0123";
-      parcelle.coordonnees = { latitude: 48.0, longitude: -4.0 };
+      const site =new Site();
+      site.identifiantParcelle = "29232000AB0123";
+      site.coordonnees = { latitude: 48.0, longitude: -4.0 };
 
       rgaService.getRga.mockResolvedValue({
         success: true,
@@ -132,20 +132,20 @@ describe("RisquesNaturelsEnrichissementService", () => {
       calculator.combiner.mockReturnValue(RisqueNaturel.MOYEN);
 
       // Act
-      const result = await service.enrichir(parcelle);
+      const result = await service.enrichir(site);
 
       // Assert
       expect(result.result.sourcesUtilisees).toContain(SourceEnrichissement.GEORISQUES_RGA);
       expect(result.result.sourcesEchouees).toContain(SourceEnrichissement.GEORISQUES_CAVITES);
       expect(calculator.combiner).toHaveBeenCalledWith(RisqueNaturel.MOYEN, RisqueNaturel.AUCUN);
-      expect(parcelle.presenceRisquesNaturels).toBe(RisqueNaturel.MOYEN);
+      expect(site.presenceRisquesNaturels).toBe(RisqueNaturel.MOYEN);
     });
 
     it("devrait retourner AUCUN si les deux services echouent", async () => {
       // Arrange
-      const parcelle = new Parcelle();
-      parcelle.identifiantParcelle = "29232000AB0123";
-      parcelle.coordonnees = { latitude: 48.0, longitude: -4.0 };
+      const site =new Site();
+      site.identifiantParcelle = "29232000AB0123";
+      site.coordonnees = { latitude: 48.0, longitude: -4.0 };
 
       rgaService.getRga.mockResolvedValue({
         success: false,
@@ -160,23 +160,23 @@ describe("RisquesNaturelsEnrichissementService", () => {
       calculator.combiner.mockReturnValue(RisqueNaturel.AUCUN);
 
       // Act
-      const result = await service.enrichir(parcelle);
+      const result = await service.enrichir(site);
 
       // Assert
       expect(result.result.success).toBe(false);
       expect(result.result.sourcesEchouees).toHaveLength(2);
       expect(calculator.combiner).toHaveBeenCalledWith(RisqueNaturel.AUCUN, RisqueNaturel.AUCUN);
-      expect(parcelle.presenceRisquesNaturels).toBe(RisqueNaturel.AUCUN);
+      expect(site.presenceRisquesNaturels).toBe(RisqueNaturel.AUCUN);
     });
 
     it("devrait retourner echec si pas de coordonnees", async () => {
       // Arrange
-      const parcelle = new Parcelle();
-      parcelle.identifiantParcelle = "29232000AB0123";
-      parcelle.coordonnees = undefined;
+      const site =new Site();
+      site.identifiantParcelle = "29232000AB0123";
+      site.coordonnees = undefined;
 
       // Act
-      const result = await service.enrichir(parcelle);
+      const result = await service.enrichir(site);
 
       // Assert
       expect(result.result.success).toBe(false);
@@ -187,9 +187,9 @@ describe("RisquesNaturelsEnrichissementService", () => {
 
     it("devrait appeler les services en parallele", async () => {
       // Arrange
-      const parcelle = new Parcelle();
-      parcelle.identifiantParcelle = "29232000AB0123";
-      parcelle.coordonnees = { latitude: 48.0, longitude: -4.0 };
+      const site =new Site();
+      site.identifiantParcelle = "29232000AB0123";
+      site.coordonnees = { latitude: 48.0, longitude: -4.0 };
 
       let rgaCallTime = 0;
       let cavitesCallTime = 0;
@@ -211,7 +211,7 @@ describe("RisquesNaturelsEnrichissementService", () => {
       calculator.combiner.mockReturnValue(RisqueNaturel.MOYEN);
 
       // Act
-      await service.enrichir(parcelle);
+      await service.enrichir(site);
 
       // Assert
       const timeDiff = Math.abs(rgaCallTime - cavitesCallTime);

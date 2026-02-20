@@ -1,6 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { SourceEnrichissement } from "@mutafriches/shared-types";
-import { Parcelle } from "../../../evaluation/entities/parcelle.entity";
+import { Site } from "../../../evaluation/entities/site.entity";
 import { EnedisService } from "../../adapters/enedis/enedis.service";
 import { EnrichmentResult } from "../shared/enrichissement.types";
 
@@ -9,7 +9,7 @@ import { EnrichmentResult } from "../shared/enrichissement.types";
  *
  * Responsabilités :
  * - Récupérer la distance de raccordement électrique via Enedis
- * - Enrichir la parcelle avec les données énergétiques
+ * - Enrichir le site avec les données énergétiques
  */
 @Injectable()
 export class EnergieEnrichissementService {
@@ -18,20 +18,20 @@ export class EnergieEnrichissementService {
   constructor(private readonly enedisService: EnedisService) {}
 
   /**
-   * Enrichit une parcelle avec les données énergétiques
+   * Enrichit un site avec les données énergétiques
    *
-   * @param parcelle - Parcelle à enrichir (doit avoir des coordonnées)
+   * @param site - Site à enrichir (doit avoir des coordonnées)
    * @returns Résultat de l'enrichissement
    */
-  async enrichir(parcelle: Parcelle): Promise<EnrichmentResult> {
+  async enrichir(site: Site): Promise<EnrichmentResult> {
     const sourcesUtilisees: string[] = [];
     const sourcesEchouees: string[] = [];
     const champsManquants: string[] = [];
 
     // Vérifier la présence des coordonnées
-    if (!parcelle.coordonnees) {
+    if (!site.coordonnees) {
       this.logger.warn(
-        `Pas de coordonnées disponibles pour la parcelle ${parcelle.identifiantParcelle}`,
+        `Pas de coordonnées disponibles pour le site ${site.identifiantParcelle}`,
       );
       sourcesEchouees.push(SourceEnrichissement.ENEDIS_RACCORDEMENT);
       champsManquants.push("distanceRaccordementElectrique");
@@ -46,15 +46,15 @@ export class EnergieEnrichissementService {
     // Récupérer la distance de raccordement électrique
     try {
       const distanceResult = await this.enedisService.getDistanceRaccordement(
-        parcelle.coordonnees.latitude,
-        parcelle.coordonnees.longitude,
+        site.coordonnees.latitude,
+        site.coordonnees.longitude,
       );
 
       if (distanceResult.success && distanceResult.data) {
-        parcelle.distanceRaccordementElectrique = distanceResult.data.distance;
+        site.distanceRaccordementElectrique = distanceResult.data.distance;
         sourcesUtilisees.push(SourceEnrichissement.ENEDIS_RACCORDEMENT);
         this.logger.log(
-          `Distance raccordement électrique: ${Math.round(distanceResult.data.distance)}m pour ${parcelle.identifiantParcelle}`,
+          `Distance raccordement électrique: ${Math.round(distanceResult.data.distance)}m pour ${site.identifiantParcelle}`,
         );
       } else {
         this.logger.warn(`Échec récupération Enedis: ${distanceResult.error || "Aucune donnée"}`);

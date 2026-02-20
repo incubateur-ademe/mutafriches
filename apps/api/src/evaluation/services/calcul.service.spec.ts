@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { RaccordementEau, UsageType } from "@mutafriches/shared-types";
 import { CalculService } from "./calcul.service";
 import { FiabiliteCalculator } from "./algorithme/fiabilite.calculator";
-import { Parcelle } from "../entities/parcelle.entity";
+import { Site } from "../entities/site.entity";
 
 describe("CalculService", () => {
   let service: CalculService;
@@ -14,13 +14,13 @@ describe("CalculService", () => {
 
   describe("calculer", () => {
     it("devrait calculer la mutabilite pour tous les usages", async () => {
-      const parcelle = new Parcelle();
-      parcelle.surfaceSite = 42780;
-      parcelle.surfaceBati = 6600;
-      parcelle.siteEnCentreVille = true;
-      parcelle.raccordementEau = RaccordementEau.OUI;
+      const site = new Site();
+      site.surfaceSite = 42780;
+      site.surfaceBati = 6600;
+      site.siteEnCentreVille = true;
+      site.raccordementEau = RaccordementEau.OUI;
 
-      const result = await service.calculer(parcelle);
+      const result = await service.calculer(site);
 
       expect(result).toBeDefined();
       expect(result.resultats).toBeDefined();
@@ -45,11 +45,11 @@ describe("CalculService", () => {
     });
 
     it("devrait classer les usages par indice decroissant", async () => {
-      const parcelle = new Parcelle();
-      parcelle.surfaceSite = 10000;
-      parcelle.surfaceBati = 2000;
+      const site = new Site();
+      site.surfaceSite = 10000;
+      site.surfaceBati = 2000;
 
-      const result = await service.calculer(parcelle);
+      const result = await service.calculer(site);
 
       const rangs = result.resultats.map((r) => r.rang);
       const rangsUniques = [...new Set(rangs)];
@@ -67,12 +67,12 @@ describe("CalculService", () => {
     });
 
     it("devrait calculer les details en mode detaille", async () => {
-      const parcelle = new Parcelle();
-      parcelle.surfaceSite = 15000;
-      parcelle.surfaceBati = 3000;
-      parcelle.siteEnCentreVille = true;
+      const site = new Site();
+      site.surfaceSite = 15000;
+      site.surfaceBati = 3000;
+      site.siteEnCentreVille = true;
 
-      const result = await service.calculer(parcelle, { modeDetaille: true });
+      const result = await service.calculer(site, { modeDetaille: true });
 
       result.resultats.forEach((res: any) => {
         expect(res.avantages).toBeDefined();
@@ -89,10 +89,10 @@ describe("CalculService", () => {
       });
     });
 
-    it("devrait gerer les parcelles avec donnees manquantes", async () => {
-      const parcelle = new Parcelle();
+    it("devrait gerer les sites avec donnees manquantes", async () => {
+      const site = new Site();
 
-      const result = await service.calculer(parcelle);
+      const result = await service.calculer(site);
 
       expect(result).toBeDefined();
       expect(result.resultats.length).toBe(7);
@@ -105,38 +105,38 @@ describe("CalculService", () => {
     });
 
     it("devrait calculer une meilleure fiabilite avec plus de criteres ponderes", async () => {
-      // Parcelle minimale avec un seul critere
-      const parcelleMin = new Parcelle();
-      parcelleMin.surfaceSite = 10000; // poids 2
+      // Site minimal avec un seul critère
+      const siteMin = new Site();
+      siteMin.surfaceSite = 10000; // poids 2
 
-      const resultMin = await service.calculer(parcelleMin);
+      const resultMin = await service.calculer(siteMin);
 
-      // Parcelle avec plusieurs criteres de poids varies
-      const parcelleComplete = new Parcelle();
-      parcelleComplete.surfaceSite = 10000; // poids 2
-      parcelleComplete.surfaceBati = 2000; // poids 2
-      parcelleComplete.siteEnCentreVille = true; // poids 1
-      parcelleComplete.raccordementEau = RaccordementEau.OUI; // poids 1
-      parcelleComplete.distanceRaccordementElectrique = 100; // poids 1
-      parcelleComplete.proximiteCommercesServices = true; // poids 1
-      parcelleComplete.tauxLogementsVacants = 5.2; // poids 1
-      parcelleComplete.distanceAutoroute = 2; // poids 0.5
-      parcelleComplete.distanceTransportCommun = 300; // poids 1
-      parcelleComplete.presenceRisquesNaturels = "FAIBLE" as any; // poids 2
-      parcelleComplete.presenceRisquesTechnologiques = false; // poids 1
+      // Site avec plusieurs critères de poids variés
+      const siteComplet = new Site();
+      siteComplet.surfaceSite = 10000; // poids 2
+      siteComplet.surfaceBati = 2000; // poids 2
+      siteComplet.siteEnCentreVille = true; // poids 1
+      siteComplet.raccordementEau = RaccordementEau.OUI; // poids 1
+      siteComplet.distanceRaccordementElectrique = 100; // poids 1
+      siteComplet.proximiteCommercesServices = true; // poids 1
+      siteComplet.tauxLogementsVacants = 5.2; // poids 1
+      siteComplet.distanceAutoroute = 2; // poids 0.5
+      siteComplet.distanceTransportCommun = 300; // poids 1
+      siteComplet.presenceRisquesNaturels = "FAIBLE" as any; // poids 2
+      siteComplet.presenceRisquesTechnologiques = false; // poids 1
 
-      const resultComplete = await service.calculer(parcelleComplete);
+      const resultComplet = await service.calculer(siteComplet);
 
-      // Plus de poids renseignes = meilleure fiabilite
-      expect(resultComplete.fiabilite.note).toBeGreaterThan(resultMin.fiabilite.note);
+      // Plus de poids renseignés = meilleure fiabilité
+      expect(resultComplet.fiabilite.note).toBeGreaterThan(resultMin.fiabilite.note);
     });
 
     it("devrait determiner le potentiel selon l'indice", async () => {
-      const parcelle = new Parcelle();
-      parcelle.surfaceSite = 20000;
-      parcelle.surfaceBati = 4000;
+      const site = new Site();
+      site.surfaceSite = 20000;
+      site.surfaceBati = 4000;
 
-      const result = await service.calculer(parcelle);
+      const result = await service.calculer(site);
 
       result.resultats.forEach((res) => {
         if (res.indiceMutabilite >= 70) {
@@ -154,22 +154,22 @@ describe("CalculService", () => {
     });
 
     it("devrait favoriser certains usages selon les caracteristiques", async () => {
-      const parcelleResidentiel = new Parcelle();
-      parcelleResidentiel.surfaceSite = 5000;
-      parcelleResidentiel.surfaceBati = 1000;
-      parcelleResidentiel.siteEnCentreVille = true;
-      parcelleResidentiel.proximiteCommercesServices = true;
-      parcelleResidentiel.distanceTransportCommun = 200;
+      const siteResidentiel = new Site();
+      siteResidentiel.surfaceSite = 5000;
+      siteResidentiel.surfaceBati = 1000;
+      siteResidentiel.siteEnCentreVille = true;
+      siteResidentiel.proximiteCommercesServices = true;
+      siteResidentiel.distanceTransportCommun = 200;
 
-      const resultResidentiel = await service.calculer(parcelleResidentiel);
+      const resultResidentiel = await service.calculer(siteResidentiel);
 
-      const parcelleIndustrie = new Parcelle();
-      parcelleIndustrie.surfaceSite = 50000;
-      parcelleIndustrie.surfaceBati = 10000;
-      parcelleIndustrie.siteEnCentreVille = false;
-      parcelleIndustrie.distanceAutoroute = 1;
+      const siteIndustrie = new Site();
+      siteIndustrie.surfaceSite = 50000;
+      siteIndustrie.surfaceBati = 10000;
+      siteIndustrie.siteEnCentreVille = false;
+      siteIndustrie.distanceAutoroute = 1;
 
-      const resultIndustrie = await service.calculer(parcelleIndustrie);
+      const resultIndustrie = await service.calculer(siteIndustrie);
 
       const scoreResidentielCentre = resultResidentiel.resultats.find(
         (r) => r.usage === UsageType.RESIDENTIEL,
@@ -193,13 +193,13 @@ describe("CalculService", () => {
     });
 
     it("devrait calculer correctement les avantages et contraintes", async () => {
-      const parcelle = new Parcelle();
-      parcelle.surfaceSite = 10000;
-      parcelle.surfaceBati = 2000;
-      parcelle.siteEnCentreVille = true;
-      parcelle.presenceRisquesTechnologiques = true;
+      const site = new Site();
+      site.surfaceSite = 10000;
+      site.surfaceBati = 2000;
+      site.siteEnCentreVille = true;
+      site.presenceRisquesTechnologiques = true;
 
-      const result = await service.calculer(parcelle, { modeDetaille: true });
+      const result = await service.calculer(site, { modeDetaille: true });
 
       result.resultats.forEach((res: any) => {
         if (res.avantages + res.contraintes > 0) {

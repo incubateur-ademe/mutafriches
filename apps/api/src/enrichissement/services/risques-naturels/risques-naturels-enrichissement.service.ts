@@ -1,6 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { RisqueNaturel, SourceEnrichissement } from "@mutafriches/shared-types";
-import { Parcelle } from "../../../evaluation/entities/parcelle.entity";
+import { Site } from "../../../evaluation/entities/site.entity";
 import { RgaService } from "../../adapters/georisques/rga/rga.service";
 import { CavitesService } from "../../adapters/georisques/cavites/cavites.service";
 import { GEORISQUES_RAYONS_DEFAUT } from "../../adapters/georisques/georisques.constants";
@@ -14,7 +14,7 @@ import { EvaluationRisquesNaturels } from "./risques-naturels.types";
  * Responsabilités :
  * - Appeler les APIs GeoRisques (RGA + Cavités) en parallèle
  * - Utiliser le calculator pour combiner les risques
- * - Enrichir la parcelle avec le niveau de risque final
+ * - Enrichir le site avec le niveau de risque final
  */
 @Injectable()
 export class RisquesNaturelsEnrichissementService {
@@ -27,12 +27,12 @@ export class RisquesNaturelsEnrichissementService {
   ) {}
 
   /**
-   * Enrichit une parcelle avec les risques naturels
+   * Enrichit un site avec les risques naturels
    *
-   * @param parcelle - Parcelle à enrichir (doit avoir des coordonnées)
+   * @param site - Site à enrichir (doit avoir des coordonnées)
    * @returns Résultat de l'enrichissement et évaluation détaillée
    */
-  async enrichir(parcelle: Parcelle): Promise<{
+  async enrichir(site: Site): Promise<{
     result: EnrichmentResult;
     evaluation: EvaluationRisquesNaturels;
   }> {
@@ -40,9 +40,9 @@ export class RisquesNaturelsEnrichissementService {
     const sourcesEchouees: string[] = [];
 
     // Vérifier la présence des coordonnées
-    if (!parcelle.coordonnees) {
+    if (!site.coordonnees) {
       this.logger.warn(
-        `Pas de coordonnees disponibles pour les risques naturels - parcelle ${parcelle.identifiantParcelle}`,
+        `Pas de coordonnees disponibles pour les risques naturels - site ${site.identifiantParcelle}`,
       );
       sourcesEchouees.push(
         SourceEnrichissement.GEORISQUES_RGA,
@@ -65,8 +65,8 @@ export class RisquesNaturelsEnrichissementService {
 
     // Appeler RGA et Cavités en parallèle
     const [rgaResult, cavitesResult] = await Promise.allSettled([
-      this.getRga(parcelle.coordonnees),
-      this.getCavites(parcelle.coordonnees),
+      this.getRga(site.coordonnees),
+      this.getCavites(site.coordonnees),
     ]);
 
     // Traiter les résultats
@@ -106,10 +106,10 @@ export class RisquesNaturelsEnrichissementService {
 
     // 3. Combiner les risques avec le calculator
     const risqueFinal = this.calculator.combiner(aleaRga, aleaCavites);
-    parcelle.presenceRisquesNaturels = risqueFinal;
+    site.presenceRisquesNaturels = risqueFinal;
 
     this.logger.log(
-      `Risques naturels calcules pour ${parcelle.identifiantParcelle}: ` +
+      `Risques naturels calcules pour ${site.identifiantParcelle}: ` +
         `RGA=${aleaRga}, Cavites=${aleaCavites} → Final=${risqueFinal}`,
     );
 

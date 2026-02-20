@@ -4,7 +4,7 @@ import {
   convertTestCaseToMutabilityInput,
   UsageResultatDetaille,
 } from "@mutafriches/shared-types";
-import { Parcelle } from "../entities/parcelle.entity";
+import { Site } from "../entities/site.entity";
 
 /**
  * Seuils de validation pour les tests de fixtures
@@ -43,16 +43,16 @@ export interface TestCaseValidation {
 }
 
 /**
- * Convertit un TestCase en Parcelle pour le calcul
+ * Convertit un TestCase en Site pour le calcul
  */
-export function convertTestCaseToParcelle(testCase: TestCase): Parcelle {
+export function convertTestCaseToSite(testCase: TestCase): Site {
   const input = convertTestCaseToMutabilityInput(testCase);
 
-  const parcelle = new Parcelle();
-  Object.assign(parcelle, input.donneesEnrichies);
-  Object.assign(parcelle, input.donneesComplementaires);
+  const site = new Site();
+  Object.assign(site, input.donneesEnrichies);
+  Object.assign(site, input.donneesComplementaires);
 
-  return parcelle;
+  return site;
 }
 
 /**
@@ -126,9 +126,9 @@ export async function executeTestCase(
   calculService: CalculService,
   testCase: TestCase,
 ): Promise<TestCaseValidation> {
-  const parcelle = convertTestCaseToParcelle(testCase);
+  const site = convertTestCaseToSite(testCase);
 
-  const result = await calculService.calculer(parcelle, { modeDetaille: true });
+  const result = await calculService.calculer(site, { modeDetaille: true });
 
   return compareResults(testCase, result.resultats as UsageResultatDetaille[]);
 }
