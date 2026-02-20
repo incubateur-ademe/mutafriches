@@ -97,46 +97,55 @@ export class SiteRepository {
    */
   async findValidCache(identifiants: string[]): Promise<CachedSite | null> {
     const cacheKey = SiteRepository.buildCacheKey(identifiants);
-    const ttlDate = new Date();
-    ttlDate.setHours(ttlDate.getHours() - SITE_CACHE_TTL_HOURS);
 
-    // Recherche par correspondance exacte des identifiants cadastraux triés
-    // On utilise un cast explicite du paramètre en jsonb pour éviter les problèmes de binding
-    const sortedJson = JSON.stringify([...identifiants].sort());
+    try {
+      const ttlDate = new Date();
+      ttlDate.setHours(ttlDate.getHours() - SITE_CACHE_TTL_HOURS);
 
-    const result = await this.database.db
-      .select({
-        id: sites.id,
-        donnees: sites.donnees,
-      })
-      .from(sites)
-      .where(
-        and(
-          // Correspondance bidirectionnelle : le contenu en base inclut tous les identifiants demandés ET inversement
-          sql`${sites.identifiantsCadastraux} @> ${sortedJson}::jsonb`,
-          sql`${sortedJson}::jsonb @> ${sites.identifiantsCadastraux}`,
-          eq(sites.statut, StatutEnrichissement.SUCCES),
-          gte(sites.dateEnrichissement, ttlDate),
-          sql`(${sites.sourcesEchouees} IS NULL OR ${sites.sourcesEchouees} = '[]'::jsonb OR jsonb_array_length(${sites.sourcesEchouees}) = 0)`,
-        ),
-      )
-      .orderBy(sql`${sites.dateEnrichissement} DESC`)
-      .limit(1);
+      // Recherche par correspondance exacte des identifiants cadastraux triés
+      // On utilise CAST(... AS jsonb) au lieu de ::jsonb pour garantir la compatibilité
+      // avec postgres.js qui peut avoir des problèmes de binding avec la syntaxe ::jsonb
+      const sortedJson = JSON.stringify([...identifiants].sort());
 
-    if (result.length === 0) {
+      const result = await this.database.db
+        .select({
+          id: sites.id,
+          donnees: sites.donnees,
+        })
+        .from(sites)
+        .where(
+          and(
+            // Correspondance bidirectionnelle : le contenu en base inclut tous les identifiants demandés ET inversement
+            sql`${sites.identifiantsCadastraux} @> CAST(${sortedJson} AS jsonb)`,
+            sql`CAST(${sortedJson} AS jsonb) @> ${sites.identifiantsCadastraux}`,
+            eq(sites.statut, StatutEnrichissement.SUCCES),
+            gte(sites.dateEnrichissement, ttlDate),
+            sql`(${sites.sourcesEchouees} IS NULL OR ${sites.sourcesEchouees} = '[]'::jsonb OR jsonb_array_length(${sites.sourcesEchouees}) = 0)`,
+          ),
+        )
+        .orderBy(sql`${sites.dateEnrichissement} DESC`)
+        .limit(1);
+
+      if (result.length === 0) {
+        return null;
+      }
+
+      const row = result[0];
+      if (!row.donnees) {
+        return null;
+      }
+
+      this.logger.log(`Cache site trouvé pour [${cacheKey}]: ${row.id}`);
+
+      return {
+        id: row.id,
+        donnees: row.donnees as unknown as EnrichissementOutputDto,
+      };
+    } catch (error) {
+      this.logger.error(
+        `Erreur lors de la recherche cache site [${cacheKey}]: ${error instanceof Error ? error.message : error}`,
+      );
       return null;
     }
-
-    const row = result[0];
-    if (!row.donnees) {
-      return null;
-    }
-
-    this.logger.log(`Cache site trouvé pour [${cacheKey}]: ${row.id}`);
-
-    return {
-      id: row.id,
-      donnees: row.donnees as unknown as EnrichissementOutputDto,
-    };
   }
 }
