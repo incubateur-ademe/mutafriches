@@ -42,9 +42,13 @@ export const EvaluationSection: React.FC<EvaluationSectionProps> = ({ mutability
             <strong>{fiabilite.text}</strong>
             <br />
             <span className="fr-text--xs">
-              {fiabilite.criteresRenseignes}/{fiabilite.criteresTotal} crit&egrave;res renseign&eacute;s
+              {fiabilite.criteresRenseignes}/{fiabilite.criteresTotal} crit&egrave;res
+              renseign&eacute;s
               {fiabilite.poidsRenseignes !== undefined && (
-                <> &mdash; Poids : {fiabilite.poidsRenseignes}/{fiabilite.poidsTotal}</>
+                <>
+                  {" "}
+                  &mdash; Poids : {fiabilite.poidsRenseignes}/{fiabilite.poidsTotal}
+                </>
               )}
             </span>
           </div>
@@ -70,7 +74,9 @@ export const EvaluationSection: React.FC<EvaluationSectionProps> = ({ mutability
                     <td>{c.critere}</td>
                     <td>{c.poids}</td>
                     <td>
-                      <span className={`fr-badge fr-badge--sm ${c.renseigne ? "fr-badge--success" : "fr-badge--warning"}`}>
+                      <span
+                        className={`fr-badge fr-badge--sm ${c.renseigne ? "fr-badge--success" : "fr-badge--warning"}`}
+                      >
                         {c.renseigne ? "Oui" : "Non"}
                       </span>
                     </td>

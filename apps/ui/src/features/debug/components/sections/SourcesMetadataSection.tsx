@@ -46,9 +46,7 @@ export const SourcesMetadataSection: React.FC<SourcesMetadataSectionProps> = ({
         {/* Champs manquants */}
         {champsManquants.length > 0 && (
           <>
-            <h4 className="debug-panel__subtitle">
-              Champs manquants ({champsManquants.length})
-            </h4>
+            <h4 className="debug-panel__subtitle">Champs manquants ({champsManquants.length})</h4>
             <div className="debug-panel__badges">
               {champsManquants.map((champ: string) => (
                 <span key={champ} className="fr-badge fr-badge--sm fr-badge--warning">

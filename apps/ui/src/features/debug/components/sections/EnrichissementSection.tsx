@@ -32,7 +32,9 @@ export const EnrichissementSection: React.FC<EnrichissementSectionProps> = ({ en
         <dl className="debug-panel__data-grid">
           <dt>Centre-ville</dt>
           <dd>
-            <span className={`fr-badge fr-badge--sm ${getBooleanBadgeClass(enrichmentData.siteEnCentreVille)}`}>
+            <span
+              className={`fr-badge fr-badge--sm ${getBooleanBadgeClass(enrichmentData.siteEnCentreVille)}`}
+            >
               {formatBoolean(enrichmentData.siteEnCentreVille)}
             </span>
           </dd>
@@ -45,7 +47,9 @@ export const EnrichissementSection: React.FC<EnrichissementSectionProps> = ({ en
 
           <dt>Commerces / services</dt>
           <dd>
-            <span className={`fr-badge fr-badge--sm ${getBooleanBadgeClass(enrichmentData.proximiteCommercesServices)}`}>
+            <span
+              className={`fr-badge fr-badge--sm ${getBooleanBadgeClass(enrichmentData.proximiteCommercesServices)}`}
+            >
               {formatBoolean(enrichmentData.proximiteCommercesServices)}
             </span>
           </dd>
@@ -75,7 +79,9 @@ export const EnrichissementSection: React.FC<EnrichissementSectionProps> = ({ en
         <dl className="debug-panel__data-grid">
           <dt>Risques technologiques</dt>
           <dd>
-            <span className={`fr-badge fr-badge--sm ${getRiskBadgeClass(enrichmentData.presenceRisquesTechnologiques)}`}>
+            <span
+              className={`fr-badge fr-badge--sm ${getRiskBadgeClass(enrichmentData.presenceRisquesTechnologiques)}`}
+            >
               {formatBoolean(enrichmentData.presenceRisquesTechnologiques)}
             </span>
           </dd>
@@ -84,7 +90,8 @@ export const EnrichissementSection: React.FC<EnrichissementSectionProps> = ({ en
           <dd>
             <span
               className={`fr-badge fr-badge--sm ${
-                enrichmentData.presenceRisquesNaturels === "aucun" || enrichmentData.presenceRisquesNaturels === "faible"
+                enrichmentData.presenceRisquesNaturels === "aucun" ||
+                enrichmentData.presenceRisquesNaturels === "faible"
                   ? "fr-badge--success"
                   : enrichmentData.presenceRisquesNaturels === "moyen"
                     ? "fr-badge--warning"
@@ -99,7 +106,9 @@ export const EnrichissementSection: React.FC<EnrichissementSectionProps> = ({ en
 
           <dt>Site r&eacute;f&eacute;renc&eacute; pollu&eacute;</dt>
           <dd>
-            <span className={`fr-badge fr-badge--sm ${getRiskBadgeClass(enrichmentData.siteReferencePollue)}`}>
+            <span
+              className={`fr-badge fr-badge--sm ${getRiskBadgeClass(enrichmentData.siteReferencePollue)}`}
+            >
               {formatBoolean(enrichmentData.siteReferencePollue)}
             </span>
           </dd>
