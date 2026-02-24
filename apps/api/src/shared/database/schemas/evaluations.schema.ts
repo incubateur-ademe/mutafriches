@@ -3,7 +3,7 @@ import { pgTable, varchar, jsonb, timestamp, numeric, integer } from "drizzle-or
 // Table pour les évaluations
 export const evaluations = pgTable("evaluations", {
   id: varchar("id", { length: 50 }).primaryKey(),
-  siteId: varchar("site_id", { length: 255 }).notNull(),
+  siteId: varchar("site_id", { length: 1000 }).notNull(),
   nombreParcelles: integer("nombre_parcelles"),
   codeInsee: varchar("code_insee", { length: 5 }).notNull(),
   dateCalcul: timestamp("date_calcul").notNull().defaultNow(),

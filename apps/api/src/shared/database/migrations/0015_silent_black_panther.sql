@@ -1,0 +1,1 @@
+ALTER TABLE "evaluations" ALTER COLUMN "site_id" SET DATA TYPE varchar(1000);
