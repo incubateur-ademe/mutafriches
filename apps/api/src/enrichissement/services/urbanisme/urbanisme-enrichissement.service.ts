@@ -1,6 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { SourceEnrichissement } from "@mutafriches/shared-types";
-import { Parcelle } from "../../../evaluation/entities/parcelle.entity";
+import { Site } from "../../../evaluation/entities/site.entity";
 import { EnrichmentResult } from "../shared/enrichissement.types";
 import { DatagouvLovacService } from "../../adapters/datagouv-lovac/datagouv-lovac.service";
 import { BpeRepository } from "../../repositories/bpe.repository";
@@ -32,27 +32,22 @@ export class UrbanismeEnrichissementService {
   ) {}
 
   /**
-   * Enrichit une parcelle avec les donnees d'urbanisme
+   * Enrichit un site avec les donnees d'urbanisme
    *
-   * @param parcelle - Parcelle a enrichir
+   * @param site - Site a enrichir
    * @returns Resultat de l'enrichissement
    */
-  async enrichir(parcelle: Parcelle): Promise<EnrichmentResult> {
+  async enrichir(site: Site): Promise<EnrichmentResult> {
     const sourcesUtilisees: string[] = [];
     const sourcesEchouees: string[] = [];
     const champsManquants: string[] = [];
 
     // Taux de logements vacants (LOVAC via data.gouv.fr)
-    await this.enrichTauxLogementsVacants(
-      parcelle,
-      sourcesUtilisees,
-      sourcesEchouees,
-      champsManquants,
-    );
+    await this.enrichTauxLogementsVacants(site, sourcesUtilisees, sourcesEchouees, champsManquants);
 
     // Proximite commerces/services (BPE)
     await this.enrichProximiteCommercesServices(
-      parcelle,
+      site,
       sourcesUtilisees,
       sourcesEchouees,
       champsManquants,
@@ -74,13 +69,13 @@ export class UrbanismeEnrichissementService {
    * - Services : A203 (banque), A206-A208 (poste), D307 (pharmacie)
    */
   private async enrichProximiteCommercesServices(
-    parcelle: Parcelle,
+    site: Site,
     sourcesUtilisees: string[],
     sourcesEchouees: string[],
     champsManquants: string[],
   ): Promise<void> {
-    if (!parcelle.coordonnees) {
-      this.logger.warn(`Pas de coordonnees pour BPE - parcelle ${parcelle.identifiantParcelle}`);
+    if (!site.coordonnees) {
+      this.logger.warn(`Pas de coordonnees pour BPE - site ${site.identifiantParcelle}`);
       sourcesEchouees.push(SourceEnrichissement.BPE);
       champsManquants.push("proximiteCommercesServices");
       return;
@@ -88,19 +83,19 @@ export class UrbanismeEnrichissementService {
 
     try {
       const result = await this.bpeRepository.findCommercesServicesProximite(
-        parcelle.coordonnees.latitude,
-        parcelle.coordonnees.longitude,
+        site.coordonnees.latitude,
+        site.coordonnees.longitude,
         RAYON_RECHERCHE_COMMERCES_M,
       );
 
-      parcelle.proximiteCommercesServices = result.presenceCommercesServices;
+      site.proximiteCommercesServices = result.presenceCommercesServices;
       sourcesUtilisees.push(SourceEnrichissement.BPE);
 
       if (result.presenceCommercesServices) {
         this.logger.log(
           `Commerces/services: OUI (${result.nombreCommercesServices} trouves, ` +
             `plus proche a ${result.distancePlusProche}m) ` +
-            `pour ${parcelle.identifiantParcelle}`,
+            `pour ${site.identifiantParcelle}`,
         );
 
         if (result.categoriesTrouvees.length > 0) {
@@ -109,7 +104,7 @@ export class UrbanismeEnrichissementService {
       } else {
         this.logger.log(
           `Commerces/services: NON (aucun dans un rayon de ${RAYON_RECHERCHE_COMMERCES_M}m) ` +
-            `pour ${parcelle.identifiantParcelle}`,
+            `pour ${site.identifiantParcelle}`,
         );
       }
     } catch (error) {
@@ -123,15 +118,15 @@ export class UrbanismeEnrichissementService {
    * Enrichit le taux de logements vacants via l'API LOVAC (data.gouv.fr)
    */
   private async enrichTauxLogementsVacants(
-    parcelle: Parcelle,
+    site: Site,
     sourcesUtilisees: string[],
     sourcesEchouees: string[],
     champsManquants: string[],
   ): Promise<void> {
     // Verifier qu'on a soit le code INSEE, soit le nom de la commune
-    if (!parcelle.codeInsee && !parcelle.commune) {
+    if (!site.codeInsee && !site.commune) {
       this.logger.warn(
-        `Pas de code INSEE ni de commune pour LOVAC - parcelle ${parcelle.identifiantParcelle}`,
+        `Pas de code INSEE ni de commune pour LOVAC - site ${site.identifiantParcelle}`,
       );
       sourcesEchouees.push(SourceEnrichissement.LOVAC);
       champsManquants.push("tauxLogementsVacants");
@@ -141,14 +136,12 @@ export class UrbanismeEnrichissementService {
     try {
       // Appel a l'API LOVAC via data.gouv.fr
       const lovacData = await this.lovacService.getLovacByCommune({
-        codeInsee: parcelle.codeInsee,
-        nomCommune: !parcelle.codeInsee ? parcelle.commune : undefined,
+        codeInsee: site.codeInsee,
+        nomCommune: !site.codeInsee ? site.commune : undefined,
       });
 
       if (!lovacData) {
-        this.logger.warn(
-          `Aucune donnee LOVAC trouvee pour ${parcelle.codeInsee || parcelle.commune}`,
-        );
+        this.logger.warn(`Aucune donnee LOVAC trouvee pour ${site.codeInsee || site.commune}`);
         sourcesEchouees.push(SourceEnrichissement.LOVAC);
         champsManquants.push("tauxLogementsVacants");
         return;
@@ -174,7 +167,7 @@ export class UrbanismeEnrichissementService {
       );
 
       if (tauxVacance !== null) {
-        parcelle.tauxLogementsVacants = tauxVacance;
+        site.tauxLogementsVacants = tauxVacance;
         sourcesUtilisees.push(SourceEnrichissement.LOVAC);
 
         const categorie = LovacCalculator.categoriserTauxVacance(tauxVacance);
@@ -190,7 +183,7 @@ export class UrbanismeEnrichissementService {
       }
     } catch (error) {
       this.logger.error(
-        `Erreur lors de la recuperation LOVAC pour ${parcelle.codeInsee || parcelle.commune}:`,
+        `Erreur lors de la recuperation LOVAC pour ${site.codeInsee || site.commune}:`,
         error,
       );
       sourcesEchouees.push(SourceEnrichissement.LOVAC);

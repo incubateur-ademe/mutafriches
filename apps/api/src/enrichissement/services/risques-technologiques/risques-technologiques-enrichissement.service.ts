@@ -1,6 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { SourceEnrichissement } from "@mutafriches/shared-types";
-import { Parcelle } from "../../../evaluation/entities/parcelle.entity";
+import { Site } from "../../../evaluation/entities/site.entity";
 import { SisService } from "../../adapters/georisques/sis/sis.service";
 import { IcpeService } from "../../adapters/georisques/icpe/icpe.service";
 import { GEORISQUES_RAYONS_DEFAUT } from "../../adapters/georisques/georisques.constants";
@@ -14,7 +14,7 @@ import { EvaluationRisquesTechnologiques } from "./risques-technologiques.types"
  * Responsabilités :
  * - Appeler les APIs GeoRisques (SIS + ICPE) en parallèle
  * - Utiliser le calculator pour évaluer les risques
- * - Enrichir la parcelle avec la présence de risques technologiques
+ * - Enrichir le site avec la présence de risques technologiques
  */
 @Injectable()
 export class RisquesTechnologiquesEnrichissementService {
@@ -27,12 +27,12 @@ export class RisquesTechnologiquesEnrichissementService {
   ) {}
 
   /**
-   * Enrichit une parcelle avec les risques technologiques
+   * Enrichit un site avec les risques technologiques
    *
-   * @param parcelle - Parcelle à enrichir (doit avoir des coordonnées)
+   * @param site - Site à enrichir (doit avoir des coordonnées)
    * @returns Résultat de l'enrichissement et évaluation détaillée
    */
-  async enrichir(parcelle: Parcelle): Promise<{
+  async enrichir(site: Site): Promise<{
     result: EnrichmentResult;
     evaluation: EvaluationRisquesTechnologiques;
   }> {
@@ -40,9 +40,9 @@ export class RisquesTechnologiquesEnrichissementService {
     const sourcesEchouees: string[] = [];
 
     // Vérifier la présence des coordonnées
-    if (!parcelle.coordonnees) {
+    if (!site.coordonnees) {
       this.logger.warn(
-        `Pas de coordonnees disponibles pour les risques technologiques - parcelle ${parcelle.identifiantParcelle}`,
+        `Pas de coordonnees disponibles pour les risques technologiques - site ${site.identifiantParcelle}`,
       );
       sourcesEchouees.push(
         SourceEnrichissement.GEORISQUES_SIS,
@@ -65,8 +65,8 @@ export class RisquesTechnologiquesEnrichissementService {
 
     // Appeler SIS et ICPE en parallèle
     const [sisResult, icpeResult] = await Promise.allSettled([
-      this.getSis(parcelle.coordonnees),
-      this.getIcpe(parcelle.coordonnees),
+      this.getSis(site.coordonnees),
+      this.getIcpe(site.coordonnees),
     ]);
 
     // Traiter les résultats
@@ -106,10 +106,10 @@ export class RisquesTechnologiquesEnrichissementService {
 
     // 3. Évaluer les risques avec le calculator
     const risqueFinal = this.calculator.evaluer(presenceSis, distanceIcpePlusProche);
-    parcelle.presenceRisquesTechnologiques = risqueFinal;
+    site.presenceRisquesTechnologiques = risqueFinal;
 
     this.logger.log(
-      `Risques technologiques calcules pour ${parcelle.identifiantParcelle}: ` +
+      `Risques technologiques calcules pour ${site.identifiantParcelle}: ` +
         `SIS=${presenceSis}, ICPE=${distanceIcpePlusProche !== undefined ? `${Math.round(distanceIcpePlusProche)}m` : "N/A"} → Final=${risqueFinal}`,
     );
 

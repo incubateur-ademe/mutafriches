@@ -11,7 +11,7 @@ import { RisquesTechnologiquesEnrichissementService } from "./risques-technologi
 import { GeoRisquesEnrichissementService } from "./georisques/georisques-enrichissement.service";
 import { EnrichissementRepository } from "../repositories/enrichissement.repository";
 import { PollutionDetectionService } from "./pollution/pollution-detection.service";
-import { Parcelle } from "../../evaluation/entities/parcelle.entity";
+import { Site } from "../../evaluation/entities/site.entity";
 import {
   createMockCadastreEnrichissementService,
   createMockEnergieEnrichissementService,
@@ -23,8 +23,10 @@ import {
   createMockEnrichissementRepository,
   createMockZonageOrchestratorService,
   createMockPollutionDetectionService,
+  createMockSiteRepository,
 } from "../__test-helpers__/enrichissement.mocks";
 import { ZonageOrchestratorService } from "./zonage";
+import { SiteRepository } from "../repositories/site.repository";
 
 describe("EnrichissementService", () => {
   let service: EnrichissementService;
@@ -54,6 +56,7 @@ describe("EnrichissementService", () => {
     const mockZonageOrchestrator = createMockZonageOrchestratorService();
     const mockPollutionDetection = createMockPollutionDetectionService();
     const mockRepository = createMockEnrichissementRepository();
+    const mockSiteRepository = createMockSiteRepository();
 
     // Configuration par defaut du mock pollution
     mockPollutionDetection.detecterPollution.mockResolvedValue({
@@ -85,6 +88,7 @@ describe("EnrichissementService", () => {
         { provide: ZonageOrchestratorService, useValue: mockZonageOrchestrator },
         { provide: PollutionDetectionService, useValue: mockPollutionDetection },
         { provide: EnrichissementRepository, useValue: mockRepository },
+        { provide: SiteRepository, useValue: mockSiteRepository },
       ],
     }).compile();
 
@@ -106,9 +110,9 @@ describe("EnrichissementService", () => {
 
     it("devrait orchestrer tous les sous-domaines dans l'ordre", async () => {
       // Arrange
-      const parcelle = createMockParcelle();
+      const site = createMockSite();
       cadastreEnrichissement.enrichir.mockResolvedValue({
-        parcelle,
+        site,
         result: { success: true, sourcesUtilisees: ["cadastre"], sourcesEchouees: [] },
       });
       energieEnrichissement.enrichir.mockResolvedValue({
@@ -152,19 +156,19 @@ describe("EnrichissementService", () => {
 
       // Assert
       expect(cadastreEnrichissement.enrichir).toHaveBeenCalledWith(identifiantTest);
-      expect(energieEnrichissement.enrichir).toHaveBeenCalledWith(parcelle);
-      expect(transportEnrichissement.enrichir).toHaveBeenCalledWith(parcelle);
-      expect(urbanismeEnrichissement.enrichir).toHaveBeenCalledWith(parcelle);
-      expect(risquesNaturelsEnrichissement.enrichir).toHaveBeenCalledWith(parcelle);
-      expect(risquesTechnologiquesEnrichissement.enrichir).toHaveBeenCalledWith(parcelle);
+      expect(energieEnrichissement.enrichir).toHaveBeenCalledWith(site);
+      expect(transportEnrichissement.enrichir).toHaveBeenCalledWith(site);
+      expect(urbanismeEnrichissement.enrichir).toHaveBeenCalledWith(site);
+      expect(risquesNaturelsEnrichissement.enrichir).toHaveBeenCalledWith(site);
+      expect(risquesTechnologiquesEnrichissement.enrichir).toHaveBeenCalledWith(site);
       expect(georisquesEnrichissement.enrichir).toHaveBeenCalled();
     });
 
     it("devrait construire le DTO de sortie complet", async () => {
       // Arrange
-      const parcelle = createMockParcelle();
+      const site = createMockSite();
       cadastreEnrichissement.enrichir.mockResolvedValue({
-        parcelle,
+        site,
         result: { success: true, sourcesUtilisees: ["cadastre"], sourcesEchouees: [] },
       });
       energieEnrichissement.enrichir.mockResolvedValue({
@@ -216,8 +220,8 @@ describe("EnrichissementService", () => {
 
     it("devrait persister l'enrichissement avec statut SUCCES", async () => {
       // Arrange
-      const parcelle = createMockParcelle();
-      setupAllMocksSuccess(parcelle, {
+      const site = createMockSite();
+      setupAllMocksSuccess(site, {
         cadastreEnrichissement,
         energieEnrichissement,
         transportEnrichissement,
@@ -245,9 +249,9 @@ describe("EnrichissementService", () => {
 
     it("devrait retourner statut PARTIEL si certains services echouent", async () => {
       // Arrange
-      const parcelle = createMockParcelle();
+      const site = createMockSite();
       cadastreEnrichissement.enrichir.mockResolvedValue({
-        parcelle,
+        site,
         result: { success: true, sourcesUtilisees: ["cadastre"], sourcesEchouees: [] },
       });
       energieEnrichissement.enrichir.mockResolvedValue({
@@ -300,7 +304,7 @@ describe("EnrichissementService", () => {
     it("devrait lancer une erreur si cadastre echoue", async () => {
       // Arrange
       cadastreEnrichissement.enrichir.mockResolvedValue({
-        parcelle: null,
+        site: null,
         result: { success: false, sourcesUtilisees: [], sourcesEchouees: ["cadastre"] },
       });
       enrichissementRepository.save.mockResolvedValue({});
@@ -332,8 +336,8 @@ describe("EnrichissementService", () => {
 
     it("devrait ne pas bloquer si le repository echoue", async () => {
       // Arrange
-      const parcelle = createMockParcelle();
-      setupAllMocksSuccess(parcelle, {
+      const site = createMockSite();
+      setupAllMocksSuccess(site, {
         cadastreEnrichissement,
         energieEnrichissement,
         transportEnrichissement,
@@ -351,8 +355,8 @@ describe("EnrichissementService", () => {
 
     it("devrait inclure source et integrateur dans la persistence", async () => {
       // Arrange
-      const parcelle = createMockParcelle();
-      setupAllMocksSuccess(parcelle, {
+      const site = createMockSite();
+      setupAllMocksSuccess(site, {
         cadastreEnrichissement,
         energieEnrichissement,
         transportEnrichissement,
@@ -381,11 +385,11 @@ describe("EnrichissementService", () => {
 
     it("devrait appeler georisques seulement si coordonnees presentes", async () => {
       // Arrange
-      const parcelleSansCoordonnees = createMockParcelle();
-      parcelleSansCoordonnees.coordonnees = undefined;
+      const siteSansCoordonnees = createMockSite();
+      siteSansCoordonnees.coordonnees = undefined;
 
       cadastreEnrichissement.enrichir.mockResolvedValue({
-        parcelle: parcelleSansCoordonnees,
+        site: siteSansCoordonnees,
         result: { success: true, sourcesUtilisees: ["cadastre"], sourcesEchouees: [] },
       });
       energieEnrichissement.enrichir.mockResolvedValue({
@@ -499,8 +503,8 @@ describe("EnrichissementService", () => {
     it("devrait faire un enrichissement complet si pas de cache", async () => {
       // Arrange
       enrichissementRepository.findValidCache.mockResolvedValue(null);
-      const parcelle = createMockParcelle();
-      setupAllMocksSuccess(parcelle, {
+      const site = createMockSite();
+      setupAllMocksSuccess(site, {
         cadastreEnrichissement,
         energieEnrichissement,
         transportEnrichissement,
@@ -523,8 +527,8 @@ describe("EnrichissementService", () => {
     it("devrait ne pas inclure enrichissementSourceId si enrichissement complet", async () => {
       // Arrange
       enrichissementRepository.findValidCache.mockResolvedValue(null);
-      const parcelle = createMockParcelle();
-      setupAllMocksSuccess(parcelle, {
+      const site = createMockSite();
+      setupAllMocksSuccess(site, {
         cadastreEnrichissement,
         energieEnrichissement,
         transportEnrichissement,
@@ -550,15 +554,15 @@ describe("EnrichissementService", () => {
 });
 
 // Helpers
-function createMockParcelle(): Parcelle {
-  const parcelle = new Parcelle();
-  parcelle.identifiantParcelle = "29232000AB0123";
-  parcelle.codeInsee = "29232";
-  parcelle.commune = "Quimper";
-  parcelle.surfaceSite = 1000;
-  parcelle.coordonnees = { latitude: 48.0, longitude: -4.0 };
-  parcelle.geometrie = { type: "Polygon", coordinates: [] } as any;
-  return parcelle;
+function createMockSite(): Site {
+  const site = new Site();
+  site.identifiantParcelle = "29232000AB0123";
+  site.codeInsee = "29232";
+  site.commune = "Quimper";
+  site.surfaceSite = 1000;
+  site.coordonnees = { latitude: 48.0, longitude: -4.0 };
+  site.geometrie = { type: "Polygon", coordinates: [] } as any;
+  return site;
 }
 
 interface AllMocks {
@@ -574,9 +578,9 @@ interface AllMocks {
   zonageOrchestrator: ReturnType<typeof createMockZonageOrchestratorService>;
 }
 
-function setupAllMocksSuccess(parcelle: Parcelle, mocks: AllMocks): void {
+function setupAllMocksSuccess(site: Site, mocks: AllMocks): void {
   mocks.cadastreEnrichissement.enrichir.mockResolvedValue({
-    parcelle,
+    site,
     result: { success: true, sourcesUtilisees: ["cadastre"], sourcesEchouees: [] },
   });
   mocks.energieEnrichissement.enrichir.mockResolvedValue({

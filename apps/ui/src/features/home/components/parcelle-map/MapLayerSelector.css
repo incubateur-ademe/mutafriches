@@ -1,0 +1,21 @@
+/**
+ * Styles pour le sélecteur de fond de carte
+ * Placé au-dessus de la carte, aligné à gauche
+ */
+.map-layer-selector {
+  margin: 0;
+}
+
+/* Assurer que le contrôle segmenté DSFR reste compact */
+.map-layer-selector .fr-segmented {
+  margin: 0;
+}
+
+.map-layer-selector .fr-segmented__elements {
+  gap: 0;
+}
+
+.map-layer-selector .fr-label {
+  font-size: 0.875rem;
+  white-space: nowrap;
+}

@@ -4,7 +4,7 @@ import { OrchestrateurService } from "./orchestrateur.service";
 import { CalculService } from "./calcul.service";
 import { EnrichissementService } from "../../enrichissement/services/enrichissement.service";
 import { EvaluationRepository } from "../repositories/evaluation.repository";
-import { Parcelle } from "../entities/parcelle.entity";
+import { Site } from "../entities/site.entity";
 import { createMockEnrichissementService } from "../../enrichissement/__test-helpers__/enrichissement.mocks";
 import {
   createMockCalculService,
@@ -51,7 +51,7 @@ describe("OrchestrateurService", () => {
     evaluationRepository = mockRepository;
   });
 
-  describe("enrichirParcelle", () => {
+  describe("enrichirSite", () => {
     it("devrait enrichir une parcelle via le service d'enrichissement", async () => {
       const input = { identifiant: "490055000AI0001" };
       const mockEnrichissement = {
@@ -64,7 +64,7 @@ describe("OrchestrateurService", () => {
 
       enrichissementService.enrichir.mockResolvedValue(mockEnrichissement);
 
-      const result = await service.enrichirParcelle(input);
+      const result = await service.enrichirSite(input);
 
       expect(enrichissementService.enrichir).toHaveBeenCalledWith(input.identifiant);
       expect(result).toBe(mockEnrichissement);
@@ -94,22 +94,22 @@ describe("OrchestrateurService", () => {
         resultats: [{ usage: "RESIDENTIEL", rang: 1, indiceMutabilite: 75 }],
       } as any;
 
-      // Mock de Parcelle.fromEnrichissement
-      const mockParcelle = new Parcelle();
-      mockParcelle.identifiantParcelle = "490055000AI0001";
-      vi.spyOn(Parcelle, "fromEnrichissement").mockReturnValue(mockParcelle);
-      vi.spyOn(mockParcelle, "estComplete").mockReturnValue(true);
+      // Mock de Site.fromEnrichissement
+      const mockSite = new Site();
+      mockSite.identifiantParcelle = "490055000AI0001";
+      vi.spyOn(Site, "fromEnrichissement").mockReturnValue(mockSite);
+      vi.spyOn(mockSite, "estComplete").mockReturnValue(true);
 
       calculService.calculer.mockResolvedValue(mockResultatCalcul);
       evaluationRepository.save.mockResolvedValue("eval-123");
 
       const result = await service.calculerMutabilite(input);
 
-      expect(Parcelle.fromEnrichissement).toHaveBeenCalledWith(
+      expect(Site.fromEnrichissement).toHaveBeenCalledWith(
         mockEnrichissement,
         mockDonneesComplementaires,
       );
-      expect(calculService.calculer).toHaveBeenCalledWith(mockParcelle, undefined);
+      expect(calculService.calculer).toHaveBeenCalledWith(mockSite, undefined);
       expect(evaluationRepository.save).toHaveBeenCalled();
       expect(result.evaluationId).toBe("eval-123");
       expect(result.fiabilite).toEqual(mockResultatCalcul.fiabilite);
@@ -126,18 +126,18 @@ describe("OrchestrateurService", () => {
       );
     });
 
-    it("devrait lancer une erreur si la parcelle n'est pas complète", async () => {
+    it("devrait lancer une erreur si le site n'est pas complet", async () => {
       const input = {
         donneesEnrichies: { identifiantParcelle: "123" },
         donneesComplementaires: {},
       } as any;
 
-      const mockParcelle = new Parcelle();
-      vi.spyOn(Parcelle, "fromEnrichissement").mockReturnValue(mockParcelle);
-      vi.spyOn(mockParcelle, "estComplete").mockReturnValue(false);
+      const mockSite = new Site();
+      vi.spyOn(Site, "fromEnrichissement").mockReturnValue(mockSite);
+      vi.spyOn(mockSite, "estComplete").mockReturnValue(false);
 
       await expect(service.calculerMutabilite(input)).rejects.toThrow(
-        "Parcelle incomplète pour le calcul",
+        "Site incomplet pour le calcul",
       );
     });
 
@@ -149,9 +149,9 @@ describe("OrchestrateurService", () => {
 
       const options = { modeDetaille: true };
 
-      const mockParcelle = new Parcelle();
-      vi.spyOn(Parcelle, "fromEnrichissement").mockReturnValue(mockParcelle);
-      vi.spyOn(mockParcelle, "estComplete").mockReturnValue(true);
+      const mockSite = new Site();
+      vi.spyOn(Site, "fromEnrichissement").mockReturnValue(mockSite);
+      vi.spyOn(mockSite, "estComplete").mockReturnValue(true);
 
       const mockResultat = {
         fiabilite: { note: 5 },
@@ -163,11 +163,11 @@ describe("OrchestrateurService", () => {
 
       await service.calculerMutabilite(input, options);
 
-      expect(calculService.calculer).toHaveBeenCalledWith(mockParcelle, options);
+      expect(calculService.calculer).toHaveBeenCalledWith(mockSite, options);
     });
   });
 
-  describe("evaluerParcelle", () => {
+  describe("evaluerSite", () => {
     it("devrait orchestrer enrichissement + calcul + sauvegarde", async () => {
       const identifiant = "490055000AI0001";
       const donneesComplementaires = {
@@ -193,7 +193,7 @@ describe("OrchestrateurService", () => {
 
       evaluationRepository.save.mockResolvedValue("eval-final");
 
-      const result = await service.evaluerParcelle(identifiant, donneesComplementaires);
+      const result = await service.evaluerSite(identifiant, donneesComplementaires);
 
       expect(enrichissementService.enrichir).toHaveBeenCalledWith(identifiant);
       expect(service.calculerMutabilite).toHaveBeenCalledWith({
@@ -304,10 +304,10 @@ describe("OrchestrateurService", () => {
         resultats: [{ usage: "RESIDENTIEL", rang: 1, indiceMutabilite: 75 }],
       } as any;
 
-      const mockParcelle = new Parcelle();
-      mockParcelle.identifiantParcelle = "490055000AI0001";
-      vi.spyOn(Parcelle, "fromEnrichissement").mockReturnValue(mockParcelle);
-      vi.spyOn(mockParcelle, "estComplete").mockReturnValue(true);
+      const mockSite = new Site();
+      mockSite.identifiantParcelle = "490055000AI0001";
+      vi.spyOn(Site, "fromEnrichissement").mockReturnValue(mockSite);
+      vi.spyOn(mockSite, "estComplete").mockReturnValue(true);
 
       calculService.calculer.mockResolvedValue(mockResultatCalcul);
       evaluationRepository.save.mockResolvedValue("eval-new");
@@ -323,7 +323,7 @@ describe("OrchestrateurService", () => {
       expect(evaluationRepository.findValidCache).toHaveBeenCalled();
 
       // Verifie que le calcul a ete effectue
-      expect(calculService.calculer).toHaveBeenCalledWith(mockParcelle, undefined);
+      expect(calculService.calculer).toHaveBeenCalledWith(mockSite, undefined);
 
       // Verifie que save a ete appele SANS id source
       expect(evaluationRepository.save).toHaveBeenCalled();
@@ -347,9 +347,9 @@ describe("OrchestrateurService", () => {
         resultats: [],
       } as any;
 
-      const mockParcelle = new Parcelle();
-      vi.spyOn(Parcelle, "fromEnrichissement").mockReturnValue(mockParcelle);
-      vi.spyOn(mockParcelle, "estComplete").mockReturnValue(true);
+      const mockSite = new Site();
+      vi.spyOn(Site, "fromEnrichissement").mockReturnValue(mockSite);
+      vi.spyOn(mockSite, "estComplete").mockReturnValue(true);
 
       calculService.calculer.mockResolvedValue(mockResultatCalcul);
       evaluationRepository.save.mockResolvedValue("eval-new");

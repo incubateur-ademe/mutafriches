@@ -14,6 +14,9 @@
   "dependencies": {
     "@gouvfr/dsfr": "^1.14.1",
     "@mutafriches/shared-types": "workspace:*",
+    "@turf/boolean-intersects": "^7.3.3",
+    "@turf/centroid": "^7.3.0",
+    "@turf/helpers": "^7.3.0",
     "axios": "^1.11.0",
     "leaflet": "^1.9.4",
     "react": "^19.1.1",

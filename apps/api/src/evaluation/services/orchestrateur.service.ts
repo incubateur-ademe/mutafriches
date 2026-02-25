@@ -10,7 +10,7 @@ import {
 } from "@mutafriches/shared-types";
 import { EnrichissementService } from "../../enrichissement/services/enrichissement.service";
 import { CalculService } from "./calcul.service";
-import { Parcelle } from "../entities/parcelle.entity";
+import { Site } from "../entities/site.entity";
 import { Evaluation } from "../entities/evaluation.entity";
 import { EvaluationRepository } from "../repositories/evaluation.repository";
 
@@ -29,15 +29,15 @@ export class OrchestrateurService {
   ) {}
 
   /**
-   * Enrichit une parcelle avec les données externes
+   * Enrichit un site (1 ou plusieurs parcelles) avec les données externes
    */
-  async enrichirParcelle(input: EnrichirParcelleInputDto): Promise<EnrichissementOutputDto> {
+  async enrichirSite(input: EnrichirParcelleInputDto): Promise<EnrichissementOutputDto> {
     // Délègue à l'enrichissement service
     return await this.enrichissementService.enrichir(input.identifiant);
   }
 
   /**
-   * Calcule la mutabilité d'une parcelle
+   * Calcule la mutabilité d'un site
    */
   async calculerMutabilite(
     input: CalculerMutabiliteInputDto,
@@ -52,28 +52,31 @@ export class OrchestrateurService {
       throw new Error("Données enrichies manquantes dans la requête");
     }
 
-    const parcelleId = input.donneesEnrichies.identifiantParcelle;
+    // identifiantParcelle du DTO contient l'identifiant du site (contrat API public inchangé)
+    const siteId = input.donneesEnrichies.identifiantParcelle;
+    const nombreParcelles = input.donneesEnrichies.nombreParcelles;
 
     // 0. VERIFIER LE CACHE
     const cached = await this.evaluationRepository.findValidCache(
-      parcelleId,
+      siteId,
       input.donneesComplementaires,
     );
 
     if (cached) {
-      this.logger.log(`Cache evaluation hit pour ${parcelleId}, source: ${cached.id}`);
+      this.logger.log(`Cache evaluation hit pour site ${siteId}, source: ${cached.id}`);
 
       // Origine par défaut si non fournie
       const origine = options?.origine || { source: SourceUtilisation.API_DIRECTE };
 
       // Enregistrer l'utilisation du cache pour analytics
       const evaluation = new Evaluation(
-        parcelleId,
+        siteId,
         input.donneesEnrichies.codeInsee,
         input.donneesEnrichies,
         input.donneesComplementaires,
         cached.resultats,
         origine,
+        nombreParcelles,
       );
 
       const evaluationId = await this.evaluationRepository.save(evaluation, cached.id);
@@ -84,39 +87,40 @@ export class OrchestrateurService {
       };
     }
 
-    this.logger.log(`Cache evaluation miss pour ${parcelleId}, calcul complet`);
+    this.logger.log(`Cache evaluation miss pour site ${siteId}, calcul complet`);
 
-    // Crée l'entité Parcelle selon le mode
-    let parcelle: Parcelle;
+    // Crée l'entité Site selon le mode
+    let site: Site;
 
     if (options?.sansEnrichissement) {
       // Mode sans enrichissement : utilise directement l'input
       // Utilisé pour les tests avec des données complètes
-      parcelle = Parcelle.fromInput(input);
+      site = Site.fromInput(input);
     } else {
       // Mode normal : crée depuis l'enrichissement
-      parcelle = Parcelle.fromEnrichissement(input.donneesEnrichies, input.donneesComplementaires);
+      site = Site.fromEnrichissement(input.donneesEnrichies, input.donneesComplementaires);
     }
 
-    // Vérifie que la parcelle est complète
-    if (!parcelle.estComplete()) {
-      throw new Error("Parcelle incomplète pour le calcul");
+    // Vérifie que le site est complet
+    if (!site.estComplete()) {
+      throw new Error("Site incomplet pour le calcul");
     }
 
     // Lance le calcul
-    const resultats = await this.calculService.calculer(parcelle, options);
+    const resultats = await this.calculService.calculer(site, options);
 
     // Origine par défaut si non fournie
     const origine = options?.origine || { source: SourceUtilisation.API_DIRECTE };
 
     // Création d'une évaluation de mutabilité
     const evaluation = new Evaluation(
-      parcelle.identifiantParcelle,
-      parcelle.codeInsee,
+      siteId,
+      site.codeInsee,
       input.donneesEnrichies,
       input.donneesComplementaires,
       resultats,
       origine,
+      nombreParcelles,
     );
 
     // Sauvegarde l'évaluation et retourne l'id
@@ -131,7 +135,7 @@ export class OrchestrateurService {
   /**
    * Enrichit ET calcule en une seule fois
    */
-  async evaluerParcelle(
+  async evaluerSite(
     identifiant: string,
     donneesComplementaires: DonneesComplementairesInputDto,
     origine?: OrigineUtilisation,
@@ -141,7 +145,7 @@ export class OrchestrateurService {
     evaluationId?: string;
   }> {
     // 1. Enrichissement
-    const enrichissement = await this.enrichirParcelle({ identifiant });
+    const enrichissement = await this.enrichirSite({ identifiant });
 
     // 2. Calcul
     const mutabilite = await this.calculerMutabilite({
@@ -154,12 +158,13 @@ export class OrchestrateurService {
 
     // 3. Sauvegarde
     const evaluation = new Evaluation(
-      identifiant,
+      enrichissement.identifiantParcelle,
       enrichissement.codeInsee,
       enrichissement,
       donneesComplementaires,
       mutabilite,
       origineFinale,
+      enrichissement.nombreParcelles,
     );
 
     const evaluationId = await this.evaluationRepository.save(evaluation);

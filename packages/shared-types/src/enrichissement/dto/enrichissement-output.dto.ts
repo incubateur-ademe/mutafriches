@@ -1,7 +1,7 @@
 import { Coordonnees, GeometrieParcelle } from "../..";
 
 /**
- * Résultat de l'enrichissement automatique des données de parcelle
+ * Résultat de l'enrichissement automatique des données de parcelle ou site
  * Contient uniquement les données extraites automatiquement depuis des sources externes
  */
 export interface EnrichissementOutputDto {
@@ -9,8 +9,20 @@ export interface EnrichissementOutputDto {
   identifiantParcelle: string;
   codeInsee: string;
   commune: string;
-  coordonnees?: Coordonnees; // Coordonnées GPS du point d'entrée de la parcelle
-  geometrie?: GeometrieParcelle; // Polygone complet
+  coordonnees?: Coordonnees; // Centroïde du site (ou point d'entrée en mono-parcelle)
+  geometrie?: GeometrieParcelle; // Polygone complet (union en multi-parcelle)
+
+  // Données multi-parcelle (optionnelles, absentes en mono-parcelle)
+  /** Identifiants de toutes les parcelles du site */
+  identifiantsParcelles?: string[];
+  /** Nombre de parcelles constituant le site */
+  nombreParcelles?: number;
+  /** Identifiant de la parcelle prédominante (plus grande surface) */
+  parcellePredominante?: string;
+  /** Commune prédominante (plus grande surface cumulée) */
+  communePredominante?: string;
+  /** Géométrie union du site (union de toutes les parcelles) */
+  geometrieSite?: GeometrieParcelle;
 
   // Données physiques du site
   surfaceSite: number;
@@ -33,7 +45,7 @@ export interface EnrichissementOutputDto {
   presenceRisquesTechnologiques: boolean;
   presenceRisquesNaturels?: string; // Enum RisqueNaturel
 
-  // Pollution - site reference dans les bases ADEME (sites et sols pollues)
+  // Pollution - site référencé dans les bases ADEME (sites et sols pollués)
   siteReferencePollue: boolean;
 
   // Zonages réglementaires

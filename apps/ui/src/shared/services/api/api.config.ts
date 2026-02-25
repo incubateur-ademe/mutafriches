@@ -25,6 +25,9 @@ export const API_CONFIG = {
     evenements: {
       enregistrer: "/evenements",
     },
+    metabase: {
+      embedUrl: "/api/metabase/embed-url",
+    },
     // Legacy endpoints (deprecated - pour compatibilité)
     friches: {
       enrichir: "/friches/enrichir",

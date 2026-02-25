@@ -107,6 +107,33 @@ export function useEventTracking() {
     [track],
   );
 
+  const trackParcelleAjoutee = useCallback(
+    (nombreParcelles: number, surfaceTotaleM2: number) => {
+      return track(TypeEvenement.PARCELLE_AJOUTEE, {
+        donnees: { nombreParcelles, surfaceTotaleM2 },
+      });
+    },
+    [track],
+  );
+
+  const trackParcelleSupprimee = useCallback(
+    (nombreParcelles: number, surfaceTotaleM2: number) => {
+      return track(TypeEvenement.PARCELLE_SUPPRIMEE, {
+        donnees: { nombreParcelles, surfaceTotaleM2 },
+      });
+    },
+    [track],
+  );
+
+  const trackJaugeDepassee = useCallback(
+    (nombreParcelles: number, surfaceTotaleM2: number) => {
+      return track(TypeEvenement.JAUGE_DEPASSEE, {
+        donnees: { nombreParcelles, surfaceTotaleM2 },
+      });
+    },
+    [track],
+  );
+
   return {
     track,
     trackFeedback,
@@ -114,5 +141,8 @@ export function useEventTracking() {
     trackInteretMiseEnRelation,
     trackExporterResultats,
     trackEvaluationTerminee,
+    trackParcelleAjoutee,
+    trackParcelleSupprimee,
+    trackJaugeDepassee,
   };
 }

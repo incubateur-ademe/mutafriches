@@ -8,12 +8,13 @@ import { VERSION_ALGO } from "@mutafriches/shared-types";
 
 /**
  * Entité métier Evaluation
- * Représente une évaluation de mutabilité sauvegardée pour une parcelle à un instant donné
+ * Représente une évaluation de mutabilité sauvegardée pour un site (1 ou plusieurs parcelles) à un instant donné
  */
 export class Evaluation {
   id?: string;
   codeInsee: string;
-  parcelleId: string;
+  siteId: string;
+  nombreParcelles?: number;
   dateCalcul: Date;
 
   // Snapshot des données au moment du calcul
@@ -28,14 +29,16 @@ export class Evaluation {
   versionAlgorithme: string;
 
   constructor(
-    parcelleId: string,
+    siteId: string,
     codeInsee: string,
     donneesEnrichissement: EnrichissementOutputDto,
     donneesComplementaires: DonneesComplementairesInputDto,
     resultats: MutabiliteOutputDto,
     origine: OrigineUtilisation,
+    nombreParcelles?: number,
   ) {
-    this.parcelleId = parcelleId;
+    this.siteId = siteId;
+    this.nombreParcelles = nombreParcelles;
     this.codeInsee = codeInsee;
     this.dateCalcul = new Date();
     this.donneesEnrichissement = donneesEnrichissement;

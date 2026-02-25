@@ -20,6 +20,7 @@ import { QualificationEnvironnementPage } from "./features/qualification/pages/Q
 import { QualificationRisquesPage } from "./features/qualification/pages/QualificationRisquesPage";
 import { ResultatsPage } from "./features/resultats/pages/ResultatsPage";
 import { DocumentationIntegrationPage } from "./features/documentation/pages/DocumentationIntegrationPage";
+import { StatistiquesPage } from "./features/statistiques/pages/StatistiquesPage";
 
 function AppContent() {
   const { track } = useEventTracking();
@@ -49,6 +50,9 @@ function AppContent() {
         />
         <Route path={ROUTES.QUALIFICATION_RISQUES} element={<QualificationRisquesPage />} />
         <Route path={ROUTES.RESULTATS} element={<ResultatsPage />} />
+
+        {/* Statistiques */}
+        <Route path={ROUTES.STATISTIQUES} element={<StatistiquesPage />} />
 
         {/* Documentation */}
         <Route path={ROUTES.DOCUMENTATION_INTEGRATION} element={<DocumentationIntegrationPage />} />

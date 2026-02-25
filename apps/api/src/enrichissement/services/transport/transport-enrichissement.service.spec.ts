@@ -4,7 +4,7 @@ import { TransportEnrichissementService } from "./transport-enrichissement.servi
 import { ServicePublicService } from "../../adapters/service-public/service-public.service";
 import { IgnWfsService } from "../../adapters/ign-wfs/ign-wfs.service";
 import { TransportStopsRepository } from "../../repositories/transport-stops.repository";
-import { Parcelle } from "../../../evaluation/entities/parcelle.entity";
+import { Site } from "../../../evaluation/entities/site.entity";
 
 describe("TransportEnrichissementService", () => {
   let service: TransportEnrichissementService;
@@ -36,13 +36,13 @@ describe("TransportEnrichissementService", () => {
   });
 
   describe("enrichir - Centre-ville", () => {
-    it("devrait determiner que la parcelle est en centre-ville (< 1000m)", async () => {
+    it("devrait determiner que le site est en centre-ville (< 1000m)", async () => {
       // Arrange
-      const parcelle = new Parcelle();
-      parcelle.identifiantParcelle = "29232000AB0123";
-      parcelle.codeInsee = "29232";
-      parcelle.commune = "Test Commune";
-      parcelle.coordonnees = { latitude: 48.0, longitude: -4.0 };
+      const site = new Site();
+      site.identifiantParcelle = "29232000AB0123";
+      site.codeInsee = "29232";
+      site.commune = "Test Commune";
+      site.coordonnees = { latitude: 48.0, longitude: -4.0 };
 
       // Mock mairie
       vi.mocked(servicePublicService.getMairieCoordonnees).mockResolvedValue({
@@ -70,11 +70,11 @@ describe("TransportEnrichissementService", () => {
       vi.mocked(transportStopsRepository.findTransportStopProximite).mockResolvedValue(450);
 
       // Act
-      const result = await service.enrichir(parcelle);
+      const result = await service.enrichir(site);
 
       // Assert
-      expect(parcelle.siteEnCentreVille).toBe(true);
-      expect(parcelle.distanceTransportCommun).toBe(450);
+      expect(site.siteEnCentreVille).toBe(true);
+      expect(site.distanceTransportCommun).toBe(450);
       expect(result.success).toBe(true);
       expect(result.sourcesUtilisees).toContain(SourceEnrichissement.SERVICE_PUBLIC);
       expect(result.sourcesUtilisees).toContain(SourceEnrichissement.IGN_WFS);
@@ -82,13 +82,13 @@ describe("TransportEnrichissementService", () => {
       expect(servicePublicService.getMairieCoordonnees).toHaveBeenCalledWith("29232");
     });
 
-    it("devrait determiner que la parcelle n'est PAS en centre-ville (> 1000m)", async () => {
+    it("devrait determiner que le site n'est PAS en centre-ville (> 1000m)", async () => {
       // Arrange
-      const parcelle = new Parcelle();
-      parcelle.identifiantParcelle = "29232000AB0123";
-      parcelle.codeInsee = "29232";
-      parcelle.commune = "Test Commune";
-      parcelle.coordonnees = { latitude: 48.0, longitude: -4.0 };
+      const site = new Site();
+      site.identifiantParcelle = "29232000AB0123";
+      site.codeInsee = "29232";
+      site.commune = "Test Commune";
+      site.coordonnees = { latitude: 48.0, longitude: -4.0 };
 
       vi.mocked(servicePublicService.getMairieCoordonnees).mockResolvedValue({
         success: true,
@@ -110,11 +110,11 @@ describe("TransportEnrichissementService", () => {
       vi.mocked(transportStopsRepository.findTransportStopProximite).mockResolvedValue(800);
 
       // Act
-      const result = await service.enrichir(parcelle);
+      const result = await service.enrichir(site);
 
       // Assert
-      expect(parcelle.siteEnCentreVille).toBe(false);
-      expect(parcelle.distanceTransportCommun).toBe(800);
+      expect(site.siteEnCentreVille).toBe(false);
+      expect(site.distanceTransportCommun).toBe(800);
       expect(result.success).toBe(true);
       expect(result.sourcesUtilisees).toContain(SourceEnrichissement.SERVICE_PUBLIC);
       expect(result.sourcesUtilisees).toContain(SourceEnrichissement.TRANSPORT_DATA_GOUV);
@@ -122,11 +122,11 @@ describe("TransportEnrichissementService", () => {
 
     it("devrait mettre centre-ville a false si erreur API Service Public", async () => {
       // Arrange
-      const parcelle = new Parcelle();
-      parcelle.identifiantParcelle = "29232000AB0123";
-      parcelle.codeInsee = "29232";
-      parcelle.commune = "Test Commune";
-      parcelle.coordonnees = { latitude: 48.0, longitude: -4.0 };
+      const site = new Site();
+      site.identifiantParcelle = "29232000AB0123";
+      site.codeInsee = "29232";
+      site.commune = "Test Commune";
+      site.coordonnees = { latitude: 48.0, longitude: -4.0 };
 
       vi.mocked(servicePublicService.getMairieCoordonnees).mockResolvedValue({
         success: false,
@@ -143,11 +143,11 @@ describe("TransportEnrichissementService", () => {
       vi.mocked(transportStopsRepository.findTransportStopProximite).mockResolvedValue(600);
 
       // Act
-      const result = await service.enrichir(parcelle);
+      const result = await service.enrichir(site);
 
       // Assert
-      expect(parcelle.siteEnCentreVille).toBe(false);
-      expect(parcelle.distanceTransportCommun).toBe(600);
+      expect(site.siteEnCentreVille).toBe(false);
+      expect(site.distanceTransportCommun).toBe(600);
       expect(result.sourcesEchouees).toContain(SourceEnrichissement.SERVICE_PUBLIC);
       expect(result.champsManquants).toContain("siteEnCentreVille");
       // IGN WFS et Transport devrait quand meme fonctionner
@@ -155,13 +155,13 @@ describe("TransportEnrichissementService", () => {
       expect(result.sourcesUtilisees).toContain(SourceEnrichissement.TRANSPORT_DATA_GOUV);
     });
 
-    it("devrait determiner centre-ville avec une vraie parcelle (Trelaze)", async () => {
+    it("devrait determiner centre-ville avec un vrai site (Trelaze)", async () => {
       // Arrange
-      const parcelle = new Parcelle();
-      parcelle.identifiantParcelle = "49007000ZE0153";
-      parcelle.codeInsee = "49007";
-      parcelle.commune = "Trelaze";
-      parcelle.coordonnees = { latitude: 47.4484, longitude: -0.4768 };
+      const site = new Site();
+      site.identifiantParcelle = "49007000ZE0153";
+      site.codeInsee = "49007";
+      site.commune = "Trelaze";
+      site.coordonnees = { latitude: 47.4484, longitude: -0.4768 };
 
       vi.mocked(servicePublicService.getMairieCoordonnees).mockResolvedValue({
         success: true,
@@ -183,11 +183,11 @@ describe("TransportEnrichissementService", () => {
       vi.mocked(transportStopsRepository.findTransportStopProximite).mockResolvedValue(350);
 
       // Act
-      const result = await service.enrichir(parcelle);
+      const result = await service.enrichir(site);
 
       // Assert
-      expect(parcelle.siteEnCentreVille).toBe(true);
-      expect(parcelle.distanceTransportCommun).toBe(350);
+      expect(site.siteEnCentreVille).toBe(true);
+      expect(site.distanceTransportCommun).toBe(350);
       expect(result.success).toBe(true);
       expect(result.sourcesUtilisees).toContain(SourceEnrichissement.SERVICE_PUBLIC);
       expect(result.sourcesUtilisees).toContain(SourceEnrichissement.TRANSPORT_DATA_GOUV);
@@ -197,11 +197,11 @@ describe("TransportEnrichissementService", () => {
   describe("enrichir - Distance autoroute", () => {
     it("devrait calculer la distance a l'autoroute la plus proche", async () => {
       // Arrange
-      const parcelle = new Parcelle();
-      parcelle.identifiantParcelle = "29232000AB0123";
-      parcelle.codeInsee = "29232";
-      parcelle.commune = "Test Commune";
-      parcelle.coordonnees = { latitude: 48.0, longitude: -4.0 };
+      const site = new Site();
+      site.identifiantParcelle = "29232000AB0123";
+      site.codeInsee = "29232";
+      site.commune = "Test Commune";
+      site.coordonnees = { latitude: 48.0, longitude: -4.0 };
 
       vi.mocked(servicePublicService.getMairieCoordonnees).mockResolvedValue({
         success: true,
@@ -227,10 +227,10 @@ describe("TransportEnrichissementService", () => {
       vi.mocked(transportStopsRepository.findTransportStopProximite).mockResolvedValue(500);
 
       // Act
-      const result = await service.enrichir(parcelle);
+      const result = await service.enrichir(site);
 
       // Assert
-      expect(parcelle.distanceAutoroute).toBe(3500);
+      expect(site.distanceAutoroute).toBe(3500);
       expect(result.success).toBe(true);
       expect(result.sourcesUtilisees).toContain(SourceEnrichissement.IGN_WFS);
       expect(ignWfsService.getDistanceVoieGrandeCirculation).toHaveBeenCalledWith(
@@ -242,11 +242,11 @@ describe("TransportEnrichissementService", () => {
 
     it("devrait gerer le cas ou aucune autoroute n'est trouvee", async () => {
       // Arrange
-      const parcelle = new Parcelle();
-      parcelle.identifiantParcelle = "RURAL123";
-      parcelle.codeInsee = "12345";
-      parcelle.commune = "Village Isole";
-      parcelle.coordonnees = { latitude: 45.0, longitude: 2.0 };
+      const site = new Site();
+      site.identifiantParcelle = "RURAL123";
+      site.codeInsee = "12345";
+      site.commune = "Village Isole";
+      site.coordonnees = { latitude: 45.0, longitude: 2.0 };
 
       vi.mocked(servicePublicService.getMairieCoordonnees).mockResolvedValue({
         success: true,
@@ -269,11 +269,11 @@ describe("TransportEnrichissementService", () => {
       vi.mocked(transportStopsRepository.findTransportStopProximite).mockResolvedValue(1200);
 
       // Act
-      const result = await service.enrichir(parcelle);
+      const result = await service.enrichir(site);
 
       // Assert
-      expect(parcelle.distanceAutoroute).toBeUndefined();
-      expect(parcelle.distanceTransportCommun).toBe(1200);
+      expect(site.distanceAutoroute).toBeUndefined();
+      expect(site.distanceTransportCommun).toBe(1200);
       expect(result.sourcesEchouees).toContain(SourceEnrichissement.IGN_WFS);
       expect(result.champsManquants).toContain("distanceAutoroute");
       // Les autres enrichissements devraient quand meme fonctionner
@@ -283,10 +283,10 @@ describe("TransportEnrichissementService", () => {
 
     it("devrait enrichir meme sans code INSEE (IGN WFS fonctionne)", async () => {
       // Arrange
-      const parcelle = new Parcelle();
-      parcelle.identifiantParcelle = "TEST";
-      parcelle.codeInsee = undefined; // Pas de code INSEE
-      parcelle.coordonnees = { latitude: 48.0, longitude: -4.0 };
+      const site = new Site();
+      site.identifiantParcelle = "TEST";
+      site.codeInsee = undefined; // Pas de code INSEE
+      site.coordonnees = { latitude: 48.0, longitude: -4.0 };
 
       // Mock : IGN WFS fonctionne sans code INSEE
       vi.mocked(ignWfsService.getDistanceVoieGrandeCirculation).mockResolvedValue({
@@ -298,11 +298,11 @@ describe("TransportEnrichissementService", () => {
       vi.mocked(transportStopsRepository.findTransportStopProximite).mockResolvedValue(750);
 
       // Act
-      const result = await service.enrichir(parcelle);
+      const result = await service.enrichir(site);
 
       // Assert
-      expect(parcelle.distanceAutoroute).toBe(1200);
-      expect(parcelle.distanceTransportCommun).toBe(750);
+      expect(site.distanceAutoroute).toBe(1200);
+      expect(site.distanceTransportCommun).toBe(750);
       expect(result.sourcesUtilisees).toContain(SourceEnrichissement.IGN_WFS);
       expect(result.sourcesUtilisees).toContain(SourceEnrichissement.TRANSPORT_DATA_GOUV);
       // Service Public devrait echouer (pas de code INSEE)
@@ -313,11 +313,11 @@ describe("TransportEnrichissementService", () => {
   describe("enrichir - Distance transport en commun", () => {
     it("devrait calculer la distance au transport en commun le plus proche", async () => {
       // Arrange
-      const parcelle = new Parcelle();
-      parcelle.identifiantParcelle = "75056000AB0001";
-      parcelle.codeInsee = "75056";
-      parcelle.commune = "Paris";
-      parcelle.coordonnees = { latitude: 48.8566, longitude: 2.3522 };
+      const site = new Site();
+      site.identifiantParcelle = "75056000AB0001";
+      site.codeInsee = "75056";
+      site.commune = "Paris";
+      site.coordonnees = { latitude: 48.8566, longitude: 2.3522 };
 
       vi.mocked(servicePublicService.getMairieCoordonnees).mockResolvedValue({
         success: true,
@@ -340,10 +340,10 @@ describe("TransportEnrichissementService", () => {
       vi.mocked(transportStopsRepository.findTransportStopProximite).mockResolvedValue(250.5);
 
       // Act
-      const result = await service.enrichir(parcelle);
+      const result = await service.enrichir(site);
 
       // Assert
-      expect(parcelle.distanceTransportCommun).toBe(251); // Arrondi
+      expect(site.distanceTransportCommun).toBe(251); // Arrondi
       expect(result.success).toBe(true);
       expect(result.sourcesUtilisees).toContain(SourceEnrichissement.TRANSPORT_DATA_GOUV);
       expect(transportStopsRepository.findTransportStopProximite).toHaveBeenCalledWith(
@@ -355,11 +355,11 @@ describe("TransportEnrichissementService", () => {
 
     it("devrait gerer le cas ou aucun transport n'est trouve dans le rayon", async () => {
       // Arrange
-      const parcelle = new Parcelle();
-      parcelle.identifiantParcelle = "RURAL456";
-      parcelle.codeInsee = "23456";
-      parcelle.commune = "Campagne Profonde";
-      parcelle.coordonnees = { latitude: 44.5, longitude: 1.5 };
+      const site = new Site();
+      site.identifiantParcelle = "RURAL456";
+      site.codeInsee = "23456";
+      site.commune = "Campagne Profonde";
+      site.coordonnees = { latitude: 44.5, longitude: 1.5 };
 
       vi.mocked(servicePublicService.getMairieCoordonnees).mockResolvedValue({
         success: true,
@@ -382,11 +382,11 @@ describe("TransportEnrichissementService", () => {
       vi.mocked(transportStopsRepository.findTransportStopProximite).mockResolvedValue(null);
 
       // Act
-      const result = await service.enrichir(parcelle);
+      const result = await service.enrichir(site);
 
       // Assert
       // null = "recherche OK, aucun arrêt dans le rayon" (information valide, pas un champ manquant)
-      expect(parcelle.distanceTransportCommun).toBeNull();
+      expect(site.distanceTransportCommun).toBeNull();
       // La source est utilisée (la recherche a fonctionné) et le champ n'est PAS manquant
       expect(result.sourcesUtilisees).toContain(SourceEnrichissement.TRANSPORT_DATA_GOUV);
       expect(result.sourcesEchouees).not.toContain(SourceEnrichissement.TRANSPORT_DATA_GOUV);
@@ -398,11 +398,11 @@ describe("TransportEnrichissementService", () => {
 
     it("devrait gerer les erreurs du repository transport", async () => {
       // Arrange
-      const parcelle = new Parcelle();
-      parcelle.identifiantParcelle = "TEST789";
-      parcelle.codeInsee = "12345";
-      parcelle.commune = "Test";
-      parcelle.coordonnees = { latitude: 48.0, longitude: -4.0 };
+      const site = new Site();
+      site.identifiantParcelle = "TEST789";
+      site.codeInsee = "12345";
+      site.commune = "Test";
+      site.coordonnees = { latitude: 48.0, longitude: -4.0 };
 
       vi.mocked(servicePublicService.getMairieCoordonnees).mockResolvedValue({
         success: true,
@@ -427,10 +427,10 @@ describe("TransportEnrichissementService", () => {
       );
 
       // Act
-      const result = await service.enrichir(parcelle);
+      const result = await service.enrichir(site);
 
       // Assert
-      expect(parcelle.distanceTransportCommun).toBeUndefined();
+      expect(site.distanceTransportCommun).toBeUndefined();
       expect(result.sourcesEchouees).toContain(SourceEnrichissement.TRANSPORT_DATA_GOUV);
       expect(result.champsManquants).toContain("distanceTransportCommun");
       // Les autres enrichissements devraient quand meme fonctionner
@@ -441,11 +441,11 @@ describe("TransportEnrichissementService", () => {
 
     it("devrait arrondir la distance au metre pres", async () => {
       // Arrange
-      const parcelle = new Parcelle();
-      parcelle.identifiantParcelle = "TEST";
-      parcelle.codeInsee = "12345";
-      parcelle.commune = "Test";
-      parcelle.coordonnees = { latitude: 48.0, longitude: -4.0 };
+      const site = new Site();
+      site.identifiantParcelle = "TEST";
+      site.codeInsee = "12345";
+      site.commune = "Test";
+      site.coordonnees = { latitude: 48.0, longitude: -4.0 };
 
       vi.mocked(servicePublicService.getMairieCoordonnees).mockResolvedValue({
         success: true,
@@ -468,10 +468,10 @@ describe("TransportEnrichissementService", () => {
       vi.mocked(transportStopsRepository.findTransportStopProximite).mockResolvedValue(456.789);
 
       // Act
-      const result = await service.enrichir(parcelle);
+      const result = await service.enrichir(site);
 
       // Assert
-      expect(parcelle.distanceTransportCommun).toBe(457); // Arrondi
+      expect(site.distanceTransportCommun).toBe(457); // Arrondi
       expect(result.success).toBe(true);
     });
   });
@@ -479,19 +479,19 @@ describe("TransportEnrichissementService", () => {
   describe("enrichir - Cas d'erreur", () => {
     it("devrait retourner echec si pas de coordonnees", async () => {
       // Arrange
-      const parcelle = new Parcelle();
-      parcelle.identifiantParcelle = "29232000AB0123";
-      parcelle.codeInsee = "29232";
-      parcelle.commune = "Test Commune";
-      parcelle.coordonnees = undefined;
+      const site = new Site();
+      site.identifiantParcelle = "29232000AB0123";
+      site.codeInsee = "29232";
+      site.commune = "Test Commune";
+      site.coordonnees = undefined;
 
       // Act
-      const result = await service.enrichir(parcelle);
+      const result = await service.enrichir(site);
 
       // Assert
-      expect(parcelle.distanceTransportCommun).toBeUndefined();
-      expect(parcelle.siteEnCentreVille).toBeUndefined();
-      expect(parcelle.distanceAutoroute).toBeUndefined();
+      expect(site.distanceTransportCommun).toBeUndefined();
+      expect(site.siteEnCentreVille).toBeUndefined();
+      expect(site.distanceAutoroute).toBeUndefined();
       expect(result.success).toBe(false);
       expect(result.sourcesEchouees).toContain(SourceEnrichissement.SERVICE_PUBLIC);
       expect(result.sourcesEchouees).toContain(SourceEnrichissement.IGN_WFS);
@@ -507,11 +507,11 @@ describe("TransportEnrichissementService", () => {
 
     it("devrait retourner echec si pas de code INSEE (seulement pour mairie)", async () => {
       // Arrange
-      const parcelle = new Parcelle();
-      parcelle.identifiantParcelle = "29232000AB0123";
-      parcelle.codeInsee = undefined;
-      parcelle.commune = "Test Commune";
-      parcelle.coordonnees = { latitude: 48.0, longitude: -4.0 };
+      const site = new Site();
+      site.identifiantParcelle = "29232000AB0123";
+      site.codeInsee = undefined;
+      site.commune = "Test Commune";
+      site.coordonnees = { latitude: 48.0, longitude: -4.0 };
 
       vi.mocked(ignWfsService.getDistanceVoieGrandeCirculation).mockResolvedValue({
         success: true,
@@ -522,7 +522,7 @@ describe("TransportEnrichissementService", () => {
       vi.mocked(transportStopsRepository.findTransportStopProximite).mockResolvedValue(800);
 
       // Act
-      const result = await service.enrichir(parcelle);
+      const result = await service.enrichir(site);
 
       // Assert
       expect(result.sourcesEchouees).toContain(SourceEnrichissement.SERVICE_PUBLIC);
@@ -530,8 +530,8 @@ describe("TransportEnrichissementService", () => {
       // IGN WFS et Transport devraient fonctionner
       expect(result.sourcesUtilisees).toContain(SourceEnrichissement.IGN_WFS);
       expect(result.sourcesUtilisees).toContain(SourceEnrichissement.TRANSPORT_DATA_GOUV);
-      expect(parcelle.distanceAutoroute).toBe(5000);
-      expect(parcelle.distanceTransportCommun).toBe(800);
+      expect(site.distanceAutoroute).toBe(5000);
+      expect(site.distanceTransportCommun).toBe(800);
       // Ne doit pas appeler Service Public
       expect(servicePublicService.getMairieCoordonnees).not.toHaveBeenCalled();
     });
@@ -540,11 +540,11 @@ describe("TransportEnrichissementService", () => {
   describe("enrichir - Succes partiel", () => {
     it("devrait continuer meme si centre-ville echoue", async () => {
       // Arrange
-      const parcelle = new Parcelle();
-      parcelle.identifiantParcelle = "29232000AB0123";
-      parcelle.codeInsee = "29232";
-      parcelle.commune = "Test Commune";
-      parcelle.coordonnees = { latitude: 48.0, longitude: -4.0 };
+      const site = new Site();
+      site.identifiantParcelle = "29232000AB0123";
+      site.codeInsee = "29232";
+      site.commune = "Test Commune";
+      site.coordonnees = { latitude: 48.0, longitude: -4.0 };
 
       vi.mocked(servicePublicService.getMairieCoordonnees).mockRejectedValue(
         new Error("Timeout API"),
@@ -559,25 +559,25 @@ describe("TransportEnrichissementService", () => {
       vi.mocked(transportStopsRepository.findTransportStopProximite).mockResolvedValue(650);
 
       // Act
-      const result = await service.enrichir(parcelle);
+      const result = await service.enrichir(site);
 
       // Assert
       expect(result.success).toBe(true); // Succes partiel
       expect(result.sourcesUtilisees).toContain(SourceEnrichissement.IGN_WFS);
       expect(result.sourcesUtilisees).toContain(SourceEnrichissement.TRANSPORT_DATA_GOUV);
       expect(result.sourcesEchouees).toContain(SourceEnrichissement.SERVICE_PUBLIC);
-      expect(parcelle.siteEnCentreVille).toBe(false);
-      expect(parcelle.distanceAutoroute).toBe(3000);
-      expect(parcelle.distanceTransportCommun).toBe(650);
+      expect(site.siteEnCentreVille).toBe(false);
+      expect(site.distanceAutoroute).toBe(3000);
+      expect(site.distanceTransportCommun).toBe(650);
     });
 
     it("devrait continuer meme si transport echoue", async () => {
       // Arrange
-      const parcelle = new Parcelle();
-      parcelle.identifiantParcelle = "29232000AB0123";
-      parcelle.codeInsee = "29232";
-      parcelle.commune = "Test Commune";
-      parcelle.coordonnees = { latitude: 48.0, longitude: -4.0 };
+      const site = new Site();
+      site.identifiantParcelle = "29232000AB0123";
+      site.codeInsee = "29232";
+      site.commune = "Test Commune";
+      site.coordonnees = { latitude: 48.0, longitude: -4.0 };
 
       vi.mocked(servicePublicService.getMairieCoordonnees).mockResolvedValue({
         success: true,
@@ -600,7 +600,7 @@ describe("TransportEnrichissementService", () => {
       vi.mocked(transportStopsRepository.findTransportStopProximite).mockResolvedValue(null);
 
       // Act
-      const result = await service.enrichir(parcelle);
+      const result = await service.enrichir(site);
 
       // Assert
       expect(result.success).toBe(true); // Succes partiel
@@ -610,20 +610,20 @@ describe("TransportEnrichissementService", () => {
       expect(result.sourcesUtilisees).toContain(SourceEnrichissement.TRANSPORT_DATA_GOUV);
       expect(result.sourcesEchouees).not.toContain(SourceEnrichissement.TRANSPORT_DATA_GOUV);
       expect(result.champsManquants).not.toContain("distanceTransportCommun");
-      expect(parcelle.siteEnCentreVille).toBe(true);
-      expect(parcelle.distanceAutoroute).toBe(2500);
-      expect(parcelle.distanceTransportCommun).toBeNull();
+      expect(site.siteEnCentreVille).toBe(true);
+      expect(site.distanceAutoroute).toBe(2500);
+      expect(site.distanceTransportCommun).toBeNull();
     });
   });
 
   describe("isCentreVille - Seuil de 1000m", () => {
     it("devrait retourner true pour 900m", async () => {
       // Arrange
-      const parcelle = new Parcelle();
-      parcelle.identifiantParcelle = "TEST";
-      parcelle.codeInsee = "12345";
-      parcelle.commune = "Test";
-      parcelle.coordonnees = { latitude: 48.0, longitude: -4.0 };
+      const site = new Site();
+      site.identifiantParcelle = "TEST";
+      site.codeInsee = "12345";
+      site.commune = "Test";
+      site.coordonnees = { latitude: 48.0, longitude: -4.0 };
 
       vi.mocked(servicePublicService.getMairieCoordonnees).mockResolvedValue({
         success: true,
@@ -645,19 +645,19 @@ describe("TransportEnrichissementService", () => {
       vi.mocked(transportStopsRepository.findTransportStopProximite).mockResolvedValue(400);
 
       // Act
-      await service.enrichir(parcelle);
+      await service.enrichir(site);
 
       // Assert
-      expect(parcelle.siteEnCentreVille).toBe(true);
+      expect(site.siteEnCentreVille).toBe(true);
     });
 
     it("devrait retourner false pour 1100m", async () => {
       // Arrange
-      const parcelle = new Parcelle();
-      parcelle.identifiantParcelle = "TEST";
-      parcelle.codeInsee = "12345";
-      parcelle.commune = "Test";
-      parcelle.coordonnees = { latitude: 48.0, longitude: -4.0 };
+      const site = new Site();
+      site.identifiantParcelle = "TEST";
+      site.codeInsee = "12345";
+      site.commune = "Test";
+      site.coordonnees = { latitude: 48.0, longitude: -4.0 };
 
       vi.mocked(servicePublicService.getMairieCoordonnees).mockResolvedValue({
         success: true,
@@ -679,10 +679,10 @@ describe("TransportEnrichissementService", () => {
       vi.mocked(transportStopsRepository.findTransportStopProximite).mockResolvedValue(500);
 
       // Act
-      await service.enrichir(parcelle);
+      await service.enrichir(site);
 
       // Assert
-      expect(parcelle.siteEnCentreVille).toBe(false);
+      expect(site.siteEnCentreVille).toBe(false);
     });
   });
 });

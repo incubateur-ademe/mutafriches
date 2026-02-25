@@ -3,7 +3,7 @@ import { ParcelleUiModel } from "../types/parcelle.models";
 
 export interface FormState {
   // Étape 1 - Données d'enrichissement
-  identifiantParcelle?: string;
+  identifiantSite?: string;
   enrichmentData?: EnrichissementOutputDto;
   uiData?: ParcelleUiModel;
 

@@ -1,26 +1,24 @@
-import React, { useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Layout } from "../../../shared/components/layout/Layout";
 import { ROUTES } from "../../../shared/config/routes.config";
-import { MultiParcelleToggle } from "../components/MultiParcelleToggle";
 import { ParcelleSelectionMap } from "../components/parcelle-map/ParcelleSelectionMap";
 import { MutabilityAccordion } from "../components/MutabilityAccordion";
 import { useFormContext } from "../../../shared/form/useFormContext";
+import { useIsIframeMode } from "../../../shared/iframe/useIframe";
 
 export const HomePage: React.FC = () => {
   const navigate = useNavigate();
   const { resetForm, state } = useFormContext();
+  const isInIframe = useIsIframeMode();
 
-  const [isMultiParcelle, setIsMultiParcelle] = useState(false);
-
-  const handleAnalyze = async (identifiant: string) => {
+  const handleAnalyze = (identifiants: string[]) => {
     // Reset le formulaire si on recommence une analyse
     if (state.enrichmentData) {
       resetForm();
     }
 
-    // Naviguer vers la page d'enrichissement (loading)
-    navigate(ROUTES.ENRICHISSEMENT, { state: { identifiant } });
+    navigate(ROUTES.ENRICHISSEMENT, { state: { identifiants } });
   };
 
   return (
@@ -50,7 +48,7 @@ export const HomePage: React.FC = () => {
         </div>
       )}
 
-      <div className="fr-mt-6w fr-mb-4w">
+      <div className={isInIframe ? "fr-mt-2w fr-mb-2w" : "fr-mt-6w fr-mb-4w"}>
         <h1>Trouver le bon usage pour une friche</h1>
 
         <p className="fr-text--lead">
@@ -58,10 +56,8 @@ export const HomePage: React.FC = () => {
           sélectionner une parcelle sur la carte. Vous pouvez la rechercher en entrant son adresse
           exacte ou une adresse approchante.
           <br />
-          Sélectionner la parcelle et cliquer sur 'Analyser cette parcelle'.
+          Sélectionner la parcelle et cliquer sur 'Analyser ce site'.
         </p>
-
-        <MultiParcelleToggle isMulti={isMultiParcelle} onChange={setIsMultiParcelle} />
 
         <ParcelleSelectionMap onAnalyze={handleAnalyze} height="500px" />
 

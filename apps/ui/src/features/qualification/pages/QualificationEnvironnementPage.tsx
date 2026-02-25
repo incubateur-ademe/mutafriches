@@ -47,10 +47,10 @@ export const QualificationEnvironnementPage: React.FC = () => {
     if (!hasTrackedVisit.current) {
       hasTrackedVisit.current = true;
       track(TypeEvenement.QUALIFICATION_ENVIRONNEMENT, {
-        identifiantCadastral: state.identifiantParcelle || undefined,
+        identifiantCadastral: state.identifiantSite || undefined,
       });
     }
-  }, [canAccessStep, navigate, setCurrentStep, track, state.identifiantParcelle]);
+  }, [canAccessStep, navigate, setCurrentStep, track, state.identifiantSite]);
 
   const handleChange = (fieldName: keyof EnvironnementFormValues, value: string) => {
     setValues((prev) => ({ ...prev, [fieldName]: value }));
@@ -95,7 +95,7 @@ export const QualificationEnvironnementPage: React.FC = () => {
         // Tracker l'événement de saisie des données complémentaires
         const dataRecord = updatedManualData as Record<string, string>;
         await track(TypeEvenement.DONNEES_COMPLEMENTAIRES_SAISIES, {
-          identifiantCadastral: state.identifiantParcelle || undefined,
+          identifiantCadastral: state.identifiantSite || undefined,
           donnees: {
             nombreChampsSaisis: Object.keys(dataRecord).filter(
               (k) => dataRecord[k] && dataRecord[k] !== "",

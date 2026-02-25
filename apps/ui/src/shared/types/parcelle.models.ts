@@ -10,6 +10,8 @@ export interface ParcelleUiModel {
   // Informations parcelle
   commune: string;
   identifiantParcelle: string;
+  identifiantsParcelles?: string[];
+  nombreParcelles?: number;
 
   // Environnement
   centreVille: string;

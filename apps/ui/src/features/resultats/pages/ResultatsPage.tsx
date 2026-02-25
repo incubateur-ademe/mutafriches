@@ -17,6 +17,7 @@ import { IframeEvaluationSummaryDto } from "../../../shared/iframe/iframe.types"
 import { evaluationService } from "../../../shared/services/api/api.evaluation.service";
 import { ModalInfo } from "../../../shared/components/common/ModalInfo";
 import { VERSION_ALGO } from "@mutafriches/shared-types";
+import { DebugPanelGate } from "../../debug/components/DebugPanelGate";
 
 // Seuils pour les messages contextuels
 const SEUIL_SURFACE_HECTARE = 10000; // 1 hectare en m2
@@ -109,7 +110,7 @@ export const ResultatsPage: React.FC = () => {
       // Données détaillées renvoyées vers l'intégrateur
       const evaluationSummary: IframeEvaluationSummaryDto = {
         evaluationId: results.evaluationId || "",
-        identifiantParcelle: state.identifiantParcelle || "",
+        identifiantParcelle: state.identifiantSite || "",
         retrieveUrl: `/friches/evaluations/${results.evaluationId}`,
         fiabilite: {
           note: results.fiabilite.note,
@@ -133,7 +134,7 @@ export const ResultatsPage: React.FC = () => {
 
       iframeCommunicator.sendCompleted(evaluationSummary);
     },
-    [isIframeMode, iframeCommunicator, state.identifiantParcelle],
+    [isIframeMode, iframeCommunicator, state.identifiantSite],
   );
 
   // Fonction pour calculer la mutabilité
@@ -158,7 +159,7 @@ export const ResultatsPage: React.FC = () => {
 
       // Tracker l'événement d'évaluation terminée (seulement si evaluationId valide)
       if (result.evaluationId) {
-        await trackEvaluationTerminee(result.evaluationId, state.identifiantParcelle || undefined);
+        await trackEvaluationTerminee(result.evaluationId, state.identifiantSite || undefined);
       }
     } catch (err) {
       const errorMessage =
@@ -179,7 +180,7 @@ export const ResultatsPage: React.FC = () => {
     isIframeMode,
     iframeCommunicator,
     integrator,
-    state.identifiantParcelle,
+    state.identifiantSite,
     trackEvaluationTerminee,
   ]);
 
@@ -198,7 +199,7 @@ export const ResultatsPage: React.FC = () => {
 
     // Tracker l'arrivée sur la page
     track(TypeEvenement.RESULTATS_MUTABILITE, {
-      identifiantCadastral: state.identifiantParcelle || undefined,
+      identifiantCadastral: state.identifiantSite || undefined,
     });
 
     if (state.mutabilityResult) {
@@ -471,6 +472,14 @@ export const ResultatsPage: React.FC = () => {
         <p>Voulez-vous vraiment démarrer une nouvelle analyse ?</p>
         <p className="fr-text--sm">Les données actuelles seront perdues.</p>
       </ModalInfo>
+
+      {/* Panneau de diagnostic (dev/staging uniquement) */}
+      <DebugPanelGate
+        enrichmentData={state.enrichmentData}
+        manualData={state.manualData}
+        mutabilityData={mutabilityData}
+        identifiantSite={state.identifiantSite}
+      />
     </Layout>
   );
 };

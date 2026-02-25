@@ -1,6 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { SourceEnrichissement } from "@mutafriches/shared-types";
-import { Parcelle } from "../../../evaluation/entities/parcelle.entity";
+import { Site } from "../../../evaluation/entities/site.entity";
 import { EnrichmentResult } from "../shared/enrichissement.types";
 import { ServicePublicService } from "../../adapters/service-public/service-public.service";
 import { IgnWfsService } from "../../adapters/ign-wfs/ign-wfs.service";
@@ -16,7 +16,7 @@ import { TransportStopsRepository } from "../../repositories/transport-stops.rep
  * Service d'enrichissement du sous-domaine Transport
  *
  * Responsabilites :
- * - Determiner si la parcelle est en centre-ville (distance a la mairie)
+ * - Determiner si le site est en centre-ville (distance a la mairie)
  * - Calculer la distance a la voie de grande circulation la plus proche
  * - Calculer la distance au transport en commun le plus proche
  */
@@ -31,20 +31,18 @@ export class TransportEnrichissementService {
   ) {}
 
   /**
-   * Enrichit la parcelle avec les informations de transport
-   * @param parcelle
+   * Enrichit le site avec les informations de transport
+   * @param site
    * @returns
    */
-  async enrichir(parcelle: Parcelle): Promise<EnrichmentResult> {
+  async enrichir(site: Site): Promise<EnrichmentResult> {
     const sourcesUtilisees: string[] = [];
     const sourcesEchouees: string[] = [];
     const champsManquants: string[] = [];
 
     // Verifications preliminaires
-    if (!parcelle.coordonnees) {
-      this.logger.warn(
-        `Pas de coordonnees disponibles pour la parcelle ${parcelle.identifiantParcelle}`,
-      );
+    if (!site.coordonnees) {
+      this.logger.warn(`Pas de coordonnees disponibles pour le site ${site.identifiantParcelle}`);
       sourcesEchouees.push(
         SourceEnrichissement.SERVICE_PUBLIC,
         SourceEnrichissement.IGN_WFS,
@@ -54,26 +52,16 @@ export class TransportEnrichissementService {
       return { success: false, sourcesUtilisees, sourcesEchouees, champsManquants };
     }
 
-    if (!parcelle.codeInsee) {
-      this.logger.warn(`Code INSEE manquant pour la parcelle ${parcelle.identifiantParcelle}`);
+    if (!site.codeInsee) {
+      this.logger.warn(`Code INSEE manquant pour le site ${site.identifiantParcelle}`);
       sourcesEchouees.push(SourceEnrichissement.SERVICE_PUBLIC);
       champsManquants.push("siteEnCentreVille");
     }
 
     // Enrichissements
-    await this.enrichirCentreVille(parcelle, sourcesUtilisees, sourcesEchouees, champsManquants);
-    await this.enrichirDistanceAutoroute(
-      parcelle,
-      sourcesUtilisees,
-      sourcesEchouees,
-      champsManquants,
-    );
-    await this.enrichirTransportCommun(
-      parcelle,
-      sourcesUtilisees,
-      sourcesEchouees,
-      champsManquants,
-    );
+    await this.enrichirCentreVille(site, sourcesUtilisees, sourcesEchouees, champsManquants);
+    await this.enrichirDistanceAutoroute(site, sourcesUtilisees, sourcesEchouees, champsManquants);
+    await this.enrichirTransportCommun(site, sourcesUtilisees, sourcesEchouees, champsManquants);
 
     return {
       success: sourcesUtilisees.length > 0,
@@ -84,25 +72,25 @@ export class TransportEnrichissementService {
   }
 
   /**
-   * Determine si la parcelle est en centre-ville via l'API Service Public
+   * Determine si le site est en centre-ville via l'API Service Public
    */
   private async enrichirCentreVille(
-    parcelle: Parcelle,
+    site: Site,
     sourcesUtilisees: string[],
     sourcesEchouees: string[],
     champsManquants: string[],
   ): Promise<void> {
     try {
-      if (!parcelle.coordonnees || !parcelle.codeInsee) {
+      if (!site.coordonnees || !site.codeInsee) {
         throw new Error("Coordonnees ou code INSEE non disponibles");
       }
 
       this.logger.debug(
-        `Parcelle ${parcelle.identifiantParcelle}: ` +
-          `lat=${parcelle.coordonnees.latitude.toFixed(5)}, lon=${parcelle.coordonnees.longitude.toFixed(5)}`,
+        `Site ${site.identifiantParcelle}: ` +
+          `lat=${site.coordonnees.latitude.toFixed(5)}, lon=${site.coordonnees.longitude.toFixed(5)}`,
       );
 
-      const mairieResult = await this.servicePublicService.getMairieCoordonnees(parcelle.codeInsee);
+      const mairieResult = await this.servicePublicService.getMairieCoordonnees(site.codeInsee);
 
       if (!mairieResult.success || !mairieResult.data) {
         throw new Error(mairieResult.error || "Mairie non trouvee");
@@ -111,32 +99,32 @@ export class TransportEnrichissementService {
       const coordonneesMairie = mairieResult.data.coordonnees;
 
       this.logger.debug(
-        `Mairie ${mairieResult.data.nomCommune} (${parcelle.codeInsee}): ` +
+        `Mairie ${mairieResult.data.nomCommune} (${site.codeInsee}): ` +
           `lat=${coordonneesMairie.latitude.toFixed(5)}, lon=${coordonneesMairie.longitude.toFixed(5)}`,
       );
 
       const distanceMetres = calculateDistance(
-        parcelle.coordonnees.latitude,
-        parcelle.coordonnees.longitude,
+        site.coordonnees.latitude,
+        site.coordonnees.longitude,
         coordonneesMairie.latitude,
         coordonneesMairie.longitude,
       );
 
       this.logger.debug(`Distance calculee: ${Math.round(distanceMetres)}m`);
 
-      parcelle.siteEnCentreVille = TransportCalculator.isCentreVille(distanceMetres);
+      site.siteEnCentreVille = TransportCalculator.isCentreVille(distanceMetres);
       sourcesUtilisees.push(SourceEnrichissement.SERVICE_PUBLIC);
 
       this.logger.log(
-        `Centre-ville: ${parcelle.siteEnCentreVille ? "OUI" : "NON"} ` +
+        `Centre-ville: ${site.siteEnCentreVille ? "OUI" : "NON"} ` +
           `(distance mairie: ${Math.round(distanceMetres)}m) ` +
-          `pour ${parcelle.identifiantParcelle}`,
+          `pour ${site.identifiantParcelle}`,
       );
     } catch (error) {
       this.logger.error("Erreur lors de la determination centre-ville:", error);
       sourcesEchouees.push(SourceEnrichissement.SERVICE_PUBLIC);
       champsManquants.push("siteEnCentreVille");
-      parcelle.siteEnCentreVille = false;
+      site.siteEnCentreVille = false;
     }
   }
 
@@ -144,21 +132,21 @@ export class TransportEnrichissementService {
    * Calcule la distance a la voie de grande circulation la plus proche via IGN WFS
    */
   private async enrichirDistanceAutoroute(
-    parcelle: Parcelle,
+    site: Site,
     sourcesUtilisees: string[],
     sourcesEchouees: string[],
     champsManquants: string[],
   ): Promise<void> {
     try {
-      if (!parcelle.coordonnees) {
+      if (!site.coordonnees) {
         throw new Error("Coordonnees non disponibles");
       }
 
-      this.logger.debug(`Recherche voie grande circulation pour ${parcelle.identifiantParcelle}`);
+      this.logger.debug(`Recherche voie grande circulation pour ${site.identifiantParcelle}`);
 
       const wfsResult = await this.ignWfsService.getDistanceVoieGrandeCirculation(
-        parcelle.coordonnees.latitude,
-        parcelle.coordonnees.longitude,
+        site.coordonnees.latitude,
+        site.coordonnees.longitude,
         RAYON_RECHERCHE_AUTOROUTE_M,
       );
 
@@ -169,20 +157,20 @@ export class TransportEnrichissementService {
       const distanceMetres = wfsResult.data.distanceMetres;
 
       // Stocker la distance brute et la categorie
-      parcelle.distanceAutoroute = Math.round(distanceMetres);
+      site.distanceAutoroute = Math.round(distanceMetres);
 
       sourcesUtilisees.push(SourceEnrichissement.IGN_WFS);
 
       this.logger.log(
         `Distance autoroute: ${Math.round(distanceMetres)}m ` +
           `(${TransportCalculator.categoriserDistanceAutoroute(distanceMetres)}) ` +
-          `pour ${parcelle.identifiantParcelle}`,
+          `pour ${site.identifiantParcelle}`,
       );
     } catch (error) {
       this.logger.error("Erreur lors de la recherche autoroute:", error);
       sourcesEchouees.push(SourceEnrichissement.IGN_WFS);
       champsManquants.push("distanceAutoroute");
-      parcelle.distanceAutoroute = undefined;
+      site.distanceAutoroute = undefined;
     }
   }
 
@@ -191,22 +179,22 @@ export class TransportEnrichissementService {
    * Utilise les données de transport.data.gouv.fr
    */
   private async enrichirTransportCommun(
-    parcelle: Parcelle,
+    site: Site,
     sourcesUtilisees: string[],
     sourcesEchouees: string[],
     champsManquants: string[],
   ): Promise<void> {
     try {
-      if (!parcelle.coordonnees) {
+      if (!site.coordonnees) {
         throw new Error("Coordonnees non disponibles");
       }
 
-      this.logger.debug(`Recherche transport en commun pour ${parcelle.identifiantParcelle}`);
+      this.logger.debug(`Recherche transport en commun pour ${site.identifiantParcelle}`);
 
       // Recherche dans le rayon defini dans les constantes
       const distanceMetres = await this.transportStopsRepository.findTransportStopProximite(
-        parcelle.coordonnees.latitude,
-        parcelle.coordonnees.longitude,
+        site.coordonnees.latitude,
+        site.coordonnees.longitude,
         RAYON_RECHERCHE_TRANSPORT_M,
       );
 
@@ -218,24 +206,24 @@ export class TransportEnrichissementService {
         // null = "recherche OK, aucun résultat" vs undefined = "erreur technique"
         this.logger.log(
           `Aucun point d'arret trouve dans un rayon de ${RAYON_RECHERCHE_TRANSPORT_M}m ` +
-            `pour ${parcelle.identifiantParcelle}`,
+            `pour ${site.identifiantParcelle}`,
         );
-        parcelle.distanceTransportCommun = null;
+        site.distanceTransportCommun = null;
         return;
       }
 
       // Stocker la distance brute
-      parcelle.distanceTransportCommun = Math.round(distanceMetres);
+      site.distanceTransportCommun = Math.round(distanceMetres);
 
       this.logger.log(
-        `Distance transport: ${Math.round(distanceMetres)}m pour ${parcelle.identifiantParcelle}`,
+        `Distance transport: ${Math.round(distanceMetres)}m pour ${site.identifiantParcelle}`,
       );
     } catch (error) {
       // Erreur technique lors de la recherche
       this.logger.error("Erreur lors de la recherche transport en commun:", error);
       sourcesEchouees.push(SourceEnrichissement.TRANSPORT_DATA_GOUV);
       champsManquants.push("distanceTransportCommun");
-      parcelle.distanceTransportCommun = undefined;
+      site.distanceTransportCommun = undefined;
     }
   }
 }

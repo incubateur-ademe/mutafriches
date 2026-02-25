@@ -313,7 +313,7 @@ describe("EvaluationController", () => {
       // Arrange
       const mockEvaluation = new EvaluationBuilder()
         .withId("eval-123")
-        .withParcelleId("29232000AB0123")
+        .withSiteId("29232000AB0123")
         .withCodeInsee("29232")
         .withCommune("Quimper")
         .withVersionAlgorithme("1.1.0")

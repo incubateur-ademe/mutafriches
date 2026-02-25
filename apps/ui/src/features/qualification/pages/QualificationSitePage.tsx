@@ -47,10 +47,10 @@ export const QualificationSitePage: React.FC = () => {
     if (!hasTrackedVisit.current) {
       hasTrackedVisit.current = true;
       track(TypeEvenement.QUALIFICATION_SITE, {
-        identifiantCadastral: state.identifiantParcelle || undefined,
+        identifiantCadastral: state.identifiantSite || undefined,
       });
     }
-  }, [canAccessStep, navigate, setCurrentStep, track, state.identifiantParcelle]);
+  }, [canAccessStep, navigate, setCurrentStep, track, state.identifiantSite]);
 
   const handleChange = (fieldName: keyof SiteFormValues, value: string) => {
     setValues((prev) => ({ ...prev, [fieldName]: value }));
@@ -136,8 +136,16 @@ export const QualificationSitePage: React.FC = () => {
 
           <EnrichedInfoField
             id="identifiant-parcelle"
-            label="Identifiant parcelle"
-            value={uiData?.identifiantParcelle || "-"}
+            label={
+              uiData?.nombreParcelles && uiData.nombreParcelles > 1
+                ? "Parcelles du site"
+                : "Identifiant parcelle"
+            }
+            value={
+              uiData?.identifiantsParcelles && uiData.identifiantsParcelles.length > 1
+                ? uiData.identifiantsParcelles
+                : uiData?.identifiantParcelle || "-"
+            }
             tooltip={
               <>
                 Récupéré depuis l'API IGN Cadastre :<br />

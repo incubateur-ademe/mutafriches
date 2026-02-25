@@ -17,6 +17,10 @@ export interface EvenementDonnees {
   usageConcerne?: UsageType | string;
   /** Nombre de champs saisis dans les donnees complementaires */
   nombreChampsSaisis?: number;
+  /** Nombre de parcelles dans la sélection au moment de l'événement */
+  nombreParcelles?: number;
+  /** Surface cumulée du site en m² au moment de l'événement */
+  surfaceTotaleM2?: number;
 }
 
 export interface EvenementInputDto {

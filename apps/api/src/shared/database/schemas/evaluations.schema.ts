@@ -1,9 +1,10 @@
-import { pgTable, varchar, jsonb, timestamp, numeric } from "drizzle-orm/pg-core";
+import { pgTable, varchar, jsonb, timestamp, numeric, integer } from "drizzle-orm/pg-core";
 
 // Table pour les évaluations
 export const evaluations = pgTable("evaluations", {
   id: varchar("id", { length: 50 }).primaryKey(),
-  parcelleId: varchar("parcelle_id", { length: 20 }).notNull(),
+  siteId: varchar("site_id", { length: 1000 }).notNull(),
+  nombreParcelles: integer("nombre_parcelles"),
   codeInsee: varchar("code_insee", { length: 5 }).notNull(),
   dateCalcul: timestamp("date_calcul").notNull().defaultNow(),
 
