@@ -7,7 +7,7 @@ import type {
   PreviewParcelle,
   SelectionState,
 } from "../types/parcelle-selection.types";
-import { MAX_SITE_AREA_M2 } from "../types/parcelle-selection.types";
+import { MAX_SITE_AREA_M2, MAX_PARCELLE_COUNT } from "../types/parcelle-selection.types";
 import type { ParcelleProperties } from "../services/cadastre/api.cadastre.types";
 
 /**
@@ -79,8 +79,8 @@ export interface UseParcelleSelectionOptions {
 /**
  * Hook de gestion de la sélection multi-parcelle.
  *
- * Gère les états : idle, previewing, already-added, non-adjacent, max-size.
- * Vérifie l'adjacence via Turf.js et contrôle le seuil de surface (10 ha, uniquement en multi-parcelles).
+ * Gère les états : idle, previewing, already-added, non-adjacent, max-size, max-parcelles.
+ * Vérifie l'adjacence via Turf.js, contrôle le seuil de surface (10 ha) et le nombre max de parcelles (20).
  */
 export function useParcelleSelection(
   options?: UseParcelleSelectionOptions,
@@ -122,6 +122,12 @@ export function useParcelleSelection(
         setPreviewParcelle({ idu, geometry, properties, contenance, clickCoords });
         setSelectionState("max-size");
         options?.onMaxSizeReached?.(selectedParcelles.size, totalArea + contenance);
+        return;
+      }
+
+      // Cas 2bis : nombre maximum de parcelles atteint (20)
+      if (selectedParcelles.size >= MAX_PARCELLE_COUNT) {
+        setSelectionState("max-parcelles");
         return;
       }
 

@@ -35,8 +35,18 @@ export interface PreviewParcelle {
  * - already-added : une parcelle déjà ajoutée est cliquée, bouton poubelle affiché
  * - non-adjacent : tentative d'ajout d'une parcelle non adjacente
  * - max-size : la taille maximale du site est atteinte (10 hectares, uniquement en multi-parcelles)
+ * - max-parcelles : le nombre maximum de parcelles est atteint (20)
  */
-export type SelectionState = "idle" | "previewing" | "already-added" | "non-adjacent" | "max-size";
+export type SelectionState =
+  | "idle"
+  | "previewing"
+  | "already-added"
+  | "non-adjacent"
+  | "max-size"
+  | "max-parcelles";
 
 /** Seuil maximal de surface cumulée en m² (10 hectares) */
 export const MAX_SITE_AREA_M2 = 100_000;
+
+/** Nombre maximum de parcelles sélectionnables par site */
+export const MAX_PARCELLE_COUNT = 20;

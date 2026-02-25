@@ -22,6 +22,13 @@ const GUIDE_MESSAGES: Record<SelectionState, React.ReactNode> = {
       Nous vous recommandons de diviser votre site en 2 analyses distinctes
     </>
   ),
+  "max-parcelles": (
+    <>
+      Vous avez atteint le nombre maximum de parcelles sélectionnées (20).
+      <br />
+      Nous vous invitons à procéder à un test de votre site en deux fois.
+    </>
+  ),
 };
 
 /**
@@ -29,7 +36,10 @@ const GUIDE_MESSAGES: Record<SelectionState, React.ReactNode> = {
  * Le message change en fonction de l'état de sélection et du nombre de parcelles.
  */
 export function MapGuide({ selectionState, parcelleCount }: MapGuideProps) {
-  const isError = selectionState === "non-adjacent" || selectionState === "max-size";
+  const isError =
+    selectionState === "non-adjacent" ||
+    selectionState === "max-size" ||
+    selectionState === "max-parcelles";
 
   // Affiner le message idle quand des parcelles sont déjà ajoutées
   let message: React.ReactNode;
