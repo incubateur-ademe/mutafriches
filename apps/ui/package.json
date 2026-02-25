@@ -12,32 +12,32 @@
     "clean": "rm -rf dist node_modules"
   },
   "dependencies": {
-    "@gouvfr/dsfr": "^1.14.1",
+    "@gouvfr/dsfr": "^1.14.3",
     "@mutafriches/shared-types": "workspace:*",
-    "@turf/boolean-intersects": "^7.3.3",
-    "@turf/centroid": "^7.3.0",
-    "@turf/helpers": "^7.3.0",
-    "axios": "^1.11.0",
+    "@turf/boolean-intersects": "^7.3.4",
+    "@turf/centroid": "^7.3.4",
+    "@turf/helpers": "^7.3.4",
+    "axios": "^1.13.5",
     "leaflet": "^1.9.4",
-    "react": "^19.1.1",
-    "react-dom": "^19.1.1",
-    "react-router-dom": "^7.8.2",
-    "zustand": "^5.0.8"
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "react-router-dom": "^7.13.1",
+    "zustand": "^5.0.11"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4.1.13",
+    "@tailwindcss/postcss": "^4.2.1",
     "@types/geojson": "^7946.0.16",
     "@types/leaflet": "^1.9.20",
-    "@types/react": "^19.1.10",
+    "@types/react": "^19.2.14",
     "@types/react-dom": "^19.1.7",
     "@types/react-router-dom": "^5.3.3",
-    "@vitejs/plugin-react": "^5.0.0",
-    "autoprefixer": "^10.4.21",
+    "@vitejs/plugin-react": "^5.1.4",
+    "autoprefixer": "^10.4.24",
     "eslint-plugin-react-hooks": "^7.0.1",
-    "eslint-plugin-react-refresh": "^0.4.20",
+    "eslint-plugin-react-refresh": "^0.5.2",
     "postcss": "^8.5.6",
-    "tailwindcss": "^4.1.13",
-    "vite": "^7.1.2",
-    "vitest": "^4.0.14"
+    "tailwindcss": "^4.2.1",
+    "vite": "^7.3.1",
+    "vitest": "^4.0.18"
   }
 }
