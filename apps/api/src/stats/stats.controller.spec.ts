@@ -20,7 +20,11 @@ function createMockRequest(origin?: string): Request {
   } as unknown as Request;
 }
 
-function createMockResponse(): Response & { _status: number; _headers: Record<string, string>; _body: unknown } {
+function createMockResponse(): Response & {
+  _status: number;
+  _headers: Record<string, string>;
+  _body: unknown;
+} {
   const res = {
     _status: 0,
     _headers: {} as Record<string, string>,
@@ -38,7 +42,11 @@ function createMockResponse(): Response & { _status: number; _headers: Record<st
       return res;
     }),
   };
-  return res as unknown as Response & { _status: number; _headers: Record<string, string>; _body: unknown };
+  return res as unknown as Response & {
+    _status: number;
+    _headers: Record<string, string>;
+    _body: unknown;
+  };
 }
 
 describe("StatsController", () => {
