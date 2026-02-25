@@ -39,7 +39,7 @@ export class StatsService {
   ): Promise<StatOutput> {
     const truncExpr = this.dateTruncExpr(periodicity, "date_calcul");
     const whereClause = since
-      ? sql`WHERE donnees_enrichissement->>'surfaceSite' IS NOT NULL AND date_calcul >= ${since}`
+      ? sql`WHERE donnees_enrichissement->>'surfaceSite' IS NOT NULL AND date_calcul >= ${since.toISOString()}`
       : sql`WHERE donnees_enrichissement->>'surfaceSite' IS NOT NULL`;
 
     const result = await this.database.db.execute(sql`
@@ -77,7 +77,7 @@ export class StatsService {
     periodicity: Periodicity,
   ): Promise<StatOutput> {
     const truncExpr = this.dateTruncExpr(periodicity, "date_calcul");
-    const whereClause = since ? sql`WHERE date_calcul >= ${since}` : sql``;
+    const whereClause = since ? sql`WHERE date_calcul >= ${since.toISOString()}` : sql``;
 
     const result = await this.database.db.execute(sql`
       SELECT
@@ -138,7 +138,7 @@ export class StatsService {
     periodicity: Periodicity,
   ): Promise<StatOutput> {
     const truncExpr = this.dateTruncExpr(periodicity, "date_calcul");
-    const whereClause = since ? sql`WHERE date_calcul >= ${since}` : sql``;
+    const whereClause = since ? sql`WHERE date_calcul >= ${since.toISOString()}` : sql``;
 
     const result = await this.database.db.execute(sql`
       WITH par_commune_par_periode AS (
