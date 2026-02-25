@@ -46,9 +46,9 @@ export class StatsService {
       WITH parcelles_par_periode AS (
         SELECT
           ${truncExpr} AS period,
-          parcelle_id,
+          site_id,
           (donnees_enrichissement->>'surfaceSite')::NUMERIC AS surface_m2,
-          ROW_NUMBER() OVER (PARTITION BY ${truncExpr}, parcelle_id ORDER BY date_calcul DESC) AS rn
+          ROW_NUMBER() OVER (PARTITION BY ${truncExpr}, site_id ORDER BY date_calcul DESC) AS rn
         FROM evaluations
         ${whereClause}
       )
@@ -145,14 +145,14 @@ export class StatsService {
         SELECT
           ${truncExpr} AS period,
           code_insee,
-          COUNT(DISTINCT parcelle_id)::INT AS nb_parcelles
+          COUNT(DISTINCT site_id)::INT AS nb_sites
         FROM evaluations
         ${whereClause}
         GROUP BY period, code_insee
       )
       SELECT
         period,
-        ROUND(AVG(nb_parcelles), 1)::FLOAT AS value
+        ROUND(AVG(nb_sites), 1)::FLOAT AS value
       FROM par_commune_par_periode
       GROUP BY period
       ORDER BY period
