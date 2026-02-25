@@ -184,7 +184,7 @@ export class StatsService {
     // periodicity est validé dans le controller contre isValidPeriodicity
     const query = `
       SELECT
-        DATE_TRUNC('${periodicity}', ${dateColumn}) AS period,
+        DATE_TRUNC('${periodicity}', ${dateColumn}) AT TIME ZONE 'UTC' AS period,
         COUNT(*)::INT AS value
       FROM ${table}
       WHERE ${whereCondition} ${sinceCondition}
@@ -205,6 +205,7 @@ export class StatsService {
    */
   private dateTruncExpr(periodicity: Periodicity, column: string) {
     // periodicity est validé en amont, pas de risque d'injection
-    return sql.raw(`DATE_TRUNC('${periodicity}', ${column})`);
+    // AT TIME ZONE 'UTC' force le retour en timestamptz UTC pour matcher fillGaps
+    return sql.raw(`DATE_TRUNC('${periodicity}', ${column}) AT TIME ZONE 'UTC'`);
   }
 }
