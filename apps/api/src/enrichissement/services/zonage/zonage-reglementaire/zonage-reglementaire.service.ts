@@ -2,6 +2,7 @@ import { Injectable, Logger } from "@nestjs/common";
 import { SourceEnrichissement } from "@mutafriches/shared-types";
 import { ApiCartoGpuService } from "../../../adapters/api-carto/gpu/api-carto-gpu.service";
 import { ParcelleGeometry } from "../../shared/geometry.types";
+import { selectionnerFeatureDominante } from "../../shared/geometry.utils";
 import { EnrichmentResult } from "../../shared/enrichissement.types";
 import { ZonageReglementaireCalculator } from "./zonage-reglementaire.calculator";
 import {
@@ -119,18 +120,22 @@ export class ZonageReglementaireService {
         };
       }
 
-      const feature = result.data.features[0];
-      const properties = feature.properties;
+      // Sélectionner la zone dominante par surface d'intersection
+      const dominante = selectionnerFeatureDominante(geometry, result.data.features);
+      const properties = dominante.feature.properties;
 
       return {
         present: true,
         nombreZones: result.data.totalFeatures,
         typezone: properties?.typezone as string,
         libelle: properties?.libelle as string,
+        libelong: properties?.libelong as string,
         destdomi: properties?.destdomi as string,
+        indexZoneDominante: dominante.index,
+        surfaceIntersection: dominante.surfaceIntersection ?? undefined,
       };
     } catch (error) {
-      this.logger.error("Erreur lors de la recuperation zone-urba:", error);
+      this.logger.error("Erreur lors de la récupération zone-urba:", error);
       return null;
     }
   }
@@ -138,9 +143,7 @@ export class ZonageReglementaireService {
   /**
    * Wrapper de getZoneUrba avec log détaillé des données brutes API
    */
-  private async getZoneUrbaAvecLog(
-    geometry: ParcelleGeometry,
-  ): Promise<ResultatZoneUrba | null> {
+  private async getZoneUrbaAvecLog(geometry: ParcelleGeometry): Promise<ResultatZoneUrba | null> {
     try {
       const result = await this.apiCartoGpuService.getZoneUrba(geometry);
 
@@ -166,12 +169,17 @@ export class ZonageReglementaireService {
                 `       properties.libelle: ${f.properties?.libelle}\n` +
                 `       properties.libelong: ${f.properties?.libelong}\n` +
                 `       properties.destdomi: ${f.properties?.destdomi}\n` +
+                `       properties.formdomi: ${f.properties?.formdomi}\n` +
+                `       properties.destoui: ${f.properties?.destoui}\n` +
+                `       properties.destcdt: ${f.properties?.destcdt}\n` +
+                `       properties.destnon: ${f.properties?.destnon}\n` +
                 `       properties.nomfic: ${f.properties?.nomfic}\n` +
                 `       properties.urlfic: ${f.properties?.urlfic}\n` +
                 `       properties.insee: ${f.properties?.insee}\n` +
                 `       properties.datappro: ${f.properties?.datappro}\n` +
                 `       properties.datvalid: ${f.properties?.datvalid}\n` +
-                `       properties.idurba: ${f.properties?.idurba}`,
+                `       properties.idurba: ${f.properties?.idurba}\n` +
+                `       --- TOUTES LES CLÉS: ${Object.keys(f.properties ?? {}).join(", ")}`,
             )
             .join("\n"),
       );
@@ -180,15 +188,28 @@ export class ZonageReglementaireService {
         return { present: false, nombreZones: 0 };
       }
 
-      const feature = result.data.features[0];
-      const properties = feature.properties;
+      // Sélectionner la zone dominante par surface d'intersection
+      const dominante = selectionnerFeatureDominante(geometry, result.data.features);
+      const properties = dominante.feature.properties;
+
+      if (dominante.nombreFeatures > 1) {
+        this.logger.log(
+          `[ZONE-URBA] Sélection zone dominante : ` +
+            `${dominante.nombreFeatures} zones détectées, ` +
+            `zone [${dominante.index}] "${properties?.libelle}" sélectionnée ` +
+            `(intersection: ${dominante.surfaceIntersection ?? "N/A"} m²)`,
+        );
+      }
 
       return {
         present: true,
         nombreZones: result.data.totalFeatures,
         typezone: properties?.typezone as string,
         libelle: properties?.libelle as string,
+        libelong: properties?.libelong as string,
         destdomi: properties?.destdomi as string,
+        indexZoneDominante: dominante.index,
+        surfaceIntersection: dominante.surfaceIntersection ?? undefined,
       };
     } catch (error) {
       this.logger.error("Erreur lors de la récupération zone-urba:", error);
@@ -225,9 +246,7 @@ export class ZonageReglementaireService {
   /**
    * Wrapper de getSecteurCC avec log détaillé des données brutes API
    */
-  private async getSecteurCCAvecLog(
-    geometry: ParcelleGeometry,
-  ): Promise<ResultatSecteurCC | null> {
+  private async getSecteurCCAvecLog(geometry: ParcelleGeometry): Promise<ResultatSecteurCC | null> {
     try {
       const result = await this.apiCartoGpuService.getSecteurCC(geometry);
 
