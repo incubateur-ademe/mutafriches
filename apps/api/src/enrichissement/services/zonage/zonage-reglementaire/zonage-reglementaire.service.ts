@@ -1,6 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { DiagnosticFeature, DiagnosticReglementaire, SourceEnrichissement } from "@mutafriches/shared-types";
-import { isProduction } from "../../../../shared/utils/environment.utils";
+
 import { ApiCartoGpuService } from "../../../adapters/api-carto/gpu/api-carto-gpu.service";
 import { ParcelleGeometry } from "../../shared/geometry.types";
 import { selectionnerFeatureDominante } from "../../shared/geometry.utils";
@@ -110,30 +110,27 @@ export class ZonageReglementaireService {
     this.logger.log(`Zonage réglementaire final: ${zonageFinal}`);
 
     // TODO: supprimer apres analyse - construire le diagnostic réglementaire
-    let diagnosticReglementaire: DiagnosticReglementaire | undefined;
-    if (!isProduction()) {
-      diagnosticReglementaire = {
-        zoneUrba: zoneUrbaData?.present
-          ? { totalFeatures: zoneUrbaData.nombreZones, features: rawZoneUrbaFeatures }
-          : null,
-        secteurCC: secteurCCData?.present
-          ? { totalFeatures: secteurCCData.nombreSecteurs, features: rawSecteurCCFeatures }
-          : null,
-        commune: communeData,
-        zoneDominante: zoneUrbaData?.present
-          ? {
-              index: zoneUrbaData.indexZoneDominante ?? 0,
-              surfaceIntersection: zoneUrbaData.surfaceIntersection,
-              typezone: zoneUrbaData.typezone,
-              libelle: zoneUrbaData.libelle,
-              libelong: zoneUrbaData.libelong,
-              destdomi: zoneUrbaData.destdomi,
-              formdomi: undefined,
-            }
-          : null,
-        zonageFinal,
-      };
-    }
+    const diagnosticReglementaire: DiagnosticReglementaire = {
+      zoneUrba: zoneUrbaData?.present
+        ? { totalFeatures: zoneUrbaData.nombreZones, features: rawZoneUrbaFeatures }
+        : null,
+      secteurCC: secteurCCData?.present
+        ? { totalFeatures: secteurCCData.nombreSecteurs, features: rawSecteurCCFeatures }
+        : null,
+      commune: communeData,
+      zoneDominante: zoneUrbaData?.present
+        ? {
+            index: zoneUrbaData.indexZoneDominante ?? 0,
+            surfaceIntersection: zoneUrbaData.surfaceIntersection,
+            typezone: zoneUrbaData.typezone,
+            libelle: zoneUrbaData.libelle,
+            libelong: zoneUrbaData.libelong,
+            destdomi: zoneUrbaData.destdomi,
+            formdomi: undefined,
+          }
+        : null,
+      zonageFinal,
+    };
 
     return {
       result: {
