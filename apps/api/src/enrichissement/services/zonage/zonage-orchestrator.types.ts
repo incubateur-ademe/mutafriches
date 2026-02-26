@@ -1,4 +1,5 @@
 import {
+  DiagnosticZonages,
   ZonageEnvironnemental,
   ZonagePatrimonial,
   ZonageReglementaire,
@@ -23,4 +24,6 @@ export interface ResultatEnrichissementZonage {
     patrimonial: EvaluationZonagePatrimonial;
     reglementaire: EvaluationZonageReglementaire;
   };
+  // TODO: supprimer apres analyse
+  diagnosticZonages?: DiagnosticZonages;
 }

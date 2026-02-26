@@ -1,5 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { SourceEnrichissement } from "@mutafriches/shared-types";
+import { DiagnosticFeature, DiagnosticReglementaire, SourceEnrichissement } from "@mutafriches/shared-types";
+import { isProduction } from "../../../../shared/utils/environment.utils";
 import { ApiCartoGpuService } from "../../../adapters/api-carto/gpu/api-carto-gpu.service";
 import { ParcelleGeometry } from "../../shared/geometry.types";
 import { selectionnerFeatureDominante } from "../../shared/geometry.utils";
@@ -11,6 +12,12 @@ import {
   ResultatSecteurCC,
   InfoCommune,
 } from "./zonage-reglementaire.types";
+
+// TODO: supprimer apres analyse
+interface ResultatAvecDiagnostic<T> {
+  result: T;
+  rawFeatures: DiagnosticFeature[];
+}
 
 /**
  * Service d'enrichissement du sous-domaine Zonage Réglementaire
@@ -42,15 +49,17 @@ export class ZonageReglementaireService {
   ): Promise<{
     result: EnrichmentResult;
     evaluation: EvaluationZonageReglementaire;
+    // TODO: supprimer apres analyse
+    diagnosticReglementaire?: DiagnosticReglementaire;
   }> {
     const sourcesUtilisees: string[] = [];
     const sourcesEchouees: string[] = [];
 
     // Appeler les APIs en parallèle
     const [zoneUrbaResult, secteurCCResult, communeResult] = await Promise.allSettled([
-      this.getZoneUrbaAvecLog(geometry),
-      this.getSecteurCCAvecLog(geometry),
-      this.getCommuneAvecLog(codeInsee),
+      this.getZoneUrba(geometry),
+      this.getSecteurCC(geometry),
+      this.getCommune(codeInsee),
     ]);
 
     // Traiter les résultats
@@ -58,9 +67,14 @@ export class ZonageReglementaireService {
     let secteurCCData: ResultatSecteurCC | null = null;
     let communeData: InfoCommune | null = null;
 
+    // TODO: supprimer apres analyse - collecter les features brutes
+    let rawZoneUrbaFeatures: DiagnosticFeature[] = [];
+    let rawSecteurCCFeatures: DiagnosticFeature[] = [];
+
     // 1. Traiter zone-urba (PLU)
     if (zoneUrbaResult.status === "fulfilled" && zoneUrbaResult.value) {
-      zoneUrbaData = zoneUrbaResult.value;
+      zoneUrbaData = zoneUrbaResult.value.result;
+      rawZoneUrbaFeatures = zoneUrbaResult.value.rawFeatures;
       sourcesUtilisees.push(SourceEnrichissement.API_CARTO_GPU);
       this.logger.debug(
         `Zone-urba: ${zoneUrbaData.present ? `${zoneUrbaData.typezone} - ${zoneUrbaData.libelle}` : "aucune"}`,
@@ -71,7 +85,8 @@ export class ZonageReglementaireService {
 
     // 2. Traiter secteur-cc (carte communale)
     if (secteurCCResult.status === "fulfilled" && secteurCCResult.value) {
-      secteurCCData = secteurCCResult.value;
+      secteurCCData = secteurCCResult.value.result;
+      rawSecteurCCFeatures = secteurCCResult.value.rawFeatures;
       if (!sourcesUtilisees.includes(SourceEnrichissement.API_CARTO_GPU)) {
         sourcesUtilisees.push(SourceEnrichissement.API_CARTO_GPU);
       }
@@ -94,6 +109,32 @@ export class ZonageReglementaireService {
 
     this.logger.log(`Zonage réglementaire final: ${zonageFinal}`);
 
+    // TODO: supprimer apres analyse - construire le diagnostic réglementaire
+    let diagnosticReglementaire: DiagnosticReglementaire | undefined;
+    if (!isProduction()) {
+      diagnosticReglementaire = {
+        zoneUrba: zoneUrbaData?.present
+          ? { totalFeatures: zoneUrbaData.nombreZones, features: rawZoneUrbaFeatures }
+          : null,
+        secteurCC: secteurCCData?.present
+          ? { totalFeatures: secteurCCData.nombreSecteurs, features: rawSecteurCCFeatures }
+          : null,
+        commune: communeData,
+        zoneDominante: zoneUrbaData?.present
+          ? {
+              index: zoneUrbaData.indexZoneDominante ?? 0,
+              surfaceIntersection: zoneUrbaData.surfaceIntersection,
+              typezone: zoneUrbaData.typezone,
+              libelle: zoneUrbaData.libelle,
+              libelong: zoneUrbaData.libelong,
+              destdomi: zoneUrbaData.destdomi,
+              formdomi: undefined,
+            }
+          : null,
+        zonageFinal,
+      };
+    }
+
     return {
       result: {
         success: sourcesUtilisees.length > 0,
@@ -106,86 +147,27 @@ export class ZonageReglementaireService {
         commune: communeData,
         zonageFinal,
       },
+      diagnosticReglementaire,
     };
   }
 
-  private async getZoneUrba(geometry: ParcelleGeometry): Promise<ResultatZoneUrba | null> {
-    try {
-      const result = await this.apiCartoGpuService.getZoneUrba(geometry);
-
-      if (!result.success || !result.data || result.data.totalFeatures === 0) {
-        return {
-          present: false,
-          nombreZones: 0,
-        };
-      }
-
-      // Sélectionner la zone dominante par surface d'intersection
-      const dominante = selectionnerFeatureDominante(geometry, result.data.features);
-      const properties = dominante.feature.properties;
-
-      return {
-        present: true,
-        nombreZones: result.data.totalFeatures,
-        typezone: properties?.typezone as string,
-        libelle: properties?.libelle as string,
-        libelong: properties?.libelong as string,
-        destdomi: properties?.destdomi as string,
-        indexZoneDominante: dominante.index,
-        surfaceIntersection: dominante.surfaceIntersection ?? undefined,
-      };
-    } catch (error) {
-      this.logger.error("Erreur lors de la récupération zone-urba:", error);
-      return null;
-    }
-  }
-
   /**
-   * Wrapper de getZoneUrba avec log détaillé des données brutes API
+   * Récupère les zones d'urbanisme (PLU) et sélectionne la zone dominante
    */
-  private async getZoneUrbaAvecLog(geometry: ParcelleGeometry): Promise<ResultatZoneUrba | null> {
+  private async getZoneUrba(
+    geometry: ParcelleGeometry,
+  ): Promise<ResultatAvecDiagnostic<ResultatZoneUrba | null>> {
     try {
       const result = await this.apiCartoGpuService.getZoneUrba(geometry);
 
-      this.logger.log(
-        `[ZONE-URBA] Réponse brute API Carto GPU /gpu/zone-urba:\n` +
-          `  success: ${result.success}\n` +
-          `  source: ${result.source}\n` +
-          `  responseTimeMs: ${result.responseTimeMs}\n` +
-          `  error: ${result.error ?? "aucune"}\n` +
-          `  totalFeatures: ${result.data?.totalFeatures ?? 0}\n` +
-          `  numberMatched: ${result.data?.numberMatched ?? "N/A"}\n` +
-          `  numberReturned: ${result.data?.numberReturned ?? "N/A"}\n` +
-          `  timeStamp: ${result.data?.timeStamp ?? "N/A"}\n` +
-          `  --- Features (${result.data?.features?.length ?? 0}) ---\n` +
-          (result.data?.features ?? [])
-            .map(
-              (f, i) =>
-                `  [${i}] id: ${f.id}\n` +
-                `       geometry.type: ${f.geometry?.type}\n` +
-                `       properties.gid: ${f.properties?.gid}\n` +
-                `       properties.partition: ${f.properties?.partition}\n` +
-                `       properties.typezone: ${f.properties?.typezone}\n` +
-                `       properties.libelle: ${f.properties?.libelle}\n` +
-                `       properties.libelong: ${f.properties?.libelong}\n` +
-                `       properties.destdomi: ${f.properties?.destdomi}\n` +
-                `       properties.formdomi: ${f.properties?.formdomi}\n` +
-                `       properties.destoui: ${f.properties?.destoui}\n` +
-                `       properties.destcdt: ${f.properties?.destcdt}\n` +
-                `       properties.destnon: ${f.properties?.destnon}\n` +
-                `       properties.nomfic: ${f.properties?.nomfic}\n` +
-                `       properties.urlfic: ${f.properties?.urlfic}\n` +
-                `       properties.insee: ${f.properties?.insee}\n` +
-                `       properties.datappro: ${f.properties?.datappro}\n` +
-                `       properties.datvalid: ${f.properties?.datvalid}\n` +
-                `       properties.idurba: ${f.properties?.idurba}\n` +
-                `       --- TOUTES LES CLÉS: ${Object.keys(f.properties ?? {}).join(", ")}`,
-            )
-            .join("\n"),
-      );
+      // TODO: supprimer apres analyse - extraire les features brutes (sans géométrie)
+      const rawFeatures: DiagnosticFeature[] = (result.data?.features ?? []).map((f) => ({
+        id: f.id,
+        properties: f.properties as Record<string, unknown>,
+      }));
 
       if (!result.success || !result.data || result.data.totalFeatures === 0) {
-        return { present: false, nombreZones: 0 };
+        return { result: { present: false, nombreZones: 0 }, rawFeatures };
       }
 
       // Sélectionner la zone dominante par surface d'intersection
@@ -193,155 +175,75 @@ export class ZonageReglementaireService {
       const properties = dominante.feature.properties;
 
       if (dominante.nombreFeatures > 1) {
-        this.logger.log(
-          `[ZONE-URBA] Sélection zone dominante : ` +
-            `${dominante.nombreFeatures} zones détectées, ` +
-            `zone [${dominante.index}] "${properties?.libelle}" sélectionnée ` +
-            `(intersection: ${dominante.surfaceIntersection ?? "N/A"} m²)`,
+        this.logger.debug(
+          `Zone-urba : ${dominante.nombreFeatures} zones, ` +
+            `dominante [${dominante.index}] "${properties?.libelle}" ` +
+            `(${dominante.surfaceIntersection ?? "?"} m²)`,
         );
       }
 
       return {
-        present: true,
-        nombreZones: result.data.totalFeatures,
-        typezone: properties?.typezone as string,
-        libelle: properties?.libelle as string,
-        libelong: properties?.libelong as string,
-        destdomi: properties?.destdomi as string,
-        indexZoneDominante: dominante.index,
-        surfaceIntersection: dominante.surfaceIntersection ?? undefined,
+        result: {
+          present: true,
+          nombreZones: result.data.totalFeatures,
+          typezone: properties?.typezone as string,
+          libelle: properties?.libelle as string,
+          libelong: properties?.libelong as string,
+          destdomi: properties?.destdomi as string,
+          indexZoneDominante: dominante.index,
+          surfaceIntersection: dominante.surfaceIntersection ?? undefined,
+        },
+        rawFeatures,
       };
     } catch (error) {
       this.logger.error("Erreur lors de la récupération zone-urba:", error);
-      return null;
-    }
-  }
-
-  private async getSecteurCC(geometry: ParcelleGeometry): Promise<ResultatSecteurCC | null> {
-    try {
-      const result = await this.apiCartoGpuService.getSecteurCC(geometry);
-
-      if (!result.success || !result.data || result.data.totalFeatures === 0) {
-        return {
-          present: false,
-          nombreSecteurs: 0,
-        };
-      }
-
-      const feature = result.data.features[0];
-      const properties = feature.properties;
-
-      return {
-        present: true,
-        nombreSecteurs: result.data.totalFeatures,
-        typesect: properties?.typesect as string,
-        libelle: properties?.libelle as string,
-      };
-    } catch (error) {
-      this.logger.error("Erreur lors de la recuperation secteur-cc:", error);
-      return null;
+      return { result: null, rawFeatures: [] };
     }
   }
 
   /**
-   * Wrapper de getSecteurCC avec log détaillé des données brutes API
+   * Récupère les secteurs de carte communale
    */
-  private async getSecteurCCAvecLog(geometry: ParcelleGeometry): Promise<ResultatSecteurCC | null> {
+  private async getSecteurCC(
+    geometry: ParcelleGeometry,
+  ): Promise<ResultatAvecDiagnostic<ResultatSecteurCC | null>> {
     try {
       const result = await this.apiCartoGpuService.getSecteurCC(geometry);
 
-      this.logger.log(
-        `[SECTEUR-CC] Réponse brute API Carto GPU /gpu/secteur-cc:\n` +
-          `  success: ${result.success}\n` +
-          `  source: ${result.source}\n` +
-          `  responseTimeMs: ${result.responseTimeMs}\n` +
-          `  error: ${result.error ?? "aucune"}\n` +
-          `  totalFeatures: ${result.data?.totalFeatures ?? 0}\n` +
-          `  numberMatched: ${result.data?.numberMatched ?? "N/A"}\n` +
-          `  numberReturned: ${result.data?.numberReturned ?? "N/A"}\n` +
-          `  timeStamp: ${result.data?.timeStamp ?? "N/A"}\n` +
-          `  --- Features (${result.data?.features?.length ?? 0}) ---\n` +
-          (result.data?.features ?? [])
-            .map(
-              (f, i) =>
-                `  [${i}] id: ${f.id}\n` +
-                `       geometry.type: ${f.geometry?.type}\n` +
-                `       properties.gid: ${f.properties?.gid}\n` +
-                `       properties.partition: ${f.properties?.partition}\n` +
-                `       properties.typesect: ${f.properties?.typesect}\n` +
-                `       properties.libelle: ${f.properties?.libelle}\n` +
-                `       properties.libelong: ${f.properties?.libelong}\n` +
-                `       properties.fermreco: ${f.properties?.fermreco}\n` +
-                `       properties.destdomi: ${f.properties?.destdomi}\n` +
-                `       properties.nomfic: ${f.properties?.nomfic}\n` +
-                `       properties.urlfic: ${f.properties?.urlfic}\n` +
-                `       properties.insee: ${f.properties?.insee}\n` +
-                `       properties.datappro: ${f.properties?.datappro}\n` +
-                `       properties.datvalid: ${f.properties?.datvalid}\n` +
-                `       properties.idurba: ${f.properties?.idurba}`,
-            )
-            .join("\n"),
-      );
+      // TODO: supprimer apres analyse - extraire les features brutes (sans géométrie)
+      const rawFeatures: DiagnosticFeature[] = (result.data?.features ?? []).map((f) => ({
+        id: f.id,
+        properties: f.properties as Record<string, unknown>,
+      }));
 
       if (!result.success || !result.data || result.data.totalFeatures === 0) {
-        return { present: false, nombreSecteurs: 0 };
+        return { result: { present: false, nombreSecteurs: 0 }, rawFeatures };
       }
 
       const feature = result.data.features[0];
       const properties = feature.properties;
 
       return {
-        present: true,
-        nombreSecteurs: result.data.totalFeatures,
-        typesect: properties?.typesect as string,
-        libelle: properties?.libelle as string,
+        result: {
+          present: true,
+          nombreSecteurs: result.data.totalFeatures,
+          typesect: properties?.typesect as string,
+          libelle: properties?.libelle as string,
+        },
+        rawFeatures,
       };
     } catch (error) {
       this.logger.error("Erreur lors de la récupération secteur-cc:", error);
-      return null;
-    }
-  }
-
-  private async getCommune(codeInsee: string): Promise<InfoCommune | null> {
-    try {
-      const result = await this.apiCartoGpuService.getMunicipalityInfo(codeInsee);
-
-      if (!result.success || !result.data) {
-        return null;
-      }
-
-      return {
-        insee: result.data.insee,
-        name: result.data.name,
-        is_rnu: result.data.is_rnu,
-      };
-    } catch (error) {
-      this.logger.error("Erreur lors de la recuperation commune:", error);
-      return null;
+      return { result: null, rawFeatures: [] };
     }
   }
 
   /**
-   * Wrapper de getCommune avec log détaillé des données brutes API
+   * Récupère les informations de la commune (RNU)
    */
-  private async getCommuneAvecLog(codeInsee: string): Promise<InfoCommune | null> {
+  private async getCommune(codeInsee: string): Promise<InfoCommune | null> {
     try {
       const result = await this.apiCartoGpuService.getMunicipalityInfo(codeInsee);
-
-      this.logger.log(
-        `[COMMUNE] Réponse brute API Carto GPU /gpu/municipality?insee=${codeInsee}:\n` +
-          `  success: ${result.success}\n` +
-          `  source: ${result.source}\n` +
-          `  responseTimeMs: ${result.responseTimeMs}\n` +
-          `  error: ${result.error ?? "aucune"}\n` +
-          `  --- Données Municipality ---\n` +
-          `  gid: ${result.data?.gid ?? "N/A"}\n` +
-          `  insee: ${result.data?.insee ?? "N/A"}\n` +
-          `  name: ${result.data?.name ?? "N/A"}\n` +
-          `  is_rnu: ${result.data?.is_rnu ?? "N/A"}\n` +
-          `  is_deleted: ${result.data?.is_deleted ?? "N/A"}\n` +
-          `  bbox: ${result.data?.bbox ? JSON.stringify(result.data.bbox) : "N/A"}`,
-      );
 
       if (!result.success || !result.data) {
         return null;

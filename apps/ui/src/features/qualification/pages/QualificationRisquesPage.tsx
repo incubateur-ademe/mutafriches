@@ -7,6 +7,8 @@ import { useFormContext } from "../../../shared/form/useFormContext";
 import { useEventTracking } from "../../../shared/hooks/useEventTracking";
 import { TypeEvenement } from "@mutafriches/shared-types";
 import { EnrichedInfoField, StepNavigation } from "../components";
+// TODO: supprimer apres analyse
+import { DebugPanelGate } from "../../debug/components/DebugPanelGate";
 
 export const QualificationRisquesPage: React.FC = () => {
   const navigate = useNavigate();
@@ -174,6 +176,14 @@ export const QualificationRisquesPage: React.FC = () => {
         onNext={handleNext}
         previousLabel="Précédent"
         nextLabel="Calculer la mutabilité"
+      />
+
+      {/* TODO: supprimer apres analyse */}
+      <DebugPanelGate
+        enrichmentData={state.enrichmentData}
+        manualData={state.manualData}
+        mutabilityData={null}
+        identifiantSite={state.identifiantSite}
       />
     </Layout>
   );

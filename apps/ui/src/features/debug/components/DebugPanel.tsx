@@ -7,6 +7,8 @@ import { DonneesComplementairesSection } from "./sections/DonneesComplementaires
 import { EvaluationSection } from "./sections/EvaluationSection";
 import { SourcesMetadataSection } from "./sections/SourcesMetadataSection";
 import { RawJsonSection } from "./sections/RawJsonSection";
+// TODO: supprimer apres analyse
+import { DiagnosticZonagesSection } from "./sections/DiagnosticZonagesSection";
 import "./DebugPanel.css";
 
 export interface DebugPanelProps {
@@ -103,6 +105,9 @@ export const DebugPanel: React.FC<DebugPanelProps> = ({
           />
 
           <EnrichissementSection enrichmentData={enrichmentData} />
+
+          {/* TODO: supprimer apres analyse */}
+          <DiagnosticZonagesSection diagnosticZonages={enrichmentData?.diagnosticZonages} />
 
           <DonneesComplementairesSection manualData={manualData} />
 
