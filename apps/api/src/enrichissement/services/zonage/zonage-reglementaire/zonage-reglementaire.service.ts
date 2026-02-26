@@ -47,9 +47,9 @@ export class ZonageReglementaireService {
 
     // Appeler les APIs en parallèle
     const [zoneUrbaResult, secteurCCResult, communeResult] = await Promise.allSettled([
-      this.getZoneUrba(geometry),
-      this.getSecteurCC(geometry),
-      this.getCommune(codeInsee),
+      this.getZoneUrbaAvecLog(geometry),
+      this.getSecteurCCAvecLog(geometry),
+      this.getCommuneAvecLog(codeInsee),
     ]);
 
     // Traiter les résultats
@@ -135,6 +135,67 @@ export class ZonageReglementaireService {
     }
   }
 
+  /**
+   * Wrapper de getZoneUrba avec log détaillé des données brutes API
+   */
+  private async getZoneUrbaAvecLog(
+    geometry: ParcelleGeometry,
+  ): Promise<ResultatZoneUrba | null> {
+    try {
+      const result = await this.apiCartoGpuService.getZoneUrba(geometry);
+
+      this.logger.log(
+        `[ZONE-URBA] Réponse brute API Carto GPU /gpu/zone-urba:\n` +
+          `  success: ${result.success}\n` +
+          `  source: ${result.source}\n` +
+          `  responseTimeMs: ${result.responseTimeMs}\n` +
+          `  error: ${result.error ?? "aucune"}\n` +
+          `  totalFeatures: ${result.data?.totalFeatures ?? 0}\n` +
+          `  numberMatched: ${result.data?.numberMatched ?? "N/A"}\n` +
+          `  numberReturned: ${result.data?.numberReturned ?? "N/A"}\n` +
+          `  timeStamp: ${result.data?.timeStamp ?? "N/A"}\n` +
+          `  --- Features (${result.data?.features?.length ?? 0}) ---\n` +
+          (result.data?.features ?? [])
+            .map(
+              (f, i) =>
+                `  [${i}] id: ${f.id}\n` +
+                `       geometry.type: ${f.geometry?.type}\n` +
+                `       properties.gid: ${f.properties?.gid}\n` +
+                `       properties.partition: ${f.properties?.partition}\n` +
+                `       properties.typezone: ${f.properties?.typezone}\n` +
+                `       properties.libelle: ${f.properties?.libelle}\n` +
+                `       properties.libelong: ${f.properties?.libelong}\n` +
+                `       properties.destdomi: ${f.properties?.destdomi}\n` +
+                `       properties.nomfic: ${f.properties?.nomfic}\n` +
+                `       properties.urlfic: ${f.properties?.urlfic}\n` +
+                `       properties.insee: ${f.properties?.insee}\n` +
+                `       properties.datappro: ${f.properties?.datappro}\n` +
+                `       properties.datvalid: ${f.properties?.datvalid}\n` +
+                `       properties.idurba: ${f.properties?.idurba}`,
+            )
+            .join("\n"),
+      );
+
+      if (!result.success || !result.data || result.data.totalFeatures === 0) {
+        return { present: false, nombreZones: 0 };
+      }
+
+      const feature = result.data.features[0];
+      const properties = feature.properties;
+
+      return {
+        present: true,
+        nombreZones: result.data.totalFeatures,
+        typezone: properties?.typezone as string,
+        libelle: properties?.libelle as string,
+        destdomi: properties?.destdomi as string,
+      };
+    } catch (error) {
+      this.logger.error("Erreur lors de la récupération zone-urba:", error);
+      return null;
+    }
+  }
+
   private async getSecteurCC(geometry: ParcelleGeometry): Promise<ResultatSecteurCC | null> {
     try {
       const result = await this.apiCartoGpuService.getSecteurCC(geometry);
@@ -161,6 +222,67 @@ export class ZonageReglementaireService {
     }
   }
 
+  /**
+   * Wrapper de getSecteurCC avec log détaillé des données brutes API
+   */
+  private async getSecteurCCAvecLog(
+    geometry: ParcelleGeometry,
+  ): Promise<ResultatSecteurCC | null> {
+    try {
+      const result = await this.apiCartoGpuService.getSecteurCC(geometry);
+
+      this.logger.log(
+        `[SECTEUR-CC] Réponse brute API Carto GPU /gpu/secteur-cc:\n` +
+          `  success: ${result.success}\n` +
+          `  source: ${result.source}\n` +
+          `  responseTimeMs: ${result.responseTimeMs}\n` +
+          `  error: ${result.error ?? "aucune"}\n` +
+          `  totalFeatures: ${result.data?.totalFeatures ?? 0}\n` +
+          `  numberMatched: ${result.data?.numberMatched ?? "N/A"}\n` +
+          `  numberReturned: ${result.data?.numberReturned ?? "N/A"}\n` +
+          `  timeStamp: ${result.data?.timeStamp ?? "N/A"}\n` +
+          `  --- Features (${result.data?.features?.length ?? 0}) ---\n` +
+          (result.data?.features ?? [])
+            .map(
+              (f, i) =>
+                `  [${i}] id: ${f.id}\n` +
+                `       geometry.type: ${f.geometry?.type}\n` +
+                `       properties.gid: ${f.properties?.gid}\n` +
+                `       properties.partition: ${f.properties?.partition}\n` +
+                `       properties.typesect: ${f.properties?.typesect}\n` +
+                `       properties.libelle: ${f.properties?.libelle}\n` +
+                `       properties.libelong: ${f.properties?.libelong}\n` +
+                `       properties.fermreco: ${f.properties?.fermreco}\n` +
+                `       properties.destdomi: ${f.properties?.destdomi}\n` +
+                `       properties.nomfic: ${f.properties?.nomfic}\n` +
+                `       properties.urlfic: ${f.properties?.urlfic}\n` +
+                `       properties.insee: ${f.properties?.insee}\n` +
+                `       properties.datappro: ${f.properties?.datappro}\n` +
+                `       properties.datvalid: ${f.properties?.datvalid}\n` +
+                `       properties.idurba: ${f.properties?.idurba}`,
+            )
+            .join("\n"),
+      );
+
+      if (!result.success || !result.data || result.data.totalFeatures === 0) {
+        return { present: false, nombreSecteurs: 0 };
+      }
+
+      const feature = result.data.features[0];
+      const properties = feature.properties;
+
+      return {
+        present: true,
+        nombreSecteurs: result.data.totalFeatures,
+        typesect: properties?.typesect as string,
+        libelle: properties?.libelle as string,
+      };
+    } catch (error) {
+      this.logger.error("Erreur lors de la récupération secteur-cc:", error);
+      return null;
+    }
+  }
+
   private async getCommune(codeInsee: string): Promise<InfoCommune | null> {
     try {
       const result = await this.apiCartoGpuService.getMunicipalityInfo(codeInsee);
@@ -176,6 +298,43 @@ export class ZonageReglementaireService {
       };
     } catch (error) {
       this.logger.error("Erreur lors de la recuperation commune:", error);
+      return null;
+    }
+  }
+
+  /**
+   * Wrapper de getCommune avec log détaillé des données brutes API
+   */
+  private async getCommuneAvecLog(codeInsee: string): Promise<InfoCommune | null> {
+    try {
+      const result = await this.apiCartoGpuService.getMunicipalityInfo(codeInsee);
+
+      this.logger.log(
+        `[COMMUNE] Réponse brute API Carto GPU /gpu/municipality?insee=${codeInsee}:\n` +
+          `  success: ${result.success}\n` +
+          `  source: ${result.source}\n` +
+          `  responseTimeMs: ${result.responseTimeMs}\n` +
+          `  error: ${result.error ?? "aucune"}\n` +
+          `  --- Données Municipality ---\n` +
+          `  gid: ${result.data?.gid ?? "N/A"}\n` +
+          `  insee: ${result.data?.insee ?? "N/A"}\n` +
+          `  name: ${result.data?.name ?? "N/A"}\n` +
+          `  is_rnu: ${result.data?.is_rnu ?? "N/A"}\n` +
+          `  is_deleted: ${result.data?.is_deleted ?? "N/A"}\n` +
+          `  bbox: ${result.data?.bbox ? JSON.stringify(result.data.bbox) : "N/A"}`,
+      );
+
+      if (!result.success || !result.data) {
+        return null;
+      }
+
+      return {
+        insee: result.data.insee,
+        name: result.data.name,
+        is_rnu: result.data.is_rnu,
+      };
+    } catch (error) {
+      this.logger.error("Erreur lors de la récupération commune:", error);
       return null;
     }
   }

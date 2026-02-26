@@ -54,7 +54,8 @@ export class ZonageReglementaireCalculator {
     const type = typezone.toUpperCase();
 
     // Vérifier d'abord la destination dominante (plus spécifique)
-    if (destdomi && destdomi.toLowerCase().includes("activit")) {
+    // Le standard CNIG autorise le code numérique ("02") ou le libellé littéral ("activité")
+    if (destdomi && this.isDestdomiActivite(destdomi)) {
       this.logger.debug("Zonage réglementaire: ZONE_VOCATION_ACTIVITES");
       return ZonageReglementaire.ZONE_VOCATION_ACTIVITES;
     }
@@ -85,6 +86,15 @@ export class ZonageReglementaireCalculator {
 
     this.logger.debug("Zonage réglementaire: NE_SAIT_PAS (type inconnu)");
     return ZonageReglementaire.NE_SAIT_PAS;
+  }
+
+  /**
+   * Vérifie si la destination dominante correspond à une activité
+   * Gère le code numérique CNIG ("02") et le libellé littéral ("activité", "activite", etc.)
+   */
+  private isDestdomiActivite(destdomi: string): boolean {
+    const value = destdomi.trim().toLowerCase();
+    return value === "02" || value.includes("activit");
   }
 
   /**

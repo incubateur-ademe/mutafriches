@@ -94,13 +94,29 @@ describe("ZonageReglementaireCalculator", () => {
         expect(result).toBe(ZonageReglementaire.ZONE_NATURELLE_N);
       });
 
-      it("devrait retourner ZONE_VOCATION_ACTIVITES si destdomi contient activité", () => {
+      it("devrait retourner ZONE_VOCATION_ACTIVITES si destdomi contient activité (libellé littéral)", () => {
         // Arrange
         const zoneUrba: ResultatZoneUrba = {
           present: true,
           nombreZones: 1,
           typezone: "UX",
           destdomi: "Activités économiques",
+        };
+
+        // Act
+        const result = calculator.evaluer(zoneUrba, null, null);
+
+        // Assert
+        expect(result).toBe(ZonageReglementaire.ZONE_VOCATION_ACTIVITES);
+      });
+
+      it("devrait retourner ZONE_VOCATION_ACTIVITES si destdomi est le code CNIG 02", () => {
+        // Arrange - Le standard CNIG autorise le code numérique "02" pour activité
+        const zoneUrba: ResultatZoneUrba = {
+          present: true,
+          nombreZones: 1,
+          typezone: "UX",
+          destdomi: "02",
         };
 
         // Act
