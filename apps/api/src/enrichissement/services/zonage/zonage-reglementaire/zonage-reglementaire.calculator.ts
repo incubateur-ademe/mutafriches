@@ -28,7 +28,7 @@ export class ZonageReglementaireCalculator {
   ): ZonageReglementaire {
     // Priorité 1 : Zone PLU/POS
     if (zoneUrba?.present && zoneUrba.typezone) {
-      return this.mapZoneUrbaToZonage(zoneUrba.typezone, zoneUrba.destdomi);
+      return this.mapZoneUrbaToZonage(zoneUrba.typezone, zoneUrba.destdomi, zoneUrba.libelle);
     }
 
     // Priorité 2 : Secteur carte communale
@@ -50,7 +50,11 @@ export class ZonageReglementaireCalculator {
   /**
    * Mappe une zone PLU/POS vers le zonage réglementaire
    */
-  private mapZoneUrbaToZonage(typezone: string, destdomi?: string): ZonageReglementaire {
+  private mapZoneUrbaToZonage(
+    typezone: string,
+    destdomi?: string,
+    libelle?: string,
+  ): ZonageReglementaire {
     const type = typezone.toUpperCase();
 
     // Vérifier d'abord la destination dominante (plus spécifique)
@@ -60,19 +64,23 @@ export class ZonageReglementaireCalculator {
       return ZonageReglementaire.ZONE_VOCATION_ACTIVITES;
     }
 
+    // Pour les sous-zones U, utiliser le libellé si le typezone est juste "U"
+    // L'API Carto GPU renvoie typezone="U" avec le détail dans libelle (ex: "UA", "UE", "UX")
+    const codeZone = type === "U" && libelle ? libelle.toUpperCase() : type;
+
     // Sous-zones urbaines U avec affinage
-    if (/^U[ABCD]/i.test(type)) {
-      this.logger.debug("Zonage réglementaire: ZONE_URBAINE_U_HABITAT");
+    if (/^U[ABCD]/i.test(codeZone)) {
+      this.logger.debug(`Zonage réglementaire: ZONE_URBAINE_U_HABITAT (code=${codeZone})`);
       return ZonageReglementaire.ZONE_URBAINE_U_HABITAT;
     }
 
-    if (/^UE/i.test(type)) {
-      this.logger.debug("Zonage réglementaire: ZONE_URBAINE_U_EQUIPEMENT");
+    if (/^UE/i.test(codeZone)) {
+      this.logger.debug(`Zonage réglementaire: ZONE_URBAINE_U_EQUIPEMENT (code=${codeZone})`);
       return ZonageReglementaire.ZONE_URBAINE_U_EQUIPEMENT;
     }
 
-    if (/^U[XYZ]/i.test(type)) {
-      this.logger.debug("Zonage réglementaire: ZONE_URBAINE_U_ACTIVITE");
+    if (/^U[XYZ]/i.test(codeZone)) {
+      this.logger.debug(`Zonage réglementaire: ZONE_URBAINE_U_ACTIVITE (code=${codeZone})`);
       return ZonageReglementaire.ZONE_URBAINE_U_ACTIVITE;
     }
 

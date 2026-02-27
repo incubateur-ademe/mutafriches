@@ -75,6 +75,48 @@ describe("ZonageReglementaireCalculator", () => {
         });
       });
 
+      it("devrait retourner ZONE_URBAINE_U_HABITAT quand typezone=U et libelle=UA (cas réel API Carto)", () => {
+        const libelles = ["UA", "UB", "UC", "UD", "Ua1", "UBa"];
+        libelles.forEach((libelle) => {
+          const zoneUrba: ResultatZoneUrba = {
+            present: true,
+            nombreZones: 1,
+            typezone: "U",
+            libelle,
+          };
+          expect(calculator.evaluer(zoneUrba, null, null)).toBe(
+            ZonageReglementaire.ZONE_URBAINE_U_HABITAT,
+          );
+        });
+      });
+
+      it("devrait retourner ZONE_URBAINE_U_EQUIPEMENT quand typezone=U et libelle=UE", () => {
+        const zoneUrba: ResultatZoneUrba = {
+          present: true,
+          nombreZones: 1,
+          typezone: "U",
+          libelle: "UE",
+        };
+        expect(calculator.evaluer(zoneUrba, null, null)).toBe(
+          ZonageReglementaire.ZONE_URBAINE_U_EQUIPEMENT,
+        );
+      });
+
+      it("devrait retourner ZONE_URBAINE_U_ACTIVITE quand typezone=U et libelle=UX", () => {
+        const libelles = ["UX", "UY", "UZ"];
+        libelles.forEach((libelle) => {
+          const zoneUrba: ResultatZoneUrba = {
+            present: true,
+            nombreZones: 1,
+            typezone: "U",
+            libelle,
+          };
+          expect(calculator.evaluer(zoneUrba, null, null)).toBe(
+            ZonageReglementaire.ZONE_URBAINE_U_ACTIVITE,
+          );
+        });
+      });
+
       it("devrait retourner ZONE_A_URBANISER_AU si typezone commence par AU", () => {
         // Arrange
         const zoneUrba: ResultatZoneUrba = {
