@@ -422,6 +422,65 @@
   border-bottom-color: #ffe0b2;
 }
 
+/* ===== Section Diagnostic risques ===== */
+
+/* Fiabilité GeoRisques */
+.diag-risques__fiabilite {
+  padding: 0.375rem 0.5rem;
+  background: var(--background-alt-grey, #f6f6f6);
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+  color: var(--text-mention-grey, #666);
+}
+
+/* Tableau des APIs */
+.diag-risques__table {
+  font-size: 0.75rem;
+}
+
+/* Nom de l'API avec bouton expand */
+.diag-risques__api-name {
+  white-space: nowrap;
+}
+
+.diag-risques__expand-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: 600;
+  color: inherit;
+  text-align: left;
+}
+
+.diag-risques__expand-btn:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+
+/* Résumé */
+.diag-risques__summary {
+  font-size: 0.6875rem;
+  color: var(--text-mention-grey, #666);
+  max-width: 260px;
+}
+
+/* Colonne exploité */
+.diag-risques__exploite {
+  text-align: center;
+}
+
+/* Ligne avec exposition/alerte */
+.diag-risques__row--alerte {
+  background: #fff3e0;
+}
+
+.diag-risques__row--alerte td {
+  border-bottom-color: #ffe0b2;
+}
+
 /* Responsive mobile */
 @media (max-width: 576px) {
   .debug-panel__drawer {

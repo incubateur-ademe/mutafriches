@@ -6,6 +6,7 @@ import { EnrichissementSection } from "./sections/EnrichissementSection";
 import { DonneesComplementairesSection } from "./sections/DonneesComplementairesSection";
 import { EvaluationSection } from "./sections/EvaluationSection";
 import { DetailAlgorithmeSection } from "./sections/DetailAlgorithmeSection";
+import { DiagnosticRisquesSection } from "./sections/DiagnosticRisquesSection";
 import { SourcesMetadataSection } from "./sections/SourcesMetadataSection";
 import { RawJsonSection } from "./sections/RawJsonSection";
 import "./DebugPanel.css";
@@ -110,6 +111,8 @@ export const DebugPanel: React.FC<DebugPanelProps> = ({
           <EvaluationSection mutabilityData={mutabilityData} />
 
           <DetailAlgorithmeSection mutabilityData={mutabilityData} />
+
+          <DiagnosticRisquesSection enrichmentData={enrichmentData} />
 
           <SourcesMetadataSection enrichmentData={enrichmentData} />
 
