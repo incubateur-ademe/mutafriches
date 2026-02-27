@@ -33,16 +33,45 @@ describe("ZonageReglementaireCalculator", () => {
         expect(result).toBe(ZonageReglementaire.ZONE_URBAINE_U);
       });
 
-      it("devrait retourner ZONE_URBAINE_U pour UA, UB, UC", () => {
-        // Arrange & Act & Assert
-        const zones = ["UA", "UB", "UC", "Ue"];
+      it("devrait retourner ZONE_URBAINE_U_HABITAT pour UA, UB, UC, UD", () => {
+        const zones = ["UA", "UB", "UC", "UD", "Ua", "ub"];
         zones.forEach((typezone) => {
           const zoneUrba: ResultatZoneUrba = {
             present: true,
             nombreZones: 1,
             typezone,
           };
-          expect(calculator.evaluer(zoneUrba, null, null)).toBe(ZonageReglementaire.ZONE_URBAINE_U);
+          expect(calculator.evaluer(zoneUrba, null, null)).toBe(
+            ZonageReglementaire.ZONE_URBAINE_U_HABITAT,
+          );
+        });
+      });
+
+      it("devrait retourner ZONE_URBAINE_U_EQUIPEMENT pour UE", () => {
+        const zones = ["UE", "Ue", "ue"];
+        zones.forEach((typezone) => {
+          const zoneUrba: ResultatZoneUrba = {
+            present: true,
+            nombreZones: 1,
+            typezone,
+          };
+          expect(calculator.evaluer(zoneUrba, null, null)).toBe(
+            ZonageReglementaire.ZONE_URBAINE_U_EQUIPEMENT,
+          );
+        });
+      });
+
+      it("devrait retourner ZONE_URBAINE_U_ACTIVITE pour UX, UY, UZ sans destdomi activité", () => {
+        const zones = ["UX", "UY", "UZ", "Ux"];
+        zones.forEach((typezone) => {
+          const zoneUrba: ResultatZoneUrba = {
+            present: true,
+            nombreZones: 1,
+            typezone,
+          };
+          expect(calculator.evaluer(zoneUrba, null, null)).toBe(
+            ZonageReglementaire.ZONE_URBAINE_U_ACTIVITE,
+          );
         });
       });
 

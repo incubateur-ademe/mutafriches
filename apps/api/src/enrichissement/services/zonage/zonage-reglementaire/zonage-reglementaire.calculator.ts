@@ -60,7 +60,23 @@ export class ZonageReglementaireCalculator {
       return ZonageReglementaire.ZONE_VOCATION_ACTIVITES;
     }
 
-    // Zone urbaine U
+    // Sous-zones urbaines U avec affinage
+    if (/^U[ABCD]/i.test(type)) {
+      this.logger.debug("Zonage réglementaire: ZONE_URBAINE_U_HABITAT");
+      return ZonageReglementaire.ZONE_URBAINE_U_HABITAT;
+    }
+
+    if (/^UE/i.test(type)) {
+      this.logger.debug("Zonage réglementaire: ZONE_URBAINE_U_EQUIPEMENT");
+      return ZonageReglementaire.ZONE_URBAINE_U_EQUIPEMENT;
+    }
+
+    if (/^U[XYZ]/i.test(type)) {
+      this.logger.debug("Zonage réglementaire: ZONE_URBAINE_U_ACTIVITE");
+      return ZonageReglementaire.ZONE_URBAINE_U_ACTIVITE;
+    }
+
+    // Zone urbaine U générique (catch-all pour U simple ou sous-zones non classifiées)
     if (type.startsWith("U")) {
       this.logger.debug("Zonage réglementaire: ZONE_URBAINE_U");
       return ZonageReglementaire.ZONE_URBAINE_U;
