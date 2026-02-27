@@ -18,6 +18,7 @@ import { evaluationService } from "../../../shared/services/api/api.evaluation.s
 import { ModalInfo } from "../../../shared/components/common/ModalInfo";
 import { VERSION_ALGO } from "@mutafriches/shared-types";
 import { DebugPanelGate } from "../../debug/components/DebugPanelGate";
+import { isDebugPanelEnabled } from "../../debug/utils/debug.helpers";
 
 // Seuils pour les messages contextuels
 const SEUIL_SURFACE_HECTARE = 10000; // 1 hectare en m2
@@ -152,6 +153,7 @@ export const ResultatsPage: React.FC = () => {
       const result = await evaluationService.calculerMutabilite(mutabilityInput, {
         isIframe: isIframeMode,
         integrator: integrator || undefined,
+        modeDetaille: isDebugPanelEnabled(),
       });
       setMutabilityResult(result);
       setMutabilityData(result);

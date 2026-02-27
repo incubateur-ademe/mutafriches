@@ -242,6 +242,186 @@
   margin-top: 0.25rem;
 }
 
+/* ===== Section Radiographie de l'algorithme ===== */
+
+/* Selecteur d'usage (boutons horizontaux) */
+.detail-algo__usage-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  margin-bottom: 0.75rem;
+}
+
+.detail-algo__usage-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.375rem 0.625rem;
+  border: 2px solid var(--border-default-grey, #e5e5e5);
+  border-radius: 4px;
+  background: var(--background-default-grey, #fff);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+  line-height: 1.2;
+}
+
+.detail-algo__usage-btn:hover {
+  border-color: var(--text-mention-grey, #666);
+}
+
+.detail-algo__usage-btn--active {
+  border-width: 2px;
+  font-weight: 700;
+}
+
+.detail-algo__usage-btn-label {
+  font-size: 0.6875rem;
+  white-space: nowrap;
+}
+
+.detail-algo__usage-btn-score {
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+/* Barre avantages / contraintes */
+.detail-algo__ratio-bar {
+  margin-bottom: 0.75rem;
+}
+
+.detail-algo__ratio-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 0.75rem;
+  margin-bottom: 0.25rem;
+  color: var(--text-mention-grey, #666);
+}
+
+.detail-algo__ratio-formula {
+  font-size: 0.6875rem;
+  color: var(--text-mention-grey, #999);
+}
+
+.detail-algo__ratio-track {
+  display: flex;
+  height: 12px;
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--background-alt-grey, #f6f6f6);
+}
+
+.detail-algo__ratio-fill--avantages {
+  background: #4caf50;
+  transition: width 0.3s ease;
+}
+
+.detail-algo__ratio-fill--contraintes {
+  background: #ef5350;
+  transition: width 0.3s ease;
+}
+
+/* Tableau des criteres */
+.detail-algo__table {
+  font-size: 0.75rem;
+}
+
+.detail-algo__table th {
+  font-size: 0.6875rem;
+  position: sticky;
+  top: 0;
+  background: var(--background-default-grey, #fff);
+}
+
+/* Ligne d'en-tete de groupe (Avantages, Contraintes, Non renseignes) */
+.detail-algo__group-header td {
+  font-weight: 700;
+  font-size: 0.6875rem;
+  color: var(--text-mention-grey, #666);
+  background: var(--background-alt-grey, #f6f6f6);
+  padding: 0.25rem 0.5rem;
+  border-bottom: 1px solid var(--border-default-grey, #e5e5e5);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+/* Nom du critere */
+.detail-algo__critere-name {
+  white-space: nowrap;
+}
+
+/* Valeur du critere */
+.detail-algo__critere-valeur {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.6875rem;
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Poids */
+.detail-algo__poids {
+  text-align: center;
+  color: var(--text-mention-grey, #666);
+}
+
+/* Score pondere */
+.detail-algo__pondere {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Badge d'impact colore */
+.detail-algo__impact-badge {
+  display: inline-block;
+  padding: 0.125rem 0.375rem;
+  border-radius: 3px;
+  font-size: 0.625rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.detail-algo__score--tres-positif {
+  background: #c8e6c9;
+  color: #2e7d32;
+}
+
+.detail-algo__score--positif {
+  background: #dcedc8;
+  color: #558b2f;
+}
+
+.detail-algo__score--neutre {
+  background: #fff9c4;
+  color: #f57f17;
+}
+
+.detail-algo__score--negatif {
+  background: #ffccbc;
+  color: #bf360c;
+}
+
+.detail-algo__score--tres-negatif {
+  background: #ffcdd2;
+  color: #c62828;
+}
+
+/* Ligne de critere vide (non renseigne) */
+.detail-algo__row--vide {
+  opacity: 0.5;
+}
+
+/* Ligne surlignee (zonage reglementaire, etc.) */
+.detail-algo__row--highlight {
+  background: #fff3e0;
+}
+
+.detail-algo__row--highlight td {
+  border-bottom-color: #ffe0b2;
+}
+
 /* Responsive mobile */
 @media (max-width: 576px) {
   .debug-panel__drawer {
