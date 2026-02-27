@@ -251,9 +251,6 @@ export class EnrichissementService {
         // Risques GeoRisques Bruts
         risquesGeorisques,
 
-        // TODO: supprimer apres analyse - Diagnostic zonages (dev/staging)
-        diagnosticZonages: zonagesResult?.diagnosticZonages,
-
         // Métadonnées d'enrichissement
         sourcesUtilisees: sourcesUniques,
         champsManquants: champsManquantsUniques,
@@ -517,9 +514,6 @@ export class EnrichissementService {
         trameVerteEtBleue: siteEval.trameVerteEtBleue,
 
         risquesGeorisques,
-
-        // TODO: supprimer apres analyse - Diagnostic zonages (dev/staging)
-        diagnosticZonages: zonagesResult?.diagnosticZonages,
 
         // Métadonnées
         sourcesUtilisees: sourcesUniques,

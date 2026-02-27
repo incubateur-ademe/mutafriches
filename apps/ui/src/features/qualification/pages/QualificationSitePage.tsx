@@ -12,8 +12,6 @@ import { SITE_FIELDS } from "../config/fields/site.fields";
 import { validateSiteForm } from "../config/validators";
 import { EnrichedInfoField, FormSelectField, PollutionField } from "../components";
 import { PresencePollution } from "@mutafriches/shared-types";
-// TODO: supprimer apres analyse
-import { DebugPanelGate } from "../../debug/components/DebugPanelGate";
 
 export const QualificationSitePage: React.FC = () => {
   const navigate = useNavigate();
@@ -288,14 +286,6 @@ export const QualificationSitePage: React.FC = () => {
         nextType="submit"
         formId="site-form"
         isLoading={isSubmitting}
-      />
-
-      {/* TODO: supprimer apres analyse */}
-      <DebugPanelGate
-        enrichmentData={state.enrichmentData}
-        manualData={state.manualData}
-        mutabilityData={null}
-        identifiantSite={state.identifiantSite}
       />
     </Layout>
   );

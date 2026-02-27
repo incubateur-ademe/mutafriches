@@ -1,5 +1,4 @@
 import { Coordonnees, GeometrieParcelle } from "../..";
-import { DiagnosticZonages } from "./diagnostic-zonages.dto";
 
 /**
  * Résultat de l'enrichissement automatique des données de parcelle ou site
@@ -61,7 +60,4 @@ export interface EnrichissementOutputDto {
 
   // TODO a supprimer Données Géorisques
   risquesGeorisques?: any;
-
-  // TODO: supprimer apres analyse - Diagnostic zonages (dev/staging uniquement)
-  diagnosticZonages?: DiagnosticZonages;
 }
