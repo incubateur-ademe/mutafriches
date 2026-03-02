@@ -109,8 +109,8 @@ export const DetailAlgorithmeSection: React.FC<DetailAlgorithmeSectionProps> = (
   }
 
   // Usage sélectionné ou le premier par défaut
-  const activeUsage = selectedUsage ?? resultatsDetailles![0]?.usage;
-  const activeResult = resultatsDetailles!.find((r) => r.usage === activeUsage);
+  const activeUsage = selectedUsage ?? resultatsDetailles?.[0]?.usage;
+  const activeResult = resultatsDetailles?.find((r) => r.usage === activeUsage);
   const details = activeResult?.detailsCalcul;
 
   /**
@@ -154,7 +154,7 @@ export const DetailAlgorithmeSection: React.FC<DetailAlgorithmeSectionProps> = (
       <div className="debug-panel__section-content">
         {/* Sélecteur d'usage */}
         <div className="detail-algo__usage-selector">
-          {resultatsDetailles!.map((r) => (
+          {resultatsDetailles?.map((r) => (
             <button
               key={r.usage}
               type="button"

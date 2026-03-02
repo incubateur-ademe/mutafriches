@@ -154,11 +154,13 @@ export const DiagnosticRisquesSection: React.FC<DiagnosticRisquesSectionProps> =
     );
   }
 
-  const metadata = risques.metadata as {
-    sourcesUtilisees: string[];
-    sourcesEchouees: string[];
-    fiabilite: number;
-  } | undefined;
+  const metadata = risques.metadata as
+    | {
+        sourcesUtilisees: string[];
+        sourcesEchouees: string[];
+        fiabilite: number;
+      }
+    | undefined;
 
   const toggleExpand = (key: string) => {
     setExpandedApis((prev) => {
@@ -177,9 +179,7 @@ export const DiagnosticRisquesSection: React.FC<DiagnosticRisquesSectionProps> =
       <summary>Diagnostic risques</summary>
       <div className="debug-panel__section-content">
         {/* Résumé exploitation */}
-        <h4 className="debug-panel__subtitle">
-          Données exploitées par l'algorithme
-        </h4>
+        <h4 className="debug-panel__subtitle">Données exploitées par l'algorithme</h4>
         <dl className="debug-panel__data-grid">
           <dt>Risques naturels (final)</dt>
           <dd>
@@ -222,9 +222,7 @@ export const DiagnosticRisquesSection: React.FC<DiagnosticRisquesSectionProps> =
         )}
 
         {/* Tableau des 13 APIs */}
-        <h4 className="debug-panel__subtitle">
-          Détail des 13 APIs GeoRisques
-        </h4>
+        <h4 className="debug-panel__subtitle">Détail des 13 APIs GeoRisques</h4>
         <table className="debug-panel__usage-table diag-risques__table">
           <thead>
             <tr>
@@ -242,9 +240,7 @@ export const DiagnosticRisquesSection: React.FC<DiagnosticRisquesSectionProps> =
 
               return (
                 <React.Fragment key={key}>
-                  <tr
-                    className={`diag-risques__row ${expo ? "diag-risques__row--alerte" : ""}`}
-                  >
+                  <tr className={`diag-risques__row ${expo ? "diag-risques__row--alerte" : ""}`}>
                     <td className="diag-risques__api-name">
                       <button
                         type="button"
@@ -261,31 +257,29 @@ export const DiagnosticRisquesSection: React.FC<DiagnosticRisquesSectionProps> =
                     </td>
                     <td>
                       {apiData ? (
-                        <span className={`fr-badge fr-badge--sm ${expo ? "fr-badge--warning" : "fr-badge--success"}`}>
+                        <span
+                          className={`fr-badge fr-badge--sm ${expo ? "fr-badge--warning" : "fr-badge--success"}`}
+                        >
                           {expo ? "Exposé" : "OK"}
                         </span>
                       ) : (
-                        <span className="fr-badge fr-badge--sm fr-badge--error">
-                          Échec
-                        </span>
+                        <span className="fr-badge fr-badge--sm fr-badge--error">Échec</span>
                       )}
                     </td>
                     <td className="diag-risques__summary">
-                      {apiData
-                        ? getApiSummary(key, apiData)
-                        : "Non disponible"}
+                      {apiData ? getApiSummary(key, apiData) : "Non disponible"}
                     </td>
                     <td className="diag-risques__exploite">
                       {exploite === "naturel" ? (
-                        <span className="fr-badge fr-badge--sm fr-badge--blue-ecume">
-                          Naturel
-                        </span>
+                        <span className="fr-badge fr-badge--sm fr-badge--blue-ecume">Naturel</span>
                       ) : exploite === "techno" ? (
                         <span className="fr-badge fr-badge--sm fr-badge--purple-glycine">
                           Techno
                         </span>
                       ) : (
-                        <span className="fr-text--xs" style={{ color: "#999" }}>Non exploité</span>
+                        <span className="fr-text--xs" style={{ color: "#999" }}>
+                          Non exploité
+                        </span>
                       )}
                     </td>
                   </tr>
@@ -293,9 +287,7 @@ export const DiagnosticRisquesSection: React.FC<DiagnosticRisquesSectionProps> =
                   {isExpanded && apiData && (
                     <tr>
                       <td colSpan={4}>
-                        <pre className="debug-panel__json">
-                          {JSON.stringify(apiData, null, 2)}
-                        </pre>
+                        <pre className="debug-panel__json">{JSON.stringify(apiData, null, 2)}</pre>
                       </td>
                     </tr>
                   )}
