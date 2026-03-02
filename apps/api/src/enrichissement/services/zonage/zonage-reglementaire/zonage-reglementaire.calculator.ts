@@ -79,7 +79,7 @@ export class ZonageReglementaireCalculator {
       return ZonageReglementaire.ZONE_URBAINE_U_EQUIPEMENT;
     }
 
-    if (/^U[XYZ]/i.test(codeZone)) {
+    if (/^U[XYZI]/i.test(codeZone)) {
       this.logger.debug(`Zonage réglementaire: ZONE_URBAINE_U_ACTIVITE (code=${codeZone})`);
       return ZonageReglementaire.ZONE_URBAINE_U_ACTIVITE;
     }

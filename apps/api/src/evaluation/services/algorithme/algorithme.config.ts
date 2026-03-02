@@ -362,7 +362,7 @@ export const MATRICE_SCORING = {
       [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
     },
 
-    // Zone urbaine U activité (UX, UY, UZ)
+    // Zone urbaine U activité (UI, UX, UY, UZ)
     [ZonageReglementaire.ZONE_URBAINE_U_ACTIVITE]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.TRES_NEGATIF,
       [UsageType.EQUIPEMENTS]: ScoreImpact.NEGATIF,

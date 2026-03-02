@@ -61,8 +61,8 @@ describe("ZonageReglementaireCalculator", () => {
         });
       });
 
-      it("devrait retourner ZONE_URBAINE_U_ACTIVITE pour UX, UY, UZ sans destdomi activité", () => {
-        const zones = ["UX", "UY", "UZ", "Ux"];
+      it("devrait retourner ZONE_URBAINE_U_ACTIVITE pour UI, UX, UY, UZ sans destdomi activité", () => {
+        const zones = ["UI", "UX", "UY", "UZ", "Ui", "Ux"];
         zones.forEach((typezone) => {
           const zoneUrba: ResultatZoneUrba = {
             present: true,
@@ -102,8 +102,8 @@ describe("ZonageReglementaireCalculator", () => {
         );
       });
 
-      it("devrait retourner ZONE_URBAINE_U_ACTIVITE quand typezone=U et libelle=UX", () => {
-        const libelles = ["UX", "UY", "UZ"];
+      it("devrait retourner ZONE_URBAINE_U_ACTIVITE quand typezone=U et libelle=UI, UX, UY, UZ", () => {
+        const libelles = ["UI", "UX", "UY", "UZ"];
         libelles.forEach((libelle) => {
           const zoneUrba: ResultatZoneUrba = {
             present: true,
