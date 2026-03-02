@@ -5,6 +5,7 @@ import {
   GeometrieParcelle,
   MessagesErreurEnrichissement,
   StatutEnrichissement,
+  ZaerEnrichissement,
 } from "@mutafriches/shared-types";
 import { EnrichissementRepository } from "../repositories/enrichissement.repository";
 import { SiteRepository } from "../repositories/site.repository";
@@ -19,6 +20,7 @@ import { RisquesTechnologiquesEnrichissementService } from "./risques-technologi
 import { GeoRisquesEnrichissementService } from "./georisques/georisques-enrichissement.service";
 import { ZonageOrchestratorService } from "./zonage";
 import { PollutionDetectionService } from "./pollution/pollution-detection.service";
+import { EnrEnrichissementService } from "./enr/enr-enrichissement.service";
 
 /**
  * Service principal d'enrichissement - Orchestrateur
@@ -46,6 +48,7 @@ export class EnrichissementService {
     private readonly georisquesEnrichissement: GeoRisquesEnrichissementService,
     private readonly zonageOrchestrator: ZonageOrchestratorService,
     private readonly pollutionDetection: PollutionDetectionService,
+    private readonly enrEnrichissement: EnrEnrichissementService,
 
     // Utilitaires
     private readonly enrichissementRepository: EnrichissementRepository,
@@ -204,7 +207,23 @@ export class EnrichissementService {
         sourcesEchouees.push(...pollutionResult.sourcesEchouees);
       }
 
-      // 10. CALCULER LA FIABILITE
+      // 10. ENR / ZAER (Zones d'Acceleration des Energies Renouvelables)
+      let zaer: ZaerEnrichissement | undefined;
+      if (siteEval.geometrie || siteEval.coordonnees) {
+        const enrResult = await this.enrEnrichissement.enrichir(
+          siteEval.geometrie,
+          siteEval.coordonnees,
+        );
+        this.mergeEnrichmentResult(
+          enrResult.result,
+          sourcesUtilisees,
+          champsManquants,
+          sourcesEchouees,
+        );
+        zaer = enrResult.data;
+      }
+
+      // 11. CALCULER LA FIABILITE
       const sourcesUniques = [...new Set(sourcesUtilisees)];
       const champsManquantsUniques = [...new Set(champsManquants)];
 
@@ -213,7 +232,7 @@ export class EnrichissementService {
         `Champs manquants uniques (${champsManquantsUniques.length}): ${champsManquantsUniques.join(", ")}`,
       );
 
-      // 10. DÉTERMINER LE STATUT
+      // 11. DETERMINER LE STATUT
       if (sourcesEchouees.length === 0) {
         statut = StatutEnrichissement.SUCCES;
       } else if (sourcesUtilisees.length > 0) {
@@ -250,6 +269,9 @@ export class EnrichissementService {
 
         // Risques GeoRisques Bruts
         risquesGeorisques,
+
+        // Energies renouvelables
+        zaer,
 
         // Métadonnées d'enrichissement
         sourcesUtilisees: sourcesUniques,
@@ -453,7 +475,7 @@ export class EnrichissementService {
         siteEval.zonageReglementaire = zonagesResult.zonageReglementaire;
       }
 
-      // 10. POLLUTION -> centroïde du site
+      // 10. POLLUTION -> centroide du site
       let siteReferencePollue = false;
       if (siteEval.coordonnees) {
         const pollutionResult = await this.pollutionDetection.detecterPollution(
@@ -466,7 +488,23 @@ export class EnrichissementService {
         sourcesEchouees.push(...pollutionResult.sourcesEchouees);
       }
 
-      // 11. DÉTERMINER LE STATUT
+      // 11. ENR / ZAER -> geometrie union du site ou centroide
+      let zaer: ZaerEnrichissement | undefined;
+      if (siteEval.geometrie || siteEval.coordonnees) {
+        const enrResult = await this.enrEnrichissement.enrichir(
+          siteEval.geometrie,
+          siteEval.coordonnees,
+        );
+        this.mergeEnrichmentResult(
+          enrResult.result,
+          sourcesUtilisees,
+          champsManquants,
+          sourcesEchouees,
+        );
+        zaer = enrResult.data;
+      }
+
+      // 12. DETERMINER LE STATUT
       const sourcesUniques = [...new Set(sourcesUtilisees)];
       const champsManquantsUniques = [...new Set(champsManquants)];
 
@@ -515,6 +553,9 @@ export class EnrichissementService {
 
         risquesGeorisques,
 
+        // Energies renouvelables
+        zaer,
+
         // Métadonnées
         sourcesUtilisees: sourcesUniques,
         champsManquants: champsManquantsUniques,
@@ -522,7 +563,7 @@ export class EnrichissementService {
       } as EnrichissementOutputDto;
 
       this.logger.log(
-        `Enrichissement site terminé : ${site.nombreParcelles} parcelle(s) (statut: ${statut})`,
+        `Enrichissement site termine : ${site.nombreParcelles} parcelle(s) (statut: ${statut})`,
       );
     } catch (error) {
       statut = StatutEnrichissement.ECHEC;

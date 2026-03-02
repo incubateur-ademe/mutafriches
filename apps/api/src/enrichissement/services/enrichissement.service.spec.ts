@@ -11,6 +11,7 @@ import { RisquesTechnologiquesEnrichissementService } from "./risques-technologi
 import { GeoRisquesEnrichissementService } from "./georisques/georisques-enrichissement.service";
 import { EnrichissementRepository } from "../repositories/enrichissement.repository";
 import { PollutionDetectionService } from "./pollution/pollution-detection.service";
+import { EnrEnrichissementService } from "./enr/enr-enrichissement.service";
 import { Site } from "../../evaluation/entities/site.entity";
 import {
   createMockCadastreEnrichissementService,
@@ -23,6 +24,7 @@ import {
   createMockEnrichissementRepository,
   createMockZonageOrchestratorService,
   createMockPollutionDetectionService,
+  createMockEnrEnrichissementService,
   createMockSiteRepository,
 } from "../__test-helpers__/enrichissement.mocks";
 import { ZonageOrchestratorService } from "./zonage";
@@ -54,9 +56,16 @@ describe("EnrichissementService", () => {
     const mockRisquesTechnologiques = createMockRisquesTechnologiquesEnrichissementService();
     const mockGeoRisques = createMockGeoRisquesEnrichissementService();
     const mockZonageOrchestrator = createMockZonageOrchestratorService();
+    const mockEnrEnrichissement = createMockEnrEnrichissementService();
     const mockPollutionDetection = createMockPollutionDetectionService();
     const mockRepository = createMockEnrichissementRepository();
     const mockSiteRepository = createMockSiteRepository();
+
+    // Configuration par défaut du mock ENR
+    mockEnrEnrichissement.enrichir.mockResolvedValue({
+      result: { success: true, sourcesUtilisees: ["ZAER-ENR"], sourcesEchouees: [] },
+      data: undefined,
+    });
 
     // Configuration par defaut du mock pollution
     mockPollutionDetection.detecterPollution.mockResolvedValue({
@@ -87,6 +96,7 @@ describe("EnrichissementService", () => {
         { provide: GeoRisquesEnrichissementService, useValue: mockGeoRisques },
         { provide: ZonageOrchestratorService, useValue: mockZonageOrchestrator },
         { provide: PollutionDetectionService, useValue: mockPollutionDetection },
+        { provide: EnrEnrichissementService, useValue: mockEnrEnrichissement },
         { provide: EnrichissementRepository, useValue: mockRepository },
         { provide: SiteRepository, useValue: mockSiteRepository },
       ],
@@ -215,7 +225,7 @@ describe("EnrichissementService", () => {
       expect(result.codeInsee).toBe("29232");
       expect(result.commune).toBe("Quimper");
       expect(result.surfaceSite).toBe(1000);
-      expect(result.sourcesUtilisees).toHaveLength(9);
+      expect(result.sourcesUtilisees).toHaveLength(10);
     });
 
     it("devrait persister l'enrichissement avec statut SUCCES", async () => {

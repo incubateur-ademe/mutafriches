@@ -126,6 +126,70 @@ export const EnrichissementSection: React.FC<EnrichissementSectionProps> = ({ en
           <dt>Patrimonial</dt>
           <dd>{enrichmentData.zonagePatrimonial ?? "Non disponible"}</dd>
         </dl>
+
+        {/* Énergies renouvelables (ZAER) */}
+        <h4 className="debug-panel__subtitle">&Eacute;nergies renouvelables (ZAER)</h4>
+        {enrichmentData.zaer ? (
+          <>
+            <dl className="debug-panel__data-grid">
+              <dt>En zone ZAER</dt>
+              <dd>
+                <span
+                  className={`fr-badge fr-badge--sm ${enrichmentData.zaer.enZoneZaer ? "fr-badge--success" : "fr-badge--info"}`}
+                >
+                  {formatBoolean(enrichmentData.zaer.enZoneZaer)}
+                </span>
+              </dd>
+
+              <dt>Nombre de zones</dt>
+              <dd>{enrichmentData.zaer.nombreZones}</dd>
+
+              {enrichmentData.zaer.filieres.length > 0 && (
+                <>
+                  <dt>Fili&egrave;res</dt>
+                  <dd>
+                    {enrichmentData.zaer.filieres.map((filiere) => (
+                      <span
+                        key={filiere}
+                        className="fr-badge fr-badge--sm fr-badge--green-emeraude"
+                        style={{ marginRight: "0.25rem", marginBottom: "0.25rem" }}
+                      >
+                        {filiere}
+                      </span>
+                    ))}
+                  </dd>
+                </>
+              )}
+            </dl>
+
+            {enrichmentData.zaer.zones.length > 0 && (
+              <table className="debug-panel__usage-table" style={{ marginTop: "0.5rem" }}>
+                <thead>
+                  <tr>
+                    <th>Nom</th>
+                    <th>Fili&egrave;re</th>
+                    <th>D&eacute;tail</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {enrichmentData.zaer.zones.map((zone, index) => (
+                    <tr key={index}>
+                      <td>{zone.nom ?? "Sans nom"}</td>
+                      <td>
+                        <span className="fr-badge fr-badge--sm fr-badge--green-emeraude">
+                          {zone.filiere}
+                        </span>
+                      </td>
+                      <td>{zone.detailFiliere ?? "-"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </>
+        ) : (
+          <p className="fr-text--sm">Non disponible</p>
+        )}
       </div>
     </details>
   );

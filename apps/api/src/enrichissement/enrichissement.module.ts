@@ -21,6 +21,10 @@ import { RisquesTechnologiquesCalculator } from "./services/risques-technologiqu
 // Service Pollution
 import { PollutionDetectionService } from "./services/pollution/pollution-detection.service";
 
+// Service ENR (Energies Renouvelables)
+import { EnrEnrichissementService } from "./services/enr/enr-enrichissement.service";
+import { ZaerWfsService } from "./adapters/zaer-wfs/zaer-wfs.service";
+
 // Services Zonage
 import { ZonageOrchestratorService } from "./services/zonage/zonage-orchestrator.service";
 import { ZonageEnvironnementalService } from "./services/zonage/zonage-environnemental/zonage-environnemental.service";
@@ -93,6 +97,10 @@ import { AdemeSitesPolluesRepository } from "./repositories/ademe-sites-pollues.
 
     // Service Pollution
     PollutionDetectionService,
+
+    // Service ENR
+    EnrEnrichissementService,
+    ZaerWfsService,
 
     // Services Zonage
     ZonageOrchestratorService,

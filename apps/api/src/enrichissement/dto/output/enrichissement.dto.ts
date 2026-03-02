@@ -7,6 +7,7 @@ import {
   TrameVerteEtBleue,
   Coordonnees,
   GeometrieParcelle,
+  ZaerEnrichissement,
 } from "@mutafriches/shared-types";
 
 /**
@@ -189,6 +190,22 @@ export class EnrichissementSwaggerDto implements IEnrichissementOutput {
     maximum: 10,
   })
   fiabilite: number;
+
+  @ApiProperty({
+    description: "Zones d'Acceleration des Energies Renouvelables (ZAER)",
+    required: false,
+    type: Object,
+    example: {
+      enZoneZaer: true,
+      nombreZones: 2,
+      filieres: ["SOLAIRE_PV", "EOLIEN"],
+      zones: [
+        { nom: "Zone solaire sud", filiere: "SOLAIRE_PV", detailFiliere: "SOLAIRE_PV_NV_TOIT" },
+        { nom: "Zone eolien nord", filiere: "EOLIEN", detailFiliere: null },
+      ],
+    },
+  })
+  zaer?: ZaerEnrichissement;
 
   // TODO a supprimer Données Géorisques
   risquesGeorisques?: any;

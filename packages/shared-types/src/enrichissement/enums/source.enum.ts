@@ -24,4 +24,5 @@ export enum SourceEnrichissement {
   SERVICE_PUBLIC = "API Service Public",
   TRANSPORT_DATA_GOUV = "Transport Data Gouv",
   IGN_WFS = "IGN WFS",
+  ZAER = "ZAER-ENR",
 }

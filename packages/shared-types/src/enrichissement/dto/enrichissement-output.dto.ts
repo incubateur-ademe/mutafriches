@@ -58,6 +58,33 @@ export interface EnrichissementOutputDto {
   champsManquants: string[];
   sourcesEchouees: string[];
 
+  // Energies renouvelables
+  /** Zones d'Acceleration des Energies Renouvelables */
+  zaer?: ZaerEnrichissement;
+
   // TODO a supprimer Données Géorisques
   risquesGeorisques?: any;
+}
+
+/**
+ * Resultat de l'enrichissement ZAER pour un site
+ */
+export interface ZaerEnrichissement {
+  /** Le site intersecte au moins une zone ZAER */
+  enZoneZaer: boolean;
+  /** Nombre de zones ZAER intersectees */
+  nombreZones: number;
+  /** Filieres ENR uniques presentes (ex: ["SOLAIRE_PV", "EOLIEN"]) */
+  filieres: string[];
+  /** Detail par zone intersectee */
+  zones: ZaerDetail[];
+}
+
+/**
+ * Detail d'une zone ZAER intersectee
+ */
+export interface ZaerDetail {
+  nom: string | null;
+  filiere: string;
+  detailFiliere: string | null;
 }
