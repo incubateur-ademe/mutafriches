@@ -350,6 +350,197 @@ describe("ZonageReglementaireCalculator", () => {
       });
     });
 
+    describe("Affinage par mots-clés dans libelong", () => {
+      it("devrait retourner ZONE_URBAINE_U_HABITAT si libelong contient 'habitat'", () => {
+        const zoneUrba: ResultatZoneUrba = {
+          present: true,
+          nombreZones: 1,
+          typezone: "U",
+          libelle: "UG",
+          libelong: "Zone d'habitat collectif",
+        };
+        expect(calculator.evaluer(zoneUrba, null, null)).toBe(
+          ZonageReglementaire.ZONE_URBAINE_U_HABITAT,
+        );
+      });
+
+      it("devrait retourner ZONE_URBAINE_U_HABITAT si libelong contient 'mixte'", () => {
+        const zoneUrba: ResultatZoneUrba = {
+          present: true,
+          nombreZones: 1,
+          typezone: "U",
+          libelle: "UM",
+          libelong: "Zone mixte centre-ville",
+        };
+        expect(calculator.evaluer(zoneUrba, null, null)).toBe(
+          ZonageReglementaire.ZONE_URBAINE_U_HABITAT,
+        );
+      });
+
+      it("devrait retourner ZONE_URBAINE_U_HABITAT si libelong contient 'pavillonnaire'", () => {
+        const zoneUrba: ResultatZoneUrba = {
+          present: true,
+          nombreZones: 1,
+          typezone: "U",
+          libelle: "UP",
+          libelong: "Zone pavillonnaire",
+        };
+        expect(calculator.evaluer(zoneUrba, null, null)).toBe(
+          ZonageReglementaire.ZONE_URBAINE_U_HABITAT,
+        );
+      });
+
+      it("devrait retourner ZONE_URBAINE_U_HABITAT si libelong contient 'centre'", () => {
+        const zoneUrba: ResultatZoneUrba = {
+          present: true,
+          nombreZones: 1,
+          typezone: "U",
+          libelle: "UV",
+          libelong: "Zone de centre bourg",
+        };
+        expect(calculator.evaluer(zoneUrba, null, null)).toBe(
+          ZonageReglementaire.ZONE_URBAINE_U_HABITAT,
+        );
+      });
+
+      it("devrait retourner ZONE_URBAINE_U_EQUIPEMENT si libelong contient 'équipement'", () => {
+        const zoneUrba: ResultatZoneUrba = {
+          present: true,
+          nombreZones: 1,
+          typezone: "U",
+          libelle: "UF",
+          libelong: "Zone d'équipement public",
+        };
+        expect(calculator.evaluer(zoneUrba, null, null)).toBe(
+          ZonageReglementaire.ZONE_URBAINE_U_EQUIPEMENT,
+        );
+      });
+
+      it("devrait retourner ZONE_URBAINE_U_EQUIPEMENT si libelong contient 'equipement' sans accent", () => {
+        const zoneUrba: ResultatZoneUrba = {
+          present: true,
+          nombreZones: 1,
+          typezone: "U",
+          libelle: "UF",
+          libelong: "Zone d'equipement communal",
+        };
+        expect(calculator.evaluer(zoneUrba, null, null)).toBe(
+          ZonageReglementaire.ZONE_URBAINE_U_EQUIPEMENT,
+        );
+      });
+
+      it("devrait retourner ZONE_URBAINE_U_ACTIVITE si libelong contient 'activité'", () => {
+        const zoneUrba: ResultatZoneUrba = {
+          present: true,
+          nombreZones: 1,
+          typezone: "U",
+          libelle: "UG",
+          libelong: "Zone d'activité économique",
+        };
+        expect(calculator.evaluer(zoneUrba, null, null)).toBe(
+          ZonageReglementaire.ZONE_URBAINE_U_ACTIVITE,
+        );
+      });
+
+      it("devrait retourner ZONE_URBAINE_U_ACTIVITE si libelong contient 'industrie'", () => {
+        const zoneUrba: ResultatZoneUrba = {
+          present: true,
+          nombreZones: 1,
+          typezone: "U",
+          libelle: "UG",
+          libelong: "Zone d'industrie lourde",
+        };
+        expect(calculator.evaluer(zoneUrba, null, null)).toBe(
+          ZonageReglementaire.ZONE_URBAINE_U_ACTIVITE,
+        );
+      });
+
+      it("devrait retourner ZONE_URBAINE_U_ACTIVITE si libelong contient 'industrielle'", () => {
+        const zoneUrba: ResultatZoneUrba = {
+          present: true,
+          nombreZones: 1,
+          typezone: "U",
+          libelle: "UG",
+          libelong: "Zone industrielle nord",
+        };
+        expect(calculator.evaluer(zoneUrba, null, null)).toBe(
+          ZonageReglementaire.ZONE_URBAINE_U_ACTIVITE,
+        );
+      });
+
+      it("devrait retourner ZONE_URBAINE_U_ACTIVITE si libelong contient 'artisanale'", () => {
+        const zoneUrba: ResultatZoneUrba = {
+          present: true,
+          nombreZones: 1,
+          typezone: "U",
+          libelle: "UG",
+          libelong: "Zone artisanale communale",
+        };
+        expect(calculator.evaluer(zoneUrba, null, null)).toBe(
+          ZonageReglementaire.ZONE_URBAINE_U_ACTIVITE,
+        );
+      });
+
+      it("devrait retourner ZONE_URBAINE_U_ACTIVITE si libelong contient 'artisanat'", () => {
+        const zoneUrba: ResultatZoneUrba = {
+          present: true,
+          nombreZones: 1,
+          typezone: "U",
+          libelle: "UG",
+          libelong: "Zone d'artisanat",
+        };
+        expect(calculator.evaluer(zoneUrba, null, null)).toBe(
+          ZonageReglementaire.ZONE_URBAINE_U_ACTIVITE,
+        );
+      });
+
+      it("devrait prioriser le code sur le libelong (UA + libelong activité → HABITAT)", () => {
+        const zoneUrba: ResultatZoneUrba = {
+          present: true,
+          nombreZones: 1,
+          typezone: "UA",
+          libelong: "Zone d'activité",
+        };
+        expect(calculator.evaluer(zoneUrba, null, null)).toBe(
+          ZonageReglementaire.ZONE_URBAINE_U_HABITAT,
+        );
+      });
+
+      it("devrait retourner ZONE_URBAINE_U si libelong ne contient aucun mot-clé", () => {
+        const zoneUrba: ResultatZoneUrba = {
+          present: true,
+          nombreZones: 1,
+          typezone: "U",
+          libelle: "UG",
+          libelong: "Zone générale",
+        };
+        expect(calculator.evaluer(zoneUrba, null, null)).toBe(ZonageReglementaire.ZONE_URBAINE_U);
+      });
+
+      it("devrait retourner ZONE_URBAINE_U si libelong est absent", () => {
+        const zoneUrba: ResultatZoneUrba = {
+          present: true,
+          nombreZones: 1,
+          typezone: "U",
+          libelle: "UG",
+        };
+        expect(calculator.evaluer(zoneUrba, null, null)).toBe(ZonageReglementaire.ZONE_URBAINE_U);
+      });
+
+      it("devrait être insensible à la casse du libelong", () => {
+        const zoneUrba: ResultatZoneUrba = {
+          present: true,
+          nombreZones: 1,
+          typezone: "U",
+          libelle: "UG",
+          libelong: "ZONE D'HABITAT COLLECTIF",
+        };
+        expect(calculator.evaluer(zoneUrba, null, null)).toBe(
+          ZonageReglementaire.ZONE_URBAINE_U_HABITAT,
+        );
+      });
+    });
+
     describe("Cas limites", () => {
       it("devrait gérer les typezones en minuscules", () => {
         // Arrange

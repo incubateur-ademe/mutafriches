@@ -160,7 +160,9 @@ export function InputFormFields({ formData, onFormDataChange, isEditable }: Inpu
                 <option value={EtatBatiInfrastructure.DEGRADATION_INEXISTANTE}>
                   Dégradation inexistante
                 </option>
-                <option value={EtatBatiInfrastructure.NE_SAIT_PAS}>Ne sait pas / Pas de bâti</option>
+                <option value={EtatBatiInfrastructure.NE_SAIT_PAS}>
+                  Ne sait pas / Pas de bâti
+                </option>
               </select>
             </div>
           </div>
