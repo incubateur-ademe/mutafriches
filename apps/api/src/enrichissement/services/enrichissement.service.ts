@@ -273,6 +273,9 @@ export class EnrichissementService {
         // Energies renouvelables
         zaer,
 
+        // Diagnostic zonages (dev/staging uniquement)
+        diagnosticZonages: zonagesResult?.diagnosticZonages,
+
         // Métadonnées d'enrichissement
         sourcesUtilisees: sourcesUniques,
         champsManquants: champsManquantsUniques,
@@ -555,6 +558,9 @@ export class EnrichissementService {
 
         // Energies renouvelables
         zaer,
+
+        // Diagnostic zonages (dev/staging uniquement)
+        diagnosticZonages: zonagesResult?.diagnosticZonages,
 
         // Métadonnées
         sourcesUtilisees: sourcesUniques,

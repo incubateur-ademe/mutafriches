@@ -2,6 +2,7 @@ import {
   ZonageEnvironnemental,
   ZonagePatrimonial,
   ZonageReglementaire,
+  DiagnosticZonages,
 } from "@mutafriches/shared-types";
 import { EnrichmentResult } from "../shared/enrichissement.types";
 import {
@@ -23,4 +24,6 @@ export interface ResultatEnrichissementZonage {
     patrimonial: EvaluationZonagePatrimonial;
     reglementaire: EvaluationZonageReglementaire;
   };
+  /** Données brutes des APIs pour le panneau de diagnostic (absent en production) */
+  diagnosticZonages?: DiagnosticZonages;
 }

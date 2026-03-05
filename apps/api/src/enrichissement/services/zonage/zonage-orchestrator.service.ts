@@ -1,6 +1,7 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { SourceEnrichissement } from "@mutafriches/shared-types";
+import { DiagnosticZonages, SourceEnrichissement } from "@mutafriches/shared-types";
 
+import { isProduction } from "../../../shared/utils/environment.utils";
 import { ParcelleGeometry } from "../shared/geometry.types";
 import { ZonageEnvironnementalService } from "./zonage-environnemental/zonage-environnemental.service";
 import { ZonagePatrimonialService } from "./zonage-patrimonial/zonage-patrimonial.service";
@@ -157,6 +158,34 @@ export class ZonageOrchestratorService {
         `Env: ${zonageEnvironnementalFinal}, Patri: ${zonagePatrimonialFinal}, Regl: ${zonageReglementaireFinal}`,
     );
 
+    // Assembler les données de diagnostic (hors production)
+    let diagnosticZonages: DiagnosticZonages | undefined;
+    if (!isProduction()) {
+      diagnosticZonages = {
+        reglementaire:
+          reglementaireResult.status === "fulfilled" && reglementaireResult.value
+            ? (reglementaireResult.value.diagnosticReglementaire ?? null)
+            : null,
+        environnemental: evalEnvironnemental
+          ? {
+              natura2000: evalEnvironnemental.natura2000,
+              znieff: evalEnvironnemental.znieff,
+              parcNaturel: evalEnvironnemental.parcNaturel,
+              reserveNaturelle: evalEnvironnemental.reserveNaturelle,
+              zonageFinal: evalEnvironnemental.zonageFinal,
+            }
+          : null,
+        patrimonial: evalPatrimonial
+          ? {
+              ac1: evalPatrimonial.ac1,
+              ac2: evalPatrimonial.ac2,
+              ac4: evalPatrimonial.ac4,
+              zonageFinal: evalPatrimonial.zonageFinal,
+            }
+          : null,
+      };
+    }
+
     return {
       result: {
         success: sourcesUtilisees.size > 0,
@@ -171,6 +200,7 @@ export class ZonageOrchestratorService {
         patrimonial: evalPatrimonial as any,
         reglementaire: evalReglementaire as any,
       },
+      diagnosticZonages,
     };
   }
 }

@@ -15,6 +15,7 @@ import {
 } from "../config/types";
 import { ENVIRONNEMENT_FIELDS } from "../config/fields/environnement.fields";
 import { validateEnvironnementForm } from "../config/validators";
+import { DebugPanelGate } from "../../debug/components/DebugPanelGate";
 
 export const QualificationEnvironnementPage: React.FC = () => {
   const navigate = useNavigate();
@@ -278,6 +279,13 @@ export const QualificationEnvironnementPage: React.FC = () => {
         nextType="submit"
         formId="environnement-form"
         isLoading={isSubmitting}
+      />
+
+      <DebugPanelGate
+        enrichmentData={state.enrichmentData}
+        manualData={state.manualData}
+        mutabilityData={null}
+        identifiantSite={state.identifiantSite}
       />
     </Layout>
   );

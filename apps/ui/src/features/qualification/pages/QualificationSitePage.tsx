@@ -12,6 +12,7 @@ import { SITE_FIELDS } from "../config/fields/site.fields";
 import { validateSiteForm } from "../config/validators";
 import { EnrichedInfoField, FormSelectField, PollutionField } from "../components";
 import { PresencePollution } from "@mutafriches/shared-types";
+import { DebugPanelGate } from "../../debug/components/DebugPanelGate";
 
 export const QualificationSitePage: React.FC = () => {
   const navigate = useNavigate();
@@ -286,6 +287,13 @@ export const QualificationSitePage: React.FC = () => {
         nextType="submit"
         formId="site-form"
         isLoading={isSubmitting}
+      />
+
+      <DebugPanelGate
+        enrichmentData={state.enrichmentData}
+        manualData={state.manualData}
+        mutabilityData={null}
+        identifiantSite={state.identifiantSite}
       />
     </Layout>
   );

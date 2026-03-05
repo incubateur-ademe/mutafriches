@@ -7,6 +7,7 @@ import { DonneesComplementairesSection } from "./sections/DonneesComplementaires
 import { EvaluationSection } from "./sections/EvaluationSection";
 import { DetailAlgorithmeSection } from "./sections/DetailAlgorithmeSection";
 import { DiagnosticRisquesSection } from "./sections/DiagnosticRisquesSection";
+import { DiagnosticZonagesSection } from "./sections/DiagnosticZonagesSection";
 import { SourcesMetadataSection } from "./sections/SourcesMetadataSection";
 import { RawJsonSection } from "./sections/RawJsonSection";
 import "./DebugPanel.css";
@@ -105,6 +106,8 @@ export const DebugPanel: React.FC<DebugPanelProps> = ({
           />
 
           <EnrichissementSection enrichmentData={enrichmentData} />
+
+          <DiagnosticZonagesSection enrichmentData={enrichmentData} />
 
           <DonneesComplementairesSection manualData={manualData} />
 

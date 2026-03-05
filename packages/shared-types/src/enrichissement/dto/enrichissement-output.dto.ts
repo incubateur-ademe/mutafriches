@@ -1,4 +1,5 @@
 import { Coordonnees, GeometrieParcelle } from "../..";
+import { DiagnosticZonages } from "./diagnostic-zonages.dto";
 
 /**
  * Résultat de l'enrichissement automatique des données de parcelle ou site
@@ -61,6 +62,10 @@ export interface EnrichissementOutputDto {
   // Energies renouvelables
   /** Zones d'Acceleration des Energies Renouvelables */
   zaer?: ZaerEnrichissement;
+
+  // Diagnostic zonages (dev/staging uniquement, absent en production)
+  /** Données brutes des APIs de zonage pour le panneau de diagnostic */
+  diagnosticZonages?: DiagnosticZonages;
 
   // TODO a supprimer Données Géorisques
   risquesGeorisques?: any;
