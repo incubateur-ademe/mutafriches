@@ -160,9 +160,8 @@ export function InputFormFields({ formData, onFormDataChange, isEditable }: Inpu
                 <option value={EtatBatiInfrastructure.DEGRADATION_INEXISTANTE}>
                   Dégradation inexistante
                 </option>
-                <option value={EtatBatiInfrastructure.NE_SAIT_PAS}>
-                  Ne sait pas / Pas de bâti
-                </option>
+                <option value={EtatBatiInfrastructure.PAS_DE_BATI}>Pas de bâti</option>
+                <option value={EtatBatiInfrastructure.NE_SAIT_PAS}>Ne sait pas</option>
               </select>
             </div>
           </div>
@@ -481,7 +480,8 @@ export function InputFormFields({ formData, onFormDataChange, isEditable }: Inpu
                 <option value={ValeurArchitecturale.SANS_INTERET}>Sans intérêt</option>
                 <option value={ValeurArchitecturale.ORDINAIRE}>Ordinaire</option>
                 <option value={ValeurArchitecturale.INTERET_REMARQUABLE}>Remarquable</option>
-                <option value={ValeurArchitecturale.NE_SAIT_PAS}>Ne sait pas / Pas de bâti</option>
+                <option value={ValeurArchitecturale.PAS_DE_BATI}>Pas de bâti</option>
+                <option value={ValeurArchitecturale.NE_SAIT_PAS}>Ne sait pas</option>
               </select>
             </div>
           </div>

@@ -622,7 +622,7 @@ export const MATRICE_SCORING = {
       [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.TRES_NEGATIF,
     },
 
-    [ValeurArchitecturale.NE_SAIT_PAS]: {
+    [ValeurArchitecturale.PAS_DE_BATI]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
       [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
       [UsageType.CULTURE]: ScoreImpact.NEUTRE,
@@ -630,6 +630,16 @@ export const MATRICE_SCORING = {
       [UsageType.INDUSTRIE]: ScoreImpact.NEUTRE,
       [UsageType.RENATURATION]: ScoreImpact.TRES_POSITIF,
       [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.TRES_POSITIF,
+    },
+
+    [ValeurArchitecturale.NE_SAIT_PAS]: {
+      [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
+      [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
+      [UsageType.CULTURE]: ScoreImpact.NEUTRE,
+      [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
+      [UsageType.INDUSTRIE]: ScoreImpact.NEUTRE,
+      [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
+      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
     },
   },
 

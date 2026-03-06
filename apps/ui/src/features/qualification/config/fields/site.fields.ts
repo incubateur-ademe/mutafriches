@@ -61,7 +61,8 @@ export const SITE_FIELDS: Record<string, FormFieldConfig<string>> = {
         value: EtatBatiInfrastructure.DEGRADATION_TRES_IMPORTANTE,
         label: "Dégradation très importante",
       },
-      { value: EtatBatiInfrastructure.NE_SAIT_PAS, label: "Ne sait pas / Pas de bâti" },
+      { value: EtatBatiInfrastructure.PAS_DE_BATI, label: "Pas de bâti" },
+      { value: EtatBatiInfrastructure.NE_SAIT_PAS, label: "Ne sait pas" },
     ] as SelectOption<EtatBatiInfrastructure>[],
   },
 
@@ -92,7 +93,8 @@ export const SITE_FIELDS: Record<string, FormFieldConfig<string>> = {
       { value: ValeurArchitecturale.SANS_INTERET, label: "Sans intérêt" },
       { value: ValeurArchitecturale.ORDINAIRE, label: "Ordinaire" },
       { value: ValeurArchitecturale.INTERET_REMARQUABLE, label: "Intérêt remarquable" },
-      { value: ValeurArchitecturale.NE_SAIT_PAS, label: "Ne sait pas / Pas de bâti" },
+      { value: ValeurArchitecturale.PAS_DE_BATI, label: "Pas de bâti" },
+      { value: ValeurArchitecturale.NE_SAIT_PAS, label: "Ne sait pas" },
     ] as SelectOption<ValeurArchitecturale>[],
   },
 };
