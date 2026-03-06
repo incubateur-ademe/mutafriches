@@ -44,7 +44,9 @@ export interface EnrichissementOutputDto {
 
   // Risques et contraintes
   presenceRisquesTechnologiques: boolean;
-  presenceRisquesNaturels?: string; // Enum RisqueNaturel
+  risqueRetraitGonflementArgile?: string; // Enum RisqueRetraitGonflementArgile
+  risqueCavitesSouterraines?: string; // Enum RisqueCavitesSouterraines
+  risqueInondation?: string; // Enum RisqueInondation
 
   // Pollution - site référencé dans les bases ADEME (sites et sols pollués)
   siteReferencePollue: boolean;

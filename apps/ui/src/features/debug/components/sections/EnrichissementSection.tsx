@@ -86,21 +86,50 @@ export const EnrichissementSection: React.FC<EnrichissementSectionProps> = ({ en
             </span>
           </dd>
 
-          <dt>Risques naturels</dt>
+          <dt>Retrait gonflement argiles</dt>
           <dd>
             <span
               className={`fr-badge fr-badge--sm ${
-                enrichmentData.presenceRisquesNaturels === "aucun" ||
-                enrichmentData.presenceRisquesNaturels === "faible"
+                enrichmentData.risqueRetraitGonflementArgile === "aucun"
                   ? "fr-badge--success"
-                  : enrichmentData.presenceRisquesNaturels === "moyen"
+                  : enrichmentData.risqueRetraitGonflementArgile === "faible-ou-moyen"
                     ? "fr-badge--warning"
-                    : enrichmentData.presenceRisquesNaturels === "fort"
+                    : enrichmentData.risqueRetraitGonflementArgile === "fort"
                       ? "fr-badge--error"
                       : "fr-badge--info"
               }`}
             >
-              {enrichmentData.presenceRisquesNaturels ?? "Non disponible"}
+              {enrichmentData.risqueRetraitGonflementArgile ?? "Non disponible"}
+            </span>
+          </dd>
+
+          <dt>Cavit&eacute;s souterraines</dt>
+          <dd>
+            <span
+              className={`fr-badge fr-badge--sm ${
+                enrichmentData.risqueCavitesSouterraines === "non"
+                  ? "fr-badge--success"
+                  : enrichmentData.risqueCavitesSouterraines === "oui"
+                    ? "fr-badge--error"
+                    : "fr-badge--info"
+              }`}
+            >
+              {enrichmentData.risqueCavitesSouterraines ?? "Non disponible"}
+            </span>
+          </dd>
+
+          <dt>Inondations</dt>
+          <dd>
+            <span
+              className={`fr-badge fr-badge--sm ${
+                enrichmentData.risqueInondation === "non"
+                  ? "fr-badge--success"
+                  : enrichmentData.risqueInondation === "oui"
+                    ? "fr-badge--error"
+                    : "fr-badge--info"
+              }`}
+            >
+              {enrichmentData.risqueInondation ?? "Non disponible"}
             </span>
           </dd>
 

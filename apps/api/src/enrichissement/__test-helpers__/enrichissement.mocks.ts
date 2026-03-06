@@ -43,9 +43,9 @@ interface MockRisquesNaturelsEnrichissementService {
 }
 
 interface MockRisquesNaturelsCalculator {
-  combiner: Mock;
   transformRgaToRisque: Mock;
   transformCavitesToRisque: Mock;
+  evaluerInondation: Mock;
 }
 
 interface MockRgaService {
@@ -54,6 +54,22 @@ interface MockRgaService {
 
 interface MockCavitesService {
   getCavites: Mock;
+}
+
+interface MockTriService {
+  getTri: Mock;
+}
+
+interface MockAziService {
+  getAzi: Mock;
+}
+
+interface MockPapiService {
+  getPapi: Mock;
+}
+
+interface MockPprService {
+  getPpr: Mock;
 }
 
 interface MockRisquesTechnologiquesEnrichissementService {
@@ -210,9 +226,9 @@ export function createMockRisquesNaturelsEnrichissementService(): MockRisquesNat
  */
 export function createMockRisquesNaturelsCalculator(): MockRisquesNaturelsCalculator {
   return {
-    combiner: vi.fn(),
     transformRgaToRisque: vi.fn(),
     transformCavitesToRisque: vi.fn(),
+    evaluerInondation: vi.fn(),
   };
 }
 
@@ -231,6 +247,42 @@ export function createMockRgaService(): MockRgaService {
 export function createMockCavitesService(): MockCavitesService {
   return {
     getCavites: vi.fn(),
+  };
+}
+
+/**
+ * Mock du TriService
+ */
+export function createMockTriService(): MockTriService {
+  return {
+    getTri: vi.fn(),
+  };
+}
+
+/**
+ * Mock du AziService
+ */
+export function createMockAziService(): MockAziService {
+  return {
+    getAzi: vi.fn(),
+  };
+}
+
+/**
+ * Mock du PapiService
+ */
+export function createMockPapiService(): MockPapiService {
+  return {
+    getPapi: vi.fn(),
+  };
+}
+
+/**
+ * Mock du PprService
+ */
+export function createMockPprService(): MockPprService {
+  return {
+    getPpr: vi.fn(),
   };
 }
 

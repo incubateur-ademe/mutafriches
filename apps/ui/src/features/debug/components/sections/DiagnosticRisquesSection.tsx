@@ -181,18 +181,40 @@ export const DiagnosticRisquesSection: React.FC<DiagnosticRisquesSectionProps> =
         {/* Résumé exploitation */}
         <h4 className="debug-panel__subtitle">Données exploitées par l'algorithme</h4>
         <dl className="debug-panel__data-grid">
-          <dt>Risques naturels (final)</dt>
+          <dt>RGA (final)</dt>
           <dd>
             <span
               className={`fr-badge fr-badge--sm ${
-                enrichmentData.presenceRisquesNaturels === "fort"
+                enrichmentData.risqueRetraitGonflementArgile === "fort"
                   ? "fr-badge--error"
-                  : enrichmentData.presenceRisquesNaturels === "moyen"
+                  : enrichmentData.risqueRetraitGonflementArgile === "faible-ou-moyen"
                     ? "fr-badge--warning"
                     : "fr-badge--success"
               }`}
             >
-              {enrichmentData.presenceRisquesNaturels ?? "Non disponible"}
+              {enrichmentData.risqueRetraitGonflementArgile ?? "Non disponible"}
+            </span>
+          </dd>
+          <dt>Cavités (final)</dt>
+          <dd>
+            <span
+              className={`fr-badge fr-badge--sm ${
+                enrichmentData.risqueCavitesSouterraines === "oui"
+                  ? "fr-badge--error"
+                  : "fr-badge--success"
+              }`}
+            >
+              {enrichmentData.risqueCavitesSouterraines ?? "Non disponible"}
+            </span>
+          </dd>
+          <dt>Inondations (final)</dt>
+          <dd>
+            <span
+              className={`fr-badge fr-badge--sm ${
+                enrichmentData.risqueInondation === "oui" ? "fr-badge--error" : "fr-badge--success"
+              }`}
+            >
+              {enrichmentData.risqueInondation ?? "Non disponible"}
             </span>
           </dd>
           <dt>Risques technologiques (final)</dt>

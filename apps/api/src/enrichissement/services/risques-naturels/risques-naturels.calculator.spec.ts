@@ -1,6 +1,10 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { Test, TestingModule } from "@nestjs/testing";
-import { RisqueNaturel } from "@mutafriches/shared-types";
+import {
+  RisqueRetraitGonflementArgile,
+  RisqueCavitesSouterraines,
+  RisqueInondation,
+} from "@mutafriches/shared-types";
 import { RisquesNaturelsCalculator } from "./risques-naturels.calculator";
 import { CavitesResultNormalized } from "../../adapters/georisques/cavites/cavites.types";
 
@@ -17,266 +21,142 @@ describe("RisquesNaturelsCalculator", () => {
 
   describe("transformRgaToRisque", () => {
     it("devrait retourner FORT pour alea 'Fort'", () => {
-      expect(calculator.transformRgaToRisque("Fort")).toBe(RisqueNaturel.FORT);
+      expect(calculator.transformRgaToRisque("Fort")).toBe(RisqueRetraitGonflementArgile.FORT);
     });
 
     it("devrait retourner FORT pour alea 'fort' (lowercase)", () => {
-      expect(calculator.transformRgaToRisque("fort")).toBe(RisqueNaturel.FORT);
+      expect(calculator.transformRgaToRisque("fort")).toBe(RisqueRetraitGonflementArgile.FORT);
     });
 
     it("devrait retourner FORT pour alea contenant 'fort'", () => {
-      expect(calculator.transformRgaToRisque("Alea fort")).toBe(RisqueNaturel.FORT);
+      expect(calculator.transformRgaToRisque("Alea fort")).toBe(RisqueRetraitGonflementArgile.FORT);
     });
 
-    it("devrait retourner MOYEN pour alea 'Moyen'", () => {
-      expect(calculator.transformRgaToRisque("Moyen")).toBe(RisqueNaturel.MOYEN);
+    it("devrait retourner FAIBLE_OU_MOYEN pour alea 'Moyen'", () => {
+      expect(calculator.transformRgaToRisque("Moyen")).toBe(
+        RisqueRetraitGonflementArgile.FAIBLE_OU_MOYEN,
+      );
     });
 
-    it("devrait retourner MOYEN pour alea 'moyen' (lowercase)", () => {
-      expect(calculator.transformRgaToRisque("moyen")).toBe(RisqueNaturel.MOYEN);
+    it("devrait retourner FAIBLE_OU_MOYEN pour alea 'moyen' (lowercase)", () => {
+      expect(calculator.transformRgaToRisque("moyen")).toBe(
+        RisqueRetraitGonflementArgile.FAIBLE_OU_MOYEN,
+      );
     });
 
-    it("devrait retourner FAIBLE pour alea 'Faible'", () => {
-      expect(calculator.transformRgaToRisque("Faible")).toBe(RisqueNaturel.FAIBLE);
+    it("devrait retourner FAIBLE_OU_MOYEN pour alea 'Faible'", () => {
+      expect(calculator.transformRgaToRisque("Faible")).toBe(
+        RisqueRetraitGonflementArgile.FAIBLE_OU_MOYEN,
+      );
     });
 
-    it("devrait retourner FAIBLE pour alea 'faible' (lowercase)", () => {
-      expect(calculator.transformRgaToRisque("faible")).toBe(RisqueNaturel.FAIBLE);
+    it("devrait retourner FAIBLE_OU_MOYEN pour alea 'faible' (lowercase)", () => {
+      expect(calculator.transformRgaToRisque("faible")).toBe(
+        RisqueRetraitGonflementArgile.FAIBLE_OU_MOYEN,
+      );
     });
 
     it("devrait retourner AUCUN pour alea inconnu", () => {
-      expect(calculator.transformRgaToRisque("Inexistant")).toBe(RisqueNaturel.AUCUN);
+      expect(calculator.transformRgaToRisque("Inexistant")).toBe(
+        RisqueRetraitGonflementArgile.AUCUN,
+      );
     });
 
     it("devrait retourner AUCUN pour alea vide", () => {
-      expect(calculator.transformRgaToRisque("")).toBe(RisqueNaturel.AUCUN);
+      expect(calculator.transformRgaToRisque("")).toBe(RisqueRetraitGonflementArgile.AUCUN);
     });
 
     it("devrait gerer les espaces autour", () => {
-      expect(calculator.transformRgaToRisque("  Fort  ")).toBe(RisqueNaturel.FORT);
+      expect(calculator.transformRgaToRisque("  Fort  ")).toBe(RisqueRetraitGonflementArgile.FORT);
     });
   });
 
   describe("transformCavitesToRisque", () => {
-    it("devrait retourner AUCUN si pas d'exposition", () => {
-      // Arrange
+    it("devrait retourner NON si pas d'exposition", () => {
       const data: CavitesResultNormalized = {
         exposition: false,
         nombreCavites: 0,
       };
-
-      // Act
-      const result = calculator.transformCavitesToRisque(data);
-
-      // Assert
-      expect(result).toBe(RisqueNaturel.AUCUN);
+      expect(calculator.transformCavitesToRisque(data)).toBe(RisqueCavitesSouterraines.NON);
     });
 
-    it("devrait retourner AUCUN si 0 cavite", () => {
-      // Arrange
+    it("devrait retourner NON si 0 cavite", () => {
       const data: CavitesResultNormalized = {
         exposition: true,
         nombreCavites: 0,
       };
-
-      // Act
-      const result = calculator.transformCavitesToRisque(data);
-
-      // Assert
-      expect(result).toBe(RisqueNaturel.AUCUN);
+      expect(calculator.transformCavitesToRisque(data)).toBe(RisqueCavitesSouterraines.NON);
     });
 
-    it("devrait retourner AUCUN si distance undefined", () => {
-      // Arrange
+    it("devrait retourner NON si distance undefined", () => {
       const data: CavitesResultNormalized = {
         exposition: true,
         nombreCavites: 5,
         distancePlusProche: undefined,
       };
-
-      // Act
-      const result = calculator.transformCavitesToRisque(data);
-
-      // Assert
-      expect(result).toBe(RisqueNaturel.AUCUN);
+      expect(calculator.transformCavitesToRisque(data)).toBe(RisqueCavitesSouterraines.NON);
     });
 
-    it("devrait retourner FORT si cavite a moins de 500m", () => {
-      // Arrange
+    it("devrait retourner OUI si cavite a moins de 500m", () => {
       const data: CavitesResultNormalized = {
         exposition: true,
         nombreCavites: 1,
         distancePlusProche: 499,
       };
-
-      // Act
-      const result = calculator.transformCavitesToRisque(data);
-
-      // Assert
-      expect(result).toBe(RisqueNaturel.FORT);
+      expect(calculator.transformCavitesToRisque(data)).toBe(RisqueCavitesSouterraines.OUI);
     });
 
-    it("devrait retourner FORT si cavite exactement a 500m (limite incluse)", () => {
-      // Arrange
+    it("devrait retourner OUI si cavite exactement a 500m (limite incluse)", () => {
       const data: CavitesResultNormalized = {
         exposition: true,
         nombreCavites: 1,
         distancePlusProche: 500,
       };
-
-      // Act
-      const result = calculator.transformCavitesToRisque(data);
-
-      // Assert
-      expect(result).toBe(RisqueNaturel.FORT);
+      expect(calculator.transformCavitesToRisque(data)).toBe(RisqueCavitesSouterraines.OUI);
     });
 
-    it("devrait retourner MOYEN si cavite entre 500m et 1000m", () => {
-      // Arrange
+    it("devrait retourner NON si cavite a plus de 500m", () => {
       const data: CavitesResultNormalized = {
         exposition: true,
         nombreCavites: 1,
-        distancePlusProche: 750,
+        distancePlusProche: 501,
       };
-
-      // Act
-      const result = calculator.transformCavitesToRisque(data);
-
-      // Assert
-      expect(result).toBe(RisqueNaturel.MOYEN);
+      expect(calculator.transformCavitesToRisque(data)).toBe(RisqueCavitesSouterraines.NON);
     });
 
-    it("devrait retourner MOYEN si cavite exactement a 1000m (limite incluse)", () => {
-      // Arrange
-      const data: CavitesResultNormalized = {
-        exposition: true,
-        nombreCavites: 1,
-        distancePlusProche: 1000,
-      };
-
-      // Act
-      const result = calculator.transformCavitesToRisque(data);
-
-      // Assert
-      expect(result).toBe(RisqueNaturel.MOYEN);
-    });
-
-    it("devrait retourner FAIBLE si cavite a plus de 1000m", () => {
-      // Arrange
-      const data: CavitesResultNormalized = {
-        exposition: true,
-        nombreCavites: 1,
-        distancePlusProche: 1001,
-      };
-
-      // Act
-      const result = calculator.transformCavitesToRisque(data);
-
-      // Assert
-      expect(result).toBe(RisqueNaturel.FAIBLE);
-    });
-
-    it("devrait retourner FORT si cavite tres proche (0m)", () => {
-      // Arrange
+    it("devrait retourner OUI si cavite tres proche (0m)", () => {
       const data: CavitesResultNormalized = {
         exposition: true,
         nombreCavites: 1,
         distancePlusProche: 0,
       };
-
-      // Act
-      const result = calculator.transformCavitesToRisque(data);
-
-      // Assert
-      expect(result).toBe(RisqueNaturel.FORT);
+      expect(calculator.transformCavitesToRisque(data)).toBe(RisqueCavitesSouterraines.OUI);
     });
   });
 
-  describe("combiner", () => {
-    describe("Combinaisons avec FORT", () => {
-      it("devrait retourner FORT si FORT + FORT", () => {
-        expect(calculator.combiner(RisqueNaturel.FORT, RisqueNaturel.FORT)).toBe(
-          RisqueNaturel.FORT,
-        );
-      });
-
-      it("devrait retourner FORT si FORT + MOYEN", () => {
-        expect(calculator.combiner(RisqueNaturel.FORT, RisqueNaturel.MOYEN)).toBe(
-          RisqueNaturel.FORT,
-        );
-        expect(calculator.combiner(RisqueNaturel.MOYEN, RisqueNaturel.FORT)).toBe(
-          RisqueNaturel.FORT,
-        );
-      });
-
-      it("devrait retourner MOYEN si FORT + FAIBLE", () => {
-        expect(calculator.combiner(RisqueNaturel.FORT, RisqueNaturel.FAIBLE)).toBe(
-          RisqueNaturel.MOYEN,
-        );
-        expect(calculator.combiner(RisqueNaturel.FAIBLE, RisqueNaturel.FORT)).toBe(
-          RisqueNaturel.MOYEN,
-        );
-      });
-
-      it("devrait retourner MOYEN si FORT + AUCUN", () => {
-        expect(calculator.combiner(RisqueNaturel.FORT, RisqueNaturel.AUCUN)).toBe(
-          RisqueNaturel.MOYEN,
-        );
-        expect(calculator.combiner(RisqueNaturel.AUCUN, RisqueNaturel.FORT)).toBe(
-          RisqueNaturel.MOYEN,
-        );
-      });
+  describe("evaluerInondation", () => {
+    it("devrait retourner NON si aucun risque", () => {
+      expect(calculator.evaluerInondation(false, false, false, false)).toBe(RisqueInondation.NON);
     });
 
-    describe("Combinaisons avec MOYEN", () => {
-      it("devrait retourner MOYEN si MOYEN + MOYEN", () => {
-        expect(calculator.combiner(RisqueNaturel.MOYEN, RisqueNaturel.MOYEN)).toBe(
-          RisqueNaturel.MOYEN,
-        );
-      });
-
-      it("devrait retourner MOYEN si MOYEN + FAIBLE", () => {
-        expect(calculator.combiner(RisqueNaturel.MOYEN, RisqueNaturel.FAIBLE)).toBe(
-          RisqueNaturel.MOYEN,
-        );
-        expect(calculator.combiner(RisqueNaturel.FAIBLE, RisqueNaturel.MOYEN)).toBe(
-          RisqueNaturel.MOYEN,
-        );
-      });
-
-      it("devrait retourner MOYEN si MOYEN + AUCUN", () => {
-        expect(calculator.combiner(RisqueNaturel.MOYEN, RisqueNaturel.AUCUN)).toBe(
-          RisqueNaturel.MOYEN,
-        );
-        expect(calculator.combiner(RisqueNaturel.AUCUN, RisqueNaturel.MOYEN)).toBe(
-          RisqueNaturel.MOYEN,
-        );
-      });
+    it("devrait retourner OUI si TRI present", () => {
+      expect(calculator.evaluerInondation(true, false, false, false)).toBe(RisqueInondation.OUI);
     });
 
-    describe("Combinaisons avec FAIBLE", () => {
-      it("devrait retourner FAIBLE si FAIBLE + FAIBLE", () => {
-        expect(calculator.combiner(RisqueNaturel.FAIBLE, RisqueNaturel.FAIBLE)).toBe(
-          RisqueNaturel.FAIBLE,
-        );
-      });
-
-      it("devrait retourner FAIBLE si FAIBLE + AUCUN", () => {
-        expect(calculator.combiner(RisqueNaturel.FAIBLE, RisqueNaturel.AUCUN)).toBe(
-          RisqueNaturel.FAIBLE,
-        );
-        expect(calculator.combiner(RisqueNaturel.AUCUN, RisqueNaturel.FAIBLE)).toBe(
-          RisqueNaturel.FAIBLE,
-        );
-      });
+    it("devrait retourner OUI si AZI present", () => {
+      expect(calculator.evaluerInondation(false, true, false, false)).toBe(RisqueInondation.OUI);
     });
 
-    describe("Combinaisons avec AUCUN", () => {
-      it("devrait retourner AUCUN si AUCUN + AUCUN", () => {
-        expect(calculator.combiner(RisqueNaturel.AUCUN, RisqueNaturel.AUCUN)).toBe(
-          RisqueNaturel.AUCUN,
-        );
-      });
+    it("devrait retourner OUI si PAPI present", () => {
+      expect(calculator.evaluerInondation(false, false, true, false)).toBe(RisqueInondation.OUI);
+    });
+
+    it("devrait retourner OUI si PPR present", () => {
+      expect(calculator.evaluerInondation(false, false, false, true)).toBe(RisqueInondation.OUI);
+    });
+
+    it("devrait retourner OUI si tous presents", () => {
+      expect(calculator.evaluerInondation(true, true, true, true)).toBe(RisqueInondation.OUI);
     });
   });
 });

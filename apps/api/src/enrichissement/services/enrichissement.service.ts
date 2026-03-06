@@ -252,7 +252,9 @@ export class EnrichissementService {
         surfaceSite: siteEval.surfaceSite,
         surfaceBati: siteEval.surfaceBati,
         distanceRaccordementElectrique: siteEval.distanceRaccordementElectrique,
-        presenceRisquesNaturels: siteEval.presenceRisquesNaturels,
+        risqueRetraitGonflementArgile: siteEval.risqueRetraitGonflementArgile,
+        risqueCavitesSouterraines: siteEval.risqueCavitesSouterraines,
+        risqueInondation: siteEval.risqueInondation,
         coordonnees: siteEval.coordonnees,
         geometrie: siteEval.geometrie,
 
@@ -434,8 +436,11 @@ export class EnrichissementService {
         champsManquants,
         sourcesEchouees,
       );
-      // Reporter le résultat sur le site d'évaluation
-      siteEval.presenceRisquesNaturels = siteEvalRisquesNaturels.presenceRisquesNaturels;
+      // Reporter les 3 résultats sur le site d'évaluation
+      siteEval.risqueRetraitGonflementArgile =
+        siteEvalRisquesNaturels.risqueRetraitGonflementArgile;
+      siteEval.risqueCavitesSouterraines = siteEvalRisquesNaturels.risqueCavitesSouterraines;
+      siteEval.risqueInondation = siteEvalRisquesNaturels.risqueInondation;
 
       // 7. RISQUES TECHNOLOGIQUES -> centroïde du site
       const risquesTechnologiquesResult =
@@ -544,7 +549,9 @@ export class EnrichissementService {
 
         // Données enrichies
         distanceRaccordementElectrique: siteEval.distanceRaccordementElectrique,
-        presenceRisquesNaturels: siteEval.presenceRisquesNaturels,
+        risqueRetraitGonflementArgile: siteEval.risqueRetraitGonflementArgile,
+        risqueCavitesSouterraines: siteEval.risqueCavitesSouterraines,
+        risqueInondation: siteEval.risqueInondation,
         siteEnCentreVille: siteEval.siteEnCentreVille,
         distanceAutoroute: siteEval.distanceAutoroute,
         distanceTransportCommun: siteEval.distanceTransportCommun,

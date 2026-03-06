@@ -1,8 +1,17 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { RisqueNaturel, SourceEnrichissement } from "@mutafriches/shared-types";
+import {
+  SourceEnrichissement,
+  RisqueRetraitGonflementArgile,
+  RisqueCavitesSouterraines,
+  RisqueInondation,
+} from "@mutafriches/shared-types";
 import { Site } from "../../../evaluation/entities/site.entity";
 import { RgaService } from "../../adapters/georisques/rga/rga.service";
 import { CavitesService } from "../../adapters/georisques/cavites/cavites.service";
+import { TriService } from "../../adapters/georisques/tri/tri.service";
+import { AziService } from "../../adapters/georisques/azi/azi.service";
+import { PapiService } from "../../adapters/georisques/papi/papi.service";
+import { PprService } from "../../adapters/georisques/ppr/ppr.service";
 import { GEORISQUES_RAYONS_DEFAUT } from "../../adapters/georisques/georisques.constants";
 import { EnrichmentResult } from "../shared/enrichissement.types";
 import { RisquesNaturelsCalculator } from "./risques-naturels.calculator";
@@ -12,9 +21,12 @@ import { EvaluationRisquesNaturels } from "./risques-naturels.types";
  * Service d'enrichissement du sous-domaine Risques Naturels
  *
  * Responsabilités :
- * - Appeler les APIs GeoRisques (RGA + Cavités) en parallèle
- * - Utiliser le calculator pour combiner les risques
- * - Enrichir le site avec le niveau de risque final
+ * - Appeler les APIs GeoRisques (RGA + Cavités + TRI + AZI + PAPI + PPR) en parallèle
+ * - Utiliser le calculator pour évaluer 3 critères de risque séparés :
+ *   1. Retrait gonflement argile (RGA)
+ *   2. Cavités souterraines
+ *   3. Inondation (TRI/AZI/PAPI/PPR)
+ * - Enrichir le site avec les 3 niveaux de risque
  */
 @Injectable()
 export class RisquesNaturelsEnrichissementService {
@@ -23,11 +35,15 @@ export class RisquesNaturelsEnrichissementService {
   constructor(
     private readonly rgaService: RgaService,
     private readonly cavitesService: CavitesService,
+    private readonly triService: TriService,
+    private readonly aziService: AziService,
+    private readonly papiService: PapiService,
+    private readonly pprService: PprService,
     private readonly calculator: RisquesNaturelsCalculator,
   ) {}
 
   /**
-   * Enrichit un site avec les risques naturels
+   * Enrichit un site avec les 3 critères de risques naturels
    *
    * @param site - Site à enrichir (doit avoir des coordonnées)
    * @returns Résultat de l'enrichissement et évaluation détaillée
@@ -47,6 +63,10 @@ export class RisquesNaturelsEnrichissementService {
       sourcesEchouees.push(
         SourceEnrichissement.GEORISQUES_RGA,
         SourceEnrichissement.GEORISQUES_CAVITES,
+        SourceEnrichissement.GEORISQUES_TRI,
+        SourceEnrichissement.GEORISQUES_AZI,
+        SourceEnrichissement.GEORISQUES_PAPI,
+        SourceEnrichissement.GEORISQUES_PPR,
       );
 
       return {
@@ -58,59 +78,109 @@ export class RisquesNaturelsEnrichissementService {
         evaluation: {
           rga: null,
           cavites: null,
-          risqueFinal: RisqueNaturel.AUCUN,
+          inondation: null,
+          risqueRetraitGonflementArgile: RisqueRetraitGonflementArgile.AUCUN,
+          risqueCavitesSouterraines: RisqueCavitesSouterraines.NON,
+          risqueInondation: RisqueInondation.NON,
         },
       };
     }
 
-    // Appeler RGA et Cavités en parallèle
-    const [rgaResult, cavitesResult] = await Promise.allSettled([
-      this.getRga(site.coordonnees),
-      this.getCavites(site.coordonnees),
-    ]);
+    // Appeler les 6 APIs en parallèle
+    const [rgaResult, cavitesResult, triResult, aziResult, papiResult, pprResult] =
+      await Promise.allSettled([
+        this.getRga(site.coordonnees),
+        this.getCavites(site.coordonnees),
+        this.getTri(site.coordonnees),
+        this.getAzi(site.coordonnees),
+        this.getPapi(site.coordonnees),
+        this.getPpr(site.coordonnees),
+      ]);
 
-    // Traiter les résultats
-    let aleaRga: RisqueNaturel = RisqueNaturel.AUCUN;
-    let aleaCavites: RisqueNaturel = RisqueNaturel.AUCUN;
+    // --- 1. Traiter RGA ---
+    let risqueRga = RisqueRetraitGonflementArgile.AUCUN;
     let rgaData = null;
-    let cavitesData = null;
 
-    // 1. Traiter RGA
     if (rgaResult.status === "fulfilled" && rgaResult.value) {
-      aleaRga = rgaResult.value.risque;
+      risqueRga = rgaResult.value.risque;
       rgaData = rgaResult.value;
       sourcesUtilisees.push(SourceEnrichissement.GEORISQUES_RGA);
-      this.logger.debug(`RGA recupere: ${rgaResult.value.alea} → ${aleaRga}`);
+      this.logger.debug(`RGA recupere: ${rgaResult.value.alea} -> ${risqueRga}`);
     } else {
       sourcesEchouees.push(SourceEnrichissement.GEORISQUES_RGA);
       this.logger.warn(
-        `Echec recuperation RGA: ${rgaResult.status === "rejected" ? rgaResult.reason : "Aucune donnee"}`,
+        `Echec recuperation RGA: ${rgaResult.status === "rejected" ? (rgaResult.reason as string) : "Aucune donnee"}`,
       );
     }
 
-    // 2. Traiter Cavités
+    // --- 2. Traiter Cavités ---
+    let risqueCavites = RisqueCavitesSouterraines.NON;
+    let cavitesData = null;
+
     if (cavitesResult.status === "fulfilled" && cavitesResult.value) {
-      aleaCavites = cavitesResult.value.risque;
+      risqueCavites = cavitesResult.value.risque;
       cavitesData = cavitesResult.value;
       sourcesUtilisees.push(SourceEnrichissement.GEORISQUES_CAVITES);
       this.logger.debug(
         `Cavites recuperees: ${cavitesResult.value.nombreCavites} cavites, ` +
-          `plus proche: ${cavitesResult.value.distancePlusProche ? `${Math.round(cavitesResult.value.distancePlusProche)}m` : "N/A"} → ${aleaCavites}`,
+          `plus proche: ${cavitesResult.value.distancePlusProche ? `${Math.round(cavitesResult.value.distancePlusProche)}m` : "N/A"} -> ${risqueCavites}`,
       );
     } else {
       sourcesEchouees.push(SourceEnrichissement.GEORISQUES_CAVITES);
       this.logger.warn(
-        `Echec recuperation Cavites: ${cavitesResult.status === "rejected" ? cavitesResult.reason : "Aucune donnee"}`,
+        `Echec recuperation Cavites: ${cavitesResult.status === "rejected" ? (cavitesResult.reason as string) : "Aucune donnee"}`,
       );
     }
 
-    // 3. Combiner les risques avec le calculator
-    const risqueFinal = this.calculator.combiner(aleaRga, aleaCavites);
-    site.presenceRisquesNaturels = risqueFinal;
+    // --- 3. Traiter Inondation (TRI/AZI/PAPI/PPR) ---
+    let triExposition = false;
+    let aziExposition = false;
+    let papiExposition = false;
+    let pprExposition = false;
+
+    if (triResult.status === "fulfilled") {
+      triExposition = triResult.value;
+      sourcesUtilisees.push(SourceEnrichissement.GEORISQUES_TRI);
+    } else {
+      sourcesEchouees.push(SourceEnrichissement.GEORISQUES_TRI);
+    }
+
+    if (aziResult.status === "fulfilled") {
+      aziExposition = aziResult.value;
+      sourcesUtilisees.push(SourceEnrichissement.GEORISQUES_AZI);
+    } else {
+      sourcesEchouees.push(SourceEnrichissement.GEORISQUES_AZI);
+    }
+
+    if (papiResult.status === "fulfilled") {
+      papiExposition = papiResult.value;
+      sourcesUtilisees.push(SourceEnrichissement.GEORISQUES_PAPI);
+    } else {
+      sourcesEchouees.push(SourceEnrichissement.GEORISQUES_PAPI);
+    }
+
+    if (pprResult.status === "fulfilled") {
+      pprExposition = pprResult.value;
+      sourcesUtilisees.push(SourceEnrichissement.GEORISQUES_PPR);
+    } else {
+      sourcesEchouees.push(SourceEnrichissement.GEORISQUES_PPR);
+    }
+
+    const risqueInondation = this.calculator.evaluerInondation(
+      triExposition,
+      aziExposition,
+      papiExposition,
+      pprExposition,
+    );
+
+    // Appliquer les 3 critères sur le site
+    site.risqueRetraitGonflementArgile = risqueRga;
+    site.risqueCavitesSouterraines = risqueCavites;
+    site.risqueInondation = risqueInondation;
 
     this.logger.log(
       `Risques naturels calcules pour ${site.identifiantParcelle}: ` +
-        `RGA=${aleaRga}, Cavites=${aleaCavites} → Final=${risqueFinal}`,
+        `RGA=${risqueRga}, Cavites=${risqueCavites}, Inondation=${risqueInondation}`,
     );
 
     return {
@@ -122,7 +192,16 @@ export class RisquesNaturelsEnrichissementService {
       evaluation: {
         rga: rgaData,
         cavites: cavitesData,
-        risqueFinal,
+        inondation: {
+          tri: triExposition,
+          azi: aziExposition,
+          papi: papiExposition,
+          ppr: pprExposition,
+          risque: risqueInondation,
+        },
+        risqueRetraitGonflementArgile: risqueRga,
+        risqueCavitesSouterraines: risqueCavites,
+        risqueInondation,
       },
     };
   }
@@ -133,7 +212,7 @@ export class RisquesNaturelsEnrichissementService {
   private async getRga(coordonnees: {
     latitude: number;
     longitude: number;
-  }): Promise<{ alea: string; risque: RisqueNaturel } | null> {
+  }): Promise<{ alea: string; risque: RisqueRetraitGonflementArgile } | null> {
     try {
       const result = await this.rgaService.getRga({
         latitude: coordonnees.latitude,
@@ -163,7 +242,7 @@ export class RisquesNaturelsEnrichissementService {
     exposition: boolean;
     nombreCavites: number;
     distancePlusProche?: number;
-    risque: RisqueNaturel;
+    risque: RisqueCavitesSouterraines;
   } | null> {
     try {
       const result = await this.cavitesService.getCavites({
@@ -187,6 +266,70 @@ export class RisquesNaturelsEnrichissementService {
     } catch (error) {
       this.logger.error("Erreur lors de la recuperation Cavites:", error);
       return null;
+    }
+  }
+
+  /**
+   * Récupère l'exposition TRI (Territoires à Risques importants d'Inondation)
+   */
+  private async getTri(coordonnees: { latitude: number; longitude: number }): Promise<boolean> {
+    try {
+      const result = await this.triService.getTri({
+        latitude: coordonnees.latitude,
+        longitude: coordonnees.longitude,
+      });
+      return result.success && result.data ? result.data.exposition : false;
+    } catch (error) {
+      this.logger.error("Erreur lors de la recuperation TRI:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Récupère l'exposition AZI (Atlas des Zones Inondables)
+   */
+  private async getAzi(coordonnees: { latitude: number; longitude: number }): Promise<boolean> {
+    try {
+      const result = await this.aziService.getAzi({
+        latitude: coordonnees.latitude,
+        longitude: coordonnees.longitude,
+      });
+      return result.success && result.data ? result.data.exposition : false;
+    } catch (error) {
+      this.logger.error("Erreur lors de la recuperation AZI:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Récupère l'exposition PAPI (Programmes d'Actions de Prévention des Inondations)
+   */
+  private async getPapi(coordonnees: { latitude: number; longitude: number }): Promise<boolean> {
+    try {
+      const result = await this.papiService.getPapi({
+        latitude: coordonnees.latitude,
+        longitude: coordonnees.longitude,
+      });
+      return result.success && result.data ? result.data.exposition : false;
+    } catch (error) {
+      this.logger.error("Erreur lors de la recuperation PAPI:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Récupère l'exposition PPR (Plans de Prévention des Risques)
+   */
+  private async getPpr(coordonnees: { latitude: number; longitude: number }): Promise<boolean> {
+    try {
+      const result = await this.pprService.getPpr({
+        latitude: coordonnees.latitude,
+        longitude: coordonnees.longitude,
+      });
+      return result.success && result.data ? result.data.exposition : false;
+    } catch (error) {
+      this.logger.error("Erreur lors de la recuperation PPR:", error);
+      throw error;
     }
   }
 }

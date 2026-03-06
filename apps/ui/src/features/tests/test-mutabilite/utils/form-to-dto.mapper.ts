@@ -34,7 +34,9 @@ export function buildCalculerMutabiliteFromFormData(formData: any): CalculerMuta
 
     // Risques
     presenceRisquesTechnologiques: formData.presenceRisquesTechnologiques || false,
-    presenceRisquesNaturels: formData.presenceRisquesNaturels,
+    risqueRetraitGonflementArgile: formData.risqueRetraitGonflementArgile,
+    risqueCavitesSouterraines: formData.risqueCavitesSouterraines,
+    risqueInondation: formData.risqueInondation,
     siteReferencePollue: false, // Pas de donnee ADEME en saisie manuelle
 
     // Zonages
@@ -84,7 +86,9 @@ function getFieldsMissing(formData: any): string[] {
     "proximiteCommercesServices",
     "tauxLogementsVacants",
     "presenceRisquesTechnologiques",
-    "presenceRisquesNaturels",
+    "risqueRetraitGonflementArgile",
+    "risqueCavitesSouterraines",
+    "risqueInondation",
     "zonageReglementaire",
     "raccordementEau",
     "etatBatiInfrastructure",

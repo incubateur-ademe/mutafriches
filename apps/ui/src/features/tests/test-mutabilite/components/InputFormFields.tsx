@@ -6,7 +6,9 @@ import {
   ValeurArchitecturale,
   QualitePaysage,
   QualiteVoieDesserte,
-  RisqueNaturel,
+  RisqueRetraitGonflementArgile,
+  RisqueCavitesSouterraines,
+  RisqueInondation,
   ZonageEnvironnemental,
   ZonageReglementaire,
   ZonagePatrimonial,
@@ -395,21 +397,60 @@ export function InputFormFields({ formData, onFormDataChange, isEditable }: Inpu
 
           <div className="fr-col-12 fr-col-md-6">
             <div className="fr-select-group">
-              <label className="fr-label" htmlFor="presenceRisquesNaturels">
-                Risques naturels
+              <label className="fr-label" htmlFor="risqueRetraitGonflementArgile">
+                Retrait gonflement argiles
               </label>
               <select
                 className="fr-select"
-                id="presenceRisquesNaturels"
-                value={formData.presenceRisquesNaturels || ""}
-                onChange={(e) => handleInputChange("presenceRisquesNaturels", e.target.value)}
+                id="risqueRetraitGonflementArgile"
+                value={formData.risqueRetraitGonflementArgile || ""}
+                onChange={(e) => handleInputChange("risqueRetraitGonflementArgile", e.target.value)}
                 disabled={!isEditable}
               >
                 <option value="">-- Sélectionner --</option>
-                <option value={RisqueNaturel.AUCUN}>Aucun</option>
-                <option value={RisqueNaturel.FAIBLE}>Faible</option>
-                <option value={RisqueNaturel.MOYEN}>Moyen</option>
-                <option value={RisqueNaturel.FORT}>Fort</option>
+                <option value={RisqueRetraitGonflementArgile.AUCUN}>Aucun</option>
+                <option value={RisqueRetraitGonflementArgile.FAIBLE_OU_MOYEN}>
+                  Faible ou moyen
+                </option>
+                <option value={RisqueRetraitGonflementArgile.FORT}>Fort</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="fr-col-12 fr-col-md-6">
+            <div className="fr-select-group">
+              <label className="fr-label" htmlFor="risqueCavitesSouterraines">
+                Cavités souterraines
+              </label>
+              <select
+                className="fr-select"
+                id="risqueCavitesSouterraines"
+                value={formData.risqueCavitesSouterraines || ""}
+                onChange={(e) => handleInputChange("risqueCavitesSouterraines", e.target.value)}
+                disabled={!isEditable}
+              >
+                <option value="">-- Sélectionner --</option>
+                <option value={RisqueCavitesSouterraines.NON}>Non</option>
+                <option value={RisqueCavitesSouterraines.OUI}>Oui</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="fr-col-12 fr-col-md-6">
+            <div className="fr-select-group">
+              <label className="fr-label" htmlFor="risqueInondation">
+                Inondations
+              </label>
+              <select
+                className="fr-select"
+                id="risqueInondation"
+                value={formData.risqueInondation || ""}
+                onChange={(e) => handleInputChange("risqueInondation", e.target.value)}
+                disabled={!isEditable}
+              >
+                <option value="">-- Sélectionner --</option>
+                <option value={RisqueInondation.NON}>Non</option>
+                <option value={RisqueInondation.OUI}>Oui</option>
               </select>
             </div>
           </div>

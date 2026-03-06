@@ -78,8 +78,8 @@ export const QualificationRisquesPage: React.FC = () => {
         />
 
         <EnrichedInfoField
-          id="niveau-risques-naturels"
-          label="Niveau de risques naturels"
+          id="risques-naturels"
+          label="Risques naturels"
           value={uiData?.risquesNaturels}
           tooltip={
             <>
@@ -92,12 +92,6 @@ export const QualificationRisquesPage: React.FC = () => {
               >
                 georisques.gouv.fr/citoyen-recherche-map
               </a>
-              <br />
-              <br />
-              <em>
-                En l'absence de la numérisation des plans de prévention des risques, cette donnée
-                est susceptible d'être faussée
-              </em>
             </>
           }
         />

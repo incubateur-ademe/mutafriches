@@ -1,13 +1,18 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { RisqueNaturel } from "@mutafriches/shared-types";
+import {
+  RisqueRetraitGonflementArgile,
+  RisqueCavitesSouterraines,
+  RisqueInondation,
+} from "@mutafriches/shared-types";
 import { CavitesResultNormalized } from "../../adapters/georisques/cavites/cavites.types";
 
 /**
  * Calculator du sous-domaine Risques Naturels
  *
  * Contient toute la logique métier pure pour :
- * - Combiner les risques RGA et Cavités
- * - Transformer les aléas en niveaux de risque
+ * - Évaluer le risque retrait gonflement argile (RGA)
+ * - Évaluer le risque cavités souterraines
+ * - Évaluer le risque inondation (TRI/AZI/PAPI/PPR)
  *
  * Toutes les méthodes sont pures (sans effets de bord) pour faciliter les tests
  */
@@ -16,121 +21,69 @@ export class RisquesNaturelsCalculator {
   private readonly logger = new Logger(RisquesNaturelsCalculator.name);
 
   /**
-   * Combine les risques RGA et Cavités selon les règles métier
+   * Transforme le niveau d'aléa RGA en risque retrait gonflement argile
    *
-   * Règles de combinaison :
-   * - Si un des deux est FORT et l'autre est FORT ou MOYEN → FORT
-   * - Si un des deux est FORT et l'autre est FAIBLE ou AUCUN → MOYEN
-   * - Si au moins un est MOYEN → MOYEN
-   * - Si les deux sont FAIBLE ou (un FAIBLE + un AUCUN) → FAIBLE
-   * - Sinon → AUCUN
-   *
-   * @param aleaRga - Niveau de risque RGA
-   * @param aleaCavites - Niveau de risque Cavités
-   * @returns Niveau de risque final combiné
+   * @param alea - Niveau d'aléa RGA (ex: "Fort", "Moyen", "Faible", "Nul")
+   * @returns Niveau de risque correspondant
    */
-  combiner(aleaRga: RisqueNaturel, aleaCavites: RisqueNaturel): RisqueNaturel {
-    // Convertir en valeurs numériques pour simplifier les comparaisons
-    const niveaux = {
-      [RisqueNaturel.AUCUN]: 0,
-      [RisqueNaturel.FAIBLE]: 1,
-      [RisqueNaturel.MOYEN]: 2,
-      [RisqueNaturel.FORT]: 3,
-    };
-
-    const niveauRga = niveaux[aleaRga];
-    const niveauCavites = niveaux[aleaCavites];
-    const niveauMax = Math.max(niveauRga, niveauCavites);
-    const niveauMin = Math.min(niveauRga, niveauCavites);
-
-    let risqueFinal: RisqueNaturel;
-
-    // Si un des deux est FORT
-    if (niveauMax === 3) {
-      // FORT + FORT ou FORT + MOYEN → FORT
-      if (niveauMin >= 2) {
-        risqueFinal = RisqueNaturel.FORT;
-      } else {
-        // FORT + FAIBLE ou FORT + AUCUN → MOYEN
-        risqueFinal = RisqueNaturel.MOYEN;
-      }
-    }
-    // Si au moins un est MOYEN → MOYEN
-    else if (niveauMax === 2) {
-      risqueFinal = RisqueNaturel.MOYEN;
-    }
-    // Si au moins un est FAIBLE → FAIBLE
-    else if (niveauMax === 1) {
-      risqueFinal = RisqueNaturel.FAIBLE;
-    }
-    // Les deux sont AUCUN → AUCUN
-    else {
-      risqueFinal = RisqueNaturel.AUCUN;
-    }
-
-    this.logger.debug(
-      `Combinaison risques naturels: RGA=${aleaRga}, Cavites=${aleaCavites} → Final=${risqueFinal}`,
-    );
-
-    return risqueFinal;
-  }
-
-  /**
-   * Transforme le niveau d'aléa RGA en risque naturel
-   *
-   * @param alea - Niveau d'aléa RGA (ex: "Fort", "Moyen", "Faible")
-   * @returns Niveau de risque naturel correspondant
-   */
-  transformRgaToRisque(alea: string): RisqueNaturel {
+  transformRgaToRisque(alea: string): RisqueRetraitGonflementArgile {
     const aleaNormalise = alea.toLowerCase().trim();
 
     if (aleaNormalise.includes("fort") || aleaNormalise === "fort") {
-      return RisqueNaturel.FORT;
-    } else if (aleaNormalise.includes("moyen") || aleaNormalise === "moyen") {
-      return RisqueNaturel.MOYEN;
-    } else if (aleaNormalise.includes("faible") || aleaNormalise === "faible") {
-      return RisqueNaturel.FAIBLE;
+      return RisqueRetraitGonflementArgile.FORT;
+    } else if (
+      aleaNormalise.includes("moyen") ||
+      aleaNormalise === "moyen" ||
+      aleaNormalise.includes("faible") ||
+      aleaNormalise === "faible"
+    ) {
+      return RisqueRetraitGonflementArgile.FAIBLE_OU_MOYEN;
     }
 
-    return RisqueNaturel.AUCUN;
+    return RisqueRetraitGonflementArgile.AUCUN;
   }
 
   /**
-   * Transforme les données cavités en risque naturel
+   * Transforme les données cavités en risque cavités souterraines
    * Basé sur la distance de la cavité la plus proche
    *
-   * Règles de calcul :
-   * - Aucune cavité détectée → AUCUN
-   * - Cavité à moins de 500m → FORT
-   * - Cavité entre 500m et 1000m → MOYEN
-   * - Cavité à plus de 1000m → FAIBLE
+   * Règle : OUI si cavité détectée à moins de 500m, NON sinon
    *
    * @param cavitesData - Données normalisées des cavités
-   * @returns Niveau de risque naturel correspondant
+   * @returns Risque cavités souterraines
    */
-  transformCavitesToRisque(cavitesData: CavitesResultNormalized): RisqueNaturel {
-    // Si aucune cavité détectée
+  transformCavitesToRisque(cavitesData: CavitesResultNormalized): RisqueCavitesSouterraines {
     if (!cavitesData.exposition || cavitesData.nombreCavites === 0) {
-      return RisqueNaturel.AUCUN;
+      return RisqueCavitesSouterraines.NON;
     }
 
     const distancePlusProche = cavitesData.distancePlusProche;
 
-    // Si on n'a pas de distance, on considère aucun risque par défaut
     if (distancePlusProche === undefined) {
-      return RisqueNaturel.AUCUN;
+      return RisqueCavitesSouterraines.NON;
     }
 
-    // Règles de calcul basées sur la distance de la cavité la plus proche
+    // OUI seulement si cavité à moins de 500m
     if (distancePlusProche <= 500) {
-      // Cavité à moins de 500m
-      return RisqueNaturel.FORT;
-    } else if (distancePlusProche <= 1000) {
-      // Cavité entre 500m et 1000m
-      return RisqueNaturel.MOYEN;
-    } else {
-      // Cavité supérieure à 1000m
-      return RisqueNaturel.FAIBLE;
+      return RisqueCavitesSouterraines.OUI;
     }
+
+    return RisqueCavitesSouterraines.NON;
+  }
+
+  /**
+   * Évalue le risque inondation à partir des données TRI/AZI/PAPI/PPR
+   *
+   * @param tri - Présence dans un Territoire à Risques importants d'Inondation
+   * @param azi - Présence dans un Atlas des Zones Inondables
+   * @param papi - Présence d'un Programme d'Actions de Prévention des Inondations
+   * @param ppr - Présence d'un Plan de Prévention des Risques
+   * @returns Risque inondation (OUI si au moins un est présent)
+   */
+  evaluerInondation(tri: boolean, azi: boolean, papi: boolean, ppr: boolean): RisqueInondation {
+    if (tri || azi || papi || ppr) {
+      return RisqueInondation.OUI;
+    }
+    return RisqueInondation.NON;
   }
 }

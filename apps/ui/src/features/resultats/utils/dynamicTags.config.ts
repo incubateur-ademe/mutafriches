@@ -1,7 +1,6 @@
 import {
   UsageType,
   PresencePollution,
-  RisqueNaturel,
   ZonageReglementaire,
   ZonageEnvironnemental,
   ZonagePatrimonial,
@@ -69,19 +68,19 @@ const resolveServicesProches = (data: TagInputData): string | null => {
 
 // --- Risques naturels ---
 const resolveRisquesNaturels = (data: TagInputData): string | null => {
-  const risques = data.enrichmentData.presenceRisquesNaturels;
-  if (!risques) return null;
+  const rga = data.enrichmentData.risqueRetraitGonflementArgile;
+  const cavites = data.enrichmentData.risqueCavitesSouterraines;
+  const inondation = data.enrichmentData.risqueInondation;
 
-  switch (risques) {
-    case RisqueNaturel.FAIBLE:
-    case RisqueNaturel.AUCUN:
-      return "risques nat. faibles";
-    case RisqueNaturel.MOYEN:
-      return "risques nat. modérés";
-    case RisqueNaturel.FORT:
-    default:
-      return null;
-  }
+  // Si au moins un risque est "fort" ou "oui" → pas de tag
+  if (inondation === "oui") return null;
+  if (cavites === "oui") return null;
+  if (rga === "fort") return null;
+
+  // Si au moins un risque est renseigné et aucun n'est problématique → faibles
+  if (rga || cavites || inondation) return "risques nat. faibles";
+
+  return null;
 };
 
 // --- Risques technologiques ---

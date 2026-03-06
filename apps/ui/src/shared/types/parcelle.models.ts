@@ -23,7 +23,7 @@ export interface ParcelleUiModel {
 
   // Risques et zonage
   risquesTechno: string;
-  risquesNaturels: string;
+  risquesNaturels: string[];
   zonageEnviro: string;
   zonageUrba: string;
   zonagePatrimonial: string;

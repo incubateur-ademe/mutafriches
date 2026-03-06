@@ -7,7 +7,9 @@ import {
   ValeurArchitecturale,
   QualitePaysage,
   QualiteVoieDesserte,
-  RisqueNaturel,
+  RisqueRetraitGonflementArgile,
+  RisqueCavitesSouterraines,
+  RisqueInondation,
   ZonageEnvironnemental,
   ZonagePatrimonial,
   ZonageReglementaire,
@@ -43,7 +45,9 @@ export class Site {
   distanceRaccordementElectrique: number;
   tauxLogementsVacants: number;
   presenceRisquesTechnologiques: boolean;
-  presenceRisquesNaturels?: RisqueNaturel;
+  risqueRetraitGonflementArgile?: RisqueRetraitGonflementArgile;
+  risqueCavitesSouterraines?: RisqueCavitesSouterraines;
+  risqueInondation?: RisqueInondation;
   zonageReglementaire?: ZonageReglementaire;
   zonageEnvironnemental?: ZonageEnvironnemental;
   zonagePatrimonial?: ZonagePatrimonial;
@@ -80,8 +84,14 @@ export class Site {
     Object.assign(site, {
       ...enrichissement,
       // Cast sécurisé des enums
-      presenceRisquesNaturels: enrichissement.presenceRisquesNaturels
-        ? (enrichissement.presenceRisquesNaturels as RisqueNaturel)
+      risqueRetraitGonflementArgile: enrichissement.risqueRetraitGonflementArgile
+        ? (enrichissement.risqueRetraitGonflementArgile as RisqueRetraitGonflementArgile)
+        : undefined,
+      risqueCavitesSouterraines: enrichissement.risqueCavitesSouterraines
+        ? (enrichissement.risqueCavitesSouterraines as RisqueCavitesSouterraines)
+        : undefined,
+      risqueInondation: enrichissement.risqueInondation
+        ? (enrichissement.risqueInondation as RisqueInondation)
         : undefined,
       zonageEnvironnemental: enrichissement.zonageEnvironnemental
         ? (enrichissement.zonageEnvironnemental as ZonageEnvironnemental)
@@ -137,8 +147,14 @@ export class Site {
     site.presenceRisquesTechnologiques = donneesEnrichies.presenceRisquesTechnologiques;
 
     // Cast sécurisé des enums
-    site.presenceRisquesNaturels = donneesEnrichies.presenceRisquesNaturels
-      ? (donneesEnrichies.presenceRisquesNaturels as RisqueNaturel)
+    site.risqueRetraitGonflementArgile = donneesEnrichies.risqueRetraitGonflementArgile
+      ? (donneesEnrichies.risqueRetraitGonflementArgile as RisqueRetraitGonflementArgile)
+      : undefined;
+    site.risqueCavitesSouterraines = donneesEnrichies.risqueCavitesSouterraines
+      ? (donneesEnrichies.risqueCavitesSouterraines as RisqueCavitesSouterraines)
+      : undefined;
+    site.risqueInondation = donneesEnrichies.risqueInondation
+      ? (donneesEnrichies.risqueInondation as RisqueInondation)
       : undefined;
     site.zonageEnvironnemental = donneesEnrichies.zonageEnvironnemental
       ? (donneesEnrichies.zonageEnvironnemental as ZonageEnvironnemental)

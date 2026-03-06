@@ -214,7 +214,9 @@ Content-Type: application/json
   "siteEnCentreVille": true,
   "distanceAutoroute": 1.5,
   "tauxLogementsVacants": 4.9,
-  "presenceRisquesNaturels": "faible",
+  "risqueRetraitGonflementArgile": "faible-ou-moyen",
+  "risqueCavitesSouterraines": "non",
+  "risqueInondation": "non",
   "zonageEnvironnemental": "hors-zone",
   "champsManquants": [
     "presencePollution",
