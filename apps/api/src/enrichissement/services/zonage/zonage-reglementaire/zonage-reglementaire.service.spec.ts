@@ -82,7 +82,10 @@ describe("ZonageReglementaireService", () => {
         nombreZones: 1,
         typezone: "U",
         libelle: "Zone urbaine",
+        libelong: undefined,
         destdomi: "Habitat",
+        indexZoneDominante: 0,
+        surfaceIntersection: undefined,
       });
       expect(result.evaluation.zonageFinal).toBe(ZonageReglementaire.ZONE_URBAINE_U);
     });

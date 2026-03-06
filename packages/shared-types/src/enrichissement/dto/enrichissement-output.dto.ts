@@ -1,4 +1,5 @@
 import { Coordonnees, GeometrieParcelle } from "../..";
+import { DiagnosticZonages } from "./diagnostic-zonages.dto";
 
 /**
  * Résultat de l'enrichissement automatique des données de parcelle ou site
@@ -58,6 +59,37 @@ export interface EnrichissementOutputDto {
   champsManquants: string[];
   sourcesEchouees: string[];
 
+  // Energies renouvelables
+  /** Zones d'Acceleration des Energies Renouvelables */
+  zaer?: ZaerEnrichissement;
+
+  // Diagnostic zonages (dev/staging uniquement, absent en production)
+  /** Données brutes des APIs de zonage pour le panneau de diagnostic */
+  diagnosticZonages?: DiagnosticZonages;
+
   // TODO a supprimer Données Géorisques
   risquesGeorisques?: any;
+}
+
+/**
+ * Resultat de l'enrichissement ZAER pour un site
+ */
+export interface ZaerEnrichissement {
+  /** Le site intersecte au moins une zone ZAER */
+  enZoneZaer: boolean;
+  /** Nombre de zones ZAER intersectees */
+  nombreZones: number;
+  /** Filieres ENR uniques presentes (ex: ["SOLAIRE_PV", "EOLIEN"]) */
+  filieres: string[];
+  /** Detail par zone intersectee */
+  zones: ZaerDetail[];
+}
+
+/**
+ * Detail d'une zone ZAER intersectee
+ */
+export interface ZaerDetail {
+  nom: string | null;
+  filiere: string;
+  detailFiliere: string | null;
 }

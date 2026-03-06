@@ -2,6 +2,18 @@ import { Injectable, Logger } from "@nestjs/common";
 import { ZonageReglementaire } from "@mutafriches/shared-types";
 import { ResultatZoneUrba, ResultatSecteurCC, InfoCommune } from "./zonage-reglementaire.types";
 
+/** Mots-clés dans le libellé long (libelong) pour classifier les sous-zones U */
+const MOTS_CLES_HABITAT = ["habitat", "mixte", "pavillonnaire", "centre"];
+const MOTS_CLES_EQUIPEMENT = ["équipement", "equipement"];
+const MOTS_CLES_ACTIVITE = [
+  "activité",
+  "activite",
+  "industrie",
+  "industrielle",
+  "artisanale",
+  "artisanat",
+];
+
 /**
  * Calculator du sous-domaine Zonage Réglementaire
  *
@@ -28,7 +40,12 @@ export class ZonageReglementaireCalculator {
   ): ZonageReglementaire {
     // Priorité 1 : Zone PLU/POS
     if (zoneUrba?.present && zoneUrba.typezone) {
-      return this.mapZoneUrbaToZonage(zoneUrba.typezone, zoneUrba.destdomi);
+      return this.mapZoneUrbaToZonage(
+        zoneUrba.typezone,
+        zoneUrba.destdomi,
+        zoneUrba.libelle,
+        zoneUrba.libelong,
+      );
     }
 
     // Priorité 2 : Secteur carte communale
@@ -49,18 +66,57 @@ export class ZonageReglementaireCalculator {
 
   /**
    * Mappe une zone PLU/POS vers le zonage réglementaire
+   *
+   * Ordre de classification pour les zones U :
+   * 1. destdomi activité → ZONE_VOCATION_ACTIVITES
+   * 2. Code zone (UA/UB/UC/UD, UE, UX/UY/UZ/UI) → sous-type U
+   * 3. Mots-clés dans libelong (fallback) → sous-type U
+   * 4. Catch-all → ZONE_URBAINE_U
    */
-  private mapZoneUrbaToZonage(typezone: string, destdomi?: string): ZonageReglementaire {
+  private mapZoneUrbaToZonage(
+    typezone: string,
+    destdomi?: string,
+    libelle?: string,
+    libelong?: string,
+  ): ZonageReglementaire {
     const type = typezone.toUpperCase();
 
     // Vérifier d'abord la destination dominante (plus spécifique)
-    if (destdomi && destdomi.toLowerCase().includes("activit")) {
+    // Le standard CNIG autorise le code numérique ("02") ou le libellé littéral ("activité")
+    if (destdomi && this.isDestdomiActivite(destdomi)) {
       this.logger.debug("Zonage réglementaire: ZONE_VOCATION_ACTIVITES");
       return ZonageReglementaire.ZONE_VOCATION_ACTIVITES;
     }
 
-    // Zone urbaine U
+    // Pour les sous-zones U, utiliser le libellé si le typezone est juste "U"
+    // L'API Carto GPU renvoie typezone="U" avec le détail dans libelle (ex: "UA", "UE", "UX")
+    const codeZone = type === "U" && libelle ? libelle.toUpperCase() : type;
+
+    // Sous-zones urbaines U avec affinage par code
+    if (/^U[ABCD]/i.test(codeZone)) {
+      this.logger.debug(`Zonage réglementaire: ZONE_URBAINE_U_HABITAT (code=${codeZone})`);
+      return ZonageReglementaire.ZONE_URBAINE_U_HABITAT;
+    }
+
+    if (/^UE/i.test(codeZone)) {
+      this.logger.debug(`Zonage réglementaire: ZONE_URBAINE_U_EQUIPEMENT (code=${codeZone})`);
+      return ZonageReglementaire.ZONE_URBAINE_U_EQUIPEMENT;
+    }
+
+    if (/^U[XYZI]/i.test(codeZone)) {
+      this.logger.debug(`Zonage réglementaire: ZONE_URBAINE_U_ACTIVITE (code=${codeZone})`);
+      return ZonageReglementaire.ZONE_URBAINE_U_ACTIVITE;
+    }
+
+    // Fallback : détection par mots-clés dans le libellé long (libelong)
+    // Permet de classifier les codes non standards (UG, UM, UP...) selon leur description
     if (type.startsWith("U")) {
+      const zonageParLibelong = this.classifierParLibelong(libelong);
+      if (zonageParLibelong) {
+        this.logger.debug(`Zonage réglementaire: ${zonageParLibelong} (libelong="${libelong}")`);
+        return zonageParLibelong;
+      }
+
       this.logger.debug("Zonage réglementaire: ZONE_URBAINE_U");
       return ZonageReglementaire.ZONE_URBAINE_U;
     }
@@ -85,6 +141,39 @@ export class ZonageReglementaireCalculator {
 
     this.logger.debug("Zonage réglementaire: NE_SAIT_PAS (type inconnu)");
     return ZonageReglementaire.NE_SAIT_PAS;
+  }
+
+  /**
+   * Classifie une zone U à partir des mots-clés présents dans le libellé long
+   * Retourne le zonage si un mot-clé est trouvé, null sinon
+   */
+  private classifierParLibelong(libelong?: string): ZonageReglementaire | null {
+    if (!libelong) return null;
+
+    const texte = libelong.toLowerCase();
+
+    if (MOTS_CLES_HABITAT.some((mot) => texte.includes(mot))) {
+      return ZonageReglementaire.ZONE_URBAINE_U_HABITAT;
+    }
+
+    if (MOTS_CLES_EQUIPEMENT.some((mot) => texte.includes(mot))) {
+      return ZonageReglementaire.ZONE_URBAINE_U_EQUIPEMENT;
+    }
+
+    if (MOTS_CLES_ACTIVITE.some((mot) => texte.includes(mot))) {
+      return ZonageReglementaire.ZONE_URBAINE_U_ACTIVITE;
+    }
+
+    return null;
+  }
+
+  /**
+   * Vérifie si la destination dominante correspond à une activité
+   * Gère le code numérique CNIG ("02") et le libellé littéral ("activité", "activite", etc.)
+   */
+  private isDestdomiActivite(destdomi: string): boolean {
+    const value = destdomi.trim().toLowerCase();
+    return value === "02" || value.includes("activit");
   }
 
   /**

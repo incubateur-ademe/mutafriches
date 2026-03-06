@@ -10,7 +10,12 @@ export interface ResultatZoneUrba {
   nombreZones: number;
   typezone?: string;
   libelle?: string;
+  libelong?: string;
   destdomi?: string;
+  /** Index de la feature sélectionnée (zone dominante par surface d'intersection) */
+  indexZoneDominante?: number;
+  /** Surface d'intersection de la zone dominante en m² */
+  surfaceIntersection?: number;
 }
 
 /**

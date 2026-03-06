@@ -110,6 +110,10 @@ interface MockAdemeSitesPolluesRepository {
   count: Mock;
 }
 
+interface MockEnrEnrichissementService {
+  enrichir: Mock;
+}
+
 interface MockPollutionDetectionService {
   detecterPollution: Mock;
 }
@@ -318,6 +322,15 @@ export function createMockAdemeSitesPolluesRepository(): MockAdemeSitesPolluesRe
     isSiteReferencePollue: vi.fn(),
     findSitePlusProche: vi.fn(),
     count: vi.fn(),
+  };
+}
+
+/**
+ * Mock du EnrEnrichissementService
+ */
+export function createMockEnrEnrichissementService(): MockEnrEnrichissementService {
+  return {
+    enrichir: vi.fn(),
   };
 }
 

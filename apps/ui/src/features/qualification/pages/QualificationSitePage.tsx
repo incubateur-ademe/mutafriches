@@ -12,6 +12,7 @@ import { SITE_FIELDS } from "../config/fields/site.fields";
 import { validateSiteForm } from "../config/validators";
 import { EnrichedInfoField, FormSelectField, PollutionField } from "../components";
 import { PresencePollution } from "@mutafriches/shared-types";
+import { DebugPanelGate } from "../../debug/components/DebugPanelGate";
 
 export const QualificationSitePage: React.FC = () => {
   const navigate = useNavigate();
@@ -274,7 +275,7 @@ export const QualificationSitePage: React.FC = () => {
             onChange={(v) => handleChange("presencePollution", v as PresencePollution | "")}
             siteReferencePollue={uiData?.siteReferencePollue}
             error={touched.presencePollution ? errors.presencePollution : undefined}
-            tooltip="Entrez l'information dont vous disposez sur la présence de pollution sur votre site (sol et bâti). Si la case 'Oui' est présélectionnée, c'est que nous avons retrouvé votre site dans une base de données nationales des sites pollués."
+            tooltip="Entrez l'information dont vous disposez sur la présence de pollution sur votre site (sol et bâti). Si la case 'Oui' est présélectionnée, c’est que nous avons retrouvé un risque de pollution à moins de 500 m dans une base de données nationales des sites et sols pollués."
           />
         </div>
       </form>
@@ -286,6 +287,13 @@ export const QualificationSitePage: React.FC = () => {
         nextType="submit"
         formId="site-form"
         isLoading={isSubmitting}
+      />
+
+      <DebugPanelGate
+        enrichmentData={state.enrichmentData}
+        manualData={state.manualData}
+        mutabilityData={null}
+        identifiantSite={state.identifiantSite}
       />
     </Layout>
   );

@@ -329,6 +329,7 @@ export const MATRICE_SCORING = {
 
   // Zonage du PLU
   zonageReglementaire: {
+    // Zone urbaine U générique (catch-all pour U simple ou sous-zones non classifiées)
     [ZonageReglementaire.ZONE_URBAINE_U]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.TRES_POSITIF,
       [UsageType.EQUIPEMENTS]: ScoreImpact.TRES_POSITIF,
@@ -339,13 +340,46 @@ export const MATRICE_SCORING = {
       [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEGATIF,
     },
 
+    // Zone urbaine U habitat (UA, UB, UC, UD)
+    [ZonageReglementaire.ZONE_URBAINE_U_HABITAT]: {
+      [UsageType.RESIDENTIEL]: ScoreImpact.TRES_POSITIF,
+      [UsageType.EQUIPEMENTS]: ScoreImpact.POSITIF,
+      [UsageType.CULTURE]: ScoreImpact.POSITIF,
+      [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
+      [UsageType.INDUSTRIE]: ScoreImpact.TRES_NEGATIF,
+      [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
+      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEGATIF,
+    },
+
+    // Zone urbaine U équipement (UE)
+    [ZonageReglementaire.ZONE_URBAINE_U_EQUIPEMENT]: {
+      [UsageType.RESIDENTIEL]: ScoreImpact.TRES_NEGATIF,
+      [UsageType.EQUIPEMENTS]: ScoreImpact.TRES_POSITIF,
+      [UsageType.CULTURE]: ScoreImpact.POSITIF,
+      [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
+      [UsageType.INDUSTRIE]: ScoreImpact.TRES_NEGATIF,
+      [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
+      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
+    },
+
+    // Zone urbaine U activité (UI, UX, UY, UZ)
+    [ZonageReglementaire.ZONE_URBAINE_U_ACTIVITE]: {
+      [UsageType.RESIDENTIEL]: ScoreImpact.TRES_NEGATIF,
+      [UsageType.EQUIPEMENTS]: ScoreImpact.NEGATIF,
+      [UsageType.CULTURE]: ScoreImpact.NEGATIF,
+      [UsageType.TERTIAIRE]: ScoreImpact.POSITIF,
+      [UsageType.INDUSTRIE]: ScoreImpact.TRES_POSITIF,
+      [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
+      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
+    },
+
     [ZonageReglementaire.ZONE_A_URBANISER_AU]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.POSITIF,
       [UsageType.EQUIPEMENTS]: ScoreImpact.POSITIF,
       [UsageType.CULTURE]: ScoreImpact.NEUTRE,
       [UsageType.TERTIAIRE]: ScoreImpact.POSITIF,
       [UsageType.INDUSTRIE]: ScoreImpact.NEUTRE,
-      [UsageType.RENATURATION]: ScoreImpact.NEGATIF,
+      [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
       [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEGATIF,
     },
 
@@ -353,7 +387,7 @@ export const MATRICE_SCORING = {
       [UsageType.RESIDENTIEL]: ScoreImpact.TRES_NEGATIF,
       [UsageType.EQUIPEMENTS]: ScoreImpact.NEGATIF,
       [UsageType.CULTURE]: ScoreImpact.NEGATIF,
-      [UsageType.TERTIAIRE]: ScoreImpact.NEGATIF,
+      [UsageType.TERTIAIRE]: ScoreImpact.POSITIF,
       [UsageType.INDUSTRIE]: ScoreImpact.TRES_POSITIF,
       [UsageType.RENATURATION]: ScoreImpact.NEGATIF,
       [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
