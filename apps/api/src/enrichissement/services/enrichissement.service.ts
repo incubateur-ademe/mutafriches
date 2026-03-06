@@ -21,6 +21,7 @@ import { GeoRisquesEnrichissementService } from "./georisques/georisques-enrichi
 import { ZonageOrchestratorService } from "./zonage";
 import { PollutionDetectionService } from "./pollution/pollution-detection.service";
 import { EnrEnrichissementService } from "./enr/enr-enrichissement.service";
+import { EnrCalculator } from "./enr/enr.calculator";
 
 /**
  * Service principal d'enrichissement - Orchestrateur
@@ -49,6 +50,7 @@ export class EnrichissementService {
     private readonly zonageOrchestrator: ZonageOrchestratorService,
     private readonly pollutionDetection: PollutionDetectionService,
     private readonly enrEnrichissement: EnrEnrichissementService,
+    private readonly enrCalculator: EnrCalculator,
 
     // Utilitaires
     private readonly enrichissementRepository: EnrichissementRepository,
@@ -272,6 +274,7 @@ export class EnrichissementService {
 
         // Energies renouvelables
         zaer,
+        zoneAccelerationEnr: this.enrCalculator.evaluer(zaer),
 
         // Diagnostic zonages (dev/staging uniquement)
         diagnosticZonages: zonagesResult?.diagnosticZonages,
@@ -491,11 +494,11 @@ export class EnrichissementService {
         sourcesEchouees.push(...pollutionResult.sourcesEchouees);
       }
 
-      // 11. ENR / ZAER -> geometrie union du site ou centroide
+      // 11. ENR / ZAER -> parcelle prédominante ou centroïde
       let zaer: ZaerEnrichissement | undefined;
-      if (siteEval.geometrie || siteEval.coordonnees) {
+      if (predominante.geometrie || siteEval.coordonnees) {
         const enrResult = await this.enrEnrichissement.enrichir(
-          siteEval.geometrie,
+          predominante.geometrie,
           siteEval.coordonnees,
         );
         this.mergeEnrichmentResult(
@@ -558,6 +561,7 @@ export class EnrichissementService {
 
         // Energies renouvelables
         zaer,
+        zoneAccelerationEnr: this.enrCalculator.evaluer(zaer),
 
         // Diagnostic zonages (dev/staging uniquement)
         diagnosticZonages: zonagesResult?.diagnosticZonages,

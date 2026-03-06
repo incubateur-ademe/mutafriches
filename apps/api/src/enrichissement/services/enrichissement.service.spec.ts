@@ -12,6 +12,7 @@ import { GeoRisquesEnrichissementService } from "./georisques/georisques-enrichi
 import { EnrichissementRepository } from "../repositories/enrichissement.repository";
 import { PollutionDetectionService } from "./pollution/pollution-detection.service";
 import { EnrEnrichissementService } from "./enr/enr-enrichissement.service";
+import { EnrCalculator } from "./enr/enr.calculator";
 import { Site } from "../../evaluation/entities/site.entity";
 import {
   createMockCadastreEnrichissementService,
@@ -25,6 +26,7 @@ import {
   createMockZonageOrchestratorService,
   createMockPollutionDetectionService,
   createMockEnrEnrichissementService,
+  createMockEnrCalculator,
   createMockSiteRepository,
 } from "../__test-helpers__/enrichissement.mocks";
 import { ZonageOrchestratorService } from "./zonage";
@@ -57,6 +59,7 @@ describe("EnrichissementService", () => {
     const mockGeoRisques = createMockGeoRisquesEnrichissementService();
     const mockZonageOrchestrator = createMockZonageOrchestratorService();
     const mockEnrEnrichissement = createMockEnrEnrichissementService();
+    const mockEnrCalculator = createMockEnrCalculator();
     const mockPollutionDetection = createMockPollutionDetectionService();
     const mockRepository = createMockEnrichissementRepository();
     const mockSiteRepository = createMockSiteRepository();
@@ -97,6 +100,7 @@ describe("EnrichissementService", () => {
         { provide: ZonageOrchestratorService, useValue: mockZonageOrchestrator },
         { provide: PollutionDetectionService, useValue: mockPollutionDetection },
         { provide: EnrEnrichissementService, useValue: mockEnrEnrichissement },
+        { provide: EnrCalculator, useValue: mockEnrCalculator },
         { provide: EnrichissementRepository, useValue: mockRepository },
         { provide: SiteRepository, useValue: mockSiteRepository },
       ],

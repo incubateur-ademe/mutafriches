@@ -62,6 +62,8 @@ export interface EnrichissementOutputDto {
   // Energies renouvelables
   /** Zones d'Acceleration des Energies Renouvelables */
   zaer?: ZaerEnrichissement;
+  /** Critère calculé pour l'algorithme : zone d'accélération ENR */
+  zoneAccelerationEnr?: string;
 
   // Diagnostic zonages (dev/staging uniquement, absent en production)
   /** Données brutes des APIs de zonage pour le panneau de diagnostic */

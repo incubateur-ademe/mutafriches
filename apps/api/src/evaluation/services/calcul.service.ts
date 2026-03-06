@@ -283,6 +283,7 @@ export class CalculService {
       zonageReglementaire: site.zonageReglementaire,
       zonagePatrimonial: site.zonagePatrimonial,
       trameVerteEtBleue: site.trameVerteEtBleue,
+      zoneAccelerationEnr: site.zoneAccelerationEnr,
     };
 
     return criteres;

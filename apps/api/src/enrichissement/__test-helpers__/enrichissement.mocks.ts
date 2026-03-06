@@ -114,6 +114,10 @@ interface MockEnrEnrichissementService {
   enrichir: Mock;
 }
 
+interface MockEnrCalculator {
+  evaluer: Mock;
+}
+
 interface MockPollutionDetectionService {
   detecterPollution: Mock;
 }
@@ -331,6 +335,15 @@ export function createMockAdemeSitesPolluesRepository(): MockAdemeSitesPolluesRe
 export function createMockEnrEnrichissementService(): MockEnrEnrichissementService {
   return {
     enrichir: vi.fn(),
+  };
+}
+
+/**
+ * Mock du EnrCalculator
+ */
+export function createMockEnrCalculator(): MockEnrCalculator {
+  return {
+    evaluer: vi.fn().mockReturnValue("non"),
   };
 }
 

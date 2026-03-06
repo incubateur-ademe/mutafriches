@@ -30,4 +30,8 @@ export interface ParcelleUiModel {
 
   // Pollution - indique si le site est reference dans les bases SIS/ICPE/ADEME
   siteReferencePollue: boolean;
+
+  // Énergies renouvelables
+  zoneAccelerationEnr: string;
+  zaerFilieres?: string[];
 }

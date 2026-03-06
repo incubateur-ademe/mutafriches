@@ -12,6 +12,7 @@ import {
   ZonagePatrimonial,
   ZonageReglementaire,
   TrameVerteEtBleue,
+  ZoneAccelerationEnr,
   Coordonnees,
   GeometrieParcelle,
   CalculerMutabiliteInputDto,
@@ -47,6 +48,7 @@ export class Site {
   zonageEnvironnemental?: ZonageEnvironnemental;
   zonagePatrimonial?: ZonagePatrimonial;
   trameVerteEtBleue?: TrameVerteEtBleue;
+  zoneAccelerationEnr?: ZoneAccelerationEnr;
 
   // Données saisies manuellement
   typeProprietaire?: TypeProprietaire;
@@ -89,6 +91,9 @@ export class Site {
         : undefined,
       zonageReglementaire: enrichissement.zonageReglementaire
         ? (enrichissement.zonageReglementaire as ZonageReglementaire)
+        : undefined,
+      zoneAccelerationEnr: enrichissement.zoneAccelerationEnr
+        ? (enrichissement.zoneAccelerationEnr as ZoneAccelerationEnr)
         : undefined,
       // Copie des données géographiques
       coordonnees: enrichissement.coordonnees,
@@ -143,6 +148,9 @@ export class Site {
       : undefined;
     site.zonageReglementaire = donneesEnrichies.zonageReglementaire
       ? (donneesEnrichies.zonageReglementaire as ZonageReglementaire)
+      : undefined;
+    site.zoneAccelerationEnr = donneesEnrichies.zoneAccelerationEnr
+      ? (donneesEnrichies.zoneAccelerationEnr as ZoneAccelerationEnr)
       : undefined;
 
     // Multi-parcelle

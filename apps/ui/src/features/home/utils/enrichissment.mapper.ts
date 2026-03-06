@@ -84,5 +84,26 @@ export const transformEnrichmentToUiData = (
 
     // Pollution - site reference dans les bases ADEME (sites et sols pollues)
     siteReferencePollue: enrichmentData.siteReferencePollue === true,
+
+    // Énergies renouvelables
+    zoneAccelerationEnr: formatZoneAccelerationEnr(enrichmentData.zoneAccelerationEnr),
+    zaerFilieres: enrichmentData.zaer?.filieres,
   };
+};
+
+/**
+ * Formate la valeur du critère zone d'accélération ENR en label lisible
+ */
+const formatZoneAccelerationEnr = (value?: string): string => {
+  if (!value) return "";
+  switch (value) {
+    case "non":
+      return "Non";
+    case "oui":
+      return "Oui";
+    case "oui-solaire-pv-ombriere":
+      return "Oui Solaire PV (ombrière)";
+    default:
+      return value;
+  }
 };

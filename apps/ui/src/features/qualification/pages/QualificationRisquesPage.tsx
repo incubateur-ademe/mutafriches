@@ -148,8 +148,8 @@ export const QualificationRisquesPage: React.FC = () => {
 
       <hr className="fr-my-4w" />
 
-      {/* Zone 3 - Zonage patrimonial */}
-      <div className="fr-grid-row fr-grid-row--gutters fr-mb-8w">
+      {/* Zone 3 - Zonage patrimonial  & ZAER */}
+      <div className="fr-grid-row fr-grid-row--gutters">
         <EnrichedInfoField
           id="type-zonage-patrimonial"
           label="Type de zonage patrimonial"
@@ -168,7 +168,33 @@ export const QualificationRisquesPage: React.FC = () => {
             </>
           }
         />
+
+        {/*   Zone d'accélération des énergies renouvelables */}
+        <EnrichedInfoField
+          id="zone-acceleration-enr"
+          label="Zone d'accélération des énergies renouvelables"
+          value={
+            uiData?.zaerFilieres && uiData.zaerFilieres.length > 0
+              ? uiData.zaerFilieres
+              : uiData?.zoneAccelerationEnr
+          }
+          tooltip={
+            <>
+              Données enrichies via le WFS Géoplateforme (ZAER) :<br />
+              <a
+                href="https://data.geopf.fr/wfs?service=WFS&request=GetCapabilities"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="fr-link fr-text--xs"
+              >
+                data.geopf.fr/wfs
+              </a>
+            </>
+          }
+        />
       </div>
+
+      <hr className="fr-my-4w" />
 
       <StepNavigation
         onPrevious={handlePrevious}
