@@ -43,9 +43,8 @@ mutafriches/
 │   │   └── drizzle/            # Migrations base de données
 │   └── ui/                     # Application React
 │       ├── src/
-│       │   ├── components/     # Composants React
-│       │   ├── pages/          # Pages de l'application
-│       │   ├── services/       # Services API
+│       │   ├── features/       # Modules fonctionnels (home, qualification, resultats...)
+│       │   ├── shared/         # Composants, hooks, services et utilitaires partagés
 │       │   └── App.tsx         # Composant racine
 │       └── vite.config.ts      # Configuration Vite
 ├── packages/
@@ -79,35 +78,25 @@ mutafriches/
 
 ### Prérequis
 
-- Node.js `24.X.0`
-- pnpm `10.25.1`
+- Node.js 24.x
+- pnpm 10.x
 - Docker & Docker Compose
 
-### Démarrage rapide
+### Demarrage rapide
 
 ```bash
 # Cloner le projet
-git clone <repository-url>
+git clone https://github.com/incubateur-ademe/mutafriches.git
 cd mutafriches
 
-# Configuration
-cp .env.example .env
+# Setup complet (env, dependances, BDD, schema)
+pnpm setup
 
-# Installer les dépendances (API + UI)
-pnpm install:all
-
-# Démarrer PostgreSQL
-pnpm db:start
-
-# Synchroniser le schéma de base de données
-pnpm db:push
-
-# Générer des données de test
-pnpm db:seed
-
-# Démarrer en mode développement (API + UI)
-pnpm dev
+# Demarrer en mode developpement (API + UI)
+pnpm start:dev
 ```
+
+> Le script `pnpm setup` copie le `.env.example`, installe les dependances, demarre PostgreSQL via Docker et synchronise le schema de base de donnees.
 
 **Accès :**
 
@@ -122,14 +111,12 @@ pnpm dev
 
 ```bash
 # Stack complète
-pnpm dev                    # Lance API + UI en développement
+pnpm start:dev              # Lance API + UI en développement
 pnpm dev:api                # API uniquement (NestJS watch mode)
 pnpm dev:ui                 # UI uniquement (Vite dev server)
 
 # Build
-pnpm build:all              # Build API + UI pour production
-pnpm build:api              # Build API uniquement
-pnpm build:ui               # Build UI uniquement
+pnpm build                  # Build shared-types + API pour production
 
 # Production
 pnpm start                  # Lance l'app en production (après build)
@@ -143,7 +130,6 @@ pnpm db:stop                # Arrêter PostgreSQL
 pnpm db:reset               # Reset complet (supprime les données)
 pnpm db:push                # Synchroniser le schéma
 pnpm db:studio              # Interface graphique Drizzle Studio
-pnpm db:seed                # Générer des fake data pour analytics
 ```
 
 ### Qualité de code & Tests
@@ -154,7 +140,7 @@ pnpm format                 # Formatter Prettier
 pnpm typecheck              # Vérification TypeScript
 pnpm test                   # Tests unitaires (Vitest)
 pnpm test:watch             # Tests en mode watch
-pnpm test:coverage          # Tests avec coverage
+pnpm validate               # Tout vérifier (format + lint + typecheck + test)
 ```
 
 ## 🌐 API Routes disponibles
@@ -171,35 +157,6 @@ pnpm test:coverage          # Tests avec coverage
 | `/friches/*` | * | **DEPRECATED** - Routes historiques |
 
 ## 🎨 Interface utilisateur
-
-### Architecture React
-
-L'UI React communique avec l'API NestJS via des services dédiés :
-
-```typescript
-// ui/src/services/api.ts
-export const api = {
-  enrichissement: {
-    enrichir: (identifiant) => fetch('/enrichissement', {
-      method: 'POST',
-      body: JSON.stringify({ identifiant })
-    })
-  },
-  evaluation: {
-    calculer: (data) => fetch('/evaluation/calculer', {
-      method: 'POST',
-      body: JSON.stringify(data)
-    }),
-    recuperer: (id) => fetch(`/evaluation/${id}`)
-  },
-  evenements: {
-    tracker: (event) => fetch('/evenements', {
-      method: 'POST',
-      body: JSON.stringify(event)
-    })
-  }
-}
-```
 
 ### Parcours utilisateur
 
@@ -226,8 +183,8 @@ Le déploiement sur Scalingo utilise une architecture monolithique où NestJS se
 // package.json
 {
   "scripts": {
-    "heroku-postbuild": "pnpm run build:all",
-    "start": "node dist/src/main.js"
+    "scalingo-postbuild": "pnpm install --frozen-lockfile && pnpm --filter shared-types build && pnpm --filter api build",
+    "start": "node apps/api/dist/src/main"
   }
 }
 ```
@@ -237,15 +194,14 @@ Le déploiement sur Scalingo utilise une architecture monolithique où NestJS se
 ```env
 NODE_ENV=production
 PORT=<fourni par Scalingo>
-DATABASE_URL=<fourni par addon PostgreSQL>
+SCALINGO_POSTGRESQL_URL=<fourni par addon PostgreSQL>
 ```
 
 ### Build et déploiement
 
-1. **Build** : Scalingo exécute `pnpm run build:all`
-   - Compile l'API NestJS → `dist/`
-   - Compile l'UI React → `ui/dist/`
-   - Copie l'UI vers `dist-ui/`
+1. **Build** : Scalingo exécute `scalingo-postbuild`
+   - Compile shared-types puis l'API NestJS → `apps/api/dist/`
+   - L'UI React est compilée dans le build API → `dist-ui/`
 
 2. **Runtime** : NestJS sert :
    - Routes API sur `/api/*`, `/enrichissement`, `/evaluation/*`, `/evenements`
@@ -270,19 +226,6 @@ Système de tracking léger pour mesurer l'engagement utilisateur :
 - Actions utilisateur (enrichissement, calcul)
 - Téléchargements de résultats
 
-## 🧪 Tests
-
-```bash
-# Tests unitaires
-pnpm test
-
-# Tests avec interface UI
-pnpm test:ui
-
-# Tests E2E (à venir)
-pnpm test:e2e
-```
-
 ## 📚 Documentation
 
 Documentation complète dans le dossier [`docs/`](./docs/) :
@@ -291,20 +234,6 @@ Documentation complète dans le dossier [`docs/`](./docs/) :
 - **[Module Enrichissement](./docs/enrichissement.md)** - 9 domaines, 24 APIs, règles de gestion
 - **[Algorithme d'Évaluation](./docs/evaluation-mutabilite.md)** - Matrice 26×7, calcul mutabilité
 - **[Guide d'Intégration](./docs/integration/README.md)** - Iframe + PostMessage
-
-### Architecture
-
-- **Monorepo** : apps/api + apps/ui + packages/shared-types
-- **Backend** : NestJS + PostgreSQL + PostGIS + Drizzle ORM
-- **Frontend** : React 19 + Vite + DSFR
-- **APIs Externes** : 21 APIs publiques + 3 bases locales PostGIS
-
-### Règles de code
-
-Voir [CLAUDE.md](./CLAUDE.md) pour les règles strictes :
-- Typage TypeScript explicite obligatoire
-- Accents français dans tout le code
-- Conventions NestJS (services, controllers, DTOs)
 
 ---
 
@@ -348,38 +277,15 @@ Pour une intégration avec communication bidirectionnelle via PostMessage, perme
 https://mutafriches.beta.gouv.fr/iframe?integrator=benefriches&callbackUrl=https://benefriches.ademe.fr&callbackLabel=Retour+vers+Benefriches
 ```
 
----
-
-## 🔗 Intégration partenaires
-
 ### Liens trackés (analytics)
 
-Pour le tracking analytics (usage externe de Mutafriches), utiliser le paramètre `source` :
+Pour le tracking analytics (usage externe de Mutafriches sans iframe), utiliser le paramètre `source` :
 
 ```
 https://mutafriches.beta.gouv.fr?source={partenaire}
 ```
 
-| Paramètre | Description | Exemple |
-|-----------|-------------|---------|
-| `source` | Nom du partenaire (analytics uniquement) | `urbanvitaliz`, `benefriches` |
-
-**Exemples :**
-
-- `https://mutafriches.beta.gouv.fr?source=urbanvitaliz`
-- `https://mutafriches.beta.gouv.fr?source=benefriches`
-
-**Note** : Pour l'intégration iframe avec callback, voir section précédente avec paramètre `integrator`.
-
-### Intégration iframe
-
-Pour une intégration en iframe avec callback :
-
-```
-https://mutafriches.beta.gouv.fr/iframe?integrator={partenaire}&callbackUrl={url_retour}&callbackLabel={label}
-```
-
-Les intégrateurs autorisés sont définis dans les variables d'environnement (voir `CLAUDE.md` - Variables d'environnement).
+Les intégrateurs autorisés sont définis dans les variables d'environnement (voir `CLAUDE.md`).
 
 ---
 
@@ -458,6 +364,6 @@ scalingo -a mutafriches run "pnpm --filter api db:bpe:import"
 
 ---
 
-**Version** : 1.0
-**Dernière mise à jour** : 2026-01-29
+**Version** : 1.6.0
+**Dernière mise à jour** : 2026-03-11
 **Projet** : Mutafriches - Beta.gouv / ADEME

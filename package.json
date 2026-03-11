@@ -36,6 +36,7 @@
     "db:transport-stops:import": "pnpm --filter api run db:transport-stops:import",
     "db:ademe-sites:import": "pnpm --filter api run db:ademe-sites:import",
     "validate": "pnpm format && pnpm lint:fix && pnpm typecheck && pnpm test",
+    "setup": "bash scripts/setup.sh",
     "clean": "pnpm -r clean && rm -rf node_modules",
     "fresh": "rm -rf node_modules apps/*/node_modules pnpm-lock.yaml && pnpm install && pnpm start:dev"
   },
