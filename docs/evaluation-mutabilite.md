@@ -1,38 +1,38 @@
-# 📚 Documentation de l'Algorithme Mutafriches
+# Documentation de l'Algorithme Mutafriches
 
-> **Version** : 1.0  
-> **Date** : Aout 2025  
+> **Version** : 2.0
+> **Date** : Mars 2026
 > **Objectif** : Évaluer la mutabilité des friches urbaines pour 7 usages potentiels
 
 ---
 
-## 🎯 Vue d'ensemble
+## Vue d'ensemble
 
 ### Qu'est-ce que Mutafriches ?
 
 Mutafriches est un algorithme d'aide à la décision qui évalue le potentiel de reconversion d'une friche urbaine.
 
-Il analyse **26 critères** pour déterminer le meilleur usage futur parmi **7 possibilités**, en produisant :
+Il analyse **24 critères** pour déterminer le meilleur usage futur parmi **7 possibilités**, en produisant :
 
-- ✅ Un **indice de mutabilité** (0-100%) pour chaque usage
-- 🏆 Un **classement** des usages par ordre de pertinence
-- 📊 Un **indice de fiabilité** (0-10) basé sur la complétude des données
+- Un **indice de mutabilité** (0-100%) pour chaque usage
+- Un **classement** des usages par ordre de pertinence
+- Un **indice de fiabilité** (0-10) basé sur la complétude des données
 
 ### Les 7 usages évalués
 
-| Usage | Description | Exemples |
-|-------|-------------|----------|
-| 🏘️ **Résidentiel ou mixte** | Habitat et commerces de proximité | Logements sociaux, résidences, commerces en RDC |
-| 🏛️ **Équipements publics** | Services publics et collectifs | École, médiathèque, gymnase, mairie annexe |
-| 🎭 **Culturel, touristique** | Lieux culturels et d'hébergement | Musée, théâtre, hôtel, galerie d'art |
-| 🏢 **Tertiaire** | Bureaux et services | Sièges sociaux, espaces de coworking, services |
-| 🏭 **Industriel, logistique** | Production et stockage | Usines, entrepôts, centres de distribution |
-| 🌳 **Renaturation** | Espaces naturels | Parcs urbains, jardins partagés, zones humides |
-| ☀️ **Photovoltaïque au sol** | Production d'énergie solaire | Centrales photovoltaïques, fermes solaires |
+| Usage | Code | Description | Exemples |
+|-------|------|-------------|----------|
+| **Résidentiel ou mixte** | `residentiel` | Habitat et commerces de proximité | Logements sociaux, résidences, commerces en RDC |
+| **Équipements publics** | `equipements` | Services publics et collectifs | École, médiathèque, gymnase, mairie annexe |
+| **Culturel, touristique** | `culture` | Lieux culturels et d'hébergement | Musée, théâtre, hôtel, galerie d'art |
+| **Tertiaire** | `tertiaire` | Bureaux et services | Sièges sociaux, espaces de coworking, services |
+| **Industriel, logistique** | `industrie` | Production et stockage | Usines, entrepôts, centres de distribution |
+| **Renaturation** | `renaturation` | Espaces naturels | Parcs urbains, jardins partagés, zones humides |
+| **Photovoltaïque au sol** | `photovoltaique` | Production d'énergie solaire | Centrales photovoltaïques, fermes solaires |
 
 ---
 
-## 🔧 Fonctionnement de l'algorithme
+## Fonctionnement de l'algorithme
 
 ### Architecture générale
 
@@ -45,11 +45,11 @@ Il analyse **26 critères** pour déterminer le meilleur usage futur parmi **7 p
  ┌─────────────┐         ┌─────────────┐          ┌─────────────┐
  │  COLLECTE   │         │ CONSULTATION│          │   CALCUL    │
  │     DES     │  ────→  │   MATRICE   │  ────→   │     DES     │
- │  26 CRITÈRES│         │  DE SCORING │          │   POINTS    │
+ │  24 CRITÈRES│         │  DE SCORING │          │   POINTS    │
  └─────────────┘         └─────────────┘          └─────────────┘
-  État friche             26 critères ×            Score × Poids
+  État friche             24 critères ×            Score × Poids
   Situation               7 usages =               Pour chaque
-  Réglementation          182 valeurs              usage
+  Réglementation          168 valeurs              usage
   Patrimoine              
   Écosystème              
        │                        │                        │
@@ -70,29 +70,29 @@ Il analyse **26 critères** pour déterminer le meilleur usage futur parmi **7 p
            │  CLASSEMENT │           │  FIABILITÉ  │
            │  1er → 7ème │           │    0-10     │
            └─────────────┘           └─────────────┘
-             Tri par %                 Nb renseignés/26
+             Tri par %                 Poids/25.5
 ```
 
 ### Étape 1 : Collecte des données
 
-L'algorithme collecte **26 critères** répartis en **5 catégories** :
+L'algorithme collecte **24 critères** répartis en **2 sources** :
 
-#### 📊 Synthèse des critères et leurs poids
+- **17 critères enrichis automatiquement** via le module d'enrichissement (APIs externes)
+- **7 critères complémentaires** saisis manuellement par l'utilisateur
 
-| Catégorie | Nb critères | Poids total | % du total |
-|-----------|------------|-------------|------------|
-| État de la friche | 6 | 10 | 36% |
-| Situation | 9 | 8 | 29% |
-| Réglementation | 4 | 4 | 14% |
-| Patrimoine | 2 | 2 | 7% |
-| Écosystème | 5 | 5 | 18% |
-| **TOTAL** | **26** | **27.5** | **100%** |
+#### Synthèse des critères et leurs poids
+
+| Source | Nb critères | Poids total |
+|--------|------------|-------------|
+| Enrichissement automatique | 17 | 17.5 |
+| Données complémentaires (saisie) | 7 | 8 |
+| **TOTAL** | **24** | **25.5** |
 
 ### Étape 2 : Matrice de scoring
 
 L'algorithme utilise une **matrice de scoring unique** qui définit comment chaque valeur de critère impacte chaque usage.
 
-Cette matrice contient 26 critères × 7 usages = 182 correspondances.
+Cette matrice contient 24 critères × 7 usages = 168 correspondances de base (davantage avec les valeurs multiples par critère).
 
 #### Structure de la matrice
 
@@ -214,20 +214,22 @@ Les 7 usages sont classés par ordre décroissant d'indice de mutabilité :
 
 #### 5b. Indice de fiabilité
 
-Indicateur de confiance basé sur la complétude des données :
+Indicateur de confiance basé sur la somme des poids des critères renseignés :
 
 ```
-Fiabilité = (Nombre_critères_renseignés / 26) × 10
+Fiabilité = (Poids_critères_renseignés / Poids_total) × 10
 ```
+
+Le poids total est de **25.5** (somme de tous les poids des 24 critères). Chaque critère contribue proportionnellement à son poids.
 
 #### Grille d'interprétation
 
-| Fiabilité | Critères renseignés | Interprétation | Recommandation |
-|-----------|-------------------|-----------------|----------------|
-| **9-10/10** | 24-26 sur 26 | Excellente | Résultats fiables pour décision |
-| **7-8/10** | 19-23 sur 26 | Bonne | Résultats exploitables |
-| **5-6/10** | 13-18 sur 26 | Moyenne | Compléter les données si possible |
-| **< 5/10** | < 13 sur 26 | Insuffisante | Données trop partielles, prudence |
+| Fiabilité | Interprétation | Recommandation |
+|-----------|-----------------|----------------|
+| **9-10/10** | Excellente | Résultats fiables pour décision |
+| **7-8/10** | Bonne | Résultats exploitables |
+| **5-6/10** | Moyenne | Compléter les données si possible |
+| **< 5/10** | Insuffisante | Données trop partielles, prudence |
 
 #### Note importante
 
@@ -235,90 +237,44 @@ La fiabilité **ne modifie pas** le classement. C'est un indicateur séparé qui
 
 ---
 
-## 📋 Liste détaillée des 26 critères avec mapping DTO
+## Liste des 24 critères actifs
 
-### 1️⃣ État de la friche (6 critères)
+### Critères enrichis automatiquement (17)
 
-| # | Critère | Poids | Valeurs possibles | Champ DTO | Interface |
-|---|---------|-------|-------------------|-----------|-----------|
-| 1 | **Propriétaire** | 1 | Public / Privé / Copropriété / Mixte | `typeProprietaire` | ParcelleManualData |
-| 2 | **Surface de la parcelle (m²)** | 2 | < 10 000 / 10-15 000 / 15-50 000 / > 50 000 | `surfaceSite` | ParcelleAutoData |
-| 3 | **Emprise au sol du bâti (m²)** | 2 | < 10 000 / ≥ 10 000 | `surfaceBati` | ParcelleAutoData |
-| 4 | **État du bâti et infrastructure** | 2 | En ruine / Forte dégradation / État moyen / Bon état / État remarquable / Bâtiments hétérogènes / Pas de bâti | `etatBatiInfrastructure` | ParcelleManualData |
-| 5 | **Présence de pollution** | 2 | Non / Déjà gérée / Oui-composés volatils / Oui-autres composés / Ne sait pas | `presencePollution` | ParcelleManualData |
-| 6 | **Terrain en pente (>12%)** | 1 | Oui / Non / Ne sait pas | **⚠️ NON MAPPÉ** | - |
+| # | Critère | Poids | Valeurs | Champ DTO |
+|---|---------|-------|---------|-----------|
+| 1 | **Surface du site (m²)** | 2 | < 10 000 / 10-15 000 / 15-50 000 / > 50 000 | `surfaceSite` |
+| 2 | **Surface bâtie (m²)** | 2 | < 5 000 / 5-10 000 / > 10 000 | `surfaceBati` |
+| 3 | **En centre-ville** | 1 | Oui / Non | `siteEnCentreVille` |
+| 4 | **Distance autoroute (km)** | 0.5 | < 1 / 1-2 / 2-5 / > 5 | `distanceAutoroute` |
+| 5 | **Distance transport en commun (m)** | 1 | < 500 / >= 500 | `distanceTransportCommun` |
+| 6 | **Commerces/services à proximité** | 1 | Oui / Non | `proximiteCommercesServices` |
+| 7 | **Distance raccordement électrique (km)** | 1 | < 1 / 1-5 / > 5 | `distanceRaccordementElectrique` |
+| 8 | **Taux logements vacants (%)** | 1 | <= 7 / 7-8 / 8-10 / > 10 | `tauxLogementsVacants` |
+| 9 | **Risque RGA** | 0.5 | Aucun / Faible ou moyen / Fort | `risqueRetraitGonflementArgile` |
+| 10 | **Risque cavités souterraines** | 0.5 | Non / Oui | `risqueCavitesSouterraines` |
+| 11 | **Risque inondation** | 1 | Non / Oui (TRI/AZI/PAPI/PPR) | `risqueInondation` |
+| 12 | **Risque technologique** | 1 | Oui / Non | `presenceRisquesTechnologiques` |
+| 13 | **Zonage environnemental** | 1 | Hors zone / Réserve naturelle / Natura 2000 / ZNIEFF / Proximité zone | `zonageEnvironnemental` |
+| 14 | **Zonage réglementaire (PLU)** | 2 | Zone U (habitat/équipement/activité) / AU / Activités / CC constructible / CC non-constructible / Agricole / Naturelle / Ne sait pas | `zonageReglementaire` |
+| 15 | **Zonage patrimonial** | 1 | Non concerné / Site inscrit-classé / Périmètre ABF | `zonagePatrimonial` |
+| 16 | **Trame verte et bleue** | 1 | Hors trame / Réservoir biodiversité / Corridor à préserver / Corridor à restaurer / Ne sait pas | `trameVerteEtBleue` |
+| 17 | **Zone ZAER (ENR)** | 1 | Non / Oui / Oui avec PV ombrière | `zoneAccelerationEnr` |
 
-### 2️⃣ Situation (9 critères)
+### Critères complémentaires saisis (7)
 
-| # | Critère | Poids | Valeurs possibles | Champ DTO | Interface |
-|---|---------|-------|-------------------|-----------|-----------|
-| 7 | **En centre-ville ou centre-bourg** | 2 | Oui / Non / Ne sait pas | `siteEnCentreVille` | ParcelleAutoData |
-| 8 | **Taux de logements vacants (%)** | 1 | ≤4 / 4-6 / 6-10 / 10-13 / >13 | `tauxLogementsVacants` | ParcelleAutoData |
-| 9 | **Terrain viabilisé** | 1 | Oui / Non / Ne sait pas | `terrainViabilise` *(partiel)* | ParcelleManualData |
-| 10 | **Qualité de la voie de desserte** | 0.5 | Accessible / Dégradée / Peu accessible / Ne sait pas | `qualiteVoieDesserte` | ParcelleManualData |
-| 11 | **Distance d'une entrée d'autoroute (km)** | 0.5 | <1 / 1-2 / 2-5 / >5 / Ne sait pas | `distanceAutoroute` | ParcelleAutoData |
-| 12 | **Distance gare/transport en commun (m)** | 0.5 | <500 / >500 / Ne sait pas | `distanceTransportCommun` | ParcelleAutoData |
-| 13 | **Commerces/services à proximité** | 1 | Oui / Non / Ne sait pas | `proximiteCommercesServices` | ParcelleAutoData |
-| 14 | **Voie d'eau à proximité** | 1 | Oui et navigable / Oui et non navigable / Non / Ne sait pas | **⚠️ NON MAPPÉ** | - |
-| 15 | **Distance point raccordement BT/HT (km)** | 1 | <1 / 1-5 / >5 / Ne sait pas | `distanceRaccordementElectrique` | ParcelleAutoData |
-
-### 3️⃣ Réglementation (4 critères)
-
-| # | Critère | Poids | Valeurs possibles | Champ DTO | Interface |
-|---|---------|-------|-------------------|-----------|-----------|
-| 16 | **Zonage du PLU(I) ou carte communale** | 1 | Zone urbaine U / Zone à urbaniser AU / Zone activités / Zone naturelle / Zone agricole / Zone ENR / Zone mixte / Constructible / Non-constructible / Ne sait pas | `zonageReglementaire` | ParcelleAutoData |
-| 17 | **Risque naturel (inondations/argiles)** | 1 | Fort / Moyen / Faible / Absent / Ne sait pas | `presenceRisquesNaturels` | ParcelleAutoData |
-| 18 | **Risque technologique** | 1 | Oui / Non / Ne sait pas | `presenceRisquesTechnologiques` | ParcelleAutoData |
-| 19 | **Monument historique** | 1 | Non concerné / Site inscrit-classé / Périmètre ABF / Ne sait pas | `zonagePatrimonial` | ParcelleAutoData |
-
-### 4️⃣ Patrimoine (2 critères)
-
-| # | Critère | Poids | Valeurs possibles | Champ DTO | Interface |
-|---|---------|-------|-------------------|-----------|-----------|
-| 20 | **Paysage** | 1 | Dégradé / Banal-infra-ordinaire / Quotidien-ordinaire / Intéressant / Remarquable / Ne sait pas | `qualitePaysage` | ParcelleManualData |
-| 21 | **Valeur architecturale et/ou histoire sociale** | 1 | Sans intérêt / Banal-infra-ordinaire / Ordinaire / Intérêt fort / Exceptionnel / Ne sait pas | `valeurArchitecturaleHistorique` | ParcelleManualData |
-
-### 5️⃣ Écosystème (5 critères)
-
-| # | Critère | Poids | Valeurs possibles | Champ DTO | Interface |
-|---|---------|-------|-------------------|-----------|-----------|
-| 22 | **Couvert végétal** | 1 | Imperméabilisé / Sol nu ou faiblement herbacé / Végétation arbustive faible / Végétation arbustive prédominante / Ne sait pas | **⚠️ NON MAPPÉ** | - |
-| 23 | **Présence d'une espèce protégée** | 1 | Oui / Non / Ne sait pas | **⚠️ NON MAPPÉ** | - |
-| 24 | **Zonage environnemental** | 1 | Hors zone / Réserve naturelle / Zone Natura 2000 / ZNIEFF 1 ou 2 / Proximité zone (<5km) / Ne sait pas | `zonageEnvironnemental` | ParcelleAutoData |
-| 25 | **Trame verte et bleue** | 1 | Hors trame / Réservoir biodiversité / Corridor à préserver / Corridor à restaurer / Ne sait pas | `trameVerteEtBleue` | ParcelleAutoData |
-| 26 | **Zone humide** | 1 | Présence avérée / Présence potentielle / Absence / Ne sait pas | **⚠️ NON MAPPÉ** | - |
+| # | Critère | Poids | Valeurs | Champ DTO |
+|---|---------|-------|---------|-----------|
+| 18 | **Type de propriétaire** | 1 | Public / Privé / Copropriété-indivision / Mixte / Ne sait pas | `typeProprietaire` |
+| 19 | **Raccordement eau** | 1 | Oui / Non / Ne sait pas | `raccordementEau` |
+| 20 | **État du bâti et infrastructure** | 2 | Dégradation inexistante / Très importante / Moyenne / Hétérogène / Pas de bâti / Ne sait pas | `etatBatiInfrastructure` |
+| 21 | **Présence de pollution** | 2 | Non / Déjà gérée / Oui-composés volatils / Oui-autres composés / Oui-amiante / Ne sait pas | `presencePollution` |
+| 22 | **Valeur architecturale et historique** | 1 | Sans intérêt / Ordinaire / Intérêt remarquable / Pas de bâti / Ne sait pas | `valeurArchitecturaleHistorique` |
+| 23 | **Qualité du paysage** | 1 | Sans intérêt / Ordinaire / Intérêt remarquable / Ne sait pas | `qualitePaysage` |
+| 24 | **Qualité voie de desserte** | 0.5 | Accessible / Dégradée / Peu accessible / Ne sait pas | `qualiteVoieDesserte` |
 
 ---
 
-## ⚠️ État du mapping DTO
-
-### Résumé du mapping
-
-| Statut | Nombre | Pourcentage | Détails |
-|--------|--------|-------------|---------|
-| ✅ **Mappés correctement** | 21 | 81% | Champs existants dans les DTOs |
-| ⚠️ **Non mappés** | 5 | 19% | À ajouter aux interfaces |
-
-### Critères non mappés à implémenter
-
-| Critère | Catégorie | Poids | Source probable | Interface suggérée |
-|---------|-----------|-------|-----------------|-------------------|
-| **Terrain en pente >12%** | État de la friche | 1 | Visite terrain ou données topographiques | ParcelleManualData ou ParcelleAutoData |
-| **Voie d'eau à proximité** | Situation | 1 | Données géographiques | ParcelleAutoData |
-| **Couvert végétal** | Écosystème | 1 | Imagerie satellite ou visite terrain | ParcelleAutoData ou ParcelleManualData |
-| **Présence espèce protégée** | Écosystème | 1 | Expertise écologique | ParcelleManualData |
-| **Zone humide** | Écosystème | 1 | Données environnementales | ParcelleAutoData |
-
-### Notes importantes
-
-1. **Terrain viabilisé** : Le critère Excel est partiellement mappé sur `terrainViabilise`, mais la viabilisation complète inclut aussi l'électricité (`connectionReseauElectricite` existe séparément), l'assainissement et la voirie.
-
-2. **Types de données** :
-   - **ParcelleAutoData** : Données récupérables automatiquement via APIs (Cadastre, INSEE, Géorisques, etc.)
-   - **ParcelleManualData** : Données nécessitant une saisie manuelle (visite terrain, expertise)
-
----
-
-> 📅 **Dernière mise à jour** : Aout 2025  
-> 📧 **Contact** : <samir.benfares@beta.gouv.fr>  
-> 🔗 **Repository** : [https://github.com/incubateur-ademe/mutafriches](https://github.com/incubateur-ademe/mutafriches)
+> **Dernière mise à jour** : Mars 2026
+> **Contact** : <samir.benfares@beta.gouv.fr>
+> **Repository** : [https://github.com/incubateur-ademe/mutafriches](https://github.com/incubateur-ademe/mutafriches)

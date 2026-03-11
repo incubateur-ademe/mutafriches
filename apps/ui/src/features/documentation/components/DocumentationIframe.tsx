@@ -212,11 +212,11 @@ export function DocumentationIframe() {
   timestamp: 1758177708492,
   data: {
     evaluationId: "uuid-de-l-evaluation",
-    identifiantParcelle: "490055000AI0001",
+    identifiantParcelle: "49353000AV0202",
     retrieveUrl: "/evaluation/uuid",
     fiabilite: { note: 8.5, text: "Bonne" },
     usagePrincipal: {
-      usage: "RESIDENTIEL_MIXTE",
+      usage: "residentiel",
       indiceMutabilite: 75.5,
       potentiel: "Excellent"
     },

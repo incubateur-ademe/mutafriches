@@ -2,7 +2,7 @@
 
 > API d'analyse de mutabilité des friches urbaines - Beta.gouv / ADEME
 
-## 📚 Documentation disponible
+## Documentation disponible
 
 ### Pour les développeurs
 
@@ -13,34 +13,35 @@
 
 - **[Guide d'Intégration](./integration/README.md)** - Intégrer Mutafriches dans votre site web
 
-## 🎯 Vue d'ensemble du système
+## Vue d'ensemble du système
 
 ```
-┌─────────────────┐
-│  Identifiant    │
-│  cadastral      │
-└────────┬────────┘
-         │
-         ↓
-┌─────────────────┐
-│  ENRICHISSEMENT │ ←── 24 APIs publiques
-│  24 sources     │     (IGN, Enedis, GeoRisques...)
-└────────┬────────┘
-         │
-         ↓
-┌─────────────────┐
-│  ÉVALUATION     │ ←── Matrice 26 critères × 7 usages
-│  Mutabilité     │
-└────────┬────────┘
-         │
-         ↓
-   Indice 0-100%
-   pour 7 usages
+┌──────────────────────┐
+│  Identifiant(s)      │
+│  cadastral(s)        │
+│  (1 à 20 parcelles)  │
+└──────────┬───────────┘
+           │
+           ↓
+┌──────────────────────┐
+│  ENRICHISSEMENT      │ ←── 24 sources externes + 3 bases locales
+│  10 domaines         │     (IGN, Enedis, GeoRisques, ZAER...)
+└──────────┬───────────┘
+           │
+           ↓
+┌──────────────────────┐
+│  ÉVALUATION          │ ←── Matrice 24 critères × 7 usages
+│  Mutabilité          │
+└──────────┬───────────┘
+           │
+           ↓
+     Indice 0-100%
+     pour 7 usages
 ```
 
-## 🚀 Démarrage rapide
+## Démarrage rapide
 
-### Enrichir une parcelle
+### Enrichir un site (mono-parcelle)
 
 ```bash
 POST /enrichissement
@@ -49,21 +50,30 @@ POST /enrichissement
 }
 ```
 
-**Réponse** : Parcelle enrichie avec ~25 critères (surfaces, distances, risques, zonages...)
+### Enrichir un site (multi-parcelle, 1 à 20)
+
+```bash
+POST /enrichissement
+{
+  "identifiants": ["25056000HZ0346", "25056000HZ0347"]
+}
+```
+
+**Réponse** : Site enrichi avec ~25 critères (surfaces, distances, risques, zonages, ZAER...)
 
 ### Évaluer la mutabilité
 
 ```bash
 POST /evaluation/calculer
 {
-  "identifiantParcelle": "25056000HZ0346",
-  # + critères enrichis ou saisis manuellement
+  "donneesEnrichies": { ... },
+  "donneesComplementaires": { ... }
 }
 ```
 
 **Réponse** : Indices de mutabilité 0-100% pour 7 usages + fiabilité
 
-## 🏗️ Architecture
+## Architecture
 
 ### Monorepo
 
@@ -85,31 +95,32 @@ mutafriches/
 - **Package Manager** : pnpm (OBLIGATOIRE)
 - **Tests** : Vitest
 
-## 📖 Concepts clés
+## Concepts clés
 
 ### Enrichissement
 
-Le module d'enrichissement interroge **24 sources de données externes** (APIs publiques françaises) pour pré-remplir automatiquement les critères d'une parcelle :
+Le module d'enrichissement interroge **24 sources de données externes** et **3 bases locales PostGIS** pour pré-remplir automatiquement les critères d'un site (mono ou multi-parcelle) :
 
-- **9 domaines** : Cadastre, Énergie, Transport, Urbanisme, Risques Naturels, Risques Technologiques, Pollution, Zonages, GeoRisques
-- **21 APIs externes** : IGN, Enedis, GeoRisques, API Carto, data.gouv.fr...
+- **10 domaines** : Cadastre, Énergie, Transport, Urbanisme, Risques Naturels, Risques Technologiques, Pollution, Zonages, ENR/ZAER, GeoRisques brut
+- **24 sources externes** : IGN, BDNB, Enedis, GeoRisques (×13), API Carto, ZAER WFS, data.gouv.fr...
 - **3 bases locales** : Transport, BPE (commerces), Sites pollués ADEME
+- **Multi-parcelle** : Support de 1 à 20 parcelles par site
 - **Cache 24h** : Optimisation des performances
 
 ### Évaluation de mutabilité
 
 L'algorithme calcule un **indice de mutabilité 0-100%** pour **7 usages** possibles d'une friche :
 
-1. Résidentiel pur
-2. Résidentiel mixte
-3. Tertiaire
-4. Logistique
-5. Industrie
-6. Équipements publics
-7. Énergies renouvelables
+1. Résidentiel ou mixte
+2. Équipements publics
+3. Culturel, touristique
+4. Tertiaire
+5. Industriel, logistique
+6. Renaturation
+7. Photovoltaïque au sol
 
-**Matrice** : 26 critères × 7 usages = 182 pondérations
-**Fiabilité** : Indice 0-10 selon précision des données d'entrée
+**Matrice** : 24 critères × 7 usages
+**Fiabilité** : Indice 0-10 selon la complétude des données d'entrée (pondéré par poids des critères)
 
 ### Intégration
 
@@ -120,7 +131,7 @@ Mutafriches peut être intégré dans un site web via **iframe + postMessage** :
 - Callback personnalisable
 - Support HTML/React
 
-## 🔗 Liens utiles
+## Liens utiles
 
 - **Production** : https://mutafriches.beta.gouv.fr
 - **Staging** : https://mutafriches.incubateur.ademe.dev
@@ -128,7 +139,7 @@ Mutafriches peut être intégré dans un site web via **iframe + postMessage** :
 - **Repository** : https://github.com/incubateur-ademe/mutafriches
 - **Contact** : contact@mutafriches.beta.gouv.fr
 
-## 🛠️ Développement
+## Développement
 
 ### Installation
 
@@ -161,7 +172,7 @@ pnpm run db:migrate        # Appliquer migrations
 pnpm run db:studio         # Interface Drizzle Studio
 ```
 
-## 📋 Règles de code
+## Règles de code
 
 Voir [CLAUDE.md](../CLAUDE.md) pour les règles strictes :
 
@@ -170,19 +181,19 @@ Voir [CLAUDE.md](../CLAUDE.md) pour les règles strictes :
 - Accents français obligatoires
 - Conventions de nommage NestJS
 
-## 🤝 Contribuer
+## Contribuer
 
 1. Fork le projet
 2. Créer une branche (`git checkout -b feature/ma-fonctionnalite`)
 3. Commit avec messages conventionnels
 4. Push et ouvrir une Pull Request
 
-## 📄 Licence
+## Licence
 
 Ce projet est sous licence MIT - voir le fichier LICENSE pour plus de détails.
 
 ---
 
-**Version** : 1.0
-**Dernière mise à jour** : 2026-01-29
+**Version** : 2.0
+**Dernière mise à jour** : 2026-03-11
 **Projet** : Mutafriches - Beta.gouv / ADEME

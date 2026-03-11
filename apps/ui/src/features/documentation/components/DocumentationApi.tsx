@@ -45,7 +45,7 @@ export function DocumentationApi() {
               aria-describedby="check-api-enrich-messages"
             />
             <label className="fr-label" htmlFor="check-api-enrich">
-              Tester l'enrichissement d'une parcelle (POST /enrichissement)
+              Tester l'enrichissement d'un site (POST /enrichissement)
             </label>
             <div
               className="fr-messages-group"
@@ -124,7 +124,7 @@ export function DocumentationApi() {
               <td>
                 <code>/enrichissement</code>
               </td>
-              <td>Enrichir les données d'une parcelle cadastrale</td>
+              <td>Enrichir les données d'un site (mono ou multi-parcelle, 1 à 20)</td>
             </tr>
             <tr>
               <td>
@@ -161,12 +161,12 @@ export function DocumentationApi() {
       <div className="fr-stepper">
         <h3 className="fr-stepper__title">
           <span className="fr-stepper__state">Étape 1 sur 3</span>
-          Enrichissement de la parcelle
+          Enrichissement du site
         </h3>
         <div className="fr-stepper__steps" data-fr-current-step="1" data-fr-steps="3"></div>
         <p className="fr-stepper__details">
-          Appelez <code>POST /enrichissement</code> avec l'identifiant cadastral pour récupérer les
-          données automatiques.
+          Appelez <code>POST /enrichissement</code> avec un ou plusieurs identifiants cadastraux (1
+          à 20) pour récupérer les données automatiques.
         </p>
       </div>
 
@@ -196,19 +196,47 @@ export function DocumentationApi() {
 
       <h3 className="fr-h5 fr-mt-6w">Exemples de requêtes</h3>
 
-      <h4 className="fr-h6 fr-mt-4w">1. Enrichissement d'une parcelle</h4>
+      <h4 className="fr-h6 fr-mt-4w">1. Enrichissement d'un site</h4>
+
+      <p className="fr-text--sm fr-mb-1w">
+        <strong>Mono-parcelle</strong> (rétro-compatible) :
+      </p>
       <div className="fr-highlight">
         <pre>
           <code>{`POST https://mutafriches.beta.gouv.fr/enrichissement
 Content-Type: application/json
 
 {
-  "identifiant": "490055000AI0001"
-}
+  "identifiant": "49353000AV0202"
+}`}</code>
+        </pre>
+      </div>
 
-// Réponse
+      <p className="fr-text--sm fr-mb-1w fr-mt-2w">
+        <strong>Multi-parcelle</strong> (1 à 20 parcelles) :
+      </p>
+      <div className="fr-highlight">
+        <pre>
+          <code>{`POST https://mutafriches.beta.gouv.fr/enrichissement
+Content-Type: application/json
+
 {
-  "identifiantParcelle": "490055000AI0001",
+  "identifiants": ["49353000AV0202", "49353000AV0203"]
+}`}</code>
+        </pre>
+      </div>
+
+      <p className="fr-text--sm fr-mb-1w fr-mt-2w">
+        <strong>Réponse</strong> (multi-parcelle) :
+      </p>
+      <div className="fr-highlight">
+        <pre>
+          <code>{`{
+  "identifiantParcelle": "49353000AV0202",
+  "identifiantsParcelles": ["49353000AV0202", "49353000AV0203"],
+  "nombreParcelles": 2,
+  "parcellePredominante": "49353000AV0202",
+  "communePredominante": "Trélazé",
   "commune": "Trélazé",
   "surfaceSite": 42780,
   "siteEnCentreVille": true,
@@ -218,6 +246,12 @@ Content-Type: application/json
   "risqueCavitesSouterraines": "non",
   "risqueInondation": "non",
   "zonageEnvironnemental": "hors-zone",
+  "zaer": {
+    "enZoneZaer": false,
+    "nombreZones": 0,
+    "filieres": [],
+    "zones": []
+  },
   "champsManquants": [
     "presencePollution",
     "valeurArchitecturaleHistorique"
@@ -273,7 +307,7 @@ Content-Type: application/json
 // Réponse
 {
   "id": "eval-uuid",
-  "identifiantParcelle": "490055000AI0001",
+  "identifiantParcelle": "49353000AV0202",
   "dateCreation": "2024-03-15T10:30:00Z",
   "enrichissement": { /* données enrichies */ },
   "donneesComplementaires": { /* données saisies */ },
