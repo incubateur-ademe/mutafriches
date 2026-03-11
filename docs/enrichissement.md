@@ -5,8 +5,8 @@
 Le module d'enrichissement est le cœur de Mutafriches. Il enrichit automatiquement les données d'une parcelle cadastrale en interrogeant **24 sources de données externes** (APIs publiques françaises) et **3 bases locales PostGIS**.
 
 **Endpoint** : `POST /enrichissement`
-**Entrée** : Identifiant cadastral (ex: `25056000HZ0346`)
-**Sortie** : Parcelle enrichie avec ~25 critères de mutabilité
+**Entrée** : Identifiant(s) cadastral(s) — mono-parcelle ou multi-parcelle (1 à 20 parcelles)
+**Sortie** : Site enrichi avec ~25 critères de mutabilité
 
 ---
 
@@ -17,16 +17,20 @@ Le module d'enrichissement est le cœur de Mutafriches. Il enrichit automatiquem
 ```
 1. Vérification cache (24h TTL)
    ↓ Cache miss
-2. CADASTRE (OBLIGATOIRE) - Initialisation parcelle
+2. CADASTRE (OBLIGATOIRE) - Initialisation site
+   ├─ Mono-parcelle : chargement direct
+   └─ Multi-parcelle : chargement toutes parcelles,
+      calcul centroïde, géométrie union, parcelle prédominante
    ↓
-3. Enrichissement parallélisé de 8 domaines :
+3. Enrichissement parallélisé de 9 domaines :
    ├─ ÉNERGIE (Enedis)
    ├─ TRANSPORT (Service Public + IGN + data.gouv)
    ├─ URBANISME (LOVAC + BPE)
-   ├─ RISQUES NATURELS (RGA + Cavités)
+   ├─ RISQUES NATURELS (RGA + Cavités + Inondation)
    ├─ RISQUES TECHNOLOGIQUES (SIS + ICPE)
    ├─ POLLUTION (ADEME + SIS + ICPE)
    ├─ ZONAGES (Environnemental + Patrimonial + Réglementaire)
+   ├─ ENR / ZAER (Géoplateforme WFS)
    └─ GEORISQUES BRUT (13 APIs pour intégrateurs)
    ↓
 4. Construction DTO + Logging
@@ -57,7 +61,7 @@ Le module d'enrichissement est le cœur de Mutafriches. Il enrichit automatiquem
 ## 1. Domaine CADASTRE
 
 ### Responsabilité
-Récupérer les données cadastrales de base et initialiser l'objet Parcelle.
+Récupérer les données cadastrales de base et initialiser l'objet Site (mono ou multi-parcelle).
 
 ### APIs utilisées
 
@@ -77,20 +81,44 @@ Récupérer les données cadastrales de base et initialiser l'objet Parcelle.
    - Interrogation BDNB via identifiant cadastral
    - Si échec → champ `surfaceBati` reste `undefined`, pas d'arrêt
 
+### Mode multi-parcelle
+
+Lorsque plusieurs identifiants sont fournis (2 à 20 parcelles), le service effectue des calculs supplémentaires :
+
+1. **Chargement** : toutes les parcelles sont récupérées via l'API Cadastre
+2. **Parcelle prédominante** : la parcelle avec la plus grande surface
+3. **Commune prédominante** : la commune avec la plus grande surface cumulée (par code INSEE)
+4. **Centroïde du site** : centre géométrique de l'union de toutes les parcelles
+5. **Géométrie union** : polygone agrégé de l'ensemble des parcelles
+
+Les enrichissements suivants utilisent des coordonnées différentes selon le domaine :
+- **Énergie / Transport / Urbanisme / Risques techno / Pollution** : centroïde + géométrie union
+- **Risques naturels (RGA / Cavités / Inondation)** : coordonnées de la parcelle prédominante
+- **Zonages environnemental / patrimonial** : géométrie union
+- **Zonage réglementaire** : parcelle prédominante
+- **ENR / ZAER** : géométrie de la parcelle prédominante ou centroïde
+
 ### Champs enrichis
 
 ```typescript
 {
-  identifiantParcelle: string    // Ex: "25056000HZ0346"
-  codeInsee: string              // Ex: "25056"
+  identifiantParcelle: string    // Ex: "25056000HZ0346" (mono) ou "ID1,ID2,ID3" (multi)
+  codeInsee: string              // Ex: "25056" (commune prédominante en multi)
   commune: string                // Ex: "Besançon"
-  surfaceSite: number            // Surface totale en m²
+  surfaceSite: number            // Surface totale en m² (somme en multi)
   surfaceBati?: number           // Surface bâtie en m² (optionnel)
   coordonnees: {
-    latitude: number             // WGS84
+    latitude: number             // WGS84 (centroïde en multi)
     longitude: number            // WGS84
   }
   geometrie: GeometrieParcelle   // GeoJSON complet
+
+  // Champs spécifiques multi-parcelle
+  identifiantsParcelles?: string[]      // Ex: ["25056000HZ0346", "25056000HZ0347"]
+  nombreParcelles?: number              // Ex: 2
+  parcellePredominante?: string         // Identifiant de la plus grande parcelle
+  communePredominante?: string          // Nom de la commune prédominante
+  geometrieSite?: GeometrieParcelle     // Géométrie union (polygone agrégé)
 }
 ```
 
@@ -252,7 +280,7 @@ RAYON_RECHERCHE_COMMERCES_M = 500  // 500m (distance de marche standard)
 ## 5. Domaine RISQUES NATURELS
 
 ### Responsabilité
-Évaluer le niveau de risques naturels (RGA + Cavités souterraines).
+Évaluer les risques naturels via 3 critères indépendants : RGA, Cavités souterraines et Inondation.
 
 ### APIs utilisées
 
@@ -260,6 +288,12 @@ RAYON_RECHERCHE_COMMERCES_M = 500  // 500m (distance de marche standard)
 |-----|--------|-------------------|
 | **GeoRisques RGA** | `georisques.gouv.fr` | Retrait-Gonflement des Argiles |
 | **GeoRisques Cavités** | `georisques.gouv.fr` | Cavités souterraines (nombre + distance) |
+| **GeoRisques TRI** | `georisques.gouv.fr` | Territoires à Risque Important d'inondation |
+| **GeoRisques AZI** | `georisques.gouv.fr` | Atlas des Zones Inondables |
+| **GeoRisques PAPI** | `georisques.gouv.fr` | Programmes d'Actions de Prévention des Inondations |
+| **GeoRisques PPR** | `georisques.gouv.fr` | Plans de Prévention des Risques |
+
+Les 6 APIs sont appelées en parallèle via `Promise.allSettled()`.
 
 ### Règles de gestion
 
@@ -268,53 +302,43 @@ RAYON_RECHERCHE_COMMERCES_M = 500  // 500m (distance de marche standard)
 **Algorithme** :
 1. Interrogation API GeoRisques par coordonnées (point)
 2. Transformation aléa GeoRisques → Niveau risque :
-   - `"Fort"` → `RisqueNaturel.FORT`
-   - `"Moyen"` → `RisqueNaturel.MOYEN`
-   - `"Faible"` → `RisqueNaturel.FAIBLE`
-   - Autre → `RisqueNaturel.AUCUN`
+   - `"Fort"` → `RisqueRetraitGonflementArgile.FORT`
+   - `"Moyen"` ou `"Faible"` → `RisqueRetraitGonflementArgile.FAIBLE_OU_MOYEN`
+   - Autre / `"Nul"` → `RisqueRetraitGonflementArgile.AUCUN`
 
 #### 5.2 Cavités souterraines
 
 **Algorithme** :
 1. Recherche cavités dans rayon de 1 km
 2. Transformation basée sur distance la plus proche :
-   - `distance <= 500m` → `RisqueNaturel.FORT`
-   - `500m < distance <= 1000m` → `RisqueNaturel.MOYEN`
-   - `distance > 1000m` → `RisqueNaturel.FAIBLE`
-   - Aucune cavité → `RisqueNaturel.AUCUN`
+   - `distance <= 500m` → `RisqueCavitesSouterraines.OUI`
+   - `distance > 500m` ou aucune cavité → `RisqueCavitesSouterraines.NON`
 
 **Constantes** :
 ```typescript
 GEORISQUES_RAYONS_DEFAUT.CAVITES = 1000  // 1 km
+SEUIL_CAVITES_M = 500                    // 500m
 ```
 
-#### 5.3 Combinaison RGA + Cavités
+#### 5.3 Risque Inondation
 
-**Algorithme de combinaison** :
-```
-Niveaux : AUCUN=0, FAIBLE=1, MOYEN=2, FORT=3
-
-Si max(RGA, Cavités) = FORT :
-  - Si min >= MOYEN → FORT
-  - Sinon → MOYEN
-
-Si max = MOYEN → MOYEN
-Si max = FAIBLE → FAIBLE
-Sinon → AUCUN
-```
-
-**Exemples** :
-- RGA=FORT + Cavités=FORT → **FORT**
-- RGA=FORT + Cavités=MOYEN → **FORT**
-- RGA=FORT + Cavités=FAIBLE → **MOYEN**
-- RGA=MOYEN + Cavités=FAIBLE → **MOYEN**
-- RGA=FAIBLE + Cavités=AUCUN → **FAIBLE**
+**Algorithme** :
+1. Interrogation parallèle de 4 sources d'inondation :
+   - **TRI** : Territoires à Risque Important d'inondation
+   - **AZI** : Atlas des Zones Inondables
+   - **PAPI** : Programmes d'Actions de Prévention des Inondations
+   - **PPR** : Plans de Prévention des Risques
+2. Combinaison avec opérateur OU :
+   - Si au moins une source indique une exposition → `RisqueInondation.OUI`
+   - Sinon → `RisqueInondation.NON`
 
 ### Champs enrichis
 
 ```typescript
 {
-  presenceRisquesNaturels: "AUCUN" | "FAIBLE" | "MOYEN" | "FORT"
+  risqueRetraitGonflementArgile: "aucun" | "faible-ou-moyen" | "fort"
+  risqueCavitesSouterraines: "non" | "oui"
+  risqueInondation: "non" | "oui"
 }
 ```
 
@@ -481,19 +505,33 @@ Identifier les zonages réglementaires, environnementaux et patrimoniaux.
 
 #### 8.3 Zonage Réglementaire
 
-**API** : data.gouv.fr LOVAC (Plan Local d'Urbanisme)
+**API** : API Carto GPU (Géoportail de l'Urbanisme) — PLU/PLUi et Cartes Communales
 
 **Sources interrogées** :
 - Zonages PLU/PLUi (U, AU, A, N)
+- Secteurs de Cartes Communales
+- RNU (Règlement National d'Urbanisme)
 
 **Algorithme** :
-1. Recherche zonage PLU par code INSEE + géométrie
-2. Classification :
-   - Zones **U** (Urbain) → `"ZONE_URBAINE"`
-   - Zones **AU** (À Urbaniser) → `"ZONE_A_URBANISER"`
-   - Zones **A** (Agricole) → `"ZONE_AGRICOLE"`
-   - Zones **N** (Naturelle) → `"ZONE_NATURELLE"`
-   - Aucun zonage → `"AUCUN"`
+1. Recherche zonage PLU par code INSEE + géométrie (priorité haute)
+2. Si pas de PLU → recherche secteur Carte Communale
+3. Si pas de CC → vérification RNU
+
+**Classification PLU** (avec sous-catégories pour zones U) :
+- Zone **U** générique → `"zone-urbaine-u"`
+- Zone **U Habitat** (UA, UB, UC, UD ou libellé contenant "habitat", "mixte", "pavillonnaire", "centre") → `"zone-urbaine-u-habitat"`
+- Zone **U Équipement** (UE ou libellé contenant "équipement") → `"zone-urbaine-u-equipement"`
+- Zone **U Activité** (UX, UY, UZ, UI ou libellé contenant "activité", "industrie", "artisanale") → `"zone-urbaine-u-activite"`
+- Zone à vocation d'activités (destdomi="02" ou contenant "activit") → `"zone-vocation-activites"`
+- Zone **AU** (À Urbaniser) → `"zone-a-urbaniser-au"`
+- Zone **A** (Agricole) → `"zone-agricole-a"`
+- Zone **N** (Naturelle) → `"zone-naturelle-n"`
+
+**Classification Carte Communale** :
+- Secteur constructible → `"secteur-ouvert-a-la-construction"`
+- Secteur non constructible → `"secteur-non-ouvert-a-la-construction"`
+
+**RNU ou indéterminé** → `"ne-sait-pas"`
 
 **Orchestration** :
 - Les 3 zonages sont appelés **en parallèle** via `ZonageOrchestratorService`
@@ -503,9 +541,14 @@ Identifier les zonages réglementaires, environnementaux et patrimoniaux.
 
 ```typescript
 {
-  zonageEnvironnemental?: "RESERVE_NATURELLE" | "PARC_NATUREL" | "NATURA_2000" | "ZNIEFF_1" | "ZNIEFF_2" | "AUCUN"
-  zonagePatrimonial?: "MONUMENT_HISTORIQUE" | "SITE_CLASSE" | "SITE_INSCRIT" | "ZONE_PROTECTION" | "AUCUN"
-  zonageReglementaire?: "ZONE_URBAINE" | "ZONE_A_URBANISER" | "ZONE_AGRICOLE" | "ZONE_NATURELLE" | "AUCUN"
+  zonageEnvironnemental?: "hors-zone" | "reserve-naturelle" | "parc-naturel-regional"
+    | "parc-naturel-national" | "natura-2000" | "znieff-type-1-2" | "proximite-zone"
+  zonagePatrimonial?: "non-concerne" | "monument-historique" | "site-inscrit-classe"
+    | "perimetre-abf" | "zppaup" | "avap" | "spr"
+  zonageReglementaire?: "zone-urbaine-u" | "zone-urbaine-u-habitat" | "zone-urbaine-u-equipement"
+    | "zone-urbaine-u-activite" | "zone-vocation-activites" | "zone-a-urbaniser-au"
+    | "secteur-ouvert-a-la-construction" | "secteur-non-ouvert-a-la-construction"
+    | "secteur-reglement-urbanisme" | "zone-agricole-a" | "zone-naturelle-n" | "ne-sait-pas"
 }
 ```
 
@@ -565,6 +608,55 @@ Fournir les données brutes GeoRisques pour intégrateurs avancés (ex: Benefric
 
 ---
 
+## 10. Domaine ENR / ZAER
+
+### Responsabilité
+Détecter si le site se trouve dans une Zone d'Accélération des Énergies Renouvelables (ZAER) et calculer le critère algorithmique correspondant.
+
+### API utilisée
+
+| API | Source | Données récupérées |
+|-----|--------|-------------------|
+| **ZAER WFS** | `data.geopf.fr/wfs` (Géoplateforme) | Zones ZAER intersectant le site (filière, détail filière, nom) |
+
+### Règles de gestion
+
+**Requête WFS** :
+- Service WFS 2.0.0, typename `zaer:zaer`
+- Filtre CQL : `INTERSECTS(geom, <géométrie_site>)` (polygone ou point)
+- Propriétés récupérées : `nom`, `filiere`, `detail_filiere`
+- Déduplication par clé composite `filiere|detail_filiere|nom`
+
+**Stratégie de géolocalisation** :
+1. Si géométrie disponible → intersection par polygone (plus précis)
+2. Sinon → intersection par point (coordonnées centroïde)
+
+**Calcul du critère algorithmique** (`ZoneAccelerationEnr`) :
+1. Si aucune zone ZAER → `NON`
+2. Si zone ZAER avec `detailFiliere` contenant "OMBRIERE" (insensible à la casse) → `OUI_SOLAIRE_PV_OMBRIERE`
+3. Sinon → `OUI`
+
+### Champs enrichis
+
+```typescript
+{
+  zaer?: {
+    enZoneZaer: boolean        // true si au moins une zone ZAER intersecte le site
+    nombreZones: number        // Nombre de zones ZAER intersectées
+    filieres: string[]         // Filières ENR uniques (ex: ["SOLAIRE_PV", "EOLIEN"])
+    zones: Array<{
+      nom: string | null       // Nom de la zone
+      filiere: string          // Filière ENR
+      detailFiliere: string | null  // Détail (ex: "SOLAIRE_PV_OMBRIERE")
+    }>
+  }
+}
+```
+
+Le critère `zoneAccelerationEnr` (`"non"` | `"oui"` | `"oui-solaire-pv-ombriere"`) est calculé à partir de ces données lors de l'évaluation de mutabilité.
+
+---
+
 ## Constantes Globales
 
 ### Cache
@@ -615,17 +707,18 @@ GEORISQUES_RAYONS_DEFAUT = {
 
 ## Résumé des Sources de Données
 
-### APIs Externes (21)
+### Sources Externes (24)
 
-| Domaine | API | Nombre |
-|---------|-----|--------|
-| Cadastre | IGN Cadastre, BDNB | 2 |
+| Domaine | API | Sources |
+|---------|-----|---------|
+| Cadastre | IGN Cadastre, BDNB (3 sources : bâtiment, surface bâtie, risques) | 4 |
 | Énergie | Enedis | 1 |
 | Transport | Service Public, IGN WFS | 2 |
 | Urbanisme | data.gouv LOVAC | 1 |
 | Zonages | API Carto Nature, API Carto GPU | 2 |
+| ENR | ZAER WFS Géoplateforme | 1 |
 | GeoRisques | 13 APIs GeoRisques | 13 |
-| **TOTAL** | | **21** |
+| **TOTAL** | | **24** |
 
 ### Bases Locales PostGIS (3)
 
@@ -644,7 +737,7 @@ GEORISQUES_RAYONS_DEFAUT = {
 
 - **Cache hit** : < 50ms (lecture PostgreSQL)
 - **Cache miss** : 2-5 secondes (dépend des APIs externes)
-- **Parallélisation** : 8 domaines + 13 APIs GeoRisques en simultané
+- **Parallélisation** : 9 domaines + 13 APIs GeoRisques en simultané
 
 ### Stratégie de résilience
 
@@ -668,6 +761,13 @@ GEORISQUES_RAYONS_DEFAUT = {
   coordonnees?: { latitude: number, longitude: number }
   geometrie?: GeometrieParcelle
 
+  // === CADASTRE — Multi-parcelle ===
+  identifiantsParcelles?: string[]      // Présent si multi-parcelle
+  nombreParcelles?: number              // Présent si multi-parcelle
+  parcellePredominante?: string         // Parcelle avec la plus grande surface
+  communePredominante?: string          // Commune prédominante
+  geometrieSite?: GeometrieParcelle     // Géométrie union
+
   // === ÉNERGIE ===
   distanceRaccordementElectrique: number
 
@@ -680,8 +780,10 @@ GEORISQUES_RAYONS_DEFAUT = {
   tauxLogementsVacants: number
   proximiteCommercesServices: boolean
 
-  // === RISQUES NATURELS ===
-  presenceRisquesNaturels?: "AUCUN" | "FAIBLE" | "MOYEN" | "FORT"
+  // === RISQUES NATURELS (3 critères indépendants) ===
+  risqueRetraitGonflementArgile?: "aucun" | "faible-ou-moyen" | "fort"
+  risqueCavitesSouterraines?: "non" | "oui"
+  risqueInondation?: "non" | "oui"
 
   // === RISQUES TECHNOLOGIQUES ===
   presenceRisquesTechnologiques: boolean
@@ -695,13 +797,17 @@ GEORISQUES_RAYONS_DEFAUT = {
   zonageReglementaire?: string
   trameVerteEtBleue?: string
 
-  // === GEORISQUES BRUT ===
-  risquesGeorisques?: any
+  // === ENR / ZAER ===
+  zaer?: ZaerEnrichissement             // Données ZAER détaillées
+
+  // === GEORISQUES BRUT (deprecated) ===
+  risquesGeorisques?: any               // Données brutes pour intégrateurs avancés
 
   // === MÉTADONNÉES ===
   sourcesUtilisees: string[]
   champsManquants: string[]
   sourcesEchouees: string[]
+  fiabilite: number                     // Indice 0-10
 }
 ```
 
@@ -746,18 +852,21 @@ GEORISQUES_RAYONS_DEFAUT = {
 | Distance raccordement élec | Énergie | `distanceRaccordementElectrique` | Enedis |
 | Commerces/services proximité | Urbanisme | `proximiteCommercesServices` | BPE (local) |
 | Taux logements vacants | Urbanisme | `tauxLogementsVacants` | LOVAC data.gouv |
-| Risques naturels | Risques Naturels | `presenceRisquesNaturels` | GeoRisques RGA + Cavités |
+| Risque RGA | Risques Naturels | `risqueRetraitGonflementArgile` | GeoRisques RGA |
+| Risque cavités | Risques Naturels | `risqueCavitesSouterraines` | GeoRisques Cavités |
+| Risque inondation | Risques Naturels | `risqueInondation` | GeoRisques TRI + AZI + PAPI + PPR |
 | Risques technologiques | Risques Techno | `presenceRisquesTechnologiques` | GeoRisques SIS + ICPE |
 | Site pollué | Pollution | `siteReferencePollue` | ADEME + SIS + ICPE |
 | Zonage environnemental | Zonages | `zonageEnvironnemental` | API Carto Nature |
 | Zonage patrimonial | Zonages | `zonagePatrimonial` | API Carto GPU |
-| Zonage PLU | Zonages | `zonageReglementaire` | LOVAC data.gouv |
+| Zonage PLU | Zonages | `zonageReglementaire` | API Carto GPU |
+| Zone ZAER | ENR | `zaer` / `zoneAccelerationEnr` | ZAER WFS Géoplateforme |
 
 ---
 
 ## Annexe : Référence Rapide des APIs Externes
 
-> 💡 **Note** : Pour les détails d'implémentation spécifiques à Mutafriches, consulter les README dans `apps/api/src/enrichissement/adapters/[nom-api]/`
+> **Note** : Pour les détails d'implémentation spécifiques à Mutafriches, consulter les README dans `apps/api/src/enrichissement/adapters/[nom-api]/`
 
 ### IGN Cadastre
 - **URL** : `https://apicarto.ign.fr/api/cadastre`
@@ -811,8 +920,14 @@ GEORISQUES_RAYONS_DEFAUT = {
 - **Documentation** : https://geoservices.ign.fr/documentation/services/api-et-services-ogc/wfs
 - **Adapter** : `apps/api/src/enrichissement/adapters/ign-wfs/`
 
+### ZAER WFS (Zones d'Accélération des Énergies Renouvelables)
+- **URL** : `https://data.geopf.fr/wfs` (typename `zaer:zaer`)
+- **Utilisation** : Détection des zones ZAER par intersection géométrique
+- **Protocole** : WFS 2.0.0 avec filtre CQL `INTERSECTS`
+- **Adapter** : `apps/api/src/enrichissement/adapters/zaer-wfs/`
+
 ---
 
-**Version** : 1.0
-**Dernière mise à jour** : 2026-01-29
+**Version** : 2.0
+**Dernière mise à jour** : 2026-03-11
 **Projet** : Mutafriches - Beta.gouv / ADEME

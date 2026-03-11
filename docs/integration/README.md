@@ -74,28 +74,31 @@ Envoyé quand l'analyse est terminée avec les résultats complets :
   data: {
     evaluationId: "uuid-de-l-evaluation",
     identifiantParcelle: "490055000AI0001",
-    retrieveUrl: "/friches/evaluations/uuid-de-l-evaluation",
+    identifiantsParcelles: ["490055000AI0001"],  // Multi-parcelle : liste des identifiants
+    retrieveUrl: "/evaluation/uuid-de-l-evaluation",
     fiabilite: {
       note: 8.5,
       text: "Bonne"
     },
     usagePrincipal: {
-      usage: "RESIDENTIEL_MIXTE",
+      usage: "residentiel",
       indiceMutabilite: 75.5,
       potentiel: "Excellent"
     },
     top3Usages: [
-      { usage: "RESIDENTIEL_MIXTE", indiceMutabilite: 75.5, rang: 1 },
-      { usage: "EQUIPEMENTS_PUBLICS", indiceMutabilite: 68.2, rang: 2 },
-      { usage: "TERTIAIRE", indiceMutabilite: 62.1, rang: 3 }
+      { usage: "residentiel", indiceMutabilite: 75.5, rang: 1 },
+      { usage: "equipements", indiceMutabilite: 68.2, rang: 2 },
+      { usage: "tertiaire", indiceMutabilite: 62.1, rang: 3 }
     ],
     metadata: {
-      dateAnalyse: "2025-01-15T10:30:00Z",
-      versionAlgorithme: "1.0.0"
+      dateAnalyse: "2026-03-15T10:30:00Z",
+      versionAlgorithme: "2.0.0"
     }
   }
 }
 ```
+
+> **Note multi-parcelle** : En mode multi-parcelle, `identifiantParcelle` contient les identifiants séparés par des virgules et `identifiantsParcelles` contient le tableau complet.
 
 ### Message `error`
 
@@ -171,7 +174,56 @@ function handleFormCompletion(data) {
 }
 ```
 
-## 🔧 Personnalisation
+## Intégration API directe (partenaires)
+
+En plus de l'intégration iframe, les partenaires peuvent appeler l'API REST directement pour un contrôle total du flux.
+
+### Flux d'utilisation
+
+1. **Enrichir un site** (mono ou multi-parcelle)
+
+```bash
+POST https://mutafriches.beta.gouv.fr/enrichissement?integrateur=votre-id
+Content-Type: application/json
+
+# Mono-parcelle
+{ "identifiant": "25056000HZ0346" }
+
+# Multi-parcelle (1 à 20 parcelles)
+{ "identifiants": ["25056000HZ0346", "25056000HZ0347", "25056000HZ0348"] }
+```
+
+2. **Calculer la mutabilité** avec les données enrichies + données complémentaires
+
+```bash
+POST https://mutafriches.beta.gouv.fr/evaluation/calculer?integrateur=votre-id
+Content-Type: application/json
+
+{
+  "donneesEnrichies": { ... },        // Réponse de l'étape 1
+  "donneesComplementaires": { ... }   // Données saisies par l'utilisateur
+}
+```
+
+3. **Récupérer une évaluation** ultérieurement
+
+```bash
+GET https://mutafriches.beta.gouv.fr/evaluation/{evaluationId}
+```
+
+### Documentation Swagger
+
+La documentation complète de l'API (schémas, DTOs, exemples) est disponible sur :
+- **Production** : https://mutafriches.beta.gouv.fr/api
+- **Staging** : https://mutafriches.incubateur.ademe.dev/api
+
+### Autorisation des origines
+
+Pour utiliser l'API directe en production, votre domaine doit être autorisé. Contactez-nous pour l'ajouter à la liste blanche.
+
+---
+
+## Personnalisation
 
 ### Taille de l'iframe
 
@@ -313,4 +365,4 @@ Pour obtenir votre identifiant d'intégrateur, contactez-nous par mail afin d'é
 
 ---
 
-*Version 1.0 - Septembre 2025*  
+*Version 2.0 - Mars 2026*  

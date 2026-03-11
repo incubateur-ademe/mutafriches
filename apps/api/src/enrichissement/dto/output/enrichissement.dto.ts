@@ -62,6 +62,42 @@ export class EnrichissementSwaggerDto implements IEnrichissementOutput {
   geometrie?: GeometrieParcelle;
 
   @ApiProperty({
+    description: "Liste des identifiants cadastraux (présent en mode multi-parcelle)",
+    required: false,
+    type: [String],
+    example: ["25056000HZ0346", "25056000HZ0347"],
+  })
+  identifiantsParcelles?: string[];
+
+  @ApiProperty({
+    description: "Nombre de parcelles du site (présent en mode multi-parcelle)",
+    required: false,
+    example: 2,
+  })
+  nombreParcelles?: number;
+
+  @ApiProperty({
+    description: "Identifiant de la parcelle prédominante (plus grande surface)",
+    required: false,
+    example: "25056000HZ0346",
+  })
+  parcellePredominante?: string;
+
+  @ApiProperty({
+    description: "Nom de la commune prédominante (plus grande surface cumulée)",
+    required: false,
+    example: "Trélazé",
+  })
+  communePredominante?: string;
+
+  @ApiProperty({
+    description: "Géométrie union du site (polygone agrégé de toutes les parcelles)",
+    required: false,
+    type: Object,
+  })
+  geometrieSite?: GeometrieParcelle;
+
+  @ApiProperty({
     description: "Surface totale du site en mètres carrés",
     example: 42780,
     minimum: 0,
@@ -225,7 +261,12 @@ export class EnrichissementSwaggerDto implements IEnrichissementOutput {
   })
   zaer?: ZaerEnrichissement;
 
-  // TODO a supprimer Données Géorisques
+  /** @deprecated Données brutes Géorisques, sera supprimé dans une version future */
+  @ApiProperty({
+    description: "Données brutes Géorisques (deprecated, sera supprimé)",
+    required: false,
+    deprecated: true,
+  })
   risquesGeorisques?: any;
 
   @ApiProperty({
