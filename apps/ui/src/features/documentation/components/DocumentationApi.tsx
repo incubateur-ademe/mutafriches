@@ -165,8 +165,8 @@ export function DocumentationApi() {
         </h3>
         <div className="fr-stepper__steps" data-fr-current-step="1" data-fr-steps="3"></div>
         <p className="fr-stepper__details">
-          Appelez <code>POST /enrichissement</code> avec un ou plusieurs identifiants cadastraux (1 à
-          20) pour récupérer les données automatiques.
+          Appelez <code>POST /enrichissement</code> avec un ou plusieurs identifiants cadastraux (1
+          à 20) pour récupérer les données automatiques.
         </p>
       </div>
 
