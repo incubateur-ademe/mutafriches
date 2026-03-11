@@ -19,7 +19,7 @@ export class EvaluationSwaggerDto {
   @ApiProperty({
     description:
       "Identifiant cadastral de la parcelle évaluée (parcelle prédominante en multi-parcelle)",
-    example: "490055000AI0001",
+    example: "49353000AV0202",
   })
   identifiantParcelle: string;
 
@@ -27,7 +27,7 @@ export class EvaluationSwaggerDto {
     description: "Liste des identifiants cadastraux (présent en mode multi-parcelle)",
     required: false,
     type: [String],
-    example: ["490055000AI0001", "490055000AI0002"],
+    example: ["49353000AV0202", "49353000AV0203"],
   })
   identifiantsParcelles?: string[];
 

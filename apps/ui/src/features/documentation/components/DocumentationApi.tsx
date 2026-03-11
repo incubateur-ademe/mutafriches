@@ -207,7 +207,7 @@ export function DocumentationApi() {
 Content-Type: application/json
 
 {
-  "identifiant": "490055000AI0001"
+  "identifiant": "49353000AV0202"
 }`}</code>
         </pre>
       </div>
@@ -221,7 +221,7 @@ Content-Type: application/json
 Content-Type: application/json
 
 {
-  "identifiants": ["490055000AI0001", "490055000AI0002"]
+  "identifiants": ["49353000AV0202", "49353000AV0203"]
 }`}</code>
         </pre>
       </div>
@@ -232,10 +232,10 @@ Content-Type: application/json
       <div className="fr-highlight">
         <pre>
           <code>{`{
-  "identifiantParcelle": "490055000AI0001",
-  "identifiantsParcelles": ["490055000AI0001", "490055000AI0002"],
+  "identifiantParcelle": "49353000AV0202",
+  "identifiantsParcelles": ["49353000AV0202", "49353000AV0203"],
   "nombreParcelles": 2,
-  "parcellePredominante": "490055000AI0001",
+  "parcellePredominante": "49353000AV0202",
   "communePredominante": "Trélazé",
   "commune": "Trélazé",
   "surfaceSite": 42780,
@@ -307,7 +307,7 @@ Content-Type: application/json
 // Réponse
 {
   "id": "eval-uuid",
-  "identifiantParcelle": "490055000AI0001",
+  "identifiantParcelle": "49353000AV0202",
   "dateCreation": "2024-03-15T10:30:00Z",
   "enrichissement": { /* données enrichies */ },
   "donneesComplementaires": { /* données saisies */ },

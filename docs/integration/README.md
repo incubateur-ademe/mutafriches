@@ -73,8 +73,8 @@ Envoyé quand l'analyse est terminée avec les résultats complets :
   timestamp: 1758177708492,
   data: {
     evaluationId: "uuid-de-l-evaluation",
-    identifiantParcelle: "490055000AI0001",
-    identifiantsParcelles: ["490055000AI0001"],  // Multi-parcelle : liste des identifiants
+    identifiantParcelle: "49353000AV0202",
+    identifiantsParcelles: ["49353000AV0202"],  // Multi-parcelle : liste des identifiants
     retrieveUrl: "/evaluation/uuid-de-l-evaluation",
     fiabilite: {
       note: 8.5,
