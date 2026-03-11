@@ -23,11 +23,15 @@ export interface ParcelleUiModel {
 
   // Risques et zonage
   risquesTechno: string;
-  risquesNaturels: string;
+  risquesNaturels: string[];
   zonageEnviro: string;
   zonageUrba: string;
   zonagePatrimonial: string;
 
   // Pollution - indique si le site est reference dans les bases SIS/ICPE/ADEME
   siteReferencePollue: boolean;
+
+  // Énergies renouvelables
+  zoneAccelerationEnr: string;
+  zaerFilieres?: string[];
 }

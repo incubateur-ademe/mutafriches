@@ -278,11 +278,14 @@ export class CalculService {
       distanceRaccordementElectrique: site.distanceRaccordementElectrique,
       tauxLogementsVacants: site.tauxLogementsVacants,
       presenceRisquesTechnologiques: site.presenceRisquesTechnologiques,
-      presenceRisquesNaturels: site.presenceRisquesNaturels,
+      risqueRetraitGonflementArgile: site.risqueRetraitGonflementArgile,
+      risqueCavitesSouterraines: site.risqueCavitesSouterraines,
+      risqueInondation: site.risqueInondation,
       zonageEnvironnemental: site.zonageEnvironnemental,
       zonageReglementaire: site.zonageReglementaire,
       zonagePatrimonial: site.zonagePatrimonial,
       trameVerteEtBleue: site.trameVerteEtBleue,
+      zoneAccelerationEnr: site.zoneAccelerationEnr,
     };
 
     return criteres;

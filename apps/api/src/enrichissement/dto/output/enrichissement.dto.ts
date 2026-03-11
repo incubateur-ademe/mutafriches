@@ -1,7 +1,9 @@
 import { ApiProperty } from "@nestjs/swagger";
 import {
   EnrichissementOutputDto as IEnrichissementOutput,
-  RisqueNaturel,
+  RisqueRetraitGonflementArgile,
+  RisqueCavitesSouterraines,
+  RisqueInondation,
   ZonageEnvironnemental,
   ZonagePatrimonial,
   TrameVerteEtBleue,
@@ -124,12 +126,28 @@ export class EnrichissementSwaggerDto implements IEnrichissementOutput {
   presenceRisquesTechnologiques: boolean;
 
   @ApiProperty({
-    description: "Niveau de risques naturels",
+    description: "Risque retrait gonflement argile (RGA)",
     required: false,
-    example: RisqueNaturel.FAIBLE,
-    enum: RisqueNaturel,
+    example: RisqueRetraitGonflementArgile.FAIBLE_OU_MOYEN,
+    enum: RisqueRetraitGonflementArgile,
   })
-  presenceRisquesNaturels?: string;
+  risqueRetraitGonflementArgile?: string;
+
+  @ApiProperty({
+    description: "Risque cavites souterraines",
+    required: false,
+    example: RisqueCavitesSouterraines.NON,
+    enum: RisqueCavitesSouterraines,
+  })
+  risqueCavitesSouterraines?: string;
+
+  @ApiProperty({
+    description: "Risque inondation (TRI/AZI/PAPI/PPR)",
+    required: false,
+    example: RisqueInondation.NON,
+    enum: RisqueInondation,
+  })
+  risqueInondation?: string;
 
   @ApiProperty({
     description: "Zonage réglementaire selon le PLU/PLUi",

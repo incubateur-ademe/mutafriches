@@ -122,7 +122,9 @@ describe("CalculService", () => {
       siteComplet.tauxLogementsVacants = 5.2; // poids 1
       siteComplet.distanceAutoroute = 2; // poids 0.5
       siteComplet.distanceTransportCommun = 300; // poids 1
-      siteComplet.presenceRisquesNaturels = "FAIBLE" as any; // poids 2
+      siteComplet.risqueRetraitGonflementArgile = "faible-ou-moyen" as any; // poids 0.5
+      siteComplet.risqueCavitesSouterraines = "non" as any; // poids 0.5
+      siteComplet.risqueInondation = "non" as any; // poids 1
       siteComplet.presenceRisquesTechnologiques = false; // poids 1
 
       const resultComplet = await service.calculer(siteComplet);

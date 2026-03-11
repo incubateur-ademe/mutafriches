@@ -44,7 +44,9 @@ export interface EnrichissementOutputDto {
 
   // Risques et contraintes
   presenceRisquesTechnologiques: boolean;
-  presenceRisquesNaturels?: string; // Enum RisqueNaturel
+  risqueRetraitGonflementArgile?: string; // Enum RisqueRetraitGonflementArgile
+  risqueCavitesSouterraines?: string; // Enum RisqueCavitesSouterraines
+  risqueInondation?: string; // Enum RisqueInondation
 
   // Pollution - site référencé dans les bases ADEME (sites et sols pollués)
   siteReferencePollue: boolean;
@@ -62,6 +64,8 @@ export interface EnrichissementOutputDto {
   // Energies renouvelables
   /** Zones d'Acceleration des Energies Renouvelables */
   zaer?: ZaerEnrichissement;
+  /** Critère calculé pour l'algorithme : zone d'accélération ENR */
+  zoneAccelerationEnr?: string;
 
   // Diagnostic zonages (dev/staging uniquement, absent en production)
   /** Données brutes des APIs de zonage pour le panneau de diagnostic */

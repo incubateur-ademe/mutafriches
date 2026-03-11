@@ -55,8 +55,8 @@ export const transformEnrichmentToUiData = (
     // Données électriques formatées
     distanceRaccordement: formatDistance(enrichmentData.distanceRaccordementElectrique),
 
-    // Risques
-    risquesNaturels: enrichmentData.presenceRisquesNaturels || "",
+    // Risques naturels (badges cumulatifs)
+    risquesNaturels: buildRisquesNaturelsBadges(enrichmentData),
     risquesTechno: formatBoolean(enrichmentData.presenceRisquesTechnologiques),
 
     // Zonages
@@ -84,5 +84,63 @@ export const transformEnrichmentToUiData = (
 
     // Pollution - site reference dans les bases ADEME (sites et sols pollues)
     siteReferencePollue: enrichmentData.siteReferencePollue === true,
+
+    // Énergies renouvelables
+    zoneAccelerationEnr: formatZoneAccelerationEnr(enrichmentData.zoneAccelerationEnr),
+    zaerFilieres: enrichmentData.zaer?.filieres,
   };
+};
+
+/**
+ * Construit un tableau de badges cumulatifs pour les risques naturels
+ */
+const buildRisquesNaturelsBadges = (data: EnrichissementOutputDto): string[] => {
+  const badges: string[] = [];
+
+  // RGA : badge avec niveau sauf si "aucun"
+  if (data.risqueRetraitGonflementArgile) {
+    switch (data.risqueRetraitGonflementArgile) {
+      case "fort":
+        badges.push("Retrait gonflement argiles : Fort");
+        break;
+      case "faible-ou-moyen":
+        badges.push("Retrait gonflement argiles : Faible ou moyen");
+        break;
+      // "aucun" : pas de badge
+    }
+  }
+
+  // Cavités souterraines
+  if (data.risqueCavitesSouterraines === "oui") {
+    badges.push("Cavités souterraines");
+  }
+
+  // Inondations
+  if (data.risqueInondation === "oui") {
+    badges.push("Inondations");
+  }
+
+  // Si aucun badge, afficher "Aucun"
+  if (badges.length === 0) {
+    badges.push("Aucun");
+  }
+
+  return badges;
+};
+
+/**
+ * Formate la valeur du critère zone d'accélération ENR en label lisible
+ */
+const formatZoneAccelerationEnr = (value?: string): string => {
+  if (!value) return "";
+  switch (value) {
+    case "non":
+      return "Non";
+    case "oui":
+      return "Oui";
+    case "oui-solaire-pv-ombriere":
+      return "Oui Solaire PV (ombrière)";
+    default:
+      return value;
+  }
 };

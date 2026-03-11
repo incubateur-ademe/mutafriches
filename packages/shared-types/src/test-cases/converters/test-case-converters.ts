@@ -1,7 +1,50 @@
 import { EnrichissementOutputDto } from "../../enrichissement";
+import {
+  RisqueRetraitGonflementArgile,
+  RisqueCavitesSouterraines,
+  RisqueInondation,
+} from "../../enrichissement";
 import { CalculerMutabiliteInputDto, DonneesComplementairesInputDto } from "../../evaluation";
 import { TestCase } from "../types/test-case.types";
 import * as enumConverters from "./enum-converters";
+
+/**
+ * Convertit l'ancien risque naturel combiné en 3 critères séparés
+ * Mapping approximatif pour compatibilité avec les tests Excel existants
+ */
+function mapRisquesNaturels(risque?: string): {
+  risqueRetraitGonflementArgile: string;
+  risqueCavitesSouterraines: string;
+  risqueInondation: string;
+} {
+  switch (risque) {
+    case "fort":
+      return {
+        risqueRetraitGonflementArgile: RisqueRetraitGonflementArgile.FORT,
+        risqueCavitesSouterraines: RisqueCavitesSouterraines.OUI,
+        risqueInondation: RisqueInondation.NON,
+      };
+    case "moyen":
+      return {
+        risqueRetraitGonflementArgile: RisqueRetraitGonflementArgile.FAIBLE_OU_MOYEN,
+        risqueCavitesSouterraines: RisqueCavitesSouterraines.OUI,
+        risqueInondation: RisqueInondation.NON,
+      };
+    case "faible":
+      return {
+        risqueRetraitGonflementArgile: RisqueRetraitGonflementArgile.FAIBLE_OU_MOYEN,
+        risqueCavitesSouterraines: RisqueCavitesSouterraines.NON,
+        risqueInondation: RisqueInondation.NON,
+      };
+    case "aucun":
+    default:
+      return {
+        risqueRetraitGonflementArgile: RisqueRetraitGonflementArgile.AUCUN,
+        risqueCavitesSouterraines: RisqueCavitesSouterraines.NON,
+        risqueInondation: RisqueInondation.NON,
+      };
+  }
+}
 
 /**
  * Convertit une valeur de distance textuelle en nombre
@@ -83,7 +126,8 @@ export function convertTestCaseToMutabilityInput(
     presenceRisquesTechnologiques: input.presenceRisquesTechnologiques,
     siteReferencePollue: false, // Valeur par defaut pour les tests
 
-    presenceRisquesNaturels: input.presenceRisquesNaturels,
+    // Mapping de l'ancien risque naturel combiné vers les 3 critères séparés
+    ...mapRisquesNaturels(input.presenceRisquesNaturels),
     zonageEnvironnemental: input.zonageEnvironnemental,
     zonageReglementaire: input.zonageReglementaire,
     zonagePatrimonial: input.zonagePatrimonial,

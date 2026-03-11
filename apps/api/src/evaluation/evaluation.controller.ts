@@ -33,7 +33,9 @@ import {
   ValeurArchitecturale,
   QualitePaysage,
   QualiteVoieDesserte,
-  RisqueNaturel,
+  RisqueRetraitGonflementArgile,
+  RisqueCavitesSouterraines,
+  RisqueInondation,
   ZonageEnvironnemental,
   ZonagePatrimonial,
   TrameVerteEtBleue,
@@ -118,7 +120,9 @@ export class EvaluationController {
     return {
       enums: {
         enrichissement: {
-          risqueNaturel: Object.values(RisqueNaturel),
+          risqueRetraitGonflementArgile: Object.values(RisqueRetraitGonflementArgile),
+          risqueCavitesSouterraines: Object.values(RisqueCavitesSouterraines),
+          risqueInondation: Object.values(RisqueInondation),
           zonageEnvironnemental: Object.values(ZonageEnvironnemental),
           zonageReglementaire: Object.values(ZonageReglementaire),
           zonagePatrimonial: Object.values(ZonagePatrimonial),

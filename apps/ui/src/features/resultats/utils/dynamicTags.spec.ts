@@ -2,7 +2,9 @@ import { describe, it, expect } from "vitest";
 import {
   UsageType,
   PresencePollution,
-  RisqueNaturel,
+  RisqueRetraitGonflementArgile,
+  RisqueCavitesSouterraines,
+  RisqueInondation,
   ZonageReglementaire,
   ZonageEnvironnemental,
   ZonagePatrimonial,
@@ -160,29 +162,44 @@ describe("Usage RESIDENTIEL - Logements et commerces de proximité", () => {
   });
 
   describe("Risques naturels", () => {
-    it("devrait afficher 'risques nat. faibles' si risques faibles", () => {
-      const data = createTagInputData({ presenceRisquesNaturels: RisqueNaturel.FAIBLE });
-      const result = generateTagsForUsage(UsageType.RESIDENTIEL, data);
-      expect(result.tags).toContain("risques nat. faibles");
-    });
-
     it("devrait afficher 'risques nat. faibles' si aucun risque", () => {
-      const data = createTagInputData({ presenceRisquesNaturels: RisqueNaturel.AUCUN });
+      const data = createTagInputData({
+        risqueRetraitGonflementArgile: RisqueRetraitGonflementArgile.AUCUN,
+        risqueCavitesSouterraines: RisqueCavitesSouterraines.NON,
+        risqueInondation: RisqueInondation.NON,
+      });
       const result = generateTagsForUsage(UsageType.RESIDENTIEL, data);
       expect(result.tags).toContain("risques nat. faibles");
     });
 
-    it("devrait afficher 'risques nat. modérés' si risques moyens", () => {
-      const data = createTagInputData({ presenceRisquesNaturels: RisqueNaturel.MOYEN });
+    it("devrait afficher 'risques nat. faibles' si RGA faible ou moyen sans autre risque", () => {
+      const data = createTagInputData({
+        risqueRetraitGonflementArgile: RisqueRetraitGonflementArgile.FAIBLE_OU_MOYEN,
+        risqueCavitesSouterraines: RisqueCavitesSouterraines.NON,
+        risqueInondation: RisqueInondation.NON,
+      });
       const result = generateTagsForUsage(UsageType.RESIDENTIEL, data);
-      expect(result.tags).toContain("risques nat. modérés");
+      expect(result.tags).toContain("risques nat. faibles");
     });
 
-    it("ne devrait pas afficher de tag si risques forts", () => {
-      const data = createTagInputData({ presenceRisquesNaturels: RisqueNaturel.FORT });
+    it("ne devrait pas afficher de tag si RGA fort", () => {
+      const data = createTagInputData({
+        risqueRetraitGonflementArgile: RisqueRetraitGonflementArgile.FORT,
+        risqueCavitesSouterraines: RisqueCavitesSouterraines.NON,
+        risqueInondation: RisqueInondation.NON,
+      });
       const result = generateTagsForUsage(UsageType.RESIDENTIEL, data);
       expect(result.tags).not.toContain("risques nat. faibles");
-      expect(result.tags).not.toContain("risques nat. modérés");
+    });
+
+    it("ne devrait pas afficher de tag si inondation", () => {
+      const data = createTagInputData({
+        risqueRetraitGonflementArgile: RisqueRetraitGonflementArgile.AUCUN,
+        risqueCavitesSouterraines: RisqueCavitesSouterraines.NON,
+        risqueInondation: RisqueInondation.OUI,
+      });
+      const result = generateTagsForUsage(UsageType.RESIDENTIEL, data);
+      expect(result.tags).not.toContain("risques nat. faibles");
     });
   });
 
@@ -232,7 +249,9 @@ describe("Usage EQUIPEMENTS - Équipements publics", () => {
         surfaceSite: 15000,
         siteEnCentreVille: true,
         proximiteCommercesServices: true,
-        presenceRisquesNaturels: RisqueNaturel.FAIBLE,
+        risqueRetraitGonflementArgile: RisqueRetraitGonflementArgile.FAIBLE_OU_MOYEN,
+        risqueCavitesSouterraines: RisqueCavitesSouterraines.NON,
+        risqueInondation: RisqueInondation.NON,
         presenceRisquesTechnologiques: false,
       },
       { presencePollution: PresencePollution.NON },
@@ -786,7 +805,9 @@ describe("Cas limites", () => {
   it("devrait retourner un tableau vide si toutes les conditions sont 'ne sait pas'", () => {
     const data = createTagInputData(
       {
-        presenceRisquesNaturels: undefined,
+        risqueRetraitGonflementArgile: undefined,
+        risqueCavitesSouterraines: undefined,
+        risqueInondation: undefined,
         zonageReglementaire: ZonageReglementaire.NE_SAIT_PAS,
         zonageEnvironnemental: undefined,
         zonagePatrimonial: undefined,

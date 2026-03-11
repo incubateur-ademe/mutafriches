@@ -87,7 +87,9 @@ describe("EnrichissementController", () => {
         distanceRaccordementElectrique: 500,
         distanceTransportCommun: 200,
         siteEnCentreVille: true,
-        presenceRisquesNaturels: "FAIBLE",
+        risqueRetraitGonflementArgile: "faible-ou-moyen",
+        risqueCavitesSouterraines: "non",
+        risqueInondation: "non",
         presenceRisquesTechnologiques: false,
       };
       enrichissementService.enrichir.mockResolvedValue(detailedOutput);

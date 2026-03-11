@@ -21,6 +21,7 @@ import { GeoRisquesEnrichissementService } from "./georisques/georisques-enrichi
 import { ZonageOrchestratorService } from "./zonage";
 import { PollutionDetectionService } from "./pollution/pollution-detection.service";
 import { EnrEnrichissementService } from "./enr/enr-enrichissement.service";
+import { EnrCalculator } from "./enr/enr.calculator";
 
 /**
  * Service principal d'enrichissement - Orchestrateur
@@ -49,6 +50,7 @@ export class EnrichissementService {
     private readonly zonageOrchestrator: ZonageOrchestratorService,
     private readonly pollutionDetection: PollutionDetectionService,
     private readonly enrEnrichissement: EnrEnrichissementService,
+    private readonly enrCalculator: EnrCalculator,
 
     // Utilitaires
     private readonly enrichissementRepository: EnrichissementRepository,
@@ -250,7 +252,9 @@ export class EnrichissementService {
         surfaceSite: siteEval.surfaceSite,
         surfaceBati: siteEval.surfaceBati,
         distanceRaccordementElectrique: siteEval.distanceRaccordementElectrique,
-        presenceRisquesNaturels: siteEval.presenceRisquesNaturels,
+        risqueRetraitGonflementArgile: siteEval.risqueRetraitGonflementArgile,
+        risqueCavitesSouterraines: siteEval.risqueCavitesSouterraines,
+        risqueInondation: siteEval.risqueInondation,
         coordonnees: siteEval.coordonnees,
         geometrie: siteEval.geometrie,
 
@@ -272,6 +276,7 @@ export class EnrichissementService {
 
         // Energies renouvelables
         zaer,
+        zoneAccelerationEnr: this.enrCalculator.evaluer(zaer),
 
         // Diagnostic zonages (dev/staging uniquement)
         diagnosticZonages: zonagesResult?.diagnosticZonages,
@@ -431,8 +436,11 @@ export class EnrichissementService {
         champsManquants,
         sourcesEchouees,
       );
-      // Reporter le résultat sur le site d'évaluation
-      siteEval.presenceRisquesNaturels = siteEvalRisquesNaturels.presenceRisquesNaturels;
+      // Reporter les 3 résultats sur le site d'évaluation
+      siteEval.risqueRetraitGonflementArgile =
+        siteEvalRisquesNaturels.risqueRetraitGonflementArgile;
+      siteEval.risqueCavitesSouterraines = siteEvalRisquesNaturels.risqueCavitesSouterraines;
+      siteEval.risqueInondation = siteEvalRisquesNaturels.risqueInondation;
 
       // 7. RISQUES TECHNOLOGIQUES -> centroïde du site
       const risquesTechnologiquesResult =
@@ -491,11 +499,11 @@ export class EnrichissementService {
         sourcesEchouees.push(...pollutionResult.sourcesEchouees);
       }
 
-      // 11. ENR / ZAER -> geometrie union du site ou centroide
+      // 11. ENR / ZAER -> parcelle prédominante ou centroïde
       let zaer: ZaerEnrichissement | undefined;
-      if (siteEval.geometrie || siteEval.coordonnees) {
+      if (predominante.geometrie || siteEval.coordonnees) {
         const enrResult = await this.enrEnrichissement.enrichir(
-          siteEval.geometrie,
+          predominante.geometrie,
           siteEval.coordonnees,
         );
         this.mergeEnrichmentResult(
@@ -541,7 +549,9 @@ export class EnrichissementService {
 
         // Données enrichies
         distanceRaccordementElectrique: siteEval.distanceRaccordementElectrique,
-        presenceRisquesNaturels: siteEval.presenceRisquesNaturels,
+        risqueRetraitGonflementArgile: siteEval.risqueRetraitGonflementArgile,
+        risqueCavitesSouterraines: siteEval.risqueCavitesSouterraines,
+        risqueInondation: siteEval.risqueInondation,
         siteEnCentreVille: siteEval.siteEnCentreVille,
         distanceAutoroute: siteEval.distanceAutoroute,
         distanceTransportCommun: siteEval.distanceTransportCommun,
@@ -558,6 +568,7 @@ export class EnrichissementService {
 
         // Energies renouvelables
         zaer,
+        zoneAccelerationEnr: this.enrCalculator.evaluer(zaer),
 
         // Diagnostic zonages (dev/staging uniquement)
         diagnosticZonages: zonagesResult?.diagnosticZonages,

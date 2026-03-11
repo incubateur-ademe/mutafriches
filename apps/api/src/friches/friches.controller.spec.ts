@@ -10,7 +10,9 @@ import {
   ValeurArchitecturale,
   QualitePaysage,
   QualiteVoieDesserte,
-  RisqueNaturel,
+  RisqueRetraitGonflementArgile,
+  RisqueCavitesSouterraines,
+  RisqueInondation,
   ZonageEnvironnemental,
   ZonagePatrimonial,
   TrameVerteEtBleue,
@@ -302,7 +304,9 @@ describe("FrichesController", () => {
       expect(result).toEqual({
         enums: {
           enrichissement: {
-            risqueNaturel: Object.values(RisqueNaturel),
+            risqueRetraitGonflementArgile: Object.values(RisqueRetraitGonflementArgile),
+            risqueCavitesSouterraines: Object.values(RisqueCavitesSouterraines),
+            risqueInondation: Object.values(RisqueInondation),
             zonageEnvironnemental: Object.values(ZonageEnvironnemental),
             zonageReglementaire: Object.values(ZonageReglementaire),
             zonagePatrimonial: Object.values(ZonagePatrimonial),
@@ -328,8 +332,10 @@ describe("FrichesController", () => {
       const result = controller.getMetadata();
 
       // Assert
-      expect(result.enums.enrichissement.risqueNaturel).toContain(RisqueNaturel.AUCUN);
-      expect(result.enums.enrichissement.risqueNaturel).toContain(RisqueNaturel.FAIBLE);
+      expect(result.enums.enrichissement.risqueRetraitGonflementArgile).toContain(
+        RisqueRetraitGonflementArgile.AUCUN,
+      );
+      expect(result.enums.enrichissement.risqueInondation).toContain(RisqueInondation.NON);
       expect(result.enums.enrichissement.zonageEnvironnemental).toContain(
         ZonageEnvironnemental.HORS_ZONE,
       );

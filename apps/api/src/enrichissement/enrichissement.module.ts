@@ -23,6 +23,7 @@ import { PollutionDetectionService } from "./services/pollution/pollution-detect
 
 // Service ENR (Energies Renouvelables)
 import { EnrEnrichissementService } from "./services/enr/enr-enrichissement.service";
+import { EnrCalculator } from "./services/enr/enr.calculator";
 import { ZaerWfsService } from "./adapters/zaer-wfs/zaer-wfs.service";
 
 // Services Zonage
@@ -100,6 +101,7 @@ import { AdemeSitesPolluesRepository } from "./repositories/ademe-sites-pollues.
 
     // Service ENR
     EnrEnrichissementService,
+    EnrCalculator,
     ZaerWfsService,
 
     // Services Zonage

@@ -1,6 +1,11 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { Test, TestingModule } from "@nestjs/testing";
-import { StatutEnrichissement, RisqueNaturel } from "@mutafriches/shared-types";
+import {
+  StatutEnrichissement,
+  RisqueRetraitGonflementArgile,
+  RisqueCavitesSouterraines,
+  RisqueInondation,
+} from "@mutafriches/shared-types";
 import { EnrichissementService } from "./enrichissement.service";
 import { CadastreEnrichissementService } from "./cadastre/cadastre-enrichissement.service";
 import { EnergieEnrichissementService } from "./energie/energie-enrichissement.service";
@@ -12,6 +17,7 @@ import { GeoRisquesEnrichissementService } from "./georisques/georisques-enrichi
 import { EnrichissementRepository } from "../repositories/enrichissement.repository";
 import { PollutionDetectionService } from "./pollution/pollution-detection.service";
 import { EnrEnrichissementService } from "./enr/enr-enrichissement.service";
+import { EnrCalculator } from "./enr/enr.calculator";
 import { Site } from "../../evaluation/entities/site.entity";
 import {
   createMockCadastreEnrichissementService,
@@ -25,6 +31,7 @@ import {
   createMockZonageOrchestratorService,
   createMockPollutionDetectionService,
   createMockEnrEnrichissementService,
+  createMockEnrCalculator,
   createMockSiteRepository,
 } from "../__test-helpers__/enrichissement.mocks";
 import { ZonageOrchestratorService } from "./zonage";
@@ -57,6 +64,7 @@ describe("EnrichissementService", () => {
     const mockGeoRisques = createMockGeoRisquesEnrichissementService();
     const mockZonageOrchestrator = createMockZonageOrchestratorService();
     const mockEnrEnrichissement = createMockEnrEnrichissementService();
+    const mockEnrCalculator = createMockEnrCalculator();
     const mockPollutionDetection = createMockPollutionDetectionService();
     const mockRepository = createMockEnrichissementRepository();
     const mockSiteRepository = createMockSiteRepository();
@@ -97,6 +105,7 @@ describe("EnrichissementService", () => {
         { provide: ZonageOrchestratorService, useValue: mockZonageOrchestrator },
         { provide: PollutionDetectionService, useValue: mockPollutionDetection },
         { provide: EnrEnrichissementService, useValue: mockEnrEnrichissement },
+        { provide: EnrCalculator, useValue: mockEnrCalculator },
         { provide: EnrichissementRepository, useValue: mockRepository },
         { provide: SiteRepository, useValue: mockSiteRepository },
       ],
@@ -142,7 +151,14 @@ describe("EnrichissementService", () => {
       });
       risquesNaturelsEnrichissement.enrichir.mockResolvedValue({
         result: { success: true, sourcesUtilisees: ["rga"], sourcesEchouees: [] },
-        evaluation: { rga: null, cavites: null, risqueFinal: RisqueNaturel.AUCUN },
+        evaluation: {
+          rga: null,
+          cavites: null,
+          inondation: null,
+          risqueRetraitGonflementArgile: RisqueRetraitGonflementArgile.AUCUN,
+          risqueCavitesSouterraines: RisqueCavitesSouterraines.NON,
+          risqueInondation: RisqueInondation.NON,
+        },
       });
       risquesTechnologiquesEnrichissement.enrichir.mockResolvedValue({
         result: { success: true, sourcesUtilisees: ["sis"], sourcesEchouees: [] },
@@ -198,7 +214,14 @@ describe("EnrichissementService", () => {
       });
       risquesNaturelsEnrichissement.enrichir.mockResolvedValue({
         result: { success: true, sourcesUtilisees: ["rga"], sourcesEchouees: [] },
-        evaluation: { rga: null, cavites: null, risqueFinal: RisqueNaturel.AUCUN },
+        evaluation: {
+          rga: null,
+          cavites: null,
+          inondation: null,
+          risqueRetraitGonflementArgile: RisqueRetraitGonflementArgile.AUCUN,
+          risqueCavitesSouterraines: RisqueCavitesSouterraines.NON,
+          risqueInondation: RisqueInondation.NON,
+        },
       });
       risquesTechnologiquesEnrichissement.enrichir.mockResolvedValue({
         result: { success: true, sourcesUtilisees: ["sis"], sourcesEchouees: [] },
@@ -281,7 +304,14 @@ describe("EnrichissementService", () => {
       });
       risquesNaturelsEnrichissement.enrichir.mockResolvedValue({
         result: { success: true, sourcesUtilisees: ["rga"], sourcesEchouees: [] },
-        evaluation: { rga: null, cavites: null, risqueFinal: RisqueNaturel.AUCUN },
+        evaluation: {
+          rga: null,
+          cavites: null,
+          inondation: null,
+          risqueRetraitGonflementArgile: RisqueRetraitGonflementArgile.AUCUN,
+          risqueCavitesSouterraines: RisqueCavitesSouterraines.NON,
+          risqueInondation: RisqueInondation.NON,
+        },
       });
       risquesTechnologiquesEnrichissement.enrichir.mockResolvedValue({
         result: { success: true, sourcesUtilisees: ["sis"], sourcesEchouees: [] },
@@ -419,7 +449,14 @@ describe("EnrichissementService", () => {
       });
       risquesNaturelsEnrichissement.enrichir.mockResolvedValue({
         result: { success: true, sourcesUtilisees: [], sourcesEchouees: [] },
-        evaluation: { rga: null, cavites: null, risqueFinal: RisqueNaturel.AUCUN },
+        evaluation: {
+          rga: null,
+          cavites: null,
+          inondation: null,
+          risqueRetraitGonflementArgile: RisqueRetraitGonflementArgile.AUCUN,
+          risqueCavitesSouterraines: RisqueCavitesSouterraines.NON,
+          risqueInondation: RisqueInondation.NON,
+        },
       });
       risquesTechnologiquesEnrichissement.enrichir.mockResolvedValue({
         result: { success: true, sourcesUtilisees: [], sourcesEchouees: [] },
@@ -610,7 +647,14 @@ function setupAllMocksSuccess(site: Site, mocks: AllMocks): void {
   });
   mocks.risquesNaturelsEnrichissement.enrichir.mockResolvedValue({
     result: { success: true, sourcesUtilisees: ["rga"], sourcesEchouees: [] },
-    evaluation: { rga: null, cavites: null, risqueFinal: RisqueNaturel.AUCUN },
+    evaluation: {
+      rga: null,
+      cavites: null,
+      inondation: null,
+      risqueRetraitGonflementArgile: RisqueRetraitGonflementArgile.AUCUN,
+      risqueCavitesSouterraines: RisqueCavitesSouterraines.NON,
+      risqueInondation: RisqueInondation.NON,
+    },
   });
   mocks.risquesTechnologiquesEnrichissement.enrichir.mockResolvedValue({
     result: { success: true, sourcesUtilisees: ["sis"], sourcesEchouees: [] },
@@ -645,7 +689,9 @@ function createMockCachedEnrichissement() {
     surfaceSite: 1000,
     surfaceBati: 200,
     distanceRaccordementElectrique: 50,
-    presenceRisquesNaturels: "aucun",
+    risqueRetraitGonflementArgile: "aucun",
+    risqueCavitesSouterraines: "non",
+    risqueInondation: "non",
     coordonnees: { latitude: 48.0, longitude: -4.0 },
     geometrie: { type: "Polygon", coordinates: [] },
     siteEnCentreVille: false,

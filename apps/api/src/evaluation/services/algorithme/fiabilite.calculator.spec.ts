@@ -107,7 +107,9 @@ describe("FiabiliteCalculator", () => {
         surfaceBati: 5000, // 2
         etatBatiInfrastructure: "test", // 2
         presencePollution: "non", // 2
-        presenceRisquesNaturels: "faible", // 2
+        risqueRetraitGonflementArgile: "faible-ou-moyen", // 0.5
+        risqueCavitesSouterraines: "non", // 0.5
+        risqueInondation: "non", // 1
         zonageReglementaire: "U", // 2
       };
 

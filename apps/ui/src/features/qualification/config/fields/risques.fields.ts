@@ -52,6 +52,13 @@ export const RISQUES_INFO_CONFIG = {
     source: "API Carto (IGN)",
     sourceUrl: "https://apicarto.ign.fr/api/doc/",
   },
+
+  zoneAccelerationEnr: {
+    id: "zone-acceleration-enr",
+    label: "Zone d'accélération des énergies renouvelables",
+    source: "WFS Géoplateforme (ZAER)",
+    sourceUrl: "https://data.geopf.fr/wfs",
+  },
 } as const;
 
 /**

@@ -32,7 +32,10 @@ export interface TestCaseInput {
 
   // Zonages et contraintes
   zonageReglementaire: string;
-  presenceRisquesNaturels: string;
+  presenceRisquesNaturels: string; // Ancien champ combiné (compat test Excel)
+  risqueRetraitGonflementArgile?: string;
+  risqueCavitesSouterraines?: string;
+  risqueInondation?: string;
   presenceRisquesTechnologiques: boolean;
   zonagePatrimonial: string;
 
