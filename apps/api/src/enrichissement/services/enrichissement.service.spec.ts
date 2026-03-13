@@ -1,6 +1,14 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { Test, TestingModule } from "@nestjs/testing";
-import { StatutEnrichissement } from "@mutafriches/shared-types";
+import {
+  StatutEnrichissement,
+  RisqueRetraitGonflementArgile,
+  RisqueCavitesSouterraines,
+  RisqueInondation,
+  ZonageEnvironnemental,
+  ZonageReglementaire,
+  ZonagePatrimonial,
+} from "@mutafriches/shared-types";
 import { EnrichissementService } from "./enrichissement.service";
 import { CadastreEnrichissementService } from "./cadastre/cadastre-enrichissement.service";
 import { EnergieEnrichissementService } from "./energie/energie-enrichissement.service";
@@ -663,9 +671,9 @@ function createMockCachedEnrichissement() {
     surfaceSite: 1000,
     surfaceBati: 200,
     distanceRaccordementElectrique: 50,
-    risqueRetraitGonflementArgile: "aucun",
-    risqueCavitesSouterraines: "non",
-    risqueInondation: "non",
+    risqueRetraitGonflementArgile: RisqueRetraitGonflementArgile.AUCUN,
+    risqueCavitesSouterraines: RisqueCavitesSouterraines.NON,
+    risqueInondation: RisqueInondation.NON,
     coordonnees: { latitude: 48.0, longitude: -4.0 },
     geometrie: { type: "Polygon", coordinates: [] },
     siteEnCentreVille: false,
@@ -675,9 +683,9 @@ function createMockCachedEnrichissement() {
     tauxLogementsVacants: 0.05,
     presenceRisquesTechnologiques: false,
     siteReferencePollue: false,
-    zonageEnvironnemental: "hors-zone",
-    zonageReglementaire: "zone-urbaine-u",
-    zonagePatrimonial: "non-concerne",
+    zonageEnvironnemental: ZonageEnvironnemental.HORS_ZONE,
+    zonageReglementaire: ZonageReglementaire.ZONE_URBAINE_U,
+    zonagePatrimonial: ZonagePatrimonial.NON_CONCERNE,
     sourcesUtilisees: ["cadastre", "enedis", "transport"],
     champsManquants: [],
     sourcesEchouees: [],

@@ -27,8 +27,12 @@ async function bootstrap() {
       .setVersion("2.0")
       .addTag("enrichissement", "Module d'enrichissement des sites (mono ou multi-parcelle)")
       .addTag("evaluation", "Module d'évaluation de la mutabilité")
-      .addTag("friches", "Routes de compatibilité (deprecated)")
-      .addTag("evenements", "Tracking des événements utilisateur")
+      .addTag("health", "Vérification de l'état de santé de l'API")
+      .addTag("stats", "KPIs publics Mutafriches")
+      .addTag(
+        "friches (deprecated)",
+        "Routes de compatibilité (deprecated) - utilisez /enrichissement et /evaluation",
+      )
       .build();
 
     const document = SwaggerModule.createDocument(app, config);

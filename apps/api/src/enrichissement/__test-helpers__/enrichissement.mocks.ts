@@ -1,4 +1,5 @@
 import { vi, type Mock } from "vitest";
+import { ZoneAccelerationEnr } from "@mutafriches/shared-types";
 
 /**
  * Mocks spécifiques au domaine Enrichissement
@@ -393,7 +394,7 @@ export function createMockEnrEnrichissementService(): MockEnrEnrichissementServi
  */
 export function createMockEnrCalculator(): MockEnrCalculator {
   return {
-    evaluer: vi.fn().mockReturnValue("non"),
+    evaluer: vi.fn().mockReturnValue(ZoneAccelerationEnr.NON),
   };
 }
 

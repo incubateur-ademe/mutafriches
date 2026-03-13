@@ -1,6 +1,12 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { FiabiliteCalculator } from "./fiabilite.calculator";
 import { POIDS_CRITERES } from "./algorithme.config";
+import {
+  RisqueRetraitGonflementArgile,
+  RisqueCavitesSouterraines,
+  RisqueInondation,
+  ZonageReglementaire,
+} from "@mutafriches/shared-types";
 
 describe("FiabiliteCalculator", () => {
   let calculator: FiabiliteCalculator;
@@ -107,10 +113,10 @@ describe("FiabiliteCalculator", () => {
         surfaceBati: 5000, // 2
         etatBatiInfrastructure: "test", // 2
         presencePollution: "non", // 2
-        risqueRetraitGonflementArgile: "faible-ou-moyen", // 0.5
-        risqueCavitesSouterraines: "non", // 0.5
-        risqueInondation: "non", // 1
-        zonageReglementaire: "U", // 2
+        risqueRetraitGonflementArgile: RisqueRetraitGonflementArgile.FAIBLE_OU_MOYEN, // 0.5
+        risqueCavitesSouterraines: RisqueCavitesSouterraines.NON, // 0.5
+        risqueInondation: RisqueInondation.NON, // 1
+        zonageReglementaire: ZonageReglementaire.ZONE_URBAINE_U, // 2
       };
 
       const result = calculator.calculer(criteres);

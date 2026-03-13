@@ -1,6 +1,11 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { HttpException, HttpStatus } from "@nestjs/common";
-import { SourceUtilisation } from "@mutafriches/shared-types";
+import {
+  SourceUtilisation,
+  RisqueRetraitGonflementArgile,
+  RisqueCavitesSouterraines,
+  RisqueInondation,
+} from "@mutafriches/shared-types";
 import { EnrichissementController } from "./enrichissement.controller";
 import { EnrichissementService } from "./services/enrichissement.service";
 import { OrigineDetectionService } from "../shared/services/origine-detection.service";
@@ -87,9 +92,9 @@ describe("EnrichissementController", () => {
         distanceRaccordementElectrique: 500,
         distanceTransportCommun: 200,
         siteEnCentreVille: true,
-        risqueRetraitGonflementArgile: "faible-ou-moyen",
-        risqueCavitesSouterraines: "non",
-        risqueInondation: "non",
+        risqueRetraitGonflementArgile: RisqueRetraitGonflementArgile.FAIBLE_OU_MOYEN,
+        risqueCavitesSouterraines: RisqueCavitesSouterraines.NON,
+        risqueInondation: RisqueInondation.NON,
         presenceRisquesTechnologiques: false,
       };
       enrichissementService.enrichir.mockResolvedValue(detailedOutput);
