@@ -154,7 +154,7 @@ describe("EnrichissementService", () => {
         result: { success: true, sourcesUtilisees: ["georisques"], sourcesEchouees: [] },
         data: undefined,
       });
-      zonageOrchestrator.enrichirZonages.mockResolvedValue({
+      zonageOrchestrator.enrichir.mockResolvedValue({
         result: { success: true, sourcesUtilisees: ["API_CARTO_GPU"], sourcesEchouees: [] },
         zonageEnvironnemental: "hors-zone",
         zonagePatrimonial: "non-concerne",
@@ -212,7 +212,7 @@ describe("EnrichissementService", () => {
         result: { success: true, sourcesUtilisees: ["georisques"], sourcesEchouees: [] },
         data: { metadata: { sourcesUtilisees: [], sourcesEchouees: [] } },
       });
-      zonageOrchestrator.enrichirZonages.mockResolvedValue({
+      zonageOrchestrator.enrichir.mockResolvedValue({
         result: { success: true, sourcesUtilisees: ["API_CARTO_GPU"], sourcesEchouees: [] },
         zonageEnvironnemental: "hors-zone",
         zonagePatrimonial: "non-concerne",
@@ -297,7 +297,7 @@ describe("EnrichissementService", () => {
         result: { success: true, sourcesUtilisees: ["georisques"], sourcesEchouees: [] },
         data: undefined,
       });
-      zonageOrchestrator.enrichirZonages.mockResolvedValue({
+      zonageOrchestrator.enrichir.mockResolvedValue({
         result: { success: true, sourcesUtilisees: ["API_CARTO_GPU"], sourcesEchouees: [] },
         zonageEnvironnemental: "hors-zone",
         zonagePatrimonial: "non-concerne",
@@ -437,7 +437,7 @@ describe("EnrichissementService", () => {
         result: { success: false, sourcesUtilisees: [], sourcesEchouees: [] },
         data: undefined,
       });
-      zonageOrchestrator.enrichirZonages.mockResolvedValue({
+      zonageOrchestrator.enrichir.mockResolvedValue({
         result: { success: true, sourcesUtilisees: ["API_CARTO_GPU"], sourcesEchouees: [] },
         zonageEnvironnemental: "hors-zone",
         zonagePatrimonial: "non-concerne",
@@ -638,7 +638,7 @@ function setupAllMocksSuccess(site: Site, mocks: AllMocks): void {
     result: { success: true, sourcesUtilisees: ["georisques"], sourcesEchouees: [] },
     data: undefined,
   });
-  mocks.zonageOrchestrator.enrichirZonages.mockResolvedValue({
+  mocks.zonageOrchestrator.enrichir.mockResolvedValue({
     result: {
       success: true,
       sourcesUtilisees: ["API_CARTO_NATURE", "API_CARTO_GPU"],

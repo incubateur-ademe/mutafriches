@@ -10,20 +10,22 @@ import { ZonageOrchestratorService } from "./zonage-orchestrator.service";
 import { ZonageEnvironnementalService } from "./zonage-environnemental/zonage-environnemental.service";
 import { ZonagePatrimonialService } from "./zonage-patrimonial/zonage-patrimonial.service";
 import { ZonageReglementaireService } from "./zonage-reglementaire/zonage-reglementaire.service";
-import { ParcelleGeometry } from "../shared/geometry.types";
+import { Site } from "../../../evaluation/entities/site.entity";
+
+/** Crée un site de test avec géométrie et codeInsee */
+function createTestSite(): Site {
+  const site = new Site();
+  site.identifiantParcelle = "75056000AB0001";
+  site.codeInsee = "75056";
+  site.geometrie = { type: "Point", coordinates: [2.3522, 48.8566] } as any;
+  return site;
+}
 
 describe("ZonageOrchestratorService", () => {
   let orchestrator: ZonageOrchestratorService;
   let zonageEnvironnementalService: any;
   let zonagePatrimonialService: any;
   let zonageReglementaireService: any;
-
-  const mockGeometry: ParcelleGeometry = {
-    type: "Point",
-    coordinates: [2.3522, 48.8566],
-  };
-
-  const mockCodeInsee = "75056";
 
   beforeEach(async () => {
     zonageEnvironnementalService = {
@@ -59,9 +61,11 @@ describe("ZonageOrchestratorService", () => {
     orchestrator = module.get<ZonageOrchestratorService>(ZonageOrchestratorService);
   });
 
-  describe("enrichirZonages", () => {
-    it("devrait enrichir avec tous les zonages détectés", async () => {
+  describe("enrichir", () => {
+    it("devrait enrichir avec tous les zonages détectés et muter le site", async () => {
       // Arrange
+      const site = createTestSite();
+
       zonageEnvironnementalService.enrichir.mockResolvedValue({
         result: {
           success: true,
@@ -111,22 +115,26 @@ describe("ZonageOrchestratorService", () => {
       });
 
       // Act
-      const result = await orchestrator.enrichirZonages(mockGeometry, mockCodeInsee);
+      const result = await orchestrator.enrichir(site);
 
-      // Assert
+      // Assert — résultat
       expect(result.result.success).toBe(true);
       expect(result.result.sourcesUtilisees).toContain(SourceEnrichissement.API_CARTO_NATURE);
       expect(result.result.sourcesUtilisees).toContain(SourceEnrichissement.API_CARTO_GPU);
-      expect(result.zonageEnvironnemental).toBe(ZonageEnvironnemental.NATURA_2000);
-      expect(result.zonagePatrimonial).toBe(ZonagePatrimonial.MONUMENT_HISTORIQUE);
-      expect(result.zonageReglementaire).toBe(ZonageReglementaire.ZONE_URBAINE_U);
       expect(result.evaluations.environnemental).toBeTruthy();
       expect(result.evaluations.patrimonial).toBeTruthy();
       expect(result.evaluations.reglementaire).toBeTruthy();
+
+      // Assert — mutation du site
+      expect(site.zonageEnvironnemental).toBe(ZonageEnvironnemental.NATURA_2000);
+      expect(site.zonagePatrimonial).toBe(ZonagePatrimonial.MONUMENT_HISTORIQUE);
+      expect(site.zonageReglementaire).toBe(ZonageReglementaire.ZONE_URBAINE_U);
     });
 
     it("devrait gérer les zonages HORS_ZONE / NON_CONCERNE / NE_SAIT_PAS", async () => {
       // Arrange
+      const site = createTestSite();
+
       zonageEnvironnementalService.enrichir.mockResolvedValue({
         result: {
           success: true,
@@ -171,16 +179,18 @@ describe("ZonageOrchestratorService", () => {
       });
 
       // Act
-      const result = await orchestrator.enrichirZonages(mockGeometry, mockCodeInsee);
+      const result = await orchestrator.enrichir(site);
 
       // Assert
-      expect(result.zonageEnvironnemental).toBe(ZonageEnvironnemental.HORS_ZONE);
-      expect(result.zonagePatrimonial).toBe(ZonagePatrimonial.NON_CONCERNE);
-      expect(result.zonageReglementaire).toBe(ZonageReglementaire.NE_SAIT_PAS);
+      expect(site.zonageEnvironnemental).toBe(ZonageEnvironnemental.HORS_ZONE);
+      expect(site.zonagePatrimonial).toBe(ZonagePatrimonial.NON_CONCERNE);
+      expect(site.zonageReglementaire).toBe(ZonageReglementaire.NE_SAIT_PAS);
     });
 
     it("devrait continuer si un service échoue", async () => {
       // Arrange
+      const site = createTestSite();
+
       zonageEnvironnementalService.enrichir.mockRejectedValue(new Error("Service indisponible"));
 
       zonagePatrimonialService.enrichir.mockResolvedValue({
@@ -217,20 +227,23 @@ describe("ZonageOrchestratorService", () => {
       });
 
       // Act
-      const result = await orchestrator.enrichirZonages(mockGeometry, mockCodeInsee);
+      const result = await orchestrator.enrichir(site);
 
       // Assert
       expect(result.result.success).toBe(true);
       expect(result.result.sourcesEchouees).toContain(SourceEnrichissement.API_CARTO_NATURE);
       expect(result.zonageEnvironnemental).toBeNull();
-      expect(result.zonagePatrimonial).toBe(ZonagePatrimonial.NON_CONCERNE);
-      expect(result.zonageReglementaire).toBe(ZonageReglementaire.ZONE_AGRICOLE_A);
+      expect(site.zonageEnvironnemental).toBeNull();
+      expect(site.zonagePatrimonial).toBe(ZonagePatrimonial.NON_CONCERNE);
+      expect(site.zonageReglementaire).toBe(ZonageReglementaire.ZONE_AGRICOLE_A);
       expect(result.evaluations.environnemental).toBeNull();
       expect(result.evaluations.patrimonial).toBeTruthy();
     });
 
     it("devrait consolider les sources utilisées sans doublons", async () => {
-      // Arrange - Les 3 services utilisent API_CARTO_GPU
+      // Arrange
+      const site = createTestSite();
+
       zonageEnvironnementalService.enrichir.mockResolvedValue({
         result: {
           success: true,
@@ -265,7 +278,7 @@ describe("ZonageOrchestratorService", () => {
       });
 
       // Act
-      const result = await orchestrator.enrichirZonages(mockGeometry, mockCodeInsee);
+      const result = await orchestrator.enrichir(site);
 
       // Assert
       expect(result.result.sourcesUtilisees).toHaveLength(2);
@@ -275,6 +288,7 @@ describe("ZonageOrchestratorService", () => {
 
     it("devrait appeler les 3 services en parallèle", async () => {
       // Arrange
+      const site = createTestSite();
       const startTimes: Record<string, number> = {};
 
       zonageEnvironnementalService.enrichir.mockImplementation(async () => {
@@ -305,7 +319,7 @@ describe("ZonageOrchestratorService", () => {
       });
 
       // Act
-      await orchestrator.enrichirZonages(mockGeometry, mockCodeInsee);
+      await orchestrator.enrichir(site);
 
       // Assert
       const times = Object.values(startTimes);
@@ -315,17 +329,79 @@ describe("ZonageOrchestratorService", () => {
 
     it("devrait retourner success false si tous les services échouent", async () => {
       // Arrange
+      const site = createTestSite();
+
       zonageEnvironnementalService.enrichir.mockRejectedValue(new Error("Erreur 1"));
       zonagePatrimonialService.enrichir.mockRejectedValue(new Error("Erreur 2"));
       zonageReglementaireService.enrichir.mockRejectedValue(new Error("Erreur 3"));
 
       // Act
-      const result = await orchestrator.enrichirZonages(mockGeometry, mockCodeInsee);
+      const result = await orchestrator.enrichir(site);
 
       // Assert
       expect(result.result.success).toBe(false);
       expect(result.result.sourcesUtilisees).toHaveLength(0);
       expect(result.result.sourcesEchouees.length).toBeGreaterThan(0);
+    });
+
+    it("devrait retourner échec si pas de géométrie", async () => {
+      // Arrange
+      const site = new Site();
+      site.identifiantParcelle = "75056000AB0001";
+      site.codeInsee = "75056";
+      // Pas de géométrie
+
+      // Act
+      const result = await orchestrator.enrichir(site);
+
+      // Assert
+      expect(result.result.success).toBe(false);
+      expect(result.result.sourcesEchouees).toContain(SourceEnrichissement.API_CARTO_NATURE);
+      expect(result.result.sourcesEchouees).toContain(SourceEnrichissement.API_CARTO_GPU);
+      expect(zonageEnvironnementalService.enrichir).not.toHaveBeenCalled();
+    });
+
+    it("devrait utiliser geometrieReglementaire si présente (multi-parcellaire)", async () => {
+      // Arrange
+      const site = createTestSite();
+      const geometriePredominante = {
+        type: "Polygon",
+        coordinates: [
+          [
+            [0, 0],
+            [1, 0],
+            [1, 1],
+            [0, 0],
+          ],
+        ],
+      } as any;
+      site.geometrieReglementaire = geometriePredominante;
+
+      zonageEnvironnementalService.enrichir.mockResolvedValue({
+        result: { success: true, sourcesUtilisees: [], sourcesEchouees: [] },
+        evaluation: { zonageFinal: ZonageEnvironnemental.HORS_ZONE },
+      });
+
+      zonagePatrimonialService.enrichir.mockResolvedValue({
+        result: { success: true, sourcesUtilisees: [], sourcesEchouees: [] },
+        evaluation: { zonageFinal: ZonagePatrimonial.NON_CONCERNE },
+      });
+
+      zonageReglementaireService.enrichir.mockResolvedValue({
+        result: { success: true, sourcesUtilisees: [], sourcesEchouees: [] },
+        evaluation: { zonageFinal: ZonageReglementaire.ZONE_URBAINE_U },
+      });
+
+      // Act
+      await orchestrator.enrichir(site);
+
+      // Assert — env et patri reçoivent la géométrie du site, réglementaire reçoit la prédominante
+      expect(zonageEnvironnementalService.enrichir).toHaveBeenCalledWith(site.geometrie);
+      expect(zonagePatrimonialService.enrichir).toHaveBeenCalledWith(site.geometrie);
+      expect(zonageReglementaireService.enrichir).toHaveBeenCalledWith(
+        geometriePredominante,
+        "75056",
+      );
     });
   });
 });

@@ -107,8 +107,7 @@ interface MockEnrichissementRepository {
 }
 
 interface MockZonageOrchestratorService {
-  enrichirZonages: Mock;
-  enrichirZonagesSite: Mock;
+  enrichir: Mock;
 }
 
 interface MockSiteRepository {
@@ -365,8 +364,7 @@ export function createMockEnrichissementRepository(): MockEnrichissementReposito
  */
 export function createMockZonageOrchestratorService(): MockZonageOrchestratorService {
   return {
-    enrichirZonages: vi.fn(),
-    enrichirZonagesSite: vi.fn(),
+    enrichir: vi.fn(),
   };
 }
 

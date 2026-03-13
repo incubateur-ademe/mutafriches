@@ -173,24 +173,13 @@ export class EnrichissementService {
       const risquesGeorisques = georisquesResult.data;
 
       // 8. ZONAGES (Environnemental, Patrimonial, Réglementaire)
-      let zonagesResult;
-      if (siteEval.geometrie && siteEval.codeInsee) {
-        zonagesResult = await this.zonageOrchestrator.enrichirZonages(
-          siteEval.geometrie,
-          siteEval.codeInsee,
-        );
-        this.mergeEnrichmentResult(
-          zonagesResult.result,
-          sourcesUtilisees,
-          champsManquants,
-          sourcesEchouees,
-        );
-
-        // Affecter les zonages au site
-        siteEval.zonageEnvironnemental = zonagesResult.zonageEnvironnemental;
-        siteEval.zonagePatrimonial = zonagesResult.zonagePatrimonial;
-        siteEval.zonageReglementaire = zonagesResult.zonageReglementaire;
-      }
+      const zonagesResult = await this.zonageOrchestrator.enrichir(siteEval);
+      this.mergeEnrichmentResult(
+        zonagesResult.result,
+        sourcesUtilisees,
+        champsManquants,
+        sourcesEchouees,
+      );
 
       // 9. POLLUTION (ADEME + SIS + ICPE)
       const pollutionResult = await this.pollutionDetection.enrichir(siteEval);
@@ -449,25 +438,15 @@ export class EnrichissementService {
       const risquesGeorisques = georisquesResult.data;
 
       // 9. ZONAGES -> union (env/patri) + prédominante (réglementaire)
-      let zonagesResult;
       const predominante = site.parcellePredominante;
-      if (site.geometrieUnion && predominante.geometrie && siteEval.codeInsee) {
-        zonagesResult = await this.zonageOrchestrator.enrichirZonagesSite(
-          site.geometrieUnion,
-          predominante.geometrie,
-          siteEval.codeInsee,
-        );
-        this.mergeEnrichmentResult(
-          zonagesResult.result,
-          sourcesUtilisees,
-          champsManquants,
-          sourcesEchouees,
-        );
-
-        siteEval.zonageEnvironnemental = zonagesResult.zonageEnvironnemental;
-        siteEval.zonagePatrimonial = zonagesResult.zonagePatrimonial;
-        siteEval.zonageReglementaire = zonagesResult.zonageReglementaire;
-      }
+      siteEval.geometrieReglementaire = predominante.geometrie;
+      const zonagesResult = await this.zonageOrchestrator.enrichir(siteEval);
+      this.mergeEnrichmentResult(
+        zonagesResult.result,
+        sourcesUtilisees,
+        champsManquants,
+        sourcesEchouees,
+      );
 
       // 10. POLLUTION -> centroide du site
       const pollutionResult = await this.pollutionDetection.enrichir(siteEval);

@@ -1,6 +1,7 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { DiagnosticZonages, SourceEnrichissement } from "@mutafriches/shared-types";
 
+import { Site } from "../../../evaluation/entities/site.entity";
 import { isProduction } from "../../../shared/utils/environment.utils";
 import { ParcelleGeometry } from "../shared/geometry.types";
 import { ZonageEnvironnementalService } from "./zonage-environnemental/zonage-environnemental.service";
@@ -15,6 +16,12 @@ import { ResultatEnrichissementZonage } from "./zonage-orchestrator.types";
  * - Coordonner les 3 services de zonage (environnemental, patrimonial, réglementaire)
  * - Appeler les services en parallèle pour optimiser les performances
  * - Agréger les résultats et consolider les sources utilisées/échouées
+ * - Muter le site avec les zonages calculés
+ *
+ * Règles multi-parcellaire :
+ * - Environnemental et patrimonial utilisent site.geometrie (union)
+ * - Réglementaire utilise site.geometrieReglementaire si présente (parcelle prédominante),
+ *   sinon fallback sur site.geometrie
  */
 @Injectable()
 export class ZonageOrchestratorService {
@@ -27,46 +34,54 @@ export class ZonageOrchestratorService {
   ) {}
 
   /**
-   * Enrichit un site multi-parcellaire avec les zonages
+   * Enrichit un site avec les 3 zonages (environnemental, patrimonial, réglementaire)
    *
-   * Règles de gestion :
-   * - Environnemental : géométrie union (si au moins une parcelle est concernée -> site concerné)
-   * - Patrimonial : géométrie union (si au moins une parcelle est concernée -> site concerné)
-   * - Réglementaire : géométrie de la parcelle prédominante uniquement
+   * Mute site.zonageEnvironnemental, site.zonagePatrimonial, site.zonageReglementaire
    *
-   * @param geometrieUnion - Géométrie union du site (pour environnemental et patrimonial)
-   * @param geometriePredominante - Géométrie de la parcelle prédominante (pour réglementaire)
-   * @param codeInsee - Code INSEE de la commune prédominante
-   * @returns Résultat complet de l'enrichissement zonage
+   * @param site - Site à enrichir (doit avoir une géométrie et un codeInsee)
+   * @returns Résultat de l'enrichissement et données d'évaluation/diagnostic
    */
-  async enrichirZonagesSite(
-    geometrieUnion: ParcelleGeometry,
-    geometriePredominante: ParcelleGeometry,
-    codeInsee: string,
-  ): Promise<ResultatEnrichissementZonage> {
-    this.logger.log("Enrichissement zonages site multi-parcellaire");
+  async enrichir(site: Site): Promise<ResultatEnrichissementZonage> {
+    if (!site.geometrie || !site.codeInsee) {
+      this.logger.warn(
+        `Pas de géométrie ou codeInsee pour les zonages - site ${site.identifiantParcelle}`,
+      );
+      return {
+        result: {
+          success: false,
+          sourcesUtilisees: [],
+          sourcesEchouees: [
+            SourceEnrichissement.API_CARTO_NATURE,
+            SourceEnrichissement.API_CARTO_GPU,
+          ],
+        },
+        zonageEnvironnemental: null as any,
+        zonagePatrimonial: null as any,
+        zonageReglementaire: null as any,
+        evaluations: {
+          environnemental: null as any,
+          patrimonial: null as any,
+          reglementaire: null as any,
+        },
+      };
+    }
 
-    return this.executeZonageEnrichment(
-      geometrieUnion, // Environnemental : union
-      geometrieUnion, // Patrimonial : union
-      geometriePredominante, // Réglementaire : prédominante
-      codeInsee,
+    // Réglementaire : géométrie prédominante si multi-parcellaire, sinon géométrie du site
+    const geometrieReglementaire = site.geometrieReglementaire ?? site.geometrie;
+
+    const result = await this.executeZonageEnrichment(
+      site.geometrie, // Environnemental : union
+      site.geometrie, // Patrimonial : union
+      geometrieReglementaire, // Réglementaire : prédominante ou union
+      site.codeInsee,
     );
-  }
 
-  /**
-   * Enrichit avec tous les zonages (environnemental, patrimonial, réglementaire)
-   * Méthode mono-parcellaire : utilise la même géométrie pour tous les zonages
-   *
-   * @param geometry - Géométrie de la parcelle
-   * @param codeInsee - Code INSEE de la commune (pour le zonage réglementaire)
-   * @returns Résultat complet de l'enrichissement zonage
-   */
-  async enrichirZonages(
-    geometry: ParcelleGeometry,
-    codeInsee: string,
-  ): Promise<ResultatEnrichissementZonage> {
-    return this.executeZonageEnrichment(geometry, geometry, geometry, codeInsee);
+    // Muter le site avec les zonages calculés
+    site.zonageEnvironnemental = result.zonageEnvironnemental;
+    site.zonagePatrimonial = result.zonagePatrimonial;
+    site.zonageReglementaire = result.zonageReglementaire;
+
+    return result;
   }
 
   /**
