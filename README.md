@@ -39,8 +39,9 @@ mutafriches/
 │   │   │   ├── evaluation/     # Calcul mutabilité
 │   │   │   ├── evenements/     # Tracking événements
 │   │   │   ├── friches/        # DEPRECATED (routes historiques)
-│   │   │   └── shared/         # Services partagés
-│   │   └── drizzle/            # Migrations base de données
+│   │   │   ├── stats/          # Endpoint KPIs publics
+│   │   │   ├── metabase/       # Intégration dashboard Metabase
+│   │   │   └── shared/         # Services, guards, database, utilitaires partagés
 │   └── ui/                     # Application React
 │       ├── src/
 │       │   ├── features/       # Modules fonctionnels (home, qualification, resultats...)
@@ -54,9 +55,6 @@ mutafriches/
 │   ├── enrichissement.md       # Module enrichissement
 │   ├── evaluation-mutabilite.md # Algorithme mutabilité
 │   └── integration/            # Guide intégration
-└── dist/                       # Build de production
-    ├── src/                    # API compilée
-    └── dist-ui/                # UI React compilée
 ```
 
 ### Modes de fonctionnement
@@ -82,21 +80,21 @@ mutafriches/
 - pnpm 10.x
 - Docker & Docker Compose
 
-### Demarrage rapide
+### Démarrage rapide
 
 ```bash
 # Cloner le projet
 git clone https://github.com/incubateur-ademe/mutafriches.git
 cd mutafriches
 
-# Setup complet (env, dependances, BDD, schema)
+# Setup complet (env, dépendances, BDD, schéma)
 pnpm setup
 
-# Demarrer en mode developpement (API + UI)
+# Démarrer en mode développement (API + UI)
 pnpm start:dev
 ```
 
-> Le script `pnpm setup` copie le `.env.example`, installe les dependances, demarre PostgreSQL via Docker et synchronise le schema de base de donnees.
+> Le script `pnpm setup` copie le `.env.example`, installe les dépendances, démarre PostgreSQL via Docker et synchronise le schéma de base de données.
 
 **Accès :**
 
@@ -154,6 +152,8 @@ pnpm validate               # Tout vérifier (format + lint + typecheck + test)
 | `/evaluation/:id` | GET | Récupérer une évaluation |
 | `/evaluation/metadata` | GET | Métadonnées (enums) |
 | `/evenements` | POST | Tracker un événement |
+| `/api/stats` | GET | Statistiques KPIs publics |
+| `/api/metabase/embed-url` | GET | URL d'embedding dashboard Metabase |
 | `/friches/*` | * | **DEPRECATED** - Routes historiques |
 
 ## 🎨 Interface utilisateur
@@ -232,7 +232,7 @@ Documentation complète dans le dossier [`docs/`](./docs/) :
 
 - **[Index Général](./docs/README.md)** - Vue d'ensemble et navigation
 - **[Module Enrichissement](./docs/enrichissement.md)** - 9 domaines, 24 APIs, règles de gestion
-- **[Algorithme d'Évaluation](./docs/evaluation-mutabilite.md)** - Matrice 26×7, calcul mutabilité
+- **[Algorithme d'Évaluation](./docs/evaluation-mutabilite.md)** - Matrice 24×7, calcul mutabilité
 - **[Guide d'Intégration](./docs/integration/README.md)** - Iframe + PostMessage
 
 ---
@@ -358,7 +358,7 @@ scalingo -a mutafriches run "pnpm --filter api db:bpe:import"
 
 - **Production** : https://mutafriches.beta.gouv.fr
 - **Staging** : https://mutafriches.incubateur.ademe.dev
-- **Documentation API** : https://mutafriches.beta.gouv.fr/docs
+- **Documentation API (Swagger)** : https://mutafriches.beta.gouv.fr/api
 - **Repository** : https://github.com/incubateur-ademe/mutafriches
 - **Contact** : contact@mutafriches.beta.gouv.fr
 
