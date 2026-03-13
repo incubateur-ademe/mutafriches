@@ -85,6 +85,37 @@ Cette règle s'applique à :
 - Tests : `*.spec.ts`
 - Calculateurs : `*.calculator.ts`
 
+## Workflow obligatoire
+
+### Vérification post-implémentation
+
+Après toute implémentation ou modification de code, TOUJOURS lancer la vérification complète :
+
+```bash
+pnpm format && pnpm lint && pnpm typecheck && pnpm test
+```
+
+Si des erreurs apparaissent, les corriger immédiatement et relancer jusqu'à ce que tout passe. Ne JAMAIS considérer une tâche comme terminée sans cette vérification.
+
+### ADR automatique
+
+Quand une tâche implique un **choix architectural significatif**, créer automatiquement un ADR dans `docs/adr/` via le skill `/adr`. Déclencheurs :
+
+- Ajout ou remplacement d'une dépendance majeure
+- Nouveau pattern de code (nouveau type de service, nouvelle convention)
+- Changement d'infrastructure ou de déploiement
+- Choix entre plusieurs approches avec des compromis
+
+Ne PAS créer d'ADR pour les corrections de bugs, refactorings mineurs ou fonctionnalités qui suivent un pattern existant.
+
+### Compaction du contexte
+
+Lors de la compaction automatique ou manuelle (`/compact`), TOUJOURS préserver :
+- La liste des fichiers modifiés dans la session
+- Les commandes de test et vérification à relancer
+- Les Gotchas rencontrés pendant la session
+- Les décisions architecturales prises
+
 ## Commandes courantes
 
 ```bash
@@ -210,12 +241,59 @@ apps/api/src/
 
 ## Documentation contextuelle
 
-Des guides détaillés sont disponibles dans `.claude/context/` :
+- @.claude/context/enrichissement-patterns.md — Comment ajouter un nouveau domaine ou une nouvelle API externe
+- @.claude/context/security-rules.md — Checklist sécurité (secrets, validation, injection SQL, guards)
+- @.claude/context/feature-example.md — Parcours complet d'ajout d'une source d'enrichissement
+- @.claude/context/evaluation-patterns.md — Algorithme de scoring (matrice 24×7), fiabilité, cache, sémantique `null` vs `undefined`
 
-- **[Patterns d'enrichissement](.claude/context/enrichissement-patterns.md)** — Comment ajouter un nouveau domaine ou une nouvelle API externe
-- **[Règles de sécurité](.claude/context/security-rules.md)** — Checklist sécurité (secrets, validation, injection SQL, guards)
-- **[Exemple de feature](.claude/context/feature-example.md)** — Parcours complet d'ajout d'une source d'enrichissement
-- **[Patterns d'évaluation](.claude/context/evaluation-patterns.md)** — Algorithme de scoring (matrice 24×7), fiabilité, cache, sémantique `null` vs `undefined`
+## Gotchas
+
+Pièges rencontrés en session. Chaque entrée documente un piège pour éviter d'y retomber.
+
+### Identifiants cadastraux
+
+- Les identifiants Corse utilisent `2A` / `2B` au lieu de `20` dans le code département
+- Les DOM-TOM ont des formats spécifiques (3 chiffres département : `971`, `972`, etc.)
+- Le format complet fait 14 caractères : `DDDCCCSSNNNNPP` (département, commune, section, numéro, parcelle)
+- TOUJOURS valider le format avant d'appeler les APIs cadastrales
+
+### Fiabilité : sémantique `null` vs `undefined`
+
+- `null` = recherche effectuée, aucun résultat → **compte comme renseigné** (contribue à la fiabilité)
+- `undefined` = donnée indisponible (erreur technique) → **ne compte pas**
+- `"ne-sait-pas"` = réponse utilisateur explicite → **ne compte pas**
+- Ne JAMAIS confondre `null` et `undefined` dans le calcul de fiabilité
+
+### Score NEUTRE dans l'algorithme
+
+- Le score `NEUTRE = 0.5` est ajouté **simultanément** aux avantages ET aux contraintes
+- C'est un comportement intentionnel qui reproduit le fichier Excel original
+- Ne PAS modifier ce comportement sans valider avec la formule Excel de référence
+
+### Mutation du Site
+
+- Les services d'enrichissement **mutent directement** l'objet `Site` passé en paramètre
+- C'est un pattern volontaire (pas de retour de données, mutation in-place)
+- Le `Site` traverse tout le pipeline : enrichissement → évaluation → persistance
+
+### Cache d'évaluation
+
+- Si les données complémentaires contiennent `"ne-sait-pas"` → **pas de mise en cache** (résultat partiel)
+- Le cache compare les 8 champs complémentaires un par un (pas de hash)
+- TTL de 24 heures, basé sur le `siteId` (identifiant cadastral)
+
+### PostGIS et coordonnées
+
+- Les coordonnées en entrée sont en WGS84 (EPSG:4326 — latitude/longitude)
+- Les calculs spatiaux PostGIS utilisent le SRID 4326
+- Lambert 93 (EPSG:2154) est utilisé pour certaines distances métriques
+- TOUJOURS valider les coordonnées (latitude -90/+90, longitude -180/+180) avant les requêtes PostGIS
+
+### Pattern `ApiResponse<T>` des adapters
+
+- Les adapters ne doivent JAMAIS throw — ils retournent `{ success: false, error: ... }`
+- TOUJOURS mesurer le `responseTimeMs` pour le monitoring
+- TOUJOURS configurer un `timeout` sur les appels HTTP (10s par défaut)
 
 ## Points d'attention
 
