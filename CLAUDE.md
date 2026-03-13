@@ -208,6 +208,15 @@ apps/api/src/
 | POST /friches/* (deprecated) | IntegrateurOriginGuard | Bypass | Origines whitelistées |
 | POST /evenements | OriginGuard | localhost + Mutafriches | Mutafriches uniquement |
 
+## Documentation contextuelle
+
+Des guides détaillés sont disponibles dans `.claude/context/` :
+
+- **[Patterns d'enrichissement](.claude/context/enrichissement-patterns.md)** — Comment ajouter un nouveau domaine ou une nouvelle API externe
+- **[Règles de sécurité](.claude/context/security-rules.md)** — Checklist sécurité (secrets, validation, injection SQL, guards)
+- **[Exemple de feature](.claude/context/feature-example.md)** — Parcours complet d'ajout d'une source d'enrichissement
+- **[Patterns d'évaluation](.claude/context/evaluation-patterns.md)** — Algorithme de scoring (matrice 24×7), fiabilité, cache, sémantique `null` vs `undefined`
+
 ## Points d'attention
 
 1. Les identifiants cadastraux français ont des formats complexes (DOM-TOM, Corse)
