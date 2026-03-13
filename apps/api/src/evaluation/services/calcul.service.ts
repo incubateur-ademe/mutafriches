@@ -312,13 +312,17 @@ export class CalculService {
     const utiliseAncienModeleRisques = poidsCriteres && "presenceRisquesNaturels" in poidsCriteres;
 
     if (utiliseAncienModeleRisques) {
-      // v1.1/v1.2 : combiner les 3 risques séparés en un seul critère
+      // v1.1/v1.2/v1.3 : combiner les 3 risques séparés en un seul critère
       criteres.presenceRisquesNaturels = this.combinerRisquesNaturels(site);
     } else {
-      // v1.3 : 3 critères séparés + ZAER
+      // v1.4 : 3 critères séparés
       criteres.risqueRetraitGonflementArgile = site.risqueRetraitGonflementArgile;
       criteres.risqueCavitesSouterraines = site.risqueCavitesSouterraines;
       criteres.risqueInondation = site.risqueInondation;
+    }
+
+    // ZAER : indépendant du modèle de risques (v1.3+)
+    if (!poidsCriteres || "zoneAccelerationEnr" in poidsCriteres) {
       criteres.zoneAccelerationEnr = site.zoneAccelerationEnr;
     }
 

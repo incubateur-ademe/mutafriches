@@ -17,7 +17,7 @@ export interface ComparaisonAlgoPanelProps {
   donneesComplementaires?: Record<string, string>;
 }
 
-const VERSION_COURANTE = "v1.3";
+const VERSION_COURANTE = "v1.4";
 
 export const ComparaisonAlgoPanel: React.FC<ComparaisonAlgoPanelProps> = ({
   enrichmentData,
