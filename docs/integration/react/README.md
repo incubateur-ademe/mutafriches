@@ -4,8 +4,8 @@ Exemple d'intégration de l'iframe Mutafriches dans une application React avec l
 
 ## 📋 Prérequis
 
-- React 18+
-- Node.js 16+
+- React 19+
+- Node.js 24+
 - DSFR (Design System de l'État)
 
 ## 🚀 Installation rapide
@@ -23,13 +23,13 @@ Dans votre fichier `public/index.html`, ajoutez les liens vers le DSFR :
   <title>Intégration Mutafriches</title>
   
   <!-- DSFR CSS -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@gouvfr/dsfr@1.14.1/dist/dsfr.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@gouvfr/dsfr@1.14.4/dist/dsfr.min.css">
 </head>
 <body>
   <div id="root"></div>
   
   <!-- DSFR JS -->
-  <script src="https://cdn.jsdelivr.net/npm/@gouvfr/dsfr@1.14.1/dist/dsfr.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@gouvfr/dsfr@1.14.4/dist/dsfr.min.js"></script>
 </body>
 </html>
 ```

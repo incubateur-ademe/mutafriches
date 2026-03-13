@@ -135,7 +135,7 @@ Mutafriches peut être intégré dans un site web via **iframe + postMessage** :
 
 - **Production** : https://mutafriches.beta.gouv.fr
 - **Staging** : https://mutafriches.incubateur.ademe.dev
-- **Documentation API** : https://mutafriches.beta.gouv.fr/docs
+- **Documentation API (Swagger)** : https://mutafriches.beta.gouv.fr/api
 - **Repository** : https://github.com/incubateur-ademe/mutafriches
 - **Contact** : contact@mutafriches.beta.gouv.fr
 

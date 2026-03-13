@@ -88,45 +88,82 @@ Cette règle s'applique à :
 ## Commandes courantes
 
 ```bash
+# Setup initial
+pnpm setup                  # Installation complète (env, dépendances, BDD, schéma)
+
 # Développement
-pnpm run start:dev          # Mode développement avec watch
-pnpm run test               # Tests unitaires
-pnpm run test:watch         # Tests en mode watch
-pnpm run lint               # Linter ESLint
-pnpm run typecheck          # Vérification TypeScript
+pnpm start:dev              # Lance API + UI en développement
+pnpm dev:api                # API uniquement (NestJS watch mode)
+pnpm dev:ui                 # UI uniquement (Vite dev server)
+
+# Tests
+pnpm test                   # Tests unitaires (Vitest)
+pnpm test:watch             # Tests en mode watch
+pnpm test:coverage          # Tests avec rapport de couverture
+
+# Qualité de code
+pnpm lint                   # Linter ESLint
+pnpm format                 # Formatter Prettier
+pnpm typecheck              # Vérification TypeScript
+pnpm validate               # Tout vérifier (format + lint + typecheck + test)
+
+# Build
+pnpm build                  # Build complet (shared-types + API + UI)
 
 # Base de données
-pnpm run db:generate        # Générer les migrations Drizzle
-pnpm run db:migrate         # Appliquer les migrations
-pnpm run db:studio          # Interface Drizzle Studio
+pnpm db:start               # Démarrer PostgreSQL (Docker)
+pnpm db:stop                # Arrêter PostgreSQL
+pnpm db:reset               # Reset complet (supprime les données)
+pnpm db:generate            # Générer les migrations Drizzle
+pnpm db:migrate             # Appliquer les migrations
+pnpm db:push                # Synchroniser le schéma directement
+pnpm db:studio              # Interface Drizzle Studio
+
+# Import de données
+pnpm db:bpe:import          # Importer les données BPE (commerces INSEE)
+pnpm db:transport-stops:import  # Importer les arrêts de transport
+pnpm db:ademe-sites:import  # Importer les sites pollués ADEME
 ```
 
-## Architecture DDD
+## Architecture
 
-Le projet suit une architecture Domain-Driven Design :
+Le projet suit une architecture modulaire NestJS :
 
 ```
-src/
-├── domains/
-│   ├── cadastre/           # Données parcellaires IGN
-│   ├── energie/            # Raccordements électriques
-│   ├── transport/          # Arrêts de transport
-│   ├── urbanisme/          # PLU, zonages
-│   ├── risques-naturels/   # Inondations, argiles
-│   ├── risques-technologiques/
-│   └── georisques/         # API GéoRisques
-├── enrichment/             # Orchestration enrichissement
-├── calculators/            # Logique métier pure
-└── adapters/               # APIs externes
+apps/api/src/
+├── enrichissement/         # Enrichissement parcelles (24 APIs externes + 3 bases locales)
+│   ├── adapters/           # Clients APIs externes (IGN, Enedis, GéoRisques, ZAER...)
+│   ├── domains/            # Logique métier par domaine (cadastre, énergie, transport...)
+│   ├── dtos/               # Objets de transfert
+│   ├── entities/           # Entités domaine
+│   └── repositories/       # Accès base de données
+├── evaluation/             # Calcul mutabilité (matrice 24 critères × 7 usages)
+│   ├── algorithme/         # Logique de calcul pure
+│   ├── dtos/               # Objets de transfert
+│   └── entities/           # Entités domaine
+├── evenements/             # Tracking événements utilisateur
+├── friches/                # DEPRECATED (routes historiques)
+├── stats/                  # Endpoint KPIs publics
+├── metabase/               # Intégration dashboard Metabase
+├── shared/                 # Services, guards, database, utilitaires partagés
+│   ├── database/           # Schémas Drizzle, migrations
+│   └── guards/             # IntegrateurOriginGuard, OriginGuard
+└── scripts/                # Scripts d'import de données (BPE, transport, ADEME)
 ```
 
 ## APIs externes intégrées
 
-- IGN Cadastre : données parcellaires
-- GéoRisques : risques environnementaux
-- transport.data.gouv.fr : arrêts de transport
-- API Carto : zonages PLU
-- INSEE : données démographiques
+- **IGN Cadastre** (`cadastre.data.gouv.fr`) : données parcellaires, géométrie, surface
+- **BDNB** (`api.bdnb.io`) : surface bâtie
+- **Enedis** (`data.enedis.fr`) : distance raccordement électrique
+- **GéoRisques** (`georisques.gouv.fr`) : 13 APIs risques (RGA, SIS, ICPE, cavités, inondation, CATNAT, etc.)
+- **API Carto Nature** (`apicarto.ign.fr`) : zonages environnementaux (Natura 2000, ZNIEFF, Parcs)
+- **API Carto GPU** (`apicarto.ign.fr`) : zonages patrimoniaux et réglementaires (PLU, Monuments)
+- **IGN WFS** (`data.geopf.fr`) : voies de grande circulation (autoroutes)
+- **ZAER WFS** (`data.geopf.fr`) : zones d'accélération des énergies renouvelables
+- **API Service Public** (`service-public.fr`) : coordonnées mairies (centre-ville)
+- **LOVAC** (`data.gouv.fr`) : taux de logements vacants
+- **Bases locales PostGIS** : arrêts de transport (data.gouv), BPE INSEE (commerces), sites pollués ADEME
 
 ## Tests
 
