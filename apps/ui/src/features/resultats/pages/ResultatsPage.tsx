@@ -18,6 +18,7 @@ import { evaluationService } from "../../../shared/services/api/api.evaluation.s
 import { ModalInfo } from "../../../shared/components/common/ModalInfo";
 import { VERSION_ALGO } from "@mutafriches/shared-types";
 import { DebugPanelGate } from "../../debug/components/DebugPanelGate";
+import { ComparaisonAlgoPanelGate } from "../../comparaison-algo/components/ComparaisonAlgoPanelGate";
 import { isDebugPanelEnabled } from "../../debug/utils/debug.helpers";
 
 // Seuils pour les messages contextuels
@@ -481,6 +482,12 @@ export const ResultatsPage: React.FC = () => {
         manualData={state.manualData}
         mutabilityData={mutabilityData}
         identifiantSite={state.identifiantSite}
+      />
+
+      {/* Panneau de comparaison algorithme (dev/staging uniquement) */}
+      <ComparaisonAlgoPanelGate
+        enrichmentData={state.enrichmentData}
+        donneesComplementaires={state.manualData}
       />
     </Layout>
   );

@@ -9,7 +9,7 @@ import {
   SourceUtilisation,
 } from "@mutafriches/shared-types";
 import { EnrichissementService } from "../../enrichissement/services/enrichissement.service";
-import { CalculService } from "./calcul.service";
+import { CalculService, CalculOptions } from "./calcul.service";
 import { Site } from "../entities/site.entity";
 import { Evaluation } from "../entities/evaluation.entity";
 import { EvaluationRepository } from "../repositories/evaluation.repository";
@@ -45,6 +45,7 @@ export class OrchestrateurService {
       modeDetaille?: boolean;
       sansEnrichissement?: boolean;
       origine?: OrigineUtilisation;
+      versionAlgorithme?: string;
     },
   ): Promise<MutabiliteOutputDto> {
     // Vérification des données
@@ -56,11 +57,13 @@ export class OrchestrateurService {
     const siteId = input.donneesEnrichies.identifiantParcelle;
     const nombreParcelles = input.donneesEnrichies.nombreParcelles;
 
+    // Bypass du cache si version non courante (comparaison = transient)
+    const utiliserCache = !options?.versionAlgorithme;
+
     // 0. VERIFIER LE CACHE
-    const cached = await this.evaluationRepository.findValidCache(
-      siteId,
-      input.donneesComplementaires,
-    );
+    const cached = utiliserCache
+      ? await this.evaluationRepository.findValidCache(siteId, input.donneesComplementaires)
+      : null;
 
     if (cached) {
       this.logger.log(`Cache evaluation hit pour site ${siteId}, source: ${cached.id}`);
@@ -181,5 +184,51 @@ export class OrchestrateurService {
    */
   async recupererEvaluation(evaluationId: string): Promise<Evaluation | null> {
     return await this.evaluationRepository.findById(evaluationId);
+  }
+
+  /**
+   * Compare les résultats de mutabilité pour plusieurs versions de l'algorithme
+   * Pas de cache, pas de persistance (comparaison = transient)
+   */
+  async comparerMutabilite(
+    input: CalculerMutabiliteInputDto,
+    versions: string[],
+    options?: { sansEnrichissement?: boolean },
+  ): Promise<Record<string, MutabiliteOutputDto>> {
+    if (!input.donneesEnrichies) {
+      throw new Error("Données enrichies manquantes dans la requête");
+    }
+
+    // Crée le site une seule fois
+    let site: Site;
+    if (options?.sansEnrichissement) {
+      site = Site.fromInput(input);
+    } else {
+      site = Site.fromEnrichissement(input.donneesEnrichies, input.donneesComplementaires);
+    }
+
+    if (!site.estComplete()) {
+      throw new Error("Site incomplet pour le calcul");
+    }
+
+    // Calculer en parallèle pour chaque version
+    const resultats = await Promise.all(
+      versions.map(async (version) => {
+        const calcOptions: CalculOptions = {
+          modeDetaille: true,
+          versionAlgorithme: version,
+        };
+        const resultat = await this.calculService.calculer(site, calcOptions);
+        return { version, resultat };
+      }),
+    );
+
+    // Construire le record version -> résultat
+    const comparaison: Record<string, MutabiliteOutputDto> = {};
+    for (const { version, resultat } of resultats) {
+      comparaison[version] = resultat;
+    }
+
+    return comparaison;
   }
 }

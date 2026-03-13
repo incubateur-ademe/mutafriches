@@ -27,6 +27,7 @@ export interface ApiCallOptions {
 export interface CalculerMutabiliteOptions extends ApiCallOptions {
   modeDetaille?: boolean;
   sansEnrichissement?: boolean;
+  versionAlgorithme?: string;
 }
 
 // Options pour les requêtes HTTP

@@ -19,6 +19,8 @@ export const API_CONFIG = {
     },
     evaluation: {
       calculer: "/evaluation/calculer",
+      comparer: "/evaluation/comparer",
+      algorithmeVersions: "/evaluation/algorithme/versions",
       recuperer: (id: string) => `/evaluation/${id}`,
       metadata: "/evaluation/metadata",
     },

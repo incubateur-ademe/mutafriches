@@ -42,6 +42,8 @@ const CRITERE_LABELS: Record<string, string> = {
   valeurArchitecturaleHistorique: "Valeur architecturale / historique",
   zonageEnvironnemental: "Zonage environnemental",
   trameVerteEtBleue: "Trame verte et bleue",
+  presenceRisquesNaturels: "Risques naturels",
+  zoneAccelerationEnr: "Zone d'accélération EnR",
 };
 
 /** Critères à mettre en évidence (poids élevé et/ou intérêt analytique) */
@@ -86,10 +88,12 @@ function formatValeur(valeur: string | number | boolean): string {
 
 interface DetailAlgorithmeSectionProps {
   mutabilityData: MutabiliteOutputDto | null;
+  title?: string;
 }
 
 export const DetailAlgorithmeSection: React.FC<DetailAlgorithmeSectionProps> = ({
   mutabilityData,
+  title,
 }) => {
   const [selectedUsage, setSelectedUsage] = useState<string | null>(null);
 
@@ -100,7 +104,7 @@ export const DetailAlgorithmeSection: React.FC<DetailAlgorithmeSectionProps> = (
   if (!mutabilityData || !hasDetailedData) {
     return (
       <details className="debug-panel__section">
-        <summary>Détail de l'algorithme</summary>
+        <summary>{title ?? "Détail de l'algorithme"}</summary>
         <div className="debug-panel__section-content">
           <p className="fr-text--sm">
             Données détaillées non disponibles. Le mode détaillé n'est pas activé.
@@ -152,7 +156,7 @@ export const DetailAlgorithmeSection: React.FC<DetailAlgorithmeSectionProps> = (
 
   return (
     <details className="debug-panel__section">
-      <summary>Détail de l'algorithme</summary>
+      <summary>{title ?? "Détail de l'algorithme"}</summary>
       <div className="debug-panel__section-content">
         {/* Sélecteur d'usage */}
         <div className="detail-algo__usage-selector">
