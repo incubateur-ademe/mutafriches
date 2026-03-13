@@ -13,6 +13,10 @@ import {
   QualitePaysage,
   QualiteVoieDesserte,
   TrameVerteEtBleue,
+  RisqueRetraitGonflementArgile,
+  RisqueCavitesSouterraines,
+  RisqueInondation,
+  ZonageReglementaire,
 } from "@mutafriches/shared-types";
 
 /**
@@ -45,11 +49,11 @@ export class EvaluationBuilder {
     distanceRaccordementElectrique: 500,
     tauxLogementsVacants: 5.2,
     presenceRisquesTechnologiques: false,
-    risqueRetraitGonflementArgile: "faible-ou-moyen",
-    risqueCavitesSouterraines: "non",
-    risqueInondation: "non",
+    risqueRetraitGonflementArgile: RisqueRetraitGonflementArgile.FAIBLE_OU_MOYEN,
+    risqueCavitesSouterraines: RisqueCavitesSouterraines.NON,
+    risqueInondation: RisqueInondation.NON,
     siteReferencePollue: false,
-    zonageReglementaire: "U",
+    zonageReglementaire: ZonageReglementaire.ZONE_URBAINE_U,
     sourcesUtilisees: ["cadastre"],
     champsManquants: [],
     sourcesEchouees: [],

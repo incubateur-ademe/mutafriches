@@ -12,7 +12,6 @@ import {
 import { ApiProperty } from "@nestjs/swagger";
 
 export class DonneesComplementairesSwaggerDto implements IDonneesComplementaires {
-  tvb: TrameVerteEtBleue;
   @ApiProperty({
     enum: TypeProprietaire,
     description: "Type de propriétaire de la parcelle",
@@ -63,7 +62,7 @@ export class DonneesComplementairesSwaggerDto implements IDonneesComplementaires
   qualiteVoieDesserte: QualiteVoieDesserte;
 
   @ApiProperty({
-    enum: ["HORS_TRAME", "ZONE_DE_CONNEXION", "NOUE", "COULOIR_DE_PASSAGE", "NOEUD_HYDROGRAPHIQUE"],
+    enum: TrameVerteEtBleue,
     description: "Intégration de la parcelle dans la trame verte et bleue",
     example: "HORS_TRAME",
   })

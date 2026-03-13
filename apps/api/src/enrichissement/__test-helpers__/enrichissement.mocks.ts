@@ -1,4 +1,5 @@
 import { vi, type Mock } from "vitest";
+import { ZoneAccelerationEnr } from "@mutafriches/shared-types";
 
 /**
  * Mocks spécifiques au domaine Enrichissement
@@ -107,8 +108,7 @@ interface MockEnrichissementRepository {
 }
 
 interface MockZonageOrchestratorService {
-  enrichirZonages: Mock;
-  enrichirZonagesSite: Mock;
+  enrichir: Mock;
 }
 
 interface MockSiteRepository {
@@ -135,7 +135,7 @@ interface MockEnrCalculator {
 }
 
 interface MockPollutionDetectionService {
-  detecterPollution: Mock;
+  enrichir: Mock;
 }
 
 /**
@@ -365,8 +365,7 @@ export function createMockEnrichissementRepository(): MockEnrichissementReposito
  */
 export function createMockZonageOrchestratorService(): MockZonageOrchestratorService {
   return {
-    enrichirZonages: vi.fn(),
-    enrichirZonagesSite: vi.fn(),
+    enrichir: vi.fn(),
   };
 }
 
@@ -395,7 +394,7 @@ export function createMockEnrEnrichissementService(): MockEnrEnrichissementServi
  */
 export function createMockEnrCalculator(): MockEnrCalculator {
   return {
-    evaluer: vi.fn().mockReturnValue("non"),
+    evaluer: vi.fn().mockReturnValue(ZoneAccelerationEnr.NON),
   };
 }
 
@@ -404,7 +403,7 @@ export function createMockEnrCalculator(): MockEnrCalculator {
  */
 export function createMockPollutionDetectionService(): MockPollutionDetectionService {
   return {
-    detecterPollution: vi.fn(),
+    enrichir: vi.fn(),
   };
 }
 

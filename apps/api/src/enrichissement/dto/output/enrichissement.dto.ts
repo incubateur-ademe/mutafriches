@@ -4,8 +4,10 @@ import {
   RisqueRetraitGonflementArgile,
   RisqueCavitesSouterraines,
   RisqueInondation,
+  ZonageReglementaire,
   ZonageEnvironnemental,
   ZonagePatrimonial,
+  ZoneAccelerationEnr,
   TrameVerteEtBleue,
   Coordonnees,
   GeometrieParcelle,
@@ -167,15 +169,15 @@ export class EnrichissementSwaggerDto implements IEnrichissementOutput {
     example: RisqueRetraitGonflementArgile.FAIBLE_OU_MOYEN,
     enum: RisqueRetraitGonflementArgile,
   })
-  risqueRetraitGonflementArgile?: string;
+  risqueRetraitGonflementArgile?: RisqueRetraitGonflementArgile;
 
   @ApiProperty({
-    description: "Risque cavites souterraines",
+    description: "Risque cavités souterraines",
     required: false,
     example: RisqueCavitesSouterraines.NON,
     enum: RisqueCavitesSouterraines,
   })
-  risqueCavitesSouterraines?: string;
+  risqueCavitesSouterraines?: RisqueCavitesSouterraines;
 
   @ApiProperty({
     description: "Risque inondation (TRI/AZI/PAPI/PPR)",
@@ -183,14 +185,15 @@ export class EnrichissementSwaggerDto implements IEnrichissementOutput {
     example: RisqueInondation.NON,
     enum: RisqueInondation,
   })
-  risqueInondation?: string;
+  risqueInondation?: RisqueInondation;
 
   @ApiProperty({
     description: "Zonage réglementaire selon le PLU/PLUi",
     required: false,
-    example: "Zone urbaine - U",
+    example: ZonageReglementaire.ZONE_URBAINE_U,
+    enum: ZonageReglementaire,
   })
-  zonageReglementaire?: string;
+  zonageReglementaire?: ZonageReglementaire;
 
   @ApiProperty({
     description: "Type de zonage environnemental applicable",
@@ -198,7 +201,7 @@ export class EnrichissementSwaggerDto implements IEnrichissementOutput {
     example: ZonageEnvironnemental.HORS_ZONE,
     enum: ZonageEnvironnemental,
   })
-  zonageEnvironnemental?: string;
+  zonageEnvironnemental?: ZonageEnvironnemental;
 
   @ApiProperty({
     description: "Type de protection patrimoniale",
@@ -206,7 +209,7 @@ export class EnrichissementSwaggerDto implements IEnrichissementOutput {
     example: ZonagePatrimonial.NON_CONCERNE,
     enum: ZonagePatrimonial,
   })
-  zonagePatrimonial?: string;
+  zonagePatrimonial?: ZonagePatrimonial;
 
   @ApiProperty({
     description: "Position par rapport à la trame verte et bleue",
@@ -214,7 +217,15 @@ export class EnrichissementSwaggerDto implements IEnrichissementOutput {
     example: TrameVerteEtBleue.HORS_TRAME,
     enum: TrameVerteEtBleue,
   })
-  trameVerteEtBleue?: string;
+  trameVerteEtBleue?: TrameVerteEtBleue;
+
+  @ApiProperty({
+    description: "Zone d'accélération des énergies renouvelables",
+    required: false,
+    example: ZoneAccelerationEnr.NON,
+    enum: ZoneAccelerationEnr,
+  })
+  zoneAccelerationEnr?: ZoneAccelerationEnr;
 
   @ApiProperty({
     description: "Liste des sources de données utilisées pour l'enrichissement",
@@ -238,15 +249,7 @@ export class EnrichissementSwaggerDto implements IEnrichissementOutput {
   sourcesEchouees: string[];
 
   @ApiProperty({
-    description: "Indice de fiabilité des données enrichies (0-10)",
-    example: 8.5,
-    minimum: 0,
-    maximum: 10,
-  })
-  fiabilite: number;
-
-  @ApiProperty({
-    description: "Zones d'Acceleration des Energies Renouvelables (ZAER)",
+    description: "Zones d'Accélération des Énergies Renouvelables (ZAER)",
     required: false,
     type: Object,
     example: {
@@ -255,7 +258,7 @@ export class EnrichissementSwaggerDto implements IEnrichissementOutput {
       filieres: ["SOLAIRE_PV", "EOLIEN"],
       zones: [
         { nom: "Zone solaire sud", filiere: "SOLAIRE_PV", detailFiliere: "SOLAIRE_PV_NV_TOIT" },
-        { nom: "Zone eolien nord", filiere: "EOLIEN", detailFiliere: null },
+        { nom: "Zone éolien nord", filiere: "EOLIEN", detailFiliere: null },
       ],
     },
   })

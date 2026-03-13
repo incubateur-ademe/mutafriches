@@ -32,6 +32,8 @@ export class Site {
   commune: string;
   coordonnees?: Coordonnees; // Centroïde du site
   geometrie?: GeometrieParcelle; // Géométrie du site (Polygon ou MultiPolygon)
+  /** Géométrie spécifique pour le zonage réglementaire (parcelle prédominante en multi-parcellaire) */
+  geometrieReglementaire?: GeometrieParcelle;
   nombreParcelles?: number; // Nombre de parcelles constituant le site
 
   // Données enrichies automatiquement
@@ -53,6 +55,8 @@ export class Site {
   zonagePatrimonial?: ZonagePatrimonial;
   trameVerteEtBleue?: TrameVerteEtBleue;
   zoneAccelerationEnr?: ZoneAccelerationEnr;
+  /** Site référencé comme pollué (détection auto via ADEME/SIS/ICPE) */
+  siteReferencePollue?: boolean;
 
   // Données saisies manuellement
   typeProprietaire?: TypeProprietaire;

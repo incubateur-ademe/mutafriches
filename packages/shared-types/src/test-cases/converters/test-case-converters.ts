@@ -3,6 +3,9 @@ import {
   RisqueRetraitGonflementArgile,
   RisqueCavitesSouterraines,
   RisqueInondation,
+  ZonageEnvironnemental,
+  ZonageReglementaire,
+  ZonagePatrimonial,
 } from "../../enrichissement";
 import { CalculerMutabiliteInputDto, DonneesComplementairesInputDto } from "../../evaluation";
 import { TestCase } from "../types/test-case.types";
@@ -13,9 +16,9 @@ import * as enumConverters from "./enum-converters";
  * Mapping approximatif pour compatibilité avec les tests Excel existants
  */
 function mapRisquesNaturels(risque?: string): {
-  risqueRetraitGonflementArgile: string;
-  risqueCavitesSouterraines: string;
-  risqueInondation: string;
+  risqueRetraitGonflementArgile: RisqueRetraitGonflementArgile;
+  risqueCavitesSouterraines: RisqueCavitesSouterraines;
+  risqueInondation: RisqueInondation;
 } {
   switch (risque) {
     case "fort":
@@ -128,9 +131,9 @@ export function convertTestCaseToMutabilityInput(
 
     // Mapping de l'ancien risque naturel combiné vers les 3 critères séparés
     ...mapRisquesNaturels(input.presenceRisquesNaturels),
-    zonageEnvironnemental: input.zonageEnvironnemental,
-    zonageReglementaire: input.zonageReglementaire,
-    zonagePatrimonial: input.zonagePatrimonial,
+    zonageEnvironnemental: input.zonageEnvironnemental as ZonageEnvironnemental,
+    zonageReglementaire: input.zonageReglementaire as ZonageReglementaire,
+    zonagePatrimonial: input.zonagePatrimonial as ZonagePatrimonial,
 
     coordonnees: input.coordonnees,
     sourcesUtilisees: ["Test"],
