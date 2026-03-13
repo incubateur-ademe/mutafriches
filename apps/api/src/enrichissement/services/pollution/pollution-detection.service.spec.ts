@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { Test, TestingModule } from "@nestjs/testing";
 import { SourceEnrichissement } from "@mutafriches/shared-types";
 import { PollutionDetectionService } from "./pollution-detection.service";
+import { Site } from "../../../evaluation/entities/site.entity";
 import { AdemeSitesPolluesRepository } from "../../repositories/ademe-sites-pollues.repository";
 import { SisService } from "../../adapters/georisques/sis/sis.service";
 import { IcpeService } from "../../adapters/georisques/icpe/icpe.service";
@@ -10,6 +11,17 @@ import {
   createMockSisService,
   createMockIcpeService,
 } from "../../__test-helpers__/enrichissement.mocks";
+
+/** Crée un site de test avec des coordonnées */
+function createTestSite(latitude = 48.0, longitude = -4.0, codeInsee?: string): Site {
+  const site = new Site();
+  site.identifiantParcelle = "29232000AB0001";
+  site.coordonnees = { latitude, longitude };
+  if (codeInsee) {
+    site.codeInsee = codeInsee;
+  }
+  return site;
+}
 
 describe("PollutionDetectionService", () => {
   let service: PollutionDetectionService;
@@ -37,9 +49,10 @@ describe("PollutionDetectionService", () => {
     icpeService = mockIcpe;
   });
 
-  describe("detecterPollution", () => {
-    it("devrait detecter pollution si ADEME positif seul", async () => {
+  describe("enrichir", () => {
+    it("devrait détecter pollution si ADEME positif seul", async () => {
       // Arrange
+      const site = createTestSite(48.0, -4.0, "29232");
       ademeRepository.isSiteReferencePollue.mockResolvedValue(true);
       sisService.getSisByLatLon.mockResolvedValue({
         success: true,
@@ -51,18 +64,17 @@ describe("PollutionDetectionService", () => {
       });
 
       // Act
-      const result = await service.detecterPollution(48.0, -4.0, "29232");
+      const result = await service.enrichir(site);
 
       // Assert
-      expect(result.siteReferencePollue).toBe(true);
-      expect(result.pollutionAdeme).toBe(true);
-      expect(result.pollutionSis).toBe(false);
-      expect(result.pollutionIcpe).toBe(false);
-      expect(result.sourcesPollution).toContain("ADEME-Sites-Pollues");
+      expect(site.siteReferencePollue).toBe(true);
+      expect(result.success).toBe(true);
+      expect(result.sourcesUtilisees).toContain("ADEME-Sites-Pollues");
     });
 
-    it("devrait detecter pollution si SIS positif seul", async () => {
+    it("devrait détecter pollution si SIS positif seul", async () => {
       // Arrange
+      const site = createTestSite();
       ademeRepository.isSiteReferencePollue.mockResolvedValue(false);
       sisService.getSisByLatLon.mockResolvedValue({
         success: true,
@@ -74,18 +86,16 @@ describe("PollutionDetectionService", () => {
       });
 
       // Act
-      const result = await service.detecterPollution(48.0, -4.0);
+      const result = await service.enrichir(site);
 
       // Assert
-      expect(result.siteReferencePollue).toBe(true);
-      expect(result.pollutionAdeme).toBe(false);
-      expect(result.pollutionSis).toBe(true);
-      expect(result.pollutionIcpe).toBe(false);
-      expect(result.sourcesPollution).toContain(SourceEnrichissement.GEORISQUES_SIS);
+      expect(site.siteReferencePollue).toBe(true);
+      expect(result.sourcesUtilisees).toContain(SourceEnrichissement.GEORISQUES_SIS);
     });
 
-    it("devrait detecter pollution si ICPE a moins de 500m", async () => {
+    it("devrait détecter pollution si ICPE à moins de 500m", async () => {
       // Arrange
+      const site = createTestSite();
       ademeRepository.isSiteReferencePollue.mockResolvedValue(false);
       sisService.getSisByLatLon.mockResolvedValue({
         success: true,
@@ -97,19 +107,16 @@ describe("PollutionDetectionService", () => {
       });
 
       // Act
-      const result = await service.detecterPollution(48.0, -4.0);
+      const result = await service.enrichir(site);
 
       // Assert
-      expect(result.siteReferencePollue).toBe(true);
-      expect(result.pollutionAdeme).toBe(false);
-      expect(result.pollutionSis).toBe(false);
-      expect(result.pollutionIcpe).toBe(true);
-      expect(result.distanceIcpePlusProche).toBe(300);
-      expect(result.sourcesPollution).toContain(SourceEnrichissement.GEORISQUES_ICPE);
+      expect(site.siteReferencePollue).toBe(true);
+      expect(result.sourcesUtilisees).toContain(SourceEnrichissement.GEORISQUES_ICPE);
     });
 
-    it("ne devrait PAS detecter pollution si ICPE a plus de 500m", async () => {
+    it("ne devrait PAS détecter pollution si ICPE à plus de 500m", async () => {
       // Arrange
+      const site = createTestSite();
       ademeRepository.isSiteReferencePollue.mockResolvedValue(false);
       sisService.getSisByLatLon.mockResolvedValue({
         success: true,
@@ -121,16 +128,15 @@ describe("PollutionDetectionService", () => {
       });
 
       // Act
-      const result = await service.detecterPollution(48.0, -4.0);
+      await service.enrichir(site);
 
       // Assert
-      expect(result.siteReferencePollue).toBe(false);
-      expect(result.pollutionIcpe).toBe(false);
-      expect(result.distanceIcpePlusProche).toBe(600);
+      expect(site.siteReferencePollue).toBe(false);
     });
 
-    it("devrait detecter pollution si ICPE exactement a 500m", async () => {
+    it("devrait détecter pollution si ICPE exactement à 500m", async () => {
       // Arrange
+      const site = createTestSite();
       ademeRepository.isSiteReferencePollue.mockResolvedValue(false);
       sisService.getSisByLatLon.mockResolvedValue({
         success: true,
@@ -142,15 +148,15 @@ describe("PollutionDetectionService", () => {
       });
 
       // Act
-      const result = await service.detecterPollution(48.0, -4.0);
+      await service.enrichir(site);
 
       // Assert
-      expect(result.siteReferencePollue).toBe(true);
-      expect(result.pollutionIcpe).toBe(true);
+      expect(site.siteReferencePollue).toBe(true);
     });
 
-    it("devrait detecter pollution si plusieurs sources positives", async () => {
+    it("devrait détecter pollution si plusieurs sources positives", async () => {
       // Arrange
+      const site = createTestSite();
       ademeRepository.isSiteReferencePollue.mockResolvedValue(true);
       sisService.getSisByLatLon.mockResolvedValue({
         success: true,
@@ -162,18 +168,16 @@ describe("PollutionDetectionService", () => {
       });
 
       // Act
-      const result = await service.detecterPollution(48.0, -4.0);
+      const result = await service.enrichir(site);
 
       // Assert
-      expect(result.siteReferencePollue).toBe(true);
-      expect(result.pollutionAdeme).toBe(true);
-      expect(result.pollutionSis).toBe(true);
-      expect(result.pollutionIcpe).toBe(true);
-      expect(result.sourcesPollution).toHaveLength(3);
+      expect(site.siteReferencePollue).toBe(true);
+      expect(result.sourcesUtilisees).toHaveLength(3);
     });
 
-    it("ne devrait PAS detecter pollution si toutes les sources negatives", async () => {
+    it("ne devrait PAS détecter pollution si toutes les sources négatives", async () => {
       // Arrange
+      const site = createTestSite();
       ademeRepository.isSiteReferencePollue.mockResolvedValue(false);
       sisService.getSisByLatLon.mockResolvedValue({
         success: true,
@@ -185,18 +189,17 @@ describe("PollutionDetectionService", () => {
       });
 
       // Act
-      const result = await service.detecterPollution(48.0, -4.0);
+      const result = await service.enrichir(site);
 
       // Assert
-      expect(result.siteReferencePollue).toBe(false);
-      expect(result.pollutionAdeme).toBe(false);
-      expect(result.pollutionSis).toBe(false);
-      expect(result.pollutionIcpe).toBe(false);
-      expect(result.sourcesPollution).toHaveLength(0);
+      expect(site.siteReferencePollue).toBe(false);
+      expect(result.sourcesUtilisees).toHaveLength(3);
+      expect(result.sourcesEchouees).toHaveLength(0);
     });
 
-    it("devrait gerer l'echec d'ADEME et continuer avec les autres sources", async () => {
+    it("devrait gérer l'échec d'ADEME et continuer avec les autres sources", async () => {
       // Arrange
+      const site = createTestSite();
       ademeRepository.isSiteReferencePollue.mockRejectedValue(new Error("DB error"));
       sisService.getSisByLatLon.mockResolvedValue({
         success: true,
@@ -208,17 +211,17 @@ describe("PollutionDetectionService", () => {
       });
 
       // Act
-      const result = await service.detecterPollution(48.0, -4.0);
+      const result = await service.enrichir(site);
 
       // Assert
-      expect(result.siteReferencePollue).toBe(true);
-      expect(result.pollutionSis).toBe(true);
+      expect(site.siteReferencePollue).toBe(true);
       expect(result.sourcesEchouees).toContain("ADEME-Sites-Pollues");
       expect(result.sourcesUtilisees).toContain(SourceEnrichissement.GEORISQUES_SIS);
     });
 
-    it("devrait gerer l'echec de SIS et continuer avec les autres sources", async () => {
+    it("devrait gérer l'échec de SIS et continuer avec les autres sources", async () => {
       // Arrange
+      const site = createTestSite();
       ademeRepository.isSiteReferencePollue.mockResolvedValue(true);
       sisService.getSisByLatLon.mockResolvedValue({
         success: false,
@@ -230,17 +233,17 @@ describe("PollutionDetectionService", () => {
       });
 
       // Act
-      const result = await service.detecterPollution(48.0, -4.0);
+      const result = await service.enrichir(site);
 
       // Assert
-      expect(result.siteReferencePollue).toBe(true);
-      expect(result.pollutionAdeme).toBe(true);
+      expect(site.siteReferencePollue).toBe(true);
       expect(result.sourcesEchouees).toContain(SourceEnrichissement.GEORISQUES_SIS);
       expect(result.sourcesUtilisees).toContain("ADEME-Sites-Pollues");
     });
 
-    it("devrait gerer l'echec de ICPE et continuer avec les autres sources", async () => {
+    it("devrait gérer l'échec de ICPE et continuer avec les autres sources", async () => {
       // Arrange
+      const site = createTestSite();
       ademeRepository.isSiteReferencePollue.mockResolvedValue(false);
       sisService.getSisByLatLon.mockResolvedValue({
         success: true,
@@ -252,16 +255,16 @@ describe("PollutionDetectionService", () => {
       });
 
       // Act
-      const result = await service.detecterPollution(48.0, -4.0);
+      const result = await service.enrichir(site);
 
       // Assert
-      expect(result.siteReferencePollue).toBe(true);
-      expect(result.pollutionSis).toBe(true);
+      expect(site.siteReferencePollue).toBe(true);
       expect(result.sourcesEchouees).toContain(SourceEnrichissement.GEORISQUES_ICPE);
     });
 
-    it("devrait retourner false si toutes les sources echouent", async () => {
+    it("devrait retourner false si toutes les sources échouent", async () => {
       // Arrange
+      const site = createTestSite();
       ademeRepository.isSiteReferencePollue.mockRejectedValue(new Error("DB error"));
       sisService.getSisByLatLon.mockResolvedValue({
         success: false,
@@ -273,16 +276,18 @@ describe("PollutionDetectionService", () => {
       });
 
       // Act
-      const result = await service.detecterPollution(48.0, -4.0);
+      const result = await service.enrichir(site);
 
       // Assert
-      expect(result.siteReferencePollue).toBe(false);
+      expect(site.siteReferencePollue).toBe(false);
       expect(result.sourcesEchouees).toHaveLength(3);
       expect(result.sourcesUtilisees).toHaveLength(0);
+      expect(result.success).toBe(false);
     });
 
-    it("devrait appeler les 3 sources en parallele", async () => {
+    it("devrait appeler les 3 sources en parallèle", async () => {
       // Arrange
+      const site = createTestSite();
       let ademeCallTime = 0;
       let sisCallTime = 0;
       let icpeCallTime = 0;
@@ -306,9 +311,9 @@ describe("PollutionDetectionService", () => {
       });
 
       // Act
-      await service.detecterPollution(48.0, -4.0);
+      await service.enrichir(site);
 
-      // Assert - les 3 appels doivent etre quasi simultanes
+      // Assert - les 3 appels doivent être quasi simultanés
       const maxDiff = Math.max(
         Math.abs(ademeCallTime - sisCallTime),
         Math.abs(sisCallTime - icpeCallTime),
@@ -317,8 +322,9 @@ describe("PollutionDetectionService", () => {
       expect(maxDiff).toBeLessThan(5);
     });
 
-    it("devrait passer le code INSEE a ADEME", async () => {
+    it("devrait passer le code INSEE à ADEME", async () => {
       // Arrange
+      const site = createTestSite(48.0, -4.0, "29232");
       ademeRepository.isSiteReferencePollue.mockResolvedValue(false);
       sisService.getSisByLatLon.mockResolvedValue({
         success: true,
@@ -330,10 +336,25 @@ describe("PollutionDetectionService", () => {
       });
 
       // Act
-      await service.detecterPollution(48.0, -4.0, "29232");
+      await service.enrichir(site);
 
       // Assert
       expect(ademeRepository.isSiteReferencePollue).toHaveBeenCalledWith(48.0, -4.0, "29232");
+    });
+
+    it("devrait gérer un site sans coordonnées", async () => {
+      // Arrange
+      const site = new Site();
+      site.identifiantParcelle = "29232000AB0001";
+      // Pas de coordonnées
+
+      // Act
+      const result = await service.enrichir(site);
+
+      // Assert
+      expect(site.siteReferencePollue).toBe(false);
+      expect(result.success).toBe(false);
+      expect(result.sourcesEchouees).toHaveLength(3);
     });
   });
 });

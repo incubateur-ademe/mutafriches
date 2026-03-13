@@ -123,9 +123,9 @@ describe("RisquesNaturelsEnrichissementService", () => {
       expect(site.risqueRetraitGonflementArgile).toBe(RisqueRetraitGonflementArgile.FORT);
       expect(site.risqueCavitesSouterraines).toBe(RisqueCavitesSouterraines.OUI);
       expect(site.risqueInondation).toBe(RisqueInondation.OUI);
-      expect(result.result.sourcesUtilisees).toContain(SourceEnrichissement.GEORISQUES_RGA);
-      expect(result.result.sourcesUtilisees).toContain(SourceEnrichissement.GEORISQUES_CAVITES);
-      expect(result.result.sourcesUtilisees).toContain(SourceEnrichissement.GEORISQUES_TRI);
+      expect(result.sourcesUtilisees).toContain(SourceEnrichissement.GEORISQUES_RGA);
+      expect(result.sourcesUtilisees).toContain(SourceEnrichissement.GEORISQUES_CAVITES);
+      expect(result.sourcesUtilisees).toContain(SourceEnrichissement.GEORISQUES_TRI);
     });
 
     it("devrait enrichir meme si RGA echoue", async () => {
@@ -148,8 +148,8 @@ describe("RisquesNaturelsEnrichissementService", () => {
       const result = await service.enrichir(site);
 
       // Assert
-      expect(result.result.sourcesUtilisees).toContain(SourceEnrichissement.GEORISQUES_CAVITES);
-      expect(result.result.sourcesEchouees).toContain(SourceEnrichissement.GEORISQUES_RGA);
+      expect(result.sourcesUtilisees).toContain(SourceEnrichissement.GEORISQUES_CAVITES);
+      expect(result.sourcesEchouees).toContain(SourceEnrichissement.GEORISQUES_RGA);
       expect(site.risqueRetraitGonflementArgile).toBe(RisqueRetraitGonflementArgile.AUCUN);
       expect(site.risqueCavitesSouterraines).toBe(RisqueCavitesSouterraines.OUI);
     });
@@ -176,8 +176,8 @@ describe("RisquesNaturelsEnrichissementService", () => {
       const result = await service.enrichir(site);
 
       // Assert
-      expect(result.result.sourcesUtilisees).toContain(SourceEnrichissement.GEORISQUES_RGA);
-      expect(result.result.sourcesEchouees).toContain(SourceEnrichissement.GEORISQUES_CAVITES);
+      expect(result.sourcesUtilisees).toContain(SourceEnrichissement.GEORISQUES_RGA);
+      expect(result.sourcesEchouees).toContain(SourceEnrichissement.GEORISQUES_CAVITES);
       expect(site.risqueRetraitGonflementArgile).toBe(
         RisqueRetraitGonflementArgile.FAIBLE_OU_MOYEN,
       );
@@ -203,8 +203,8 @@ describe("RisquesNaturelsEnrichissementService", () => {
       const result = await service.enrichir(site);
 
       // Assert
-      expect(result.result.success).toBe(false);
-      expect(result.result.sourcesEchouees).toHaveLength(6);
+      expect(result.success).toBe(false);
+      expect(result.sourcesEchouees).toHaveLength(6);
       expect(site.risqueRetraitGonflementArgile).toBe(RisqueRetraitGonflementArgile.AUCUN);
       expect(site.risqueCavitesSouterraines).toBe(RisqueCavitesSouterraines.NON);
       expect(site.risqueInondation).toBe(RisqueInondation.NON);
@@ -220,18 +220,16 @@ describe("RisquesNaturelsEnrichissementService", () => {
       const result = await service.enrichir(site);
 
       // Assert
-      expect(result.result.success).toBe(false);
-      expect(result.result.sourcesEchouees).toContain(SourceEnrichissement.GEORISQUES_RGA);
-      expect(result.result.sourcesEchouees).toContain(SourceEnrichissement.GEORISQUES_CAVITES);
-      expect(result.result.sourcesEchouees).toContain(SourceEnrichissement.GEORISQUES_TRI);
-      expect(result.result.sourcesEchouees).toContain(SourceEnrichissement.GEORISQUES_AZI);
-      expect(result.result.sourcesEchouees).toContain(SourceEnrichissement.GEORISQUES_PAPI);
-      expect(result.result.sourcesEchouees).toContain(SourceEnrichissement.GEORISQUES_PPR);
-      expect(result.evaluation.risqueRetraitGonflementArgile).toBe(
-        RisqueRetraitGonflementArgile.AUCUN,
-      );
-      expect(result.evaluation.risqueCavitesSouterraines).toBe(RisqueCavitesSouterraines.NON);
-      expect(result.evaluation.risqueInondation).toBe(RisqueInondation.NON);
+      expect(result.success).toBe(false);
+      expect(result.sourcesEchouees).toContain(SourceEnrichissement.GEORISQUES_RGA);
+      expect(result.sourcesEchouees).toContain(SourceEnrichissement.GEORISQUES_CAVITES);
+      expect(result.sourcesEchouees).toContain(SourceEnrichissement.GEORISQUES_TRI);
+      expect(result.sourcesEchouees).toContain(SourceEnrichissement.GEORISQUES_AZI);
+      expect(result.sourcesEchouees).toContain(SourceEnrichissement.GEORISQUES_PAPI);
+      expect(result.sourcesEchouees).toContain(SourceEnrichissement.GEORISQUES_PPR);
+      expect(site.risqueRetraitGonflementArgile).toBe(RisqueRetraitGonflementArgile.AUCUN);
+      expect(site.risqueCavitesSouterraines).toBe(RisqueCavitesSouterraines.NON);
+      expect(site.risqueInondation).toBe(RisqueInondation.NON);
     });
 
     it("devrait appeler les 6 services en parallele", async () => {
@@ -315,13 +313,7 @@ describe("RisquesNaturelsEnrichissementService", () => {
       // Assert
       expect(calculator.evaluerInondation).toHaveBeenCalledWith(false, true, true, false);
       expect(site.risqueInondation).toBe(RisqueInondation.OUI);
-      expect(result.evaluation.inondation).toEqual({
-        tri: false,
-        azi: true,
-        papi: true,
-        ppr: false,
-        risque: RisqueInondation.OUI,
-      });
+      expect(result.success).toBe(true);
     });
   });
 });

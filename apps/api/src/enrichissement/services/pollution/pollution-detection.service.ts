@@ -1,52 +1,27 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { SourceEnrichissement } from "@mutafriches/shared-types";
+import { Site } from "../../../evaluation/entities/site.entity";
 import { AdemeSitesPolluesRepository } from "../../repositories/ademe-sites-pollues.repository";
 import { SisService } from "../../adapters/georisques/sis/sis.service";
 import { IcpeService } from "../../adapters/georisques/icpe/icpe.service";
 import { GEORISQUES_RAYONS_DEFAUT } from "../../adapters/georisques/georisques.constants";
+import { EnrichmentResult } from "../shared/enrichissement.types";
 
-/** Seuil de distance ICPE en metres pour considerer le site comme pollue */
+/** Seuil de distance ICPE en mètres pour considérer le site comme pollué */
 const ICPE_DISTANCE_SEUIL_METRES = 500;
 
 /**
- * Resultat de la detection de pollution
- */
-export interface PollutionDetectionResult {
-  /** Le site est-il reference comme pollue (ADEME, SIS ou ICPE proche) */
-  siteReferencePollue: boolean;
-
-  /** Sources ayant detecte une pollution */
-  sourcesPollution: string[];
-
-  /** Sources utilisees avec succes */
-  sourcesUtilisees: string[];
-
-  /** Sources en echec */
-  sourcesEchouees: string[];
-
-  /** Detail: pollution detectee via ADEME */
-  pollutionAdeme: boolean;
-
-  /** Detail: pollution detectee via SIS (Secteurs d'Information sur les Sols) */
-  pollutionSis: boolean;
-
-  /** Detail: pollution detectee via ICPE (installation a moins de 500m) */
-  pollutionIcpe: boolean;
-
-  /** Distance de l'ICPE la plus proche (si applicable) */
-  distanceIcpePlusProche?: number;
-}
-
-/**
- * Service de detection de pollution combinant 3 sources :
- * - ADEME Sites Pollues (base PostGIS locale)
- * - GeoRisques SIS (Secteurs d'Information sur les Sols)
- * - GeoRisques ICPE (Installations Classees pour la Protection de l'Environnement)
+ * Service de détection de pollution combinant 3 sources :
+ * - ADEME Sites Pollués (base PostGIS locale)
+ * - GéoRisques SIS (Secteurs d'Information sur les Sols)
+ * - GéoRisques ICPE (Installations Classées pour la Protection de l'Environnement)
  *
- * Le site est considere comme pollue si AU MOINS UNE des conditions est vraie :
- * - Parcelle a moins de 500m d'un site ADEME
+ * Le site est considéré comme pollué si AU MOINS UNE des conditions est vraie :
+ * - Parcelle à moins de 500m d'un site ADEME
  * - Parcelle dans un secteur SIS
- * - Parcelle a moins de 500m d'une ICPE
+ * - Parcelle à moins de 500m d'une ICPE
+ *
+ * Pattern uniforme : enrichir(site) mute site.siteReferencePollue et retourne EnrichmentResult
  */
 @Injectable()
 export class PollutionDetectionService {
@@ -59,28 +34,38 @@ export class PollutionDetectionService {
   ) {}
 
   /**
-   * Detecte si un site est potentiellement pollue en combinant 3 sources
+   * Enrichit un site avec la détection de pollution
    *
-   * @param latitude Latitude WGS84
-   * @param longitude Longitude WGS84
-   * @param codeInsee Code INSEE de la commune (optionnel, pour ADEME)
-   * @returns Resultat de detection avec details par source
+   * Mute site.siteReferencePollue avec le résultat combiné des 3 sources
+   *
+   * @param site - Site à enrichir (doit avoir des coordonnées)
+   * @returns Résultat de l'enrichissement (sources utilisées/échouées)
    */
-  async detecterPollution(
-    latitude: number,
-    longitude: number,
-    codeInsee?: string,
-  ): Promise<PollutionDetectionResult> {
+  async enrichir(site: Site): Promise<EnrichmentResult> {
     const sourcesUtilisees: string[] = [];
     const sourcesEchouees: string[] = [];
-    const sourcesPollution: string[] = [];
+
+    if (!site.coordonnees) {
+      this.logger.warn(
+        `Pas de coordonnées disponibles pour la détection de pollution - site ${site.identifiantParcelle}`,
+      );
+      sourcesEchouees.push(
+        "ADEME-Sites-Pollues",
+        SourceEnrichissement.GEORISQUES_SIS,
+        SourceEnrichissement.GEORISQUES_ICPE,
+      );
+      site.siteReferencePollue = false;
+      return { success: false, sourcesUtilisees, sourcesEchouees };
+    }
+
+    const { latitude, longitude } = site.coordonnees;
+    const codeInsee = site.codeInsee;
 
     let pollutionAdeme = false;
     let pollutionSis = false;
     let pollutionIcpe = false;
-    let distanceIcpePlusProche: number | undefined;
 
-    // Appeler les 3 sources en parallele
+    // Appeler les 3 sources en parallèle
     const [ademeResult, sisResult, icpeResult] = await Promise.allSettled([
       this.checkAdeme(latitude, longitude, codeInsee),
       this.checkSis(latitude, longitude),
@@ -92,16 +77,13 @@ export class PollutionDetectionService {
       if (ademeResult.value !== null) {
         sourcesUtilisees.push("ADEME-Sites-Pollues");
         pollutionAdeme = ademeResult.value;
-        if (pollutionAdeme) {
-          sourcesPollution.push("ADEME-Sites-Pollues");
-        }
-        this.logger.debug(`ADEME: pollue=${pollutionAdeme}`);
+        this.logger.debug(`ADEME: pollué=${pollutionAdeme}`);
       } else {
         sourcesEchouees.push("ADEME-Sites-Pollues");
       }
     } else {
       sourcesEchouees.push("ADEME-Sites-Pollues");
-      this.logger.warn(`Echec ADEME: ${ademeResult.reason}`);
+      this.logger.warn(`Échec ADEME: ${ademeResult.reason}`);
     }
 
     // 2. Traiter SIS
@@ -109,61 +91,50 @@ export class PollutionDetectionService {
       if (sisResult.value !== null) {
         sourcesUtilisees.push(SourceEnrichissement.GEORISQUES_SIS);
         pollutionSis = sisResult.value;
-        if (pollutionSis) {
-          sourcesPollution.push(SourceEnrichissement.GEORISQUES_SIS);
-        }
-        this.logger.debug(`SIS: pollue=${pollutionSis}`);
+        this.logger.debug(`SIS: pollué=${pollutionSis}`);
       } else {
         sourcesEchouees.push(SourceEnrichissement.GEORISQUES_SIS);
       }
     } else {
       sourcesEchouees.push(SourceEnrichissement.GEORISQUES_SIS);
-      this.logger.warn(`Echec SIS: ${sisResult.reason}`);
+      this.logger.warn(`Échec SIS: ${sisResult.reason}`);
     }
 
     // 3. Traiter ICPE
     if (icpeResult.status === "fulfilled") {
       if (icpeResult.value !== null) {
         sourcesUtilisees.push(SourceEnrichissement.GEORISQUES_ICPE);
-        distanceIcpePlusProche = icpeResult.value.distancePlusProche;
         pollutionIcpe = icpeResult.value.pollue;
-        if (pollutionIcpe) {
-          sourcesPollution.push(SourceEnrichissement.GEORISQUES_ICPE);
-        }
         this.logger.debug(
-          `ICPE: pollue=${pollutionIcpe}, distance=${distanceIcpePlusProche !== undefined ? `${Math.round(distanceIcpePlusProche)}m` : "N/A"}`,
+          `ICPE: pollué=${pollutionIcpe}, distance=${icpeResult.value.distancePlusProche !== undefined ? `${Math.round(icpeResult.value.distancePlusProche)}m` : "N/A"}`,
         );
       } else {
         sourcesEchouees.push(SourceEnrichissement.GEORISQUES_ICPE);
       }
     } else {
       sourcesEchouees.push(SourceEnrichissement.GEORISQUES_ICPE);
-      this.logger.warn(`Echec ICPE: ${icpeResult.reason}`);
+      this.logger.warn(`Échec ICPE: ${icpeResult.reason}`);
     }
 
-    // Resultat final : pollue si au moins une source detecte une pollution
+    // Résultat final : pollué si au moins une source détecte une pollution
     const siteReferencePollue = pollutionAdeme || pollutionSis || pollutionIcpe;
+    site.siteReferencePollue = siteReferencePollue;
 
     this.logger.log(
-      `Detection pollution (lat=${latitude.toFixed(5)}, lon=${longitude.toFixed(5)}): ` +
+      `Détection pollution (lat=${latitude.toFixed(5)}, lon=${longitude.toFixed(5)}): ` +
         `ADEME=${pollutionAdeme}, SIS=${pollutionSis}, ICPE=${pollutionIcpe} ` +
         `-> siteReferencePollue=${siteReferencePollue}`,
     );
 
     return {
-      siteReferencePollue,
-      sourcesPollution,
+      success: sourcesUtilisees.length > 0,
       sourcesUtilisees,
       sourcesEchouees,
-      pollutionAdeme,
-      pollutionSis,
-      pollutionIcpe,
-      distanceIcpePlusProche,
     };
   }
 
   /**
-   * Verifie la pollution via ADEME (base PostGIS locale)
+   * Vérifie la pollution via ADEME (base PostGIS locale)
    */
   private async checkAdeme(
     latitude: number,
@@ -177,13 +148,13 @@ export class PollutionDetectionService {
         codeInsee,
       );
     } catch (error) {
-      this.logger.error("Erreur lors de la verification ADEME:", error);
+      this.logger.error("Erreur lors de la vérification ADEME:", error);
       return null;
     }
   }
 
   /**
-   * Verifie la pollution via SIS (GeoRisques API)
+   * Vérifie la pollution via SIS (GéoRisques API)
    */
   private async checkSis(latitude: number, longitude: number): Promise<boolean | null> {
     try {
@@ -199,14 +170,14 @@ export class PollutionDetectionService {
 
       return result.data.presenceSis;
     } catch (error) {
-      this.logger.error("Erreur lors de la verification SIS:", error);
+      this.logger.error("Erreur lors de la vérification SIS:", error);
       return null;
     }
   }
 
   /**
-   * Verifie la pollution via ICPE (GeoRisques API)
-   * Pollue si une ICPE est a moins de 500m
+   * Vérifie la pollution via ICPE (GéoRisques API)
+   * Pollué si une ICPE est à moins de 500m
    */
   private async checkIcpe(
     latitude: number,
@@ -232,7 +203,7 @@ export class PollutionDetectionService {
         distancePlusProche,
       };
     } catch (error) {
-      this.logger.error("Erreur lors de la verification ICPE:", error);
+      this.logger.error("Erreur lors de la vérification ICPE:", error);
       return null;
     }
   }

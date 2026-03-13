@@ -53,6 +53,8 @@ export class Site {
   zonagePatrimonial?: ZonagePatrimonial;
   trameVerteEtBleue?: TrameVerteEtBleue;
   zoneAccelerationEnr?: ZoneAccelerationEnr;
+  /** Site référencé comme pollué (détection auto via ADEME/SIS/ICPE) */
+  siteReferencePollue?: boolean;
 
   // Données saisies manuellement
   typeProprietaire?: TypeProprietaire;

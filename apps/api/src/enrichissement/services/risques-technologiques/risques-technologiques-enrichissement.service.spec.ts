@@ -65,9 +65,9 @@ describe("RisquesTechnologiquesEnrichissementService", () => {
       // Assert
       expect(calculator.evaluer).toHaveBeenCalledWith(true, 300);
       expect(site.presenceRisquesTechnologiques).toBe(true);
-      expect(result.result.success).toBe(true);
-      expect(result.result.sourcesUtilisees).toContain(SourceEnrichissement.GEORISQUES_SIS);
-      expect(result.result.sourcesUtilisees).toContain(SourceEnrichissement.GEORISQUES_ICPE);
+      expect(result.success).toBe(true);
+      expect(result.sourcesUtilisees).toContain(SourceEnrichissement.GEORISQUES_SIS);
+      expect(result.sourcesUtilisees).toContain(SourceEnrichissement.GEORISQUES_ICPE);
     });
 
     it("devrait evaluer meme si SIS echoue (avec ICPE seul)", async () => {
@@ -93,8 +93,8 @@ describe("RisquesTechnologiquesEnrichissementService", () => {
 
       // Assert
       expect(calculator.evaluer).toHaveBeenCalledWith(false, 200);
-      expect(result.result.sourcesUtilisees).toContain(SourceEnrichissement.GEORISQUES_ICPE);
-      expect(result.result.sourcesEchouees).toContain(SourceEnrichissement.GEORISQUES_SIS);
+      expect(result.sourcesUtilisees).toContain(SourceEnrichissement.GEORISQUES_ICPE);
+      expect(result.sourcesEchouees).toContain(SourceEnrichissement.GEORISQUES_SIS);
       expect(site.presenceRisquesTechnologiques).toBe(true);
     });
 
@@ -121,8 +121,8 @@ describe("RisquesTechnologiquesEnrichissementService", () => {
 
       // Assert
       expect(calculator.evaluer).toHaveBeenCalledWith(true, undefined);
-      expect(result.result.sourcesUtilisees).toContain(SourceEnrichissement.GEORISQUES_SIS);
-      expect(result.result.sourcesEchouees).toContain(SourceEnrichissement.GEORISQUES_ICPE);
+      expect(result.sourcesUtilisees).toContain(SourceEnrichissement.GEORISQUES_SIS);
+      expect(result.sourcesEchouees).toContain(SourceEnrichissement.GEORISQUES_ICPE);
       expect(site.presenceRisquesTechnologiques).toBe(true);
     });
 
@@ -148,8 +148,8 @@ describe("RisquesTechnologiquesEnrichissementService", () => {
       const result = await service.enrichir(site);
 
       // Assert
-      expect(result.result.success).toBe(false);
-      expect(result.result.sourcesEchouees).toHaveLength(2);
+      expect(result.success).toBe(false);
+      expect(result.sourcesEchouees).toHaveLength(2);
       expect(calculator.evaluer).toHaveBeenCalledWith(false, undefined);
       expect(site.presenceRisquesTechnologiques).toBe(false);
     });
@@ -164,10 +164,10 @@ describe("RisquesTechnologiquesEnrichissementService", () => {
       const result = await service.enrichir(site);
 
       // Assert
-      expect(result.result.success).toBe(false);
-      expect(result.result.sourcesEchouees).toContain(SourceEnrichissement.GEORISQUES_SIS);
-      expect(result.result.sourcesEchouees).toContain(SourceEnrichissement.GEORISQUES_ICPE);
-      expect(result.evaluation.risqueFinal).toBe(false);
+      expect(result.success).toBe(false);
+      expect(result.sourcesEchouees).toContain(SourceEnrichissement.GEORISQUES_SIS);
+      expect(result.sourcesEchouees).toContain(SourceEnrichissement.GEORISQUES_ICPE);
+      expect(site.presenceRisquesTechnologiques).toBe(false);
     });
 
     it("devrait appeler les services en parallele", async () => {

@@ -135,7 +135,7 @@ interface MockEnrCalculator {
 }
 
 interface MockPollutionDetectionService {
-  detecterPollution: Mock;
+  enrichir: Mock;
 }
 
 /**
@@ -404,7 +404,7 @@ export function createMockEnrCalculator(): MockEnrCalculator {
  */
 export function createMockPollutionDetectionService(): MockPollutionDetectionService {
   return {
-    detecterPollution: vi.fn(),
+    enrichir: vi.fn(),
   };
 }
 
