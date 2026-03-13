@@ -179,7 +179,7 @@ describe("ZonageOrchestratorService", () => {
       });
 
       // Act
-      const result = await orchestrator.enrichir(site);
+      await orchestrator.enrichir(site);
 
       // Assert
       expect(site.zonageEnvironnemental).toBe(ZonageEnvironnemental.HORS_ZONE);
