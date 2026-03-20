@@ -29,10 +29,6 @@ async function bootstrap() {
       .addTag("evaluation", "Module d'évaluation de la mutabilité")
       .addTag("health", "Vérification de l'état de santé de l'API")
       .addTag("stats", "KPIs publics Mutafriches")
-      .addTag(
-        "friches (deprecated)",
-        "Routes de compatibilité (deprecated) - utilisez /enrichissement et /evaluation",
-      )
       .build();
 
     const document = SwaggerModule.createDocument(app, config);
@@ -76,7 +72,6 @@ async function bootstrap() {
           req.path.startsWith("/api") ||
           req.path.startsWith("/enrichissement") ||
           req.path.startsWith("/evaluation") ||
-          req.path.startsWith("/friches") || // Legacy
           req.path.startsWith("/evenements") ||
           req.path.startsWith("/health") ||
           req.path.includes(".")
