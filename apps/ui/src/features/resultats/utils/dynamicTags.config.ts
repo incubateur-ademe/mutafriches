@@ -48,22 +48,24 @@ const resolveGrandeParcelleUniquement = (data: TagInputData): string | null => {
 };
 
 // --- Présence de pollution ---
-const resolveNonPollue = (data: TagInputData): string | null => {
+const resolvePollution = (data: TagInputData): string | null => {
   const pollution = data.manualData.presencePollution;
-  return pollution === PresencePollution.NON ? "non-pollué" : null;
+  if (!pollution || pollution === PresencePollution.NE_SAIT_PAS) return null;
+  return pollution === PresencePollution.NON ? "non-pollué" : "pollué";
 };
 
 // --- Distance du centre ville ---
-const resolveCentral = (data: TagInputData): string | null => {
+const resolveCentreVille = (data: TagInputData): string | null => {
   const enCentreVille = data.enrichmentData.siteEnCentreVille;
-  // Si true → "central", sinon (false ou undefined) → pas de tag
-  return enCentreVille === true ? "central" : null;
+  if (enCentreVille === undefined || enCentreVille === null) return null;
+  return enCentreVille ? "centre-ville" : "excentré";
 };
 
 // --- Proximité des commerces et services ---
-const resolveServicesProches = (data: TagInputData): string | null => {
+const resolveProximiteCommercesServices = (data: TagInputData): string | null => {
   const proxCommerce = data.enrichmentData.proximiteCommercesServices;
-  return proxCommerce === true ? "services proches" : null;
+  if (proxCommerce === undefined || proxCommerce === null) return null;
+  return proxCommerce ? "services proches" : "services éloignés";
 };
 
 // --- Risques naturels ---
@@ -77,6 +79,9 @@ const resolveRisquesNaturels = (data: TagInputData): string | null => {
   if (cavites === "oui") return null;
   if (rga === "fort") return null;
 
+  // Si RGA faible ou moyen (et pas d'autre risque fort) → modérés
+  if (rga === "faible-ou-moyen") return "risques nat. modérés";
+
   // Si au moins un risque est renseigné et aucun n'est problématique → faibles
   if (rga || cavites || inondation) return "risques nat. faibles";
 
@@ -86,7 +91,6 @@ const resolveRisquesNaturels = (data: TagInputData): string | null => {
 // --- Risques technologiques ---
 const resolveRisquesTechnologiques = (data: TagInputData): string | null => {
   const risques = data.enrichmentData.presenceRisquesTechnologiques;
-  // L'API retourne un booléen, true = présence de risques, false = pas de risques
   if (risques === undefined || risques === null) return null;
   return risques === false ? "risques tech. faibles" : "risques tech. modérés";
 };
@@ -95,15 +99,14 @@ const resolveRisquesTechnologiques = (data: TagInputData): string | null => {
 const resolveRisquesTechnologiquesRenaturation = (data: TagInputData): string | null => {
   const risques = data.enrichmentData.presenceRisquesTechnologiques;
   if (risques === undefined || risques === null) return null;
-  // Pour renaturation, on affiche toujours un tag
   return risques === false ? "risques tech. faibles" : "risques tech. forts";
 };
 
 // --- Zonage réglementaire ---
-const resolveZonageFavorable = (data: TagInputData): string | null => {
+const resolveZonageReglementaire = (data: TagInputData): string | null => {
   const zonage = data.enrichmentData.zonageReglementaire;
   if (!zonage || zonage === ZonageReglementaire.NE_SAIT_PAS) return null;
-  return zonage === ZonageReglementaire.ZONE_URBAINE_U ? "zonage favorable" : null;
+  return zonage === ZonageReglementaire.ZONE_URBAINE_U ? "Zonage compatible" : null;
 };
 
 // --- Desserte par les réseaux (eau et élec) ---
@@ -118,9 +121,18 @@ const resolveDesserteReseaux = (data: TagInputData): string | null => {
   const elecOk =
     distanceElecMetres !== undefined && distanceElecMetres <= SEUIL_DISTANCE_RACCORDEMENT_ELEC;
 
-  // Si eau = oui ET/OU distance raccordement < 500m → afficher le tag
-  // Sinon (ne sait pas, non renseigné, ou conditions non remplies) → pas de tag
-  return eauOk || elecOk ? "desserte réseaux" : null;
+  if (eauOk || elecOk) return "desserte réseaux";
+
+  // Si au moins une donnée renseignée mais conditions non remplies → absence
+  const eauRenseignee =
+    raccordementEau !== undefined &&
+    raccordementEau !== null &&
+    raccordementEau !== RaccordementEau.NE_SAIT_PAS;
+  const elecRenseignee = distanceElecMetres !== undefined;
+
+  if (eauRenseignee || elecRenseignee) return "absence réseaux";
+
+  return null;
 };
 
 // --- Distance des transports en commun ---
@@ -128,7 +140,7 @@ const resolveTransportCommun = (data: TagInputData): string | null => {
   const distance = data.enrichmentData.distanceTransportCommun;
   // null = aucun arrêt trouvé dans le rayon de recherche
   if (distance === null || distance === undefined) return null;
-  return distance <= SEUIL_DISTANCE_TC_PROCHE ? "TC prox." : null;
+  return distance <= SEUIL_DISTANCE_TC_PROCHE ? "TC prox." : "TC éloigné";
 };
 
 // --- État du bâti pour Culture/Tourisme ---
@@ -184,7 +196,7 @@ const resolveZonagePatrimonialCulture = (data: TagInputData): string | null => {
     case ZonagePatrimonial.SPR:
       return "intérêt patrimonial";
     case ZonagePatrimonial.NON_CONCERNE:
-      return "zon. pat. non-protégé";
+      return "zon. pat. non-protégée";
     default:
       return null;
   }
@@ -195,7 +207,7 @@ const resolveZonagePatrimonialIndustrie = (data: TagInputData): string | null =>
   const zonage = data.enrichmentData.zonagePatrimonial;
   if (!zonage) return null;
 
-  return zonage === ZonagePatrimonial.NON_CONCERNE ? "zon. pat. non-protégé" : null;
+  return zonage === ZonagePatrimonial.NON_CONCERNE ? "zon. pat. non-protégée" : null;
 };
 
 // --- Qualité du paysage environnant ---
@@ -203,7 +215,7 @@ const resolveQualitePaysage = (data: TagInputData): string | null => {
   const qualite = data.manualData.qualitePaysage;
   if (!qualite || qualite === QualitePaysage.NE_SAIT_PAS) return null;
 
-  return qualite === QualitePaysage.INTERET_REMARQUABLE ? "qualité paysage" : null;
+  return qualite === QualitePaysage.INTERET_REMARQUABLE ? "qualité paysage" : "paysage dégradé";
 };
 
 // --- Qualité de la voie de desserte ---
@@ -211,7 +223,7 @@ const resolveQualiteVoieDesserte = (data: TagInputData): string | null => {
   const qualite = data.manualData.qualiteVoieDesserte;
   if (!qualite || qualite === QualiteVoieDesserte.NE_SAIT_PAS) return null;
 
-  return qualite === QualiteVoieDesserte.ACCESSIBLE ? "bon accès" : null;
+  return qualite === QualiteVoieDesserte.ACCESSIBLE ? "bon accès" : "voie dégradée";
 };
 
 // --- Zonage environnemental pour Industrie ---
@@ -252,15 +264,25 @@ const resolveTypeProprietaire = (data: TagInputData): string | null => {
   const type = data.manualData.typeProprietaire;
   if (!type || type === TypeProprietaire.NE_SAIT_PAS) return null;
 
-  return type === TypeProprietaire.PUBLIC ? "prop. public" : null;
+  switch (type) {
+    case TypeProprietaire.PUBLIC:
+      return "prop. public";
+    case TypeProprietaire.PRIVE:
+      return "prop. privé";
+    case TypeProprietaire.MIXTE:
+    case TypeProprietaire.COPRO_INDIVISION:
+      return "prop. mixte";
+    default:
+      return null;
+  }
 };
 
 // --- Emprise au sol du bâti ---
-const resolveEmpriseBatiFaible = (data: TagInputData): string | null => {
+const resolveEmpriseBati = (data: TagInputData): string | null => {
   const surface = data.enrichmentData.surfaceBati;
   if (surface === undefined || surface === null) return null;
 
-  return surface < SEUIL_EMPRISE_BATI_FAIBLE ? "emprise bât. faible" : null;
+  return surface < SEUIL_EMPRISE_BATI_FAIBLE ? "emprise bât. faible" : "emprise bât. forte";
 };
 
 // --- Continuité écologique pour Photovoltaïque ---
@@ -286,8 +308,8 @@ const resolveContinuiteEcologiqueRenaturation = (data: TagInputData): string | n
   }
 };
 
-// --- Valeur architecturale/patrimoniale du bâti pour Photovoltaïque ---
-const resolveValeurPatrimonialeFaible = (data: TagInputData): string | null => {
+// --- Valeur architecturale/patrimoniale du bâti ---
+const resolveValeurPatrimoniale = (data: TagInputData): string | null => {
   const valeur = data.manualData.valeurArchitecturaleHistorique;
   if (!valeur || valeur === ValeurArchitecturale.NE_SAIT_PAS) return null;
 
@@ -295,10 +317,20 @@ const resolveValeurPatrimonialeFaible = (data: TagInputData): string | null => {
     case ValeurArchitecturale.ORDINAIRE:
     case ValeurArchitecturale.SANS_INTERET:
       return "val. patr. faible";
-    // Intérêt remarquable → pas de tag
+    case ValeurArchitecturale.INTERET_REMARQUABLE:
+      return "val. patr. forte";
     default:
       return null;
   }
+};
+
+// --- Zone d'accélération ENR pour Photovoltaïque ---
+const resolveZoneEnrPhotovoltaique = (data: TagInputData): string | null => {
+  const filieres = data.enrichmentData.zaer?.filieres;
+  if (!filieres || filieres.length === 0) return null;
+
+  const hasSolairePv = filieres.some((f) => f.toUpperCase().includes("SOLAIRE_PV"));
+  return hasSolairePv ? "ZA Photovoltaïque" : null;
 };
 
 // ============================================================================
@@ -309,19 +341,19 @@ export const USAGE_TAGS_CONFIG: UsageTagsConfig = {
   // 1 - Logements et commerces de proximité (RESIDENTIEL)
   [UsageType.RESIDENTIEL]: [
     { critereId: "tailleParcelle", resolver: resolveTailleParcelle },
-    { critereId: "presencePollution", resolver: resolveNonPollue },
-    { critereId: "distanceCentreVille", resolver: resolveCentral },
-    { critereId: "proximiteCommercesServices", resolver: resolveServicesProches },
+    { critereId: "presencePollution", resolver: resolvePollution },
+    { critereId: "distanceCentreVille", resolver: resolveCentreVille },
+    { critereId: "proximiteCommercesServices", resolver: resolveProximiteCommercesServices },
     { critereId: "risquesNaturels", resolver: resolveRisquesNaturels },
-    { critereId: "zonageReglementaire", resolver: resolveZonageFavorable },
+    { critereId: "zonageReglementaire", resolver: resolveZonageReglementaire },
   ],
 
   // 2 - Équipements publics
   [UsageType.EQUIPEMENTS]: [
     { critereId: "tailleParcelle", resolver: resolveTailleParcelle },
-    { critereId: "presencePollution", resolver: resolveNonPollue },
-    { critereId: "distanceCentreVille", resolver: resolveCentral },
-    { critereId: "proximiteCommercesServices", resolver: resolveServicesProches },
+    { critereId: "presencePollution", resolver: resolvePollution },
+    { critereId: "distanceCentreVille", resolver: resolveCentreVille },
+    { critereId: "proximiteCommercesServices", resolver: resolveProximiteCommercesServices },
     { critereId: "risquesNaturels", resolver: resolveRisquesNaturels },
     { critereId: "risquesTechnologiques", resolver: resolveRisquesTechnologiques },
   ],
@@ -329,17 +361,17 @@ export const USAGE_TAGS_CONFIG: UsageTagsConfig = {
   // 3 - Bureaux (Tertiaire)
   [UsageType.TERTIAIRE]: [
     { critereId: "tailleParcelle", resolver: resolveTailleParcelle },
-    { critereId: "distanceCentreVille", resolver: resolveCentral },
+    { critereId: "distanceCentreVille", resolver: resolveCentreVille },
     { critereId: "desserteReseaux", resolver: resolveDesserteReseaux },
     { critereId: "distanceTransportCommun", resolver: resolveTransportCommun },
-    { critereId: "proximiteCommercesServices", resolver: resolveServicesProches },
-    { critereId: "zonageReglementaire", resolver: resolveZonageFavorable },
+    { critereId: "proximiteCommercesServices", resolver: resolveProximiteCommercesServices },
+    { critereId: "zonageReglementaire", resolver: resolveZonageReglementaire },
   ],
 
   // 4 - Équipements culturels et touristiques
   [UsageType.CULTURE]: [
     { critereId: "etatBati", resolver: resolveEtatBatiCulture },
-    { critereId: "presencePollution", resolver: resolveNonPollue },
+    { critereId: "presencePollution", resolver: resolvePollution },
     { critereId: "desserteReseaux", resolver: resolveDesserteReseaux },
     { critereId: "distanceTransportCommun", resolver: resolveTransportCommun },
     { critereId: "zonagePatrimonial", resolver: resolveZonagePatrimonialCulture },
@@ -351,7 +383,7 @@ export const USAGE_TAGS_CONFIG: UsageTagsConfig = {
     { critereId: "tailleParcelle", resolver: resolveGrandeParcelleUniquement },
     { critereId: "desserteReseaux", resolver: resolveDesserteReseaux },
     { critereId: "qualiteVoieDesserte", resolver: resolveQualiteVoieDesserte },
-    { critereId: "zonageReglementaire", resolver: resolveZonageFavorable },
+    { critereId: "zonageReglementaire", resolver: resolveZonageReglementaire },
     { critereId: "zonageEnvironnemental", resolver: resolveZonageEnvironnementalIndustrie },
     { critereId: "zonagePatrimonial", resolver: resolveZonagePatrimonialIndustrie },
   ],
@@ -359,17 +391,18 @@ export const USAGE_TAGS_CONFIG: UsageTagsConfig = {
   // 6 - Centrale photovoltaïque au sol
   [UsageType.PHOTOVOLTAIQUE]: [
     { critereId: "tailleParcelle", resolver: resolveGrandeParcelleUniquement },
-    { critereId: "empriseBati", resolver: resolveEmpriseBatiFaible },
+    { critereId: "empriseBati", resolver: resolveEmpriseBati },
     { critereId: "desserteReseaux", resolver: resolveDesserteReseaux },
     { critereId: "risquesNaturels", resolver: resolveRisquesNaturels },
-    { critereId: "valeurPatrimoniale", resolver: resolveValeurPatrimonialeFaible },
+    { critereId: "valeurPatrimoniale", resolver: resolveValeurPatrimoniale },
     { critereId: "continuite", resolver: resolveContinuiteEcologiquePhotovoltaique },
+    { critereId: "zoneEnr", resolver: resolveZoneEnrPhotovoltaique },
   ],
 
   // 7 - Espace renaturé
   [UsageType.RENATURATION]: [
     { critereId: "typeProprietaire", resolver: resolveTypeProprietaire },
-    { critereId: "empriseBati", resolver: resolveEmpriseBatiFaible },
+    { critereId: "empriseBati", resolver: resolveEmpriseBati },
     { critereId: "etatBati", resolver: resolveEtatBatiRenaturation },
     { critereId: "zonageEnvironnemental", resolver: resolveZonageEnvironnementalRenaturation },
     { critereId: "continuite", resolver: resolveContinuiteEcologiqueRenaturation },
