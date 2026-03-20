@@ -468,6 +468,19 @@ describe("ZonageReglementaireCalculator", () => {
         );
       });
 
+      it("devrait retourner ZONE_URBAINE_U_ACTIVITE si libelong contient 'industrialo' (variante)", () => {
+        const zoneUrba: ResultatZoneUrba = {
+          present: true,
+          nombreZones: 1,
+          typezone: "U",
+          libelle: "UG",
+          libelong: "Zone industrialo-portuaire",
+        };
+        expect(calculator.evaluer(zoneUrba, null, null)).toBe(
+          ZonageReglementaire.ZONE_URBAINE_U_ACTIVITE,
+        );
+      });
+
       it("devrait retourner ZONE_URBAINE_U_ACTIVITE si libelong contient 'artisanale'", () => {
         const zoneUrba: ResultatZoneUrba = {
           present: true,

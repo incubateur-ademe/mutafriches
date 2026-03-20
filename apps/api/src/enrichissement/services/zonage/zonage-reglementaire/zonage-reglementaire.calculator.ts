@@ -10,8 +10,7 @@ const MOTS_CLES_ACTIVITE = [
   "activite",
   "économique",
   "economique",
-  "industrie",
-  "industrielle",
+  "industri",
   "artisanale",
   "artisanat",
 ];
