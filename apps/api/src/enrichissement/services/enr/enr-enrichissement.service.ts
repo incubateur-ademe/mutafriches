@@ -1,9 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
-import {
-  GeometrieParcelle,
-  SourceEnrichissement,
-  ZaerEnrichissement,
-} from "@mutafriches/shared-types";
+import { SourceEnrichissement, ZaerEnrichissement } from "@mutafriches/shared-types";
+import { Site } from "../../../evaluation/entities/site.entity";
 import { ZaerWfsService } from "../../adapters/zaer-wfs/zaer-wfs.service";
 import { ZaerWfsResult } from "../../adapters/zaer-wfs/zaer-wfs.types";
 import { EnrichmentResult } from "../shared/enrichissement.types";
@@ -19,6 +16,9 @@ import { EnrichmentResult } from "../shared/enrichissement.types";
  * Stratégie :
  * 1. Si la géométrie du site est disponible, utilise INTERSECTS (polygone vs polygone)
  * 2. Sinon, fallback par coordonnées du centroïde (point vs polygone)
+ *
+ * Note : ce service retourne les données ZAER en plus de l'EnrichmentResult
+ * car elles sont utilisées directement dans le DTO de sortie (pas stockées sur le Site)
  */
 @Injectable()
 export class EnrEnrichissementService {
@@ -29,26 +29,24 @@ export class EnrEnrichissementService {
   /**
    * Enrichit un site avec les données ZAER
    *
-   * @param geometrie Géométrie GeoJSON du site (optionnel)
-   * @param coordonnees Coordonnées du centroïde (fallback)
+   * @param site - Site à enrichir (doit avoir géométrie ou coordonnées)
    * @returns Résultat d'enrichissement avec les données ZAER
    */
-  async enrichir(
-    geometrie?: GeometrieParcelle,
-    coordonnees?: { latitude: number; longitude: number },
-  ): Promise<{ result: EnrichmentResult; data?: ZaerEnrichissement }> {
+  async enrichir(site: Site): Promise<{ result: EnrichmentResult; data?: ZaerEnrichissement }> {
     try {
       let zones: ZaerWfsResult[];
 
-      if (geometrie) {
-        zones = await this.zaerWfsService.findZaerIntersectingSite(geometrie);
-      } else if (coordonnees) {
+      if (site.geometrie) {
+        zones = await this.zaerWfsService.findZaerIntersectingSite(site.geometrie);
+      } else if (site.coordonnees) {
         zones = await this.zaerWfsService.findZaerAtPoint(
-          coordonnees.latitude,
-          coordonnees.longitude,
+          site.coordonnees.latitude,
+          site.coordonnees.longitude,
         );
       } else {
-        this.logger.warn("Enrichissement ENR impossible : ni géométrie ni coordonnées");
+        this.logger.warn(
+          `Enrichissement ENR impossible : ni géométrie ni coordonnées - site ${site.identifiantParcelle}`,
+        );
         return {
           result: {
             success: false,

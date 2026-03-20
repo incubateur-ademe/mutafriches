@@ -5,7 +5,6 @@ import {
   GeometrieParcelle,
   MessagesErreurEnrichissement,
   StatutEnrichissement,
-  ZaerEnrichissement,
 } from "@mutafriches/shared-types";
 import { EnrichissementRepository } from "../repositories/enrichissement.repository";
 import { SiteRepository } from "../repositories/site.repository";
@@ -147,7 +146,7 @@ export class EnrichissementService {
       // 5. RISQUES NATURELS (RGA + Cavités)
       const risquesNaturelsResult = await this.risquesNaturelsEnrichissement.enrichir(siteEval);
       this.mergeEnrichmentResult(
-        risquesNaturelsResult.result,
+        risquesNaturelsResult,
         sourcesUtilisees,
         champsManquants,
         sourcesEchouees,
@@ -157,73 +156,49 @@ export class EnrichissementService {
       const risquesTechnologiquesResult =
         await this.risquesTechnologiquesEnrichissement.enrichir(siteEval);
       this.mergeEnrichmentResult(
-        risquesTechnologiquesResult.result,
+        risquesTechnologiquesResult,
         sourcesUtilisees,
         champsManquants,
         sourcesEchouees,
       );
 
       // 7. GEORISQUES RAW (13 APIs pour intégrateurs)
-      let risquesGeorisques;
-      if (siteEval.coordonnees) {
-        const georisquesResult = await this.georisquesEnrichissement.enrichir(siteEval.coordonnees);
-        this.mergeEnrichmentResult(
-          georisquesResult.result,
-          sourcesUtilisees,
-          champsManquants,
-          sourcesEchouees,
-        );
-        risquesGeorisques = georisquesResult.data;
-      }
+      const georisquesResult = await this.georisquesEnrichissement.enrichir(siteEval);
+      this.mergeEnrichmentResult(
+        georisquesResult.result,
+        sourcesUtilisees,
+        champsManquants,
+        sourcesEchouees,
+      );
+      const risquesGeorisques = georisquesResult.data;
 
       // 8. ZONAGES (Environnemental, Patrimonial, Réglementaire)
-      let zonagesResult;
-      if (siteEval.geometrie && siteEval.codeInsee) {
-        zonagesResult = await this.zonageOrchestrator.enrichirZonages(
-          siteEval.geometrie,
-          siteEval.codeInsee,
-        );
-        this.mergeEnrichmentResult(
-          zonagesResult.result,
-          sourcesUtilisees,
-          champsManquants,
-          sourcesEchouees,
-        );
-
-        // Affecter les zonages au site
-        siteEval.zonageEnvironnemental = zonagesResult.zonageEnvironnemental;
-        siteEval.zonagePatrimonial = zonagesResult.zonagePatrimonial;
-        siteEval.zonageReglementaire = zonagesResult.zonageReglementaire;
-      }
+      const zonagesResult = await this.zonageOrchestrator.enrichir(siteEval);
+      this.mergeEnrichmentResult(
+        zonagesResult.result,
+        sourcesUtilisees,
+        champsManquants,
+        sourcesEchouees,
+      );
 
       // 9. POLLUTION (ADEME + SIS + ICPE)
-      let siteReferencePollue = false;
-      if (siteEval.coordonnees) {
-        const pollutionResult = await this.pollutionDetection.detecterPollution(
-          siteEval.coordonnees.latitude,
-          siteEval.coordonnees.longitude,
-          siteEval.codeInsee,
-        );
-        siteReferencePollue = pollutionResult.siteReferencePollue;
-        sourcesUtilisees.push(...pollutionResult.sourcesUtilisees);
-        sourcesEchouees.push(...pollutionResult.sourcesEchouees);
-      }
+      const pollutionResult = await this.pollutionDetection.enrichir(siteEval);
+      this.mergeEnrichmentResult(
+        pollutionResult,
+        sourcesUtilisees,
+        champsManquants,
+        sourcesEchouees,
+      );
 
       // 10. ENR / ZAER (Zones d'Acceleration des Energies Renouvelables)
-      let zaer: ZaerEnrichissement | undefined;
-      if (siteEval.geometrie || siteEval.coordonnees) {
-        const enrResult = await this.enrEnrichissement.enrichir(
-          siteEval.geometrie,
-          siteEval.coordonnees,
-        );
-        this.mergeEnrichmentResult(
-          enrResult.result,
-          sourcesUtilisees,
-          champsManquants,
-          sourcesEchouees,
-        );
-        zaer = enrResult.data;
-      }
+      const enrResult = await this.enrEnrichissement.enrichir(siteEval);
+      this.mergeEnrichmentResult(
+        enrResult.result,
+        sourcesUtilisees,
+        champsManquants,
+        sourcesEchouees,
+      );
+      const zaer = enrResult.data;
 
       // 11. CALCULER LA FIABILITE
       const sourcesUniques = [...new Set(sourcesUtilisees)];
@@ -265,7 +240,7 @@ export class EnrichissementService {
         proximiteCommercesServices: siteEval.proximiteCommercesServices,
         tauxLogementsVacants: siteEval.tauxLogementsVacants,
         presenceRisquesTechnologiques: siteEval.presenceRisquesTechnologiques,
-        siteReferencePollue,
+        siteReferencePollue: siteEval.siteReferencePollue ?? false,
         zonageEnvironnemental: siteEval.zonageEnvironnemental,
         zonageReglementaire: siteEval.zonageReglementaire,
         zonagePatrimonial: siteEval.zonagePatrimonial,
@@ -431,7 +406,7 @@ export class EnrichissementService {
       const risquesNaturelsResult =
         await this.risquesNaturelsEnrichissement.enrichir(siteEvalRisquesNaturels);
       this.mergeEnrichmentResult(
-        risquesNaturelsResult.result,
+        risquesNaturelsResult,
         sourcesUtilisees,
         champsManquants,
         sourcesEchouees,
@@ -446,74 +421,51 @@ export class EnrichissementService {
       const risquesTechnologiquesResult =
         await this.risquesTechnologiquesEnrichissement.enrichir(siteEval);
       this.mergeEnrichmentResult(
-        risquesTechnologiquesResult.result,
+        risquesTechnologiquesResult,
         sourcesUtilisees,
         champsManquants,
         sourcesEchouees,
       );
 
       // 8. GÉORISQUES RAW -> centroïde du site
-      let risquesGeorisques;
-      if (siteEval.coordonnees) {
-        const georisquesResult = await this.georisquesEnrichissement.enrichir(siteEval.coordonnees);
-        this.mergeEnrichmentResult(
-          georisquesResult.result,
-          sourcesUtilisees,
-          champsManquants,
-          sourcesEchouees,
-        );
-        risquesGeorisques = georisquesResult.data;
-      }
+      const georisquesResult = await this.georisquesEnrichissement.enrichir(siteEval);
+      this.mergeEnrichmentResult(
+        georisquesResult.result,
+        sourcesUtilisees,
+        champsManquants,
+        sourcesEchouees,
+      );
+      const risquesGeorisques = georisquesResult.data;
 
       // 9. ZONAGES -> union (env/patri) + prédominante (réglementaire)
-      let zonagesResult;
       const predominante = site.parcellePredominante;
-      if (site.geometrieUnion && predominante.geometrie && siteEval.codeInsee) {
-        zonagesResult = await this.zonageOrchestrator.enrichirZonagesSite(
-          site.geometrieUnion,
-          predominante.geometrie,
-          siteEval.codeInsee,
-        );
-        this.mergeEnrichmentResult(
-          zonagesResult.result,
-          sourcesUtilisees,
-          champsManquants,
-          sourcesEchouees,
-        );
-
-        siteEval.zonageEnvironnemental = zonagesResult.zonageEnvironnemental;
-        siteEval.zonagePatrimonial = zonagesResult.zonagePatrimonial;
-        siteEval.zonageReglementaire = zonagesResult.zonageReglementaire;
-      }
+      siteEval.geometrieReglementaire = predominante.geometrie;
+      const zonagesResult = await this.zonageOrchestrator.enrichir(siteEval);
+      this.mergeEnrichmentResult(
+        zonagesResult.result,
+        sourcesUtilisees,
+        champsManquants,
+        sourcesEchouees,
+      );
 
       // 10. POLLUTION -> centroide du site
-      let siteReferencePollue = false;
-      if (siteEval.coordonnees) {
-        const pollutionResult = await this.pollutionDetection.detecterPollution(
-          siteEval.coordonnees.latitude,
-          siteEval.coordonnees.longitude,
-          siteEval.codeInsee,
-        );
-        siteReferencePollue = pollutionResult.siteReferencePollue;
-        sourcesUtilisees.push(...pollutionResult.sourcesUtilisees);
-        sourcesEchouees.push(...pollutionResult.sourcesEchouees);
-      }
+      const pollutionResult = await this.pollutionDetection.enrichir(siteEval);
+      this.mergeEnrichmentResult(
+        pollutionResult,
+        sourcesUtilisees,
+        champsManquants,
+        sourcesEchouees,
+      );
 
-      // 11. ENR / ZAER -> parcelle prédominante ou centroïde
-      let zaer: ZaerEnrichissement | undefined;
-      if (predominante.geometrie || siteEval.coordonnees) {
-        const enrResult = await this.enrEnrichissement.enrichir(
-          predominante.geometrie,
-          siteEval.coordonnees,
-        );
-        this.mergeEnrichmentResult(
-          enrResult.result,
-          sourcesUtilisees,
-          champsManquants,
-          sourcesEchouees,
-        );
-        zaer = enrResult.data;
-      }
+      // 11. ENR / ZAER -> géométrie union du site
+      const enrResult = await this.enrEnrichissement.enrichir(siteEval);
+      this.mergeEnrichmentResult(
+        enrResult.result,
+        sourcesUtilisees,
+        champsManquants,
+        sourcesEchouees,
+      );
+      const zaer = enrResult.data;
 
       // 12. DETERMINER LE STATUT
       const sourcesUniques = [...new Set(sourcesUtilisees)];
@@ -558,7 +510,7 @@ export class EnrichissementService {
         proximiteCommercesServices: siteEval.proximiteCommercesServices,
         tauxLogementsVacants: siteEval.tauxLogementsVacants,
         presenceRisquesTechnologiques: siteEval.presenceRisquesTechnologiques,
-        siteReferencePollue,
+        siteReferencePollue: siteEval.siteReferencePollue ?? false,
         zonageEnvironnemental: siteEval.zonageEnvironnemental,
         zonageReglementaire: siteEval.zonageReglementaire,
         zonagePatrimonial: siteEval.zonagePatrimonial,

@@ -15,7 +15,6 @@ import { PprService } from "../../adapters/georisques/ppr/ppr.service";
 import { GEORISQUES_RAYONS_DEFAUT } from "../../adapters/georisques/georisques.constants";
 import { EnrichmentResult } from "../shared/enrichissement.types";
 import { RisquesNaturelsCalculator } from "./risques-naturels.calculator";
-import { EvaluationRisquesNaturels } from "./risques-naturels.types";
 
 /**
  * Service d'enrichissement du sous-domaine Risques Naturels
@@ -45,13 +44,12 @@ export class RisquesNaturelsEnrichissementService {
   /**
    * Enrichit un site avec les 3 critères de risques naturels
    *
+   * Mute site.risqueRetraitGonflementArgile, site.risqueCavitesSouterraines, site.risqueInondation
+   *
    * @param site - Site à enrichir (doit avoir des coordonnées)
-   * @returns Résultat de l'enrichissement et évaluation détaillée
+   * @returns Résultat de l'enrichissement (sources utilisées/échouées)
    */
-  async enrichir(site: Site): Promise<{
-    result: EnrichmentResult;
-    evaluation: EvaluationRisquesNaturels;
-  }> {
+  async enrichir(site: Site): Promise<EnrichmentResult> {
     const sourcesUtilisees: string[] = [];
     const sourcesEchouees: string[] = [];
 
@@ -69,20 +67,14 @@ export class RisquesNaturelsEnrichissementService {
         SourceEnrichissement.GEORISQUES_PPR,
       );
 
+      site.risqueRetraitGonflementArgile = RisqueRetraitGonflementArgile.AUCUN;
+      site.risqueCavitesSouterraines = RisqueCavitesSouterraines.NON;
+      site.risqueInondation = RisqueInondation.NON;
+
       return {
-        result: {
-          success: false,
-          sourcesUtilisees,
-          sourcesEchouees,
-        },
-        evaluation: {
-          rga: null,
-          cavites: null,
-          inondation: null,
-          risqueRetraitGonflementArgile: RisqueRetraitGonflementArgile.AUCUN,
-          risqueCavitesSouterraines: RisqueCavitesSouterraines.NON,
-          risqueInondation: RisqueInondation.NON,
-        },
+        success: false,
+        sourcesUtilisees,
+        sourcesEchouees,
       };
     }
 
@@ -99,11 +91,8 @@ export class RisquesNaturelsEnrichissementService {
 
     // --- 1. Traiter RGA ---
     let risqueRga = RisqueRetraitGonflementArgile.AUCUN;
-    let rgaData = null;
-
     if (rgaResult.status === "fulfilled" && rgaResult.value) {
       risqueRga = rgaResult.value.risque;
-      rgaData = rgaResult.value;
       sourcesUtilisees.push(SourceEnrichissement.GEORISQUES_RGA);
       this.logger.debug(`RGA recupere: ${rgaResult.value.alea} -> ${risqueRga}`);
     } else {
@@ -115,11 +104,8 @@ export class RisquesNaturelsEnrichissementService {
 
     // --- 2. Traiter Cavités ---
     let risqueCavites = RisqueCavitesSouterraines.NON;
-    let cavitesData = null;
-
     if (cavitesResult.status === "fulfilled" && cavitesResult.value) {
       risqueCavites = cavitesResult.value.risque;
-      cavitesData = cavitesResult.value;
       sourcesUtilisees.push(SourceEnrichissement.GEORISQUES_CAVITES);
       this.logger.debug(
         `Cavites recuperees: ${cavitesResult.value.nombreCavites} cavites, ` +
@@ -184,25 +170,9 @@ export class RisquesNaturelsEnrichissementService {
     );
 
     return {
-      result: {
-        success: sourcesUtilisees.length > 0,
-        sourcesUtilisees,
-        sourcesEchouees,
-      },
-      evaluation: {
-        rga: rgaData,
-        cavites: cavitesData,
-        inondation: {
-          tri: triExposition,
-          azi: aziExposition,
-          papi: papiExposition,
-          ppr: pprExposition,
-          risque: risqueInondation,
-        },
-        risqueRetraitGonflementArgile: risqueRga,
-        risqueCavitesSouterraines: risqueCavites,
-        risqueInondation,
-      },
+      success: sourcesUtilisees.length > 0,
+      sourcesUtilisees,
+      sourcesEchouees,
     };
   }
 

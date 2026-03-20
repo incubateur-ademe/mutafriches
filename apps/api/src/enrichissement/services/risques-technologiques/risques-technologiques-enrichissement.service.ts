@@ -6,7 +6,6 @@ import { IcpeService } from "../../adapters/georisques/icpe/icpe.service";
 import { GEORISQUES_RAYONS_DEFAUT } from "../../adapters/georisques/georisques.constants";
 import { EnrichmentResult } from "../shared/enrichissement.types";
 import { RisquesTechnologiquesCalculator } from "./risques-technologiques.calculator";
-import { EvaluationRisquesTechnologiques } from "./risques-technologiques.types";
 
 /**
  * Service d'enrichissement du sous-domaine Risques Technologiques
@@ -29,13 +28,12 @@ export class RisquesTechnologiquesEnrichissementService {
   /**
    * Enrichit un site avec les risques technologiques
    *
+   * Mute site.presenceRisquesTechnologiques
+   *
    * @param site - Site à enrichir (doit avoir des coordonnées)
-   * @returns Résultat de l'enrichissement et évaluation détaillée
+   * @returns Résultat de l'enrichissement (sources utilisées/échouées)
    */
-  async enrichir(site: Site): Promise<{
-    result: EnrichmentResult;
-    evaluation: EvaluationRisquesTechnologiques;
-  }> {
+  async enrichir(site: Site): Promise<EnrichmentResult> {
     const sourcesUtilisees: string[] = [];
     const sourcesEchouees: string[] = [];
 
@@ -49,17 +47,11 @@ export class RisquesTechnologiquesEnrichissementService {
         SourceEnrichissement.GEORISQUES_ICPE,
       );
 
+      site.presenceRisquesTechnologiques = false;
       return {
-        result: {
-          success: false,
-          sourcesUtilisees,
-          sourcesEchouees,
-        },
-        evaluation: {
-          sis: null,
-          icpe: null,
-          risqueFinal: false,
-        },
+        success: false,
+        sourcesUtilisees,
+        sourcesEchouees,
       };
     }
 
@@ -72,13 +64,9 @@ export class RisquesTechnologiquesEnrichissementService {
     // Traiter les résultats
     let presenceSis = false;
     let distanceIcpePlusProche: number | undefined;
-    let sisData = null;
-    let icpeData = null;
-
     // 1. Traiter SIS
     if (sisResult.status === "fulfilled" && sisResult.value) {
       presenceSis = sisResult.value.presenceSis;
-      sisData = sisResult.value;
       sourcesUtilisees.push(SourceEnrichissement.GEORISQUES_SIS);
       this.logger.debug(`SIS recupere: presence=${presenceSis}`);
     } else {
@@ -91,7 +79,6 @@ export class RisquesTechnologiquesEnrichissementService {
     // 2. Traiter ICPE
     if (icpeResult.status === "fulfilled" && icpeResult.value) {
       distanceIcpePlusProche = icpeResult.value.distancePlusProche;
-      icpeData = icpeResult.value;
       sourcesUtilisees.push(SourceEnrichissement.GEORISQUES_ICPE);
       this.logger.debug(
         `ICPE recuperees: ${icpeResult.value.nombreIcpe} installations, ` +
@@ -114,16 +101,9 @@ export class RisquesTechnologiquesEnrichissementService {
     );
 
     return {
-      result: {
-        success: sourcesUtilisees.length > 0,
-        sourcesUtilisees,
-        sourcesEchouees,
-      },
-      evaluation: {
-        sis: sisData,
-        icpe: icpeData,
-        risqueFinal,
-      },
+      success: sourcesUtilisees.length > 0,
+      sourcesUtilisees,
+      sourcesEchouees,
     };
   }
 
