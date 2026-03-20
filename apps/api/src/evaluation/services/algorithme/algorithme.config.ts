@@ -530,7 +530,7 @@ export const MATRICE_SCORING = {
       [UsageType.CULTURE]: ScoreImpact.NEGATIF,
       [UsageType.TERTIAIRE]: ScoreImpact.NEGATIF,
       [UsageType.INDUSTRIE]: ScoreImpact.TRES_NEGATIF,
-      [UsageType.RENATURATION]: ScoreImpact.POSITIF,
+      [UsageType.RENATURATION]: ScoreImpact.TRES_POSITIF,
       [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEGATIF,
     },
   },
