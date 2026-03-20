@@ -8,7 +8,7 @@
  * Prerequis:
  *   - La migration doit avoir ete executee
  *   - PostGIS doit etre active sur la base
- *   - Le fichier GeoJSON doit etre present dans data/donnees-ademe-sites-pollues.geojson
+ *   - Le fichier GeoJSON doit être présent dans src/scripts/data/donnees-ademe-sites-pollues.geojson
  *
  * Comportement:
  *   - Lit le fichier GeoJSON local
@@ -26,7 +26,7 @@ import { sql } from "drizzle-orm";
 import * as postgres from "postgres";
 
 // Configuration
-const GEOJSON_PATH = path.resolve(__dirname, "../../data/donnees-ademe-sites-pollues.geojson");
+const GEOJSON_PATH = path.resolve(__dirname, "./data/donnees-ademe-sites-pollues.geojson");
 const BATCH_SIZE = 100;
 const DATASET_NAME = "ademe-sites-pollues";
 

@@ -8,10 +8,10 @@
  *
  * Prérequis:
  *   - Télécharger le ZIP BPE depuis https://www.insee.fr/fr/statistiques/8217537
- *   - Dézipper dans apps/api/data/raw/bpe24.csv
+ *   - Dézipper dans apps/api/src/scripts/data/raw/bpe24.csv
  *
  * Résultat:
- *   - Crée apps/api/data/bpe-filtered.csv (~10-20 Mo)
+ *   - Crée apps/api/src/scripts/data/donnees-bpe-2024-filtered.csv (~10-20 Mo)
  *   - Ce fichier filtré sera committé dans le repo
  */
 
@@ -60,7 +60,7 @@ interface FilterStats {
 }
 
 async function filterBpeCsv(): Promise<void> {
-  const dataDir = path.resolve(__dirname, "../../data");
+  const dataDir = path.resolve(__dirname, "./data");
   const inputPath = path.resolve(dataDir, "raw/donnees-bpe-2024.csv");
   const outputPath = path.resolve(dataDir, "donnees-bpe-2024-filtered.csv");
 
@@ -84,7 +84,7 @@ async function filterBpeCsv(): Promise<void> {
     console.error("");
     console.error("Instructions:");
     console.error("1. Telecharger le ZIP BPE depuis https://www.insee.fr/fr/statistiques/8217537");
-    console.error("2. Dezipper le fichier CSV dans apps/api/data/raw/bpe24.csv");
+    console.error("2. Dézipper le fichier CSV dans apps/api/src/scripts/data/raw/bpe24.csv");
     process.exit(1);
   }
 

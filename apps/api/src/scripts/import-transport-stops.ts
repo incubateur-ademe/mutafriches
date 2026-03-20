@@ -11,7 +11,7 @@
  *   - Connexion internet pour télécharger le fichier CSV (~144 Mo)
  *
  * Comportement:
- *   - Télécharge temporairement le CSV dans /tmp ou data/
+ *   - Télécharge temporairement le CSV dans /tmp ou src/scripts/data/
  *   - Truncate la table raw_transport_stops avant import (full replace)
  *   - Parse en streaming avec for await (readline natif)
  *   - Filtre les types pertinents et les coordonnées France métropolitaine
@@ -107,7 +107,7 @@ function getTempDirectory(): string {
   }
 
   // En local, utiliser data/ si disponible
-  const dataDir = path.resolve(__dirname, "../../data");
+  const dataDir = path.resolve(__dirname, "./data");
 
   if (existsSync(dataDir)) {
     return dataDir;
