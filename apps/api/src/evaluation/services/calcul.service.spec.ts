@@ -150,13 +150,13 @@ describe("CalculService", () => {
         if (res.indiceMutabilite >= 70) {
           expect(res.potentiel).toBe("Excellent");
         } else if (res.indiceMutabilite >= 60) {
-          expect(res.potentiel).toBe("Favorable");
+          expect(res.potentiel).toBe("Très bon");
         } else if (res.indiceMutabilite >= 50) {
-          expect(res.potentiel).toBe("Modéré");
+          expect(res.potentiel).toBe("Bon");
         } else if (res.indiceMutabilite >= 40) {
-          expect(res.potentiel).toBe("Peu favorable");
+          expect(res.potentiel).toBe("Moyen");
         } else {
-          expect(res.potentiel).toBe("Défavorable");
+          expect(res.potentiel).toBe("Faible");
         }
       });
     });

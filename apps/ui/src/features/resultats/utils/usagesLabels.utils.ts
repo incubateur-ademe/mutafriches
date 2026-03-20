@@ -116,21 +116,21 @@ export const getBadgeConfig = (score: number): BadgeConfig => {
       backgroundColor: "#C9FCAC",
     };
   }
-  if (score >= 45) {
+  if (score >= 50) {
     return {
       label: "BON",
       textColor: "#716043",
       backgroundColor: "#FEECC2",
     };
   }
-  if (score >= 30) {
+  if (score >= 40) {
     return {
       label: "MOYEN",
       textColor: "#716043",
       backgroundColor: "#FEDED9",
     };
   }
-  // Score < 30 : Faible
+  // Score < 40 : Faible
   return {
     label: "FAIBLE",
     textColor: "#8D533E",

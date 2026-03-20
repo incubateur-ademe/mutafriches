@@ -418,10 +418,10 @@ export class CalculService {
    */
   protected determinerPotentiel(indice: number): string {
     if (indice >= 70) return "Excellent";
-    if (indice >= 60) return "Favorable";
-    if (indice >= 50) return "Modéré";
-    if (indice >= 40) return "Peu favorable";
-    return "Défavorable";
+    if (indice >= 60) return "Très bon";
+    if (indice >= 50) return "Bon";
+    if (indice >= 40) return "Moyen";
+    return "Faible";
   }
 
   /**

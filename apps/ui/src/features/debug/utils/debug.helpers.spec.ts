@@ -124,7 +124,7 @@ describe("debug.helpers", () => {
       expect(getMutabilityColor(75)).toBe("#B8FEC9");
       expect(getMutabilityColor(65)).toBe("#C9FCAC");
       expect(getMutabilityColor(50)).toBe("#FEECC2");
-      expect(getMutabilityColor(35)).toBe("#FEDED9");
+      expect(getMutabilityColor(45)).toBe("#FEDED9");
       expect(getMutabilityColor(20)).toBe("#FFBDBE");
     });
   });
@@ -134,7 +134,7 @@ describe("debug.helpers", () => {
       expect(getMutabilityLabel(75)).toBe("Excellent");
       expect(getMutabilityLabel(65)).toBe("Tr\u00E8s bon");
       expect(getMutabilityLabel(50)).toBe("Bon");
-      expect(getMutabilityLabel(35)).toBe("Moyen");
+      expect(getMutabilityLabel(45)).toBe("Moyen");
       expect(getMutabilityLabel(20)).toBe("Faible");
     });
   });

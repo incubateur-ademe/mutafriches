@@ -92,8 +92,8 @@ export function getRiskBadgeClass(value: boolean | null | undefined): string {
 export function getMutabilityColor(score: number): string {
   if (score >= 70) return "#B8FEC9";
   if (score >= 60) return "#C9FCAC";
-  if (score >= 45) return "#FEECC2";
-  if (score >= 30) return "#FEDED9";
+  if (score >= 50) return "#FEECC2";
+  if (score >= 40) return "#FEDED9";
   return "#FFBDBE";
 }
 
@@ -103,7 +103,7 @@ export function getMutabilityColor(score: number): string {
 export function getMutabilityLabel(score: number): string {
   if (score >= 70) return "Excellent";
   if (score >= 60) return "Tr\u00E8s bon";
-  if (score >= 45) return "Bon";
-  if (score >= 30) return "Moyen";
+  if (score >= 50) return "Bon";
+  if (score >= 40) return "Moyen";
   return "Faible";
 }
