@@ -494,12 +494,62 @@ describe("ZonageReglementaireCalculator", () => {
         );
       });
 
-      it("devrait prioriser le code sur le libelong (UA + libelong activité → HABITAT)", () => {
+      it("devrait prioriser le libelong sur le code court (UA + libelong activité → ACTIVITE)", () => {
         const zoneUrba: ResultatZoneUrba = {
           present: true,
           nombreZones: 1,
           typezone: "UA",
           libelong: "Zone d'activité",
+        };
+        expect(calculator.evaluer(zoneUrba, null, null)).toBe(
+          ZonageReglementaire.ZONE_URBAINE_U_ACTIVITE,
+        );
+      });
+
+      it("devrait retourner ZONE_URBAINE_U_ACTIVITE pour UE + libelong économique (cas Loire-Atlantique)", () => {
+        const zoneUrba: ResultatZoneUrba = {
+          present: true,
+          nombreZones: 1,
+          typezone: "U",
+          libelle: "UE",
+          libelong: "Zone urbaine économique",
+        };
+        expect(calculator.evaluer(zoneUrba, null, null)).toBe(
+          ZonageReglementaire.ZONE_URBAINE_U_ACTIVITE,
+        );
+      });
+
+      it("devrait retourner ZONE_URBAINE_U_EQUIPEMENT pour UE sans libelong (fallback code court)", () => {
+        const zoneUrba: ResultatZoneUrba = {
+          present: true,
+          nombreZones: 1,
+          typezone: "U",
+          libelle: "UE",
+        };
+        expect(calculator.evaluer(zoneUrba, null, null)).toBe(
+          ZonageReglementaire.ZONE_URBAINE_U_EQUIPEMENT,
+        );
+      });
+
+      it("devrait retourner ZONE_URBAINE_U_EQUIPEMENT pour UE + libelong équipement", () => {
+        const zoneUrba: ResultatZoneUrba = {
+          present: true,
+          nombreZones: 1,
+          typezone: "U",
+          libelle: "UE",
+          libelong: "Zone d'équipement public",
+        };
+        expect(calculator.evaluer(zoneUrba, null, null)).toBe(
+          ZonageReglementaire.ZONE_URBAINE_U_EQUIPEMENT,
+        );
+      });
+
+      it("devrait retourner ZONE_URBAINE_U_HABITAT pour UA + libelong sans mot-clé (fallback code court)", () => {
+        const zoneUrba: ResultatZoneUrba = {
+          present: true,
+          nombreZones: 1,
+          typezone: "UA",
+          libelong: "Zone générale",
         };
         expect(calculator.evaluer(zoneUrba, null, null)).toBe(
           ZonageReglementaire.ZONE_URBAINE_U_HABITAT,

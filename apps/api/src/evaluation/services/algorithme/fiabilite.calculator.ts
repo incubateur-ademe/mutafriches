@@ -5,6 +5,7 @@ import { NOMBRE_CRITERES_UTILISES } from "./algorithme.constants";
 
 export interface FiabiliteOptions {
   inclureDetail?: boolean;
+  poidsCriteres?: Record<string, number>;
 }
 
 /**
@@ -29,11 +30,23 @@ export class FiabiliteCalculator {
    * @returns Objet Fiabilite avec note sur 10
    */
   calculer(criteres: Record<string, unknown>, options: FiabiliteOptions = {}): Fiabilite {
-    const { inclureDetail = true } = options;
-    const { poidsRenseignes, criteresRenseignes, detailCriteres } =
-      this.calculerPoidsRenseignes(criteres);
+    const { inclureDetail = true, poidsCriteres: customPoidsCriteres } = options;
 
-    const pourcentage = this.poidsTotal > 0 ? (poidsRenseignes / this.poidsTotal) * 100 : 0;
+    // Utiliser les poids personnalisés si fournis, sinon les poids par défaut
+    const poidsActifs = customPoidsCriteres ?? (POIDS_CRITERES as Record<string, number>);
+    const poidsTotalActif = customPoidsCriteres
+      ? Object.values(customPoidsCriteres).reduce((sum, p) => sum + p, 0)
+      : this.poidsTotal;
+    const nombreCriteresActif = customPoidsCriteres
+      ? Object.keys(customPoidsCriteres).length
+      : NOMBRE_CRITERES_UTILISES;
+
+    const { poidsRenseignes, criteresRenseignes, detailCriteres } = this.calculerPoidsRenseignes(
+      criteres,
+      poidsActifs,
+    );
+
+    const pourcentage = poidsTotalActif > 0 ? (poidsRenseignes / poidsTotalActif) * 100 : 0;
     const note = this.arrondirNote(pourcentage / 10);
     const niveau = this.determinerNiveau(note);
 
@@ -42,9 +55,9 @@ export class FiabiliteCalculator {
       text: niveau.text,
       description: niveau.description,
       criteresRenseignes,
-      criteresTotal: NOMBRE_CRITERES_UTILISES,
+      criteresTotal: nombreCriteresActif,
       poidsRenseignes,
-      poidsTotal: this.poidsTotal,
+      poidsTotal: poidsTotalActif,
     };
 
     if (inclureDetail) {
@@ -57,7 +70,10 @@ export class FiabiliteCalculator {
   /**
    * Calcule la somme des poids des criteres renseignes
    */
-  private calculerPoidsRenseignes(criteres: Record<string, unknown>): {
+  private calculerPoidsRenseignes(
+    criteres: Record<string, unknown>,
+    poidsCriteres: Record<string, number> = POIDS_CRITERES as Record<string, number>,
+  ): {
     poidsRenseignes: number;
     criteresRenseignes: number;
     detailCriteres: DetailCritereFiabilite[];
@@ -66,8 +82,8 @@ export class FiabiliteCalculator {
     let criteresRenseignes = 0;
     const detailCriteres: DetailCritereFiabilite[] = [];
 
-    // Parcourir tous les criteres definis dans POIDS_CRITERES
-    Object.entries(POIDS_CRITERES).forEach(([champDTO, poids]) => {
+    // Parcourir tous les critères définis dans les poids
+    Object.entries(poidsCriteres).forEach(([champDTO, poids]) => {
       const valeur = criteres[champDTO];
       const renseigne = this.estRenseigne(valeur);
 

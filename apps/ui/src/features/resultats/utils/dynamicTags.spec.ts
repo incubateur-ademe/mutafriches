@@ -108,6 +108,13 @@ describe("Usage RESIDENTIEL - Logements et commerces de proximité", () => {
       const result = generateTagsForUsage(UsageType.RESIDENTIEL, data);
       expect(result.tags).toContain("petite parcelle");
     });
+
+    it("ne devrait pas afficher de tag si surface indisponible", () => {
+      const data = createTagInputData({ surfaceSite: undefined });
+      const result = generateTagsForUsage(UsageType.RESIDENTIEL, data);
+      expect(result.tags).not.toContain("grande parcelle");
+      expect(result.tags).not.toContain("petite parcelle");
+    });
   });
 
   describe("Présence de pollution", () => {
@@ -117,12 +124,13 @@ describe("Usage RESIDENTIEL - Logements et commerces de proximité", () => {
       expect(result.tags).toContain("non-pollué");
     });
 
-    it("ne devrait pas afficher de tag pollution si pollution présente", () => {
+    it("devrait afficher 'pollué' si pollution présente", () => {
       const data = createTagInputData(
         {},
         { presencePollution: PresencePollution.OUI_COMPOSES_VOLATILS },
       );
       const result = generateTagsForUsage(UsageType.RESIDENTIEL, data);
+      expect(result.tags).toContain("pollué");
       expect(result.tags).not.toContain("non-pollué");
     });
 
@@ -130,20 +138,28 @@ describe("Usage RESIDENTIEL - Logements et commerces de proximité", () => {
       const data = createTagInputData({}, { presencePollution: PresencePollution.NE_SAIT_PAS });
       const result = generateTagsForUsage(UsageType.RESIDENTIEL, data);
       expect(result.tags).not.toContain("non-pollué");
+      expect(result.tags).not.toContain("pollué");
     });
   });
 
   describe("Distance du centre ville", () => {
-    it("devrait afficher 'central' si en centre ville", () => {
+    it("devrait afficher 'centre-ville' si en centre ville", () => {
       const data = createTagInputData({ siteEnCentreVille: true });
       const result = generateTagsForUsage(UsageType.RESIDENTIEL, data);
-      expect(result.tags).toContain("central");
+      expect(result.tags).toContain("centre-ville");
     });
 
-    it("ne devrait pas afficher de tag si pas en centre ville", () => {
+    it("devrait afficher 'excentré' si pas en centre ville", () => {
       const data = createTagInputData({ siteEnCentreVille: false });
       const result = generateTagsForUsage(UsageType.RESIDENTIEL, data);
-      expect(result.tags).not.toContain("central");
+      expect(result.tags).toContain("excentré");
+    });
+
+    it("ne devrait pas afficher de tag si donnée indisponible", () => {
+      const data = createTagInputData({ siteEnCentreVille: undefined });
+      const result = generateTagsForUsage(UsageType.RESIDENTIEL, data);
+      expect(result.tags).not.toContain("centre-ville");
+      expect(result.tags).not.toContain("excentré");
     });
   });
 
@@ -154,10 +170,17 @@ describe("Usage RESIDENTIEL - Logements et commerces de proximité", () => {
       expect(result.tags).toContain("services proches");
     });
 
-    it("ne devrait pas afficher de tag si pas à proximité", () => {
+    it("devrait afficher 'services éloignés' si pas à proximité", () => {
       const data = createTagInputData({ proximiteCommercesServices: false });
       const result = generateTagsForUsage(UsageType.RESIDENTIEL, data);
+      expect(result.tags).toContain("services éloignés");
+    });
+
+    it("ne devrait pas afficher de tag si donnée indisponible", () => {
+      const data = createTagInputData({ proximiteCommercesServices: undefined });
+      const result = generateTagsForUsage(UsageType.RESIDENTIEL, data);
       expect(result.tags).not.toContain("services proches");
+      expect(result.tags).not.toContain("services éloignés");
     });
   });
 
@@ -172,14 +195,14 @@ describe("Usage RESIDENTIEL - Logements et commerces de proximité", () => {
       expect(result.tags).toContain("risques nat. faibles");
     });
 
-    it("devrait afficher 'risques nat. faibles' si RGA faible ou moyen sans autre risque", () => {
+    it("devrait afficher 'risques nat. modérés' si RGA faible ou moyen sans autre risque fort", () => {
       const data = createTagInputData({
         risqueRetraitGonflementArgile: RisqueRetraitGonflementArgile.FAIBLE_OU_MOYEN,
         risqueCavitesSouterraines: RisqueCavitesSouterraines.NON,
         risqueInondation: RisqueInondation.NON,
       });
       const result = generateTagsForUsage(UsageType.RESIDENTIEL, data);
-      expect(result.tags).toContain("risques nat. faibles");
+      expect(result.tags).toContain("risques nat. modérés");
     });
 
     it("ne devrait pas afficher de tag si RGA fort", () => {
@@ -190,6 +213,7 @@ describe("Usage RESIDENTIEL - Logements et commerces de proximité", () => {
       });
       const result = generateTagsForUsage(UsageType.RESIDENTIEL, data);
       expect(result.tags).not.toContain("risques nat. faibles");
+      expect(result.tags).not.toContain("risques nat. modérés");
     });
 
     it("ne devrait pas afficher de tag si inondation", () => {
@@ -201,25 +225,46 @@ describe("Usage RESIDENTIEL - Logements et commerces de proximité", () => {
       const result = generateTagsForUsage(UsageType.RESIDENTIEL, data);
       expect(result.tags).not.toContain("risques nat. faibles");
     });
+
+    it("ne devrait pas afficher de tag si cavités souterraines", () => {
+      const data = createTagInputData({
+        risqueRetraitGonflementArgile: RisqueRetraitGonflementArgile.AUCUN,
+        risqueCavitesSouterraines: RisqueCavitesSouterraines.OUI,
+        risqueInondation: RisqueInondation.NON,
+      });
+      const result = generateTagsForUsage(UsageType.RESIDENTIEL, data);
+      expect(result.tags).not.toContain("risques nat. faibles");
+    });
+
+    it("ne devrait pas afficher de tag si aucune donnée", () => {
+      const data = createTagInputData({
+        risqueRetraitGonflementArgile: undefined,
+        risqueCavitesSouterraines: undefined,
+        risqueInondation: undefined,
+      });
+      const result = generateTagsForUsage(UsageType.RESIDENTIEL, data);
+      expect(result.tags).not.toContain("risques nat. faibles");
+      expect(result.tags).not.toContain("risques nat. modérés");
+    });
   });
 
   describe("Zonage réglementaire", () => {
-    it("devrait afficher 'zonage favorable' si zone urbaine", () => {
+    it("devrait afficher 'Zonage compatible' si zone urbaine", () => {
       const data = createTagInputData({ zonageReglementaire: ZonageReglementaire.ZONE_URBAINE_U });
       const result = generateTagsForUsage(UsageType.RESIDENTIEL, data);
-      expect(result.tags).toContain("zonage favorable");
+      expect(result.tags).toContain("Zonage compatible");
     });
 
     it("ne devrait pas afficher de tag si autre zone", () => {
       const data = createTagInputData({ zonageReglementaire: ZonageReglementaire.ZONE_AGRICOLE_A });
       const result = generateTagsForUsage(UsageType.RESIDENTIEL, data);
-      expect(result.tags).not.toContain("zonage favorable");
+      expect(result.tags).not.toContain("Zonage compatible");
     });
 
     it("ne devrait pas afficher de tag si 'ne sait pas'", () => {
       const data = createTagInputData({ zonageReglementaire: ZonageReglementaire.NE_SAIT_PAS });
       const result = generateTagsForUsage(UsageType.RESIDENTIEL, data);
-      expect(result.tags).not.toContain("zonage favorable");
+      expect(result.tags).not.toContain("Zonage compatible");
     });
   });
 });
@@ -249,7 +294,7 @@ describe("Usage EQUIPEMENTS - Équipements publics", () => {
         surfaceSite: 15000,
         siteEnCentreVille: true,
         proximiteCommercesServices: true,
-        risqueRetraitGonflementArgile: RisqueRetraitGonflementArgile.FAIBLE_OU_MOYEN,
+        risqueRetraitGonflementArgile: RisqueRetraitGonflementArgile.AUCUN,
         risqueCavitesSouterraines: RisqueCavitesSouterraines.NON,
         risqueInondation: RisqueInondation.NON,
         presenceRisquesTechnologiques: false,
@@ -260,12 +305,12 @@ describe("Usage EQUIPEMENTS - Équipements publics", () => {
 
     expect(result.tags).toContain("grande parcelle");
     expect(result.tags).toContain("non-pollué");
-    expect(result.tags).toContain("central");
+    expect(result.tags).toContain("centre-ville");
     expect(result.tags).toContain("services proches");
     expect(result.tags).toContain("risques nat. faibles");
     expect(result.tags).toContain("risques tech. faibles");
     // Ne devrait pas avoir zonage réglementaire
-    expect(result.tags).not.toContain("zonage favorable");
+    expect(result.tags).not.toContain("Zonage compatible");
   });
 });
 
@@ -288,13 +333,24 @@ describe("Usage TERTIAIRE - Bureaux", () => {
       expect(result.tags).toContain("desserte réseaux");
     });
 
-    it("ne devrait pas afficher de tag si eau = non et élec > 500m", () => {
+    it("devrait afficher 'absence réseaux' si eau = non et élec > 500m", () => {
       const data = createTagInputData(
         { distanceRaccordementElectrique: 1 }, // 1km = 1000m > 500m
         { raccordementEau: RaccordementEau.NON },
       );
       const result = generateTagsForUsage(UsageType.TERTIAIRE, data);
+      expect(result.tags).toContain("absence réseaux");
       expect(result.tags).not.toContain("desserte réseaux");
+    });
+
+    it("ne devrait pas afficher de tag si eau NSP et élec indisponible", () => {
+      const data = createTagInputData(
+        { distanceRaccordementElectrique: undefined },
+        { raccordementEau: RaccordementEau.NE_SAIT_PAS },
+      );
+      const result = generateTagsForUsage(UsageType.TERTIAIRE, data);
+      expect(result.tags).not.toContain("desserte réseaux");
+      expect(result.tags).not.toContain("absence réseaux");
     });
   });
 
@@ -311,9 +367,10 @@ describe("Usage TERTIAIRE - Bureaux", () => {
       expect(result.tags).toContain("TC prox.");
     });
 
-    it("ne devrait pas afficher de tag si distance > 500m", () => {
+    it("devrait afficher 'TC éloigné' si distance > 500m", () => {
       const data = createTagInputData({ distanceTransportCommun: 600 });
       const result = generateTagsForUsage(UsageType.TERTIAIRE, data);
+      expect(result.tags).toContain("TC éloigné");
       expect(result.tags).not.toContain("TC prox.");
     });
 
@@ -321,6 +378,7 @@ describe("Usage TERTIAIRE - Bureaux", () => {
       const data = createTagInputData({ distanceTransportCommun: null });
       const result = generateTagsForUsage(UsageType.TERTIAIRE, data);
       expect(result.tags).not.toContain("TC prox.");
+      expect(result.tags).not.toContain("TC éloigné");
     });
   });
 });
@@ -392,10 +450,10 @@ describe("Usage CULTURE - Équipements culturels et touristiques", () => {
       expect(result.tags).toContain("intérêt patrimonial");
     });
 
-    it("devrait afficher 'zon. pat. non-protégé' si non concerné", () => {
+    it("devrait afficher 'zon. pat. non-protégée' si non concerné", () => {
       const data = createTagInputData({ zonagePatrimonial: ZonagePatrimonial.NON_CONCERNE });
       const result = generateTagsForUsage(UsageType.CULTURE, data);
-      expect(result.tags).toContain("zon. pat. non-protégé");
+      expect(result.tags).toContain("zon. pat. non-protégée");
     });
   });
 
@@ -406,16 +464,23 @@ describe("Usage CULTURE - Équipements culturels et touristiques", () => {
       expect(result.tags).toContain("qualité paysage");
     });
 
-    it("ne devrait pas afficher de tag si ordinaire", () => {
+    it("devrait afficher 'paysage dégradé' si ordinaire", () => {
       const data = createTagInputData({}, { qualitePaysage: QualitePaysage.ORDINAIRE });
       const result = generateTagsForUsage(UsageType.CULTURE, data);
-      expect(result.tags).not.toContain("qualité paysage");
+      expect(result.tags).toContain("paysage dégradé");
     });
 
-    it("ne devrait pas afficher de tag si sans intérêt", () => {
+    it("devrait afficher 'paysage dégradé' si sans intérêt", () => {
       const data = createTagInputData({}, { qualitePaysage: QualitePaysage.SANS_INTERET });
       const result = generateTagsForUsage(UsageType.CULTURE, data);
+      expect(result.tags).toContain("paysage dégradé");
+    });
+
+    it("ne devrait pas afficher de tag si 'ne sait pas'", () => {
+      const data = createTagInputData({}, { qualitePaysage: QualitePaysage.NE_SAIT_PAS });
+      const result = generateTagsForUsage(UsageType.CULTURE, data);
       expect(result.tags).not.toContain("qualité paysage");
+      expect(result.tags).not.toContain("paysage dégradé");
     });
   });
 });
@@ -447,19 +512,26 @@ describe("Usage INDUSTRIE - Bâtiments industriels", () => {
       expect(result.tags).toContain("bon accès");
     });
 
-    it("ne devrait pas afficher de tag si dégradée", () => {
+    it("devrait afficher 'voie dégradée' si dégradée", () => {
       const data = createTagInputData({}, { qualiteVoieDesserte: QualiteVoieDesserte.DEGRADEE });
       const result = generateTagsForUsage(UsageType.INDUSTRIE, data);
-      expect(result.tags).not.toContain("bon accès");
+      expect(result.tags).toContain("voie dégradée");
     });
 
-    it("ne devrait pas afficher de tag si peu accessible", () => {
+    it("devrait afficher 'voie dégradée' si peu accessible", () => {
       const data = createTagInputData(
         {},
         { qualiteVoieDesserte: QualiteVoieDesserte.PEU_ACCESSIBLE },
       );
       const result = generateTagsForUsage(UsageType.INDUSTRIE, data);
+      expect(result.tags).toContain("voie dégradée");
+    });
+
+    it("ne devrait pas afficher de tag si 'ne sait pas'", () => {
+      const data = createTagInputData({}, { qualiteVoieDesserte: QualiteVoieDesserte.NE_SAIT_PAS });
+      const result = generateTagsForUsage(UsageType.INDUSTRIE, data);
       expect(result.tags).not.toContain("bon accès");
+      expect(result.tags).not.toContain("voie dégradée");
     });
   });
 
@@ -496,16 +568,16 @@ describe("Usage INDUSTRIE - Bâtiments industriels", () => {
   });
 
   describe("Zonage patrimonial", () => {
-    it("devrait afficher 'zon. pat. non-protégé' si non concerné", () => {
+    it("devrait afficher 'zon. pat. non-protégée' si non concerné", () => {
       const data = createTagInputData({ zonagePatrimonial: ZonagePatrimonial.NON_CONCERNE });
       const result = generateTagsForUsage(UsageType.INDUSTRIE, data);
-      expect(result.tags).toContain("zon. pat. non-protégé");
+      expect(result.tags).toContain("zon. pat. non-protégée");
     });
 
     it("ne devrait pas afficher de tag si site inscrit", () => {
       const data = createTagInputData({ zonagePatrimonial: ZonagePatrimonial.SITE_INSCRIT_CLASSE });
       const result = generateTagsForUsage(UsageType.INDUSTRIE, data);
-      expect(result.tags).not.toContain("zon. pat. non-protégé");
+      expect(result.tags).not.toContain("zon. pat. non-protégée");
     });
   });
 });
@@ -522,10 +594,17 @@ describe("Usage PHOTOVOLTAIQUE - Centrale photovoltaïque au sol", () => {
       expect(result.tags).toContain("emprise bât. faible");
     });
 
-    it("ne devrait pas afficher de tag si surface >= 500 m²", () => {
+    it("devrait afficher 'emprise bât. forte' si surface >= 500 m²", () => {
       const data = createTagInputData({ surfaceBati: 600 });
       const result = generateTagsForUsage(UsageType.PHOTOVOLTAIQUE, data);
+      expect(result.tags).toContain("emprise bât. forte");
+    });
+
+    it("ne devrait pas afficher de tag si surface indisponible", () => {
+      const data = createTagInputData({ surfaceBati: undefined });
+      const result = generateTagsForUsage(UsageType.PHOTOVOLTAIQUE, data);
       expect(result.tags).not.toContain("emprise bât. faible");
+      expect(result.tags).not.toContain("emprise bât. forte");
     });
   });
 
@@ -548,13 +627,23 @@ describe("Usage PHOTOVOLTAIQUE - Centrale photovoltaïque au sol", () => {
       expect(result.tags).toContain("val. patr. faible");
     });
 
-    it("ne devrait pas afficher de tag si intérêt remarquable", () => {
+    it("devrait afficher 'val. patr. forte' si intérêt remarquable", () => {
       const data = createTagInputData(
         {},
         { valeurArchitecturaleHistorique: ValeurArchitecturale.INTERET_REMARQUABLE },
       );
       const result = generateTagsForUsage(UsageType.PHOTOVOLTAIQUE, data);
+      expect(result.tags).toContain("val. patr. forte");
+    });
+
+    it("ne devrait pas afficher de tag si 'ne sait pas'", () => {
+      const data = createTagInputData(
+        {},
+        { valeurArchitecturaleHistorique: ValeurArchitecturale.NE_SAIT_PAS },
+      );
+      const result = generateTagsForUsage(UsageType.PHOTOVOLTAIQUE, data);
       expect(result.tags).not.toContain("val. patr. faible");
+      expect(result.tags).not.toContain("val. patr. forte");
     });
   });
 
@@ -583,6 +672,46 @@ describe("Usage PHOTOVOLTAIQUE - Centrale photovoltaïque au sol", () => {
       expect(result.tags).not.toContain("absence continuité écologique");
     });
   });
+
+  describe("Zone d'accélération ENR Photovoltaïque", () => {
+    it("devrait afficher 'ZA Photovoltaïque' si filière SOLAIRE_PV présente", () => {
+      const data = createTagInputData({
+        zaer: { filieres: ["SOLAIRE_PV"], geometry: null },
+      });
+      const result = generateTagsForUsage(UsageType.PHOTOVOLTAIQUE, data);
+      expect(result.tags).toContain("ZA Photovoltaïque");
+    });
+
+    it("devrait afficher 'ZA Photovoltaïque' si SOLAIRE_PV parmi d'autres filières", () => {
+      const data = createTagInputData({
+        zaer: { filieres: ["EOLIEN", "SOLAIRE_PV", "BIOGAZ"], geometry: null },
+      });
+      const result = generateTagsForUsage(UsageType.PHOTOVOLTAIQUE, data);
+      expect(result.tags).toContain("ZA Photovoltaïque");
+    });
+
+    it("ne devrait pas afficher de tag si pas de filière SOLAIRE_PV", () => {
+      const data = createTagInputData({
+        zaer: { filieres: ["EOLIEN", "BIOGAZ"], geometry: null },
+      });
+      const result = generateTagsForUsage(UsageType.PHOTOVOLTAIQUE, data);
+      expect(result.tags).not.toContain("ZA Photovoltaïque");
+    });
+
+    it("ne devrait pas afficher de tag si zaer absent", () => {
+      const data = createTagInputData({ zaer: undefined });
+      const result = generateTagsForUsage(UsageType.PHOTOVOLTAIQUE, data);
+      expect(result.tags).not.toContain("ZA Photovoltaïque");
+    });
+
+    it("ne devrait pas afficher de tag si filières vides", () => {
+      const data = createTagInputData({
+        zaer: { filieres: [], geometry: null },
+      });
+      const result = generateTagsForUsage(UsageType.PHOTOVOLTAIQUE, data);
+      expect(result.tags).not.toContain("ZA Photovoltaïque");
+    });
+  });
 });
 
 // ============================================================================
@@ -597,22 +726,44 @@ describe("Usage RENATURATION - Espace renaturé", () => {
       expect(result.tags).toContain("prop. public");
     });
 
-    it("ne devrait pas afficher de tag si propriétaire privé", () => {
+    it("devrait afficher 'prop. privé' si propriétaire privé", () => {
       const data = createTagInputData({}, { typeProprietaire: TypeProprietaire.PRIVE });
       const result = generateTagsForUsage(UsageType.RENATURATION, data);
-      expect(result.tags).not.toContain("prop. public");
+      expect(result.tags).toContain("prop. privé");
     });
 
-    it("ne devrait pas afficher de tag si mixte", () => {
+    it("devrait afficher 'prop. mixte' si propriétaire mixte", () => {
       const data = createTagInputData({}, { typeProprietaire: TypeProprietaire.MIXTE });
       const result = generateTagsForUsage(UsageType.RENATURATION, data);
-      expect(result.tags).not.toContain("prop. public");
+      expect(result.tags).toContain("prop. mixte");
     });
 
-    it("ne devrait pas afficher de tag si copropriété", () => {
+    it("devrait afficher 'prop. mixte' si copropriété", () => {
       const data = createTagInputData({}, { typeProprietaire: TypeProprietaire.COPRO_INDIVISION });
       const result = generateTagsForUsage(UsageType.RENATURATION, data);
+      expect(result.tags).toContain("prop. mixte");
+    });
+
+    it("ne devrait pas afficher de tag si 'ne sait pas'", () => {
+      const data = createTagInputData({}, { typeProprietaire: TypeProprietaire.NE_SAIT_PAS });
+      const result = generateTagsForUsage(UsageType.RENATURATION, data);
       expect(result.tags).not.toContain("prop. public");
+      expect(result.tags).not.toContain("prop. privé");
+      expect(result.tags).not.toContain("prop. mixte");
+    });
+  });
+
+  describe("Emprise au sol du bâti", () => {
+    it("devrait afficher 'emprise bât. faible' si surface < 500 m²", () => {
+      const data = createTagInputData({ surfaceBati: 200 });
+      const result = generateTagsForUsage(UsageType.RENATURATION, data);
+      expect(result.tags).toContain("emprise bât. faible");
+    });
+
+    it("devrait afficher 'emprise bât. forte' si surface >= 500 m²", () => {
+      const data = createTagInputData({ surfaceBati: 800 });
+      const result = generateTagsForUsage(UsageType.RENATURATION, data);
+      expect(result.tags).toContain("emprise bât. forte");
     });
   });
 
@@ -755,19 +906,19 @@ describe("generateAllTags", () => {
     );
     const result = generateAllTags(data);
 
-    // RESIDENTIEL devrait avoir "grande parcelle" mais pas "zon. pat. non-protégé"
+    // RESIDENTIEL devrait avoir "grande parcelle" mais pas "zon. pat. non-protégée"
     const residentielTags = result.get(UsageType.RESIDENTIEL) || [];
     expect(residentielTags).toContain("grande parcelle");
-    expect(residentielTags).not.toContain("zon. pat. non-protégé");
+    expect(residentielTags).not.toContain("zon. pat. non-protégée");
 
-    // INDUSTRIE devrait avoir "grande parcelle" ET "zon. pat. non-protégé"
+    // INDUSTRIE devrait avoir "grande parcelle" ET "zon. pat. non-protégée"
     const industrieTags = result.get(UsageType.INDUSTRIE) || [];
     expect(industrieTags).toContain("grande parcelle");
-    expect(industrieTags).toContain("zon. pat. non-protégé");
+    expect(industrieTags).toContain("zon. pat. non-protégée");
 
-    // CULTURE devrait avoir "zon. pat. non-protégé" mais pas "grande parcelle"
+    // CULTURE devrait avoir "zon. pat. non-protégée" mais pas "grande parcelle"
     const cultureTags = result.get(UsageType.CULTURE) || [];
-    expect(cultureTags).toContain("zon. pat. non-protégé");
+    expect(cultureTags).toContain("zon. pat. non-protégée");
     expect(cultureTags).not.toContain("grande parcelle");
   });
 });
@@ -812,6 +963,7 @@ describe("Cas limites", () => {
         zonageEnvironnemental: undefined,
         zonagePatrimonial: undefined,
         distanceTransportCommun: null,
+        distanceRaccordementElectrique: undefined,
       },
       {
         typeProprietaire: TypeProprietaire.NE_SAIT_PAS,
@@ -850,5 +1002,15 @@ describe("Cas limites", () => {
     const dataTcAbove = createTagInputData({ distanceTransportCommun: 501 });
     const resultTcAbove = generateTagsForUsage(UsageType.TERTIAIRE, dataTcAbove);
     expect(resultTcAbove.tags).not.toContain("TC prox.");
+    expect(resultTcAbove.tags).toContain("TC éloigné");
+
+    // Test exact à 500 m² pour emprise bâtie
+    const dataEmprise = createTagInputData({ surfaceBati: 500 });
+    const resultEmprise = generateTagsForUsage(UsageType.PHOTOVOLTAIQUE, dataEmprise);
+    expect(resultEmprise.tags).toContain("emprise bât. forte");
+
+    const dataEmpriseBelow = createTagInputData({ surfaceBati: 499 });
+    const resultEmpriseBelow = generateTagsForUsage(UsageType.PHOTOVOLTAIQUE, dataEmpriseBelow);
+    expect(resultEmpriseBelow.tags).toContain("emprise bât. faible");
   });
 });

@@ -81,7 +81,7 @@ const response = await firstValueFrom(this.httpService.get(url));
 - Vérifie l'origine des requêtes pour les endpoints intégrateurs
 - Origines par défaut whitelistées (Mutafriches, Benefriches)
 - Bypass en mode `development` uniquement
-- S'applique à : `POST /enrichissement`, `POST /evaluation/calculer`, `POST /friches/*`
+- S'applique à : `POST /enrichissement`, `POST /evaluation/calculer`
 
 ### OriginGuard
 

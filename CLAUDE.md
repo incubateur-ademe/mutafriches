@@ -173,7 +173,6 @@ apps/api/src/
 │   ├── dtos/               # Objets de transfert
 │   └── entities/           # Entités domaine
 ├── evenements/             # Tracking événements utilisateur
-├── friches/                # DEPRECATED (routes historiques)
 ├── stats/                  # Endpoint KPIs publics
 ├── metabase/               # Intégration dashboard Metabase
 ├── shared/                 # Services, guards, database, utilitaires partagés
@@ -236,7 +235,6 @@ apps/api/src/
 |-------|-------|-----|--------------|
 | POST /enrichissement | IntegrateurOriginGuard | Bypass | Origines whitelistées |
 | POST /evaluation/calculer | IntegrateurOriginGuard | Bypass | Origines whitelistées |
-| POST /friches/* (deprecated) | IntegrateurOriginGuard | Bypass | Origines whitelistées |
 | POST /evenements | OriginGuard | localhost + Mutafriches | Mutafriches uniquement |
 
 ## Documentation contextuelle

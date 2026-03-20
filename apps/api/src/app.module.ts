@@ -4,7 +4,6 @@ import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
 import { AppController } from "./app.controller";
 import { EnrichissementModule } from "./enrichissement/enrichissement.module";
 import { EvaluationModule } from "./evaluation/evaluation.module";
-import { FrichesModule } from "./friches/friches.module";
 import { EvenementsModule } from "./evenements/evenements.module";
 import { StatsModule } from "./stats/stats.module";
 import { MetabaseModule } from "./metabase/metabase.module";
@@ -23,7 +22,6 @@ import { SharedModule } from "./shared/shared.module";
     DatabaseModule,
     EnrichissementModule,
     EvaluationModule,
-    FrichesModule, // Module de compatibilité (proxy)
     EvenementsModule,
     StatsModule,
     MetabaseModule,

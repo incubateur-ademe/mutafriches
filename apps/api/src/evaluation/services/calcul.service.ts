@@ -9,10 +9,12 @@ import {
   DetailCritere,
   UsageResultatDetaille,
 } from "@mutafriches/shared-types";
+import { RisqueNaturel } from "@mutafriches/shared-types";
 import { Site } from "../entities/site.entity";
 import { MATRICE_SCORING, POIDS_CRITERES } from "./algorithme/algorithme.config";
 import { ScoreParUsage } from "./algorithme/algorithme.types";
 import { FiabiliteCalculator } from "./algorithme/fiabilite.calculator";
+import { getAlgorithmeConfig } from "./algorithme/versions";
 
 // Structure pour les calculs intermédiaires
 interface CalculIntermediaire {
@@ -26,6 +28,7 @@ interface CalculIntermediaire {
 // Options pour le calcul de mutabilité
 export interface CalculOptions {
   modeDetaille?: boolean; // Inclure les détails des calculs
+  versionAlgorithme?: string; // Version de l'algorithme (ex: "v1.0", "v1.1", "v1.2")
 }
 
 @Injectable()
@@ -38,9 +41,18 @@ export class CalculService {
   async calculer(site: Site, options: CalculOptions = {}): Promise<MutabiliteOutputDto> {
     const { modeDetaille = false } = options;
 
+    // Résoudre la configuration de l'algorithme
+    const config = options.versionAlgorithme
+      ? getAlgorithmeConfig(options.versionAlgorithme)
+      : undefined;
+    const poidsCriteres = (config?.poidsCriteres ?? POIDS_CRITERES) as Record<string, number>;
+    const matriceScoring = (config?.matriceScoring ?? MATRICE_SCORING) as Record<string, unknown>;
+
     // Calculer et trier les résultats par indice décroissant
     const resultatsCalcules = Object.values(UsageType)
-      .map((usage) => this.calculerIndiceMutabilite(site, usage, options))
+      .map((usage) =>
+        this.calculerIndiceMutabilite(site, usage, options, poidsCriteres, matriceScoring),
+      )
       .sort((a, b) => b.indice - a.indice);
 
     // Transformer en format de sortie avec rang
@@ -68,7 +80,7 @@ export class CalculService {
       },
     );
 
-    const fiabilite = this.calculerFiabilite(site);
+    const fiabilite = this.calculerFiabilite(site, poidsCriteres);
 
     return {
       fiabilite,
@@ -83,13 +95,15 @@ export class CalculService {
     site: Site,
     usage: UsageType,
     options: CalculOptions = {},
+    poidsCriteres: Record<string, number> = POIDS_CRITERES as Record<string, number>,
+    matriceScoring: Record<string, unknown> = MATRICE_SCORING as Record<string, unknown>,
   ): CalculIntermediaire {
     const { modeDetaille = false } = options;
 
     // Etape 1: Calculer avantages et contraintes
     const scoreData = modeDetaille
-      ? this.calculerScorePourUsageDetaille(site, usage)
-      : this.calculerScorePourUsage(site, usage);
+      ? this.calculerScorePourUsageDetaille(site, usage, poidsCriteres, matriceScoring)
+      : this.calculerScorePourUsage(site, usage, poidsCriteres, matriceScoring);
 
     const { avantages, contraintes } = scoreData;
 
@@ -134,12 +148,14 @@ export class CalculService {
   protected calculerScorePourUsage(
     site: Site,
     usage: keyof ScoreParUsage,
+    poidsCriteres: Record<string, number> = POIDS_CRITERES as Record<string, number>,
+    matriceScoring: Record<string, unknown> = MATRICE_SCORING as Record<string, unknown>,
   ): { avantages: number; contraintes: number } {
     let avantages = 0;
     let contraintes = 0;
 
-    // Mapper les propriétés du site aux critères
-    const criteres = this.extraireCriteres(site);
+    // Mapper les propriétés du site aux critères (adapté selon la version)
+    const criteres = this.extraireCriteres(site, poidsCriteres);
 
     // Pour chaque critère
     Object.entries(criteres).forEach(([champDTO, valeur]) => {
@@ -147,12 +163,12 @@ export class CalculService {
       if (valeur === null || valeur === undefined || valeur === "ne-sait-pas") return;
 
       // Obtenir le score pour ce critère
-      const score = this.obtenirScoreCritere(champDTO, valeur, usage);
+      const score = this.obtenirScoreCritere(champDTO, valeur, usage, matriceScoring);
 
       if (score === null) return;
 
       // Appliquer le poids
-      const poids = POIDS_CRITERES[champDTO as keyof typeof POIDS_CRITERES] ?? 1;
+      const poids = (poidsCriteres[champDTO] as number) ?? 1;
       const pointsPonderes = score * poids;
 
       // LOGIQUE EXCEL : Les critères NEUTRE (0.5) comptent dans les deux côtés
@@ -179,6 +195,8 @@ export class CalculService {
   protected calculerScorePourUsageDetaille(
     site: Site,
     usage: keyof ScoreParUsage,
+    poidsCriteres: Record<string, number> = POIDS_CRITERES as Record<string, number>,
+    matriceScoring: Record<string, unknown> = MATRICE_SCORING as Record<string, unknown>,
   ): {
     avantages: number;
     contraintes: number;
@@ -192,7 +210,7 @@ export class CalculService {
     const detailsContraintes: DetailCritere[] = [];
     const detailsCriteresVides: DetailCritere[] = [];
 
-    const criteres = this.extraireCriteres(site);
+    const criteres = this.extraireCriteres(site, poidsCriteres);
 
     Object.entries(criteres).forEach(([champDTO, valeur]) => {
       // Ignorer si non renseigné
@@ -207,11 +225,11 @@ export class CalculService {
         return;
       }
 
-      const scoreBrut = this.obtenirScoreCritere(champDTO, valeur, usage);
+      const scoreBrut = this.obtenirScoreCritere(champDTO, valeur, usage, matriceScoring);
 
       if (scoreBrut === null) return;
 
-      const poids = POIDS_CRITERES[champDTO as keyof typeof POIDS_CRITERES] ?? 1;
+      const poids = (poidsCriteres[champDTO] as number) ?? 1;
       const scorePondere = scoreBrut * poids;
 
       const detail: DetailCritere = {
@@ -258,10 +276,16 @@ export class CalculService {
 
   /**
    * Extrait les critères de calcul depuis l'entité Site
+   * Adapte les critères en fonction de la version de l'algorithme :
+   * - v1.1/v1.2 : critère unique presenceRisquesNaturels (combiné depuis les 3 risques séparés)
+   * - v1.3 : 3 critères séparés + zoneAccelerationEnr
    */
-  protected extraireCriteres(site: Site): Record<string, unknown> {
-    // Mapper les propriétés du site vers les clés attendues par la matrice
-    const criteres = {
+  protected extraireCriteres(
+    site: Site,
+    poidsCriteres?: Record<string, number>,
+  ): Record<string, unknown> {
+    // Critères communs à toutes les versions
+    const criteres: Record<string, unknown> = {
       surfaceSite: site.surfaceSite,
       surfaceBati: site.surfaceBati,
       typeProprietaire: site.typeProprietaire,
@@ -278,17 +302,55 @@ export class CalculService {
       distanceRaccordementElectrique: site.distanceRaccordementElectrique,
       tauxLogementsVacants: site.tauxLogementsVacants,
       presenceRisquesTechnologiques: site.presenceRisquesTechnologiques,
-      risqueRetraitGonflementArgile: site.risqueRetraitGonflementArgile,
-      risqueCavitesSouterraines: site.risqueCavitesSouterraines,
-      risqueInondation: site.risqueInondation,
       zonageEnvironnemental: site.zonageEnvironnemental,
       zonageReglementaire: site.zonageReglementaire,
       zonagePatrimonial: site.zonagePatrimonial,
       trameVerteEtBleue: site.trameVerteEtBleue,
-      zoneAccelerationEnr: site.zoneAccelerationEnr,
     };
 
+    // Adapter les critères de risques naturels selon la version
+    const utiliseAncienModeleRisques = poidsCriteres && "presenceRisquesNaturels" in poidsCriteres;
+
+    if (utiliseAncienModeleRisques) {
+      // v1.1/v1.2/v1.3 : combiner les 3 risques séparés en un seul critère
+      criteres.presenceRisquesNaturels = this.combinerRisquesNaturels(site);
+    } else {
+      // v1.4 : 3 critères séparés
+      criteres.risqueRetraitGonflementArgile = site.risqueRetraitGonflementArgile;
+      criteres.risqueCavitesSouterraines = site.risqueCavitesSouterraines;
+      criteres.risqueInondation = site.risqueInondation;
+    }
+
+    // ZAER : indépendant du modèle de risques (v1.3+)
+    if (!poidsCriteres || "zoneAccelerationEnr" in poidsCriteres) {
+      criteres.zoneAccelerationEnr = site.zoneAccelerationEnr;
+    }
+
     return criteres;
+  }
+
+  /**
+   * Combine les 3 critères de risques naturels v1.3 en un seul critère v1.1/v1.2
+   * Mapping : prend le niveau de risque le plus élevé parmi les 3 critères
+   */
+  private combinerRisquesNaturels(site: Site): RisqueNaturel | null {
+    const argile = site.risqueRetraitGonflementArgile;
+    const cavites = site.risqueCavitesSouterraines;
+    const inondation = site.risqueInondation;
+
+    // Si aucun critère n'est renseigné, retourner null
+    if (!argile && !cavites && !inondation) return null;
+
+    // Argile "fort" → risque FORT
+    if (argile === "fort") return RisqueNaturel.FORT;
+
+    // Inondation "oui", cavités "oui", ou argile "faible-ou-moyen" → risque MOYEN
+    if (inondation === "oui" || cavites === "oui" || argile === "faible-ou-moyen") {
+      return RisqueNaturel.MOYEN;
+    }
+
+    // Tous les critères renseignés sont à aucun/non → AUCUN
+    return RisqueNaturel.AUCUN;
   }
 
   /**
@@ -298,8 +360,9 @@ export class CalculService {
     champDTO: string,
     valeur: unknown,
     usage: keyof ScoreParUsage,
+    matriceScoring: Record<string, unknown> = MATRICE_SCORING as Record<string, unknown>,
   ): number | null {
-    const matriceCritere = MATRICE_SCORING[champDTO as keyof typeof MATRICE_SCORING];
+    const matriceCritere = matriceScoring[champDTO];
 
     // Critère non mappé
     if (!matriceCritere) {
@@ -342,11 +405,12 @@ export class CalculService {
   /**
    * Calcule la fiabilité basée sur le nombre de critères renseignés
    */
-  protected calculerFiabilite(site: Site): Fiabilite {
-    const criteres = this.extraireCriteres(site);
+  protected calculerFiabilite(site: Site, poidsCriteres?: Record<string, number>): Fiabilite {
+    const criteres = this.extraireCriteres(site, poidsCriteres);
     // Toujours inclure le détail pour la fiabilité (stocké en BDD)
     return this.fiabiliteCalculator.calculer(criteres, {
       inclureDetail: true,
+      poidsCriteres,
     });
   }
   /**
@@ -354,10 +418,10 @@ export class CalculService {
    */
   protected determinerPotentiel(indice: number): string {
     if (indice >= 70) return "Excellent";
-    if (indice >= 60) return "Favorable";
-    if (indice >= 50) return "Modéré";
-    if (indice >= 40) return "Peu favorable";
-    return "Défavorable";
+    if (indice >= 60) return "Très bon";
+    if (indice >= 50) return "Bon";
+    if (indice >= 40) return "Moyen";
+    return "Faible";
   }
 
   /**

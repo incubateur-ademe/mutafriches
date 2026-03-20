@@ -23,3 +23,14 @@ export type ScoreParUsage = {
  * Type helper pour les valeurs de score acceptées
  */
 export type ScoreValue = ScoreImpact | number;
+
+/**
+ * Configuration d'une version de l'algorithme de mutabilité
+ */
+export interface AlgorithmeConfig {
+  version: string;
+  label: string;
+  date: string;
+  poidsCriteres: Record<string, number>;
+  matriceScoring: Record<string, unknown>;
+}

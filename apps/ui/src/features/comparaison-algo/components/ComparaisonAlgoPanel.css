@@ -1,0 +1,94 @@
+/* Panneau de comparaison algorithme - Styles Off-Canvas */
+
+/* Bouton flottant d'ouverture */
+.comparaison-panel__trigger {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 5.5rem;
+  z-index: 1100;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s ease;
+}
+
+.comparaison-panel__trigger:hover {
+  transform: scale(1.1);
+}
+
+/* Fond semi-transparent */
+.comparaison-panel__backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1100;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  pointer-events: none;
+}
+
+.comparaison-panel__backdrop--visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Tiroir off-canvas */
+.comparaison-panel__drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 50vw;
+  max-width: 100vw;
+  min-width: 480px;
+  z-index: 1101;
+  background: var(--background-default-grey, #fff);
+  box-shadow: -4px 0 20px rgba(0, 0, 0, 0.15);
+  transform: translateX(100%);
+  transition: transform 0.3s ease-in-out;
+  display: flex;
+  flex-direction: column;
+}
+
+.comparaison-panel__drawer--open {
+  transform: translateX(0);
+}
+
+/* En-tête du tiroir */
+.comparaison-panel__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border-default-grey, #e5e5e5);
+  flex-shrink: 0;
+}
+
+.comparaison-panel__header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+/* Zone de contenu scrollable */
+.comparaison-panel__content {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 1rem 1.5rem;
+}
+
+/* Responsive mobile */
+@media (max-width: 576px) {
+  .comparaison-panel__drawer {
+    width: 100vw;
+  }
+
+  .comparaison-panel__trigger {
+    right: 4.5rem;
+  }
+}

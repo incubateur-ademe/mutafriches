@@ -1,5 +1,13 @@
 import { Coordonnees, GeometrieParcelle } from "../..";
 import { DiagnosticZonages } from "./diagnostic-zonages.dto";
+import { RisqueRetraitGonflementArgile } from "../enums/risque-retrait-gonflement-argile.enum";
+import { RisqueCavitesSouterraines } from "../enums/risque-cavites-souterraines.enum";
+import { RisqueInondation } from "../enums/risque-inondation.enum";
+import { ZonageReglementaire } from "../enums/zonage-reglementaire.enum";
+import { ZonageEnvironnemental } from "../enums/zonage-environnemental.enum";
+import { ZonagePatrimonial } from "../enums/zonage-patrimonial.enum";
+import { ZoneAccelerationEnr } from "../enums/zone-acceleration-enr.enum";
+import { TrameVerteEtBleue } from "../enums/trame-verte-bleue.enum";
 
 /**
  * Résultat de l'enrichissement automatique des données de parcelle ou site
@@ -44,17 +52,18 @@ export interface EnrichissementOutputDto {
 
   // Risques et contraintes
   presenceRisquesTechnologiques: boolean;
-  risqueRetraitGonflementArgile?: string; // Enum RisqueRetraitGonflementArgile
-  risqueCavitesSouterraines?: string; // Enum RisqueCavitesSouterraines
-  risqueInondation?: string; // Enum RisqueInondation
+  risqueRetraitGonflementArgile?: RisqueRetraitGonflementArgile;
+  risqueCavitesSouterraines?: RisqueCavitesSouterraines;
+  risqueInondation?: RisqueInondation;
 
   // Pollution - site référencé dans les bases ADEME (sites et sols pollués)
   siteReferencePollue: boolean;
 
   // Zonages réglementaires
-  zonageReglementaire?: string;
-  zonageEnvironnemental?: string; // Enum ZonageEnvironnemental
-  zonagePatrimonial?: string; // Enum ZonagePatrimonial
+  zonageReglementaire?: ZonageReglementaire;
+  zonageEnvironnemental?: ZonageEnvironnemental;
+  zonagePatrimonial?: ZonagePatrimonial;
+  trameVerteEtBleue?: TrameVerteEtBleue;
 
   // Métadonnées
   sourcesUtilisees: string[];
@@ -65,7 +74,7 @@ export interface EnrichissementOutputDto {
   /** Zones d'Acceleration des Energies Renouvelables */
   zaer?: ZaerEnrichissement;
   /** Critère calculé pour l'algorithme : zone d'accélération ENR */
-  zoneAccelerationEnr?: string;
+  zoneAccelerationEnr?: ZoneAccelerationEnr;
 
   // Diagnostic zonages (dev/staging uniquement, absent en production)
   /** Données brutes des APIs de zonage pour le panneau de diagnostic */

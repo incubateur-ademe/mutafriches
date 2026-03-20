@@ -1,3 +1,10 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Neutraliser les styles DSFR sur les contrôles Leaflet */
+.leaflet-bar a,
+.leaflet-bar a:hover {
+  background-image: none;
+  text-decoration: none;
+}

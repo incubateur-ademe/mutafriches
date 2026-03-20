@@ -5,6 +5,9 @@ import {
   RisqueRetraitGonflementArgile,
   RisqueCavitesSouterraines,
   RisqueInondation,
+  ZonageEnvironnemental,
+  ZonageReglementaire,
+  ZonagePatrimonial,
 } from "@mutafriches/shared-types";
 import { EnrichissementService } from "./enrichissement.service";
 import { CadastreEnrichissementService } from "./cadastre/cadastre-enrichissement.service";
@@ -75,15 +78,11 @@ describe("EnrichissementService", () => {
       data: undefined,
     });
 
-    // Configuration par defaut du mock pollution
-    mockPollutionDetection.detecterPollution.mockResolvedValue({
-      siteReferencePollue: false,
-      sourcesPollution: [],
+    // Configuration par défaut du mock pollution
+    mockPollutionDetection.enrichir.mockResolvedValue({
+      success: true,
       sourcesUtilisees: ["ADEME-Sites-Pollues"],
       sourcesEchouees: [],
-      pollutionAdeme: false,
-      pollutionSis: false,
-      pollutionIcpe: false,
     });
 
     // Configuration par defaut du mock cache (pas de cache)
@@ -150,25 +149,20 @@ describe("EnrichissementService", () => {
         sourcesEchouees: [],
       });
       risquesNaturelsEnrichissement.enrichir.mockResolvedValue({
-        result: { success: true, sourcesUtilisees: ["rga"], sourcesEchouees: [] },
-        evaluation: {
-          rga: null,
-          cavites: null,
-          inondation: null,
-          risqueRetraitGonflementArgile: RisqueRetraitGonflementArgile.AUCUN,
-          risqueCavitesSouterraines: RisqueCavitesSouterraines.NON,
-          risqueInondation: RisqueInondation.NON,
-        },
+        success: true,
+        sourcesUtilisees: ["rga"],
+        sourcesEchouees: [],
       });
       risquesTechnologiquesEnrichissement.enrichir.mockResolvedValue({
-        result: { success: true, sourcesUtilisees: ["sis"], sourcesEchouees: [] },
-        evaluation: { sis: null, icpe: null, risqueFinal: false },
+        success: true,
+        sourcesUtilisees: ["sis"],
+        sourcesEchouees: [],
       });
       georisquesEnrichissement.enrichir.mockResolvedValue({
         result: { success: true, sourcesUtilisees: ["georisques"], sourcesEchouees: [] },
         data: undefined,
       });
-      zonageOrchestrator.enrichirZonages.mockResolvedValue({
+      zonageOrchestrator.enrichir.mockResolvedValue({
         result: { success: true, sourcesUtilisees: ["API_CARTO_GPU"], sourcesEchouees: [] },
         zonageEnvironnemental: "hors-zone",
         zonagePatrimonial: "non-concerne",
@@ -213,25 +207,20 @@ describe("EnrichissementService", () => {
         sourcesEchouees: [],
       });
       risquesNaturelsEnrichissement.enrichir.mockResolvedValue({
-        result: { success: true, sourcesUtilisees: ["rga"], sourcesEchouees: [] },
-        evaluation: {
-          rga: null,
-          cavites: null,
-          inondation: null,
-          risqueRetraitGonflementArgile: RisqueRetraitGonflementArgile.AUCUN,
-          risqueCavitesSouterraines: RisqueCavitesSouterraines.NON,
-          risqueInondation: RisqueInondation.NON,
-        },
+        success: true,
+        sourcesUtilisees: ["rga"],
+        sourcesEchouees: [],
       });
       risquesTechnologiquesEnrichissement.enrichir.mockResolvedValue({
-        result: { success: true, sourcesUtilisees: ["sis"], sourcesEchouees: [] },
-        evaluation: { sis: null, icpe: null, risqueFinal: false },
+        success: true,
+        sourcesUtilisees: ["sis"],
+        sourcesEchouees: [],
       });
       georisquesEnrichissement.enrichir.mockResolvedValue({
         result: { success: true, sourcesUtilisees: ["georisques"], sourcesEchouees: [] },
         data: { metadata: { sourcesUtilisees: [], sourcesEchouees: [] } },
       });
-      zonageOrchestrator.enrichirZonages.mockResolvedValue({
+      zonageOrchestrator.enrichir.mockResolvedValue({
         result: { success: true, sourcesUtilisees: ["API_CARTO_GPU"], sourcesEchouees: [] },
         zonageEnvironnemental: "hors-zone",
         zonagePatrimonial: "non-concerne",
@@ -303,25 +292,20 @@ describe("EnrichissementService", () => {
         sourcesEchouees: [],
       });
       risquesNaturelsEnrichissement.enrichir.mockResolvedValue({
-        result: { success: true, sourcesUtilisees: ["rga"], sourcesEchouees: [] },
-        evaluation: {
-          rga: null,
-          cavites: null,
-          inondation: null,
-          risqueRetraitGonflementArgile: RisqueRetraitGonflementArgile.AUCUN,
-          risqueCavitesSouterraines: RisqueCavitesSouterraines.NON,
-          risqueInondation: RisqueInondation.NON,
-        },
+        success: true,
+        sourcesUtilisees: ["rga"],
+        sourcesEchouees: [],
       });
       risquesTechnologiquesEnrichissement.enrichir.mockResolvedValue({
-        result: { success: true, sourcesUtilisees: ["sis"], sourcesEchouees: [] },
-        evaluation: { sis: null, icpe: null, risqueFinal: false },
+        success: true,
+        sourcesUtilisees: ["sis"],
+        sourcesEchouees: [],
       });
       georisquesEnrichissement.enrichir.mockResolvedValue({
         result: { success: true, sourcesUtilisees: ["georisques"], sourcesEchouees: [] },
         data: undefined,
       });
-      zonageOrchestrator.enrichirZonages.mockResolvedValue({
+      zonageOrchestrator.enrichir.mockResolvedValue({
         result: { success: true, sourcesUtilisees: ["API_CARTO_GPU"], sourcesEchouees: [] },
         zonageEnvironnemental: "hors-zone",
         zonagePatrimonial: "non-concerne",
@@ -423,7 +407,7 @@ describe("EnrichissementService", () => {
       );
     });
 
-    it("devrait appeler georisques seulement si coordonnees presentes", async () => {
+    it("devrait appeler tous les services meme sans coordonnees (chacun gère le cas en interne)", async () => {
       // Arrange
       const siteSansCoordonnees = createMockSite();
       siteSansCoordonnees.coordonnees = undefined;
@@ -448,21 +432,20 @@ describe("EnrichissementService", () => {
         sourcesEchouees: [],
       });
       risquesNaturelsEnrichissement.enrichir.mockResolvedValue({
-        result: { success: true, sourcesUtilisees: [], sourcesEchouees: [] },
-        evaluation: {
-          rga: null,
-          cavites: null,
-          inondation: null,
-          risqueRetraitGonflementArgile: RisqueRetraitGonflementArgile.AUCUN,
-          risqueCavitesSouterraines: RisqueCavitesSouterraines.NON,
-          risqueInondation: RisqueInondation.NON,
-        },
+        success: true,
+        sourcesUtilisees: [],
+        sourcesEchouees: [],
       });
       risquesTechnologiquesEnrichissement.enrichir.mockResolvedValue({
-        result: { success: true, sourcesUtilisees: [], sourcesEchouees: [] },
-        evaluation: { sis: null, icpe: null, risqueFinal: false },
+        success: true,
+        sourcesUtilisees: [],
+        sourcesEchouees: [],
       });
-      zonageOrchestrator.enrichirZonages.mockResolvedValue({
+      georisquesEnrichissement.enrichir.mockResolvedValue({
+        result: { success: false, sourcesUtilisees: [], sourcesEchouees: [] },
+        data: undefined,
+      });
+      zonageOrchestrator.enrichir.mockResolvedValue({
         result: { success: true, sourcesUtilisees: ["API_CARTO_GPU"], sourcesEchouees: [] },
         zonageEnvironnemental: "hors-zone",
         zonagePatrimonial: "non-concerne",
@@ -474,8 +457,12 @@ describe("EnrichissementService", () => {
       // Act
       await service.enrichir(identifiantTest);
 
-      // Assert
-      expect(georisquesEnrichissement.enrichir).not.toHaveBeenCalled();
+      // Assert — tous les services sont appelés, même sans coordonnées
+      expect(georisquesEnrichissement.enrichir).toHaveBeenCalledWith(siteSansCoordonnees);
+      expect(risquesNaturelsEnrichissement.enrichir).toHaveBeenCalledWith(siteSansCoordonnees);
+      expect(risquesTechnologiquesEnrichissement.enrichir).toHaveBeenCalledWith(
+        siteSansCoordonnees,
+      );
     });
   });
 
@@ -519,7 +506,7 @@ describe("EnrichissementService", () => {
       expect(risquesNaturelsEnrichissement.enrichir).not.toHaveBeenCalled();
       expect(risquesTechnologiquesEnrichissement.enrichir).not.toHaveBeenCalled();
       expect(georisquesEnrichissement.enrichir).not.toHaveBeenCalled();
-      expect(pollutionDetection.detecterPollution).not.toHaveBeenCalled();
+      expect(pollutionDetection.enrichir).not.toHaveBeenCalled();
     });
 
     it("devrait enregistrer l'utilisation du cache avec enrichissementSourceId", async () => {
@@ -646,25 +633,20 @@ function setupAllMocksSuccess(site: Site, mocks: AllMocks): void {
     sourcesEchouees: [],
   });
   mocks.risquesNaturelsEnrichissement.enrichir.mockResolvedValue({
-    result: { success: true, sourcesUtilisees: ["rga"], sourcesEchouees: [] },
-    evaluation: {
-      rga: null,
-      cavites: null,
-      inondation: null,
-      risqueRetraitGonflementArgile: RisqueRetraitGonflementArgile.AUCUN,
-      risqueCavitesSouterraines: RisqueCavitesSouterraines.NON,
-      risqueInondation: RisqueInondation.NON,
-    },
+    success: true,
+    sourcesUtilisees: ["rga"],
+    sourcesEchouees: [],
   });
   mocks.risquesTechnologiquesEnrichissement.enrichir.mockResolvedValue({
-    result: { success: true, sourcesUtilisees: ["sis"], sourcesEchouees: [] },
-    evaluation: { sis: null, icpe: null, risqueFinal: false },
+    success: true,
+    sourcesUtilisees: ["sis"],
+    sourcesEchouees: [],
   });
   mocks.georisquesEnrichissement.enrichir.mockResolvedValue({
     result: { success: true, sourcesUtilisees: ["georisques"], sourcesEchouees: [] },
     data: undefined,
   });
-  mocks.zonageOrchestrator.enrichirZonages.mockResolvedValue({
+  mocks.zonageOrchestrator.enrichir.mockResolvedValue({
     result: {
       success: true,
       sourcesUtilisees: ["API_CARTO_NATURE", "API_CARTO_GPU"],
@@ -689,9 +671,9 @@ function createMockCachedEnrichissement() {
     surfaceSite: 1000,
     surfaceBati: 200,
     distanceRaccordementElectrique: 50,
-    risqueRetraitGonflementArgile: "aucun",
-    risqueCavitesSouterraines: "non",
-    risqueInondation: "non",
+    risqueRetraitGonflementArgile: RisqueRetraitGonflementArgile.AUCUN,
+    risqueCavitesSouterraines: RisqueCavitesSouterraines.NON,
+    risqueInondation: RisqueInondation.NON,
     coordonnees: { latitude: 48.0, longitude: -4.0 },
     geometrie: { type: "Polygon", coordinates: [] },
     siteEnCentreVille: false,
@@ -701,9 +683,9 @@ function createMockCachedEnrichissement() {
     tauxLogementsVacants: 0.05,
     presenceRisquesTechnologiques: false,
     siteReferencePollue: false,
-    zonageEnvironnemental: "hors-zone",
-    zonageReglementaire: "zone-urbaine-u",
-    zonagePatrimonial: "non-concerne",
+    zonageEnvironnemental: ZonageEnvironnemental.HORS_ZONE,
+    zonageReglementaire: ZonageReglementaire.ZONE_URBAINE_U,
+    zonagePatrimonial: ZonagePatrimonial.NON_CONCERNE,
     sourcesUtilisees: ["cadastre", "enedis", "transport"],
     champsManquants: [],
     sourcesEchouees: [],

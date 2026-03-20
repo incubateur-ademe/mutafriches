@@ -1,5 +1,11 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { RaccordementEau, UsageType } from "@mutafriches/shared-types";
+import {
+  RaccordementEau,
+  UsageType,
+  RisqueRetraitGonflementArgile,
+  RisqueCavitesSouterraines,
+  RisqueInondation,
+} from "@mutafriches/shared-types";
 import { CalculService } from "./calcul.service";
 import { FiabiliteCalculator } from "./algorithme/fiabilite.calculator";
 import { Site } from "../entities/site.entity";
@@ -122,9 +128,9 @@ describe("CalculService", () => {
       siteComplet.tauxLogementsVacants = 5.2; // poids 1
       siteComplet.distanceAutoroute = 2; // poids 0.5
       siteComplet.distanceTransportCommun = 300; // poids 1
-      siteComplet.risqueRetraitGonflementArgile = "faible-ou-moyen" as any; // poids 0.5
-      siteComplet.risqueCavitesSouterraines = "non" as any; // poids 0.5
-      siteComplet.risqueInondation = "non" as any; // poids 1
+      siteComplet.risqueRetraitGonflementArgile = RisqueRetraitGonflementArgile.FAIBLE_OU_MOYEN; // poids 0.5
+      siteComplet.risqueCavitesSouterraines = RisqueCavitesSouterraines.NON; // poids 0.5
+      siteComplet.risqueInondation = RisqueInondation.NON; // poids 1
       siteComplet.presenceRisquesTechnologiques = false; // poids 1
 
       const resultComplet = await service.calculer(siteComplet);
@@ -144,13 +150,13 @@ describe("CalculService", () => {
         if (res.indiceMutabilite >= 70) {
           expect(res.potentiel).toBe("Excellent");
         } else if (res.indiceMutabilite >= 60) {
-          expect(res.potentiel).toBe("Favorable");
+          expect(res.potentiel).toBe("Très bon");
         } else if (res.indiceMutabilite >= 50) {
-          expect(res.potentiel).toBe("Modéré");
+          expect(res.potentiel).toBe("Bon");
         } else if (res.indiceMutabilite >= 40) {
-          expect(res.potentiel).toBe("Peu favorable");
+          expect(res.potentiel).toBe("Moyen");
         } else {
-          expect(res.potentiel).toBe("Défavorable");
+          expect(res.potentiel).toBe("Faible");
         }
       });
     });

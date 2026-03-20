@@ -8,6 +8,8 @@ const MOTS_CLES_EQUIPEMENT = ["équipement", "equipement"];
 const MOTS_CLES_ACTIVITE = [
   "activité",
   "activite",
+  "économique",
+  "economique",
   "industrie",
   "industrielle",
   "artisanale",
@@ -69,9 +71,12 @@ export class ZonageReglementaireCalculator {
    *
    * Ordre de classification pour les zones U :
    * 1. destdomi activité → ZONE_VOCATION_ACTIVITES
-   * 2. Code zone (UA/UB/UC/UD, UE, UX/UY/UZ/UI) → sous-type U
-   * 3. Mots-clés dans libelong (fallback) → sous-type U
+   * 2. Mots-clés dans libelong (prioritaire quand présent) → sous-type U
+   * 3. Code zone (UA/UB/UC/UD, UE, UX/UY/UZ/UI) → sous-type U (fallback)
    * 4. Catch-all → ZONE_URBAINE_U
+   *
+   * Le libelong est prioritaire car le code court peut être ambigu selon les territoires
+   * (ex: UE = "urbain équipement" standard CNIG, mais "urbain économique" en Loire-Atlantique)
    */
   private mapZoneUrbaToZonage(
     typezone: string,
@@ -88,33 +93,31 @@ export class ZonageReglementaireCalculator {
       return ZonageReglementaire.ZONE_VOCATION_ACTIVITES;
     }
 
-    // Pour les sous-zones U, utiliser le libellé si le typezone est juste "U"
-    // L'API Carto GPU renvoie typezone="U" avec le détail dans libelle (ex: "UA", "UE", "UX")
-    const codeZone = type === "U" && libelle ? libelle.toUpperCase() : type;
-
-    // Sous-zones urbaines U avec affinage par code
-    if (/^U[ABCD]/i.test(codeZone)) {
-      this.logger.debug(`Zonage réglementaire: ZONE_URBAINE_U_HABITAT (code=${codeZone})`);
-      return ZonageReglementaire.ZONE_URBAINE_U_HABITAT;
-    }
-
-    if (/^UE/i.test(codeZone)) {
-      this.logger.debug(`Zonage réglementaire: ZONE_URBAINE_U_EQUIPEMENT (code=${codeZone})`);
-      return ZonageReglementaire.ZONE_URBAINE_U_EQUIPEMENT;
-    }
-
-    if (/^U[XYZI]/i.test(codeZone)) {
-      this.logger.debug(`Zonage réglementaire: ZONE_URBAINE_U_ACTIVITE (code=${codeZone})`);
-      return ZonageReglementaire.ZONE_URBAINE_U_ACTIVITE;
-    }
-
-    // Fallback : détection par mots-clés dans le libellé long (libelong)
-    // Permet de classifier les codes non standards (UG, UM, UP...) selon leur description
     if (type.startsWith("U")) {
+      // Priorité au libellé long quand il est présent (plus fiable que le code court)
       const zonageParLibelong = this.classifierParLibelong(libelong);
       if (zonageParLibelong) {
         this.logger.debug(`Zonage réglementaire: ${zonageParLibelong} (libelong="${libelong}")`);
         return zonageParLibelong;
+      }
+
+      // Fallback : classification par code court (UA/UB/UC/UD, UE, UI/UX/UY/UZ)
+      // Utilisé quand le libelong est absent ou ne contient aucun mot-clé reconnu
+      const codeZone = type === "U" && libelle ? libelle.toUpperCase() : type;
+
+      if (/^U[ABCD]/i.test(codeZone)) {
+        this.logger.debug(`Zonage réglementaire: ZONE_URBAINE_U_HABITAT (code=${codeZone})`);
+        return ZonageReglementaire.ZONE_URBAINE_U_HABITAT;
+      }
+
+      if (/^UE/i.test(codeZone)) {
+        this.logger.debug(`Zonage réglementaire: ZONE_URBAINE_U_EQUIPEMENT (code=${codeZone})`);
+        return ZonageReglementaire.ZONE_URBAINE_U_EQUIPEMENT;
+      }
+
+      if (/^U[XYZI]/i.test(codeZone)) {
+        this.logger.debug(`Zonage réglementaire: ZONE_URBAINE_U_ACTIVITE (code=${codeZone})`);
+        return ZonageReglementaire.ZONE_URBAINE_U_ACTIVITE;
       }
 
       this.logger.debug("Zonage réglementaire: ZONE_URBAINE_U");

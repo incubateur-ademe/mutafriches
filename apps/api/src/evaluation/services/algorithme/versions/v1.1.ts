@@ -1,3 +1,12 @@
+/**
+ * Version 1.1 - Avant zone urba
+ * Configuration extraite de l'état avant le commit b8c3f1d (zone urba)
+ * Différences avec v1.2 :
+ *   - Pas de sous-catégories U (U_HABITAT, U_EQUIPEMENT, U_ACTIVITE)
+ *   - ZONE_A_URBANISER_AU RENATURATION = NEGATIF (au lieu de NEUTRE)
+ *   - ZONE_VOCATION_ACTIVITES TERTIAIRE = NEGATIF (au lieu de POSITIF)
+ *   - Risque naturel unique (presenceRisquesNaturels) avec enum RisqueNaturel
+ */
 import { EtatBatiInfrastructure, RaccordementEau, UsageType } from "@mutafriches/shared-types";
 import {
   TypeProprietaire,
@@ -5,21 +14,15 @@ import {
   QualiteVoieDesserte,
   QualitePaysage,
   ValeurArchitecturale,
-  RisqueRetraitGonflementArgile,
-  RisqueCavitesSouterraines,
-  RisqueInondation,
+  RisqueNaturel,
   ZonageEnvironnemental,
   ZonagePatrimonial,
   TrameVerteEtBleue,
   ZonageReglementaire,
-  ZoneAccelerationEnr,
 } from "@mutafriches/shared-types";
-import { ScoreImpact, ScoreParUsage } from "./algorithme.types";
+import { ScoreImpact, ScoreParUsage } from "../algorithme.types";
 
-// Configuration des poids
 export const POIDS_CRITERES = {
-  // Critères pris en compte dans la version web (vu le 19/09)
-  // 14 Critères déduits module enrichissement
   surfaceSite: 2,
   surfaceBati: 2,
   siteEnCentreVille: 1,
@@ -28,19 +31,12 @@ export const POIDS_CRITERES = {
   proximiteCommercesServices: 1,
   distanceRaccordementElectrique: 1,
   tauxLogementsVacants: 1,
-  risqueRetraitGonflementArgile: 0.5,
-  risqueCavitesSouterraines: 0.5,
-  risqueInondation: 1,
+  presenceRisquesNaturels: 2,
   presenceRisquesTechnologiques: 1,
   zonageEnvironnemental: 1,
   zonageReglementaire: 2,
   zonagePatrimonial: 1,
   trameVerteEtBleue: 1,
-  zoneAccelerationEnr: 1,
-
-  // ------------------------------------------------
-  // 7 critères déduis des données complémentaires
-  // ------------------------------------------------
   typeProprietaire: 1,
   raccordementEau: 1,
   etatBatiInfrastructure: 2,
@@ -50,9 +46,7 @@ export const POIDS_CRITERES = {
   qualiteVoieDesserte: 0.5,
 } as const;
 
-// Matrice de scoring complète avec ScoreImpact
 export const MATRICE_SCORING = {
-  // Type de propriétaire
   typeProprietaire: {
     [TypeProprietaire.PUBLIC]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.TRES_POSITIF,
@@ -101,7 +95,6 @@ export const MATRICE_SCORING = {
     },
   },
 
-  // État du bâti
   etatBatiInfrastructure: {
     [EtatBatiInfrastructure.DEGRADATION_INEXISTANTE]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.TRES_POSITIF,
@@ -139,7 +132,6 @@ export const MATRICE_SCORING = {
       [UsageType.RENATURATION]: ScoreImpact.NEGATIF,
       [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEGATIF,
     },
-
     [EtatBatiInfrastructure.PAS_DE_BATI]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
       [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
@@ -160,7 +152,6 @@ export const MATRICE_SCORING = {
     },
   },
 
-  // Présence de pollution
   presencePollution: {
     [PresencePollution.NON]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.TRES_POSITIF,
@@ -218,7 +209,6 @@ export const MATRICE_SCORING = {
     },
   },
 
-  // En centre-ville ou centre-bourg
   siteEnCentreVille: {
     true: {
       [UsageType.RESIDENTIEL]: ScoreImpact.TRES_POSITIF,
@@ -240,7 +230,6 @@ export const MATRICE_SCORING = {
     },
   },
 
-  // Raccordement à l'eau
   raccordementEau: {
     [RaccordementEau.OUI]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.TRES_POSITIF,
@@ -271,7 +260,6 @@ export const MATRICE_SCORING = {
     },
   },
 
-  // Qualité voie desserte
   qualiteVoieDesserte: {
     [QualiteVoieDesserte.ACCESSIBLE]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.POSITIF,
@@ -311,7 +299,6 @@ export const MATRICE_SCORING = {
     },
   },
 
-  // Commerces / services à proximité
   proximiteCommercesServices: {
     true: {
       [UsageType.RESIDENTIEL]: ScoreImpact.TRES_POSITIF,
@@ -333,9 +320,8 @@ export const MATRICE_SCORING = {
     },
   },
 
-  // Zonage du PLU
+  // Zonage du PLU - v1.0 : pas de sous-catégories U
   zonageReglementaire: {
-    // Zone urbaine U générique (catch-all pour U simple ou sous-zones non classifiées)
     [ZonageReglementaire.ZONE_URBAINE_U]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.TRES_POSITIF,
       [UsageType.EQUIPEMENTS]: ScoreImpact.TRES_POSITIF,
@@ -345,60 +331,24 @@ export const MATRICE_SCORING = {
       [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
       [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEGATIF,
     },
-
-    // Zone urbaine U habitat (UA, UB, UC, UD)
-    [ZonageReglementaire.ZONE_URBAINE_U_HABITAT]: {
-      [UsageType.RESIDENTIEL]: ScoreImpact.TRES_POSITIF,
-      [UsageType.EQUIPEMENTS]: ScoreImpact.POSITIF,
-      [UsageType.CULTURE]: ScoreImpact.POSITIF,
-      [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
-      [UsageType.INDUSTRIE]: ScoreImpact.TRES_NEGATIF,
-      [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
-      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEGATIF,
-    },
-
-    // Zone urbaine U équipement (UE)
-    [ZonageReglementaire.ZONE_URBAINE_U_EQUIPEMENT]: {
-      [UsageType.RESIDENTIEL]: ScoreImpact.TRES_NEGATIF,
-      [UsageType.EQUIPEMENTS]: ScoreImpact.TRES_POSITIF,
-      [UsageType.CULTURE]: ScoreImpact.POSITIF,
-      [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
-      [UsageType.INDUSTRIE]: ScoreImpact.TRES_NEGATIF,
-      [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
-      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
-    },
-
-    // Zone urbaine U activité (UI, UX, UY, UZ)
-    [ZonageReglementaire.ZONE_URBAINE_U_ACTIVITE]: {
-      [UsageType.RESIDENTIEL]: ScoreImpact.TRES_NEGATIF,
-      [UsageType.EQUIPEMENTS]: ScoreImpact.NEGATIF,
-      [UsageType.CULTURE]: ScoreImpact.NEGATIF,
-      [UsageType.TERTIAIRE]: ScoreImpact.POSITIF,
-      [UsageType.INDUSTRIE]: ScoreImpact.TRES_POSITIF,
-      [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
-      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
-    },
-
     [ZonageReglementaire.ZONE_A_URBANISER_AU]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.POSITIF,
       [UsageType.EQUIPEMENTS]: ScoreImpact.POSITIF,
       [UsageType.CULTURE]: ScoreImpact.NEUTRE,
       [UsageType.TERTIAIRE]: ScoreImpact.POSITIF,
       [UsageType.INDUSTRIE]: ScoreImpact.NEUTRE,
-      [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
+      [UsageType.RENATURATION]: ScoreImpact.NEGATIF,
       [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEGATIF,
     },
-
     [ZonageReglementaire.ZONE_VOCATION_ACTIVITES]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.TRES_NEGATIF,
       [UsageType.EQUIPEMENTS]: ScoreImpact.NEGATIF,
       [UsageType.CULTURE]: ScoreImpact.NEGATIF,
-      [UsageType.TERTIAIRE]: ScoreImpact.POSITIF,
+      [UsageType.TERTIAIRE]: ScoreImpact.NEGATIF,
       [UsageType.INDUSTRIE]: ScoreImpact.TRES_POSITIF,
       [UsageType.RENATURATION]: ScoreImpact.NEGATIF,
       [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
     },
-
     [ZonageReglementaire.SECTEUR_OUVERT_A_LA_CONSTRUCTION]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.POSITIF,
       [UsageType.EQUIPEMENTS]: ScoreImpact.POSITIF,
@@ -408,7 +358,6 @@ export const MATRICE_SCORING = {
       [UsageType.RENATURATION]: ScoreImpact.NEGATIF,
       [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEGATIF,
     },
-
     [ZonageReglementaire.SECTEUR_REGLEMENT_URBANISME]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
       [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
@@ -418,7 +367,6 @@ export const MATRICE_SCORING = {
       [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
       [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
     },
-
     [ZonageReglementaire.SECTEUR_NON_OUVERT_A_LA_CONSTRUCTION]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.TRES_NEGATIF,
       [UsageType.EQUIPEMENTS]: ScoreImpact.NEGATIF,
@@ -428,7 +376,6 @@ export const MATRICE_SCORING = {
       [UsageType.RENATURATION]: ScoreImpact.TRES_POSITIF,
       [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.POSITIF,
     },
-
     [ZonageReglementaire.ZONE_AGRICOLE_A]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.TRES_NEGATIF,
       [UsageType.EQUIPEMENTS]: ScoreImpact.NEGATIF,
@@ -438,7 +385,6 @@ export const MATRICE_SCORING = {
       [UsageType.RENATURATION]: ScoreImpact.TRES_POSITIF,
       [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
     },
-
     [ZonageReglementaire.ZONE_NATURELLE_N]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.TRES_NEGATIF,
       [UsageType.EQUIPEMENTS]: ScoreImpact.NEGATIF,
@@ -448,7 +394,6 @@ export const MATRICE_SCORING = {
       [UsageType.RENATURATION]: ScoreImpact.TRES_POSITIF,
       [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
     },
-
     [ZonageReglementaire.NE_SAIT_PAS]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
       [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
@@ -460,82 +405,46 @@ export const MATRICE_SCORING = {
     },
   },
 
-  // Retrait gonflement argile (RGA)
-  risqueRetraitGonflementArgile: {
-    [RisqueRetraitGonflementArgile.AUCUN]: {
-      [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
-      [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
-      [UsageType.CULTURE]: ScoreImpact.NEUTRE,
-      [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
-      [UsageType.INDUSTRIE]: ScoreImpact.NEUTRE,
-      [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
-      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
-    },
-    [RisqueRetraitGonflementArgile.FAIBLE_OU_MOYEN]: {
-      [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
-      [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
-      [UsageType.CULTURE]: ScoreImpact.NEUTRE,
-      [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
-      [UsageType.INDUSTRIE]: ScoreImpact.NEUTRE,
-      [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
-      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
-    },
-    [RisqueRetraitGonflementArgile.FORT]: {
-      [UsageType.RESIDENTIEL]: ScoreImpact.NEGATIF,
-      [UsageType.EQUIPEMENTS]: ScoreImpact.NEGATIF,
-      [UsageType.CULTURE]: ScoreImpact.NEGATIF,
-      [UsageType.TERTIAIRE]: ScoreImpact.NEGATIF,
-      [UsageType.INDUSTRIE]: ScoreImpact.NEGATIF,
-      [UsageType.RENATURATION]: ScoreImpact.POSITIF,
-      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
-    },
-  },
-
-  // Cavités souterraines
-  risqueCavitesSouterraines: {
-    [RisqueCavitesSouterraines.NON]: {
-      [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
-      [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
-      [UsageType.CULTURE]: ScoreImpact.NEUTRE,
-      [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
-      [UsageType.INDUSTRIE]: ScoreImpact.NEUTRE,
-      [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
-      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
-    },
-    [RisqueCavitesSouterraines.OUI]: {
-      [UsageType.RESIDENTIEL]: ScoreImpact.NEGATIF,
-      [UsageType.EQUIPEMENTS]: ScoreImpact.NEGATIF,
-      [UsageType.CULTURE]: ScoreImpact.NEGATIF,
-      [UsageType.TERTIAIRE]: ScoreImpact.NEGATIF,
-      [UsageType.INDUSTRIE]: ScoreImpact.NEGATIF,
-      [UsageType.RENATURATION]: ScoreImpact.POSITIF,
-      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
-    },
-  },
-
-  // Inondations
-  risqueInondation: {
-    [RisqueInondation.NON]: {
-      [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
-      [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
-      [UsageType.CULTURE]: ScoreImpact.NEUTRE,
-      [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
-      [UsageType.INDUSTRIE]: ScoreImpact.NEUTRE,
-      [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
-      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
-    },
-    [RisqueInondation.OUI]: {
+  // Risques naturels - v1.0 : critère unique avec enum RisqueNaturel
+  presenceRisquesNaturels: {
+    [RisqueNaturel.FORT]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.TRES_NEGATIF,
       [UsageType.EQUIPEMENTS]: ScoreImpact.TRES_NEGATIF,
-      [UsageType.CULTURE]: ScoreImpact.NEGATIF,
-      [UsageType.TERTIAIRE]: ScoreImpact.NEGATIF,
+      [UsageType.CULTURE]: ScoreImpact.TRES_NEGATIF,
+      [UsageType.TERTIAIRE]: ScoreImpact.TRES_NEGATIF,
       [UsageType.INDUSTRIE]: ScoreImpact.TRES_NEGATIF,
       [UsageType.RENATURATION]: ScoreImpact.TRES_POSITIF,
       [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEGATIF,
     },
+    [RisqueNaturel.MOYEN]: {
+      [UsageType.RESIDENTIEL]: ScoreImpact.NEGATIF,
+      [UsageType.EQUIPEMENTS]: ScoreImpact.NEGATIF,
+      [UsageType.CULTURE]: ScoreImpact.NEGATIF,
+      [UsageType.TERTIAIRE]: ScoreImpact.NEGATIF,
+      [UsageType.INDUSTRIE]: ScoreImpact.NEGATIF,
+      [UsageType.RENATURATION]: ScoreImpact.POSITIF,
+      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEGATIF,
+    },
+    [RisqueNaturel.FAIBLE]: {
+      [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
+      [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
+      [UsageType.CULTURE]: ScoreImpact.NEUTRE,
+      [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
+      [UsageType.INDUSTRIE]: ScoreImpact.NEUTRE,
+      [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
+      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
+    },
+    [RisqueNaturel.AUCUN]: {
+      [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
+      [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
+      [UsageType.CULTURE]: ScoreImpact.NEUTRE,
+      [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
+      [UsageType.INDUSTRIE]: ScoreImpact.NEUTRE,
+      [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
+      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
+    },
   },
 
-  // Risques technologiques
   presenceRisquesTechnologiques: {
     true: {
       [UsageType.RESIDENTIEL]: ScoreImpact.TRES_NEGATIF,
@@ -557,7 +466,6 @@ export const MATRICE_SCORING = {
     },
   },
 
-  // Zonage patrimonial / Monument historique
   zonagePatrimonial: {
     [ZonagePatrimonial.NON_CONCERNE]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.POSITIF,
@@ -588,7 +496,6 @@ export const MATRICE_SCORING = {
     },
   },
 
-  // Qualité paysage
   qualitePaysage: {
     [QualitePaysage.SANS_INTERET]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
@@ -599,7 +506,6 @@ export const MATRICE_SCORING = {
       [UsageType.RENATURATION]: ScoreImpact.POSITIF,
       [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.POSITIF,
     },
-
     [QualitePaysage.ORDINAIRE]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
       [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
@@ -609,7 +515,6 @@ export const MATRICE_SCORING = {
       [UsageType.RENATURATION]: ScoreImpact.POSITIF,
       [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.POSITIF,
     },
-
     [QualitePaysage.INTERET_REMARQUABLE]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
       [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
@@ -619,7 +524,6 @@ export const MATRICE_SCORING = {
       [UsageType.RENATURATION]: ScoreImpact.POSITIF,
       [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEGATIF,
     },
-
     [QualitePaysage.NE_SAIT_PAS]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
       [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
@@ -631,7 +535,6 @@ export const MATRICE_SCORING = {
     },
   },
 
-  // Valeur architecturale
   valeurArchitecturaleHistorique: {
     [ValeurArchitecturale.SANS_INTERET]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
@@ -642,7 +545,6 @@ export const MATRICE_SCORING = {
       [UsageType.RENATURATION]: ScoreImpact.POSITIF,
       [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.POSITIF,
     },
-
     [ValeurArchitecturale.ORDINAIRE]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
       [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
@@ -652,7 +554,6 @@ export const MATRICE_SCORING = {
       [UsageType.RENATURATION]: ScoreImpact.POSITIF,
       [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.POSITIF,
     },
-
     [ValeurArchitecturale.INTERET_REMARQUABLE]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
       [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
@@ -662,8 +563,7 @@ export const MATRICE_SCORING = {
       [UsageType.RENATURATION]: ScoreImpact.TRES_NEGATIF,
       [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.TRES_NEGATIF,
     },
-
-    [ValeurArchitecturale.PAS_DE_BATI]: {
+    [ValeurArchitecturale.NE_SAIT_PAS]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
       [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
       [UsageType.CULTURE]: ScoreImpact.NEUTRE,
@@ -672,19 +572,8 @@ export const MATRICE_SCORING = {
       [UsageType.RENATURATION]: ScoreImpact.TRES_POSITIF,
       [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.TRES_POSITIF,
     },
-
-    [ValeurArchitecturale.NE_SAIT_PAS]: {
-      [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
-      [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
-      [UsageType.CULTURE]: ScoreImpact.NEUTRE,
-      [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
-      [UsageType.INDUSTRIE]: ScoreImpact.NEUTRE,
-      [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
-      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
-    },
   },
 
-  // Zonage environnemental
   zonageEnvironnemental: {
     [ZonageEnvironnemental.HORS_ZONE]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.POSITIF,
@@ -733,7 +622,6 @@ export const MATRICE_SCORING = {
     },
   },
 
-  // Trame verte et bleue
   trameVerteEtBleue: {
     [TrameVerteEtBleue.HORS_TRAME]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.POSITIF,
@@ -784,7 +672,6 @@ export const MATRICE_SCORING = {
 
   // Fonctions pour valeurs numériques
 
-  // Surface du site en m²
   surfaceSite: (value: number): ScoreParUsage => {
     if (value < 10000)
       return {
@@ -827,7 +714,6 @@ export const MATRICE_SCORING = {
     };
   },
 
-  // Surface bâtie en m²
   surfaceBati: (value: number | undefined): ScoreParUsage => {
     if (!value || value < 5000)
       return {
@@ -860,8 +746,6 @@ export const MATRICE_SCORING = {
     };
   },
 
-  // Taux de logements vacants en %
-  // Modifié le 18/09/2024 après revue avec Anna
   tauxLogementsVacants: (value: number): ScoreParUsage => {
     if (value <= 7)
       return {
@@ -874,7 +758,6 @@ export const MATRICE_SCORING = {
         [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
       };
     if (value <= 8 && value > 7)
-      // Modifié le 18/09/2024 après revue avec Anna
       return {
         [UsageType.RESIDENTIEL]: ScoreImpact.POSITIF,
         [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
@@ -885,7 +768,6 @@ export const MATRICE_SCORING = {
         [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
       };
     if (value <= 10 && value > 8)
-      // Modifié le 18/09/2024 après revue avec Anna
       return {
         [UsageType.RESIDENTIEL]: ScoreImpact.NEGATIF,
         [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
@@ -906,7 +788,6 @@ export const MATRICE_SCORING = {
     };
   },
 
-  // Distances en km et m
   distanceAutoroute: (value: number): ScoreParUsage => {
     if (value < 1)
       return {
@@ -949,13 +830,12 @@ export const MATRICE_SCORING = {
     };
   },
 
-  // Distance aux transports en commun en mètres
   distanceTransportCommun: (value: number): ScoreParUsage => {
     return value < 500
       ? {
           [UsageType.RESIDENTIEL]: ScoreImpact.POSITIF,
           [UsageType.EQUIPEMENTS]: ScoreImpact.POSITIF,
-          [UsageType.CULTURE]: ScoreImpact.POSITIF, // Modifié le 18/09/2025 après revue avec Anna
+          [UsageType.CULTURE]: ScoreImpact.POSITIF,
           [UsageType.TERTIAIRE]: ScoreImpact.POSITIF,
           [UsageType.INDUSTRIE]: ScoreImpact.POSITIF,
           [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
@@ -972,7 +852,6 @@ export const MATRICE_SCORING = {
         };
   },
 
-  // Distance au réseau électrique en km
   distanceRaccordementElectrique: (value: number): ScoreParUsage => {
     if (value < 1)
       return {
@@ -1003,36 +882,5 @@ export const MATRICE_SCORING = {
       [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
       [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.TRES_NEGATIF,
     };
-  },
-
-  // Zone d'accélération des énergies renouvelables (ZAER)
-  zoneAccelerationEnr: {
-    [ZoneAccelerationEnr.NON]: {
-      [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
-      [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
-      [UsageType.CULTURE]: ScoreImpact.NEUTRE,
-      [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
-      [UsageType.INDUSTRIE]: ScoreImpact.NEUTRE,
-      [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
-      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
-    },
-    [ZoneAccelerationEnr.OUI]: {
-      [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
-      [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
-      [UsageType.CULTURE]: ScoreImpact.NEUTRE,
-      [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
-      [UsageType.INDUSTRIE]: ScoreImpact.NEUTRE,
-      [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
-      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.POSITIF,
-    },
-    [ZoneAccelerationEnr.OUI_SOLAIRE_PV_OMBRIERE]: {
-      [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
-      [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
-      [UsageType.CULTURE]: ScoreImpact.NEUTRE,
-      [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
-      [UsageType.INDUSTRIE]: ScoreImpact.NEUTRE,
-      [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
-      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.TRES_POSITIF,
-    },
   },
 } as const;
