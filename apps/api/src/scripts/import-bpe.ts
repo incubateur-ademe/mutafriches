@@ -6,7 +6,7 @@
  *   pnpm db:bpe:import
  *
  * Prérequis:
- *   - Le fichier apps/api/data/bpe-filtered.csv doit exister
+ *   - Le fichier apps/api/src/scripts/data/donnees-bpe-2024-filtered.csv doit exister
  *   - La migration 0007_premium_malice.sql doit avoir été exécutée
  *   - PostGIS doit être activé sur la base
  *
@@ -45,7 +45,7 @@ interface BpeRow {
 }
 
 async function importBpe(): Promise<void> {
-  const dataDir = path.resolve(__dirname, "../../data");
+  const dataDir = path.resolve(__dirname, "./data");
   const inputPath = path.resolve(dataDir, "donnees-bpe-2024-filtered.csv");
 
   console.log("=".repeat(60));
