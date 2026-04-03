@@ -236,7 +236,7 @@ export const ResultatsPage: React.FC = () => {
   const handleConfirmNewAnalysis = () => {
     setIsNewAnalysisModalOpen(false);
     resetForm();
-    navigate(ROUTES.HOME);
+    navigate(ROUTES.ANALYSER);
   };
 
   // Handler pour modifier les données

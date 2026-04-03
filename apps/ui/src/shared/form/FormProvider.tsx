@@ -41,10 +41,10 @@ export const FormProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     );
   }, [state]);
 
-  // Gestion du reset du formulaire si on arrive sur la home
+  // Gestion du reset du formulaire si on arrive sur la page d'analyse
   useEffect(() => {
     const currentPath = window.location.pathname;
-    if (currentPath === ROUTES.HOME) {
+    if (currentPath === ROUTES.ANALYSER) {
       const hasData = localStorage.getItem(STORAGE_KEY);
       if (hasData) {
         const stored = JSON.parse(hasData) as { completedSteps?: number[]; timestamp?: number };

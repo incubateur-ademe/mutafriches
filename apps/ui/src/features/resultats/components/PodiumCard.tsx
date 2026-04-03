@@ -31,7 +31,6 @@ export const PodiumCard: React.FC<PodiumCardProps> = ({ result, enrichmentData, 
     const detaille = result as UsageResultatDetaille;
     const detailsCalcul = detaille.detailsCalcul;
 
-
     // Si les données détaillées sont disponibles, utiliser les vrais avantages de l'algo
     if (detailsCalcul?.detailsAvantages) {
       const tags = detailsCalcul.detailsAvantages

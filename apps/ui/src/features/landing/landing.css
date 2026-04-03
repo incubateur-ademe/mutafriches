@@ -1,0 +1,90 @@
+/* ===== Landing Page Styles ===== */
+
+/* --- Couleur custom non disponible en DSFR/Tailwind --- */
+.landing-section--blue {
+  background-color: #f1f7ff;
+}
+
+.landing-card {
+  padding: 2.5rem;
+  background-color: #f1f7ff;
+  border-radius: 16px;
+}
+
+/* --- Hero Section --- */
+.hero-section {
+  padding: 0;
+  background-color: #f1f7ff;
+  overflow: hidden;
+}
+
+.hero-section .fr-container {
+  padding-top: 3rem;
+  padding-bottom: 3rem;
+}
+
+.hero-section .fr-col-md-5 {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.hero-counter {
+  display: inline-block;
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-mention-grey);
+  margin-bottom: 1.5rem;
+}
+
+/* Zoom et recadrage du banner (pas d'équivalent utilitaire) */
+.hero-banner-wrapper {
+  overflow: hidden;
+  height: 100%;
+  min-height: 500px;
+  position: relative;
+  margin: -3rem 0;
+}
+
+.hero-banner-wrapper img {
+  width: 150%;
+  max-width: none;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-65%, -50%);
+}
+
+/* --- Section usages : grille 3 colonnes --- */
+.usages-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+/* --- Responsive --- */
+@media (max-width: 991px) {
+  .usages-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 767px) {
+  .hero-section .fr-container {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+  }
+
+  .hero-banner-wrapper {
+    display: none;
+  }
+
+  .landing-card {
+    padding: 1.5rem;
+  }
+
+  .usages-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -4,6 +4,7 @@
 export const ROUTES = {
   // Pages principales du parcours
   HOME: "/",
+  ANALYSER: "/analyser",
   ENRICHISSEMENT: "/enrichissement",
 
   // Qualification (3 étapes)

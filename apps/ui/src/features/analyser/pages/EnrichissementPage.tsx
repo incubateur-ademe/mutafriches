@@ -46,7 +46,7 @@ export const EnrichissementPage: React.FC = () => {
 
   useEffect(() => {
     if (identifiants.length === 0) {
-      navigate(ROUTES.HOME);
+      navigate(ROUTES.ANALYSER);
       return;
     }
 
@@ -103,12 +103,12 @@ export const EnrichissementPage: React.FC = () => {
     if (identifiants.length > 0) {
       window.location.reload();
     } else {
-      navigate(ROUTES.HOME);
+      navigate(ROUTES.ANALYSER);
     }
   };
 
   const handleBack = () => {
-    navigate(ROUTES.HOME);
+    navigate(ROUTES.ANALYSER);
   };
 
   return (
