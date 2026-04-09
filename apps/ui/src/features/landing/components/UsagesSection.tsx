@@ -1,20 +1,18 @@
 export function UsagesSection() {
-  const topRow = [
-    { src: "/illustrations/landing/usages/usage-public.png", alt: "Équipement public" },
+  /* Ordre : Excellent → Très bon → Bon (progression décroissante) */
+  const cards = [
     {
       src: "/illustrations/landing/usages/usage-habitat.png",
       alt: "Habitat & commerce de proximité",
     },
     { src: "/illustrations/landing/usages/usage-renature.png", alt: "Espace renaturé" },
-  ];
-
-  const bottomRow = [
-    { src: "/illustrations/landing/usages/usage-bureaux.png", alt: "Bureaux" },
-    { src: "/illustrations/landing/usages/usage-industrie.png", alt: "Industrie" },
+    { src: "/illustrations/landing/usages/usage-public.png", alt: "Équipement public" },
     {
       src: "/illustrations/landing/usages/usages-culturel.png",
       alt: "Équipement culturel & touristique",
     },
+    { src: "/illustrations/landing/usages/usage-bureaux.png", alt: "Bureaux" },
+    { src: "/illustrations/landing/usages/usage-industrie.png", alt: "Industrie" },
   ];
 
   return (
@@ -23,34 +21,25 @@ export function UsagesSection() {
         <h2 className="fr-mb-4w">Les 7 usages proposés</h2>
 
         <div className="fr-grid-row fr-grid-row--gutters">
-          {/* Image explicative à gauche (1/3) */}
-          <div className="fr-col-12 fr-col-lg-5 lg:flex items-center justify-center">
+          {/* Image explicative à gauche */}
+          <div className="fr-col-12 fr-col-lg-5 usages-legende-col">
             <img
               src="/illustrations/landing/usage-ellipses.png"
               alt="Légende des cartes d'usages : appréciation de la compatibilité, usage proposé, critères déterminants"
-              className="fr-responsive-img"
+              className="fr-responsive-img usages-legende-img"
               loading="lazy"
             />
           </div>
 
-          {/* Grille des 6 cartes (2/3) */}
+          {/* Grille des 6 cartes */}
           <div className="fr-col-12 fr-col-lg-7">
             <div className="usages-grid">
-              {topRow.map((card) => (
+              {cards.map((card, index) => (
                 <img
                   key={card.alt}
                   src={card.src}
                   alt={card.alt}
-                  className="fr-responsive-img"
-                  loading="lazy"
-                />
-              ))}
-              {bottomRow.map((card) => (
-                <img
-                  key={card.alt}
-                  src={card.src}
-                  alt={card.alt}
-                  className="fr-responsive-img"
+                  className={`fr-responsive-img${index >= 4 ? " usages-hide-mobile" : ""}`}
                   loading="lazy"
                 />
               ))}

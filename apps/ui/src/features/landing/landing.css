@@ -63,10 +63,54 @@
   gap: 1.5rem;
 }
 
+/* Légende : centrée sur desktop */
+.usages-legende-col {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* --- Logos intégrateurs --- */
+.integrateurs-logos {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6rem;
+}
+
+.integrateurs-logos img[alt="Bénéfriches"] {
+  height: 100px;
+}
+
+.integrateurs-logos img[alt="UrbanVitaliz"] {
+  height: 50px;
+}
+
+/* --- Bloc 2 CcM : en desktop le CTA reste dans le flux texte --- */
+.ccm-block2-cta {
+  margin-top: -1rem;
+}
+
 /* --- Responsive --- */
 @media (max-width: 991px) {
   .usages-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Légende plus petite, centrée et décalée à droite en responsive */
+  .usages-legende-col {
+    justify-content: center;
+    padding-left: 10rem;
+  }
+
+  .usages-legende-img {
+    max-width: 60%;
+    display: block;
+  }
+
+  /* Masquer les 2 dernières cartes en tablette/mobile */
+  .usages-hide-mobile {
+    display: none;
   }
 }
 
@@ -85,6 +129,24 @@
   }
 
   .usages-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Bloc 2 CcM : en mobile, le DOM donne déjà 2 → texte → image → CTA */
+  .ccm-block2-cta {
+    margin-top: 0;
+  }
+
+  /* Logos intégrateurs : réduire en mobile */
+  .integrateurs-logos {
+    gap: 2rem;
+  }
+
+  .integrateurs-logos img[alt="Bénéfriches"] {
+    height: 60px;
+  }
+
+  .integrateurs-logos img[alt="UrbanVitaliz"] {
+    height: 30px;
   }
 }

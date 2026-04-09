@@ -42,7 +42,7 @@ export function CommentCaMarcheSection() {
           </div>
         </div>
 
-        {/* Bloc 2 : Évaluation */}
+        {/* Bloc 2 : Évaluation — en mobile, le visuel passe avant le CTA */}
         <div className="landing-card">
           <div className="fr-grid-row fr-grid-row--gutters fr-grid-row--middle">
             <div className="fr-col-12 fr-col-md-7">
@@ -53,16 +53,13 @@ export function CommentCaMarcheSection() {
                 2
               </h1>
               <h4>Une évaluation de la mutabilité du site sur 7 usages</h4>
-              <p className="fr-mb-3w">
+              <p>
                 Sur la base de la qualification semi-automatisée du site, une{" "}
                 <strong>analyse de mutabilité</strong> permet de classer 7 usages de reconversion
                 selon leur compatibilité avec votre site.
               </p>
-              <Link to={ROUTES.ANALYSER} className="fr-btn">
-                Démarrer une analyse
-              </Link>
             </div>
-            <div className="fr-col-12 fr-col-md-5">
+            <div className="fr-col-12 fr-col-md-5 ccm-block2-visual">
               <div className="rounded-lg overflow-hidden">
                 <img
                   src="/illustrations/landing/commentcamarche-2.png"
@@ -71,6 +68,11 @@ export function CommentCaMarcheSection() {
                   loading="lazy"
                 />
               </div>
+            </div>
+            <div className="fr-col-12 fr-col-md-7 ccm-block2-cta">
+              <Link to={ROUTES.ANALYSER} className="fr-btn">
+                Démarrer une analyse
+              </Link>
             </div>
           </div>
         </div>
