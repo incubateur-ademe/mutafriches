@@ -5,7 +5,6 @@ import { CommentCaMarcheSection } from "../components/CommentCaMarcheSection";
 import { UsagesSection } from "../components/UsagesSection";
 import { IntegrationSection } from "../components/IntegrationSection";
 import { IntegrateursSection } from "../components/IntegrateursSection";
-import "../landing.css";
 
 export function LandingPage() {
   return (

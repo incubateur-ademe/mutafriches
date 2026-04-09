@@ -16,7 +16,25 @@ export function UsagesSection() {
   ];
 
   return (
-    <section className="fr-py-8w landing-section--blue">
+    <section className="fr-py-8w" style={{ backgroundColor: "#f1f7ff" }}>
+      <style>{`
+        .usages-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 1.5rem;
+        }
+        .usages-legende-col {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        @media (max-width: 1023px) {
+          .usages-grid { grid-template-columns: repeat(2, 1fr); }
+          .usages-hide-mobile { display: none; }
+          .usages-legende-col { padding-left: 10rem; }
+          .usages-legende-img { max-width: 60%; display: block; }
+        }
+      `}</style>
       <div className="fr-container">
         <h2 className="fr-mb-4w">Les 7 usages proposés</h2>
 

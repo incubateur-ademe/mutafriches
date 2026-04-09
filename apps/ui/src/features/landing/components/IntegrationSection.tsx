@@ -7,7 +7,7 @@ export function IntegrationSection() {
       <div className="fr-container">
         <h2 className="fr-mb-2w">Intégrer Mutafriches dans vos outils</h2>
 
-        <div className="landing-card">
+        <div style={{ padding: "2.5rem", backgroundColor: "#f1f7ff", borderRadius: "24px" }}>
           <p className="fr-text--lead fr-mb-4w">
             Vous développez un outil ou une plateforme sur les enjeux fonciers ?
             <br />

@@ -8,7 +8,10 @@ export function CommentCaMarcheSection() {
         <h2 className="fr-mb-4w">Comment ça marche ?</h2>
 
         {/* Bloc 1 : Qualification */}
-        <div className="landing-card fr-mb-4w">
+        <div
+          className="fr-mb-4w"
+          style={{ padding: "2.5rem", backgroundColor: "#f1f7ff", borderRadius: "24px" }}
+        >
           <div className="fr-grid-row fr-grid-row--gutters fr-grid-row--middle">
             <div className="fr-col-12 fr-col-md-7">
               <h1
@@ -42,8 +45,8 @@ export function CommentCaMarcheSection() {
           </div>
         </div>
 
-        {/* Bloc 2 : Évaluation — en mobile, le visuel passe avant le CTA */}
-        <div className="landing-card">
+        {/* Bloc 2 : Évaluation — en mobile : 2 → texte → image → CTA */}
+        <div style={{ padding: "2.5rem", backgroundColor: "#f1f7ff", borderRadius: "24px" }}>
           <div className="fr-grid-row fr-grid-row--gutters fr-grid-row--middle">
             <div className="fr-col-12 fr-col-md-7">
               <h1
@@ -53,13 +56,16 @@ export function CommentCaMarcheSection() {
                 2
               </h1>
               <h4>Une évaluation de la mutabilité du site sur 7 usages</h4>
-              <p>
+              <p className="fr-mb-3w">
                 Sur la base de la qualification semi-automatisée du site, une{" "}
                 <strong>analyse de mutabilité</strong> permet de classer 7 usages de reconversion
                 selon leur compatibilité avec votre site.
               </p>
+              <Link to={ROUTES.ANALYSER} className="fr-btn">
+                Démarrer une analyse
+              </Link>
             </div>
-            <div className="fr-col-12 fr-col-md-5 ccm-block2-visual">
+            <div className="fr-col-12 fr-col-md-5">
               <div className="rounded-lg overflow-hidden">
                 <img
                   src="/illustrations/landing/commentcamarche-2.png"
@@ -68,11 +74,6 @@ export function CommentCaMarcheSection() {
                   loading="lazy"
                 />
               </div>
-            </div>
-            <div className="fr-col-12 fr-col-md-7 ccm-block2-cta">
-              <Link to={ROUTES.ANALYSER} className="fr-btn">
-                Démarrer une analyse
-              </Link>
             </div>
           </div>
         </div>

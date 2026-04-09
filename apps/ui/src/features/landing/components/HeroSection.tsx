@@ -3,9 +3,14 @@ import { ROUTES } from "../../../shared/config/routes.config";
 
 export function HeroSection() {
   return (
-    <section className="hero-section">
-      <div className="fr-container">
-        <div className="fr-grid-row fr-grid-row--gutters fr-grid-row--middle">
+    <section style={{ padding: 0, backgroundColor: "#f1f7ff", overflow: "hidden" }}>
+      <style>{`
+        @media (max-width: 767px) {
+          .hero-banner-wrapper { display: none; }
+        }
+      `}</style>
+      <div className="fr-container max-md:py-8 md:py-12">
+        <div className="fr-grid-row fr-grid-row--gutters fr-py-12v fr-grid-row--middle">
           <div className="fr-col-12 fr-col-md-7">
             <h1>Identifier les usages les plus adaptés pour un site</h1>
 
@@ -15,7 +20,9 @@ export function HeroSection() {
               les plus adaptés compte tenu de ses caractéristiques et de son environnement.
             </p>
 
-            <p className="hero-counter">Plus de 450 sites déjà évalués !</p>
+            <p className="inline-block text-xs font-bold tracking-wide uppercase text-[var(--text-mention-grey)] mb-6">
+              <strong>Plus de 450 sites déjà évalués !</strong>
+            </p>
 
             <div>
               <Link to={ROUTES.ANALYSER} className="fr-btn fr-btn--lg">
@@ -24,11 +31,22 @@ export function HeroSection() {
             </div>
           </div>
 
-          <div className="fr-col-12 fr-col-md-5">
-            <div className="hero-banner-wrapper">
+          <div className="fr-col-12 fr-col-md-5 py-0">
+            <div
+              className="hero-banner-wrapper"
+              style={{ overflow: "hidden", height: "100%", position: "relative" }}
+              style={{ minHeight: "500px", margin: "-3rem 0" }}
+            >
               <img
                 src="/illustrations/landing/usage-banner.png"
                 alt="Aperçu des cartes d'usages : habitat, espace renaturé, équipement culturel, équipement public, industrie, photovoltaïque"
+                className="max-w-none absolute"
+                style={{
+                  width: "150%",
+                  top: "50%",
+                  left: "50%",
+                  transform: "translate(-65%, -50%)",
+                }}
                 loading="lazy"
               />
             </div>
