@@ -34,8 +34,13 @@ export function HeroSection() {
           <div className="fr-col-12 fr-col-md-5 py-0">
             <div
               className="hero-banner-wrapper"
-              style={{ overflow: "hidden", height: "100%", position: "relative" }}
-              style={{ minHeight: "500px", margin: "-3rem 0" }}
+              style={{
+                overflow: "hidden",
+                height: "100%",
+                position: "relative",
+                minHeight: "500px",
+                margin: "-3rem 0",
+              }}
             >
               <img
                 src="/illustrations/landing/usage-banner.png"
