@@ -17,15 +17,15 @@
     "@turf/boolean-intersects": "^7.3.4",
     "@turf/centroid": "^7.3.4",
     "@turf/helpers": "^7.3.4",
-    "axios": "^1.13.6",
+    "axios": "^1.15.0",
     "leaflet": "^1.9.4",
-    "react": "^19.2.4",
-    "react-dom": "^19.2.4",
-    "react-router-dom": "^7.13.1",
-    "zustand": "^5.0.11"
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
+    "react-router-dom": "^7.14.0",
+    "zustand": "^5.0.12"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4.2.1",
+    "@tailwindcss/postcss": "^4.2.2",
     "@types/geojson": "^7946.0.16",
     "@types/leaflet": "^1.9.20",
     "@types/react": "^19.2.14",
@@ -34,10 +34,10 @@
     "@vitejs/plugin-react": "^5.1.4",
     "autoprefixer": "^10.4.27",
     "eslint-plugin-react-hooks": "^7.0.1",
-    "eslint-plugin-react-refresh": "^0.4.20",
-    "postcss": "^8.5.8",
-    "tailwindcss": "^4.2.1",
+    "eslint-plugin-react-refresh": "^0.5.2",
+    "postcss": "^8.5.9",
+    "tailwindcss": "^4.2.2",
     "vite": "^7.3.1",
-    "vitest": "^4.0.18"
+    "vitest": "^4.1.4"
   }
 }
