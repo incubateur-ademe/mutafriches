@@ -1,18 +1,19 @@
 export function UsagesSection() {
   /* Ordre : Excellent → Très bon → Bon (progression décroissante) */
   const cards = [
+    { src: "/illustrations/landing/usages/usage-public.png", alt: "Équipement public" },
+
     {
       src: "/illustrations/landing/usages/usage-habitat.png",
       alt: "Habitat & commerce de proximité",
     },
     { src: "/illustrations/landing/usages/usage-renature.png", alt: "Espace renaturé" },
-    { src: "/illustrations/landing/usages/usage-public.png", alt: "Équipement public" },
+    { src: "/illustrations/landing/usages/usage-bureaux.png", alt: "Bureaux" },
+    { src: "/illustrations/landing/usages/usage-industrie.png", alt: "Industrie" },
     {
       src: "/illustrations/landing/usages/usages-culturel.png",
       alt: "Équipement culturel & touristique",
     },
-    { src: "/illustrations/landing/usages/usage-bureaux.png", alt: "Bureaux" },
-    { src: "/illustrations/landing/usages/usage-industrie.png", alt: "Industrie" },
   ];
 
   return (
