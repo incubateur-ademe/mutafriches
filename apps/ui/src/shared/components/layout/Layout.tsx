@@ -7,9 +7,10 @@ import { useIsIframeMode } from "../../iframe/useIframe";
 interface LayoutProps {
   children: ReactNode;
   showSimpleHeader?: boolean;
+  fullWidth?: boolean;
 }
 
-export function Layout({ children, showSimpleHeader = false }: LayoutProps) {
+export function Layout({ children, showSimpleHeader = false, fullWidth = false }: LayoutProps) {
   const isInIframe = useIsIframeMode();
 
   // Mode iframe : layout minimal
@@ -30,12 +31,16 @@ export function Layout({ children, showSimpleHeader = false }: LayoutProps) {
     <div className="flex flex-col min-h-screen">
       <Header />
       <main className="flex-1">
-        <div className="fr-container fr-py-4w">
-          <div className="fade-in">
-            {showSimpleHeader && <SimpleHeader />}
-            {children}
+        {fullWidth ? (
+          <div className="fade-in">{children}</div>
+        ) : (
+          <div className="fr-container fr-py-4w">
+            <div className="fade-in">
+              {showSimpleHeader && <SimpleHeader />}
+              {children}
+            </div>
           </div>
-        </div>
+        )}
       </main>
       <Footer />
     </div>

@@ -39,7 +39,7 @@ export const QualificationSitePage: React.FC = () => {
   // Vérifier l'accès à cette étape
   useEffect(() => {
     if (!canAccessStep(1)) {
-      navigate(ROUTES.HOME);
+      navigate(ROUTES.ANALYSER);
       return;
     }
     setCurrentStep(1);
@@ -95,7 +95,7 @@ export const QualificationSitePage: React.FC = () => {
   };
 
   const handlePrevious = () => {
-    navigate(ROUTES.HOME);
+    navigate(ROUTES.ANALYSER);
   };
 
   if (!canAccessStep(1)) {

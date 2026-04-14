@@ -7,7 +7,7 @@ import { MutabilityAccordion } from "../components/MutabilityAccordion";
 import { useFormContext } from "../../../shared/form/useFormContext";
 import { useIsIframeMode } from "../../../shared/iframe/useIframe";
 
-export const HomePage: React.FC = () => {
+export const AnalyserPage: React.FC = () => {
   const navigate = useNavigate();
   const { resetForm, state } = useFormContext();
   const isInIframe = useIsIframeMode();

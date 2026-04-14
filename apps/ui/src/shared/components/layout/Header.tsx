@@ -1,7 +1,9 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { ROUTES } from "../../config/routes.config";
 
 export function Header() {
+  const location = useLocation();
+  const isActive = (path: string): boolean => location.pathname === path;
   return (
     <header role="banner" className="fr-header" id="header">
       <div className="fr-header__body">
@@ -74,7 +76,7 @@ export function Header() {
           </div>
         </div>
       </div>
-      {/* Modal menu mobile - requis par le DSFR */}
+      {/* Modal menu mobile + navigation - requis par le DSFR */}
       <div className="fr-header__menu fr-modal" id="header-modal" aria-labelledby="header-menu-btn">
         <div className="fr-container">
           <button
@@ -99,6 +101,28 @@ export function Header() {
               </li>
             </ul>
           </div>
+          <nav className="fr-nav" role="navigation" aria-label="Menu principal">
+            <ul className="fr-nav__list">
+              <li className="fr-nav__item">
+                <Link
+                  to={ROUTES.HOME}
+                  className="fr-nav__link"
+                  aria-current={isActive(ROUTES.HOME) ? "page" : undefined}
+                >
+                  Accueil
+                </Link>
+              </li>
+              <li className="fr-nav__item">
+                <Link
+                  to={ROUTES.ANALYSER}
+                  className="fr-nav__link"
+                  aria-current={isActive(ROUTES.ANALYSER) ? "page" : undefined}
+                >
+                  Analyser un site
+                </Link>
+              </li>
+            </ul>
+          </nav>
         </div>
       </div>
     </header>

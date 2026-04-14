@@ -18,14 +18,15 @@ import {
   EnrichissementOutputDto,
   DonneesComplementairesInputDto,
 } from "@mutafriches/shared-types";
-import { generateTagsForUsage, generateAllTags } from "./dynamicTags.resolver";
-import { TagInputData } from "./dynamicTags.types";
 import {
+  generateTagsForUsage,
+  generateAllTags,
   SEUIL_GRANDE_PARCELLE,
   SEUIL_EMPRISE_BATI_FAIBLE,
   SEUIL_DISTANCE_TC_PROCHE,
   SEUIL_DISTANCE_RACCORDEMENT_ELEC,
-} from "./dynamicTags.config";
+} from "./dynamicTags";
+import type { TagInputData } from "./dynamicTags";
 
 // ============================================================================
 // FIXTURES DE TEST

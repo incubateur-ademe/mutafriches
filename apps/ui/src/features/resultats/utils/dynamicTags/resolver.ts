@@ -1,6 +1,6 @@
 import { UsageType } from "@mutafriches/shared-types";
-import { TagInputData, GeneratedTags } from "./dynamicTags.types";
-import { USAGE_TAGS_CONFIG } from "./dynamicTags.config";
+import { TagInputData, GeneratedTags } from "./types";
+import { USAGE_TAGS_CONFIG } from "./config";
 
 /**
  * Génère les tags dynamiques pour un usage donné en fonction des données d'entrée

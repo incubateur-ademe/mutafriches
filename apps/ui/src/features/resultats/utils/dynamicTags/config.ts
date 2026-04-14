@@ -12,26 +12,16 @@ import {
   QualiteVoieDesserte,
   RaccordementEau,
 } from "@mutafriches/shared-types";
-import { TagInputData, UsageTagsConfig } from "./dynamicTags.types";
+import { TagInputData, UsageTagsConfig } from "./types";
+import {
+  SEUIL_GRANDE_PARCELLE,
+  SEUIL_EMPRISE_BATI_FAIBLE,
+  SEUIL_DISTANCE_TC_PROCHE,
+  SEUIL_DISTANCE_RACCORDEMENT_ELEC,
+} from "./constants";
 
 // ============================================================================
-// SEUILS DE CALCUL (alignés sur algorithme.config.ts)
-// ============================================================================
-
-/** Seuil pour considérer une parcelle comme "grande" en m² */
-export const SEUIL_GRANDE_PARCELLE = 10000;
-
-/** Seuil pour considérer une emprise bâtie comme "faible" en m² */
-export const SEUIL_EMPRISE_BATI_FAIBLE = 500;
-
-/** Distance maximale pour considérer les transports en commun "à proximité" en mètres */
-export const SEUIL_DISTANCE_TC_PROCHE = 500;
-
-/** Distance maximale pour considérer le raccordement électrique accessible en mètres */
-export const SEUIL_DISTANCE_RACCORDEMENT_ELEC = 500;
-
-// ============================================================================
-// FONCTIONS DE RÉSOLUTION DES TAGS
+// FONCTIONS DE RÉSOLUTION DES TAGS (fallback legacy)
 // ============================================================================
 
 // --- Taille de la parcelle ---
@@ -334,7 +324,7 @@ const resolveZoneEnrPhotovoltaique = (data: TagInputData): string | null => {
 };
 
 // ============================================================================
-// CONFIGURATION DES TAGS PAR USAGE
+// CONFIGURATION DES TAGS PAR USAGE (fallback legacy)
 // ============================================================================
 
 export const USAGE_TAGS_CONFIG: UsageTagsConfig = {

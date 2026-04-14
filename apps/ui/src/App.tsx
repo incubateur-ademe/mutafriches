@@ -12,9 +12,10 @@ import { TypeEvenement } from "@mutafriches/shared-types";
 import { useIframe } from "./shared/iframe/useIframe";
 import { ScrollToTop } from "./shared/components/common/ScrollToTop";
 
-// Nouvelles pages
-import { HomePage } from "./features/home/pages/HomePage";
-import { EnrichissementPage } from "./features/home/pages/EnrichissementPage";
+// Pages
+import { LandingPage } from "./features/landing/pages/LandingPage";
+import { AnalyserPage } from "./features/analyser/pages/AnalyserPage";
+import { EnrichissementPage } from "./features/analyser/pages/EnrichissementPage";
 import { QualificationSitePage } from "./features/qualification/pages/QualificationSitePage";
 import { QualificationEnvironnementPage } from "./features/qualification/pages/QualificationEnvironnementPage";
 import { QualificationRisquesPage } from "./features/qualification/pages/QualificationRisquesPage";
@@ -40,8 +41,11 @@ function AppContent() {
     <>
       <ScrollToTop />
       <Routes>
+        {/* Landing page */}
+        <Route path={ROUTES.HOME} element={<LandingPage />} />
+
         {/* Parcours principal */}
-        <Route path={ROUTES.HOME} element={<HomePage />} />
+        <Route path={ROUTES.ANALYSER} element={<AnalyserPage />} />
         <Route path={ROUTES.ENRICHISSEMENT} element={<EnrichissementPage />} />
         <Route path={ROUTES.QUALIFICATION_SITE} element={<QualificationSitePage />} />
         <Route
