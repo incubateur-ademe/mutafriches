@@ -29,7 +29,7 @@ export interface EvenementInputDto {
   identifiantCadastral?: string;
   donnees?: EvenementDonnees;
   sessionId?: string;
-  sourceUtilisation?: string;
+  sourceCampagne?: string;
   ref?: string;
   integrateur?: string;
 }

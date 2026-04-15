@@ -43,7 +43,7 @@ export class EvenementInputDto implements IEvenementInput {
   @IsOptional()
   @IsString()
   @MaxLength(20)
-  sourceUtilisation?: string;
+  sourceCampagne?: string;
 
   @IsOptional()
   @IsString()
