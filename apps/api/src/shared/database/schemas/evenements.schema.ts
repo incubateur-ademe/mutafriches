@@ -20,7 +20,7 @@ export const evenements_utilisateur = pgTable(
     identifiantCadastral: varchar("identifiant_cadastral", { length: 20 }),
     donnees: jsonb("donnees"),
     dateCreation: timestamp("date_creation").notNull().defaultNow(),
-    sourceUtilisation: varchar("source_utilisation", { length: 20 }),
+    sourceCampagne: varchar("source_campagne", { length: 20 }),
     modeUtilisation: modeUtilisationEnum("mode_utilisation"),
     ref: varchar("ref", { length: 100 }),
     integrateur: varchar("integrateur", { length: 255 }),

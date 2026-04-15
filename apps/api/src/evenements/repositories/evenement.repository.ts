@@ -15,7 +15,7 @@ export class EvenementRepository {
       identifiantCadastral: evenement.identifiantCadastral || null,
       donnees: evenement.donnees || null,
       dateCreation: evenement.dateCreation,
-      sourceUtilisation: evenement.sourceUtilisation || null,
+      sourceCampagne: evenement.sourceCampagne || null,
       modeUtilisation: evenement.modeUtilisation || null,
       ref: evenement.ref || null,
       integrateur: evenement.integrateur || null,

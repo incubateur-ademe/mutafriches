@@ -8,7 +8,7 @@ export class EvenementUtilisateur {
   identifiantCadastral?: string;
   donnees?: EvenementDonnees;
   dateCreation: Date;
-  sourceUtilisation?: string;
+  sourceCampagne?: string;
   modeUtilisation?: ModeUtilisation;
   ref?: string;
   integrateur?: string;
@@ -22,7 +22,7 @@ export class EvenementUtilisateur {
     identifiantCadastral?: string;
     donnees?: EvenementDonnees;
     dateCreation: Date;
-    sourceUtilisation?: string;
+    sourceCampagne?: string;
     modeUtilisation?: ModeUtilisation;
     ref?: string;
     integrateur?: string;

@@ -33,7 +33,7 @@ export class EvenementService {
       identifiantCadastral: this.sanitizeString(input.identifiantCadastral),
       donnees: this.sanitizeDonnees(input.donnees),
       dateCreation: new Date(),
-      sourceUtilisation: this.sanitizeString(input.sourceUtilisation),
+      sourceCampagne: this.sanitizeString(input.sourceCampagne),
       modeUtilisation: metadata?.modeUtilisation,
       ref: this.sanitizeString(metadata?.ref),
       integrateur: this.sanitizeString(metadata?.integrateur),

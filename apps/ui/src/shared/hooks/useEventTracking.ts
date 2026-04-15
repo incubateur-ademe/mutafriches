@@ -46,7 +46,7 @@ export function useEventTracking() {
             ...data?.donnees,
             page: window.location.pathname, // Ajouter la page courante aux données
           },
-          sourceUtilisation: source || undefined,
+          sourceCampagne: source || undefined,
           ref: ref || undefined,
         },
         {

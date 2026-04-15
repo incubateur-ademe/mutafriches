@@ -1,0 +1,1 @@
+ALTER TABLE "evenements_utilisateur" RENAME COLUMN "source_utilisation" TO "source_campagne";
