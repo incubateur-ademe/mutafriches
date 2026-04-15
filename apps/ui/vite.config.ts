@@ -4,6 +4,9 @@ import path from "path";
 
 export default defineConfig({
   plugins: [react()],
+  css: {
+    lightningcss: { errorRecovery: true },
+  },
   resolve: {
     alias: {
       // Nouveaux alias pour la structure DDD
