@@ -315,12 +315,19 @@ const resolveValeurPatrimoniale = (data: TagInputData): string | null => {
 };
 
 // --- Zone d'accélération ENR pour Photovoltaïque ---
+// Spec : le tag « ZA Photovoltaïque » n'est affiché que si le site est dans
+// une zone ZAENR spécifiquement fléchée « SOLAIRE_PV ombrière ». Les autres
+// sous-catégories de SOLAIRE_PV (toit, sol) n'affichent pas ce tag.
 const resolveZoneEnrPhotovoltaique = (data: TagInputData): string | null => {
-  const filieres = data.enrichmentData.zaer?.filieres;
-  if (!filieres || filieres.length === 0) return null;
+  const zones = data.enrichmentData.zaer?.zones;
+  if (!zones || zones.length === 0) return null;
 
-  const hasSolairePv = filieres.some((f) => f.toUpperCase().includes("SOLAIRE_PV"));
-  return hasSolairePv ? "ZA Photovoltaïque" : null;
+  const hasOmbriere = zones.some(
+    (z) =>
+      z.filiere.toUpperCase() === "SOLAIRE_PV" &&
+      z.detailFiliere?.toUpperCase().includes("OMBRIERE"),
+  );
+  return hasOmbriere ? "ZA Photovoltaïque" : null;
 };
 
 // ============================================================================

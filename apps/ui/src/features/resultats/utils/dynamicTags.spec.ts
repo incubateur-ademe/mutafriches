@@ -675,25 +675,89 @@ describe("Usage PHOTOVOLTAIQUE - Centrale photovoltaïque au sol", () => {
   });
 
   describe("Zone d'accélération ENR Photovoltaïque", () => {
-    it("devrait afficher 'ZA Photovoltaïque' si filière SOLAIRE_PV présente", () => {
+    // Spec : le tag « ZA Photovoltaïque » ne s'affiche que pour une zone
+    // SOLAIRE_PV ombrière. Toute autre sous-catégorie PV (toit, sol) ou
+    // toute autre filière n'affiche pas ce tag.
+
+    it("devrait afficher 'ZA Photovoltaïque' si zone SOLAIRE_PV ombrière", () => {
       const data = createTagInputData({
-        zaer: { filieres: ["SOLAIRE_PV"], geometry: null },
+        zaer: {
+          enZoneZaer: true,
+          nombreZones: 1,
+          filieres: ["SOLAIRE_PV"],
+          zones: [
+            {
+              nom: "Zone ombrière",
+              filiere: "SOLAIRE_PV",
+              detailFiliere: "SOLAIRE_PV_NV_OMBRIERE",
+            },
+          ],
+        },
       });
       const result = generateTagsForUsage(UsageType.PHOTOVOLTAIQUE, data);
       expect(result.tags).toContain("ZA Photovoltaïque");
     });
 
-    it("devrait afficher 'ZA Photovoltaïque' si SOLAIRE_PV parmi d'autres filières", () => {
+    it("devrait afficher 'ZA Photovoltaïque' si ombrière parmi d'autres zones", () => {
       const data = createTagInputData({
-        zaer: { filieres: ["EOLIEN", "SOLAIRE_PV", "BIOGAZ"], geometry: null },
+        zaer: {
+          enZoneZaer: true,
+          nombreZones: 3,
+          filieres: ["EOLIEN", "SOLAIRE_PV"],
+          zones: [
+            { nom: "Eolien", filiere: "EOLIEN", detailFiliere: null },
+            { nom: "PV toit", filiere: "SOLAIRE_PV", detailFiliere: "SOLAIRE_PV_NV_TOIT" },
+            { nom: "PV ombrière", filiere: "SOLAIRE_PV", detailFiliere: "SOLAIRE_PV_NV_OMBRIERE" },
+          ],
+        },
       });
       const result = generateTagsForUsage(UsageType.PHOTOVOLTAIQUE, data);
       expect(result.tags).toContain("ZA Photovoltaïque");
     });
 
-    it("ne devrait pas afficher de tag si pas de filière SOLAIRE_PV", () => {
+    it("ne devrait PAS afficher 'ZA Photovoltaïque' pour une zone SOLAIRE_PV toit", () => {
       const data = createTagInputData({
-        zaer: { filieres: ["EOLIEN", "BIOGAZ"], geometry: null },
+        zaer: {
+          enZoneZaer: true,
+          nombreZones: 1,
+          filieres: ["SOLAIRE_PV"],
+          zones: [{ nom: "PV toit", filiere: "SOLAIRE_PV", detailFiliere: "SOLAIRE_PV_NV_TOIT" }],
+        },
+      });
+      const result = generateTagsForUsage(UsageType.PHOTOVOLTAIQUE, data);
+      expect(result.tags).not.toContain("ZA Photovoltaïque");
+    });
+
+    it("ne devrait PAS afficher 'ZA Photovoltaïque' pour une zone SOLAIRE_PV sol", () => {
+      const data = createTagInputData({
+        zaer: {
+          enZoneZaer: true,
+          nombreZones: 1,
+          filieres: ["SOLAIRE_PV"],
+          zones: [
+            {
+              nom: "Parc photovoltaïque - Ychoux",
+              filiere: "SOLAIRE_PV",
+              detailFiliere: "SOLAIRE_PV_RNV_SOL",
+            },
+          ],
+        },
+      });
+      const result = generateTagsForUsage(UsageType.PHOTOVOLTAIQUE, data);
+      expect(result.tags).not.toContain("ZA Photovoltaïque");
+    });
+
+    it("ne devrait pas afficher de tag si pas de zone SOLAIRE_PV", () => {
+      const data = createTagInputData({
+        zaer: {
+          enZoneZaer: true,
+          nombreZones: 2,
+          filieres: ["EOLIEN", "BIOGAZ"],
+          zones: [
+            { nom: "Eolien", filiere: "EOLIEN", detailFiliere: null },
+            { nom: "Biogaz", filiere: "BIOGAZ", detailFiliere: null },
+          ],
+        },
       });
       const result = generateTagsForUsage(UsageType.PHOTOVOLTAIQUE, data);
       expect(result.tags).not.toContain("ZA Photovoltaïque");
@@ -705,9 +769,9 @@ describe("Usage PHOTOVOLTAIQUE - Centrale photovoltaïque au sol", () => {
       expect(result.tags).not.toContain("ZA Photovoltaïque");
     });
 
-    it("ne devrait pas afficher de tag si filières vides", () => {
+    it("ne devrait pas afficher de tag si aucune zone", () => {
       const data = createTagInputData({
-        zaer: { filieres: [], geometry: null },
+        zaer: { enZoneZaer: false, nombreZones: 0, filieres: [], zones: [] },
       });
       const result = generateTagsForUsage(UsageType.PHOTOVOLTAIQUE, data);
       expect(result.tags).not.toContain("ZA Photovoltaïque");
