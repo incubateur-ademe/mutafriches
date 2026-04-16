@@ -168,8 +168,8 @@ export const QualificationRisquesPage: React.FC = () => {
           id="zone-acceleration-enr"
           label="Zone d'accélération des énergies renouvelables"
           value={
-            uiData?.zaerFilieres && uiData.zaerFilieres.length > 0
-              ? uiData.zaerFilieres
+            uiData?.zaerBadges && uiData.zaerBadges.length > 0
+              ? uiData.zaerBadges
               : uiData?.zoneAccelerationEnr
           }
           tooltip={
