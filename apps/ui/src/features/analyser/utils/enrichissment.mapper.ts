@@ -1,4 +1,8 @@
-import { EnrichissementOutputDto, SourceEnrichissement } from "@mutafriches/shared-types";
+import {
+  EnrichissementOutputDto,
+  SourceEnrichissement,
+  ZaerEnrichissement,
+} from "@mutafriches/shared-types";
 import { ParcelleUiModel } from "../../../shared/types/parcelle.models";
 import { formatDistance, formatSurface } from "../../../shared/utils/distance.formatter";
 
@@ -87,7 +91,7 @@ export const transformEnrichmentToUiData = (
 
     // Énergies renouvelables
     zoneAccelerationEnr: formatZoneAccelerationEnr(enrichmentData.zoneAccelerationEnr),
-    zaerFilieres: enrichmentData.zaer?.filieres,
+    zaerBadges: buildZaerBadges(enrichmentData.zaer),
   };
 };
 
@@ -130,6 +134,7 @@ const buildRisquesNaturelsBadges = (data: EnrichissementOutputDto): string[] => 
 
 /**
  * Formate la valeur du critère zone d'accélération ENR en label lisible
+ * (utilisé en fallback quand le bloc `zaer` détaillé n'est pas disponible)
  */
 const formatZoneAccelerationEnr = (value?: string): string => {
   if (!value) return "";
@@ -139,8 +144,79 @@ const formatZoneAccelerationEnr = (value?: string): string => {
     case "oui":
       return "Oui";
     case "oui-solaire-pv-ombriere":
-      return "Oui Solaire PV (ombrière)";
+      return "Oui Solaire photovoltaïque";
     default:
       return value;
+  }
+};
+
+/**
+ * Libellés des filières ENR pour l'affichage en badges cumulatifs (étape 3 de qualification).
+ *
+ * Règles (spec) :
+ * - Un badge par filière présente sur le site (cumulatif, dédupliqué)
+ * - Cas spécial `SOLAIRE_PV` :
+ *   - `detailFiliere` contenant "OMBRIERE" → badge "Oui Solaire photovoltaïque"
+ *   - toute autre sous-catégorie (toit, sol, ...) → badge générique "Oui"
+ * - Filières non-PV : libellé dédié "Oui <Nom de la filière>"
+ * - Filière inconnue → fallback "Oui"
+ * - Aucune zone ZAENR → ["Non"]
+ */
+export const buildZaerBadges = (zaer?: ZaerEnrichissement): string[] => {
+  if (!zaer || !zaer.enZoneZaer || zaer.zones.length === 0) {
+    return ["Non"];
+  }
+
+  const badges: string[] = [];
+  const addUnique = (label: string): void => {
+    if (!badges.includes(label)) badges.push(label);
+  };
+
+  // Regrouper les zones par filière (en majuscules pour normalisation)
+  const filieresDuSite = new Set(zaer.zones.map((z) => z.filiere.toUpperCase()));
+
+  for (const filiere of filieresDuSite) {
+    addUnique(libelleFiliere(filiere, zaer.zones));
+  }
+
+  return badges;
+};
+
+/**
+ * Retourne le libellé de badge pour une filière donnée.
+ * Pour SOLAIRE_PV, examine les `detailFiliere` des zones correspondantes pour
+ * distinguer l'ombrière (badge spécifique) des autres sous-catégories (badge générique).
+ */
+const libelleFiliere = (filiereUpper: string, zones: ZaerEnrichissement["zones"]): string => {
+  if (filiereUpper === "SOLAIRE_PV") {
+    const zonesPv = zones.filter((z) => z.filiere.toUpperCase() === "SOLAIRE_PV");
+    const hasOmbriere = zonesPv.some((z) => z.detailFiliere?.toUpperCase().includes("OMBRIERE"));
+    return hasOmbriere ? "Oui Solaire photovoltaïque" : "Oui";
+  }
+
+  switch (filiereUpper) {
+    case "SOLAIRE_THERMIQUE":
+      return "Oui Solaire thermique";
+    case "EOLIEN":
+      return "Oui Eolien";
+    case "HYDROELECTRICITE":
+    case "HYDRO_ELECTRICITE":
+    case "HYDROELECTRIQUE":
+      return "Oui Hydroélectricité";
+    case "BIOGAZ":
+    case "BIOMETHANE":
+    case "METHANISATION":
+      return "Oui Biométhane";
+    case "BIOMASSE":
+      return "Oui Biomasse";
+    case "GEOTHERMIE":
+      return "Oui Géothermie";
+    case "AEROTHERMIE":
+      return "Oui Aérothermie";
+    case "THALASSOTHERMIE":
+      return "Oui Thalassothermie";
+    default:
+      // Filière inconnue : on tombe sur le badge générique
+      return "Oui";
   }
 };

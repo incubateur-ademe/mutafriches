@@ -33,5 +33,6 @@ export interface ParcelleUiModel {
 
   // Énergies renouvelables
   zoneAccelerationEnr: string;
-  zaerFilieres?: string[];
+  /** Badges cumulatifs par filière ZAENR présente (ex: ["Oui", "Oui Eolien"]) */
+  zaerBadges?: string[];
 }
