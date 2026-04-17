@@ -4,6 +4,7 @@ import {
   EtatBatiInfrastructure,
   PresenceEspecesProtegees,
   PresencePollution,
+  PresenceZoneHumide,
   ValeurArchitecturale,
   QualitePaysage,
   QualiteVoieDesserte,
@@ -75,4 +76,11 @@ export class DonneesComplementairesSwaggerDto implements IDonneesComplementaires
     example: PresenceEspecesProtegees.NE_SAIT_PAS,
   })
   presenceEspecesProtegees: PresenceEspecesProtegees;
+
+  @ApiProperty({
+    enum: PresenceZoneHumide,
+    description: "Présence d'une zone humide sur le site",
+    example: PresenceZoneHumide.NE_SAIT_PAS,
+  })
+  presenceZoneHumide: PresenceZoneHumide;
 }

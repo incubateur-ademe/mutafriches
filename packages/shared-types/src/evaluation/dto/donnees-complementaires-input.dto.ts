@@ -3,6 +3,7 @@ import {
   EtatBatiInfrastructure,
   PresenceEspecesProtegees,
   PresencePollution,
+  PresenceZoneHumide,
   QualitePaysage,
   QualiteVoieDesserte,
   RaccordementEau,
@@ -37,4 +38,5 @@ export interface DonneesComplementairesInputDto {
 
   // Biodiversité
   presenceEspecesProtegees: PresenceEspecesProtegees;
+  presenceZoneHumide: PresenceZoneHumide;
 }

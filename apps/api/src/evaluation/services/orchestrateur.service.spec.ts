@@ -16,6 +16,7 @@ import {
   EtatBatiInfrastructure,
   PresenceEspecesProtegees,
   PresencePollution,
+  PresenceZoneHumide,
   ValeurArchitecturale,
   QualitePaysage,
   QualiteVoieDesserte,
@@ -253,6 +254,7 @@ describe("OrchestrateurService", () => {
       qualiteVoieDesserte: QualiteVoieDesserte.BONNE,
       trameVerteEtBleue: TrameVerteEtBleue.NON,
       presenceEspecesProtegees: PresenceEspecesProtegees.NON,
+      presenceZoneHumide: PresenceZoneHumide.NON,
     };
 
     it("devrait utiliser le cache si une evaluation valide existe", async () => {

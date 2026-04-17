@@ -253,7 +253,7 @@ export const QualificationEnvironnementPage: React.FC = () => {
         <hr className="fr-my-4w" />
 
         {/* Zone 4 - Paysage et trame verte */}
-        <div className="fr-grid-row fr-grid-row--gutters fr-mb-8w">
+        <div className="fr-grid-row fr-grid-row--gutters">
           <FormSelectField
             field={ENVIRONNEMENT_FIELDS.qualitePaysage}
             value={values.qualitePaysage}
@@ -263,6 +263,17 @@ export const QualificationEnvironnementPage: React.FC = () => {
           />
 
           <FormSelectField
+            field={ENVIRONNEMENT_FIELDS.trameVerteEtBleue}
+            value={values.trameVerteEtBleue}
+            onChange={(v) => handleChange("trameVerteEtBleue", v)}
+            error={touched.trameVerteEtBleue ? errors.trameVerteEtBleue : undefined}
+            tooltip="Indiquez si le site est situé dans un corridor écologique ou un réservoir de biodiversité."
+          />
+        </div>
+
+        {/* Zone 5 - Biodiversité */}
+        <div className="fr-grid-row fr-grid-row--gutters fr-mb-8w">
+          <FormSelectField
             field={ENVIRONNEMENT_FIELDS.presenceEspecesProtegees}
             value={values.presenceEspecesProtegees}
             onChange={(v) => handleChange("presenceEspecesProtegees", v)}
@@ -271,11 +282,11 @@ export const QualificationEnvironnementPage: React.FC = () => {
           />
 
           <FormSelectField
-            field={ENVIRONNEMENT_FIELDS.trameVerteEtBleue}
-            value={values.trameVerteEtBleue}
-            onChange={(v) => handleChange("trameVerteEtBleue", v)}
-            error={touched.trameVerteEtBleue ? errors.trameVerteEtBleue : undefined}
-            tooltip="Indiquez si le site est situé dans un corridor écologique ou un réservoir de biodiversité."
+            field={ENVIRONNEMENT_FIELDS.presenceZoneHumide}
+            value={values.presenceZoneHumide}
+            onChange={(v) => handleChange("presenceZoneHumide", v)}
+            error={touched.presenceZoneHumide ? errors.presenceZoneHumide : undefined}
+            tooltip="Renseignez si votre site est concerné ou non par la présence d'une zone humide."
           />
         </div>
       </form>

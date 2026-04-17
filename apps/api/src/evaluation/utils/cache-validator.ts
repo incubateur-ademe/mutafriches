@@ -5,6 +5,7 @@ import {
   EtatBatiInfrastructure,
   PresenceEspecesProtegees,
   PresencePollution,
+  PresenceZoneHumide,
   ValeurArchitecturale,
   QualitePaysage,
   QualiteVoieDesserte,
@@ -25,6 +26,7 @@ export function hasJeNeSaisPas(donnees: DonneesComplementairesInputDto): boolean
     donnees.qualitePaysage === QualitePaysage.NE_SAIT_PAS ||
     donnees.qualiteVoieDesserte === QualiteVoieDesserte.NE_SAIT_PAS ||
     donnees.trameVerteEtBleue === TrameVerteEtBleue.NE_SAIT_PAS ||
-    donnees.presenceEspecesProtegees === PresenceEspecesProtegees.NE_SAIT_PAS
+    donnees.presenceEspecesProtegees === PresenceEspecesProtegees.NE_SAIT_PAS ||
+    donnees.presenceZoneHumide === PresenceZoneHumide.NE_SAIT_PAS
   );
 }

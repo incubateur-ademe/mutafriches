@@ -1,6 +1,7 @@
 import {
   PresenceEspecesProtegees,
   PresencePollution,
+  PresenceZoneHumide,
   ZonageReglementaire,
   ZonageEnvironnemental,
   ZonagePatrimonial,
@@ -173,6 +174,11 @@ export function getCritereTagLabel(
     case "presenceEspecesProtegees": {
       const pep = String(valeur) as PresenceEspecesProtegees;
       return pep === PresenceEspecesProtegees.OUI ? "espèce protégée" : null;
+    }
+
+    case "presenceZoneHumide": {
+      const pzh = String(valeur) as PresenceZoneHumide;
+      return pzh === PresenceZoneHumide.OUI ? "zone humide" : null;
     }
 
     default:

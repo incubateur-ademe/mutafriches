@@ -6,6 +6,7 @@ import {
   EtatBatiInfrastructure,
   PresenceEspecesProtegees,
   PresencePollution,
+  PresenceZoneHumide,
   ValeurArchitecturale,
   QualitePaysage,
   QualiteVoieDesserte,
@@ -36,6 +37,8 @@ export function buildDonneesComplementaires(
       TrameVerteEtBleue.NE_SAIT_PAS) as TrameVerteEtBleue,
     presenceEspecesProtegees: (manualData.presenceEspecesProtegees ||
       PresenceEspecesProtegees.NE_SAIT_PAS) as PresenceEspecesProtegees,
+    presenceZoneHumide: (manualData.presenceZoneHumide ||
+      PresenceZoneHumide.NE_SAIT_PAS) as PresenceZoneHumide,
   };
 }
 

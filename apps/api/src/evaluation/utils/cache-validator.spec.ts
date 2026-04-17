@@ -7,6 +7,7 @@ import {
   EtatBatiInfrastructure,
   PresenceEspecesProtegees,
   PresencePollution,
+  PresenceZoneHumide,
   ValeurArchitecturale,
   QualitePaysage,
   QualiteVoieDesserte,
@@ -24,6 +25,7 @@ describe("hasJeNeSaisPas", () => {
     qualiteVoieDesserte: QualiteVoieDesserte.ACCESSIBLE,
     trameVerteEtBleue: TrameVerteEtBleue.HORS_TRAME,
     presenceEspecesProtegees: PresenceEspecesProtegees.NON,
+    presenceZoneHumide: PresenceZoneHumide.NON,
   };
 
   it("devrait retourner false si aucun champ n'est 'je ne sais pas'", () => {
@@ -80,6 +82,14 @@ describe("hasJeNeSaisPas", () => {
     const donnees = {
       ...donneesCompletes,
       presenceEspecesProtegees: PresenceEspecesProtegees.NE_SAIT_PAS,
+    };
+    expect(hasJeNeSaisPas(donnees)).toBe(true);
+  });
+
+  it("devrait retourner true si presenceZoneHumide est 'ne-sait-pas'", () => {
+    const donnees = {
+      ...donneesCompletes,
+      presenceZoneHumide: PresenceZoneHumide.NE_SAIT_PAS,
     };
     expect(hasJeNeSaisPas(donnees)).toBe(true);
   });

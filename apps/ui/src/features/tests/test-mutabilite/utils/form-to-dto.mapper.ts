@@ -64,6 +64,7 @@ export function buildCalculerMutabiliteFromFormData(formData: any): CalculerMuta
     qualiteVoieDesserte: formData.qualiteVoieDesserte || "NE_SAIT_PAS",
     trameVerteEtBleue: formData.trameVerteEtBleue || "NE_SAIT_PAS",
     presenceEspecesProtegees: formData.presenceEspecesProtegees || "NE_SAIT_PAS",
+    presenceZoneHumide: formData.presenceZoneHumide || "NE_SAIT_PAS",
   };
 
   return {
@@ -99,6 +100,7 @@ function getFieldsMissing(formData: any): string[] {
     "qualiteVoieDesserte",
     "trameVerteEtBleue",
     "presenceEspecesProtegees",
+    "presenceZoneHumide",
   ];
 
   const missing: string[] = [];

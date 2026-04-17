@@ -280,6 +280,7 @@ export class CalculService {
    * - v1.1/v1.2 : critère unique presenceRisquesNaturels (combiné depuis les 3 risques séparés)
    * - v1.3 : 3 critères séparés + zoneAccelerationEnr
    * - v1.5 : ajout de presenceEspecesProtegees
+   * - v1.6 : ajout de presenceZoneHumide
    */
   protected extraireCriteres(
     site: Site,
@@ -330,6 +331,11 @@ export class CalculService {
     // Présence d'espèces protégées (v1.5+)
     if (!poidsCriteres || "presenceEspecesProtegees" in poidsCriteres) {
       criteres.presenceEspecesProtegees = site.presenceEspecesProtegees;
+    }
+
+    // Présence d'une zone humide (v1.6+)
+    if (!poidsCriteres || "presenceZoneHumide" in poidsCriteres) {
+      criteres.presenceZoneHumide = site.presenceZoneHumide;
     }
 
     return criteres;

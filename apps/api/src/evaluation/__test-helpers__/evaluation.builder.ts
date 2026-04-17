@@ -10,6 +10,7 @@ import {
   EtatBatiInfrastructure,
   PresenceEspecesProtegees,
   PresencePollution,
+  PresenceZoneHumide,
   ValeurArchitecturale,
   QualitePaysage,
   QualiteVoieDesserte,
@@ -70,6 +71,7 @@ export class EvaluationBuilder {
     qualiteVoieDesserte: QualiteVoieDesserte.ACCESSIBLE,
     trameVerteEtBleue: TrameVerteEtBleue.HORS_TRAME,
     presenceEspecesProtegees: PresenceEspecesProtegees.NON,
+    presenceZoneHumide: PresenceZoneHumide.NON,
   };
 
   private resultats: MutabiliteOutputDto = {

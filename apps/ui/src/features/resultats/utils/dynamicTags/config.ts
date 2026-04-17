@@ -2,6 +2,7 @@ import {
   UsageType,
   PresenceEspecesProtegees,
   PresencePollution,
+  PresenceZoneHumide,
   ZonageReglementaire,
   ZonageEnvironnemental,
   ZonagePatrimonial,
@@ -306,6 +307,13 @@ const resolveEspecesProtegeesRenaturation = (data: TagInputData): string | null 
   return especes === PresenceEspecesProtegees.OUI ? "espèce protégée" : null;
 };
 
+// --- Présence d'une zone humide pour Renaturation ---
+const resolveZoneHumideRenaturation = (data: TagInputData): string | null => {
+  const zh = data.manualData.presenceZoneHumide;
+  if (!zh || zh === PresenceZoneHumide.NE_SAIT_PAS) return null;
+  return zh === PresenceZoneHumide.OUI ? "zone humide" : null;
+};
+
 // --- Valeur architecturale/patrimoniale du bâti ---
 const resolveValeurPatrimoniale = (data: TagInputData): string | null => {
   const valeur = data.manualData.valeurArchitecturaleHistorique;
@@ -413,5 +421,6 @@ export const USAGE_TAGS_CONFIG: UsageTagsConfig = {
     { critereId: "continuite", resolver: resolveContinuiteEcologiqueRenaturation },
     { critereId: "risquesTechnologiques", resolver: resolveRisquesTechnologiquesRenaturation },
     { critereId: "especesProtegees", resolver: resolveEspecesProtegeesRenaturation },
+    { critereId: "zoneHumide", resolver: resolveZoneHumideRenaturation },
   ],
 };

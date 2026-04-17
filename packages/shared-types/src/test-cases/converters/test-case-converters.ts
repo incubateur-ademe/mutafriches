@@ -8,7 +8,7 @@ import {
   ZonagePatrimonial,
 } from "../../enrichissement";
 import { CalculerMutabiliteInputDto, DonneesComplementairesInputDto } from "../../evaluation";
-import { PresenceEspecesProtegees } from "../../evaluation/enums";
+import { PresenceEspecesProtegees, PresenceZoneHumide } from "../../evaluation/enums";
 import { TestCase } from "../types/test-case.types";
 import * as enumConverters from "./enum-converters";
 
@@ -158,6 +158,8 @@ export function convertTestCaseToMutabilityInput(
     trameVerteEtBleue: enumConverters.toTrameVerteEtBleue(input.trameVerteEtBleu),
     // Critère introduit en v1.5 : absent des fixtures historiques → "ne-sait-pas" par défaut
     presenceEspecesProtegees: PresenceEspecesProtegees.NE_SAIT_PAS,
+    // Critère introduit en v1.6 : absent des fixtures historiques → "ne-sait-pas" par défaut
+    presenceZoneHumide: PresenceZoneHumide.NE_SAIT_PAS,
   };
 
   return {
