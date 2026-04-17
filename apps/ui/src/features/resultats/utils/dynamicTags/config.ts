@@ -1,5 +1,6 @@
 import {
   UsageType,
+  PresenceEspecesProtegees,
   PresencePollution,
   ZonageReglementaire,
   ZonageEnvironnemental,
@@ -298,6 +299,13 @@ const resolveContinuiteEcologiqueRenaturation = (data: TagInputData): string | n
   }
 };
 
+// --- Présence d'espèces protégées pour Renaturation ---
+const resolveEspecesProtegeesRenaturation = (data: TagInputData): string | null => {
+  const especes = data.manualData.presenceEspecesProtegees;
+  if (!especes || especes === PresenceEspecesProtegees.NE_SAIT_PAS) return null;
+  return especes === PresenceEspecesProtegees.OUI ? "espèce protégée" : null;
+};
+
 // --- Valeur architecturale/patrimoniale du bâti ---
 const resolveValeurPatrimoniale = (data: TagInputData): string | null => {
   const valeur = data.manualData.valeurArchitecturaleHistorique;
@@ -404,5 +412,6 @@ export const USAGE_TAGS_CONFIG: UsageTagsConfig = {
     { critereId: "zonageEnvironnemental", resolver: resolveZonageEnvironnementalRenaturation },
     { critereId: "continuite", resolver: resolveContinuiteEcologiqueRenaturation },
     { critereId: "risquesTechnologiques", resolver: resolveRisquesTechnologiquesRenaturation },
+    { critereId: "especesProtegees", resolver: resolveEspecesProtegeesRenaturation },
   ],
 };

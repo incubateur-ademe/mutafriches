@@ -61,6 +61,7 @@ const LABELS_DONNEES_COMPLEMENTAIRES: Record<string, string> = {
   qualitePaysage: "Qualit\u00E9 du paysage",
   qualiteVoieDesserte: "Qualit\u00E9 de la voie de desserte",
   trameVerteEtBleue: "Trame verte et bleue",
+  presenceEspecesProtegees: "Pr\u00E9sence d'esp\u00E8ces prot\u00E9g\u00E9es",
 };
 
 /**

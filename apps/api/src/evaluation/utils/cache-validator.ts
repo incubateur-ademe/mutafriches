@@ -3,6 +3,7 @@ import {
   TypeProprietaire,
   RaccordementEau,
   EtatBatiInfrastructure,
+  PresenceEspecesProtegees,
   PresencePollution,
   ValeurArchitecturale,
   QualitePaysage,
@@ -23,6 +24,7 @@ export function hasJeNeSaisPas(donnees: DonneesComplementairesInputDto): boolean
     donnees.valeurArchitecturaleHistorique === ValeurArchitecturale.NE_SAIT_PAS ||
     donnees.qualitePaysage === QualitePaysage.NE_SAIT_PAS ||
     donnees.qualiteVoieDesserte === QualiteVoieDesserte.NE_SAIT_PAS ||
-    donnees.trameVerteEtBleue === TrameVerteEtBleue.NE_SAIT_PAS
+    donnees.trameVerteEtBleue === TrameVerteEtBleue.NE_SAIT_PAS ||
+    donnees.presenceEspecesProtegees === PresenceEspecesProtegees.NE_SAIT_PAS
   );
 }

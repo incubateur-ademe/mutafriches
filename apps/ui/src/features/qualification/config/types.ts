@@ -1,6 +1,7 @@
 import {
   TypeProprietaire,
   EtatBatiInfrastructure,
+  PresenceEspecesProtegees,
   PresencePollution,
   ValeurArchitecturale,
   RaccordementEau,
@@ -48,6 +49,7 @@ export type EnvironnementFormValues = {
   qualitePaysage: QualitePaysage | "";
   qualiteVoieDesserte: QualiteVoieDesserte | "";
   trameVerteEtBleue: TrameVerteEtBleue | "";
+  presenceEspecesProtegees: PresenceEspecesProtegees | "";
 };
 
 /**
@@ -73,6 +75,7 @@ export const DEFAULT_ENVIRONNEMENT_VALUES: EnvironnementFormValues = {
   qualitePaysage: "",
   qualiteVoieDesserte: "",
   trameVerteEtBleue: "",
+  presenceEspecesProtegees: "",
 };
 
 /**

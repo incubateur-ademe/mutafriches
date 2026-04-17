@@ -1,4 +1,9 @@
-import { QualitePaysage, QualiteVoieDesserte, TrameVerteEtBleue } from "@mutafriches/shared-types";
+import {
+  PresenceEspecesProtegees,
+  QualitePaysage,
+  QualiteVoieDesserte,
+  TrameVerteEtBleue,
+} from "@mutafriches/shared-types";
 import { FormFieldConfig, SelectOption } from "../types";
 
 const SELECT_OPTION_PLACEHOLDER: SelectOption = { value: "", label: "Sélectionner une option" };
@@ -36,6 +41,20 @@ export const ENVIRONNEMENT_FIELDS: Record<string, FormFieldConfig<string>> = {
       { value: QualitePaysage.INTERET_REMARQUABLE, label: "Intérêt remarquable" },
       { value: QualitePaysage.NE_SAIT_PAS, label: "Ne sait pas" },
     ] as SelectOption<QualitePaysage>[],
+  },
+
+  presenceEspecesProtegees: {
+    id: "presence-especes-protegees",
+    name: "presenceEspecesProtegees",
+    label: "Présence d'une espèce protégée",
+    required: true,
+    section: "environnement",
+    options: [
+      SELECT_OPTION_PLACEHOLDER,
+      { value: PresenceEspecesProtegees.OUI, label: "Oui" },
+      { value: PresenceEspecesProtegees.NON, label: "Non" },
+      { value: PresenceEspecesProtegees.NE_SAIT_PAS, label: "Ne sait pas" },
+    ] as SelectOption<PresenceEspecesProtegees>[],
   },
 
   trameVerteEtBleue: {

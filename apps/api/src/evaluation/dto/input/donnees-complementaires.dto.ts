@@ -2,6 +2,7 @@ import {
   DonneesComplementairesInputDto as IDonneesComplementaires,
   TypeProprietaire,
   EtatBatiInfrastructure,
+  PresenceEspecesProtegees,
   PresencePollution,
   ValeurArchitecturale,
   QualitePaysage,
@@ -67,4 +68,11 @@ export class DonneesComplementairesSwaggerDto implements IDonneesComplementaires
     example: "HORS_TRAME",
   })
   trameVerteEtBleue: TrameVerteEtBleue;
+
+  @ApiProperty({
+    enum: PresenceEspecesProtegees,
+    description: "Présence d'une espèce protégée sur le site",
+    example: PresenceEspecesProtegees.NE_SAIT_PAS,
+  })
+  presenceEspecesProtegees: PresenceEspecesProtegees;
 }

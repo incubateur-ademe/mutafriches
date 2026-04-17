@@ -263,6 +263,14 @@ export const QualificationEnvironnementPage: React.FC = () => {
           />
 
           <FormSelectField
+            field={ENVIRONNEMENT_FIELDS.presenceEspecesProtegees}
+            value={values.presenceEspecesProtegees}
+            onChange={(v) => handleChange("presenceEspecesProtegees", v)}
+            error={touched.presenceEspecesProtegees ? errors.presenceEspecesProtegees : undefined}
+            tooltip="Renseignez si votre site est concerné ou non par la présence d'une espèce protégée, vous obtiendrez cette information en réalisation des études faune/flore sur votre site."
+          />
+
+          <FormSelectField
             field={ENVIRONNEMENT_FIELDS.trameVerteEtBleue}
             value={values.trameVerteEtBleue}
             onChange={(v) => handleChange("trameVerteEtBleue", v)}

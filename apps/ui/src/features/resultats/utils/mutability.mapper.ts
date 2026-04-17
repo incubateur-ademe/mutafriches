@@ -4,6 +4,7 @@ import {
   EnrichissementOutputDto,
   TypeProprietaire,
   EtatBatiInfrastructure,
+  PresenceEspecesProtegees,
   PresencePollution,
   ValeurArchitecturale,
   QualitePaysage,
@@ -33,6 +34,8 @@ export function buildDonneesComplementaires(
       QualiteVoieDesserte.NE_SAIT_PAS) as QualiteVoieDesserte,
     trameVerteEtBleue: (manualData.trameVerteEtBleue ||
       TrameVerteEtBleue.NE_SAIT_PAS) as TrameVerteEtBleue,
+    presenceEspecesProtegees: (manualData.presenceEspecesProtegees ||
+      PresenceEspecesProtegees.NE_SAIT_PAS) as PresenceEspecesProtegees,
   };
 }
 

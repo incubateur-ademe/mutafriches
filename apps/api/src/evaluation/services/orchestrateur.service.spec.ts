@@ -14,6 +14,7 @@ import {
   TypeProprietaire,
   RaccordementEau,
   EtatBatiInfrastructure,
+  PresenceEspecesProtegees,
   PresencePollution,
   ValeurArchitecturale,
   QualitePaysage,
@@ -251,6 +252,7 @@ describe("OrchestrateurService", () => {
       qualitePaysage: QualitePaysage.BONNE,
       qualiteVoieDesserte: QualiteVoieDesserte.BONNE,
       trameVerteEtBleue: TrameVerteEtBleue.NON,
+      presenceEspecesProtegees: PresenceEspecesProtegees.NON,
     };
 
     it("devrait utiliser le cache si une evaluation valide existe", async () => {

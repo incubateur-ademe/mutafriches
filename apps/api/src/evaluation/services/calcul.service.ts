@@ -279,6 +279,7 @@ export class CalculService {
    * Adapte les critères en fonction de la version de l'algorithme :
    * - v1.1/v1.2 : critère unique presenceRisquesNaturels (combiné depuis les 3 risques séparés)
    * - v1.3 : 3 critères séparés + zoneAccelerationEnr
+   * - v1.5 : ajout de presenceEspecesProtegees
    */
   protected extraireCriteres(
     site: Site,
@@ -315,7 +316,7 @@ export class CalculService {
       // v1.1/v1.2/v1.3 : combiner les 3 risques séparés en un seul critère
       criteres.presenceRisquesNaturels = this.combinerRisquesNaturels(site);
     } else {
-      // v1.4 : 3 critères séparés
+      // v1.4+ : 3 critères séparés
       criteres.risqueRetraitGonflementArgile = site.risqueRetraitGonflementArgile;
       criteres.risqueCavitesSouterraines = site.risqueCavitesSouterraines;
       criteres.risqueInondation = site.risqueInondation;
@@ -324,6 +325,11 @@ export class CalculService {
     // ZAER : indépendant du modèle de risques (v1.3+)
     if (!poidsCriteres || "zoneAccelerationEnr" in poidsCriteres) {
       criteres.zoneAccelerationEnr = site.zoneAccelerationEnr;
+    }
+
+    // Présence d'espèces protégées (v1.5+)
+    if (!poidsCriteres || "presenceEspecesProtegees" in poidsCriteres) {
+      criteres.presenceEspecesProtegees = site.presenceEspecesProtegees;
     }
 
     return criteres;

@@ -8,6 +8,7 @@ import {
   UsageType,
   RaccordementEau,
   EtatBatiInfrastructure,
+  PresenceEspecesProtegees,
   PresencePollution,
   ValeurArchitecturale,
   QualitePaysage,
@@ -68,6 +69,7 @@ export class EvaluationBuilder {
     qualitePaysage: QualitePaysage.ORDINAIRE,
     qualiteVoieDesserte: QualiteVoieDesserte.ACCESSIBLE,
     trameVerteEtBleue: TrameVerteEtBleue.HORS_TRAME,
+    presenceEspecesProtegees: PresenceEspecesProtegees.NON,
   };
 
   private resultats: MutabiliteOutputDto = {
