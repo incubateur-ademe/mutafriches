@@ -32,6 +32,11 @@ export const QualificationEnvironnementPage: React.FC = () => {
       "",
     trameVerteEtBleue:
       (state.manualData?.trameVerteEtBleue as EnvironnementFormValues["trameVerteEtBleue"]) || "",
+    presenceEspecesProtegees:
+      (state.manualData
+        ?.presenceEspecesProtegees as EnvironnementFormValues["presenceEspecesProtegees"]) || "",
+    presenceZoneHumide:
+      (state.manualData?.presenceZoneHumide as EnvironnementFormValues["presenceZoneHumide"]) || "",
   });
   const [errors, setErrors] = useState<ValidationErrors<EnvironnementFormValues>>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
