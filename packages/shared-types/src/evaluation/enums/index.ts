@@ -6,3 +6,5 @@ export * from "./presence-pollution.enum";
 export * from "./valeur-architecturale.enum";
 export * from "./qualite-paysage.enum";
 export * from "./qualite-voie.enum";
+export * from "./presence-especes-protegees.enum";
+export * from "./presence-zone-humide.enum";

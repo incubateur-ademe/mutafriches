@@ -1,4 +1,10 @@
-import { QualitePaysage, QualiteVoieDesserte, TrameVerteEtBleue } from "@mutafriches/shared-types";
+import {
+  PresenceEspecesProtegees,
+  PresenceZoneHumide,
+  QualitePaysage,
+  QualiteVoieDesserte,
+  TrameVerteEtBleue,
+} from "@mutafriches/shared-types";
 import { FormFieldConfig, SelectOption } from "../types";
 
 const SELECT_OPTION_PLACEHOLDER: SelectOption = { value: "", label: "Sélectionner une option" };
@@ -52,6 +58,34 @@ export const ENVIRONNEMENT_FIELDS: Record<string, FormFieldConfig<string>> = {
       { value: TrameVerteEtBleue.CORRIDOR_A_RESTAURER, label: "Corridor à restaurer" },
       { value: TrameVerteEtBleue.NE_SAIT_PAS, label: "Ne sait pas" },
     ] as SelectOption<TrameVerteEtBleue>[],
+  },
+
+  presenceEspecesProtegees: {
+    id: "presence-especes-protegees",
+    name: "presenceEspecesProtegees",
+    label: "Présence d'une espèce protégée",
+    required: true,
+    section: "environnement",
+    options: [
+      SELECT_OPTION_PLACEHOLDER,
+      { value: PresenceEspecesProtegees.OUI, label: "Oui" },
+      { value: PresenceEspecesProtegees.NON, label: "Non" },
+      { value: PresenceEspecesProtegees.NE_SAIT_PAS, label: "Ne sait pas" },
+    ] as SelectOption<PresenceEspecesProtegees>[],
+  },
+
+  presenceZoneHumide: {
+    id: "presence-zone-humide",
+    name: "presenceZoneHumide",
+    label: "Présence d'une zone humide",
+    required: true,
+    section: "environnement",
+    options: [
+      SELECT_OPTION_PLACEHOLDER,
+      { value: PresenceZoneHumide.OUI, label: "Oui" },
+      { value: PresenceZoneHumide.NON, label: "Non" },
+      { value: PresenceZoneHumide.NE_SAIT_PAS, label: "Ne sait pas" },
+    ] as SelectOption<PresenceZoneHumide>[],
   },
 };
 

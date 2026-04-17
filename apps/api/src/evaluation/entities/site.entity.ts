@@ -3,7 +3,9 @@ import {
   DonneesComplementairesInputDto,
   TypeProprietaire,
   EtatBatiInfrastructure,
+  PresenceEspecesProtegees,
   PresencePollution,
+  PresenceZoneHumide,
   ValeurArchitecturale,
   QualitePaysage,
   QualiteVoieDesserte,
@@ -66,6 +68,8 @@ export class Site {
   valeurArchitecturaleHistorique?: ValeurArchitecturale;
   qualitePaysage?: QualitePaysage;
   qualiteVoieDesserte?: QualiteVoieDesserte;
+  presenceEspecesProtegees?: PresenceEspecesProtegees;
+  presenceZoneHumide?: PresenceZoneHumide;
 
   // Métadonnées
   sourcesUtilisees: string[] = [];
@@ -190,6 +194,8 @@ export class Site {
       site.qualitePaysage = donneesComplementaires.qualitePaysage;
       site.qualiteVoieDesserte = donneesComplementaires.qualiteVoieDesserte;
       site.trameVerteEtBleue = donneesComplementaires.trameVerteEtBleue;
+      site.presenceEspecesProtegees = donneesComplementaires.presenceEspecesProtegees;
+      site.presenceZoneHumide = donneesComplementaires.presenceZoneHumide;
     }
 
     return site;
@@ -211,7 +217,9 @@ export class Site {
         v !== ValeurArchitecturale.NE_SAIT_PAS &&
         v !== QualitePaysage.NE_SAIT_PAS &&
         v !== QualiteVoieDesserte.NE_SAIT_PAS &&
-        v !== TrameVerteEtBleue.NE_SAIT_PAS,
+        v !== TrameVerteEtBleue.NE_SAIT_PAS &&
+        v !== PresenceEspecesProtegees.NE_SAIT_PAS &&
+        v !== PresenceZoneHumide.NE_SAIT_PAS,
     ).length;
 
     return Math.round((champsRemplis / champsTotal) * 100);
@@ -232,7 +240,9 @@ export class Site {
       this.valeurArchitecturaleHistorique &&
       this.qualitePaysage &&
       this.qualiteVoieDesserte &&
-      this.trameVerteEtBleue
+      this.trameVerteEtBleue &&
+      this.presenceEspecesProtegees &&
+      this.presenceZoneHumide
     );
   }
 }

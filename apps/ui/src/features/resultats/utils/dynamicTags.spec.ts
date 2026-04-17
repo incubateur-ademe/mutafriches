@@ -1,7 +1,9 @@
 import { describe, it, expect } from "vitest";
 import {
   UsageType,
+  PresenceEspecesProtegees,
   PresencePollution,
+  PresenceZoneHumide,
   RisqueRetraitGonflementArgile,
   RisqueCavitesSouterraines,
   RisqueInondation,
@@ -60,6 +62,8 @@ const createBaseManualData = (): DonneesComplementairesInputDto => ({
   qualitePaysage: QualitePaysage.NE_SAIT_PAS,
   qualiteVoieDesserte: QualiteVoieDesserte.NE_SAIT_PAS,
   trameVerteEtBleue: TrameVerteEtBleue.NE_SAIT_PAS,
+  presenceEspecesProtegees: PresenceEspecesProtegees.NE_SAIT_PAS,
+  presenceZoneHumide: PresenceZoneHumide.NE_SAIT_PAS,
 });
 
 const createTagInputData = (
@@ -938,6 +942,90 @@ describe("Usage RENATURATION - Espace renaturé", () => {
       const data = createTagInputData({ presenceRisquesTechnologiques: true });
       const result = generateTagsForUsage(UsageType.RENATURATION, data);
       expect(result.tags).toContain("risques tech. forts");
+    });
+  });
+
+  describe("Présence d'espèces protégées (spécifique renaturation)", () => {
+    it("devrait afficher 'espèce protégée' pour Renaturation si OUI", () => {
+      const data = createTagInputData(
+        {},
+        { presenceEspecesProtegees: PresenceEspecesProtegees.OUI },
+      );
+      const result = generateTagsForUsage(UsageType.RENATURATION, data);
+      expect(result.tags).toContain("espèce protégée");
+    });
+
+    it("ne devrait pas afficher de tag si NON", () => {
+      const data = createTagInputData(
+        {},
+        { presenceEspecesProtegees: PresenceEspecesProtegees.NON },
+      );
+      const result = generateTagsForUsage(UsageType.RENATURATION, data);
+      expect(result.tags).not.toContain("espèce protégée");
+    });
+
+    it("ne devrait pas afficher de tag si 'ne sait pas'", () => {
+      const data = createTagInputData(
+        {},
+        { presenceEspecesProtegees: PresenceEspecesProtegees.NE_SAIT_PAS },
+      );
+      const result = generateTagsForUsage(UsageType.RENATURATION, data);
+      expect(result.tags).not.toContain("espèce protégée");
+    });
+
+    it("ne devrait jamais afficher 'espèce protégée' pour les autres usages", () => {
+      const data = createTagInputData(
+        {},
+        { presenceEspecesProtegees: PresenceEspecesProtegees.OUI },
+      );
+      const autresUsages = [
+        UsageType.RESIDENTIEL,
+        UsageType.EQUIPEMENTS,
+        UsageType.CULTURE,
+        UsageType.TERTIAIRE,
+        UsageType.INDUSTRIE,
+        UsageType.PHOTOVOLTAIQUE,
+      ];
+      for (const usage of autresUsages) {
+        const result = generateTagsForUsage(usage, data);
+        expect(result.tags).not.toContain("espèce protégée");
+      }
+    });
+  });
+
+  describe("Présence d'une zone humide (spécifique renaturation)", () => {
+    it("devrait afficher 'zone humide' pour Renaturation si OUI", () => {
+      const data = createTagInputData({}, { presenceZoneHumide: PresenceZoneHumide.OUI });
+      const result = generateTagsForUsage(UsageType.RENATURATION, data);
+      expect(result.tags).toContain("zone humide");
+    });
+
+    it("ne devrait pas afficher de tag si NON", () => {
+      const data = createTagInputData({}, { presenceZoneHumide: PresenceZoneHumide.NON });
+      const result = generateTagsForUsage(UsageType.RENATURATION, data);
+      expect(result.tags).not.toContain("zone humide");
+    });
+
+    it("ne devrait pas afficher de tag si 'ne sait pas'", () => {
+      const data = createTagInputData({}, { presenceZoneHumide: PresenceZoneHumide.NE_SAIT_PAS });
+      const result = generateTagsForUsage(UsageType.RENATURATION, data);
+      expect(result.tags).not.toContain("zone humide");
+    });
+
+    it("ne devrait jamais afficher 'zone humide' pour les autres usages", () => {
+      const data = createTagInputData({}, { presenceZoneHumide: PresenceZoneHumide.OUI });
+      const autresUsages = [
+        UsageType.RESIDENTIEL,
+        UsageType.EQUIPEMENTS,
+        UsageType.CULTURE,
+        UsageType.TERTIAIRE,
+        UsageType.INDUSTRIE,
+        UsageType.PHOTOVOLTAIQUE,
+      ];
+      for (const usage of autresUsages) {
+        const result = generateTagsForUsage(usage, data);
+        expect(result.tags).not.toContain("zone humide");
+      }
     });
   });
 });

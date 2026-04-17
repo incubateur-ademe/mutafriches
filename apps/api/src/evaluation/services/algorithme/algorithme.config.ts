@@ -1,7 +1,9 @@
 import { EtatBatiInfrastructure, RaccordementEau, UsageType } from "@mutafriches/shared-types";
 import {
   TypeProprietaire,
+  PresenceEspecesProtegees,
   PresencePollution,
+  PresenceZoneHumide,
   QualiteVoieDesserte,
   QualitePaysage,
   ValeurArchitecturale,
@@ -48,6 +50,8 @@ export const POIDS_CRITERES = {
   valeurArchitecturaleHistorique: 1,
   qualitePaysage: 1,
   qualiteVoieDesserte: 0.5,
+  presenceEspecesProtegees: 1,
+  presenceZoneHumide: 1,
 } as const;
 
 // Matrice de scoring complète avec ScoreImpact
@@ -772,6 +776,68 @@ export const MATRICE_SCORING = {
       [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEGATIF,
     },
     [TrameVerteEtBleue.NE_SAIT_PAS]: {
+      [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
+      [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
+      [UsageType.CULTURE]: ScoreImpact.NEUTRE,
+      [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
+      [UsageType.INDUSTRIE]: ScoreImpact.NEUTRE,
+      [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
+      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
+    },
+  },
+
+  // Présence d'espèces protégées
+  presenceEspecesProtegees: {
+    [PresenceEspecesProtegees.OUI]: {
+      [UsageType.RESIDENTIEL]: ScoreImpact.TRES_NEGATIF,
+      [UsageType.EQUIPEMENTS]: ScoreImpact.TRES_NEGATIF,
+      [UsageType.CULTURE]: ScoreImpact.TRES_NEGATIF,
+      [UsageType.TERTIAIRE]: ScoreImpact.TRES_NEGATIF,
+      [UsageType.INDUSTRIE]: ScoreImpact.TRES_NEGATIF,
+      [UsageType.RENATURATION]: ScoreImpact.TRES_POSITIF,
+      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.TRES_NEGATIF,
+    },
+    [PresenceEspecesProtegees.NON]: {
+      [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
+      [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
+      [UsageType.CULTURE]: ScoreImpact.NEUTRE,
+      [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
+      [UsageType.INDUSTRIE]: ScoreImpact.NEUTRE,
+      [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
+      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
+    },
+    [PresenceEspecesProtegees.NE_SAIT_PAS]: {
+      [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
+      [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
+      [UsageType.CULTURE]: ScoreImpact.NEUTRE,
+      [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
+      [UsageType.INDUSTRIE]: ScoreImpact.NEUTRE,
+      [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
+      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
+    },
+  },
+
+  // Présence d'une zone humide
+  presenceZoneHumide: {
+    [PresenceZoneHumide.OUI]: {
+      [UsageType.RESIDENTIEL]: ScoreImpact.TRES_NEGATIF,
+      [UsageType.EQUIPEMENTS]: ScoreImpact.TRES_NEGATIF,
+      [UsageType.CULTURE]: ScoreImpact.TRES_NEGATIF,
+      [UsageType.TERTIAIRE]: ScoreImpact.TRES_NEGATIF,
+      [UsageType.INDUSTRIE]: ScoreImpact.TRES_NEGATIF,
+      [UsageType.RENATURATION]: ScoreImpact.TRES_POSITIF,
+      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.TRES_NEGATIF,
+    },
+    [PresenceZoneHumide.NON]: {
+      [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
+      [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
+      [UsageType.CULTURE]: ScoreImpact.NEUTRE,
+      [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
+      [UsageType.INDUSTRIE]: ScoreImpact.NEUTRE,
+      [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
+      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
+    },
+    [PresenceZoneHumide.NE_SAIT_PAS]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
       [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
       [UsageType.CULTURE]: ScoreImpact.NEUTRE,
