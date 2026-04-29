@@ -1,0 +1,99 @@
+/* Layout sidebar CCI 92 */
+
+.cci92-commune-group {
+  margin-bottom: 0.5rem;
+  border: 1px solid var(--border-default-grey, #e5e5e5);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.cci92-commune-group .fr-sidemenu__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.cci92-commune-group .fr-sidemenu__item {
+  margin: 0;
+  padding: 0;
+}
+
+.cci92-commune-group .fr-sidemenu__item:last-child .cci92-site-btn {
+  border-bottom: none;
+}
+
+.cci92-commune-group__summary {
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.875rem;
+  background: var(--background-alt-grey, #f6f6f6);
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cci92-commune-group__summary::before {
+  content: "\25B6";
+  font-size: 0.625rem;
+  transition: transform 0.2s ease;
+}
+
+.cci92-commune-group[open] > .cci92-commune-group__summary::before {
+  transform: rotate(90deg);
+}
+
+.cci92-commune-group__summary::-webkit-details-marker {
+  display: none;
+}
+
+/* Bouton de site */
+.cci92-site-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.5rem 1rem;
+  border: none;
+  background: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  font-size: 0.8125rem;
+  border-bottom: 1px solid var(--border-default-grey, #e5e5e5);
+  transition: background 0.15s ease;
+}
+
+.cci92-site-btn:hover {
+  background: var(--background-alt-grey, #f6f6f6);
+}
+
+.cci92-site-btn--active {
+  background: var(--background-action-low-blue-france, #e3e3fd);
+  font-weight: 600;
+}
+
+.cci92-site-btn__label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  word-break: break-all;
+}
+
+.cci92-site-btn__check {
+  color: var(--text-default-success, #18753c);
+  flex-shrink: 0;
+}
+
+/* Sections de détail */
+.cci92-detail__sections {
+  margin-top: 1rem;
+}
+
+/* Formulaire */
+.cci92-form {
+  border-top: 2px solid var(--border-default-grey, #e5e5e5);
+  padding-top: 1rem;
+  margin-top: 1rem;
+}

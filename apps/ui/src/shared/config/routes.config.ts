@@ -28,6 +28,9 @@ export const ROUTES = {
   TEST_IFRAME: "/test/iframe",
   TEST_CALLBACK: "/test/callback",
 
+  // Partenaires
+  CCI_92: "/partenaires/cci-92",
+
   // Legacy (pour compatibilité temporaire)
   DEBUG: "/debug",
 } as const;
