@@ -7,7 +7,9 @@ import { buildMutabilityInput } from "@features/resultats/utils/mutability.mappe
 import { useAlgorithmeVersions } from "@features/comparaison-algo/hooks/useAlgorithmeVersions";
 import { CCI92SiteList } from "../components/CCI92SiteList";
 import { CCI92SiteDetail } from "../components/CCI92SiteDetail";
+import { CCI92AddSiteModal } from "../components/CCI92AddSiteModal";
 import { CCI92Site } from "../data/parcelles-cci92";
+import { useCustomSites } from "../hooks/useCustomSites";
 import "@features/debug/components/DebugPanel.css";
 import "./CCI92Page.css";
 
@@ -28,6 +30,9 @@ export const CCI92Page: React.FC = () => {
 
   const { versions } = useAlgorithmeVersions();
   const [selectedVersion, setSelectedVersion] = useState<string>("");
+
+  const { customSites, addSite, removeSite, clearAll } = useCustomSites();
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   useEffect(() => {
     if (!selectedVersion && versions.length > 0) {
@@ -104,6 +109,48 @@ export const CCI92Page: React.FC = () => {
     setMutabilityData(null);
   }, []);
 
+  const cleanupCachesForSite = useCallback((idtup: string) => {
+    enrichmentCacheRef.current.delete(idtup);
+    mutabilityCacheRef.current.delete(idtup);
+    manualDataRef.current.delete(idtup);
+  }, []);
+
+  const handleAddSiteSubmit = useCallback(
+    (idpars: string[]) => {
+      const result = addSite(idpars);
+      return {
+        invalidIdpars: result.invalidIdpars,
+        success: result.added !== null,
+      };
+    },
+    [addSite],
+  );
+
+  const handleRemoveCustomSite = useCallback(
+    (idtup: string) => {
+      cleanupCachesForSite(idtup);
+      if (selectedSite?.idtup === idtup) {
+        setSelectedSite(null);
+        setEnrichmentData(null);
+        setMutabilityData(null);
+        setManualData({});
+      }
+      removeSite(idtup);
+    },
+    [removeSite, selectedSite, cleanupCachesForSite],
+  );
+
+  const handleClearCustomSites = useCallback(() => {
+    customSites.forEach((s) => cleanupCachesForSite(s.idtup));
+    if (selectedSite && customSites.some((s) => s.idtup === selectedSite.idtup)) {
+      setSelectedSite(null);
+      setEnrichmentData(null);
+      setMutabilityData(null);
+      setManualData({});
+    }
+    clearAll();
+  }, [clearAll, customSites, selectedSite, cleanupCachesForSite]);
+
   return (
     <Layout fullWidth>
       <div className="fr-container fr-py-4w">
@@ -120,6 +167,10 @@ export const CCI92Page: React.FC = () => {
               selectedSiteId={selectedSite?.idtup ?? null}
               onSelectSite={handleSelectSite}
               enrichmentCache={enrichmentCacheRef.current}
+              customSites={customSites}
+              onAddSiteClick={() => setIsAddModalOpen(true)}
+              onRemoveCustomSite={handleRemoveCustomSite}
+              onClearCustomSites={handleClearCustomSites}
             />
           </div>
           <div className="fr-col-12 fr-col-md-8">
@@ -150,6 +201,12 @@ export const CCI92Page: React.FC = () => {
           </div>
         </div>
       </div>
+
+      <CCI92AddSiteModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onSubmit={handleAddSiteSubmit}
+      />
     </Layout>
   );
 };

@@ -15,6 +15,8 @@ import { DonneesComplementairesSection } from "@features/debug/components/sectio
 import { EnrichmentLoadingCallout } from "@features/analyser/components/EnrichmentLoadingCallout";
 import { CCI92DonneesForm } from "./CCI92DonneesForm";
 import { CCI92Site } from "../data/parcelles-cci92";
+import { downloadJson } from "../utils/download-json";
+import { buildDonneesComplementaires } from "@features/resultats/utils/mutability.mapper";
 
 interface CCI92SiteDetailProps {
   site: CCI92Site;
@@ -48,6 +50,27 @@ export const CCI92SiteDetail: React.FC<CCI92SiteDetailProps> = ({
   onCalculerMutabilite,
 }) => {
   const [activeTab, setActiveTab] = useState<TabId>("qualification");
+
+  const handleExportEnrichissement = () => {
+    if (!enrichmentData) return;
+    downloadJson(enrichmentData, `enrichissement-${site.idtup}`);
+  };
+
+  const handleExportMutabilite = () => {
+    if (!enrichmentData || !mutabilityData) return;
+    const payload = {
+      site: {
+        idtup: site.idtup,
+        commune: site.commune,
+        parcelles: site.parcelles,
+      },
+      versionAlgorithme: selectedVersion || undefined,
+      donneesEnrichies: enrichmentData,
+      donneesComplementaires: buildDonneesComplementaires(manualData),
+      resultats: mutabilityData,
+    };
+    downloadJson(payload, `mutabilite-${site.idtup}`);
+  };
 
   const renderTabButton = (id: TabId, label: string) => (
     <li role="presentation">
@@ -85,10 +108,11 @@ export const CCI92SiteDetail: React.FC<CCI92SiteDetailProps> = ({
         <h2 className="fr-callout__title fr-h4">{site.commune}</h2>
         <p className="fr-callout__text fr-text--sm">
           Identifiant : <strong>{site.idtup}</strong>
+          <br />
+          <br />
           {site.parcelles.length > 1 && (
             <>
-              {" "}
-              — {site.parcelles.length} parcelles : {site.parcelles.join(", ")}
+              {site.parcelles.length} parcelles : {site.parcelles.join(", ")}
             </>
           )}
         </p>
@@ -121,6 +145,15 @@ export const CCI92SiteDetail: React.FC<CCI92SiteDetailProps> = ({
                 <DiagnosticZonagesSection enrichmentData={enrichmentData} />
                 <DiagnosticRisquesSection enrichmentData={enrichmentData} />
                 <SourcesMetadataSection enrichmentData={enrichmentData} />
+                <div className="fr-mt-3w">
+                  <button
+                    type="button"
+                    className="fr-btn fr-btn--secondary fr-icon-download-line fr-btn--icon-left"
+                    onClick={handleExportEnrichissement}
+                  >
+                    Télécharger l'enrichissement (JSON)
+                  </button>
+                </div>
               </div>
             )}
           </>,
@@ -151,6 +184,15 @@ export const CCI92SiteDetail: React.FC<CCI92SiteDetailProps> = ({
                     <DonneesComplementairesSection manualData={manualData} />
                     <EvaluationSection mutabilityData={mutabilityData} />
                     <DetailAlgorithmeSection mutabilityData={mutabilityData} />
+                    <div className="fr-mt-3w">
+                      <button
+                        type="button"
+                        className="fr-btn fr-btn--secondary fr-icon-download-line fr-btn--icon-left"
+                        onClick={handleExportMutabilite}
+                      >
+                        Télécharger les résultats (JSON)
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>

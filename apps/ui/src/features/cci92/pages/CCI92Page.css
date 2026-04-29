@@ -97,3 +97,34 @@
   padding-top: 1rem;
   margin-top: 1rem;
 }
+
+/* Ligne site + bouton supprimer */
+.cci92-site-row {
+  display: flex;
+  align-items: stretch;
+}
+
+.cci92-site-row .cci92-site-btn {
+  flex: 1;
+}
+
+.cci92-site-remove {
+  flex-shrink: 0;
+  width: 2rem;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--text-default-error, #ce0500);
+  border-bottom: 1px solid var(--border-default-grey, #e5e5e5);
+  transition: background 0.15s ease;
+}
+
+.cci92-site-remove:hover {
+  background: var(--background-alt-grey, #f6f6f6);
+}
+
+.cci92-clear-all {
+  padding: 0.5rem 1rem;
+  text-align: right;
+  border-top: 1px solid var(--border-default-grey, #e5e5e5);
+}
