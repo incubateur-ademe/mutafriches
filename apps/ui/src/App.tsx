@@ -23,6 +23,7 @@ import { ResultatsPage } from "./features/resultats/pages/ResultatsPage";
 import { DocumentationIntegrationPage } from "./features/documentation/pages/DocumentationIntegrationPage";
 import { StatistiquesPage } from "./features/statistiques/pages/StatistiquesPage";
 import { CCI92Page } from "./features/cci92/pages/CCI92Page";
+import { PartenairesPage } from "./features/cci92/pages/PartenairesPage";
 
 function AppContent() {
   const { track } = useEventTracking();
@@ -63,6 +64,7 @@ function AppContent() {
         <Route path={ROUTES.DOCUMENTATION_INTEGRATION} element={<DocumentationIntegrationPage />} />
 
         {/* Partenaires */}
+        <Route path={ROUTES.PARTENAIRES} element={<PartenairesPage />} />
         <Route path={ROUTES.CCI_92} element={<CCI92Page />} />
 
         {/* Routes pour les tests */}

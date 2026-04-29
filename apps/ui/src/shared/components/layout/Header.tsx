@@ -64,6 +64,14 @@ export function Header() {
                   </li>
                   <li>
                     <Link
+                      to={ROUTES.PARTENAIRES}
+                      className="fr-btn fr-btn--tertiary fr-icon-team-line fr-btn--icon-left"
+                    >
+                      Partenaires
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
                       to={ROUTES.DOCUMENTATION_INTEGRATION}
                       className="fr-btn fr-btn--tertiary fr-icon-book-2-fill fr-btn--icon-left"
                     >
@@ -92,6 +100,11 @@ export function Header() {
               <li>
                 <Link to={ROUTES.STATISTIQUES} className="fr-btn">
                   Statistiques
+                </Link>
+              </li>
+              <li>
+                <Link to={ROUTES.PARTENAIRES} className="fr-btn">
+                  Partenaires
                 </Link>
               </li>
               <li>
