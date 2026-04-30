@@ -1,0 +1,61 @@
+name: CCI 92 cache prefetch
+
+on:
+  schedule:
+    # Quotidien à 04:00 UTC (TTL serveur = 24h)
+    - cron: "0 4 * * *"
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environnement à pré-chauffer"
+        required: true
+        type: choice
+        default: production
+        options:
+          - production
+          - staging
+          - both
+
+jobs:
+  prefetch:
+    name: Prefetch ${{ matrix.env.name }}
+    runs-on: ubuntu-latest
+    if: |
+      github.event_name == 'schedule' ||
+      github.event.inputs.environment == 'both' ||
+      github.event.inputs.environment == matrix.env.name
+    strategy:
+      fail-fast: false
+      matrix:
+        env:
+          - name: production
+            url_var: PROD_API_URL
+          - name: staging
+            url_var: STAGING_API_URL
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".node-version"
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Prefetch enrichments (${{ matrix.env.name }})
+        env:
+          API_URL: ${{ vars[matrix.env.url_var] }}
+          CCI92_PREFETCH_DELAY_MS: 2000
+        run: |
+          if [ -z "$API_URL" ]; then
+            echo "Variable ${{ matrix.env.url_var }} non configurée — skip"
+            exit 0
+          fi
+          echo "Pré-chauffe sur $API_URL"
+          pnpm cci92:prefetch

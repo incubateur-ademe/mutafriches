@@ -53,6 +53,7 @@ export const CCI92Page: React.FC = () => {
     const cachedEnrichment = enrichmentCacheRef.current.get(site.idtup);
     if (cachedEnrichment) {
       setEnrichmentData(cachedEnrichment);
+      setLoadingState("idle");
       return;
     }
 
