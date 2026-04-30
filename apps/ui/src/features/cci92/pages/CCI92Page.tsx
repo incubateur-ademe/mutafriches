@@ -103,12 +103,6 @@ export const CCI92Page: React.FC = () => {
     }
   }, [selectedSite, enrichmentData, manualData, selectedVersion]);
 
-  const handleVersionChange = useCallback((version: string) => {
-    setSelectedVersion(version);
-    mutabilityCacheRef.current.clear();
-    setMutabilityData(null);
-  }, []);
-
   const cleanupCachesForSite = useCallback((idtup: string) => {
     enrichmentCacheRef.current.delete(idtup);
     mutabilityCacheRef.current.delete(idtup);
@@ -183,9 +177,7 @@ export const CCI92Page: React.FC = () => {
                 isEnriching={loadingState === "enriching"}
                 isCalculating={loadingState === "calculating"}
                 error={error}
-                versions={versions}
                 selectedVersion={selectedVersion}
-                onVersionChange={handleVersionChange}
                 onManualDataChange={handleManualDataChange}
                 onCalculerMutabilite={handleCalculerMutabilite}
               />

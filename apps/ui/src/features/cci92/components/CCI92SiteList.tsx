@@ -31,11 +31,9 @@ const renderSiteButton = (
       >
         <span className="cci92-site-btn__label">
           {site.idtup}
-          {site.parcelles.length > 1 && (
-            <span className="fr-badge fr-badge--sm fr-badge--info fr-ml-1w">
-              {site.parcelles.length} parcelles
-            </span>
-          )}
+          <span className="fr-badge fr-badge--sm fr-badge--info fr-ml-1w">
+            {site.parcelles.length} parcelle{site.parcelles.length > 1 ? "s" : ""}
+          </span>
         </span>
         {isEnriched && (
           <span

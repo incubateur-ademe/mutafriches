@@ -1,9 +1,5 @@
-import React, { useState } from "react";
-import {
-  AlgorithmeVersionDto,
-  EnrichissementOutputDto,
-  MutabiliteOutputDto,
-} from "@mutafriches/shared-types";
+import React from "react";
+import { EnrichissementOutputDto, MutabiliteOutputDto } from "@mutafriches/shared-types";
 import { SiteIdentificationSection } from "@features/debug/components/sections/SiteIdentificationSection";
 import { EnrichissementSection } from "@features/debug/components/sections/EnrichissementSection";
 import { DiagnosticZonagesSection } from "@features/debug/components/sections/DiagnosticZonagesSection";
@@ -13,10 +9,11 @@ import { EvaluationSection } from "@features/debug/components/sections/Evaluatio
 import { DetailAlgorithmeSection } from "@features/debug/components/sections/DetailAlgorithmeSection";
 import { DonneesComplementairesSection } from "@features/debug/components/sections/DonneesComplementairesSection";
 import { EnrichmentLoadingCallout } from "@features/analyser/components/EnrichmentLoadingCallout";
+import { buildDonneesComplementaires } from "@features/resultats/utils/mutability.mapper";
+import { CCI92Accordion } from "./CCI92Accordion";
 import { CCI92DonneesForm } from "./CCI92DonneesForm";
 import { CCI92Site } from "../data/parcelles-cci92";
 import { downloadJson } from "../utils/download-json";
-import { buildDonneesComplementaires } from "@features/resultats/utils/mutability.mapper";
 
 interface CCI92SiteDetailProps {
   site: CCI92Site;
@@ -26,14 +23,16 @@ interface CCI92SiteDetailProps {
   isEnriching: boolean;
   isCalculating: boolean;
   error: string | null;
-  versions: AlgorithmeVersionDto[];
   selectedVersion: string;
-  onVersionChange: (version: string) => void;
   onManualDataChange: (fieldName: string, value: string) => void;
   onCalculerMutabilite: () => void;
 }
 
-type TabId = "qualification" | "mutabilite";
+type Phase = "qualification" | "mutabilite";
+
+const TAG_AUTO = { label: "automatique", variant: "automatique" as const };
+const TAG_SAISIE = { label: "saisie de donnée", variant: "saisie" as const };
+const TAG_CALCULE = { label: "calculé", variant: "calcule" as const };
 
 export const CCI92SiteDetail: React.FC<CCI92SiteDetailProps> = ({
   site,
@@ -43,27 +42,21 @@ export const CCI92SiteDetail: React.FC<CCI92SiteDetailProps> = ({
   isEnriching,
   isCalculating,
   error,
-  versions,
   selectedVersion,
-  onVersionChange,
   onManualDataChange,
   onCalculerMutabilite,
 }) => {
-  const [activeTab, setActiveTab] = useState<TabId>("qualification");
+  // Phase dérivée : présence de mutabilityData → mutabilite, sinon qualification.
+  // La modification d'un champ vide mutabilityData (cf. handler dans la page) → retour qualification.
+  const phase: Phase = mutabilityData ? "mutabilite" : "qualification";
 
-  const handleExportEnrichissement = () => {
-    if (!enrichmentData) return;
-    downloadJson(enrichmentData, `enrichissement-${site.idtup}`);
-  };
+  const hasManualInput = Object.values(manualData).some((v) => v && v !== "");
+  const isQualPhase = phase === "qualification";
 
   const handleExportMutabilite = () => {
     if (!enrichmentData || !mutabilityData) return;
     const payload = {
-      site: {
-        idtup: site.idtup,
-        commune: site.commune,
-        parcelles: site.parcelles,
-      },
+      site: { idtup: site.idtup, commune: site.commune, parcelles: site.parcelles },
       versionAlgorithme: selectedVersion || undefined,
       donneesEnrichies: enrichmentData,
       donneesComplementaires: buildDonneesComplementaires(manualData),
@@ -72,39 +65,10 @@ export const CCI92SiteDetail: React.FC<CCI92SiteDetailProps> = ({
     downloadJson(payload, `mutabilite-${site.idtup}`);
   };
 
-  const renderTabButton = (id: TabId, label: string) => (
-    <li role="presentation">
-      <button
-        type="button"
-        id={`cci92-tab-${id}`}
-        className="fr-tabs__tab"
-        tabIndex={activeTab === id ? 0 : -1}
-        role="tab"
-        aria-selected={activeTab === id}
-        aria-controls={`cci92-tabpanel-${id}`}
-        onClick={() => setActiveTab(id)}
-      >
-        {label}
-      </button>
-    </li>
-  );
-
-  const renderPanel = (id: TabId, content: React.ReactNode) => (
-    <div
-      id={`cci92-tabpanel-${id}`}
-      className={`fr-tabs__panel ${activeTab === id ? "fr-tabs__panel--selected" : ""}`}
-      role="tabpanel"
-      aria-labelledby={`cci92-tab-${id}`}
-      tabIndex={0}
-    >
-      {content}
-    </div>
-  );
-
   return (
     <div className="cci92-detail">
       {/* En-tête du site */}
-      <div className="fr-callout fr-callout--brown-caramel fr-mb-2w">
+      <div className="fr-callout fr-callout--blue-ecume fr-mb-2w">
         <h2 className="fr-callout__title fr-h4">{site.commune}</h2>
         <p className="fr-callout__text fr-text--sm">
           Identifiant : <strong>{site.idtup}</strong>
@@ -125,81 +89,109 @@ export const CCI92SiteDetail: React.FC<CCI92SiteDetailProps> = ({
         </div>
       )}
 
-      <div className="fr-tabs">
-        <ul className="fr-tabs__list" role="tablist" aria-label="Détail du site">
-          {renderTabButton("qualification", "Qualification du site")}
-          {renderTabButton("mutabilite", "Mutabilité")}
-        </ul>
+      {/* Chargement enrichissement */}
+      {isEnriching && <EnrichmentLoadingCallout />}
 
-        {renderPanel(
-          "qualification",
-          <>
-            {isEnriching && <EnrichmentLoadingCallout />}
-            {enrichmentData && (
-              <div className="cci92-detail__sections">
-                <SiteIdentificationSection
-                  enrichmentData={enrichmentData}
-                  identifiantSite={site.idtup}
-                />
-                <EnrichissementSection enrichmentData={enrichmentData} />
-                <DiagnosticZonagesSection enrichmentData={enrichmentData} />
-                <DiagnosticRisquesSection enrichmentData={enrichmentData} />
-                <SourcesMetadataSection enrichmentData={enrichmentData} />
-                <div className="fr-mt-3w">
-                  <button
-                    type="button"
-                    className="fr-btn fr-btn--secondary fr-icon-download-line fr-btn--icon-left"
-                    onClick={handleExportEnrichissement}
-                  >
-                    Télécharger l'enrichissement (JSON)
-                  </button>
-                </div>
-              </div>
-            )}
-          </>,
-        )}
+      {enrichmentData && (
+        <>
+          {/* Section automatique */}
+          <div key={`auto-${phase}`}>
+            <CCI92Accordion title="Identification du site" tag={TAG_AUTO} defaultOpen={isQualPhase}>
+              <SiteIdentificationSection
+                enrichmentData={enrichmentData}
+                identifiantSite={site.idtup}
+                noWrapper
+              />
+            </CCI92Accordion>
 
-        {renderPanel(
-          "mutabilite",
-          <>
-            {!enrichmentData && !isEnriching && (
-              <p className="fr-text--sm">
-                L'enrichissement du site est nécessaire avant de pouvoir calculer la mutabilité.
-              </p>
+            <CCI92Accordion
+              title="Données d'enrichissement"
+              tag={TAG_AUTO}
+              defaultOpen={isQualPhase}
+            >
+              <EnrichissementSection enrichmentData={enrichmentData} noWrapper />
+            </CCI92Accordion>
+
+            {enrichmentData.diagnosticZonages && (
+              <CCI92Accordion
+                title="Diagnostic zonages (données brutes API)"
+                tag={TAG_AUTO}
+                defaultOpen={isQualPhase}
+              >
+                <DiagnosticZonagesSection enrichmentData={enrichmentData} noWrapper />
+              </CCI92Accordion>
             )}
-            {isEnriching && <EnrichmentLoadingCallout />}
-            {enrichmentData && (
-              <div className="cci92-detail__sections">
-                <CCI92DonneesForm
-                  values={manualData}
-                  onChange={onManualDataChange}
-                  onSubmit={onCalculerMutabilite}
-                  isSubmitting={isCalculating}
-                  versions={versions}
-                  selectedVersion={selectedVersion}
-                  onVersionChange={onVersionChange}
-                />
-                {mutabilityData && (
-                  <div className="fr-mt-4w">
-                    <DonneesComplementairesSection manualData={manualData} />
-                    <EvaluationSection mutabilityData={mutabilityData} />
-                    <DetailAlgorithmeSection mutabilityData={mutabilityData} />
-                    <div className="fr-mt-3w">
-                      <button
-                        type="button"
-                        className="fr-btn fr-btn--secondary fr-icon-download-line fr-btn--icon-left"
-                        onClick={handleExportMutabilite}
-                      >
-                        Télécharger les résultats (JSON)
-                      </button>
-                    </div>
-                  </div>
-                )}
+
+            <CCI92Accordion title="Diagnostic risques" tag={TAG_AUTO} defaultOpen={isQualPhase}>
+              <DiagnosticRisquesSection enrichmentData={enrichmentData} noWrapper />
+            </CCI92Accordion>
+
+            <CCI92Accordion title="Sources et métadonnées" tag={TAG_AUTO} defaultOpen={isQualPhase}>
+              <SourcesMetadataSection enrichmentData={enrichmentData} noWrapper />
+            </CCI92Accordion>
+          </div>
+
+          {/* Section saisie */}
+          <div key={`saisie-${phase}`}>
+            <CCI92Accordion
+              title="Données complémentaires"
+              tag={TAG_SAISIE}
+              defaultOpen={isQualPhase}
+              highlight={isQualPhase}
+            >
+              <CCI92DonneesForm values={manualData} onChange={onManualDataChange} />
+            </CCI92Accordion>
+
+            <div className="fr-mt-2w fr-mb-3w">
+              <button
+                type="button"
+                className="fr-btn"
+                onClick={onCalculerMutabilite}
+                disabled={!hasManualInput || isCalculating}
+                aria-busy={isCalculating}
+              >
+                {isCalculating ? "Calcul en cours..." : "Calculer la mutabilité"}
+              </button>
+              {!hasManualInput && (
+                <p className="fr-hint-text fr-mt-1w">
+                  Saisissez au moins une donnée complémentaire pour activer le calcul.
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Section mutabilité (uniquement après calcul) */}
+          {mutabilityData && phase === "mutabilite" && (
+            <div key={`mutabilite-${phase}`}>
+              <CCI92Accordion
+                title="Données complémentaires (saisies)"
+                tag={TAG_SAISIE}
+                defaultOpen={false}
+              >
+                <DonneesComplementairesSection manualData={manualData} noWrapper />
+              </CCI92Accordion>
+
+              <CCI92Accordion title="Résultats de l'évaluation" tag={TAG_CALCULE} defaultOpen>
+                <EvaluationSection mutabilityData={mutabilityData} noWrapper />
+              </CCI92Accordion>
+
+              <CCI92Accordion title="Détail de l'algorithme" tag={TAG_CALCULE} defaultOpen>
+                <DetailAlgorithmeSection mutabilityData={mutabilityData} noWrapper />
+              </CCI92Accordion>
+
+              <div className="fr-mt-2w">
+                <button
+                  type="button"
+                  className="fr-btn fr-btn--secondary fr-icon-download-line fr-btn--icon-left"
+                  onClick={handleExportMutabilite}
+                >
+                  Télécharger l'analyse complète (JSON)
+                </button>
               </div>
-            )}
-          </>,
-        )}
-      </div>
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 };

@@ -22,6 +22,7 @@ const GEORISQUES_APIS = [
 
 interface DiagnosticRisquesSectionProps {
   enrichmentData?: EnrichissementOutputDto;
+  noWrapper?: boolean;
 }
 
 /**
@@ -138,18 +139,19 @@ function hasExposition(data: Record<string, unknown>): boolean {
 
 export const DiagnosticRisquesSection: React.FC<DiagnosticRisquesSectionProps> = ({
   enrichmentData,
+  noWrapper = false,
 }) => {
   const [expandedApis, setExpandedApis] = useState<Set<string>>(new Set());
 
   const risques = enrichmentData?.risquesGeorisques as Record<string, unknown> | undefined;
 
   if (!enrichmentData || !risques) {
+    const empty = <p className="fr-text--sm">Données GeoRisques non disponibles.</p>;
+    if (noWrapper) return empty;
     return (
       <details className="debug-panel__section">
         <summary>Diagnostic risques</summary>
-        <div className="debug-panel__section-content">
-          <p className="fr-text--sm">Données GeoRisques non disponibles.</p>
-        </div>
+        <div className="debug-panel__section-content">{empty}</div>
       </details>
     );
   }
@@ -174,151 +176,153 @@ export const DiagnosticRisquesSection: React.FC<DiagnosticRisquesSectionProps> =
     });
   };
 
+  const content = (
+    <>
+      {/* Résumé exploitation */}
+      <h4 className="debug-panel__subtitle">Données exploitées par l'algorithme</h4>
+      <dl className="debug-panel__data-grid">
+        <dt>RGA (final)</dt>
+        <dd>
+          <span
+            className={`fr-badge fr-badge--sm ${
+              enrichmentData.risqueRetraitGonflementArgile === "fort"
+                ? "fr-badge--error"
+                : enrichmentData.risqueRetraitGonflementArgile === "faible-ou-moyen"
+                  ? "fr-badge--warning"
+                  : "fr-badge--success"
+            }`}
+          >
+            {enrichmentData.risqueRetraitGonflementArgile ?? "Non disponible"}
+          </span>
+        </dd>
+        <dt>Cavités (final)</dt>
+        <dd>
+          <span
+            className={`fr-badge fr-badge--sm ${
+              enrichmentData.risqueCavitesSouterraines === "oui"
+                ? "fr-badge--error"
+                : "fr-badge--success"
+            }`}
+          >
+            {enrichmentData.risqueCavitesSouterraines ?? "Non disponible"}
+          </span>
+        </dd>
+        <dt>Inondations (final)</dt>
+        <dd>
+          <span
+            className={`fr-badge fr-badge--sm ${
+              enrichmentData.risqueInondation === "oui" ? "fr-badge--error" : "fr-badge--success"
+            }`}
+          >
+            {enrichmentData.risqueInondation ?? "Non disponible"}
+          </span>
+        </dd>
+        <dt>Risques technologiques (final)</dt>
+        <dd>
+          <span
+            className={`fr-badge fr-badge--sm ${
+              enrichmentData.presenceRisquesTechnologiques ? "fr-badge--error" : "fr-badge--success"
+            }`}
+          >
+            {enrichmentData.presenceRisquesTechnologiques ? "Oui" : "Non"}
+          </span>
+        </dd>
+      </dl>
+
+      {/* Fiabilité GeoRisques */}
+      {metadata && (
+        <div className="diag-risques__fiabilite">
+          <span className="fr-text--xs">
+            APIs GeoRisques : {metadata.sourcesUtilisees.length}/13 OK
+            {metadata.sourcesEchouees.length > 0 && (
+              <>, {metadata.sourcesEchouees.length} en échec</>
+            )}
+          </span>
+        </div>
+      )}
+
+      {/* Tableau des 13 APIs */}
+      <h4 className="debug-panel__subtitle">Détail des 13 APIs GeoRisques</h4>
+      <table className="debug-panel__usage-table diag-risques__table">
+        <thead>
+          <tr>
+            <th>API</th>
+            <th>Statut</th>
+            <th>Résumé</th>
+            <th>Utilisé</th>
+          </tr>
+        </thead>
+        <tbody>
+          {GEORISQUES_APIS.map(({ key, label, exploite }) => {
+            const apiData = risques[key] as Record<string, unknown> | undefined;
+            const isExpanded = expandedApis.has(key);
+            const expo = apiData ? hasExposition(apiData) : false;
+
+            return (
+              <React.Fragment key={key}>
+                <tr className={`diag-risques__row ${expo ? "diag-risques__row--alerte" : ""}`}>
+                  <td className="diag-risques__api-name">
+                    <button
+                      type="button"
+                      className="diag-risques__expand-btn"
+                      onClick={() => apiData && toggleExpand(key)}
+                      disabled={!apiData}
+                      title={apiData ? "Voir le détail JSON" : "Pas de données"}
+                    >
+                      <span style={{ fontSize: "0.625rem", marginRight: "0.25rem" }}>
+                        {isExpanded ? "\u25BC" : "\u25B6"}
+                      </span>
+                      {label}
+                    </button>
+                  </td>
+                  <td>
+                    {apiData ? (
+                      <span
+                        className={`fr-badge fr-badge--sm ${expo ? "fr-badge--warning" : "fr-badge--success"}`}
+                      >
+                        {expo ? "Exposé" : "OK"}
+                      </span>
+                    ) : (
+                      <span className="fr-badge fr-badge--sm fr-badge--error">Échec</span>
+                    )}
+                  </td>
+                  <td className="diag-risques__summary">
+                    {apiData ? getApiSummary(key, apiData) : "Non disponible"}
+                  </td>
+                  <td className="diag-risques__exploite">
+                    {exploite === "naturel" ? (
+                      <span className="fr-badge fr-badge--sm fr-badge--blue-ecume">Naturel</span>
+                    ) : exploite === "techno" ? (
+                      <span className="fr-badge fr-badge--sm fr-badge--purple-glycine">Techno</span>
+                    ) : (
+                      <span className="fr-text--xs" style={{ color: "#999" }}>
+                        Non exploité
+                      </span>
+                    )}
+                  </td>
+                </tr>
+                {/* Détail JSON expandable */}
+                {isExpanded && apiData && (
+                  <tr>
+                    <td colSpan={4}>
+                      <pre className="debug-panel__json">{JSON.stringify(apiData, null, 2)}</pre>
+                    </td>
+                  </tr>
+                )}
+              </React.Fragment>
+            );
+          })}
+        </tbody>
+      </table>
+    </>
+  );
+
+  if (noWrapper) return content;
+
   return (
     <details className="debug-panel__section">
       <summary>Diagnostic risques</summary>
-      <div className="debug-panel__section-content">
-        {/* Résumé exploitation */}
-        <h4 className="debug-panel__subtitle">Données exploitées par l'algorithme</h4>
-        <dl className="debug-panel__data-grid">
-          <dt>RGA (final)</dt>
-          <dd>
-            <span
-              className={`fr-badge fr-badge--sm ${
-                enrichmentData.risqueRetraitGonflementArgile === "fort"
-                  ? "fr-badge--error"
-                  : enrichmentData.risqueRetraitGonflementArgile === "faible-ou-moyen"
-                    ? "fr-badge--warning"
-                    : "fr-badge--success"
-              }`}
-            >
-              {enrichmentData.risqueRetraitGonflementArgile ?? "Non disponible"}
-            </span>
-          </dd>
-          <dt>Cavités (final)</dt>
-          <dd>
-            <span
-              className={`fr-badge fr-badge--sm ${
-                enrichmentData.risqueCavitesSouterraines === "oui"
-                  ? "fr-badge--error"
-                  : "fr-badge--success"
-              }`}
-            >
-              {enrichmentData.risqueCavitesSouterraines ?? "Non disponible"}
-            </span>
-          </dd>
-          <dt>Inondations (final)</dt>
-          <dd>
-            <span
-              className={`fr-badge fr-badge--sm ${
-                enrichmentData.risqueInondation === "oui" ? "fr-badge--error" : "fr-badge--success"
-              }`}
-            >
-              {enrichmentData.risqueInondation ?? "Non disponible"}
-            </span>
-          </dd>
-          <dt>Risques technologiques (final)</dt>
-          <dd>
-            <span
-              className={`fr-badge fr-badge--sm ${
-                enrichmentData.presenceRisquesTechnologiques
-                  ? "fr-badge--error"
-                  : "fr-badge--success"
-              }`}
-            >
-              {enrichmentData.presenceRisquesTechnologiques ? "Oui" : "Non"}
-            </span>
-          </dd>
-        </dl>
-
-        {/* Fiabilité GeoRisques */}
-        {metadata && (
-          <div className="diag-risques__fiabilite">
-            <span className="fr-text--xs">
-              APIs GeoRisques : {metadata.sourcesUtilisees.length}/13 OK
-              {metadata.sourcesEchouees.length > 0 && (
-                <>, {metadata.sourcesEchouees.length} en échec</>
-              )}
-            </span>
-          </div>
-        )}
-
-        {/* Tableau des 13 APIs */}
-        <h4 className="debug-panel__subtitle">Détail des 13 APIs GeoRisques</h4>
-        <table className="debug-panel__usage-table diag-risques__table">
-          <thead>
-            <tr>
-              <th>API</th>
-              <th>Statut</th>
-              <th>Résumé</th>
-              <th>Utilisé</th>
-            </tr>
-          </thead>
-          <tbody>
-            {GEORISQUES_APIS.map(({ key, label, exploite }) => {
-              const apiData = risques[key] as Record<string, unknown> | undefined;
-              const isExpanded = expandedApis.has(key);
-              const expo = apiData ? hasExposition(apiData) : false;
-
-              return (
-                <React.Fragment key={key}>
-                  <tr className={`diag-risques__row ${expo ? "diag-risques__row--alerte" : ""}`}>
-                    <td className="diag-risques__api-name">
-                      <button
-                        type="button"
-                        className="diag-risques__expand-btn"
-                        onClick={() => apiData && toggleExpand(key)}
-                        disabled={!apiData}
-                        title={apiData ? "Voir le détail JSON" : "Pas de données"}
-                      >
-                        <span style={{ fontSize: "0.625rem", marginRight: "0.25rem" }}>
-                          {isExpanded ? "\u25BC" : "\u25B6"}
-                        </span>
-                        {label}
-                      </button>
-                    </td>
-                    <td>
-                      {apiData ? (
-                        <span
-                          className={`fr-badge fr-badge--sm ${expo ? "fr-badge--warning" : "fr-badge--success"}`}
-                        >
-                          {expo ? "Exposé" : "OK"}
-                        </span>
-                      ) : (
-                        <span className="fr-badge fr-badge--sm fr-badge--error">Échec</span>
-                      )}
-                    </td>
-                    <td className="diag-risques__summary">
-                      {apiData ? getApiSummary(key, apiData) : "Non disponible"}
-                    </td>
-                    <td className="diag-risques__exploite">
-                      {exploite === "naturel" ? (
-                        <span className="fr-badge fr-badge--sm fr-badge--blue-ecume">Naturel</span>
-                      ) : exploite === "techno" ? (
-                        <span className="fr-badge fr-badge--sm fr-badge--purple-glycine">
-                          Techno
-                        </span>
-                      ) : (
-                        <span className="fr-text--xs" style={{ color: "#999" }}>
-                          Non exploité
-                        </span>
-                      )}
-                    </td>
-                  </tr>
-                  {/* Détail JSON expandable */}
-                  {isExpanded && apiData && (
-                    <tr>
-                      <td colSpan={4}>
-                        <pre className="debug-panel__json">{JSON.stringify(apiData, null, 2)}</pre>
-                      </td>
-                    </tr>
-                  )}
-                </React.Fragment>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+      <div className="debug-panel__section-content">{content}</div>
     </details>
   );
 };

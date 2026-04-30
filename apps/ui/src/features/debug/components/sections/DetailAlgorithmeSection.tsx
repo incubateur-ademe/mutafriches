@@ -91,11 +91,13 @@ function formatValeur(valeur: string | number | boolean): string {
 interface DetailAlgorithmeSectionProps {
   mutabilityData: MutabiliteOutputDto | null;
   title?: string;
+  noWrapper?: boolean;
 }
 
 export const DetailAlgorithmeSection: React.FC<DetailAlgorithmeSectionProps> = ({
   mutabilityData,
   title,
+  noWrapper = false,
 }) => {
   const [selectedUsage, setSelectedUsage] = useState<string | null>(null);
 
@@ -104,14 +106,16 @@ export const DetailAlgorithmeSection: React.FC<DetailAlgorithmeSectionProps> = (
   const hasDetailedData = resultatsDetailles?.some((r) => r.detailsCalcul);
 
   if (!mutabilityData || !hasDetailedData) {
+    const empty = (
+      <p className="fr-text--sm">
+        Données détaillées non disponibles. Le mode détaillé n'est pas activé.
+      </p>
+    );
+    if (noWrapper) return empty;
     return (
       <details className="debug-panel__section">
         <summary>{title ?? "Détail de l'algorithme"}</summary>
-        <div className="debug-panel__section-content">
-          <p className="fr-text--sm">
-            Données détaillées non disponibles. Le mode détaillé n'est pas activé.
-          </p>
-        </div>
+        <div className="debug-panel__section-content">{empty}</div>
       </details>
     );
   }
@@ -156,108 +160,112 @@ export const DetailAlgorithmeSection: React.FC<DetailAlgorithmeSectionProps> = (
     );
   };
 
+  const content = (
+    <>
+      {/* Sélecteur d'usage */}
+      <div className="detail-algo__usage-selector">
+        {resultatsDetailles?.map((r) => (
+          <button
+            key={r.usage}
+            type="button"
+            className={`detail-algo__usage-btn ${r.usage === activeUsage ? "detail-algo__usage-btn--active" : ""}`}
+            onClick={() => setSelectedUsage(r.usage)}
+            style={{
+              borderColor:
+                r.usage === activeUsage ? getMutabilityColor(r.indiceMutabilite) : undefined,
+              backgroundColor:
+                r.usage === activeUsage ? getMutabilityColor(r.indiceMutabilite) : undefined,
+            }}
+          >
+            <span className="detail-algo__usage-btn-label">{USAGE_LABELS[r.usage] ?? r.usage}</span>
+            <span className="detail-algo__usage-btn-score">{r.indiceMutabilite}%</span>
+          </button>
+        ))}
+      </div>
+
+      {/* Synthèse pour l'usage sélectionné */}
+      {activeResult && details && (
+        <>
+          {/* Barre avantages / contraintes */}
+          <div className="detail-algo__ratio-bar">
+            <div className="detail-algo__ratio-header">
+              <span>
+                Avantages : <strong>{details.totalAvantages.toFixed(1)}</strong>
+              </span>
+              <span className="detail-algo__ratio-formula">
+                Indice = avantages / (avantages + contraintes) ={" "}
+                <strong>{activeResult.indiceMutabilite}%</strong>
+              </span>
+              <span>
+                Contraintes : <strong>{details.totalContraintes.toFixed(1)}</strong>
+              </span>
+            </div>
+            <div className="detail-algo__ratio-track">
+              <div
+                className="detail-algo__ratio-fill detail-algo__ratio-fill--avantages"
+                style={{
+                  width: `${(details.totalAvantages / (details.totalAvantages + details.totalContraintes)) * 100}%`,
+                }}
+              />
+              <div
+                className="detail-algo__ratio-fill detail-algo__ratio-fill--contraintes"
+                style={{
+                  width: `${(details.totalContraintes / (details.totalAvantages + details.totalContraintes)) * 100}%`,
+                }}
+              />
+            </div>
+          </div>
+
+          {/* Tableau des critères */}
+          <table className="debug-panel__usage-table detail-algo__table">
+            <thead>
+              <tr>
+                <th>Critère</th>
+                <th>Valeur</th>
+                <th>Impact</th>
+                <th>Poids</th>
+                <th>Pondéré</th>
+              </tr>
+            </thead>
+            <tbody>
+              {/* Avantages */}
+              {details.detailsAvantages.length > 0 && (
+                <tr className="detail-algo__group-header">
+                  <td colSpan={5}>Avantages ({details.detailsAvantages.length} critères)</td>
+                </tr>
+              )}
+              {details.detailsAvantages.map((c) => renderCritereRow(c, "avantage"))}
+
+              {/* Contraintes */}
+              {details.detailsContraintes.length > 0 && (
+                <tr className="detail-algo__group-header">
+                  <td colSpan={5}>Contraintes ({details.detailsContraintes.length} critères)</td>
+                </tr>
+              )}
+              {details.detailsContraintes.map((c) => renderCritereRow(c, "contrainte"))}
+
+              {/* Critères vides */}
+              {details.detailsCriteresVides.length > 0 && (
+                <tr className="detail-algo__group-header">
+                  <td colSpan={5}>
+                    Non renseignés ({details.detailsCriteresVides.length} critères)
+                  </td>
+                </tr>
+              )}
+              {details.detailsCriteresVides.map((c) => renderCritereRow(c, "vide"))}
+            </tbody>
+          </table>
+        </>
+      )}
+    </>
+  );
+
+  if (noWrapper) return content;
+
   return (
     <details className="debug-panel__section">
       <summary>{title ?? "Détail de l'algorithme"}</summary>
-      <div className="debug-panel__section-content">
-        {/* Sélecteur d'usage */}
-        <div className="detail-algo__usage-selector">
-          {resultatsDetailles?.map((r) => (
-            <button
-              key={r.usage}
-              type="button"
-              className={`detail-algo__usage-btn ${r.usage === activeUsage ? "detail-algo__usage-btn--active" : ""}`}
-              onClick={() => setSelectedUsage(r.usage)}
-              style={{
-                borderColor:
-                  r.usage === activeUsage ? getMutabilityColor(r.indiceMutabilite) : undefined,
-                backgroundColor:
-                  r.usage === activeUsage ? getMutabilityColor(r.indiceMutabilite) : undefined,
-              }}
-            >
-              <span className="detail-algo__usage-btn-label">
-                {USAGE_LABELS[r.usage] ?? r.usage}
-              </span>
-              <span className="detail-algo__usage-btn-score">{r.indiceMutabilite}%</span>
-            </button>
-          ))}
-        </div>
-
-        {/* Synthèse pour l'usage sélectionné */}
-        {activeResult && details && (
-          <>
-            {/* Barre avantages / contraintes */}
-            <div className="detail-algo__ratio-bar">
-              <div className="detail-algo__ratio-header">
-                <span>
-                  Avantages : <strong>{details.totalAvantages.toFixed(1)}</strong>
-                </span>
-                <span className="detail-algo__ratio-formula">
-                  Indice = avantages / (avantages + contraintes) ={" "}
-                  <strong>{activeResult.indiceMutabilite}%</strong>
-                </span>
-                <span>
-                  Contraintes : <strong>{details.totalContraintes.toFixed(1)}</strong>
-                </span>
-              </div>
-              <div className="detail-algo__ratio-track">
-                <div
-                  className="detail-algo__ratio-fill detail-algo__ratio-fill--avantages"
-                  style={{
-                    width: `${(details.totalAvantages / (details.totalAvantages + details.totalContraintes)) * 100}%`,
-                  }}
-                />
-                <div
-                  className="detail-algo__ratio-fill detail-algo__ratio-fill--contraintes"
-                  style={{
-                    width: `${(details.totalContraintes / (details.totalAvantages + details.totalContraintes)) * 100}%`,
-                  }}
-                />
-              </div>
-            </div>
-
-            {/* Tableau des critères */}
-            <table className="debug-panel__usage-table detail-algo__table">
-              <thead>
-                <tr>
-                  <th>Critère</th>
-                  <th>Valeur</th>
-                  <th>Impact</th>
-                  <th>Poids</th>
-                  <th>Pondéré</th>
-                </tr>
-              </thead>
-              <tbody>
-                {/* Avantages */}
-                {details.detailsAvantages.length > 0 && (
-                  <tr className="detail-algo__group-header">
-                    <td colSpan={5}>Avantages ({details.detailsAvantages.length} critères)</td>
-                  </tr>
-                )}
-                {details.detailsAvantages.map((c) => renderCritereRow(c, "avantage"))}
-
-                {/* Contraintes */}
-                {details.detailsContraintes.length > 0 && (
-                  <tr className="detail-algo__group-header">
-                    <td colSpan={5}>Contraintes ({details.detailsContraintes.length} critères)</td>
-                  </tr>
-                )}
-                {details.detailsContraintes.map((c) => renderCritereRow(c, "contrainte"))}
-
-                {/* Critères vides */}
-                {details.detailsCriteresVides.length > 0 && (
-                  <tr className="detail-algo__group-header">
-                    <td colSpan={5}>
-                      Non renseignés ({details.detailsCriteresVides.length} critères)
-                    </td>
-                  </tr>
-                )}
-                {details.detailsCriteresVides.map((c) => renderCritereRow(c, "vide"))}
-              </tbody>
-            </table>
-          </>
-        )}
-      </div>
+      <div className="debug-panel__section-content">{content}</div>
     </details>
   );
 };

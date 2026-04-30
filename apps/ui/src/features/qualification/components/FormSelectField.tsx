@@ -45,16 +45,19 @@ export const FormSelectField: React.FC<FormSelectFieldProps> = ({
           <strong>{field.label}</strong>
           {field.required && " *"}
           {field.hint && <span className="fr-hint-text">{field.hint}</span>}
-          <button
-            aria-describedby={`${field.id}-tooltip`}
-            type="button"
-            className="fr-btn--tooltip fr-btn"
-          >
-            infobulle
-          </button>
-          <span className="fr-tooltip fr-placement" id={`${field.id}-tooltip`} role="tooltip">
-            {tooltip}
-          </span>
+          {tooltip && (
+            <>
+              <button
+                aria-describedby={`${field.id}-tooltip`}
+                type="button"
+                className="fr-btn--tooltip fr-btn"
+              >
+              </button>
+              <span className="fr-tooltip fr-placement" id={`${field.id}-tooltip`} role="tooltip">
+                {tooltip}
+              </span>
+            </>
+          )}
         </label>
         <select
           className={`fr-select ${error ? "fr-select--error" : ""}`}
