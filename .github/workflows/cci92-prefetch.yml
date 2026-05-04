@@ -20,9 +20,6 @@ on:
     branches:
       - feat/cci-92
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
 jobs:
   prefetch:
     name: Prefetch ${{ matrix.env.name }}
@@ -55,15 +52,15 @@ jobs:
 
       - name: Checkout code
         if: steps.check.outputs.should_run == 'true'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup pnpm
         if: steps.check.outputs.should_run == 'true'
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v5
 
       - name: Setup Node.js
         if: steps.check.outputs.should_run == 'true'
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version-file: ".node-version"
           cache: "pnpm"
