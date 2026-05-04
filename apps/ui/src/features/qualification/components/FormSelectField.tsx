@@ -51,8 +51,7 @@ export const FormSelectField: React.FC<FormSelectFieldProps> = ({
                 aria-describedby={`${field.id}-tooltip`}
                 type="button"
                 className="fr-btn--tooltip fr-btn"
-              >
-              </button>
+              ></button>
               <span className="fr-tooltip fr-placement" id={`${field.id}-tooltip`} role="tooltip">
                 {tooltip}
               </span>
