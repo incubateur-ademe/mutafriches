@@ -117,11 +117,13 @@ export class EnrichissementRepository {
     ];
 
     if (acceptDegradedCache) {
-      // Accepte SUCCES ou PARTIEL (sources échouées tolérées)
+      // Accepte SUCCES, PARTIEL ou ECHEC (sources échouées tolérées).
+      // Le check `if (!row.donnees)` ci-dessous filtre les ECHEC sans données.
       conditions.push(
         inArray(enrichissements.statut, [
           StatutEnrichissement.SUCCES,
           StatutEnrichissement.PARTIEL,
+          StatutEnrichissement.ECHEC,
         ]),
       );
     } else {
