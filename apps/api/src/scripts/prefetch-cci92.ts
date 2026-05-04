@@ -130,7 +130,7 @@ const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 async function prefetchSite(site: SiteCCI92): Promise<PrefetchResult> {
   const startTime = Date.now();
-  const url = `${API_URL}/enrichissement`;
+  const url = `${API_URL}/enrichissement?acceptDegradedCache=true`;
 
   try {
     const body =

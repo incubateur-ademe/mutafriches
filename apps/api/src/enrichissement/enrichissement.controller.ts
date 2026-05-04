@@ -69,8 +69,10 @@ export class EnrichissementController {
     @Body() input: EnrichirSiteSwaggerDto,
     @Query("iframe") isIframe?: boolean,
     @Query("integrateur") integrateur?: string,
+    @Query("acceptDegradedCache") acceptDegradedCacheRaw?: string,
     @Req() req?: Request,
   ): Promise<EnrichissementOutputDto> {
+    const acceptDegradedCache = acceptDegradedCacheRaw === "true";
     try {
       // Normaliser : identifiants[] est prioritaire sur identifiant
       const identifiants: string[] =
@@ -111,6 +113,7 @@ export class EnrichissementController {
           identifiants[0],
           origine.source,
           origine.integrateur,
+          acceptDegradedCache,
         );
       }
 
@@ -119,6 +122,7 @@ export class EnrichissementController {
         identifiants,
         origine.source,
         origine.integrateur,
+        acceptDegradedCache,
       );
     } catch (error) {
       this.logger.error(`Erreur enrichissement: ${error}`);

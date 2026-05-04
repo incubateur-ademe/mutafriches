@@ -60,7 +60,9 @@ export const CCI92Page: React.FC = () => {
     setEnrichmentData(null);
     setLoadingState("enriching");
     try {
-      const result = await enrichissementService.enrichirSite(site.parcelles);
+      const result = await enrichissementService.enrichirSite(site.parcelles, {
+        acceptDegradedCache: true,
+      });
       enrichmentCacheRef.current.set(site.idtup, result);
       setEnrichmentData(result);
     } catch (err: unknown) {

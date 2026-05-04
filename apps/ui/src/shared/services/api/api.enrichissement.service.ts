@@ -14,7 +14,10 @@ class EnrichissementService {
    * Si un seul identifiant : envoi en format mono-parcelle (rétro-compatible)
    * Si plusieurs identifiants : envoi en format multi-parcelle
    */
-  async enrichirSite(identifiants: string[]): Promise<EnrichissementOutputDto> {
+  async enrichirSite(
+    identifiants: string[],
+    options?: { acceptDegradedCache?: boolean },
+  ): Promise<EnrichissementOutputDto> {
     if (identifiants.length === 0) {
       throw new ApiError("Au moins un identifiant de parcelle est requis", 400, "Bad Request");
     }
@@ -34,17 +37,26 @@ class EnrichissementService {
       return normalizeParcelId(identifiant);
     });
 
+    const queryParams: Record<string, string> = {};
+    if (options?.acceptDegradedCache) {
+      queryParams.acceptDegradedCache = "true";
+    }
+
     // Mono-parcelle : format rétro-compatible
     if (normalizedIdentifiants.length === 1) {
-      return apiClient.post<EnrichissementOutputDto>(API_CONFIG.endpoints.enrichissement.enrichir, {
-        identifiant: normalizedIdentifiants[0],
-      });
+      return apiClient.post<EnrichissementOutputDto>(
+        API_CONFIG.endpoints.enrichissement.enrichir,
+        { identifiant: normalizedIdentifiants[0] },
+        { params: queryParams },
+      );
     }
 
     // Multi-parcelle : nouveau format
-    return apiClient.post<EnrichissementOutputDto>(API_CONFIG.endpoints.enrichissement.enrichir, {
-      identifiants: normalizedIdentifiants,
-    });
+    return apiClient.post<EnrichissementOutputDto>(
+      API_CONFIG.endpoints.enrichissement.enrichir,
+      { identifiants: normalizedIdentifiants },
+      { params: queryParams },
+    );
   }
 
   /**

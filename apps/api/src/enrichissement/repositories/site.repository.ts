@@ -94,8 +94,15 @@ export class SiteRepository {
   /**
    * Recherche un site valide en cache
    * Utilise la clé de cache (identifiants triés et joints)
+   *
+   * @param identifiants identifiants cadastraux du site
+   * @param acceptDegradedCache si true, accepte les sites avec sources échouées
+   *   (utilisé pour les pages partenaires pré-chauffées)
    */
-  async findValidCache(identifiants: string[]): Promise<CachedSite | null> {
+  async findValidCache(
+    identifiants: string[],
+    acceptDegradedCache: boolean = false,
+  ): Promise<CachedSite | null> {
     const cacheKey = SiteRepository.buildCacheKey(identifiants);
 
     try {
@@ -107,22 +114,27 @@ export class SiteRepository {
       // avec postgres.js qui peut avoir des problèmes de binding avec la syntaxe ::jsonb
       const sortedJson = JSON.stringify([...identifiants].sort());
 
+      const conditions = [
+        // Correspondance bidirectionnelle : le contenu en base inclut tous les identifiants demandés ET inversement
+        sql`${sites.identifiantsCadastraux} @> CAST(${sortedJson} AS jsonb)`,
+        sql`CAST(${sortedJson} AS jsonb) @> ${sites.identifiantsCadastraux}`,
+        eq(sites.statut, StatutEnrichissement.SUCCES),
+        gte(sites.dateEnrichissement, ttlDate),
+      ];
+
+      if (!acceptDegradedCache) {
+        conditions.push(
+          sql`(${sites.sourcesEchouees} IS NULL OR ${sites.sourcesEchouees} = '[]'::jsonb OR jsonb_array_length(${sites.sourcesEchouees}) = 0)`,
+        );
+      }
+
       const result = await this.database.db
         .select({
           id: sites.id,
           donnees: sites.donnees,
         })
         .from(sites)
-        .where(
-          and(
-            // Correspondance bidirectionnelle : le contenu en base inclut tous les identifiants demandés ET inversement
-            sql`${sites.identifiantsCadastraux} @> CAST(${sortedJson} AS jsonb)`,
-            sql`CAST(${sortedJson} AS jsonb) @> ${sites.identifiantsCadastraux}`,
-            eq(sites.statut, StatutEnrichissement.SUCCES),
-            gte(sites.dateEnrichissement, ttlDate),
-            sql`(${sites.sourcesEchouees} IS NULL OR ${sites.sourcesEchouees} = '[]'::jsonb OR jsonb_array_length(${sites.sourcesEchouees}) = 0)`,
-          ),
-        )
+        .where(and(...conditions))
         .orderBy(sql`${sites.dateEnrichissement} DESC`)
         .limit(1);
 
