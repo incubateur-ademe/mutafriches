@@ -227,6 +227,14 @@ async function main(): Promise<void> {
     results
       .filter((r) => !r.success)
       .forEach((r) => console.log(`  - ${r.idtup} (${r.commune}) : ${r.error}`));
+  }
+
+  // Sortie en erreur uniquement si TOUS les sites ont échoué (= API HS)
+  // Échecs partiels (parcelles individuelles invalides) → exit 0 pour ne pas
+  // déclencher d'alarme sur le cron quotidien
+  if (successes === 0) {
+    console.error("");
+    console.error("Aucun site n'a été pré-chauffé avec succès — API potentiellement HS.");
     process.exit(1);
   }
 }
