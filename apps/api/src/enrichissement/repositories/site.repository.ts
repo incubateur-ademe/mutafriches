@@ -1,6 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { v4 as uuidv4 } from "uuid";
-import { eq, and, gte, sql } from "drizzle-orm";
+import { eq, and, gte, inArray, sql } from "drizzle-orm";
 
 import { DatabaseService } from "../../shared/database/database.service";
 import { sites } from "../../shared/database/schema";
@@ -118,11 +118,17 @@ export class SiteRepository {
         // Correspondance bidirectionnelle : le contenu en base inclut tous les identifiants demandés ET inversement
         sql`${sites.identifiantsCadastraux} @> CAST(${sortedJson} AS jsonb)`,
         sql`CAST(${sortedJson} AS jsonb) @> ${sites.identifiantsCadastraux}`,
-        eq(sites.statut, StatutEnrichissement.SUCCES),
         gte(sites.dateEnrichissement, ttlDate),
       ];
 
-      if (!acceptDegradedCache) {
+      if (acceptDegradedCache) {
+        // Accepte SUCCES ou PARTIEL (sources échouées tolérées)
+        conditions.push(
+          inArray(sites.statut, [StatutEnrichissement.SUCCES, StatutEnrichissement.PARTIEL]),
+        );
+      } else {
+        // Mode strict : SUCCES uniquement + sources_echouees vide
+        conditions.push(eq(sites.statut, StatutEnrichissement.SUCCES));
         conditions.push(
           sql`(${sites.sourcesEchouees} IS NULL OR ${sites.sourcesEchouees} = '[]'::jsonb OR jsonb_array_length(${sites.sourcesEchouees}) = 0)`,
         );

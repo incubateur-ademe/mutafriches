@@ -1,6 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { v4 as uuidv4 } from "uuid";
-import { eq, and, gte, sql } from "drizzle-orm";
+import { eq, and, gte, inArray, sql } from "drizzle-orm";
 
 import { DatabaseService } from "../../shared/database/database.service";
 import { enrichissements } from "../../shared/database/schema";
@@ -113,12 +113,20 @@ export class EnrichissementRepository {
 
     const conditions = [
       eq(enrichissements.identifiantCadastral, identifiantCadastral),
-      eq(enrichissements.statut, StatutEnrichissement.SUCCES),
       gte(enrichissements.dateEnrichissement, ttlDate),
     ];
 
-    if (!acceptDegradedCache) {
-      // sources_echouees doit etre vide (null, [], ou '[]')
+    if (acceptDegradedCache) {
+      // Accepte SUCCES ou PARTIEL (sources échouées tolérées)
+      conditions.push(
+        inArray(enrichissements.statut, [
+          StatutEnrichissement.SUCCES,
+          StatutEnrichissement.PARTIEL,
+        ]),
+      );
+    } else {
+      // Mode strict : SUCCES uniquement + sources_echouees vide (null, [], ou '[]')
+      conditions.push(eq(enrichissements.statut, StatutEnrichissement.SUCCES));
       conditions.push(
         sql`(${enrichissements.sourcesEchouees} IS NULL OR ${enrichissements.sourcesEchouees} = '[]'::jsonb OR jsonb_array_length(${enrichissements.sourcesEchouees}) = 0)`,
       );
