@@ -104,11 +104,7 @@ export const CCI92SiteDetail: React.FC<CCI92SiteDetailProps> = ({
               />
             </CCI92Accordion>
 
-            <CCI92Accordion
-              title="Données d'enrichissement"
-              tag={TAG_AUTO}
-              defaultOpen={isQualPhase}
-            >
+            <CCI92Accordion title="Qualification du site" tag={TAG_AUTO} defaultOpen={isQualPhase}>
               <EnrichissementSection enrichmentData={enrichmentData} noWrapper />
             </CCI92Accordion>
 
@@ -122,11 +118,15 @@ export const CCI92SiteDetail: React.FC<CCI92SiteDetailProps> = ({
               </CCI92Accordion>
             )}
 
-            <CCI92Accordion title="Diagnostic risques" tag={TAG_AUTO} defaultOpen={isQualPhase}>
+            <CCI92Accordion
+              title="Données exhaustives Géorisques"
+              tag={TAG_AUTO}
+              defaultOpen={isQualPhase}
+            >
               <DiagnosticRisquesSection enrichmentData={enrichmentData} noWrapper />
             </CCI92Accordion>
 
-            <CCI92Accordion title="Sources et métadonnées" tag={TAG_AUTO} defaultOpen={isQualPhase}>
+            <CCI92Accordion title="Sources appelées" tag={TAG_AUTO} defaultOpen={isQualPhase}>
               <SourcesMetadataSection enrichmentData={enrichmentData} noWrapper />
             </CCI92Accordion>
           </div>
