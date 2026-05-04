@@ -15,6 +15,13 @@ on:
           - production
           - staging
           - both
+  # TODO: retirer ce trigger avant merge sur main
+  push:
+    branches:
+      - feat/cci-92
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   prefetch:
@@ -36,7 +43,10 @@ jobs:
           ENV_NAME: ${{ matrix.env.name }}
           SELECTED: ${{ github.event.inputs.environment }}
         run: |
-          if [ "$EVENT" = "schedule" ] || [ "$SELECTED" = "both" ] || [ "$SELECTED" = "$ENV_NAME" ]; then
+          # Trigger push (test) → staging uniquement
+          if [ "$EVENT" = "push" ] && [ "$ENV_NAME" = "staging" ]; then
+            echo "should_run=true" >> $GITHUB_OUTPUT
+          elif [ "$EVENT" = "schedule" ] || [ "$SELECTED" = "both" ] || [ "$SELECTED" = "$ENV_NAME" ]; then
             echo "should_run=true" >> $GITHUB_OUTPUT
           else
             echo "should_run=false" >> $GITHUB_OUTPUT
