@@ -20,10 +20,6 @@ jobs:
   prefetch:
     name: Prefetch ${{ matrix.env.name }}
     runs-on: ubuntu-latest
-    if: |
-      github.event_name == 'schedule' ||
-      github.event.inputs.environment == 'both' ||
-      github.event.inputs.environment == matrix.env.name
     strategy:
       fail-fast: false
       matrix:
@@ -33,22 +29,41 @@ jobs:
           - name: staging
             url_var: STAGING_API_URL
     steps:
+      - name: Determine if should run
+        id: check
+        env:
+          EVENT: ${{ github.event_name }}
+          ENV_NAME: ${{ matrix.env.name }}
+          SELECTED: ${{ github.event.inputs.environment }}
+        run: |
+          if [ "$EVENT" = "schedule" ] || [ "$SELECTED" = "both" ] || [ "$SELECTED" = "$ENV_NAME" ]; then
+            echo "should_run=true" >> $GITHUB_OUTPUT
+          else
+            echo "should_run=false" >> $GITHUB_OUTPUT
+            echo "Environnement $ENV_NAME non sélectionné — skip"
+          fi
+
       - name: Checkout code
+        if: steps.check.outputs.should_run == 'true'
         uses: actions/checkout@v4
 
       - name: Setup pnpm
+        if: steps.check.outputs.should_run == 'true'
         uses: pnpm/action-setup@v4
 
       - name: Setup Node.js
+        if: steps.check.outputs.should_run == 'true'
         uses: actions/setup-node@v4
         with:
           node-version-file: ".node-version"
           cache: "pnpm"
 
       - name: Install dependencies
+        if: steps.check.outputs.should_run == 'true'
         run: pnpm install --frozen-lockfile
 
       - name: Prefetch enrichments (${{ matrix.env.name }})
+        if: steps.check.outputs.should_run == 'true'
         env:
           API_URL: ${{ vars[matrix.env.url_var] }}
           CCI92_PREFETCH_DELAY_MS: 2000
