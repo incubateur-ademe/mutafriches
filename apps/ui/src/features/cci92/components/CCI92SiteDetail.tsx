@@ -94,9 +94,9 @@ export const CCI92SiteDetail: React.FC<CCI92SiteDetailProps> = ({
 
       {enrichmentData && (
         <>
-          {/* Section automatique */}
+          {/* Section automatique — repliée par défaut, l'utilisateur déplie au besoin */}
           <div key={`auto-${phase}`}>
-            <CCI92Accordion title="Identification du site" tag={TAG_AUTO} defaultOpen={isQualPhase}>
+            <CCI92Accordion title="Identification du site" tag={TAG_AUTO} defaultOpen={false}>
               <SiteIdentificationSection
                 enrichmentData={enrichmentData}
                 identifiantSite={site.idtup}
@@ -104,7 +104,7 @@ export const CCI92SiteDetail: React.FC<CCI92SiteDetailProps> = ({
               />
             </CCI92Accordion>
 
-            <CCI92Accordion title="Qualification du site" tag={TAG_AUTO} defaultOpen={isQualPhase}>
+            <CCI92Accordion title="Qualification du site" tag={TAG_AUTO} defaultOpen={false}>
               <EnrichissementSection enrichmentData={enrichmentData} noWrapper />
             </CCI92Accordion>
 
@@ -112,7 +112,7 @@ export const CCI92SiteDetail: React.FC<CCI92SiteDetailProps> = ({
               <CCI92Accordion
                 title="Diagnostic zonages (données brutes API)"
                 tag={TAG_AUTO}
-                defaultOpen={isQualPhase}
+                defaultOpen={false}
               >
                 <DiagnosticZonagesSection enrichmentData={enrichmentData} noWrapper />
               </CCI92Accordion>
@@ -121,12 +121,12 @@ export const CCI92SiteDetail: React.FC<CCI92SiteDetailProps> = ({
             <CCI92Accordion
               title="Données exhaustives Géorisques"
               tag={TAG_AUTO}
-              defaultOpen={isQualPhase}
+              defaultOpen={false}
             >
               <DiagnosticRisquesSection enrichmentData={enrichmentData} noWrapper />
             </CCI92Accordion>
 
-            <CCI92Accordion title="Sources appelées" tag={TAG_AUTO} defaultOpen={isQualPhase}>
+            <CCI92Accordion title="Sources appelées" tag={TAG_AUTO} defaultOpen={false}>
               <SourcesMetadataSection enrichmentData={enrichmentData} noWrapper />
             </CCI92Accordion>
           </div>
