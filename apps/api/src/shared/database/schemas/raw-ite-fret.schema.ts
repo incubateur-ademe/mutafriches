@@ -15,20 +15,20 @@ export const rawIteFret = pgTable(
   {
     id: serial("id").primaryKey(),
 
-    /** Nom de l'ITE */
+    /** Nom de l'ITE (raison sociale de l'opérateur) */
     nom: varchar("nom", { length: 500 }).notNull(),
 
-    /** Code commune INSEE */
-    codeInsee: varchar("code_insee", { length: 5 }),
+    /** Adresse complète (ex: "00 RHODIA PI BELLE ETOILE AVENUE ALBERT RAMBOZ") */
+    adresse: varchar("adresse", { length: 500 }),
+
+    /** Code postal (théoriquement 5 chars en France, mais dataset contient des valeurs sales) */
+    codePostal: varchar("code_postal", { length: 50 }),
 
     /** Nom de la commune */
     commune: varchar("commune", { length: 255 }),
 
-    /** Département (code) */
-    departement: varchar("departement", { length: 3 }),
-
-    /** Région */
-    region: varchar("region", { length: 100 }),
+    /** Code SIRET (14 chiffres en théorie, mais dataset contient des valeurs sales) */
+    codeSiret: varchar("code_siret", { length: 50 }),
 
     /** Gestionnaire / Opérateur de l'ITE */
     gestionnaire: varchar("gestionnaire", { length: 500 }),
@@ -43,8 +43,8 @@ export const rawIteFret = pgTable(
     latitude: doublePrecision("latitude").notNull(),
   },
   (table) => ({
-    // Index sur le code INSEE pour recherche par commune
-    codeInseeIdx: index("raw_ite_fret_code_insee_idx").on(table.codeInsee),
+    // Index sur le code postal pour recherche par commune
+    codePostalIdx: index("raw_ite_fret_code_postal_idx").on(table.codePostal),
 
     // Index spatial PostGIS pour les recherches de proximité
     spatialIdx: index("raw_ite_fret_spatial_idx").using(

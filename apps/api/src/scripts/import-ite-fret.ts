@@ -49,10 +49,10 @@ interface GeoJSONCollection {
 
 interface IteFretRow {
   nom: string;
-  codeInsee: string | null;
+  adresse: string | null;
+  codePostal: string | null;
   commune: string | null;
-  departement: string | null;
-  region: string | null;
+  codeSiret: string | null;
   gestionnaire: string | null;
   etat: string | null;
   longitude: number;
@@ -217,16 +217,10 @@ async function importIteFret(): Promise<void> {
 
         rows.push({
           nom: nom || "Inconnu",
-          codeInsee: extractProp(props, [
-            "Code_INSEE",
-            "code_insee",
-            "INSEE_COM",
-            "insee_com",
-            "code_commune",
-          ]),
+          adresse: extractProp(props, ["Adresse", "adresse"]),
+          codePostal: extractProp(props, ["Code_postal", "code_postal", "Code_Postal", "CP"]),
           commune: extractProp(props, ["Commune", "commune", "nom_commune"]),
-          departement: extractProp(props, ["Departement", "departement", "code_dep", "dep"]),
-          region: extractProp(props, ["Region", "region", "nom_region"]),
+          codeSiret: extractProp(props, ["Code_SIRET", "code_siret", "SIRET", "siret"]),
           // Pas de gestionnaire dédié : on stocke la raison sociale ici aussi (cohérent)
           gestionnaire: extractProp(props, [
             "Gestionnaire",
@@ -330,13 +324,13 @@ async function insertBatch(db: ReturnType<typeof drizzle>, batch: IteFretRow[]):
   const values = batch
     .map(
       (row) =>
-        `(${escapeString(row.nom)}, ${escapeStringOrNull(row.codeInsee)}, ${escapeStringOrNull(row.commune)}, ${escapeStringOrNull(row.departement)}, ${escapeStringOrNull(row.region)}, ${escapeStringOrNull(row.gestionnaire)}, ${escapeStringOrNull(row.etat)}, ${row.longitude}, ${row.latitude})`,
+        `(${escapeString(row.nom)}, ${escapeStringOrNull(row.adresse)}, ${escapeStringOrNull(row.codePostal)}, ${escapeStringOrNull(row.commune)}, ${escapeStringOrNull(row.codeSiret)}, ${escapeStringOrNull(row.gestionnaire)}, ${escapeStringOrNull(row.etat)}, ${row.longitude}, ${row.latitude})`,
     )
     .join(",\n");
 
   await db.execute(
     sql.raw(`
-    INSERT INTO raw_ite_fret (nom, code_insee, commune, departement, region, gestionnaire, etat, longitude, latitude)
+    INSERT INTO raw_ite_fret (nom, adresse, code_postal, commune, code_siret, gestionnaire, etat, longitude, latitude)
     VALUES ${values}
   `),
   );
@@ -354,5 +348,10 @@ function escapeStringOrNull(value: string | null): string {
 importIteFret().catch((error: unknown) => {
   const message = error instanceof Error ? error.message : String(error);
   console.error("\nErreur:", message);
+  // Pour les erreurs Drizzle, la cause Postgres est imbriquée dans `cause`
+  const cause = (error as { cause?: { message?: string } })?.cause;
+  if (cause?.message) {
+    console.error("  cause:", cause.message);
+  }
   process.exit(1);
 });
