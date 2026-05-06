@@ -20,6 +20,9 @@ on:
     branches:
       - feat/cci-92
 
+permissions:
+  contents: read
+
 jobs:
   prefetch:
     name: Prefetch ${{ matrix.env.name }}
