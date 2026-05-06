@@ -17,6 +17,8 @@ export interface ParcelleUiModel {
   centreVille: string;
   distanceAutoroute: string;
   distanceTransportsEnCommun: string;
+  /** Catégorie de distance à une Installation Terminale Embranchée (ITE) fret */
+  distanceIte: string;
   proximiteCommerces: string;
   distanceRaccordement: string;
   tauxLV: string;

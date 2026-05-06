@@ -47,6 +47,7 @@ const CRITERE_LABELS: Record<string, string> = {
   presenceEspecesProtegees: "Présence d'espèces protégées",
   presenceZoneHumide: "Présence d'une zone humide",
   zonageAbcLogement: "Zonage ABC logement",
+  distanceIte: "Distance à une installation de chargement industrielle",
 };
 
 /** Critères à mettre en évidence (poids élevé et/ou intérêt analytique) */
