@@ -9,6 +9,7 @@ import { ZonagePatrimonial } from "../enums/zonage-patrimonial.enum";
 import { ZoneAccelerationEnr } from "../enums/zone-acceleration-enr.enum";
 import { TrameVerteEtBleue } from "../enums/trame-verte-bleue.enum";
 import { ZonageAbcLogement } from "../enums/zonage-abc-logement.enum";
+import { DistanceIte } from "../enums/distance-ite.enum";
 
 /**
  * Résultat de l'enrichissement automatique des données de parcelle ou site
@@ -44,6 +45,8 @@ export interface EnrichissementOutputDto {
   /** Distance en mètres. null = aucun arrêt trouvé dans le rayon de recherche (2km) */
   distanceTransportCommun: number | null;
   proximiteCommercesServices: boolean;
+  /** Catégorie de distance à une Installation Terminale Embranchée fret (ITE) */
+  distanceIte?: DistanceIte;
 
   // Infrastructure
   distanceRaccordementElectrique: number;

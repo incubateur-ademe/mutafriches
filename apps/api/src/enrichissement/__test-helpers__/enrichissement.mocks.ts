@@ -35,6 +35,15 @@ interface MockTransportEnrichissementService {
   enrichir: Mock;
 }
 
+interface MockIteFretEnrichissementService {
+  enrichir: Mock;
+}
+
+interface MockIteFretRepository {
+  findIteProche: Mock;
+  count: Mock;
+}
+
 interface MockUrbanismeEnrichissementService {
   enrichir: Mock;
 }
@@ -204,6 +213,25 @@ export function createMockEnedisService(): MockEnedisService {
 export function createMockTransportEnrichissementService(): MockTransportEnrichissementService {
   return {
     enrichir: vi.fn(),
+  };
+}
+
+/**
+ * Mock du IteFretEnrichissementService
+ */
+export function createMockIteFretEnrichissementService(): MockIteFretEnrichissementService {
+  return {
+    enrichir: vi.fn(),
+  };
+}
+
+/**
+ * Mock du IteFretRepository
+ */
+export function createMockIteFretRepository(): MockIteFretRepository {
+  return {
+    findIteProche: vi.fn(),
+    count: vi.fn(),
   };
 }
 

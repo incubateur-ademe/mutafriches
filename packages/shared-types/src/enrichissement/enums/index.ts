@@ -11,3 +11,4 @@ export * from "./zonage-patrimonial.enum";
 export * from "./trame-verte-bleue.enum";
 export * from "./zone-acceleration-enr.enum";
 export * from "./zonage-abc-logement.enum";
+export * from "./distance-ite.enum";

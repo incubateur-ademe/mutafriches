@@ -26,4 +26,5 @@ export enum SourceEnrichissement {
   IGN_WFS = "IGN WFS",
   ZAER = "ZAER-ENR",
   ZONAGE_ABC_LOGEMENT = "ZonageABC-Logement",
+  ITE_FRET = "ITE-Fret",
 }
