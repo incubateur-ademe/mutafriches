@@ -98,6 +98,35 @@ describe("CadastreEnrichissementService", () => {
       expect(result.result.sourcesEchouees).toHaveLength(0);
     });
 
+    it("devrait traiter une parcelle non batie (BDNB renvoie 0) comme une donnee valide", async () => {
+      // Arrange : parcelle existante mais sans bâtiment (terrain vacant)
+      cadastreService.getParcelleInfo.mockResolvedValue({
+        success: true,
+        data: {
+          identifiant: identifiantTest,
+          codeInsee: "29232",
+          commune: "Quimper",
+          surface: 1875,
+          coordonnees: { latitude: 48.0, longitude: -4.0 },
+          geometrie: { type: "Polygon", coordinates: [] } as any,
+        },
+      });
+
+      bdnbService.getSurfaceBatie.mockResolvedValue({
+        success: true,
+        data: 0,
+      });
+
+      // Act
+      const result = await service.enrichir(identifiantTest);
+
+      // Assert : 0 m² bâti est une donnée valide, pas un échec
+      expect(result.site?.surfaceBati).toBe(0);
+      expect(result.result.sourcesUtilisees).toContain(SourceEnrichissement.BDNB);
+      expect(result.result.sourcesEchouees).not.toContain(SourceEnrichissement.BDNB_SURFACE_BATIE);
+      expect(result.result.champsManquants).not.toContain("surfaceBati");
+    });
+
     it("devrait marquer BDNB comme echec si surface batie indisponible", async () => {
       // Arrange
       cadastreService.getParcelleInfo.mockResolvedValue({
