@@ -354,8 +354,10 @@ const resolveZonageAbcLogement = (data: TagInputData): string | null => {
   return zonage === "abis" || zonage === "a" ? "Zone A logement" : null;
 };
 
-// --- Accès au fret ferroviaire (ITE) pour Industrie ---
-// Tag affiché uniquement si une ITE en bon état est à moins d'1 km du site.
+// --- Accès au fret ferroviaire (ITE) ---
+// Tag informationnel affiché si une ITE en bon état est à moins d'1 km du site,
+// quel que soit l'usage. L'algorithme ne valorise ce critère que pour Industrie
+// (TRES_POSITIF), mais le tag reste utile à afficher pour les autres usages.
 const resolveAccesFret = (data: TagInputData): string | null => {
   return data.enrichmentData.distanceIte === DistanceIte.MOINS_1KM_BON_ETAT ? "accès Fret" : null;
 };
@@ -374,6 +376,7 @@ export const USAGE_TAGS_CONFIG: UsageTagsConfig = {
     { critereId: "risquesNaturels", resolver: resolveRisquesNaturels },
     { critereId: "zonageReglementaire", resolver: resolveZonageReglementaire },
     { critereId: "zonageAbcLogement", resolver: resolveZonageAbcLogement },
+    { critereId: "distanceIte", resolver: resolveAccesFret },
   ],
 
   // 2 - Équipements publics
@@ -384,6 +387,7 @@ export const USAGE_TAGS_CONFIG: UsageTagsConfig = {
     { critereId: "proximiteCommercesServices", resolver: resolveProximiteCommercesServices },
     { critereId: "risquesNaturels", resolver: resolveRisquesNaturels },
     { critereId: "risquesTechnologiques", resolver: resolveRisquesTechnologiques },
+    { critereId: "distanceIte", resolver: resolveAccesFret },
   ],
 
   // 3 - Bureaux (Tertiaire)
@@ -394,6 +398,7 @@ export const USAGE_TAGS_CONFIG: UsageTagsConfig = {
     { critereId: "distanceTransportCommun", resolver: resolveTransportCommun },
     { critereId: "proximiteCommercesServices", resolver: resolveProximiteCommercesServices },
     { critereId: "zonageReglementaire", resolver: resolveZonageReglementaire },
+    { critereId: "distanceIte", resolver: resolveAccesFret },
   ],
 
   // 4 - Équipements culturels et touristiques
@@ -404,6 +409,7 @@ export const USAGE_TAGS_CONFIG: UsageTagsConfig = {
     { critereId: "distanceTransportCommun", resolver: resolveTransportCommun },
     { critereId: "zonagePatrimonial", resolver: resolveZonagePatrimonialCulture },
     { critereId: "qualitePaysage", resolver: resolveQualitePaysage },
+    { critereId: "distanceIte", resolver: resolveAccesFret },
   ],
 
   // 5 - Bâtiments industriels
@@ -426,6 +432,7 @@ export const USAGE_TAGS_CONFIG: UsageTagsConfig = {
     { critereId: "valeurPatrimoniale", resolver: resolveValeurPatrimoniale },
     { critereId: "continuite", resolver: resolveContinuiteEcologiquePhotovoltaique },
     { critereId: "zoneEnr", resolver: resolveZoneEnrPhotovoltaique },
+    { critereId: "distanceIte", resolver: resolveAccesFret },
   ],
 
   // 7 - Espace renaturé
@@ -438,5 +445,6 @@ export const USAGE_TAGS_CONFIG: UsageTagsConfig = {
     { critereId: "risquesTechnologiques", resolver: resolveRisquesTechnologiquesRenaturation },
     { critereId: "especesProtegees", resolver: resolveEspecesProtegeesRenaturation },
     { critereId: "zoneHumide", resolver: resolveZoneHumideRenaturation },
+    { critereId: "distanceIte", resolver: resolveAccesFret },
   ],
 };
