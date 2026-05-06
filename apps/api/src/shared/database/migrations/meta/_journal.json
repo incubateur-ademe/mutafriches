@@ -127,6 +127,13 @@
       "when": 1779267254570,
       "tag": "0017_quiet_bucky",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1779267254571,
+      "tag": "0018_adorable_screwball",
+      "breakpoints": true
     }
   ]
 }
