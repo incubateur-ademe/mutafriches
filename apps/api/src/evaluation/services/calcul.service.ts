@@ -344,6 +344,11 @@ export class CalculService {
       criteres.zonageAbcLogement = site.zonageAbcLogement;
     }
 
+    // Distance à une ITE fret (v1.8+)
+    if (!poidsCriteres || "distanceIte" in poidsCriteres) {
+      criteres.distanceIte = site.distanceIte;
+    }
+
     return criteres;
   }
 

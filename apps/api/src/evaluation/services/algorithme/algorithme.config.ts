@@ -16,6 +16,7 @@ import {
   ZonageReglementaire,
   ZoneAccelerationEnr,
   ZonageAbcLogement,
+  DistanceIte,
 } from "@mutafriches/shared-types";
 import { ScoreImpact, ScoreParUsage } from "./algorithme.types";
 
@@ -41,6 +42,7 @@ export const POIDS_CRITERES = {
   trameVerteEtBleue: 1,
   zoneAccelerationEnr: 1,
   zonageAbcLogement: 0.5,
+  distanceIte: 0.5,
 
   // ------------------------------------------------
   // 7 critères déduis des données complémentaires
@@ -1143,6 +1145,37 @@ export const MATRICE_SCORING = {
       [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
     },
     [ZonageAbcLogement.C]: {
+      [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
+      [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
+      [UsageType.CULTURE]: ScoreImpact.NEUTRE,
+      [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
+      [UsageType.INDUSTRIE]: ScoreImpact.NEUTRE,
+      [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
+      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
+    },
+  },
+
+  // Distance à une Installation Terminale Embranchée (ITE) fret
+  distanceIte: {
+    [DistanceIte.MOINS_1KM_BON_ETAT]: {
+      [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
+      [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
+      [UsageType.CULTURE]: ScoreImpact.NEUTRE,
+      [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
+      [UsageType.INDUSTRIE]: ScoreImpact.TRES_POSITIF,
+      [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
+      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
+    },
+    [DistanceIte.MOINS_1KM_MAUVAIS_ETAT]: {
+      [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
+      [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
+      [UsageType.CULTURE]: ScoreImpact.NEUTRE,
+      [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
+      [UsageType.INDUSTRIE]: ScoreImpact.POSITIF,
+      [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
+      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
+    },
+    [DistanceIte.PLUS_1KM]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
       [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
       [UsageType.CULTURE]: ScoreImpact.NEUTRE,

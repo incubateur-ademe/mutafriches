@@ -41,6 +41,7 @@ import {
   TrameVerteEtBleue,
   UsageType,
   ZonageReglementaire,
+  DistanceIte,
 } from "@mutafriches/shared-types";
 import { Request } from "express";
 import { OrchestrateurService } from "./services/orchestrateur.service";
@@ -136,6 +137,7 @@ export class EvaluationController {
           zonageReglementaire: Object.values(ZonageReglementaire),
           zonagePatrimonial: Object.values(ZonagePatrimonial),
           trameVerteEtBleue: Object.values(TrameVerteEtBleue),
+          distanceIte: Object.values(DistanceIte),
         },
         saisie: {
           typeProprietaire: Object.values(TypeProprietaire),
