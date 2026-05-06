@@ -6,7 +6,7 @@
 export const SEUIL_GRANDE_PARCELLE = 10000;
 
 /** Seuil pour considérer une emprise bâtie comme "faible" en m² */
-export const SEUIL_EMPRISE_BATI_FAIBLE = 500;
+export const SEUIL_EMPRISE_BATI_FAIBLE = 5000;
 
 /** Distance maximale pour considérer les transports en commun "à proximité" en mètres */
 export const SEUIL_DISTANCE_TC_PROCHE = 500;
