@@ -153,6 +153,12 @@ export const EnrichissementSection: React.FC<EnrichissementSectionProps> = ({
 
         <dt>Environnemental</dt>
         <dd>{enrichmentData.zonageEnvironnemental ?? "Non disponible"}</dd>
+          <dt>Patrimonial</dt>
+          <dd>{enrichmentData.zonagePatrimonial ?? "Non disponible"}</dd>
+
+          <dt>ABC logement</dt>
+          <dd>{enrichmentData.zonageAbcLogement ?? "Non disponible"}</dd>
+        </dl>
 
         <dt>Patrimonial</dt>
         <dd>{enrichmentData.zonagePatrimonial ?? "Non disponible"}</dd>

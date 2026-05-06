@@ -46,6 +46,7 @@ const CRITERE_LABELS: Record<string, string> = {
   zoneAccelerationEnr: "Zone d'accélération EnR",
   presenceEspecesProtegees: "Présence d'espèces protégées",
   presenceZoneHumide: "Présence d'une zone humide",
+  zonageAbcLogement: "Zonage ABC logement",
 };
 
 /** Critères à mettre en évidence (poids élevé et/ou intérêt analytique) */
