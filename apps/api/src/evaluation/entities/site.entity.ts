@@ -17,6 +17,7 @@ import {
   ZonageReglementaire,
   TrameVerteEtBleue,
   ZoneAccelerationEnr,
+  ZonageAbcLogement,
   Coordonnees,
   GeometrieParcelle,
   CalculerMutabiliteInputDto,
@@ -57,6 +58,7 @@ export class Site {
   zonagePatrimonial?: ZonagePatrimonial;
   trameVerteEtBleue?: TrameVerteEtBleue;
   zoneAccelerationEnr?: ZoneAccelerationEnr;
+  zonageAbcLogement?: ZonageAbcLogement;
   /** Site référencé comme pollué (détection auto via ADEME/SIS/ICPE) */
   siteReferencePollue?: boolean;
 
@@ -112,6 +114,9 @@ export class Site {
         : undefined,
       zoneAccelerationEnr: enrichissement.zoneAccelerationEnr
         ? (enrichissement.zoneAccelerationEnr as ZoneAccelerationEnr)
+        : undefined,
+      zonageAbcLogement: enrichissement.zonageAbcLogement
+        ? (enrichissement.zonageAbcLogement as ZonageAbcLogement)
         : undefined,
       // Copie des données géographiques
       coordonnees: enrichissement.coordonnees,
@@ -175,6 +180,9 @@ export class Site {
       : undefined;
     site.zoneAccelerationEnr = donneesEnrichies.zoneAccelerationEnr
       ? (donneesEnrichies.zoneAccelerationEnr as ZoneAccelerationEnr)
+      : undefined;
+    site.zonageAbcLogement = donneesEnrichies.zonageAbcLogement
+      ? (donneesEnrichies.zonageAbcLogement as ZonageAbcLogement)
       : undefined;
 
     // Multi-parcelle

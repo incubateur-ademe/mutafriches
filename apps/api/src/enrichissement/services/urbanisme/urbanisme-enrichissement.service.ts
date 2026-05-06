@@ -3,6 +3,7 @@ import { SourceEnrichissement } from "@mutafriches/shared-types";
 import { Site } from "../../../evaluation/entities/site.entity";
 import { EnrichmentResult } from "../shared/enrichissement.types";
 import { DatagouvLovacService } from "../../adapters/datagouv-lovac/datagouv-lovac.service";
+import { DatagouvZonageAbcService } from "../../adapters/datagouv-zonage-abc/datagouv-zonage-abc.service";
 import { BpeRepository } from "../../repositories/bpe.repository";
 import { LovacCalculator } from "./lovac.calculator";
 
@@ -28,6 +29,7 @@ export class UrbanismeEnrichissementService {
 
   constructor(
     private readonly lovacService: DatagouvLovacService,
+    private readonly zonageAbcService: DatagouvZonageAbcService,
     private readonly bpeRepository: BpeRepository,
   ) {}
 
@@ -44,6 +46,9 @@ export class UrbanismeEnrichissementService {
 
     // Taux de logements vacants (LOVAC via data.gouv.fr)
     await this.enrichTauxLogementsVacants(site, sourcesUtilisees, sourcesEchouees, champsManquants);
+
+    // Zonage ABC logement (data.gouv.fr)
+    await this.enrichZonageAbcLogement(site, sourcesUtilisees, sourcesEchouees, champsManquants);
 
     // Proximite commerces/services (BPE)
     await this.enrichProximiteCommercesServices(
@@ -111,6 +116,48 @@ export class UrbanismeEnrichissementService {
       this.logger.error("Erreur lors de la recherche BPE:", error);
       sourcesEchouees.push(SourceEnrichissement.BPE);
       champsManquants.push("proximiteCommercesServices");
+    }
+  }
+
+  /**
+   * Enrichit le zonage ABC logement via l'API data.gouv.fr
+   */
+  private async enrichZonageAbcLogement(
+    site: Site,
+    sourcesUtilisees: string[],
+    sourcesEchouees: string[],
+    champsManquants: string[],
+  ): Promise<void> {
+    if (!site.codeInsee) {
+      this.logger.warn(`Pas de code INSEE pour Zonage ABC - site ${site.identifiantParcelle}`);
+      sourcesEchouees.push(SourceEnrichissement.ZONAGE_ABC_LOGEMENT);
+      champsManquants.push("zonageAbcLogement");
+      return;
+    }
+
+    try {
+      const zonageData = await this.zonageAbcService.getZonageByCommune(site.codeInsee);
+
+      if (!zonageData) {
+        this.logger.warn(`Aucune donnée Zonage ABC trouvée pour ${site.codeInsee}`);
+        sourcesEchouees.push(SourceEnrichissement.ZONAGE_ABC_LOGEMENT);
+        champsManquants.push("zonageAbcLogement");
+        return;
+      }
+
+      site.zonageAbcLogement = zonageData.zonage;
+      sourcesUtilisees.push(SourceEnrichissement.ZONAGE_ABC_LOGEMENT);
+
+      this.logger.log(
+        `Zonage ABC: ${zonageData.zonage.toUpperCase()} pour ${zonageData.commune} (${site.codeInsee})`,
+      );
+    } catch (error) {
+      this.logger.error(
+        `Erreur lors de la récupération du Zonage ABC pour ${site.codeInsee}:`,
+        error,
+      );
+      sourcesEchouees.push(SourceEnrichissement.ZONAGE_ABC_LOGEMENT);
+      champsManquants.push("zonageAbcLogement");
     }
   }
 

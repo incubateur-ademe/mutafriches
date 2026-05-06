@@ -249,6 +249,7 @@ export class EnrichissementService {
         zonageReglementaire: siteEval.zonageReglementaire,
         zonagePatrimonial: siteEval.zonagePatrimonial,
         trameVerteEtBleue: siteEval.trameVerteEtBleue,
+        zonageAbcLogement: siteEval.zonageAbcLogement,
 
         // Risques GeoRisques Bruts
         risquesGeorisques,
@@ -520,6 +521,7 @@ export class EnrichissementService {
         zonageReglementaire: siteEval.zonageReglementaire,
         zonagePatrimonial: siteEval.zonagePatrimonial,
         trameVerteEtBleue: siteEval.trameVerteEtBleue,
+        zonageAbcLogement: siteEval.zonageAbcLogement,
 
         risquesGeorisques,
 

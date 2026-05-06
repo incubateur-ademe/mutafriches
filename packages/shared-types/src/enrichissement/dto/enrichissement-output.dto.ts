@@ -8,6 +8,7 @@ import { ZonageEnvironnemental } from "../enums/zonage-environnemental.enum";
 import { ZonagePatrimonial } from "../enums/zonage-patrimonial.enum";
 import { ZoneAccelerationEnr } from "../enums/zone-acceleration-enr.enum";
 import { TrameVerteEtBleue } from "../enums/trame-verte-bleue.enum";
+import { ZonageAbcLogement } from "../enums/zonage-abc-logement.enum";
 
 /**
  * Résultat de l'enrichissement automatique des données de parcelle ou site
@@ -64,6 +65,9 @@ export interface EnrichissementOutputDto {
   zonageEnvironnemental?: ZonageEnvironnemental;
   zonagePatrimonial?: ZonagePatrimonial;
   trameVerteEtBleue?: TrameVerteEtBleue;
+
+  // Zonage ABC logement (tension du marché)
+  zonageAbcLogement?: ZonageAbcLogement;
 
   // Métadonnées
   sourcesUtilisees: string[];

@@ -65,6 +65,7 @@ import { ApiCartoGpuService } from "./adapters/api-carto/gpu/api-carto-gpu.servi
 
 // Adapters data.gouv.fr
 import { DatagouvLovacService } from "./adapters/datagouv-lovac/datagouv-lovac.service";
+import { DatagouvZonageAbcService } from "./adapters/datagouv-zonage-abc/datagouv-zonage-abc.service";
 import { BpeRepository } from "./repositories/bpe.repository";
 import { TransportStopsRepository } from "./repositories/transport-stops.repository";
 import { AdemeSitesPolluesRepository } from "./repositories/ademe-sites-pollues.repository";
@@ -141,6 +142,7 @@ import { AdemeSitesPolluesRepository } from "./repositories/ademe-sites-pollues.
 
     // Adapters data.gouv.fr
     DatagouvLovacService,
+    DatagouvZonageAbcService,
   ],
   exports: [EnrichissementService],
 })

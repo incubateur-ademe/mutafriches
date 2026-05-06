@@ -15,6 +15,7 @@ import {
   TrameVerteEtBleue,
   ZonageReglementaire,
   ZoneAccelerationEnr,
+  ZonageAbcLogement,
 } from "@mutafriches/shared-types";
 import { ScoreImpact, ScoreParUsage } from "./algorithme.types";
 
@@ -39,6 +40,7 @@ export const POIDS_CRITERES = {
   zonagePatrimonial: 1,
   trameVerteEtBleue: 1,
   zoneAccelerationEnr: 1,
+  zonageAbcLogement: 0.5,
 
   // ------------------------------------------------
   // 7 critères déduis des données complémentaires
@@ -1099,6 +1101,55 @@ export const MATRICE_SCORING = {
       [UsageType.INDUSTRIE]: ScoreImpact.NEUTRE,
       [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
       [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.TRES_POSITIF,
+    },
+  },
+
+  // Zonage ABC logement (tension du marché)
+  zonageAbcLogement: {
+    [ZonageAbcLogement.ABIS]: {
+      [UsageType.RESIDENTIEL]: ScoreImpact.TRES_POSITIF,
+      [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
+      [UsageType.CULTURE]: ScoreImpact.NEUTRE,
+      [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
+      [UsageType.INDUSTRIE]: ScoreImpact.NEUTRE,
+      [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
+      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
+    },
+    [ZonageAbcLogement.A]: {
+      [UsageType.RESIDENTIEL]: ScoreImpact.TRES_POSITIF,
+      [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
+      [UsageType.CULTURE]: ScoreImpact.NEUTRE,
+      [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
+      [UsageType.INDUSTRIE]: ScoreImpact.NEUTRE,
+      [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
+      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
+    },
+    [ZonageAbcLogement.B1]: {
+      [UsageType.RESIDENTIEL]: ScoreImpact.POSITIF,
+      [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
+      [UsageType.CULTURE]: ScoreImpact.NEUTRE,
+      [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
+      [UsageType.INDUSTRIE]: ScoreImpact.NEUTRE,
+      [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
+      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
+    },
+    [ZonageAbcLogement.B2]: {
+      [UsageType.RESIDENTIEL]: ScoreImpact.POSITIF,
+      [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
+      [UsageType.CULTURE]: ScoreImpact.NEUTRE,
+      [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
+      [UsageType.INDUSTRIE]: ScoreImpact.NEUTRE,
+      [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
+      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
+    },
+    [ZonageAbcLogement.C]: {
+      [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
+      [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
+      [UsageType.CULTURE]: ScoreImpact.NEUTRE,
+      [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
+      [UsageType.INDUSTRIE]: ScoreImpact.NEUTRE,
+      [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
+      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
     },
   },
 } as const;
