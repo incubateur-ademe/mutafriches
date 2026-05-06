@@ -82,17 +82,30 @@ function extractProp(props: Record<string, unknown>, candidates: string[]): stri
 
 /**
  * Normalise l'état de l'ITE en "bon" ou "mauvais".
- * Le dataset peut utiliser des libellés variés ("Bon", "Bon état", "Mauvais", "Dégradé", etc.).
+ *
+ * Mapping basé sur les 8 libellés réels du dataset Cerema (Etat_ITE) :
+ *   - "Bon", "Bon (...)", "Neuf", "Utilisée"  → "bon"  (ITE opérationnelle)
+ *   - "Mauvais", "Mauvais (...)"               → "mauvais"
+ *   - "Inutilisable", "Inutilisable (...)"     → "mauvais" (état dégradé,
+ *                                                 même sémantique pour l'algo)
  */
 function normaliserEtat(rawEtat: string | null): string | null {
   if (!rawEtat) return null;
   const lower = rawEtat.toLowerCase().trim();
 
-  if (lower.includes("bon") || lower.includes("operationnel") || lower.includes("opérationnel")) {
+  if (
+    lower.includes("bon") ||
+    lower.includes("neuf") ||
+    lower.includes("utilisée") ||
+    lower.includes("utilisee") ||
+    lower.includes("operationnel") ||
+    lower.includes("opérationnel")
+  ) {
     return "bon";
   }
   if (
     lower.includes("mauvais") ||
+    lower.includes("inutilisable") ||
     lower.includes("degrade") ||
     lower.includes("dégradé") ||
     lower.includes("hors service")
@@ -186,50 +199,43 @@ async function importIteFret(): Promise<void> {
         const [longitude, latitude] = feature.geometry.coordinates;
         const props = feature.properties;
 
-        const rawEtat = extractProp(props, [
-          "etat",
-          "Etat",
-          "etat_general",
-          "Etat_general",
-          "Etat_ITE",
-          "etat_ite",
-          "Etat_general_ITE",
-        ]);
+        const rawEtat = extractProp(props, ["Etat_ITE", "etat_ite", "Etat", "etat"]);
         const etat = normaliserEtat(rawEtat);
         if (etat === null) {
           skippedNoEtat++;
         }
 
+        // "Raison_sociale" est le nom de l'entreprise opérant l'ITE (ex: "Solvay Belle-Etoile")
         const nom = extractProp(props, [
-          "nom",
-          "Nom",
-          "nom_ite",
+          "Raison_sociale",
+          "raison_sociale",
           "Nom_ITE",
-          "nom_site",
-          "Nom_site",
-          "denomination",
-          "Denomination",
+          "nom_ite",
+          "Nom",
+          "nom",
         ]);
 
         rows.push({
           nom: nom || "Inconnu",
           codeInsee: extractProp(props, [
-            "code_insee",
             "Code_INSEE",
-            "insee_com",
+            "code_insee",
             "INSEE_COM",
+            "insee_com",
             "code_commune",
           ]),
-          commune: extractProp(props, ["commune", "Commune", "nom_commune"]),
-          departement: extractProp(props, ["departement", "Departement", "code_dep", "dep"]),
-          region: extractProp(props, ["region", "Region", "nom_region"]),
+          commune: extractProp(props, ["Commune", "commune", "nom_commune"]),
+          departement: extractProp(props, ["Departement", "departement", "code_dep", "dep"]),
+          region: extractProp(props, ["Region", "region", "nom_region"]),
+          // Pas de gestionnaire dédié : on stocke la raison sociale ici aussi (cohérent)
           gestionnaire: extractProp(props, [
-            "gestionnaire",
             "Gestionnaire",
-            "operateur",
+            "gestionnaire",
             "Operateur",
-            "exploitant",
+            "operateur",
             "Exploitant",
+            "exploitant",
+            "Raison_sociale",
           ]),
           etat,
           longitude,
