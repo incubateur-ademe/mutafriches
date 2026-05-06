@@ -273,7 +273,7 @@ const resolveTypeProprietaire = (data: TagInputData): string | null => {
 const resolveEmpriseBati = (data: TagInputData): string | null => {
   const surface = data.enrichmentData.surfaceBati;
   if (surface === undefined || surface === null) return null;
-
+  if (surface === 0) return "pas de bâti";
   return surface < SEUIL_EMPRISE_BATI_FAIBLE ? "emprise bât. faible" : "emprise bât. forte";
 };
 

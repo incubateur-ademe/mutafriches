@@ -38,10 +38,11 @@ export function getCritereTagLabel(
     case "surfaceSite":
       return Number(valeur) >= SEUIL_GRANDE_PARCELLE ? "grande parcelle" : "petite parcelle";
 
-    case "surfaceBati":
-      return Number(valeur) < SEUIL_EMPRISE_BATI_FAIBLE
-        ? "emprise bât. faible"
-        : "emprise bât. forte";
+    case "surfaceBati": {
+      const surfBati = Number(valeur);
+      if (surfBati === 0) return "pas de bâti";
+      return surfBati < SEUIL_EMPRISE_BATI_FAIBLE ? "emprise bât. faible" : "emprise bât. forte";
+    }
 
     case "siteEnCentreVille":
       return valeur === true || valeur === "true" ? "centre-ville" : "excentré";
