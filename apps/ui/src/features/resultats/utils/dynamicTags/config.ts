@@ -13,6 +13,7 @@ import {
   QualitePaysage,
   QualiteVoieDesserte,
   RaccordementEau,
+  DistanceIte,
 } from "@mutafriches/shared-types";
 import { TagInputData, UsageTagsConfig } from "./types";
 import {
@@ -353,6 +354,12 @@ const resolveZonageAbcLogement = (data: TagInputData): string | null => {
   return zonage === "abis" || zonage === "a" ? "Zone A logement" : null;
 };
 
+// --- Accès au fret ferroviaire (ITE) pour Industrie ---
+// Tag affiché uniquement si une ITE en bon état est à moins d'1 km du site.
+const resolveAccesFret = (data: TagInputData): string | null => {
+  return data.enrichmentData.distanceIte === DistanceIte.MOINS_1KM_BON_ETAT ? "accès Fret" : null;
+};
+
 // ============================================================================
 // CONFIGURATION DES TAGS PAR USAGE (fallback legacy)
 // ============================================================================
@@ -404,6 +411,7 @@ export const USAGE_TAGS_CONFIG: UsageTagsConfig = {
     { critereId: "tailleParcelle", resolver: resolveGrandeParcelleUniquement },
     { critereId: "desserteReseaux", resolver: resolveDesserteReseaux },
     { critereId: "qualiteVoieDesserte", resolver: resolveQualiteVoieDesserte },
+    { critereId: "distanceIte", resolver: resolveAccesFret },
     { critereId: "zonageReglementaire", resolver: resolveZonageReglementaire },
     { critereId: "zonageEnvironnemental", resolver: resolveZonageEnvironnementalIndustrie },
     { critereId: "zonagePatrimonial", resolver: resolveZonagePatrimonialIndustrie },

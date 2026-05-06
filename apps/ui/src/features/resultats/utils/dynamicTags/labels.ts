@@ -17,6 +17,7 @@ import {
   RisqueRetraitGonflementArgile,
   RisqueCavitesSouterraines,
   RisqueInondation,
+  DistanceIte,
 } from "@mutafriches/shared-types";
 import {
   SEUIL_GRANDE_PARCELLE,
@@ -188,6 +189,13 @@ export function getCritereTagLabel(
       if (zab === ZonageAbcLogement.ABIS || zab === ZonageAbcLogement.A) return "Zone A logement";
       if (zab === ZonageAbcLogement.B1 || zab === ZonageAbcLogement.B2) return "Zone B logement";
       return "Zone C logement";
+    }
+
+    case "distanceIte": {
+      const ite = String(valeur) as DistanceIte;
+      if (ite === DistanceIte.MOINS_1KM_BON_ETAT) return "accès Fret";
+      if (ite === DistanceIte.MOINS_1KM_MAUVAIS_ETAT) return "accès Fret (dégradé)";
+      return null;
     }
 
     default:

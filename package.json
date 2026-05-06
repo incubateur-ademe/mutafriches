@@ -35,6 +35,7 @@
     "db:bpe:import": "pnpm --filter api run db:bpe:import",
     "db:transport-stops:import": "pnpm --filter api run db:transport-stops:import",
     "db:ademe-sites:import": "pnpm --filter api run db:ademe-sites:import",
+    "db:ite-fret:import": "pnpm --filter api run db:ite-fret:import",
     "cci92:prefetch": "pnpm --filter api run cci92:prefetch",
     "validate": "pnpm format && pnpm lint:fix && pnpm typecheck && pnpm test",
     "setup": "bash scripts/setup.sh",
