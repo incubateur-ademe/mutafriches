@@ -13,6 +13,7 @@ import {
   QualiteVoieDesserte,
   RaccordementEau,
   ZoneAccelerationEnr,
+  ZonageAbcLogement,
   RisqueRetraitGonflementArgile,
   RisqueCavitesSouterraines,
   RisqueInondation,
@@ -179,6 +180,13 @@ export function getCritereTagLabel(
     case "presenceZoneHumide": {
       const pzh = String(valeur) as PresenceZoneHumide;
       return pzh === PresenceZoneHumide.OUI ? "zone humide" : null;
+    }
+
+    case "zonageAbcLogement": {
+      const zab = String(valeur) as ZonageAbcLogement;
+      if (zab === ZonageAbcLogement.ABIS || zab === ZonageAbcLogement.A) return "Zone A logement";
+      if (zab === ZonageAbcLogement.B1 || zab === ZonageAbcLogement.B2) return "Zone B logement";
+      return "Zone C logement";
     }
 
     default:

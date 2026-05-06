@@ -39,6 +39,10 @@ interface MockUrbanismeEnrichissementService {
   enrichir: Mock;
 }
 
+interface MockDatagouvZonageAbcService {
+  getZonageByCommune: Mock;
+}
+
 interface MockRisquesNaturelsEnrichissementService {
   enrichir: Mock;
 }
@@ -423,5 +427,14 @@ export function createMockSiteRepository(): MockSiteRepository {
 export function createMockSiteGeometryService(): MockSiteGeometryService {
   return {
     construireSite: vi.fn(),
+  };
+}
+
+/**
+ * Mock du DatagouvZonageAbcService
+ */
+export function createMockDatagouvZonageAbcService(): MockDatagouvZonageAbcService {
+  return {
+    getZonageByCommune: vi.fn(),
   };
 }

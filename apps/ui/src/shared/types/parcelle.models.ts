@@ -31,6 +31,9 @@ export interface ParcelleUiModel {
   // Pollution - indique si le site est reference dans les bases SIS/ICPE/ADEME
   siteReferencePollue: boolean;
 
+  // Zonage ABC logement
+  zonageAbcLogement: string;
+
   // Énergies renouvelables
   zoneAccelerationEnr: string;
   /** Badges cumulatifs par filière ZAENR présente (ex: ["Oui", "Oui Eolien"]) */

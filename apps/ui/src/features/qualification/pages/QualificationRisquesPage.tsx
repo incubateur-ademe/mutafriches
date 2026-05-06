@@ -142,8 +142,27 @@ export const QualificationRisquesPage: React.FC = () => {
 
       <hr className="fr-my-4w" />
 
-      {/* Zone 3 - Zonage patrimonial  & ZAER */}
+      {/* Zone 3 - Zonage patrimonial, ZAER & Zonage ABC */}
       <div className="fr-grid-row fr-grid-row--gutters">
+        <EnrichedInfoField
+          id="zonage-abc-logement"
+          label="Type de zone pour le logement"
+          value={uiData?.zonageAbcLogement}
+          tooltip={
+            <>
+              Récupéré depuis : Liste des communes selon le zonage ABC (data.gouv.fr) :<br />
+              <a
+                href="https://www.data.gouv.fr/datasets/liste-des-communes-selon-le-zonage-abc"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="fr-link fr-text--xs"
+              >
+                data.gouv.fr - Zonage ABC
+              </a>
+            </>
+          }
+        />
+
         <EnrichedInfoField
           id="type-zonage-patrimonial"
           label="Type de zonage patrimonial"

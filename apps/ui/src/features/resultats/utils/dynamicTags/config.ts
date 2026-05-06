@@ -346,6 +346,13 @@ const resolveZoneEnrPhotovoltaique = (data: TagInputData): string | null => {
   return hasOmbriere ? "ZA Photovoltaïque" : null;
 };
 
+// --- Zonage ABC logement pour Résidentiel ---
+const resolveZonageAbcLogement = (data: TagInputData): string | null => {
+  const zonage = data.enrichmentData.zonageAbcLogement;
+  if (!zonage) return null;
+  return zonage === "abis" || zonage === "a" ? "Zone A logement" : null;
+};
+
 // ============================================================================
 // CONFIGURATION DES TAGS PAR USAGE (fallback legacy)
 // ============================================================================
@@ -359,6 +366,7 @@ export const USAGE_TAGS_CONFIG: UsageTagsConfig = {
     { critereId: "proximiteCommercesServices", resolver: resolveProximiteCommercesServices },
     { critereId: "risquesNaturels", resolver: resolveRisquesNaturels },
     { critereId: "zonageReglementaire", resolver: resolveZonageReglementaire },
+    { critereId: "zonageAbcLogement", resolver: resolveZonageAbcLogement },
   ],
 
   // 2 - Équipements publics
