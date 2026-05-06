@@ -64,6 +64,7 @@ describe("EnrichissementController", () => {
         "29232000AB0123",
         SourceUtilisation.API_DIRECTE,
         undefined,
+        false,
       );
       expect(result).toEqual(mockOutput);
     });
@@ -81,6 +82,7 @@ describe("EnrichissementController", () => {
         "75101000AB9999",
         SourceUtilisation.API_DIRECTE,
         undefined,
+        false,
       );
       expect(enrichissementService.enrichir).toHaveBeenCalledTimes(1);
     });
@@ -211,18 +213,21 @@ describe("EnrichissementController", () => {
         "29232000AB0001",
         SourceUtilisation.API_DIRECTE,
         undefined,
+        false,
       );
       expect(enrichissementService.enrichir).toHaveBeenNthCalledWith(
         2,
         "29232000AB0002",
         SourceUtilisation.API_DIRECTE,
         undefined,
+        false,
       );
       expect(enrichissementService.enrichir).toHaveBeenNthCalledWith(
         3,
         "29232000AB0003",
         SourceUtilisation.API_DIRECTE,
         undefined,
+        false,
       );
     });
 
@@ -412,7 +417,7 @@ describe("EnrichissementController", () => {
       const req = { headers: {} } as any;
 
       // Act
-      await controller.enrichirParcelle(mockInput, true, "cartofriches", req);
+      await controller.enrichirParcelle(mockInput, true, "cartofriches", undefined, req);
 
       // Assert
       expect(origineDetectionService.detecterOrigine).toHaveBeenCalledWith(
@@ -438,6 +443,7 @@ describe("EnrichissementController", () => {
         "29232000AB0123",
         SourceUtilisation.IFRAME_INTEGREE,
         "cartofriches.fr",
+        false,
       );
     });
 
@@ -454,6 +460,7 @@ describe("EnrichissementController", () => {
         "29232000AB0123",
         SourceUtilisation.API_DIRECTE,
         undefined,
+        false,
       );
     });
 
@@ -472,6 +479,7 @@ describe("EnrichissementController", () => {
         "29232000AB0123",
         SourceUtilisation.SITE_STANDALONE,
         undefined,
+        false,
       );
     });
   });

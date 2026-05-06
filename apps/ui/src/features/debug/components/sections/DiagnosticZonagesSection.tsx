@@ -7,6 +7,7 @@ import {
 
 interface DiagnosticZonagesSectionProps {
   enrichmentData?: EnrichissementOutputDto;
+  noWrapper?: boolean;
 }
 
 /**
@@ -158,6 +159,7 @@ const DiagnosticReglementaireBlock: React.FC<{
  */
 export const DiagnosticZonagesSection: React.FC<DiagnosticZonagesSectionProps> = ({
   enrichmentData,
+  noWrapper = false,
 }) => {
   const diagnostic = enrichmentData?.diagnosticZonages;
 
@@ -165,146 +167,152 @@ export const DiagnosticZonagesSection: React.FC<DiagnosticZonagesSectionProps> =
     return null;
   }
 
+  const content = (
+    <>
+      {/* Réglementaire */}
+      {diagnostic.reglementaire ? (
+        <DiagnosticReglementaireBlock data={diagnostic.reglementaire} />
+      ) : (
+        <p className="fr-text--sm">R&eacute;glementaire : non disponible</p>
+      )}
+
+      <hr className="fr-hr fr-my-2v" />
+
+      {/* Environnemental */}
+      <h5 className="debug-panel__subtitle" style={{ fontSize: "0.85rem" }}>
+        Environnemental : {diagnostic.environnemental?.zonageFinal ?? "non disponible"}
+      </h5>
+      {diagnostic.environnemental ? (
+        <dl className="debug-panel__data-grid">
+          <dt>Natura 2000</dt>
+          <dd>
+            {diagnostic.environnemental.natura2000 ? (
+              <span
+                className={`fr-badge fr-badge--sm ${diagnostic.environnemental.natura2000.present ? "fr-badge--warning" : "fr-badge--success"}`}
+              >
+                {diagnostic.environnemental.natura2000.present
+                  ? `Oui (${diagnostic.environnemental.natura2000.nombreZones} zone(s))`
+                  : "Non"}
+              </span>
+            ) : (
+              "Erreur API"
+            )}
+          </dd>
+
+          <dt>ZNIEFF</dt>
+          <dd>
+            {diagnostic.environnemental.znieff ? (
+              <span
+                className={`fr-badge fr-badge--sm ${diagnostic.environnemental.znieff.present ? "fr-badge--warning" : "fr-badge--success"}`}
+              >
+                {diagnostic.environnemental.znieff.present
+                  ? `Oui (${diagnostic.environnemental.znieff.nombreZones} zone(s)${diagnostic.environnemental.znieff.type1 ? " - Type 1" : ""}${diagnostic.environnemental.znieff.type2 ? " - Type 2" : ""})`
+                  : "Non"}
+              </span>
+            ) : (
+              "Erreur API"
+            )}
+          </dd>
+
+          <dt>Parc naturel</dt>
+          <dd>
+            {diagnostic.environnemental.parcNaturel ? (
+              <span
+                className={`fr-badge fr-badge--sm ${diagnostic.environnemental.parcNaturel.present ? "fr-badge--warning" : "fr-badge--success"}`}
+              >
+                {diagnostic.environnemental.parcNaturel.present
+                  ? `Oui (${diagnostic.environnemental.parcNaturel.type}${diagnostic.environnemental.parcNaturel.nom ? ` - ${diagnostic.environnemental.parcNaturel.nom}` : ""})`
+                  : "Non"}
+              </span>
+            ) : (
+              "Erreur API"
+            )}
+          </dd>
+
+          <dt>R&eacute;serve naturelle</dt>
+          <dd>
+            {diagnostic.environnemental.reserveNaturelle ? (
+              <span
+                className={`fr-badge fr-badge--sm ${diagnostic.environnemental.reserveNaturelle.present ? "fr-badge--warning" : "fr-badge--success"}`}
+              >
+                {diagnostic.environnemental.reserveNaturelle.present
+                  ? `Oui (${diagnostic.environnemental.reserveNaturelle.nombreReserves} r\u00e9serve(s))`
+                  : "Non"}
+              </span>
+            ) : (
+              "Erreur API"
+            )}
+          </dd>
+        </dl>
+      ) : (
+        <p className="fr-text--sm">Non disponible</p>
+      )}
+
+      <hr className="fr-hr fr-my-2v" />
+
+      {/* Patrimonial */}
+      <h5 className="debug-panel__subtitle" style={{ fontSize: "0.85rem" }}>
+        Patrimonial : {diagnostic.patrimonial?.zonageFinal ?? "non disponible"}
+      </h5>
+      {diagnostic.patrimonial ? (
+        <dl className="debug-panel__data-grid">
+          <dt>AC1 (Monuments historiques)</dt>
+          <dd>
+            {diagnostic.patrimonial.ac1 ? (
+              <span
+                className={`fr-badge fr-badge--sm ${diagnostic.patrimonial.ac1.present ? "fr-badge--warning" : "fr-badge--success"}`}
+              >
+                {diagnostic.patrimonial.ac1.present
+                  ? `Oui (${diagnostic.patrimonial.ac1.nombreZones} zone(s)${diagnostic.patrimonial.ac1.type ? ` - ${diagnostic.patrimonial.ac1.type}` : ""})`
+                  : "Non"}
+              </span>
+            ) : (
+              "Erreur API"
+            )}
+          </dd>
+
+          <dt>AC2 (Sites inscrits/class&eacute;s)</dt>
+          <dd>
+            {diagnostic.patrimonial.ac2 ? (
+              <span
+                className={`fr-badge fr-badge--sm ${diagnostic.patrimonial.ac2.present ? "fr-badge--warning" : "fr-badge--success"}`}
+              >
+                {diagnostic.patrimonial.ac2.present
+                  ? `Oui (${diagnostic.patrimonial.ac2.nombreZones} zone(s))`
+                  : "Non"}
+              </span>
+            ) : (
+              "Erreur API"
+            )}
+          </dd>
+
+          <dt>AC4 (SPR/ZPPAUP/AVAP)</dt>
+          <dd>
+            {diagnostic.patrimonial.ac4 ? (
+              <span
+                className={`fr-badge fr-badge--sm ${diagnostic.patrimonial.ac4.present ? "fr-badge--warning" : "fr-badge--success"}`}
+              >
+                {diagnostic.patrimonial.ac4.present
+                  ? `Oui (${diagnostic.patrimonial.ac4.nombreZones} zone(s)${diagnostic.patrimonial.ac4.type ? ` - ${diagnostic.patrimonial.ac4.type}` : ""})`
+                  : "Non"}
+              </span>
+            ) : (
+              "Erreur API"
+            )}
+          </dd>
+        </dl>
+      ) : (
+        <p className="fr-text--sm">Non disponible</p>
+      )}
+    </>
+  );
+
+  if (noWrapper) return content;
+
   return (
     <details className="debug-panel__section">
       <summary>Diagnostic zonages (donn&eacute;es brutes API)</summary>
-      <div className="debug-panel__section-content">
-        {/* Réglementaire */}
-        {diagnostic.reglementaire ? (
-          <DiagnosticReglementaireBlock data={diagnostic.reglementaire} />
-        ) : (
-          <p className="fr-text--sm">R&eacute;glementaire : non disponible</p>
-        )}
-
-        <hr className="fr-hr fr-my-2v" />
-
-        {/* Environnemental */}
-        <h5 className="debug-panel__subtitle" style={{ fontSize: "0.85rem" }}>
-          Environnemental : {diagnostic.environnemental?.zonageFinal ?? "non disponible"}
-        </h5>
-        {diagnostic.environnemental ? (
-          <dl className="debug-panel__data-grid">
-            <dt>Natura 2000</dt>
-            <dd>
-              {diagnostic.environnemental.natura2000 ? (
-                <span
-                  className={`fr-badge fr-badge--sm ${diagnostic.environnemental.natura2000.present ? "fr-badge--warning" : "fr-badge--success"}`}
-                >
-                  {diagnostic.environnemental.natura2000.present
-                    ? `Oui (${diagnostic.environnemental.natura2000.nombreZones} zone(s))`
-                    : "Non"}
-                </span>
-              ) : (
-                "Erreur API"
-              )}
-            </dd>
-
-            <dt>ZNIEFF</dt>
-            <dd>
-              {diagnostic.environnemental.znieff ? (
-                <span
-                  className={`fr-badge fr-badge--sm ${diagnostic.environnemental.znieff.present ? "fr-badge--warning" : "fr-badge--success"}`}
-                >
-                  {diagnostic.environnemental.znieff.present
-                    ? `Oui (${diagnostic.environnemental.znieff.nombreZones} zone(s)${diagnostic.environnemental.znieff.type1 ? " - Type 1" : ""}${diagnostic.environnemental.znieff.type2 ? " - Type 2" : ""})`
-                    : "Non"}
-                </span>
-              ) : (
-                "Erreur API"
-              )}
-            </dd>
-
-            <dt>Parc naturel</dt>
-            <dd>
-              {diagnostic.environnemental.parcNaturel ? (
-                <span
-                  className={`fr-badge fr-badge--sm ${diagnostic.environnemental.parcNaturel.present ? "fr-badge--warning" : "fr-badge--success"}`}
-                >
-                  {diagnostic.environnemental.parcNaturel.present
-                    ? `Oui (${diagnostic.environnemental.parcNaturel.type}${diagnostic.environnemental.parcNaturel.nom ? ` - ${diagnostic.environnemental.parcNaturel.nom}` : ""})`
-                    : "Non"}
-                </span>
-              ) : (
-                "Erreur API"
-              )}
-            </dd>
-
-            <dt>R&eacute;serve naturelle</dt>
-            <dd>
-              {diagnostic.environnemental.reserveNaturelle ? (
-                <span
-                  className={`fr-badge fr-badge--sm ${diagnostic.environnemental.reserveNaturelle.present ? "fr-badge--warning" : "fr-badge--success"}`}
-                >
-                  {diagnostic.environnemental.reserveNaturelle.present
-                    ? `Oui (${diagnostic.environnemental.reserveNaturelle.nombreReserves} r\u00e9serve(s))`
-                    : "Non"}
-                </span>
-              ) : (
-                "Erreur API"
-              )}
-            </dd>
-          </dl>
-        ) : (
-          <p className="fr-text--sm">Non disponible</p>
-        )}
-
-        <hr className="fr-hr fr-my-2v" />
-
-        {/* Patrimonial */}
-        <h5 className="debug-panel__subtitle" style={{ fontSize: "0.85rem" }}>
-          Patrimonial : {diagnostic.patrimonial?.zonageFinal ?? "non disponible"}
-        </h5>
-        {diagnostic.patrimonial ? (
-          <dl className="debug-panel__data-grid">
-            <dt>AC1 (Monuments historiques)</dt>
-            <dd>
-              {diagnostic.patrimonial.ac1 ? (
-                <span
-                  className={`fr-badge fr-badge--sm ${diagnostic.patrimonial.ac1.present ? "fr-badge--warning" : "fr-badge--success"}`}
-                >
-                  {diagnostic.patrimonial.ac1.present
-                    ? `Oui (${diagnostic.patrimonial.ac1.nombreZones} zone(s)${diagnostic.patrimonial.ac1.type ? ` - ${diagnostic.patrimonial.ac1.type}` : ""})`
-                    : "Non"}
-                </span>
-              ) : (
-                "Erreur API"
-              )}
-            </dd>
-
-            <dt>AC2 (Sites inscrits/class&eacute;s)</dt>
-            <dd>
-              {diagnostic.patrimonial.ac2 ? (
-                <span
-                  className={`fr-badge fr-badge--sm ${diagnostic.patrimonial.ac2.present ? "fr-badge--warning" : "fr-badge--success"}`}
-                >
-                  {diagnostic.patrimonial.ac2.present
-                    ? `Oui (${diagnostic.patrimonial.ac2.nombreZones} zone(s))`
-                    : "Non"}
-                </span>
-              ) : (
-                "Erreur API"
-              )}
-            </dd>
-
-            <dt>AC4 (SPR/ZPPAUP/AVAP)</dt>
-            <dd>
-              {diagnostic.patrimonial.ac4 ? (
-                <span
-                  className={`fr-badge fr-badge--sm ${diagnostic.patrimonial.ac4.present ? "fr-badge--warning" : "fr-badge--success"}`}
-                >
-                  {diagnostic.patrimonial.ac4.present
-                    ? `Oui (${diagnostic.patrimonial.ac4.nombreZones} zone(s)${diagnostic.patrimonial.ac4.type ? ` - ${diagnostic.patrimonial.ac4.type}` : ""})`
-                    : "Non"}
-                </span>
-              ) : (
-                "Erreur API"
-              )}
-            </dd>
-          </dl>
-        ) : (
-          <p className="fr-text--sm">Non disponible</p>
-        )}
-      </div>
+      <div className="debug-panel__section-content">{content}</div>
     </details>
   );
 };

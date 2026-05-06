@@ -483,7 +483,7 @@ describe("EnrichissementService", () => {
 
       // Assert
       expect(result).toEqual(cachedData);
-      expect(enrichissementRepository.findValidCache).toHaveBeenCalledWith(identifiantTest);
+      expect(enrichissementRepository.findValidCache).toHaveBeenCalledWith(identifiantTest, false);
     });
 
     it("devrait ne pas appeler les services si cache disponible", async () => {

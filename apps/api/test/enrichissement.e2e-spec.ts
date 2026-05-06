@@ -86,6 +86,7 @@ describe("Enrichissement E2E", () => {
         "49007000AB0123",
         SourceUtilisation.API_DIRECTE,
         undefined,
+        false,
       );
     });
 
@@ -100,6 +101,7 @@ describe("Enrichissement E2E", () => {
         "75056000AA0001",
         SourceUtilisation.API_DIRECTE,
         undefined,
+        false,
       );
     });
 
@@ -119,6 +121,7 @@ describe("Enrichissement E2E", () => {
         "49007000AB0123",
         SourceUtilisation.IFRAME_INTEGREE,
         "cartofriches",
+        false,
       );
     });
 
@@ -137,6 +140,7 @@ describe("Enrichissement E2E", () => {
         "49007000AB0123",
         SourceUtilisation.SITE_STANDALONE,
         undefined,
+        false,
       );
     });
 

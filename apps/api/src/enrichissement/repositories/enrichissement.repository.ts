@@ -1,6 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { v4 as uuidv4 } from "uuid";
-import { eq, and, gte, sql } from "drizzle-orm";
+import { eq, and, gte, inArray, sql } from "drizzle-orm";
 
 import { DatabaseService } from "../../shared/database/database.service";
 import { enrichissements } from "../../shared/database/schema";
@@ -97,11 +97,42 @@ export class EnrichissementRepository {
 
   /**
    * Recherche un enrichissement valide en cache pour une parcelle
-   * Criteres : statut='succes', sources_echouees vide, date < TTL
+   * Critères par défaut : statut='succes', sources_echouees vide, date < TTL
+   *
+   * @param identifiantCadastral identifiant de la parcelle
+   * @param acceptDegradedCache si true, accepte les enrichissements partiels
+   *   (sources_echouees non vide). Utilisé pour les pages partenaires
+   *   pré-chauffées où la fraîcheur prime sur la complétude.
    */
-  async findValidCache(identifiantCadastral: string): Promise<CachedEnrichissement | null> {
+  async findValidCache(
+    identifiantCadastral: string,
+    acceptDegradedCache: boolean = false,
+  ): Promise<CachedEnrichissement | null> {
     const ttlDate = new Date();
     ttlDate.setHours(ttlDate.getHours() - ENRICHISSEMENT_CACHE_TTL_HOURS);
+
+    const conditions = [
+      eq(enrichissements.identifiantCadastral, identifiantCadastral),
+      gte(enrichissements.dateEnrichissement, ttlDate),
+    ];
+
+    if (acceptDegradedCache) {
+      // Accepte SUCCES, PARTIEL ou ECHEC (sources échouées tolérées).
+      // Le check `if (!row.donnees)` ci-dessous filtre les ECHEC sans données.
+      conditions.push(
+        inArray(enrichissements.statut, [
+          StatutEnrichissement.SUCCES,
+          StatutEnrichissement.PARTIEL,
+          StatutEnrichissement.ECHEC,
+        ]),
+      );
+    } else {
+      // Mode strict : SUCCES uniquement + sources_echouees vide (null, [], ou '[]')
+      conditions.push(eq(enrichissements.statut, StatutEnrichissement.SUCCES));
+      conditions.push(
+        sql`(${enrichissements.sourcesEchouees} IS NULL OR ${enrichissements.sourcesEchouees} = '[]'::jsonb OR jsonb_array_length(${enrichissements.sourcesEchouees}) = 0)`,
+      );
+    }
 
     const result = await this.database.db
       .select({
@@ -109,15 +140,7 @@ export class EnrichissementRepository {
         donnees: enrichissements.donnees,
       })
       .from(enrichissements)
-      .where(
-        and(
-          eq(enrichissements.identifiantCadastral, identifiantCadastral),
-          eq(enrichissements.statut, StatutEnrichissement.SUCCES),
-          gte(enrichissements.dateEnrichissement, ttlDate),
-          // sources_echouees doit etre vide (null, [], ou '[]')
-          sql`(${enrichissements.sourcesEchouees} IS NULL OR ${enrichissements.sourcesEchouees} = '[]'::jsonb OR jsonb_array_length(${enrichissements.sourcesEchouees}) = 0)`,
-        ),
-      )
+      .where(and(...conditions))
       .orderBy(sql`${enrichissements.dateEnrichissement} DESC`)
       .limit(1);
 

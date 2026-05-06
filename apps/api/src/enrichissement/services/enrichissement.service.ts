@@ -68,11 +68,15 @@ export class EnrichissementService {
     identifiantParcelle: string,
     sourceUtilisation?: string,
     integrateur?: string,
+    acceptDegradedCache: boolean = false,
   ): Promise<EnrichissementOutputDto> {
     const startTime = Date.now();
 
     // 0. VERIFIER LE CACHE
-    const cached = await this.enrichissementRepository.findValidCache(identifiantParcelle);
+    const cached = await this.enrichissementRepository.findValidCache(
+      identifiantParcelle,
+      acceptDegradedCache,
+    );
     if (cached) {
       this.logger.log(`Cache enrichissement hit pour ${identifiantParcelle}, source: ${cached.id}`);
 
@@ -326,11 +330,12 @@ export class EnrichissementService {
     identifiants: string[],
     sourceUtilisation?: string,
     integrateur?: string,
+    acceptDegradedCache: boolean = false,
   ): Promise<EnrichissementOutputDto> {
     const startTime = Date.now();
 
     // 0. VÉRIFIER LE CACHE SITE
-    const cached = await this.siteRepository.findValidCache(identifiants);
+    const cached = await this.siteRepository.findValidCache(identifiants, acceptDegradedCache);
     if (cached) {
       this.logger.log(`Cache site hit pour [${identifiants.join(",")}], source: ${cached.id}`);
 
