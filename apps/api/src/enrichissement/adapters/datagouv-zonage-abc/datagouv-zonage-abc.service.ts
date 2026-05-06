@@ -70,10 +70,15 @@ export class DatagouvZonageAbcService {
   private normaliserZonage(valeur: string | undefined): ZonageAbcLogement | null {
     if (!valeur) return null;
 
-    const normalise = valeur.trim().toLowerCase();
+    // Le dataset utilise "Abis" (sans espace), mais on tolère les variantes
+    // "A bis", "a-bis", etc. en supprimant espaces et tirets internes.
+    const normalise = valeur
+      .trim()
+      .toLowerCase()
+      .replace(/[\s-]+/g, "");
 
     switch (normalise) {
-      case "a bis":
+      case "abis":
         return ZonageAbcLogement.ABIS;
       case "a":
         return ZonageAbcLogement.A;
