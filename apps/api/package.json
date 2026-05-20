@@ -27,7 +27,6 @@
     "test:e2e": "vitest run --config vitest.config.ts test/",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "db:migrate:verbose": "ts-node -r tsconfig-paths/register src/scripts/migrate.ts",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "db:bpe:filter": "ts-node -r tsconfig-paths/register src/scripts/filter-bpe.ts",
