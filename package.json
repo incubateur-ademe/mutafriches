@@ -31,6 +31,7 @@
     "db:studio": "cd apps/api && pnpm drizzle-kit studio",
     "db:generate": "cd apps/api && pnpm drizzle-kit generate",
     "db:migrate": "cd apps/api && pnpm drizzle-kit migrate",
+    "db:migrate:verbose": "pnpm --filter api run db:migrate:verbose",
     "db:introspect": "cd apps/api && pnpm drizzle-kit introspect",
     "db:bpe:import": "pnpm --filter api run db:bpe:import",
     "db:transport-stops:import": "pnpm --filter api run db:transport-stops:import",
