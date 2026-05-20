@@ -1,2 +1,2 @@
-postdeploy: echo "Migrations..." && pnpm db:migrate && echo "Postdeploy termine"
+postdeploy: echo "Migrations..." && pnpm db:migrate:verbose && echo "Postdeploy termine"
 web: node apps/api/dist/src/main
