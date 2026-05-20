@@ -5,6 +5,11 @@
   "compilerOptions": {
     "deleteOutDir": true,
     "watchAssets": false,
-    "assets": []
+    "assets": [
+      {
+        "include": "scripts/data/**/*",
+        "outDir": "dist/src"
+      }
+    ]
   }
 }
