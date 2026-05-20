@@ -293,14 +293,19 @@ Pièges rencontrés en session. Chaque entrée documente un piège pour éviter 
 - TOUJOURS mesurer le `responseTimeMs` pour le monitoring
 - TOUJOURS configurer un `timeout` sur les appels HTTP (10s par défaut)
 
-### Déploiement Scalingo — review apps et migrations
+### Déploiement Scalingo — review apps, migrations et scripts d'import
 
 - Les review apps par PR (`mutafriches-preprod-prXXX`) ont une **base de données éphémère créée à la volée** par Scalingo (clone de l'app parente au moment de la création de la PR). Tester une migration sur une review app **ne reflète pas** ce qui se passera en production : la DB de la review app peut être quasi-vide ou contenir un snapshot daté.
 - Pour valider une migration avant un merge en main, **toujours** :
   1. La rejouer sur la DB locale restaurée depuis un backup de prod (`bash .local/restore-db.sh <backup>.tar.gz`)
   2. Vérifier les requêtes/jointures contre la volumétrie réelle
-- Le `postdeploy` hook lance `pnpm db:migrate` (donc `drizzle-kit migrate`). **Ne pas** wrapper avec `ts-node` : `ts-node` est en `devDependencies` et Scalingo le supprime au `Pruning devDependencies`. Si un wrapper est nécessaire pour diagnostiquer une migration, le compiler en JS via `nest build` (sortie dans `apps/api/dist/src/scripts/`) et l'appeler via `node`, pas via `ts-node`.
+- **`ts-node` ne fonctionne PAS en runtime sur Scalingo** : il est en `devDependencies` et Scalingo le supprime au `Pruning devDependencies` (changement de buildpack autour de pnpm 10.x). Tous les scripts CLI (imports, prefetch, etc.) doivent être appelés sur la version compilée par `nest build` :
+  ```json
+  "db:epci:import": "node dist/src/scripts/import-epci-communes.js"
+  ```
+  Pas de `ts-node -r tsconfig-paths/register src/scripts/...ts` qui ne tournera qu'en dev (et même en dev il faut avoir un `dist/` à jour : `pnpm --filter api build:nest`). En prod, Scalingo a compilé `dist/` au build avant le prune, donc tout est disponible.
 - Les scripts d'import de référentiels (`db:bpe:import`, `db:epci:import`, etc.) **ne sont pas** lancés par le `postdeploy` (ils sont coûteux et idempotents) : à exécuter une fois par environnement via `scalingo --app <app> run "pnpm db:xxx:import"`.
+- Le `postdeploy` hook ne contient que `pnpm db:migrate` (qui appelle `drizzle-kit`, lui en `dependencies` donc non pruné).
 
 ## Points d'attention
 
