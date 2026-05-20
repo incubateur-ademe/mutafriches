@@ -29,12 +29,12 @@
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
-    "db:bpe:filter": "ts-node -r tsconfig-paths/register src/scripts/filter-bpe.ts",
-    "db:bpe:import": "ts-node -r tsconfig-paths/register src/scripts/import-bpe.ts",
-    "db:transport-stops:import": "ts-node -r tsconfig-paths/register src/scripts/import-transport-stops.ts",
-    "db:ademe-sites:import": "ts-node -r tsconfig-paths/register src/scripts/import-ademe-sites.ts",
-    "db:epci:import": "ts-node -r tsconfig-paths/register src/scripts/import-epci-communes.ts",
-    "cci92:prefetch": "ts-node -r tsconfig-paths/register src/scripts/prefetch-cci92.ts"
+    "db:bpe:filter": "node dist/src/scripts/filter-bpe.js",
+    "db:bpe:import": "node dist/src/scripts/import-bpe.js",
+    "db:transport-stops:import": "node dist/src/scripts/import-transport-stops.js",
+    "db:ademe-sites:import": "node dist/src/scripts/import-ademe-sites.js",
+    "db:epci:import": "node dist/src/scripts/import-epci-communes.js",
+    "cci92:prefetch": "node dist/src/scripts/prefetch-cci92.js"
   },
   "dependencies": {
     "@mutafriches/shared-types": "workspace:*",
