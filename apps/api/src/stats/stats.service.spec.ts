@@ -70,16 +70,16 @@ describe("StatsService", () => {
   });
 
   describe("getAllStats", () => {
-    it("retourne 6 statistiques", async () => {
+    it("retourne 7 statistiques", async () => {
       vi.useFakeTimers();
       vi.setSystemTime(new Date("2025-06-15T12:00:00Z"));
 
       const result = await service.getAllStats(null, "month");
 
-      expect(result).toHaveLength(6);
+      expect(result).toHaveLength(7);
     });
 
-    it("retourne les 6 descriptions attendues", async () => {
+    it("retourne les 7 descriptions attendues", async () => {
       vi.useFakeTimers();
       vi.setSystemTime(new Date("2025-06-15T12:00:00Z"));
 
@@ -92,15 +92,16 @@ describe("StatsService", () => {
       expect(descriptions).toContain("Visites");
       expect(descriptions).toContain("Sites qualifiés automatiquement");
       expect(descriptions).toContain("Nombre moyen de sites analysés par commune");
+      expect(descriptions).toContain("Nombre moyen de sites analysés par EPCI");
     });
 
-    it("appelle db.execute 6 fois (une par stat)", async () => {
+    it("appelle db.execute 7 fois (une par stat)", async () => {
       vi.useFakeTimers();
       vi.setSystemTime(new Date("2025-06-15T12:00:00Z"));
 
       await service.getAllStats(null, "month");
 
-      expect(dbExecute).toHaveBeenCalledTimes(6);
+      expect(dbExecute).toHaveBeenCalledTimes(7);
     });
 
     it("retourne des stats avec tableaux vides quand la base est vide et sans since", async () => {
@@ -154,7 +155,9 @@ describe("StatsService", () => {
         // getSitesQualifies (queryByPeriod)
         .mockResolvedValueOnce([createPeriodRow("2025-02-01T00:00:00Z", 8)])
         // getMoyenneSitesParCommune
-        .mockResolvedValueOnce([createPeriodRow("2025-01-01T00:00:00Z", 1.5)]);
+        .mockResolvedValueOnce([createPeriodRow("2025-01-01T00:00:00Z", 1.5)])
+        // getMoyenneSitesParEpci
+        .mockResolvedValueOnce([createPeriodRow("2025-01-01T00:00:00Z", 2.3)]);
 
       const since = new Date("2025-01-01T00:00:00Z");
       const result = await service.getAllStats(since, "month");
@@ -196,6 +199,11 @@ describe("StatsService", () => {
       // Moyenne par commune
       const moyenne = result[5];
       expect(moyenne.stats[0].value).toBe(1.5);
+
+      // Moyenne par EPCI
+      const moyenneEpci = result[6];
+      expect(moyenneEpci.description).toBe("Nombre moyen de sites analysés par EPCI");
+      expect(moyenneEpci.stats[0].value).toBe(2.3);
     });
 
     it("gap-fill les périodes manquantes avec 0", async () => {

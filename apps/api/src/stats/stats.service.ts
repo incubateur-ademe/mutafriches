@@ -16,6 +16,7 @@ export class StatsService {
       this.getVisites(since, periodicity),
       this.getSitesQualifies(since, periodicity),
       this.getMoyenneSitesParCommune(since, periodicity),
+      this.getMoyenneSitesParEpci(since, periodicity),
     ]);
 
     return results;
@@ -165,6 +166,45 @@ export class StatsService {
 
     return {
       description: "Nombre moyen de sites analysés par commune",
+      stats: fillGaps(rows, since, periodicity),
+    };
+  }
+
+  private async getMoyenneSitesParEpci(
+    since: Date | null,
+    periodicity: Periodicity,
+  ): Promise<StatOutput> {
+    const truncExpr = this.dateTruncExpr(periodicity, "e.date_calcul");
+    const whereClause = since
+      ? sql`WHERE e.date_calcul >= ${since.toISOString()} AND c.epci_siren IS NOT NULL`
+      : sql`WHERE c.epci_siren IS NOT NULL`;
+
+    const result = await this.database.db.execute(sql`
+      WITH par_epci_par_periode AS (
+        SELECT
+          ${truncExpr} AS period,
+          c.epci_siren,
+          COUNT(DISTINCT e.site_id)::INT AS nb_sites
+        FROM evaluations e
+        JOIN communes c ON e.code_insee = c.code_insee
+        ${whereClause}
+        GROUP BY period, c.epci_siren
+      )
+      SELECT
+        period,
+        ROUND(AVG(nb_sites), 1)::FLOAT AS value
+      FROM par_epci_par_periode
+      GROUP BY period
+      ORDER BY period
+    `);
+
+    const rows = (result as unknown as { period: Date; value: number }[]).map((r) => ({
+      value: Number(r.value),
+      date: new Date(r.period).getTime(),
+    }));
+
+    return {
+      description: "Nombre moyen de sites analysés par EPCI",
       stats: fillGaps(rows, since, periodicity),
     };
   }

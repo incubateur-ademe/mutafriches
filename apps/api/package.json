@@ -33,6 +33,7 @@
     "db:bpe:import": "ts-node -r tsconfig-paths/register src/scripts/import-bpe.ts",
     "db:transport-stops:import": "ts-node -r tsconfig-paths/register src/scripts/import-transport-stops.ts",
     "db:ademe-sites:import": "ts-node -r tsconfig-paths/register src/scripts/import-ademe-sites.ts",
+    "db:epci:import": "ts-node -r tsconfig-paths/register src/scripts/import-epci-communes.ts",
     "cci92:prefetch": "ts-node -r tsconfig-paths/register src/scripts/prefetch-cci92.ts"
   },
   "dependencies": {
