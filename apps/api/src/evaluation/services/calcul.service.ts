@@ -281,6 +281,7 @@ export class CalculService {
    * - v1.3 : 3 critères séparés + zoneAccelerationEnr
    * - v1.5 : ajout de presenceEspecesProtegees
    * - v1.6 : ajout de presenceZoneHumide
+   * - v1.7 : ajout de zonageAbcLogement
    */
   protected extraireCriteres(
     site: Site,
@@ -336,6 +337,16 @@ export class CalculService {
     // Présence d'une zone humide (v1.6+)
     if (!poidsCriteres || "presenceZoneHumide" in poidsCriteres) {
       criteres.presenceZoneHumide = site.presenceZoneHumide;
+    }
+
+    // Zonage ABC logement (v1.7+)
+    if (!poidsCriteres || "zonageAbcLogement" in poidsCriteres) {
+      criteres.zonageAbcLogement = site.zonageAbcLogement;
+    }
+
+    // Distance à une ITE fret (v1.8+)
+    if (!poidsCriteres || "distanceIte" in poidsCriteres) {
+      criteres.distanceIte = site.distanceIte;
     }
 
     return criteres;

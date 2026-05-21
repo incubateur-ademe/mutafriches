@@ -1,4 +1,5 @@
 import {
+  DistanceIte,
   EnrichissementOutputDto,
   SourceEnrichissement,
   ZaerEnrichissement,
@@ -86,8 +87,14 @@ export const transformEnrichmentToUiData = (
     // Distance transports en commun formatée
     distanceTransportsEnCommun: getDistanceTransportMessage(enrichmentData),
 
+    // Distance à une Installation Terminale Embranchée (ITE) fret
+    distanceIte: formatDistanceIte(enrichmentData.distanceIte),
+
     // Pollution - site reference dans les bases ADEME (sites et sols pollues)
     siteReferencePollue: enrichmentData.siteReferencePollue === true,
+
+    // Zonage ABC logement
+    zonageAbcLogement: formatZonageAbcLogement(enrichmentData.zonageAbcLogement),
 
     // Énergies renouvelables
     zoneAccelerationEnr: formatZoneAccelerationEnr(enrichmentData.zoneAccelerationEnr),
@@ -130,6 +137,44 @@ const buildRisquesNaturelsBadges = (data: EnrichissementOutputDto): string[] => 
   }
 
   return badges;
+};
+
+/**
+ * Formate la catégorie de distance à une ITE fret en libellé lisible
+ */
+const formatDistanceIte = (value?: DistanceIte): string => {
+  if (!value) return "";
+  switch (value) {
+    case DistanceIte.MOINS_1KM_BON_ETAT:
+      return "Moins d'1 km en bon état";
+    case DistanceIte.MOINS_1KM_MAUVAIS_ETAT:
+      return "Moins d'1 km en mauvais état";
+    case DistanceIte.PLUS_1KM:
+      return "Plus d'1 km";
+    default:
+      return "";
+  }
+};
+
+/**
+ * Formate le zonage ABC logement en label lisible
+ */
+const formatZonageAbcLogement = (value?: string): string => {
+  if (!value) return "";
+  switch (value) {
+    case "abis":
+      return "A BIS";
+    case "a":
+      return "A";
+    case "b1":
+      return "B1";
+    case "b2":
+      return "B2";
+    case "c":
+      return "C";
+    default:
+      return value.toUpperCase();
+  }
 };
 
 /**

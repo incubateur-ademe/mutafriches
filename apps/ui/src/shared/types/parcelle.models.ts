@@ -17,6 +17,8 @@ export interface ParcelleUiModel {
   centreVille: string;
   distanceAutoroute: string;
   distanceTransportsEnCommun: string;
+  /** Catégorie de distance à une Installation Terminale Embranchée (ITE) fret */
+  distanceIte: string;
   proximiteCommerces: string;
   distanceRaccordement: string;
   tauxLV: string;
@@ -30,6 +32,9 @@ export interface ParcelleUiModel {
 
   // Pollution - indique si le site est reference dans les bases SIS/ICPE/ADEME
   siteReferencePollue: boolean;
+
+  // Zonage ABC logement
+  zonageAbcLogement: string;
 
   // Énergies renouvelables
   zoneAccelerationEnr: string;

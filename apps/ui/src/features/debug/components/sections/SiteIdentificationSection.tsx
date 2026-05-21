@@ -1,5 +1,6 @@
 import React from "react";
 import { EnrichissementOutputDto } from "@mutafriches/shared-types";
+import { DsfrAccordion } from "@shared/components/dsfr/DsfrAccordion";
 import { formatSurface } from "../../utils/debug.helpers";
 
 interface SiteIdentificationSectionProps {
@@ -17,10 +18,9 @@ export const SiteIdentificationSection: React.FC<SiteIdentificationSectionProps>
     const empty = <p className="fr-text--sm">Aucune donn&eacute;e d'enrichissement disponible.</p>;
     if (noWrapper) return empty;
     return (
-      <details className="debug-panel__section" open>
-        <summary>Identification du site</summary>
-        <div className="debug-panel__section-content">{empty}</div>
-      </details>
+      <DsfrAccordion title="Identification du site" defaultOpen>
+        {empty}
+      </DsfrAccordion>
     );
   }
 
@@ -94,9 +94,8 @@ export const SiteIdentificationSection: React.FC<SiteIdentificationSectionProps>
   if (noWrapper) return content;
 
   return (
-    <details className="debug-panel__section" open>
-      <summary>Identification du site</summary>
-      <div className="debug-panel__section-content">{content}</div>
-    </details>
+    <DsfrAccordion title="Identification du site" defaultOpen>
+      {content}
+    </DsfrAccordion>
   );
 };

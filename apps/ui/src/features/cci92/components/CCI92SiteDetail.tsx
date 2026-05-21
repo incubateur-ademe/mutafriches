@@ -10,7 +10,7 @@ import { DetailAlgorithmeSection } from "@features/debug/components/sections/Det
 import { DonneesComplementairesSection } from "@features/debug/components/sections/DonneesComplementairesSection";
 import { EnrichmentLoadingCallout } from "@features/analyser/components/EnrichmentLoadingCallout";
 import { buildDonneesComplementaires } from "@features/resultats/utils/mutability.mapper";
-import { CCI92Accordion } from "./CCI92Accordion";
+import { DsfrAccordion } from "@shared/components/dsfr/DsfrAccordion";
 import { CCI92DonneesForm } from "./CCI92DonneesForm";
 import { CCI92Site } from "../data/parcelles-cci92";
 import { downloadJson } from "../utils/download-json";
@@ -30,9 +30,21 @@ interface CCI92SiteDetailProps {
 
 type Phase = "qualification" | "mutabilite";
 
-const TAG_AUTO = { label: "automatique", variant: "automatique" as const };
-const TAG_SAISIE = { label: "saisie de donnée", variant: "saisie" as const };
-const TAG_CALCULE = { label: "calculé", variant: "calcule" as const };
+const BADGE_DONNEES_NATIONALES = {
+  label: "données nationales",
+  variant: "success",
+  icon: "fr-icon-checkbox-line",
+};
+const BADGE_SAISIE = {
+  label: "saisie de donnée",
+  variant: "green-tilleul-verveine",
+  icon: "fr-icon-edit-line",
+};
+const BADGE_CALCULE = {
+  label: "calculé",
+  variant: "pink-tuile",
+  icon: "fr-icon-calculator-line",
+};
 
 export const CCI92SiteDetail: React.FC<CCI92SiteDetailProps> = ({
   site,
@@ -96,51 +108,46 @@ export const CCI92SiteDetail: React.FC<CCI92SiteDetailProps> = ({
         <>
           {/* Section automatique — repliée par défaut, l'utilisateur déplie au besoin */}
           <div key={`auto-${phase}`}>
-            <CCI92Accordion title="Identification du site" tag={TAG_AUTO} defaultOpen={false}>
+            <DsfrAccordion title="Identification du site" badge={BADGE_DONNEES_NATIONALES}>
               <SiteIdentificationSection
                 enrichmentData={enrichmentData}
                 identifiantSite={site.idtup}
                 noWrapper
               />
-            </CCI92Accordion>
+            </DsfrAccordion>
 
-            <CCI92Accordion title="Qualification du site" tag={TAG_AUTO} defaultOpen={false}>
+            <DsfrAccordion title="Qualification du site" badge={BADGE_DONNEES_NATIONALES}>
               <EnrichissementSection enrichmentData={enrichmentData} noWrapper />
-            </CCI92Accordion>
+            </DsfrAccordion>
 
             {enrichmentData.diagnosticZonages && (
-              <CCI92Accordion
+              <DsfrAccordion
                 title="Diagnostic zonages (données brutes API)"
-                tag={TAG_AUTO}
-                defaultOpen={false}
+                badge={BADGE_DONNEES_NATIONALES}
               >
                 <DiagnosticZonagesSection enrichmentData={enrichmentData} noWrapper />
-              </CCI92Accordion>
+              </DsfrAccordion>
             )}
 
-            <CCI92Accordion
-              title="Données exhaustives Géorisques"
-              tag={TAG_AUTO}
-              defaultOpen={false}
-            >
+            <DsfrAccordion title="Données exhaustives Géorisques" badge={BADGE_DONNEES_NATIONALES}>
               <DiagnosticRisquesSection enrichmentData={enrichmentData} noWrapper />
-            </CCI92Accordion>
+            </DsfrAccordion>
 
-            <CCI92Accordion title="Sources appelées" tag={TAG_AUTO} defaultOpen={false}>
+            <DsfrAccordion title="Sources appelées" badge={BADGE_DONNEES_NATIONALES}>
               <SourcesMetadataSection enrichmentData={enrichmentData} noWrapper />
-            </CCI92Accordion>
+            </DsfrAccordion>
           </div>
 
           {/* Section saisie */}
           <div key={`saisie-${phase}`}>
-            <CCI92Accordion
+            <DsfrAccordion
               title="Données complémentaires"
-              tag={TAG_SAISIE}
+              badge={BADGE_SAISIE}
               defaultOpen={isQualPhase}
               highlight={isQualPhase}
             >
               <CCI92DonneesForm values={manualData} onChange={onManualDataChange} />
-            </CCI92Accordion>
+            </DsfrAccordion>
 
             <div className="fr-mt-2w fr-mb-3w">
               <button
@@ -163,21 +170,17 @@ export const CCI92SiteDetail: React.FC<CCI92SiteDetailProps> = ({
           {/* Section mutabilité (uniquement après calcul) */}
           {mutabilityData && phase === "mutabilite" && (
             <div key={`mutabilite-${phase}`}>
-              <CCI92Accordion
-                title="Données complémentaires (saisies)"
-                tag={TAG_SAISIE}
-                defaultOpen={false}
-              >
+              <DsfrAccordion title="Données complémentaires (saisies)" badge={BADGE_SAISIE}>
                 <DonneesComplementairesSection manualData={manualData} noWrapper />
-              </CCI92Accordion>
+              </DsfrAccordion>
 
-              <CCI92Accordion title="Résultats de l'évaluation" tag={TAG_CALCULE} defaultOpen>
+              <DsfrAccordion title="Résultats de l'évaluation" badge={BADGE_CALCULE} defaultOpen>
                 <EvaluationSection mutabilityData={mutabilityData} noWrapper />
-              </CCI92Accordion>
+              </DsfrAccordion>
 
-              <CCI92Accordion title="Détail de l'algorithme" tag={TAG_CALCULE} defaultOpen>
+              <DsfrAccordion title="Détail de l'algorithme" badge={BADGE_CALCULE} defaultOpen>
                 <DetailAlgorithmeSection mutabilityData={mutabilityData} noWrapper />
-              </CCI92Accordion>
+              </DsfrAccordion>
 
               <div className="fr-mt-2w">
                 <button

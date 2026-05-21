@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { EnrichissementOutputDto, MutabiliteOutputDto } from "@mutafriches/shared-types";
+import { DsfrAccordion } from "@shared/components/dsfr/DsfrAccordion";
 
 interface RawJsonSectionProps {
   enrichmentData?: EnrichissementOutputDto;
@@ -43,15 +44,12 @@ export const RawJsonSection: React.FC<RawJsonSectionProps> = ({
   mutabilityData,
 }) => {
   return (
-    <details className="debug-panel__section">
-      <summary>JSON brut</summary>
-      <div className="debug-panel__section-content">
-        {enrichmentData && <JsonBlock label="Données d'enrichissement" data={enrichmentData} />}
-        {mutabilityData && <JsonBlock label="Résultats d'évaluation" data={mutabilityData} />}
-        {!enrichmentData && !mutabilityData && (
-          <p className="fr-text--sm">Aucune donnée JSON disponible.</p>
-        )}
-      </div>
-    </details>
+    <DsfrAccordion title="JSON brut">
+      {enrichmentData && <JsonBlock label="Données d'enrichissement" data={enrichmentData} />}
+      {mutabilityData && <JsonBlock label="Résultats d'évaluation" data={mutabilityData} />}
+      {!enrichmentData && !mutabilityData && (
+        <p className="fr-text--sm">Aucune donnée JSON disponible.</p>
+      )}
+    </DsfrAccordion>
   );
 };

@@ -22,6 +22,11 @@ export class BdnbService {
 
   /**
    * Récupère uniquement la surface bâtie totale d'une parcelle
+   *
+   * Sémantique :
+   * - success=true, data=N (>0)  : bâtiments trouvés, surface bâtie totale = N m²
+   * - success=true, data=0       : recherche effectuée, aucun bâtiment sur la parcelle (terrain non bâti)
+   * - success=false              : erreur technique (timeout, 4xx/5xx, parse...)
    */
   async getSurfaceBatie(identifiantParcelle: string): Promise<ApiResponse<number>> {
     const startTime = Date.now();
@@ -29,16 +34,19 @@ export class BdnbService {
     try {
       const response = await this.callBdnbApi(identifiantParcelle);
 
-      if (!response.success || !response.data) {
+      if (!response.success) {
         return {
           success: false,
-          error: response.error || "Aucune donnée retournée par l'API BDNB",
+          error: response.error || "Erreur technique API BDNB",
           source: "API BDNB",
           responseTimeMs: Date.now() - startTime,
         };
       }
 
-      const surfaceTotale = response.data.reduce(
+      // Cas "parcelle non bâtie" : API a répondu OK avec 0 bâtiment
+      // C'est une donnée valide (pas une erreur) → surface = 0 m²
+      const batiments = response.data ?? [];
+      const surfaceTotale = batiments.reduce(
         (total, batiment) => total + (batiment.surface_emprise_sol || 0),
         0,
       );
@@ -73,10 +81,10 @@ export class BdnbService {
     try {
       const response = await this.callBdnbApi(identifiantParcelle);
 
-      if (!response.success || !response.data) {
+      if (!response.success || !response.data || response.data.length === 0) {
         return {
           success: false,
-          error: response.error || "Aucune donnée retournée par l'API BDNB",
+          error: response.error || `Aucun bâtiment trouvé pour la parcelle ${identifiantParcelle}`,
           source: "API BDNB",
           responseTimeMs: Date.now() - startTime,
         };
@@ -203,18 +211,13 @@ export class BdnbService {
 
       const data = response.data;
 
-      if (!data || data.length === 0) {
-        console.warn(`Aucun bâtiment trouvé pour la parcelle: ${identifiantParcelle}`);
-        return {
-          success: false,
-          error: `Aucun bâtiment trouvé pour la parcelle ${identifiantParcelle}`,
-          source: "API BDNB",
-        };
-      }
-
+      // Réponse 200 OK avec un tableau (potentiellement vide) = succès technique.
+      // Un tableau vide signifie "parcelle non bâtie" : c'est une information valide,
+      // pas une erreur. Les consommateurs (getSurfaceBatie / getBatiments / getRisquesNaturels)
+      // décident comment exploiter le cas "0 bâtiment".
       return {
         success: true,
-        data: data,
+        data: data ?? [],
         source: "API BDNB",
       };
     } catch (error) {

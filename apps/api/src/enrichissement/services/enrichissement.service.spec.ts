@@ -13,6 +13,7 @@ import { EnrichissementService } from "./enrichissement.service";
 import { CadastreEnrichissementService } from "./cadastre/cadastre-enrichissement.service";
 import { EnergieEnrichissementService } from "./energie/energie-enrichissement.service";
 import { TransportEnrichissementService } from "./transport/transport-enrichissement.service";
+import { IteFretEnrichissementService } from "./transport/ite-fret-enrichissement.service";
 import { UrbanismeEnrichissementService } from "./urbanisme/urbanisme-enrichissement.service";
 import { RisquesNaturelsEnrichissementService } from "./risques-naturels/risques-naturels-enrichissement.service";
 import { RisquesTechnologiquesEnrichissementService } from "./risques-technologiques/risques-technologiques-enrichissement.service";
@@ -26,6 +27,7 @@ import {
   createMockCadastreEnrichissementService,
   createMockEnergieEnrichissementService,
   createMockTransportEnrichissementService,
+  createMockIteFretEnrichissementService,
   createMockUrbanismeEnrichissementService,
   createMockRisquesNaturelsEnrichissementService,
   createMockRisquesTechnologiquesEnrichissementService,
@@ -61,6 +63,7 @@ describe("EnrichissementService", () => {
     const mockCadastre = createMockCadastreEnrichissementService();
     const mockEnergie = createMockEnergieEnrichissementService();
     const mockTransport = createMockTransportEnrichissementService();
+    const mockIteFret = createMockIteFretEnrichissementService();
     const mockUrbanisme = createMockUrbanismeEnrichissementService();
     const mockRisquesNaturels = createMockRisquesNaturelsEnrichissementService();
     const mockRisquesTechnologiques = createMockRisquesTechnologiquesEnrichissementService();
@@ -85,6 +88,13 @@ describe("EnrichissementService", () => {
       sourcesEchouees: [],
     });
 
+    // Configuration par défaut du mock ITE fret
+    mockIteFret.enrichir.mockResolvedValue({
+      success: true,
+      sourcesUtilisees: ["ITE-Fret"],
+      sourcesEchouees: [],
+    });
+
     // Configuration par defaut du mock cache (pas de cache)
     mockRepository.findValidCache.mockResolvedValue(null);
 
@@ -94,6 +104,7 @@ describe("EnrichissementService", () => {
         { provide: CadastreEnrichissementService, useValue: mockCadastre },
         { provide: EnergieEnrichissementService, useValue: mockEnergie },
         { provide: TransportEnrichissementService, useValue: mockTransport },
+        { provide: IteFretEnrichissementService, useValue: mockIteFret },
         { provide: UrbanismeEnrichissementService, useValue: mockUrbanisme },
         { provide: RisquesNaturelsEnrichissementService, useValue: mockRisquesNaturels },
         {
@@ -237,7 +248,7 @@ describe("EnrichissementService", () => {
       expect(result.codeInsee).toBe("29232");
       expect(result.commune).toBe("Quimper");
       expect(result.surfaceSite).toBe(1000);
-      expect(result.sourcesUtilisees).toHaveLength(10);
+      expect(result.sourcesUtilisees).toHaveLength(11);
     });
 
     it("devrait persister l'enrichissement avec statut SUCCES", async () => {

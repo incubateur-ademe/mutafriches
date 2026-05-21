@@ -83,8 +83,8 @@ describe("Seuils de configuration", () => {
     expect(SEUIL_GRANDE_PARCELLE).toBe(10000);
   });
 
-  it("devrait avoir le seuil d'emprise bâtie faible à 500 m²", () => {
-    expect(SEUIL_EMPRISE_BATI_FAIBLE).toBe(500);
+  it("devrait avoir le seuil d'emprise bâtie faible à 5000 m²", () => {
+    expect(SEUIL_EMPRISE_BATI_FAIBLE).toBe(5000);
   });
 
   it("devrait avoir le seuil de distance TC proche à 500 m", () => {
@@ -593,14 +593,14 @@ describe("Usage INDUSTRIE - Bâtiments industriels", () => {
 
 describe("Usage PHOTOVOLTAIQUE - Centrale photovoltaïque au sol", () => {
   describe("Emprise au sol du bâti", () => {
-    it("devrait afficher 'emprise bât. faible' si surface < 500 m²", () => {
-      const data = createTagInputData({ surfaceBati: 300 });
+    it("devrait afficher 'emprise bât. faible' si surface < 5000 m²", () => {
+      const data = createTagInputData({ surfaceBati: 3000 });
       const result = generateTagsForUsage(UsageType.PHOTOVOLTAIQUE, data);
       expect(result.tags).toContain("emprise bât. faible");
     });
 
-    it("devrait afficher 'emprise bât. forte' si surface >= 500 m²", () => {
-      const data = createTagInputData({ surfaceBati: 600 });
+    it("devrait afficher 'emprise bât. forte' si surface >= 5000 m²", () => {
+      const data = createTagInputData({ surfaceBati: 6000 });
       const result = generateTagsForUsage(UsageType.PHOTOVOLTAIQUE, data);
       expect(result.tags).toContain("emprise bât. forte");
     });
@@ -610,6 +610,13 @@ describe("Usage PHOTOVOLTAIQUE - Centrale photovoltaïque au sol", () => {
       const result = generateTagsForUsage(UsageType.PHOTOVOLTAIQUE, data);
       expect(result.tags).not.toContain("emprise bât. faible");
       expect(result.tags).not.toContain("emprise bât. forte");
+    });
+
+    it("devrait afficher 'pas de bâti' si surface = 0 (terrain non bâti)", () => {
+      const data = createTagInputData({ surfaceBati: 0 });
+      const result = generateTagsForUsage(UsageType.PHOTOVOLTAIQUE, data);
+      expect(result.tags).toContain("pas de bâti");
+      expect(result.tags).not.toContain("emprise bât. faible");
     });
   });
 
@@ -823,14 +830,14 @@ describe("Usage RENATURATION - Espace renaturé", () => {
   });
 
   describe("Emprise au sol du bâti", () => {
-    it("devrait afficher 'emprise bât. faible' si surface < 500 m²", () => {
+    it("devrait afficher 'emprise bât. faible' si surface < 5000 m²", () => {
       const data = createTagInputData({ surfaceBati: 200 });
       const result = generateTagsForUsage(UsageType.RENATURATION, data);
       expect(result.tags).toContain("emprise bât. faible");
     });
 
-    it("devrait afficher 'emprise bât. forte' si surface >= 500 m²", () => {
-      const data = createTagInputData({ surfaceBati: 800 });
+    it("devrait afficher 'emprise bât. forte' si surface >= 5000 m²", () => {
+      const data = createTagInputData({ surfaceBati: 8000 });
       const result = generateTagsForUsage(UsageType.RENATURATION, data);
       expect(result.tags).toContain("emprise bât. forte");
     });
@@ -1157,12 +1164,12 @@ describe("Cas limites", () => {
     expect(resultTcAbove.tags).not.toContain("TC prox.");
     expect(resultTcAbove.tags).toContain("TC éloigné");
 
-    // Test exact à 500 m² pour emprise bâtie
-    const dataEmprise = createTagInputData({ surfaceBati: 500 });
+    // Test exact à 5000 m² pour emprise bâtie
+    const dataEmprise = createTagInputData({ surfaceBati: 5000 });
     const resultEmprise = generateTagsForUsage(UsageType.PHOTOVOLTAIQUE, dataEmprise);
     expect(resultEmprise.tags).toContain("emprise bât. forte");
 
-    const dataEmpriseBelow = createTagInputData({ surfaceBati: 499 });
+    const dataEmpriseBelow = createTagInputData({ surfaceBati: 4999 });
     const resultEmpriseBelow = generateTagsForUsage(UsageType.PHOTOVOLTAIQUE, dataEmpriseBelow);
     expect(resultEmpriseBelow.tags).toContain("emprise bât. faible");
   });

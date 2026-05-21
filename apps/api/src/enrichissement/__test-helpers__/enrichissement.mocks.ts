@@ -35,8 +35,21 @@ interface MockTransportEnrichissementService {
   enrichir: Mock;
 }
 
+interface MockIteFretEnrichissementService {
+  enrichir: Mock;
+}
+
+interface MockIteFretRepository {
+  findIteProche: Mock;
+  count: Mock;
+}
+
 interface MockUrbanismeEnrichissementService {
   enrichir: Mock;
+}
+
+interface MockDatagouvZonageAbcService {
+  getZonageByCommune: Mock;
 }
 
 interface MockRisquesNaturelsEnrichissementService {
@@ -200,6 +213,25 @@ export function createMockEnedisService(): MockEnedisService {
 export function createMockTransportEnrichissementService(): MockTransportEnrichissementService {
   return {
     enrichir: vi.fn(),
+  };
+}
+
+/**
+ * Mock du IteFretEnrichissementService
+ */
+export function createMockIteFretEnrichissementService(): MockIteFretEnrichissementService {
+  return {
+    enrichir: vi.fn(),
+  };
+}
+
+/**
+ * Mock du IteFretRepository
+ */
+export function createMockIteFretRepository(): MockIteFretRepository {
+  return {
+    findIteProche: vi.fn(),
+    count: vi.fn(),
   };
 }
 
@@ -423,5 +455,14 @@ export function createMockSiteRepository(): MockSiteRepository {
 export function createMockSiteGeometryService(): MockSiteGeometryService {
   return {
     construireSite: vi.fn(),
+  };
+}
+
+/**
+ * Mock du DatagouvZonageAbcService
+ */
+export function createMockDatagouvZonageAbcService(): MockDatagouvZonageAbcService {
+  return {
+    getZonageByCommune: vi.fn(),
   };
 }

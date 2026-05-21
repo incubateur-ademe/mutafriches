@@ -1,5 +1,6 @@
 import React from "react";
 import { MutabiliteOutputDto } from "@mutafriches/shared-types";
+import { DsfrAccordion } from "@shared/components/dsfr/DsfrAccordion";
 import { getMutabilityColor, getMutabilityLabel } from "../../utils/debug.helpers";
 
 /** Labels francais pour les types d'usage */
@@ -27,12 +28,7 @@ export const EvaluationSection: React.FC<EvaluationSectionProps> = ({
       <p className="fr-text--sm">Aucun r&eacute;sultat d'&eacute;valuation disponible.</p>
     );
     if (noWrapper) return empty;
-    return (
-      <details className="debug-panel__section">
-        <summary>R&eacute;sultats de l'&eacute;valuation</summary>
-        <div className="debug-panel__section-content">{empty}</div>
-      </details>
-    );
+    return <DsfrAccordion title="Résultats de l'évaluation">{empty}</DsfrAccordion>;
   }
 
   const { fiabilite, resultats, evaluationId } = mutabilityData;
@@ -149,10 +145,5 @@ export const EvaluationSection: React.FC<EvaluationSectionProps> = ({
 
   if (noWrapper) return content;
 
-  return (
-    <details className="debug-panel__section">
-      <summary>R&eacute;sultats de l'&eacute;valuation</summary>
-      <div className="debug-panel__section-content">{content}</div>
-    </details>
-  );
+  return <DsfrAccordion title="Résultats de l'évaluation">{content}</DsfrAccordion>;
 };

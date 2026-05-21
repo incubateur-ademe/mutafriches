@@ -17,6 +17,8 @@ import {
   ZonageReglementaire,
   TrameVerteEtBleue,
   ZoneAccelerationEnr,
+  ZonageAbcLogement,
+  DistanceIte,
   Coordonnees,
   GeometrieParcelle,
   CalculerMutabiliteInputDto,
@@ -57,6 +59,9 @@ export class Site {
   zonagePatrimonial?: ZonagePatrimonial;
   trameVerteEtBleue?: TrameVerteEtBleue;
   zoneAccelerationEnr?: ZoneAccelerationEnr;
+  zonageAbcLogement?: ZonageAbcLogement;
+  /** Catégorie de distance à une Installation Terminale Embranchée (ITE) fret */
+  distanceIte?: DistanceIte;
   /** Site référencé comme pollué (détection auto via ADEME/SIS/ICPE) */
   siteReferencePollue?: boolean;
 
@@ -112,6 +117,12 @@ export class Site {
         : undefined,
       zoneAccelerationEnr: enrichissement.zoneAccelerationEnr
         ? (enrichissement.zoneAccelerationEnr as ZoneAccelerationEnr)
+        : undefined,
+      zonageAbcLogement: enrichissement.zonageAbcLogement
+        ? (enrichissement.zonageAbcLogement as ZonageAbcLogement)
+        : undefined,
+      distanceIte: enrichissement.distanceIte
+        ? (enrichissement.distanceIte as DistanceIte)
         : undefined,
       // Copie des données géographiques
       coordonnees: enrichissement.coordonnees,
@@ -175,6 +186,12 @@ export class Site {
       : undefined;
     site.zoneAccelerationEnr = donneesEnrichies.zoneAccelerationEnr
       ? (donneesEnrichies.zoneAccelerationEnr as ZoneAccelerationEnr)
+      : undefined;
+    site.zonageAbcLogement = donneesEnrichies.zonageAbcLogement
+      ? (donneesEnrichies.zonageAbcLogement as ZonageAbcLogement)
+      : undefined;
+    site.distanceIte = donneesEnrichies.distanceIte
+      ? (donneesEnrichies.distanceIte as DistanceIte)
       : undefined;
 
     // Multi-parcelle

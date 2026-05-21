@@ -13,6 +13,7 @@ import { Site } from "../entities/site.entity";
 import { CadastreEnrichissementService } from "./cadastre/cadastre-enrichissement.service";
 import { EnergieEnrichissementService } from "./energie/energie-enrichissement.service";
 import { TransportEnrichissementService } from "./transport/transport-enrichissement.service";
+import { IteFretEnrichissementService } from "./transport/ite-fret-enrichissement.service";
 import { UrbanismeEnrichissementService } from "./urbanisme/urbanisme-enrichissement.service";
 import { RisquesNaturelsEnrichissementService } from "./risques-naturels/risques-naturels-enrichissement.service";
 import { RisquesTechnologiquesEnrichissementService } from "./risques-technologiques/risques-technologiques-enrichissement.service";
@@ -42,6 +43,7 @@ export class EnrichissementService {
     private readonly cadastreEnrichissement: CadastreEnrichissementService,
     private readonly energieEnrichissement: EnergieEnrichissementService,
     private readonly transportEnrichissement: TransportEnrichissementService,
+    private readonly iteFretEnrichissement: IteFretEnrichissementService,
     private readonly urbanismeEnrichissement: UrbanismeEnrichissementService,
     private readonly risquesNaturelsEnrichissement: RisquesNaturelsEnrichissementService,
     private readonly risquesTechnologiquesEnrichissement: RisquesTechnologiquesEnrichissementService,
@@ -137,6 +139,10 @@ export class EnrichissementService {
         champsManquants,
         sourcesEchouees,
       );
+
+      // 3.b ITE FRET (Installations Terminales Embranchées fret)
+      const iteFretResult = await this.iteFretEnrichissement.enrichir(siteEval);
+      this.mergeEnrichmentResult(iteFretResult, sourcesUtilisees, champsManquants, sourcesEchouees);
 
       // 4. URBANISME (commerces, logements vacants, centre-ville)
       const urbanismeResult = await this.urbanismeEnrichissement.enrichir(siteEval);
@@ -241,6 +247,7 @@ export class EnrichissementService {
         siteEnCentreVille: siteEval.siteEnCentreVille,
         distanceAutoroute: siteEval.distanceAutoroute,
         distanceTransportCommun: siteEval.distanceTransportCommun,
+        distanceIte: siteEval.distanceIte,
         proximiteCommercesServices: siteEval.proximiteCommercesServices,
         tauxLogementsVacants: siteEval.tauxLogementsVacants,
         presenceRisquesTechnologiques: siteEval.presenceRisquesTechnologiques,
@@ -249,6 +256,7 @@ export class EnrichissementService {
         zonageReglementaire: siteEval.zonageReglementaire,
         zonagePatrimonial: siteEval.zonagePatrimonial,
         trameVerteEtBleue: siteEval.trameVerteEtBleue,
+        zonageAbcLogement: siteEval.zonageAbcLogement,
 
         // Risques GeoRisques Bruts
         risquesGeorisques,
@@ -397,6 +405,10 @@ export class EnrichissementService {
         sourcesEchouees,
       );
 
+      // 4.b ITE FRET -> centroïde du site
+      const iteFretResult = await this.iteFretEnrichissement.enrichir(siteEval);
+      this.mergeEnrichmentResult(iteFretResult, sourcesUtilisees, champsManquants, sourcesEchouees);
+
       // 5. URBANISME -> LOVAC: commune prédominante, BPE: centroïde
       const urbanismeResult = await this.urbanismeEnrichissement.enrichir(siteEval);
       this.mergeEnrichmentResult(
@@ -512,6 +524,7 @@ export class EnrichissementService {
         siteEnCentreVille: siteEval.siteEnCentreVille,
         distanceAutoroute: siteEval.distanceAutoroute,
         distanceTransportCommun: siteEval.distanceTransportCommun,
+        distanceIte: siteEval.distanceIte,
         proximiteCommercesServices: siteEval.proximiteCommercesServices,
         tauxLogementsVacants: siteEval.tauxLogementsVacants,
         presenceRisquesTechnologiques: siteEval.presenceRisquesTechnologiques,
@@ -520,6 +533,7 @@ export class EnrichissementService {
         zonageReglementaire: siteEval.zonageReglementaire,
         zonagePatrimonial: siteEval.zonagePatrimonial,
         trameVerteEtBleue: siteEval.trameVerteEtBleue,
+        zonageAbcLogement: siteEval.zonageAbcLogement,
 
         risquesGeorisques,
 

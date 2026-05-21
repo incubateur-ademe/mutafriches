@@ -25,4 +25,6 @@ export enum SourceEnrichissement {
   TRANSPORT_DATA_GOUV = "Transport Data Gouv",
   IGN_WFS = "IGN WFS",
   ZAER = "ZAER-ENR",
+  ZONAGE_ABC_LOGEMENT = "ZonageABC-Logement",
+  ITE_FRET = "ITE-Fret",
 }

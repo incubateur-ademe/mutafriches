@@ -10,6 +10,7 @@ import { SiteGeometryService } from "./services/site/site-geometry.service";
 import { CadastreEnrichissementService } from "./services/cadastre/cadastre-enrichissement.service";
 import { EnergieEnrichissementService } from "./services/energie/energie-enrichissement.service";
 import { TransportEnrichissementService } from "./services/transport/transport-enrichissement.service";
+import { IteFretEnrichissementService } from "./services/transport/ite-fret-enrichissement.service";
 import { UrbanismeEnrichissementService } from "./services/urbanisme/urbanisme-enrichissement.service";
 import { RisquesNaturelsEnrichissementService } from "./services/risques-naturels/risques-naturels-enrichissement.service";
 import { RisquesTechnologiquesEnrichissementService } from "./services/risques-technologiques/risques-technologiques-enrichissement.service";
@@ -65,9 +66,11 @@ import { ApiCartoGpuService } from "./adapters/api-carto/gpu/api-carto-gpu.servi
 
 // Adapters data.gouv.fr
 import { DatagouvLovacService } from "./adapters/datagouv-lovac/datagouv-lovac.service";
+import { DatagouvZonageAbcService } from "./adapters/datagouv-zonage-abc/datagouv-zonage-abc.service";
 import { BpeRepository } from "./repositories/bpe.repository";
 import { TransportStopsRepository } from "./repositories/transport-stops.repository";
 import { AdemeSitesPolluesRepository } from "./repositories/ademe-sites-pollues.repository";
+import { IteFretRepository } from "./repositories/ite-fret.repository";
 
 @Module({
   imports: [HttpModule],
@@ -81,11 +84,13 @@ import { AdemeSitesPolluesRepository } from "./repositories/ademe-sites-pollues.
     BpeRepository,
     TransportStopsRepository,
     AdemeSitesPolluesRepository,
+    IteFretRepository,
 
     // Services de domaine
     CadastreEnrichissementService,
     EnergieEnrichissementService,
     TransportEnrichissementService,
+    IteFretEnrichissementService,
     UrbanismeEnrichissementService,
     RisquesNaturelsEnrichissementService,
     RisquesTechnologiquesEnrichissementService,
@@ -141,6 +146,7 @@ import { AdemeSitesPolluesRepository } from "./repositories/ademe-sites-pollues.
 
     // Adapters data.gouv.fr
     DatagouvLovacService,
+    DatagouvZonageAbcService,
   ],
   exports: [EnrichissementService],
 })

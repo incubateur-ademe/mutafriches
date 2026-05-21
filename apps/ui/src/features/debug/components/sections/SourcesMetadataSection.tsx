@@ -1,5 +1,6 @@
 import React from "react";
 import { EnrichissementOutputDto } from "@mutafriches/shared-types";
+import { DsfrAccordion } from "@shared/components/dsfr/DsfrAccordion";
 
 interface SourcesMetadataSectionProps {
   enrichmentData?: EnrichissementOutputDto;
@@ -13,12 +14,7 @@ export const SourcesMetadataSection: React.FC<SourcesMetadataSectionProps> = ({
   if (!enrichmentData) {
     const empty = <p className="fr-text--sm">Aucune donn&eacute;e disponible.</p>;
     if (noWrapper) return empty;
-    return (
-      <details className="debug-panel__section">
-        <summary>Sources et m&eacute;tadonn&eacute;es</summary>
-        <div className="debug-panel__section-content">{empty}</div>
-      </details>
-    );
+    return <DsfrAccordion title="Sources et métadonnées">{empty}</DsfrAccordion>;
   }
 
   const sourcesUtilisees = enrichmentData.sourcesUtilisees ?? [];
@@ -77,10 +73,5 @@ export const SourcesMetadataSection: React.FC<SourcesMetadataSectionProps> = ({
 
   if (noWrapper) return content;
 
-  return (
-    <details className="debug-panel__section">
-      <summary>Sources et m&eacute;tadonn&eacute;es</summary>
-      <div className="debug-panel__section-content">{content}</div>
-    </details>
-  );
+  return <DsfrAccordion title="Sources et métadonnées">{content}</DsfrAccordion>;
 };

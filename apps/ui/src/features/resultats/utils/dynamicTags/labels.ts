@@ -13,9 +13,11 @@ import {
   QualiteVoieDesserte,
   RaccordementEau,
   ZoneAccelerationEnr,
+  ZonageAbcLogement,
   RisqueRetraitGonflementArgile,
   RisqueCavitesSouterraines,
   RisqueInondation,
+  DistanceIte,
 } from "@mutafriches/shared-types";
 import {
   SEUIL_GRANDE_PARCELLE,
@@ -37,10 +39,11 @@ export function getCritereTagLabel(
     case "surfaceSite":
       return Number(valeur) >= SEUIL_GRANDE_PARCELLE ? "grande parcelle" : "petite parcelle";
 
-    case "surfaceBati":
-      return Number(valeur) < SEUIL_EMPRISE_BATI_FAIBLE
-        ? "emprise bât. faible"
-        : "emprise bât. forte";
+    case "surfaceBati": {
+      const surfBati = Number(valeur);
+      if (surfBati === 0) return "pas de bâti";
+      return surfBati < SEUIL_EMPRISE_BATI_FAIBLE ? "emprise bât. faible" : "emprise bât. forte";
+    }
 
     case "siteEnCentreVille":
       return valeur === true || valeur === "true" ? "centre-ville" : "excentré";
@@ -179,6 +182,20 @@ export function getCritereTagLabel(
     case "presenceZoneHumide": {
       const pzh = String(valeur) as PresenceZoneHumide;
       return pzh === PresenceZoneHumide.OUI ? "zone humide" : null;
+    }
+
+    case "zonageAbcLogement": {
+      const zab = String(valeur) as ZonageAbcLogement;
+      if (zab === ZonageAbcLogement.ABIS || zab === ZonageAbcLogement.A) return "Zone A logement";
+      if (zab === ZonageAbcLogement.B1 || zab === ZonageAbcLogement.B2) return "Zone B logement";
+      return "Zone C logement";
+    }
+
+    case "distanceIte": {
+      const ite = String(valeur) as DistanceIte;
+      if (ite === DistanceIte.MOINS_1KM_BON_ETAT) return "accès Fret";
+      if (ite === DistanceIte.MOINS_1KM_MAUVAIS_ETAT) return "accès Fret (dégradé)";
+      return null;
     }
 
     default:

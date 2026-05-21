@@ -72,6 +72,14 @@ jobs:
         if: steps.check.outputs.should_run == 'true'
         run: pnpm install --frozen-lockfile
 
+      - name: Build shared-types
+        if: steps.check.outputs.should_run == 'true'
+        run: pnpm --filter @mutafriches/shared-types build
+
+      - name: Build API
+        if: steps.check.outputs.should_run == 'true'
+        run: pnpm --filter api run build:nest
+
       - name: Prefetch enrichments (${{ matrix.env.name }})
         if: steps.check.outputs.should_run == 'true'
         env:

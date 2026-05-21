@@ -1,5 +1,6 @@
 import React from "react";
 import { EnrichissementOutputDto } from "@mutafriches/shared-types";
+import { DsfrAccordion } from "@shared/components/dsfr/DsfrAccordion";
 import {
   formatDistance,
   formatBoolean,
@@ -19,12 +20,7 @@ export const EnrichissementSection: React.FC<EnrichissementSectionProps> = ({
   if (!enrichmentData) {
     const empty = <p className="fr-text--sm">Aucune donn&eacute;e disponible.</p>;
     if (noWrapper) return empty;
-    return (
-      <details className="debug-panel__section">
-        <summary>Donn&eacute;es d'enrichissement</summary>
-        <div className="debug-panel__section-content">{empty}</div>
-      </details>
-    );
+    return <DsfrAccordion title="Données d'enrichissement">{empty}</DsfrAccordion>;
   }
 
   const content = (
@@ -46,6 +42,9 @@ export const EnrichissementSection: React.FC<EnrichissementSectionProps> = ({
 
         <dt>Distance transport en commun</dt>
         <dd>{formatDistance(enrichmentData.distanceTransportCommun)}</dd>
+
+        <dt>Distance ITE fret</dt>
+        <dd>{enrichmentData.distanceIte ?? "Non disponible"}</dd>
 
         <dt>Commerces / services</dt>
         <dd>
@@ -156,6 +155,9 @@ export const EnrichissementSection: React.FC<EnrichissementSectionProps> = ({
 
         <dt>Patrimonial</dt>
         <dd>{enrichmentData.zonagePatrimonial ?? "Non disponible"}</dd>
+
+        <dt>ABC logement</dt>
+        <dd>{enrichmentData.zonageAbcLogement ?? "Non disponible"}</dd>
       </dl>
 
       {/* Énergies renouvelables (ZAER) */}
@@ -226,10 +228,5 @@ export const EnrichissementSection: React.FC<EnrichissementSectionProps> = ({
 
   if (noWrapper) return content;
 
-  return (
-    <details className="debug-panel__section">
-      <summary>Donn&eacute;es d'enrichissement</summary>
-      <div className="debug-panel__section-content">{content}</div>
-    </details>
-  );
+  return <DsfrAccordion title="Données d'enrichissement">{content}</DsfrAccordion>;
 };

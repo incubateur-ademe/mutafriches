@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import type { EnrichissementOutputDto } from "@mutafriches/shared-types";
+import { DsfrAccordion } from "@shared/components/dsfr/DsfrAccordion";
 
 // TODO: supprimer après analyse
 
@@ -148,12 +149,7 @@ export const DiagnosticRisquesSection: React.FC<DiagnosticRisquesSectionProps> =
   if (!enrichmentData || !risques) {
     const empty = <p className="fr-text--sm">Données GeoRisques non disponibles.</p>;
     if (noWrapper) return empty;
-    return (
-      <details className="debug-panel__section">
-        <summary>Diagnostic risques</summary>
-        <div className="debug-panel__section-content">{empty}</div>
-      </details>
-    );
+    return <DsfrAccordion title="Diagnostic risques">{empty}</DsfrAccordion>;
   }
 
   const metadata = risques.metadata as
@@ -319,10 +315,5 @@ export const DiagnosticRisquesSection: React.FC<DiagnosticRisquesSectionProps> =
 
   if (noWrapper) return content;
 
-  return (
-    <details className="debug-panel__section">
-      <summary>Diagnostic risques</summary>
-      <div className="debug-panel__section-content">{content}</div>
-    </details>
-  );
+  return <DsfrAccordion title="Diagnostic risques">{content}</DsfrAccordion>;
 };

@@ -4,6 +4,7 @@ import type {
   UsageResultatDetaille,
   DetailCritere,
 } from "@mutafriches/shared-types";
+import { DsfrAccordion } from "@shared/components/dsfr/DsfrAccordion";
 import { getMutabilityColor } from "../../utils/debug.helpers";
 
 /** Labels français pour les types d'usage */
@@ -46,6 +47,8 @@ const CRITERE_LABELS: Record<string, string> = {
   zoneAccelerationEnr: "Zone d'accélération EnR",
   presenceEspecesProtegees: "Présence d'espèces protégées",
   presenceZoneHumide: "Présence d'une zone humide",
+  zonageAbcLogement: "Zonage ABC logement",
+  distanceIte: "Distance à une installation de chargement industrielle",
 };
 
 /** Critères à mettre en évidence (poids élevé et/ou intérêt analytique) */
@@ -112,12 +115,7 @@ export const DetailAlgorithmeSection: React.FC<DetailAlgorithmeSectionProps> = (
       </p>
     );
     if (noWrapper) return empty;
-    return (
-      <details className="debug-panel__section">
-        <summary>{title ?? "Détail de l'algorithme"}</summary>
-        <div className="debug-panel__section-content">{empty}</div>
-      </details>
-    );
+    return <DsfrAccordion title={title ?? "Détail de l'algorithme"}>{empty}</DsfrAccordion>;
   }
 
   // Usage sélectionné ou le premier par défaut
@@ -262,10 +260,5 @@ export const DetailAlgorithmeSection: React.FC<DetailAlgorithmeSectionProps> = (
 
   if (noWrapper) return content;
 
-  return (
-    <details className="debug-panel__section">
-      <summary>{title ?? "Détail de l'algorithme"}</summary>
-      <div className="debug-panel__section-content">{content}</div>
-    </details>
-  );
+  return <DsfrAccordion title={title ?? "Détail de l'algorithme"}>{content}</DsfrAccordion>;
 };
