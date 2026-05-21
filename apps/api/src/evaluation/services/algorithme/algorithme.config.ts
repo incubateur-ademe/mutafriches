@@ -434,7 +434,7 @@ export const MATRICE_SCORING = {
       [UsageType.TERTIAIRE]: ScoreImpact.TRES_NEGATIF,
       [UsageType.INDUSTRIE]: ScoreImpact.TRES_NEGATIF,
       [UsageType.RENATURATION]: ScoreImpact.TRES_POSITIF,
-      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.POSITIF,
+      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
     },
 
     [ZonageReglementaire.ZONE_AGRICOLE_A]: {
