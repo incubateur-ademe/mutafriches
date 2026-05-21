@@ -36,13 +36,13 @@ const BADGE_DONNEES_NATIONALES = {
   icon: "fr-icon-checkbox-line",
 };
 const BADGE_SAISIE = {
-  label: "saisie de donnée",
+  label: "données à remplir",
   variant: "green-tilleul-verveine",
   icon: "fr-icon-edit-line",
 };
 const BADGE_CALCULE = {
   label: "calculé",
-  variant: "pink-tuile",
+  variant: "success",
   icon: "fr-icon-calculator-line",
 };
 
