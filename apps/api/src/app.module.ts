@@ -6,6 +6,7 @@ import { EnrichissementModule } from "./enrichissement/enrichissement.module";
 import { EvaluationModule } from "./evaluation/evaluation.module";
 import { EvenementsModule } from "./evenements/evenements.module";
 import { StatsModule } from "./stats/stats.module";
+import { ImportStatusModule } from "./import-status/import-status.module";
 import { MetabaseModule } from "./metabase/metabase.module";
 import { DatabaseModule } from "./shared/database/database.module";
 import { SharedModule } from "./shared/shared.module";
@@ -24,6 +25,7 @@ import { SharedModule } from "./shared/shared.module";
     EvaluationModule,
     EvenementsModule,
     StatsModule,
+    ImportStatusModule,
     MetabaseModule,
   ],
   controllers: [AppController],

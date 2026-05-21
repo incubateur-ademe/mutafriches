@@ -24,6 +24,7 @@ import { DocumentationIntegrationPage } from "./features/documentation/pages/Doc
 import { StatistiquesPage } from "./features/statistiques/pages/StatistiquesPage";
 import { CCI92Page } from "./features/cci92/pages/CCI92Page";
 import { PartenairesPage } from "./features/cci92/pages/PartenairesPage";
+import { StatutImportsPage } from "./features/statut-imports/pages/StatutImportsPage";
 
 function AppContent() {
   const { track } = useEventTracking();
@@ -62,6 +63,9 @@ function AppContent() {
 
         {/* Documentation */}
         <Route path={ROUTES.DOCUMENTATION_INTEGRATION} element={<DocumentationIntegrationPage />} />
+
+        {/* Statut technique */}
+        <Route path={ROUTES.STATUT_IMPORTS} element={<StatutImportsPage />} />
 
         {/* Partenaires */}
         <Route path={ROUTES.PARTENAIRES} element={<PartenairesPage />} />
