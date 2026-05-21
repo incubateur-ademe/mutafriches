@@ -1,4 +1,5 @@
 import React from "react";
+import { DsfrAccordion } from "@shared/components/dsfr/DsfrAccordion";
 import { getManualDataLabel } from "../../utils/debug.helpers";
 
 interface DonneesComplementairesSectionProps {
@@ -13,12 +14,7 @@ export const DonneesComplementairesSection: React.FC<DonneesComplementairesSecti
   if (!manualData || Object.keys(manualData).length === 0) {
     const empty = <p className="fr-text--sm">Aucune donn&eacute;e compl&eacute;mentaire saisie.</p>;
     if (noWrapper) return empty;
-    return (
-      <details className="debug-panel__section">
-        <summary>Donn&eacute;es compl&eacute;mentaires</summary>
-        <div className="debug-panel__section-content">{empty}</div>
-      </details>
-    );
+    return <DsfrAccordion title="Données complémentaires">{empty}</DsfrAccordion>;
   }
 
   const content = (
@@ -40,10 +36,5 @@ export const DonneesComplementairesSection: React.FC<DonneesComplementairesSecti
 
   if (noWrapper) return content;
 
-  return (
-    <details className="debug-panel__section">
-      <summary>Donn&eacute;es compl&eacute;mentaires</summary>
-      <div className="debug-panel__section-content">{content}</div>
-    </details>
-  );
+  return <DsfrAccordion title="Données complémentaires">{content}</DsfrAccordion>;
 };

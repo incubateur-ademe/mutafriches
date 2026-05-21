@@ -4,6 +4,7 @@ import {
   DiagnosticFeature,
   DiagnosticReglementaire,
 } from "@mutafriches/shared-types";
+import { DsfrAccordion } from "@shared/components/dsfr/DsfrAccordion";
 
 interface DiagnosticZonagesSectionProps {
   enrichmentData?: EnrichissementOutputDto;
@@ -309,10 +310,5 @@ export const DiagnosticZonagesSection: React.FC<DiagnosticZonagesSectionProps> =
 
   if (noWrapper) return content;
 
-  return (
-    <details className="debug-panel__section">
-      <summary>Diagnostic zonages (donn&eacute;es brutes API)</summary>
-      <div className="debug-panel__section-content">{content}</div>
-    </details>
-  );
+  return <DsfrAccordion title="Diagnostic zonages (données brutes API)">{content}</DsfrAccordion>;
 };
