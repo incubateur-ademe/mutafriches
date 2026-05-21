@@ -1,17 +1,45 @@
 import React, { useId } from "react";
 import "./DsfrAccordion.css";
 
-export type DsfrBadgeVariant = "info" | "success" | "warning" | "new";
+/**
+ * Suffixe d'un modifier DSFR de badge (couleur sémantique ou palette nommée).
+ * Exemples : "info", "success", "warning", "error", "new",
+ * "green-tilleul-verveine", "blue-ecume", "purple-glycine"...
+ * Voir https://www.systeme-de-design.gouv.fr/composants-et-modeles/composants/badge/
+ */
+export type DsfrBadgeVariant = string;
+
+export interface DsfrAccordionBadge {
+  label: string;
+  /** Modifier DSFR (suffixe sans "fr-badge--"). Ex. "info", "green-tilleul-verveine". */
+  variant?: DsfrBadgeVariant;
+  /** Classe d'icône DSFR complète. Ex. "fr-icon-edit-line". */
+  icon?: string;
+  /** Position de l'icône — défaut "left". */
+  iconPosition?: "left" | "right";
+  /** Si true, badge sans `fr-badge--sm`. */
+  large?: boolean;
+}
 
 export interface DsfrAccordionProps {
   title: string;
   defaultOpen?: boolean;
-  badge?: { label: string; variant?: DsfrBadgeVariant };
+  badge?: DsfrAccordionBadge;
   headingLevel?: 3 | 4 | 5 | 6;
   highlight?: boolean;
   id?: string;
   className?: string;
   children: React.ReactNode;
+}
+
+function buildBadgeClassName(badge: DsfrAccordionBadge): string {
+  const classes = ["fr-badge"];
+  if (!badge.large) classes.push("fr-badge--sm");
+  if (badge.variant) classes.push(`fr-badge--${badge.variant}`);
+  if (badge.icon) {
+    classes.push(badge.icon, `fr-badge--icon-${badge.iconPosition ?? "left"}`);
+  }
+  return classes.join(" ");
 }
 
 export const DsfrAccordion: React.FC<DsfrAccordionProps> = ({
@@ -35,10 +63,6 @@ export const DsfrAccordion: React.FC<DsfrAccordionProps> = ({
     .filter(Boolean)
     .join(" ");
 
-  const badgeClass = badge?.variant
-    ? `fr-badge fr-badge--sm fr-badge--${badge.variant}`
-    : "fr-badge fr-badge--sm";
-
   const Heading = `h${headingLevel}` as "h3" | "h4" | "h5" | "h6";
 
   return (
@@ -51,7 +75,7 @@ export const DsfrAccordion: React.FC<DsfrAccordionProps> = ({
           aria-controls={collapseId}
         >
           <span className="dsfr-accordion__label">{title}</span>
-          {badge && <span className={`${badgeClass} fr-mr-2w`}>{badge.label}</span>}
+          {badge && <span className={`${buildBadgeClassName(badge)} fr-mr-2w`}>{badge.label}</span>}
         </button>
       </Heading>
       <div className="fr-collapse" id={collapseId}>

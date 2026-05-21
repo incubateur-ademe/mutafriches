@@ -30,9 +30,21 @@ interface CCI92SiteDetailProps {
 
 type Phase = "qualification" | "mutabilite";
 
-const BADGE_AUTO = { label: "automatique", variant: "info" as const };
-const BADGE_SAISIE = { label: "saisie de donnée", variant: "warning" as const };
-const BADGE_CALCULE = { label: "calculé", variant: "success" as const };
+const BADGE_DONNEES_NATIONALES = {
+  label: "données nationales",
+  variant: "success",
+  icon: "fr-icon-checkbox-line",
+};
+const BADGE_SAISIE = {
+  label: "saisie de donnée",
+  variant: "green-tilleul-verveine",
+  icon: "fr-icon-edit-line",
+};
+const BADGE_CALCULE = {
+  label: "calculé",
+  variant: "pink-tuile",
+  icon: "fr-icon-calculator-line",
+};
 
 export const CCI92SiteDetail: React.FC<CCI92SiteDetailProps> = ({
   site,
@@ -96,7 +108,7 @@ export const CCI92SiteDetail: React.FC<CCI92SiteDetailProps> = ({
         <>
           {/* Section automatique — repliée par défaut, l'utilisateur déplie au besoin */}
           <div key={`auto-${phase}`}>
-            <DsfrAccordion title="Identification du site" badge={BADGE_AUTO}>
+            <DsfrAccordion title="Identification du site" badge={BADGE_DONNEES_NATIONALES}>
               <SiteIdentificationSection
                 enrichmentData={enrichmentData}
                 identifiantSite={site.idtup}
@@ -104,21 +116,24 @@ export const CCI92SiteDetail: React.FC<CCI92SiteDetailProps> = ({
               />
             </DsfrAccordion>
 
-            <DsfrAccordion title="Qualification du site" badge={BADGE_AUTO}>
+            <DsfrAccordion title="Qualification du site" badge={BADGE_DONNEES_NATIONALES}>
               <EnrichissementSection enrichmentData={enrichmentData} noWrapper />
             </DsfrAccordion>
 
             {enrichmentData.diagnosticZonages && (
-              <DsfrAccordion title="Diagnostic zonages (données brutes API)" badge={BADGE_AUTO}>
+              <DsfrAccordion
+                title="Diagnostic zonages (données brutes API)"
+                badge={BADGE_DONNEES_NATIONALES}
+              >
                 <DiagnosticZonagesSection enrichmentData={enrichmentData} noWrapper />
               </DsfrAccordion>
             )}
 
-            <DsfrAccordion title="Données exhaustives Géorisques" badge={BADGE_AUTO}>
+            <DsfrAccordion title="Données exhaustives Géorisques" badge={BADGE_DONNEES_NATIONALES}>
               <DiagnosticRisquesSection enrichmentData={enrichmentData} noWrapper />
             </DsfrAccordion>
 
-            <DsfrAccordion title="Sources appelées" badge={BADGE_AUTO}>
+            <DsfrAccordion title="Sources appelées" badge={BADGE_DONNEES_NATIONALES}>
               <SourcesMetadataSection enrichmentData={enrichmentData} noWrapper />
             </DsfrAccordion>
           </div>
