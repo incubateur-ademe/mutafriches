@@ -6,8 +6,8 @@ export * from "./evenements";
 // Stats
 export * from "./stats";
 
-// Import status
-export * from "./import-status";
+// Données externes (statut des imports + monitoring APIs externes)
+export * from "./donnees-externes";
 
 // Shared
 export * from "./shared";

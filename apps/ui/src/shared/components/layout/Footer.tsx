@@ -52,8 +52,8 @@ export function Footer() {
                 </a>
               </li>
               <li className="fr-footer__bottom-item">
-                <a className="fr-footer__bottom-link" href={ROUTES.STATUT_IMPORTS}>
-                  Statut des imports
+                <a className="fr-footer__bottom-link" href={ROUTES.DONNEES_EXTERNES}>
+                  Données externes
                 </a>
               </li>
               <li className="fr-footer__bottom-item">

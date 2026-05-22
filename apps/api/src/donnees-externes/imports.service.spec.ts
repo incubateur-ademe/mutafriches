@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { ImportStatusService } from "./import-status.service";
+import { ImportsService } from "./imports.service";
 import { DatabaseService } from "../shared/database/database.service";
-import { IMPORT_DATASETS } from "./import-status.registry";
+import { IMPORT_DATASETS } from "./imports.registry";
 
 function createMockDatabaseService() {
   return {
@@ -82,15 +82,15 @@ function setupDbMock(
   });
 }
 
-describe("ImportStatusService", () => {
-  let service: ImportStatusService;
+describe("ImportsService", () => {
+  let service: ImportsService;
   let databaseService: DatabaseService;
   let dbExecute: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
     databaseService = createMockDatabaseService();
     dbExecute = databaseService.db.execute as ReturnType<typeof vi.fn>;
-    service = new ImportStatusService(databaseService);
+    service = new ImportsService(databaseService);
   });
 
   it("retourne un item pour chaque dataset du registre", async () => {

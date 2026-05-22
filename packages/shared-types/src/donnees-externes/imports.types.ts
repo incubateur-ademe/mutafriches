@@ -31,7 +31,7 @@ export interface ImportStatusItem {
 }
 
 /**
- * Réponse de l'endpoint GET /api/import-status.
+ * Réponse de l'endpoint GET /api/donnees-externes/imports.
  */
 export interface ImportStatusOutput {
   /** Date de génération de la réponse (ISO8601) */

@@ -2,7 +2,7 @@ import { Injectable, Logger } from "@nestjs/common";
 import { sql } from "drizzle-orm";
 import type { ImportStatus, ImportStatusItem, ImportStatusOutput } from "@mutafriches/shared-types";
 import { DatabaseService } from "../shared/database/database.service";
-import { IMPORT_DATASETS, type ImportDatasetDefinition } from "./import-status.registry";
+import { IMPORT_DATASETS, type ImportDatasetDefinition } from "./imports.registry";
 
 interface RawImportLogRow {
   status: ImportStatus;
@@ -18,8 +18,8 @@ interface CountRow {
 }
 
 @Injectable()
-export class ImportStatusService {
-  private readonly logger = new Logger(ImportStatusService.name);
+export class ImportsService {
+  private readonly logger = new Logger(ImportsService.name);
 
   constructor(private readonly database: DatabaseService) {}
 

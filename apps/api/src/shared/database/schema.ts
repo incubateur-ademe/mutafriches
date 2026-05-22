@@ -9,6 +9,7 @@ import { rawAdemeSitesPollues } from "./schemas/raw-ademe-sites-pollues.schema";
 import { epci } from "./schemas/epci.schema";
 import { communes } from "./schemas/communes.schema";
 import { rawIteFret } from "./schemas/raw-ite-fret.schema";
+import { apiHealthSnapshots } from "./schemas/api-health-snapshots.schema";
 
 // Export individuel pour drizzle-kit
 export {
@@ -24,6 +25,7 @@ export {
   epci,
   communes,
   rawIteFret,
+  apiHealthSnapshots,
 };
 
 // Export groupé pour drizzle ORM
@@ -39,4 +41,5 @@ export const schema = {
   epci,
   communes,
   rawIteFret,
+  apiHealthSnapshots,
 };
