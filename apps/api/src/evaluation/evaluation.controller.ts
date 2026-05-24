@@ -45,9 +45,10 @@ import {
 } from "@mutafriches/shared-types";
 import { Request } from "express";
 import { OrchestrateurService } from "./services/orchestrateur.service";
-import { ALGORITHME_VERSIONS } from "./services/algorithme/versions";
+import { ALGORITHME_VERSIONS, VERSION_COURANTE } from "./services/algorithme/versions";
 import { OrigineDetectionService } from "../shared/services/origine-detection.service";
 import { IntegrateurOriginGuard } from "../shared/guards";
+import { APP_VERSION } from "../shared/utils/version.utils";
 import { CalculerMutabiliteSwaggerDto } from "./dto/input/calculer-mutabilite.dto";
 import { MutabiliteSwaggerDto } from "./dto/output/mutabilite.dto";
 import { MetadataSwaggerDto } from "./dto/output/metadata.dto";
@@ -150,7 +151,7 @@ export class EvaluationController {
         },
         usages: Object.values(UsageType),
       },
-      version: { api: "1.0.0", algorithme: "1.1.0" },
+      version: { api: APP_VERSION, algorithme: VERSION_COURANTE },
     };
   }
 
