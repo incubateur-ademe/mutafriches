@@ -25,14 +25,14 @@ export class EnrichissementSwaggerDto implements IEnrichissementOutput {
   identifiantParcelle: string;
 
   @ApiProperty({
-    description: "Code INSEE de la parcelle",
-    example: "12345",
+    description: "Code INSEE de la commune où se situe la parcelle (5 caractères).",
+    example: "25056",
   })
   codeInsee: string;
 
   @ApiProperty({
-    description: "Nom de la commune où se situe la parcelle",
-    example: "Trélazé",
+    description: "Nom de la commune où se situe la parcelle.",
+    example: "Besançon",
   })
   commune: string;
 
@@ -88,7 +88,7 @@ export class EnrichissementSwaggerDto implements IEnrichissementOutput {
   @ApiProperty({
     description: "Nom de la commune prédominante (plus grande surface cumulée)",
     required: false,
-    example: "Trélazé",
+    example: "Besançon",
   })
   communePredominante?: string;
 

@@ -1,4 +1,49 @@
 import { ApiProperty } from "@nestjs/swagger";
+import {
+  RisqueRetraitGonflementArgile,
+  RisqueCavitesSouterraines,
+  RisqueInondation,
+  ZonageEnvironnemental,
+  ZonageReglementaire,
+  ZonagePatrimonial,
+  TrameVerteEtBleue,
+  DistanceIte,
+  TypeProprietaire,
+  RaccordementEau,
+  EtatBatiInfrastructure,
+  PresencePollution,
+  ValeurArchitecturale,
+  QualitePaysage,
+  QualiteVoieDesserte,
+  UsageType,
+} from "@mutafriches/shared-types";
+
+/**
+ * Exemple dérivé dynamiquement des enums réels — garantit la cohérence
+ * entre la doc Swagger et les valeurs effectivement servies par le controller.
+ */
+const ENUMS_EXAMPLE = {
+  enrichissement: {
+    risqueRetraitGonflementArgile: Object.values(RisqueRetraitGonflementArgile),
+    risqueCavitesSouterraines: Object.values(RisqueCavitesSouterraines),
+    risqueInondation: Object.values(RisqueInondation),
+    zonageEnvironnemental: Object.values(ZonageEnvironnemental),
+    zonageReglementaire: Object.values(ZonageReglementaire),
+    zonagePatrimonial: Object.values(ZonagePatrimonial),
+    trameVerteEtBleue: Object.values(TrameVerteEtBleue),
+    distanceIte: Object.values(DistanceIte),
+  },
+  saisie: {
+    typeProprietaire: Object.values(TypeProprietaire),
+    raccordementEau: Object.values(RaccordementEau),
+    etatBatiInfrastructure: Object.values(EtatBatiInfrastructure),
+    presencePollution: Object.values(PresencePollution),
+    valeurArchitecturaleHistorique: Object.values(ValeurArchitecturale),
+    qualitePaysage: Object.values(QualitePaysage),
+    qualiteVoieDesserte: Object.values(QualiteVoieDesserte),
+  },
+  usages: Object.values(UsageType),
+};
 
 /**
  * DTO Swagger représentant les métadonnées de l'évaluation.
@@ -6,60 +51,8 @@ import { ApiProperty } from "@nestjs/swagger";
 export class MetadataSwaggerDto {
   @ApiProperty({
     description:
-      "Enums groupés par catégorie. `enrichissement` = valeurs renvoyées par l'API d'enrichissement. `saisie` = valeurs attendues dans les données complémentaires (les 8 champs saisis manuellement). `usages` = les 7 usages évalués par l'algorithme.",
-    example: {
-      enrichissement: {
-        risqueRetraitGonflementArgile: ["aucun", "faible-ou-moyen", "fort"],
-        risqueCavitesSouterraines: ["non", "oui"],
-        risqueInondation: ["non", "oui"],
-        zonageEnvironnemental: [
-          "hors-zone",
-          "natura-2000",
-          "znieff-type-1-2",
-          "parc-naturel-regional",
-          "parc-naturel-national",
-          "reserve-naturelle",
-          "proximite-zone",
-        ],
-        zonageReglementaire: [
-          "zone-urbaine-u",
-          "zone-urbaine-u-habitat",
-          "zone-a-urbaniser-au",
-          "zone-agricole-a",
-          "zone-naturelle-n",
-        ],
-        zonagePatrimonial: ["hors-zone", "monument-historique", "site-patrimonial-remarquable"],
-        trameVerteEtBleue: ["hors-zone", "reservoir-biodiversite", "corridor-ecologique"],
-        distanceIte: ["moins-1km", "entre-1-5km", "plus-5km"],
-      },
-      saisie: {
-        typeProprietaire: ["public", "prive", "mixte", "copro-indivision", "ne-sait-pas"],
-        raccordementEau: ["oui", "non", "ne-sait-pas"],
-        etatBatiInfrastructure: [
-          "degradation-inexistante",
-          "degradation-faible",
-          "degradation-tres-importante",
-        ],
-        presencePollution: ["non", "demontree-traitee", "demontree-non-traitee", "ne-sait-pas"],
-        valeurArchitecturaleHistorique: [
-          "sans-interet",
-          "ordinaire",
-          "interet-remarquable",
-          "ne-sait-pas",
-        ],
-        qualitePaysage: ["degrade", "ordinaire", "remarquable", "ne-sait-pas"],
-        qualiteVoieDesserte: ["degradee", "praticable", "accessible", "ne-sait-pas"],
-      },
-      usages: [
-        "residentiel",
-        "equipements",
-        "culture",
-        "tertiaire",
-        "industrie",
-        "renaturation",
-        "photovoltaique",
-      ],
-    },
+      "Enums groupés par catégorie. `enrichissement` = valeurs renvoyées par l'API d'enrichissement. `saisie` = valeurs attendues dans les données complémentaires (les 8 champs saisis manuellement). `usages` = les 7 usages évalués par l'algorithme. La valeur `ne-sait-pas` indique que l'utilisateur n'a pas pu répondre (ne contribue pas à la fiabilité).",
+    example: ENUMS_EXAMPLE,
   })
   enums: {
     enrichissement: Record<string, string[]>;

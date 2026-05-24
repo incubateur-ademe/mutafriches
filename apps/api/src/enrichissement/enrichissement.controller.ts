@@ -16,7 +16,7 @@ import { EnrichissementService } from "./services/enrichissement.service";
 import { OrigineDetectionService } from "../shared/services/origine-detection.service";
 import { IntegrateurOriginGuard } from "../shared/guards";
 import { ApiOriginAuth, ApiStandardErrors } from "../shared/swagger";
-import { EnrichirSiteSwaggerDto } from "./dto/input/enrichir-site.dto";
+import { EnrichirSiteSwaggerDto, ENRICHIR_SITE_BODY_EXAMPLES } from "./dto/input/enrichir-site.dto";
 import { EnrichissementSwaggerDto } from "./dto/output/enrichissement.dto";
 
 @ApiTags("enrichissement")
@@ -41,7 +41,7 @@ export class EnrichissementController {
     Si les deux sont fournis, \`identifiants\` est prioritaire.
     `,
   })
-  @ApiBody({ type: EnrichirSiteSwaggerDto })
+  @ApiBody({ type: EnrichirSiteSwaggerDto, examples: ENRICHIR_SITE_BODY_EXAMPLES })
   @ApiQuery({
     name: "iframe",
     required: false,

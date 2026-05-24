@@ -41,6 +41,7 @@ import { IntegrateurOriginGuard } from "../shared/guards";
 import { ApiOriginAuth, ApiStandardErrors } from "../shared/swagger";
 import { APP_VERSION } from "../shared/utils/version.utils";
 import { CalculerMutabiliteSwaggerDto } from "./dto/input/calculer-mutabilite.dto";
+import { CALCULER_MUTABILITE_BODY_EXAMPLES } from "./dto/input/calculer-mutabilite.examples";
 import { MutabiliteSwaggerDto } from "./dto/output/mutabilite.dto";
 import { MetadataSwaggerDto } from "./dto/output/metadata.dto";
 import { EvaluationSwaggerDto } from "./dto/output/evaluation.dto";
@@ -62,7 +63,7 @@ export class EvaluationController {
     summary: "Calculer les indices de mutabilité",
     description: "Calcule les indices de mutabilité pour 7 usages différents d'une friche urbaine.",
   })
-  @ApiBody({ type: CalculerMutabiliteSwaggerDto })
+  @ApiBody({ type: CalculerMutabiliteSwaggerDto, examples: CALCULER_MUTABILITE_BODY_EXAMPLES })
   @ApiQuery({
     name: "modeDetaille",
     required: false,
@@ -195,7 +196,7 @@ export class EvaluationController {
     description:
       "Calcule la mutabilité pour plusieurs versions de l'algorithme et retourne les résultats côte à côte",
   })
-  @ApiBody({ type: CalculerMutabiliteSwaggerDto })
+  @ApiBody({ type: CalculerMutabiliteSwaggerDto, examples: CALCULER_MUTABILITE_BODY_EXAMPLES })
   @ApiQuery({
     name: "versions",
     required: true,
