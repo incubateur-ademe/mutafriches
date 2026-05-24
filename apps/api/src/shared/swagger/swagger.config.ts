@@ -46,7 +46,18 @@ Pas de clé API à transmettre — l'autorisation se fait au niveau du navigateu
 
 ### Rate limiting
 
-Limite globale : **100 requêtes / minute / IP**. Un endpoint interne (\`/evenements\`) est plus restrictif (30 req/min) et n'est pas exposé ici.
+Limite globale : **100 requêtes / minute / IP** sur tous les endpoints exposés.
+
+### Endpoints internes (non exposés ici)
+
+Pour information, certaines routes existent côté API mais ne sont **pas destinées aux intégrateurs** et sont volontairement masquées de cette documentation :
+
+| Route | Usage | Restriction |
+|-------|-------|-------------|
+| \`POST /evenements\` | Tracking utilisateur interne Mutafriches | Origine = Mutafriches uniquement, 30 req/min/IP |
+| \`/api/metabase/*\` | Intégration dashboard Metabase interne | Réservé à l'équipe Mutafriches |
+
+Les intégrateurs (Benefriches, etc.) ne doivent **pas** appeler ces routes.
 
 ### Versioning de l'algorithme
 
@@ -102,4 +113,43 @@ export function buildSwaggerConfig() {
     .addTag("donnees-externes", "Statut des sources externes (cache, monitoring)")
     .addTag("health", "Vérification de l'état de santé de l'API")
     .build();
+}
+
+/**
+ * Style léger pour la page Swagger UI : couleurs Marianne (DSFR), barre du haut masquée
+ * (pas pertinente sur un déploiement Mutafriches), padding aéré.
+ */
+const SWAGGER_CUSTOM_CSS = `
+  .swagger-ui .topbar { display: none; }
+  .swagger-ui .info { margin: 30px 0; }
+  .swagger-ui .info .title { color: #000091; }
+  .swagger-ui .scheme-container { background: #f5f5fe; box-shadow: none; padding: 12px 20px; }
+  .swagger-ui .opblock-tag { font-size: 20px; }
+  .swagger-ui .opblock.opblock-post { background: rgba(0, 0, 145, 0.05); border-color: #000091; }
+  .swagger-ui .opblock.opblock-post .opblock-summary-method { background: #000091; }
+  .swagger-ui .btn.execute { background: #000091; border-color: #000091; }
+  .swagger-ui .btn.execute:hover { background: #1212ff; border-color: #1212ff; }
+`;
+
+/**
+ * Options de configuration de la page Swagger UI (titre, CSS custom, comportement par défaut).
+ */
+export function getSwaggerSetupOptions() {
+  return {
+    customSiteTitle: "Mutafriches API — Documentation intégrateurs",
+    customCss: SWAGGER_CUSTOM_CSS,
+    customfavIcon: "https://mutafriches.beta.gouv.fr/favicon.ico",
+    swaggerOptions: {
+      // Comportement par défaut : tags repliés, recherche activée
+      docExpansion: "list",
+      filter: true,
+      tagsSorter: "alpha",
+      operationsSorter: "alpha",
+      // Conserve les identifiants saisis dans "Try it out" entre rechargements
+      persistAuthorization: true,
+      displayRequestDuration: true,
+      // Masque le bandeau "Models" en bas qui pollue la lecture
+      defaultModelsExpandDepth: -1,
+    },
+  };
 }

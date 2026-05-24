@@ -7,7 +7,7 @@ import { SwaggerModule } from "@nestjs/swagger";
 import { Request, Response, NextFunction } from "express";
 import { ValidationPipe, Logger } from "@nestjs/common";
 import { isProduction } from "./shared/utils";
-import { buildSwaggerConfig } from "./shared/swagger";
+import { buildSwaggerConfig, getSwaggerSetupOptions } from "./shared/swagger";
 
 async function bootstrap() {
   const logger = new Logger("Bootstrap");
@@ -23,12 +23,7 @@ async function bootstrap() {
 
     // Configuration Swagger (voir shared/swagger/swagger.config.ts)
     const document = SwaggerModule.createDocument(app, buildSwaggerConfig());
-    SwaggerModule.setup("api", app, document, {
-      swaggerOptions: {
-        persistAuthorization: true,
-        displayRequestDuration: true,
-      },
-    });
+    SwaggerModule.setup("api", app, document, getSwaggerSetupOptions());
 
     // Route pour récupérer le document OpenAPI en JSON
     app.use("/api-json", (req: Request, res: Response) => {
