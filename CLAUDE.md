@@ -85,6 +85,65 @@ Cette règle s'applique à :
 - Tests : `*.spec.ts`
 - Calculateurs : `*.calculator.ts`
 
+### 5. Commentaires : simples et brefs
+
+Les commentaires doivent être **courts** et n'expliquer que le **pourquoi** (jamais le quoi évident).
+
+```typescript
+// INTERDIT - verbeux, paraphrase le code, multi-lignes inutiles
+/**
+ * Cette fonction prend en entrée un Site déjà enrichi et applique
+ * successivement toutes les règles de scoring de la matrice 24×7
+ * pour produire en sortie un objet contenant les indices de mutabilité
+ * pour chacun des 7 usages possibles.
+ */
+export function calculer(site: Site): MutabiliteResult { ... }
+
+// CORRECT - bref, va à l'essentiel
+// Calcule les indices des 7 usages. Matrice : algorithme/algorithme.config.ts
+export function calculer(site: Site): MutabiliteResult { ... }
+```
+
+Règles :
+
+- Pas de commentaires qui paraphrasent le code (le code est déjà lisible).
+- Pas de docblocks JSDoc longs sauf si la fonction a une sémantique non évidente.
+- Un commentaire d'une ligne suffit dans 90 % des cas.
+- Préférer un nom de variable/fonction explicite à un commentaire d'explication.
+- Référencer la source (chemin de fichier, version d'algorithme, ticket) en une ligne, pas en paragraphe.
+
+### 6. CSS : DSFR + Tailwind, pas de CSS custom
+
+Pour toute UI (`apps/ui/`), **ordre de priorité strict** :
+
+1. **DSFR** (`@gouvfr/dsfr` 1.14+) — classes `fr-*`, composants documentés sur [systeme-de-design.gouv.fr](https://www.systeme-de-design.gouv.fr/). C'est le défaut absolu pour layout, formulaires, boutons, badges, alertes, etc.
+2. **Tailwind CSS** (v4) — uniquement pour les ajustements utilitaires que le DSFR ne couvre pas (espacements fins, grille spécifique, responsive ponctuel).
+3. **CSS custom** (fichier `.css` dédié ou inline) — **uniquement** si DSFR + Tailwind ne suffisent pas, et **après avoir justifié** dans un commentaire pourquoi.
+
+```tsx
+// CORRECT — DSFR pour la structure, Tailwind pour le détail
+<div className="fr-card fr-card--shadow flex items-center gap-2">
+  <span className="fr-badge fr-badge--success">Mutabilité élevée</span>
+</div>
+
+// INTERDIT — CSS inline alors qu'une classe DSFR existe
+<div style={{ padding: 16, border: "1px solid #ddd" }}>...</div>
+
+// TOLÉRÉ — uniquement si justifié
+<div
+  className="fr-grid-row"
+  // Hauteur min imposée par la maquette de la carte interactive, non couverte par DSFR
+  style={{ minHeight: "320px" }}
+>
+```
+
+Règles :
+
+- Ne jamais réinventer un composant DSFR existant (callout, alert, accordion, badge, etc.).
+- En cas de doute, chercher d'abord dans la doc DSFR avant d'écrire du Tailwind.
+- Si une override de style DSFR est nécessaire, utiliser `mt-0!` (Tailwind v4 important, syntaxe suffixe) plutôt qu'un fichier CSS séparé.
+- Pas de framework UI tiers (Material UI, Chakra, etc.) — la conformité Beta.gouv impose DSFR.
+
 ## Workflow obligatoire
 
 ### Vérification post-implémentation
@@ -107,6 +166,47 @@ Quand une tâche implique un **choix architectural significatif**, créer automa
 - Choix entre plusieurs approches avec des compromis
 
 Ne PAS créer d'ADR pour les corrections de bugs, refactorings mineurs ou fonctionnalités qui suivent un pattern existant.
+
+### Commits : simples et conventionnels
+
+Suivre **Conventional Commits** : un titre court, une seule ligne de description.
+
+Format :
+
+```
+<type>(<scope?>): <titre court à l'impératif>
+
+<description en une seule ligne, le pourquoi plus que le quoi>
+```
+
+**Types courants** : `feat`, `fix`, `chore`, `docs`, `refactor`, `test`, `style`, `perf`, `build`, `ci`.
+
+**Exemples** :
+
+```
+feat(algo): publication v1.10 avec correction matrice ZAER
+
+Corrige les scores ZAER pour le photovoltaïque suite à validation avec la formule Excel de référence.
+```
+
+```
+fix(enrichissement): timeout API GéoRisques porté à 15s
+
+Les requêtes RGA sur certaines communes dépassaient les 10s par défaut et déclenchaient des sources échouées non justifiées.
+```
+
+```
+docs(adr): justifie le passage à Drizzle ORM
+
+Tradeoffs vs TypeORM et raisons du choix pour le contexte PostGIS.
+```
+
+Règles :
+
+- Titre **sous 70 caractères**, à l'impératif, en minuscules.
+- **Une seule ligne** de description (pas de listes à puces, pas de paragraphes).
+- Préférer le **pourquoi** au quoi (le diff montre déjà le quoi).
+- **Aucune mention d'auteur ou de co-auteur** dans le corps du commit (pas de `Co-Authored-By`, pas de `Generated with`, etc.). L'auteur git suffit.
 
 ### Compaction du contexte
 
@@ -180,6 +280,30 @@ apps/api/src/
 │   └── guards/             # IntegrateurOriginGuard, OriginGuard
 └── scripts/                # Scripts d'import de données (BPE, transport, ADEME)
 ```
+
+## Versionnage de l'algorithme de mutabilité
+
+L'algorithme de scoring est versionné pour préserver la reproductibilité des évaluations passées et permettre la comparaison entre versions.
+
+- **Source de vérité** : `apps/api/src/evaluation/services/algorithme/versions/` — un fichier par version (`v1.1.ts`, `v1.2.ts`, …), agrégés par `index.ts` (tableau antéchronologique, `[0]` = version courante)
+- **Référence métier** : chaque version doit pointer vers le fichier Excel de référence correspondant (matrice 24×7), conservé dans `docs/sources/` (ou équivalent)
+- **Exposition** : la version courante et la liste complète sont exposées via `GET /evaluation/metadata` et `GET /evaluation/algorithme/versions`. Toute modification doit **immédiatement** se refléter dans ces endpoints (et dans les exemples Swagger associés).
+
+### Procédure pour publier une nouvelle version
+
+Quand une nouvelle version d'algorithme entre en vigueur :
+
+1. Copier les sources datées (Excel, notes de calcul) dans `docs/sources/`
+2. Créer un fichier `vX.Y.ts` dans `versions/` avec `dateEffet` (ISO), `description`, `changements`, `pullRequest`, lien vers la source
+3. Adapter les règles (`algorithme.config.ts`, calculateurs) jusqu'à `pnpm test` vert
+4. **Ajouter l'entrée en tête de l'export agrégé** dans `versions/index.ts` (ordre antéchronologique strict)
+5. Mettre à jour les exemples Swagger qui exposent la version (`metadata.dto.ts`, `evaluation.dto.ts`)
+6. `pnpm validate`
+7. Commit : `feat(algo): publication vX.Y avec <résumé>`
+
+Un test dédié (`versions.spec.ts`) doit garantir l'ordre antéchronologique strict et le format ISO des dates — si absent, le créer à la prochaine publication.
+
+**Règle d'or** : ne JAMAIS hardcoder la version d'algorithme dans la doc ou les exemples Swagger — toujours la lire dynamiquement depuis `versions/index.ts`. Une version désynchronisée entre code et doc casse la confiance des intégrateurs.
 
 ## APIs externes intégrées
 
