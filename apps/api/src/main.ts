@@ -3,10 +3,11 @@ import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
 import { join } from "path";
 import { NestExpressApplication } from "@nestjs/platform-express";
-import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
+import { SwaggerModule } from "@nestjs/swagger";
 import { Request, Response, NextFunction } from "express";
 import { ValidationPipe, Logger } from "@nestjs/common";
 import { isProduction } from "./shared/utils";
+import { buildSwaggerConfig } from "./shared/swagger";
 
 async function bootstrap() {
   const logger = new Logger("Bootstrap");
@@ -20,18 +21,8 @@ async function bootstrap() {
     // Configuration de la validation
     app.useGlobalPipes(new ValidationPipe());
 
-    // Configuration Swagger
-    const config = new DocumentBuilder()
-      .setTitle("Mutafriches API")
-      .setDescription("API pour analyser la mutabilité des friches urbaines")
-      .setVersion("2.0")
-      .addTag("enrichissement", "Module d'enrichissement des sites (mono ou multi-parcelle)")
-      .addTag("evaluation", "Module d'évaluation de la mutabilité")
-      .addTag("health", "Vérification de l'état de santé de l'API")
-      .addTag("stats", "KPIs publics Mutafriches")
-      .build();
-
-    const document = SwaggerModule.createDocument(app, config);
+    // Configuration Swagger (voir shared/swagger/swagger.config.ts)
+    const document = SwaggerModule.createDocument(app, buildSwaggerConfig());
     SwaggerModule.setup("api", app, document, {
       swaggerOptions: {
         persistAuthorization: true,

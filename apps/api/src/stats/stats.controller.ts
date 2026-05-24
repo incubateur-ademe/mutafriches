@@ -3,6 +3,7 @@ import { ApiTags, ApiOperation, ApiQuery, ApiResponse, ApiExcludeEndpoint } from
 import type { Request, Response } from "express";
 import type { Periodicity, StatOutput } from "@mutafriches/shared-types";
 import { StatsService } from "./stats.service";
+import { ApiStandardErrors } from "../shared/swagger";
 import { isValidPeriodicity, computeSinceDate, computeCacheTtl } from "./utils/period.utils";
 
 const CORS_ALLOWED_ORIGINS = [
@@ -17,22 +18,25 @@ export class StatsController {
 
   @Get()
   @ApiOperation({
-    summary: "KPIs publiques Mutafriches",
-    description: "Retourne les statistiques d'utilisation de Mutafriches par période",
+    summary: "KPIs publics Mutafriches",
+    description:
+      "Retourne les statistiques d'utilisation de Mutafriches par période. La réponse est cacheable via un header `Cache-Control` dynamique (TTL adapté à la périodicité). CORS restreint aux dashboards ADEME (`stats.incubateur.ademe.*`).",
   })
   @ApiQuery({
     name: "periodicity",
     required: false,
     enum: ["day", "week", "month", "year"],
-    description: "Périodicité de regroupement (défaut: month)",
+    description: "Périodicité de regroupement (défaut : `month`).",
   })
   @ApiQuery({
     name: "since",
     required: false,
     type: Number,
-    description: "Nombre de périodes à remonter (défaut: toutes)",
+    description:
+      "Nombre de périodes à remonter depuis aujourd'hui (défaut : toutes les périodes disponibles).",
   })
   @ApiResponse({ status: 200, description: "Statistiques par période" })
+  @ApiStandardErrors()
   async getStats(
     @Query("periodicity") periodicityParam: string | undefined,
     @Query("since") sinceParam: string | undefined,

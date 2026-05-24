@@ -12,17 +12,7 @@ import {
   Logger,
   UseGuards,
 } from "@nestjs/common";
-import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiBody,
-  ApiBadRequestResponse,
-  ApiNotFoundResponse,
-  ApiQuery,
-  ApiParam,
-  ApiForbiddenResponse,
-} from "@nestjs/swagger";
+import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiQuery, ApiParam } from "@nestjs/swagger";
 import {
   CalculerMutabiliteInputDto,
   MutabiliteOutputDto,
@@ -48,6 +38,7 @@ import { OrchestrateurService } from "./services/orchestrateur.service";
 import { ALGORITHME_VERSIONS, VERSION_COURANTE } from "./services/algorithme/versions";
 import { OrigineDetectionService } from "../shared/services/origine-detection.service";
 import { IntegrateurOriginGuard } from "../shared/guards";
+import { ApiOriginAuth, ApiStandardErrors } from "../shared/swagger";
 import { APP_VERSION } from "../shared/utils/version.utils";
 import { CalculerMutabiliteSwaggerDto } from "./dto/input/calculer-mutabilite.dto";
 import { MutabiliteSwaggerDto } from "./dto/output/mutabilite.dto";
@@ -72,17 +63,42 @@ export class EvaluationController {
     description: "Calcule les indices de mutabilité pour 7 usages différents d'une friche urbaine.",
   })
   @ApiBody({ type: CalculerMutabiliteSwaggerDto })
-  @ApiQuery({ name: "modeDetaille", required: false, type: Boolean })
-  @ApiQuery({ name: "sansEnrichissement", required: false, type: Boolean })
+  @ApiQuery({
+    name: "modeDetaille",
+    required: false,
+    type: Boolean,
+    description:
+      "Si `true`, inclut le détail par critère (avantages, contraintes, score brut) dans la réponse.",
+  })
+  @ApiQuery({
+    name: "sansEnrichissement",
+    required: false,
+    type: Boolean,
+    description:
+      "Si `true`, calcule directement sur les données fournies sans étape d'enrichissement préalable.",
+  })
+  @ApiQuery({
+    name: "iframe",
+    required: false,
+    type: Boolean,
+    description: "Mode iframe (utilisé pour le tracking d'origine).",
+  })
+  @ApiQuery({
+    name: "integrateur",
+    required: false,
+    type: String,
+    description: "Nom de l'intégrateur (ex : `benefriches`). Utilisé pour le tracking d'origine.",
+  })
   @ApiQuery({
     name: "versionAlgorithme",
     required: false,
     type: String,
-    description: "Version de l'algorithme (ex: v1.0, v1.1, v1.2)",
+    description:
+      "Version de l'algorithme à utiliser (ex : `v1.9`). Si omis, la version courante est appliquée. Voir `GET /evaluation/algorithme/versions` pour la liste.",
   })
   @ApiResponse({ status: 201, description: "Calcul réussi", type: MutabiliteSwaggerDto })
-  @ApiBadRequestResponse({ description: "Données incomplètes" })
-  @ApiForbiddenResponse({ description: "Origine non autorisee" })
+  @ApiOriginAuth("integrateur")
+  @ApiStandardErrors()
   async calculerMutabilite(
     @Body() input: CalculerMutabiliteInputDto,
     @Query("modeDetaille") modeDetaille?: boolean,
@@ -124,9 +140,11 @@ export class EvaluationController {
   @Get("metadata")
   @ApiOperation({
     summary: "Récupérer les métadonnées",
-    description: "Retourne tous les enums disponibles",
+    description:
+      "Retourne les enums utilisés par l'API (valeurs autorisées pour chaque critère), la liste des 7 usages et la version courante de l'algorithme. Source de vérité pour construire les formulaires côté intégrateur.",
   })
   @ApiResponse({ status: 200, description: "Métadonnées récupérées", type: MetadataSwaggerDto })
+  @ApiStandardErrors()
   getMetadata(): MetadataSwaggerDto {
     return {
       enums: {
@@ -158,9 +176,11 @@ export class EvaluationController {
   @Get("algorithme/versions")
   @ApiOperation({
     summary: "Liste des versions de l'algorithme",
-    description: "Retourne les versions disponibles de l'algorithme de mutabilité",
+    description:
+      "Retourne toutes les versions disponibles de l'algorithme de mutabilité, avec leur date d'effet et leur libellé. Une version peut être ciblée via `?versionAlgorithme=vX.Y` sur `POST /evaluation/calculer`.",
   })
   @ApiResponse({ status: 200, description: "Versions récupérées" })
+  @ApiStandardErrors()
   getAlgorithmeVersions(): { version: string; label: string; date: string }[] {
     return ALGORITHME_VERSIONS.map((v) => ({
       version: v.version,
@@ -183,7 +203,7 @@ export class EvaluationController {
     description: "Versions séparées par des virgules (ex: v1.0,v1.1,v1.2)",
   })
   @ApiResponse({ status: 201, description: "Comparaison réussie" })
-  @ApiBadRequestResponse({ description: "Données incomplètes ou versions invalides" })
+  @ApiStandardErrors()
   async comparerMutabilite(
     @Body() input: CalculerMutabiliteInputDto,
     @Query("versions") versionsStr: string,
@@ -230,10 +250,18 @@ export class EvaluationController {
   }
 
   @Get(":id")
-  @ApiOperation({ summary: "Récupérer une évaluation complète" })
-  @ApiParam({ name: "id", description: "Identifiant unique de l'évaluation" })
+  @ApiOperation({
+    summary: "Récupérer une évaluation complète",
+    description:
+      "Retourne le détail complet d'une évaluation persistée : données d'enrichissement, données complémentaires saisies, résultats de mutabilité et métadonnées (version d'algorithme, source, intégrateur).",
+  })
+  @ApiParam({
+    name: "id",
+    description: "Identifiant unique de l'évaluation (préfixé `eval-`).",
+    example: "eval-550e8400-e29b-41d4-a716-446655440000",
+  })
   @ApiResponse({ status: 200, description: "Évaluation trouvée", type: EvaluationSwaggerDto })
-  @ApiNotFoundResponse({ description: "Évaluation non trouvée" })
+  @ApiStandardErrors({ notFound: true })
   async recupererEvaluation(@Param("id") id: string): Promise<EvaluationSwaggerDto> {
     try {
       const evaluation = await this.orchestrateurService.recupererEvaluation(id);
