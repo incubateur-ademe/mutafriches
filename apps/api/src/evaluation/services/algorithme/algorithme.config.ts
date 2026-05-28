@@ -21,9 +21,11 @@ import {
 import { ScoreImpact, ScoreParUsage } from "./algorithme.types";
 
 // Configuration des poids
+// 28 critères au total, poids total = 30 (source de vérité de la doc de l'algo)
 export const POIDS_CRITERES = {
-  // Critères pris en compte dans la version web (vu le 19/09)
-  // 14 Critères déduits module enrichissement
+  // ------------------------------------------------
+  // 18 critères enrichis automatiquement (module enrichissement) — poids 18.5
+  // ------------------------------------------------
   surfaceSite: 2,
   surfaceBati: 2,
   siteEnCentreVille: 1,
@@ -39,13 +41,12 @@ export const POIDS_CRITERES = {
   zonageEnvironnemental: 1,
   zonageReglementaire: 2,
   zonagePatrimonial: 1,
-  trameVerteEtBleue: 1,
   zoneAccelerationEnr: 1,
   zonageAbcLogement: 0.5,
   distanceIte: 0.5,
 
   // ------------------------------------------------
-  // 7 critères déduis des données complémentaires
+  // 10 critères saisis (données complémentaires utilisateur) — poids 11.5
   // ------------------------------------------------
   typeProprietaire: 1,
   raccordementEau: 1,
@@ -54,6 +55,7 @@ export const POIDS_CRITERES = {
   valeurArchitecturaleHistorique: 1,
   qualitePaysage: 1,
   qualiteVoieDesserte: 0.5,
+  trameVerteEtBleue: 1,
   presenceEspecesProtegees: 1,
   presenceZoneHumide: 1,
 } as const;

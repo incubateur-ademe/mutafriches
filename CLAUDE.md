@@ -93,7 +93,7 @@ Les commentaires doivent être **courts** et n'expliquer que le **pourquoi** (ja
 // INTERDIT - verbeux, paraphrase le code, multi-lignes inutiles
 /**
  * Cette fonction prend en entrée un Site déjà enrichi et applique
- * successivement toutes les règles de scoring de la matrice 24×7
+ * successivement toutes les règles de scoring de la matrice 28×7
  * pour produire en sortie un objet contenant les indices de mutabilité
  * pour chacun des 7 usages possibles.
  */
@@ -268,7 +268,7 @@ apps/api/src/
 │   ├── dtos/               # Objets de transfert
 │   ├── entities/           # Entités domaine
 │   └── repositories/       # Accès base de données
-├── evaluation/             # Calcul mutabilité (matrice 24 critères × 7 usages)
+├── evaluation/             # Calcul mutabilité (matrice 28 critères × 7 usages)
 │   ├── algorithme/         # Logique de calcul pure
 │   ├── dtos/               # Objets de transfert
 │   └── entities/           # Entités domaine
@@ -286,8 +286,13 @@ apps/api/src/
 L'algorithme de scoring est versionné pour préserver la reproductibilité des évaluations passées et permettre la comparaison entre versions.
 
 - **Source de vérité** : `apps/api/src/evaluation/services/algorithme/versions/` — un fichier par version (`v1.1.ts`, `v1.2.ts`, …), agrégés par `index.ts` (tableau antéchronologique, `[0]` = version courante)
-- **Référence métier** : chaque version doit pointer vers le fichier Excel de référence correspondant (matrice 24×7), conservé dans `docs/sources/` (ou équivalent)
+- **Référence métier** : chaque version doit pointer vers le fichier Excel de référence correspondant (matrice 28×7), conservé dans `docs/sources/` (ou équivalent)
 - **Exposition** : la version courante et la liste complète sont exposées via `GET /evaluation/metadata` et `GET /evaluation/algorithme/versions`. Toute modification doit **immédiatement** se refléter dans ces endpoints (et dans les exemples Swagger associés).
+- **Documentation OBLIGATOIRE** : toute modification de l'algorithme — ajout ou retrait d'un critère, changement de poids, de seuil, de la matrice de scoring, ou de la formule de fiabilité — DOIT être répercutée **dans le même commit** sur :
+  - `docs/evaluation-mutabilite.md` (doc métier : liste des critères, poids, poids total, formules, exemples)
+  - `.claude/context/evaluation-patterns.md` (doc technique : nombre de critères, répartition enrichis/complémentaires, poids total, sémantique)
+
+  La **source de vérité** est `POIDS_CRITERES` dans `algorithme.config.ts`. Une doc dont le nombre de critères, les poids ou le poids total divergent de `POIDS_CRITERES` est considérée comme un **bug**. Ne JAMAIS livrer un changement d'algo sans avoir mis à jour ces deux fichiers.
 
 ### Procédure pour publier une nouvelle version
 
@@ -298,8 +303,9 @@ Quand une nouvelle version d'algorithme entre en vigueur :
 3. Adapter les règles (`algorithme.config.ts`, calculateurs) jusqu'à `pnpm test` vert
 4. **Ajouter l'entrée en tête de l'export agrégé** dans `versions/index.ts` (ordre antéchronologique strict)
 5. Mettre à jour les exemples Swagger qui exposent la version (`metadata.dto.ts`, `evaluation.dto.ts`)
-6. `pnpm validate`
-7. Commit : `feat(algo): publication vX.Y avec <résumé>`
+6. **Mettre à jour la doc de l'algorithme** (`docs/evaluation-mutabilite.md` + `.claude/context/evaluation-patterns.md`) : critères, poids, poids total, fiabilité — en cohérence stricte avec `POIDS_CRITERES`
+7. `pnpm validate`
+8. Commit : `feat(algo): publication vX.Y avec <résumé>`
 
 Un test dédié (`versions.spec.ts`) doit garantir l'ordre antéchronologique strict et le format ISO des dates — si absent, le créer à la prochaine publication.
 
@@ -366,7 +372,7 @@ Un test dédié (`versions.spec.ts`) doit garantir l'ordre antéchronologique st
 - @.claude/context/enrichissement-patterns.md — Comment ajouter un nouveau domaine ou une nouvelle API externe
 - @.claude/context/security-rules.md — Checklist sécurité (secrets, validation, injection SQL, guards)
 - @.claude/context/feature-example.md — Parcours complet d'ajout d'une source d'enrichissement
-- @.claude/context/evaluation-patterns.md — Algorithme de scoring (matrice 24×7), fiabilité, cache, sémantique `null` vs `undefined`
+- @.claude/context/evaluation-patterns.md — Algorithme de scoring (matrice 28×7), fiabilité, cache, sémantique `null` vs `undefined`
 
 ## Gotchas
 
@@ -401,7 +407,7 @@ Pièges rencontrés en session. Chaque entrée documente un piège pour éviter 
 ### Cache d'évaluation
 
 - Si les données complémentaires contiennent `"ne-sait-pas"` → **pas de mise en cache** (résultat partiel)
-- Le cache compare les 8 champs complémentaires un par un (pas de hash)
+- Le cache compare les 10 champs complémentaires un par un (pas de hash)
 - TTL de 24 heures, basé sur le `siteId` (identifiant cadastral)
 
 ### PostGIS et coordonnées
