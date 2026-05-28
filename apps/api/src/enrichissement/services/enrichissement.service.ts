@@ -140,9 +140,9 @@ export class EnrichissementService {
         sourcesEchouees,
       );
 
-      // 3.b ITE FRET — désactivé, en attente validation Cerema
-      // const iteFretResult = await this.iteFretEnrichissement.enrichir(siteEval);
-      // this.mergeEnrichmentResult(iteFretResult, sourcesUtilisees, champsManquants, sourcesEchouees);
+      // 3.b ITE FRET
+      const iteFretResult = await this.iteFretEnrichissement.enrichir(siteEval);
+      this.mergeEnrichmentResult(iteFretResult, sourcesUtilisees, champsManquants, sourcesEchouees);
 
       // 4. URBANISME (commerces, logements vacants, centre-ville)
       const urbanismeResult = await this.urbanismeEnrichissement.enrichir(siteEval);
@@ -247,7 +247,7 @@ export class EnrichissementService {
         siteEnCentreVille: siteEval.siteEnCentreVille,
         distanceAutoroute: siteEval.distanceAutoroute,
         distanceTransportCommun: siteEval.distanceTransportCommun,
-        // distanceIte: siteEval.distanceIte, // Désactivé — en attente validation Cerema
+        distanceIte: siteEval.distanceIte,
         proximiteCommercesServices: siteEval.proximiteCommercesServices,
         tauxLogementsVacants: siteEval.tauxLogementsVacants,
         presenceRisquesTechnologiques: siteEval.presenceRisquesTechnologiques,
@@ -405,9 +405,9 @@ export class EnrichissementService {
         sourcesEchouees,
       );
 
-      // 4.b ITE FRET — désactivé, en attente validation Cerema
-      // const iteFretResult = await this.iteFretEnrichissement.enrichir(siteEval);
-      // this.mergeEnrichmentResult(iteFretResult, sourcesUtilisees, champsManquants, sourcesEchouees);
+      // 4.b ITE FRET
+      const iteFretResult = await this.iteFretEnrichissement.enrichir(siteEval);
+      this.mergeEnrichmentResult(iteFretResult, sourcesUtilisees, champsManquants, sourcesEchouees);
 
       // 5. URBANISME -> LOVAC: commune prédominante, BPE: centroïde
       const urbanismeResult = await this.urbanismeEnrichissement.enrichir(siteEval);
@@ -524,7 +524,7 @@ export class EnrichissementService {
         siteEnCentreVille: siteEval.siteEnCentreVille,
         distanceAutoroute: siteEval.distanceAutoroute,
         distanceTransportCommun: siteEval.distanceTransportCommun,
-        // distanceIte: siteEval.distanceIte, // Désactivé — en attente validation Cerema
+        distanceIte: siteEval.distanceIte,
         proximiteCommercesServices: siteEval.proximiteCommercesServices,
         tauxLogementsVacants: siteEval.tauxLogementsVacants,
         presenceRisquesTechnologiques: siteEval.presenceRisquesTechnologiques,

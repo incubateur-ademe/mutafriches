@@ -31,10 +31,10 @@ describe("buildRecapitulatifSite", () => {
     expect(sections.map((s) => s.id)).toEqual(["site-bati", "environnement", "risques-zonages"]);
   });
 
-  it("répartit les 27 critères sur les sections", () => {
+  it("répartit les 28 critères sur les sections", () => {
     const sections = buildRecapitulatifSite(enrichissement, complementaires);
     const total = sections.reduce((n, s) => n + s.criteres.length, 0);
-    expect(total).toBe(27);
+    expect(total).toBe(28);
   });
 
   it("formate les valeurs enrichies (surface en m², distance, %)", () => {
@@ -88,7 +88,7 @@ describe("buildRecapitulatifSite", () => {
   it("affiche 'Non disponible' pour les valeurs manquantes", () => {
     const sections = buildRecapitulatifSite(undefined, undefined);
     const criteres = sections.flatMap((s) => s.criteres);
-    expect(criteres).toHaveLength(27);
+    expect(criteres).toHaveLength(28);
     expect(criteres.every((c) => c.valeurAffichee === "Non disponible")).toBe(true);
   });
 });

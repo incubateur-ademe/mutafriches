@@ -35,8 +35,8 @@ describe("SOURCES_DONNEES", () => {
     expect(manuels.every((c) => c.saisie === "MANUELLE")).toBe(true);
   });
 
-  it("représente le poids total de l'algorithme (29.5)", () => {
+  it("représente le poids total de l'algorithme (30)", () => {
     const poidsTotal = CRITERES_METADATA_LIST.reduce((somme, c) => somme + c.poids, 0);
-    expect(poidsTotal).toBe(29.5);
+    expect(poidsTotal).toBe(30);
   });
 });

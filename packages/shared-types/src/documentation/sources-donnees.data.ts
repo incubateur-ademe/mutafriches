@@ -206,6 +206,23 @@ export const SOURCES_DONNEES: SourceDonnees[] = [
       "L'appartenance à une zone d'accélération des EnR est ramenée à un niveau grossier (non, oui, " +
       "ombrière) qui valorise l'usage photovoltaïque (cf. ADR-0013).",
   },
+  {
+    id: "ite-fret",
+    nom: "Installations terminales embranchées fret (ITE 3000)",
+    organisme: "Cerema — Base ITE 3000",
+    type: "referentiel-local",
+    urlDoc:
+      "https://www.data.gouv.fr/datasets/base-de-donnees-des-installations-terminales-embranchees-fret-en-france-ite-3000",
+    sourcesEnrichissement: [SourceEnrichissement.ITE_FRET],
+    champsRecuperes: [
+      "Installations terminales embranchées géolocalisées autour du site : nom, état et distance " +
+        "(base PostGIS `raw_ite_fret`)",
+    ],
+    traitementAlgo:
+      "La distance à l'ITE la plus proche est classée selon le seuil de 1 km, croisé avec l'état de " +
+      "l'embranchement (< 1 km bon état, < 1 km mauvais état, > 1 km). Le raccordement fret valorise " +
+      "l'usage industriel.",
+  },
 ];
 
 /** Critères d'évaluation (avec poids) alimentés par une source, dérivés du registre autoritaire */

@@ -81,10 +81,9 @@ OrchestrateurService.calculerMutabilite()
 
 ## Algorithme de scoring
 
-### Matrice 27 critères × 7 usages
+### Matrice 28 critères × 7 usages
 
-L'algorithme évalue 27 critères pour chacun des 7 usages possibles d'une friche.
-Note : `distanceIte` (poids 0.5) est temporairement désactivé en attente de validation Cerema.
+L'algorithme évalue 28 critères pour chacun des 7 usages possibles d'une friche.
 
 #### Les 7 usages
 
@@ -106,14 +105,14 @@ POSITIF      = 1
 TRES_POSITIF = 2
 ```
 
-#### Les 27 critères (18 enrichis/dérivés + 9 complémentaires)
+#### Les 28 critères (18 enrichis + 10 complémentaires)
 
 > Source de vérité : `POIDS_CRITERES` dans `algorithme.config.ts` (les poids ne changent
 > pas avec la dérivation). `raccordementEau` reste structurellement dans
 > `DonneesComplementairesInputDto` (et donc dans le snapshot de cache) mais sa valeur est
 > désormais **dérivée automatiquement** de `surfaceBati`, plus saisie par l'utilisateur.
 
-**Enrichis ou dérivés automatiquement** (poids total : 19) :
+**Enrichis automatiquement** (poids total : 18.5) :
 
 | Critère | Poids | Type |
 |---------|-------|------|
@@ -134,8 +133,7 @@ TRES_POSITIF = 2
 | `zonagePatrimonial` | 1 | Enum (3 valeurs) |
 | `zoneAccelerationEnr` | 1 | Enum (3 valeurs) |
 | `zonageAbcLogement` | 0.5 | Enum (A / Abis / B1 / B2 / C) |
-| `raccordementEau` | 1 | Dérivé de `surfaceBati` : >20m² => OUI, ≤20 => NON, indisponible => NE_SAIT_PAS |
-| ~~`distanceIte`~~ | ~~0.5~~ | ~~Enum (<1km bon état / <1km mauvais état / >1km)~~ — **désactivé temporairement** |
+| `distanceIte` | 0.5 | Enum (<1km bon état / <1km mauvais état / >1km) |
 
 > **Unité des distances** (v1.10) : `distanceAutoroute` et `distanceRaccordementElectrique` sont enrichis en **mètres** (IGN WFS, Enedis) et stockés ainsi dans le DTO/Site ; `extraireCriteres` les convertit en **km** via `metresVersKm` avant scoring (la matrice reste en km, source de vérité Excel). `distanceTransportCommun` est en mètres des deux côtés (pas de conversion). Cf. ADR-0027.
 
@@ -153,7 +151,7 @@ TRES_POSITIF = 2
 | `presenceEspecesProtegees` | 1 | Enum (Oui / Non / Ne sait pas) |
 | `presenceZoneHumide` | 1 | Enum (Oui / Non / Ne sait pas) |
 
-**Poids total : 29.5**
+**Poids total : 30**
 
 ### Formule de calcul
 
