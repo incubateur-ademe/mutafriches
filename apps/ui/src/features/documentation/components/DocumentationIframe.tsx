@@ -11,6 +11,37 @@ export function DocumentationIframe() {
         </p>
       </div>
 
+      <h2 className="fr-h3 fr-mt-6w">Identification du partenaire</h2>
+      <p>
+        Chaque partenaire dispose d'un <strong>identifiant d'intégrateur</strong> unique (ex :{" "}
+        <code>benefriches</code>). Il est transmis dans l'URL de l'iframe via le paramètre{" "}
+        <code>integrator</code> et permet à Mutafriches de reconnaître votre plateforme (suivi
+        statistique, libellé du bouton de retour, validation du domaine de callback).
+      </p>
+      <p>Concrètement :</p>
+      <ol>
+        <li>
+          Testez d'abord avec l'identifiant <code>demo</code> (aucune autorisation préalable
+          nécessaire).
+        </li>
+        <li>
+          Demandez votre identifiant officiel à l'équipe Mutafriches : votre domaine est alors
+          déclaré et associé à cet identifiant.
+        </li>
+        <li>
+          Renseignez-le dans l'URL de l'iframe : <code>?integrator=&lt;votre-id&gt;</code>.
+        </li>
+      </ol>
+      <div className="fr-callout fr-callout--brown-caramel fr-mt-2w">
+        <h3 className="fr-callout__title">À noter</h3>
+        <p className="fr-callout__text">
+          L'identifiant <code>integrator</code> doit être connu de Mutafriches au préalable : un
+          identifiant non déclaré est ignoré et l'iframe retombe sur la configuration par défaut.
+          Côté requêtes, l'iframe s'identifie automatiquement (paramètres <code>iframe=true</code>{" "}
+          et <code>integrateur</code>), vous n'avez rien à gérer en plus.
+        </p>
+      </div>
+
       <h2 className="fr-h3 fr-mt-6w">Démarrage rapide</h2>
 
       <fieldset

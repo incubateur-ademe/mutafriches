@@ -9,6 +9,74 @@ export function DocumentationApi() {
         </p>
       </div>
 
+      <h2 className="fr-h3 fr-mt-6w">Identification du partenaire</h2>
+      <p>
+        L'API ne nécessite <strong>ni clé ni token</strong>. Deux mécanismes interviennent lors d'un
+        appel :
+      </p>
+      <div className="fr-table fr-table--bordered">
+        <table>
+          <thead>
+            <tr>
+              <th>Niveau</th>
+              <th>Mécanisme</th>
+              <th>Rôle</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <strong>Autorisation</strong> (obligatoire)
+              </td>
+              <td>
+                En-tête HTTP <code>Origin</code> (ou <code>Referer</code> en repli)
+              </td>
+              <td>
+                Votre domaine doit figurer dans la liste autorisée par l'équipe Mutafriches. Toute
+                requête provenant d'une origine non autorisée est rejetée (<code>403</code>).
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <strong>Identification</strong> (recommandé)
+              </td>
+              <td>
+                Paramètre de requête <code>?integrateur=&lt;votre-id&gt;</code>
+              </td>
+              <td>
+                Trace la provenance des appels pour le suivi statistique. Optionnel mais recommandé.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p className="fr-text--sm">
+        Les navigateurs envoient automatiquement l'en-tête <code>Origin</code>. Pour des appels
+        <strong> serveur à serveur</strong>, transmettez-le explicitement avec un domaine autorisé.
+      </p>
+
+      <div className="fr-highlight">
+        <pre>
+          <code>{`POST https://mutafriches.beta.gouv.fr/enrichissement?integrateur=mon-service
+Content-Type: application/json
+Origin: https://mon-service.gouv.fr
+
+{
+  "identifiant": "49353000AV0202"
+}`}</code>
+        </pre>
+      </div>
+
+      <div className="fr-callout fr-callout--brown-caramel fr-mt-2w">
+        <h3 className="fr-callout__title">Faire autoriser votre domaine</h3>
+        <p className="fr-callout__text">
+          Pour obtenir votre identifiant d'intégrateur et faire ajouter votre domaine à la liste
+          autorisée, contactez l'équipe Mutafriches (voir en bas de page). Sans cette étape, vos
+          appels en production seront refusés.
+        </p>
+      </div>
+
       <h2 className="fr-h3 fr-mt-6w">Démarrage rapide</h2>
 
       <fieldset
