@@ -122,7 +122,14 @@ export function ImportsPanel() {
                     {data.imports.map((item) => (
                       <tr key={item.key}>
                         <td>
-                          <strong>{item.label}</strong>
+                          <a
+                            href={item.docUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            title="Ouvrir la page officielle du dataset"
+                          >
+                            <strong>{item.label}</strong>
+                          </a>
                         </td>
                         <td>
                           <span className={STATUS_BADGE_CLASSES[item.status]}>
@@ -142,10 +149,6 @@ export function ImportsPanel() {
             </div>
           </div>
         </div>
-      )}
-
-      {data && (
-        <p className="fr-text--sm fr-mt-2w">Données générées le {formatDate(data.generatedAt)}.</p>
       )}
     </>
   );

@@ -52,6 +52,7 @@ export class ImportsService {
         lastImportAt: null,
         sourcePath: null,
         fileSizeBytes: null,
+        docUrl: dataset.docUrl,
       };
     }
 
@@ -67,6 +68,7 @@ export class ImportsService {
       lastImportAt: lastImportDate ? new Date(lastImportDate).toISOString() : null,
       sourcePath: lastLog.source_path,
       fileSizeBytes: Number.isFinite(fileSize) ? fileSize : null,
+      docUrl: dataset.docUrl,
     };
   }
 

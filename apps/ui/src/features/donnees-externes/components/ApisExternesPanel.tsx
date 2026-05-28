@@ -6,8 +6,6 @@ import type {
 } from "@mutafriches/shared-types";
 import { donneesExternesService } from "../../../shared/services/api/api.donnees-externes.service";
 
-const GITHUB_REPO_URL = "https://github.com/betagouv/mutafriches/blob/main";
-
 const STATUS_LABELS: Record<ApiHealthStatus, string> = {
   up: "OK",
   slow: "Lent",
@@ -31,11 +29,6 @@ function formatDate(iso: string | null): string {
     hour: "2-digit",
     minute: "2-digit",
   }).format(date);
-}
-
-function formatResponseTime(ms: number | null): string {
-  if (ms === null) return "—";
-  return `${new Intl.NumberFormat("fr-FR").format(ms)} ms`;
 }
 
 /**
@@ -143,9 +136,6 @@ export function ApisExternesPanel() {
                       <th scope="col">API</th>
                       <th scope="col">Description</th>
                       <th scope="col">Statut</th>
-                      <th scope="col">Temps</th>
-                      <th scope="col">HTTP</th>
-                      <th scope="col">Code source</th>
                     </tr>
                   </thead>
                   {grouped.map((group) => (
@@ -153,7 +143,7 @@ export function ApisExternesPanel() {
                       <tr>
                         <th
                           scope="rowgroup"
-                          colSpan={6}
+                          colSpan={3}
                           style={{ backgroundColor: "var(--background-alt-grey)" }}
                         >
                           {group.category}
@@ -179,18 +169,6 @@ export function ApisExternesPanel() {
                             >
                               {STATUS_LABELS[api.status]}
                             </span>
-                          </td>
-                          <td>{formatResponseTime(api.responseTimeMs)}</td>
-                          <td>{api.httpStatus ?? "—"}</td>
-                          <td>
-                            <a
-                              href={`${GITHUB_REPO_URL}/${api.adapterFile}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              title="Voir le code de l'adapter sur GitHub"
-                            >
-                              <code>{api.adapterFile.split("/").pop()}</code>
-                            </a>
                           </td>
                         </tr>
                       ))}
