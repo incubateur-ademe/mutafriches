@@ -344,10 +344,9 @@ export class CalculService {
       criteres.zonageAbcLogement = site.zonageAbcLogement;
     }
 
-    // Distance ITE fret — désactivé, en attente validation Cerema
-    // if (!poidsCriteres || "distanceIte" in poidsCriteres) {
-    //   criteres.distanceIte = site.distanceIte;
-    // }
+    if (!poidsCriteres || "distanceIte" in poidsCriteres) {
+      criteres.distanceIte = site.distanceIte;
+    }
 
     return criteres;
   }

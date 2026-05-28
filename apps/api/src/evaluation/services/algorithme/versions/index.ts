@@ -68,7 +68,7 @@ export const ALGORITHME_VERSIONS: AlgorithmeConfig[] = [
   },
   {
     version: "v1.9",
-    label: "v1.7 + corrections PV (version actuelle, sans ITE fret)",
+    label: "v1.8 + corrections PV (version actuelle)",
     date: "2026-05-21",
     poidsCriteres: v19.POIDS_CRITERES as unknown as Record<string, number>,
     matriceScoring: v19.MATRICE_SCORING as unknown as Record<string, unknown>,

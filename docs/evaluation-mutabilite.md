@@ -13,7 +13,7 @@
 
 Mutafriches est un algorithme d'aide à la décision qui évalue le potentiel de reconversion d'une friche urbaine.
 
-Il analyse **27 critères** pour déterminer le meilleur usage futur parmi **7 possibilités**, en produisant :
+Il analyse **28 critères** pour déterminer le meilleur usage futur parmi **7 possibilités**, en produisant :
 
 - Un **indice de mutabilité** (0-100%) pour chaque usage
 - Un **classement** des usages par ordre de pertinence
@@ -48,7 +48,7 @@ Il analyse **27 critères** pour déterminer le meilleur usage futur parmi **7 p
  │     DES     │  ────→  │   MATRICE   │  ────→   │     DES     │
  │  27 CRITÈRES│         │  DE SCORING │          │   POINTS    │
  └─────────────┘         └─────────────┘          └─────────────┘
-  État friche             27 critères ×            Score × Poids
+  État friche             28 critères ×            Score × Poids
   Situation               7 usages =               Pour chaque
   Réglementation          189 valeurs              usage
   Patrimoine              
@@ -76,24 +76,24 @@ Il analyse **27 critères** pour déterminer le meilleur usage futur parmi **7 p
 
 ### Étape 1 : Collecte des données
 
-L'algorithme collecte **27 critères** répartis en **2 sources** :
+L'algorithme collecte **28 critères** répartis en **2 sources** :
 
-- **18 critères enrichis ou dérivés automatiquement** (17 via les APIs externes + `raccordementEau` dérivé de la surface bâtie)
-- **9 critères complémentaires** saisis manuellement par l'utilisateur
+- **18 critères enrichis automatiquement** via le module d'enrichissement (APIs externes)
+- **10 critères complémentaires** saisis manuellement par l'utilisateur (dont `raccordementEau`, désormais dérivé automatiquement de `surfaceBati`)
 
 #### Synthèse des critères et leurs poids
 
 | Source | Nb critères | Poids total |
 |--------|------------|-------------|
-| Enrichissement / dérivation automatique | 18 | 19 |
-| Données complémentaires (saisie) | 9 | 10.5 |
-| **TOTAL** | **27** | **29.5** |
+| Enrichissement automatique | 18 | 18.5 |
+| Données complémentaires (saisie) | 10 | 11.5 |
+| **TOTAL** | **28** | **30** |
 
 ### Étape 2 : Matrice de scoring
 
 L'algorithme utilise une **matrice de scoring unique** qui définit comment chaque valeur de critère impacte chaque usage.
 
-Cette matrice contient 27 critères × 7 usages = 189 correspondances de base (davantage avec les valeurs multiples par critère).
+Cette matrice contient 28 critères × 7 usages = 196 correspondances de base (davantage avec les valeurs multiples par critère).
 
 #### Structure de la matrice
 
@@ -221,7 +221,7 @@ Indicateur de confiance basé sur la somme des poids des critères renseignés :
 Fiabilité = (Poids_critères_renseignés / Poids_total) × 10
 ```
 
-Le poids total est de **29.5** (somme de tous les poids des 27 critères). Chaque critère contribue proportionnellement à son poids.
+Le poids total est de **30** (somme de tous les poids des 28 critères). Chaque critère contribue proportionnellement à son poids.
 
 #### Grille d'interprétation
 
@@ -238,9 +238,9 @@ La fiabilité **ne modifie pas** le classement. C'est un indicateur séparé qui
 
 ---
 
-## Liste des 27 critères actifs
+## Liste des 28 critères actifs
 
-### Critères enrichis ou dérivés automatiquement (18)
+### Critères enrichis automatiquement (18)
 
 | # | Critère | Poids | Valeurs | Champ DTO |
 |---|---------|-------|---------|-----------|
@@ -261,14 +261,14 @@ La fiabilité **ne modifie pas** le classement. C'est un indicateur séparé qui
 | 15 | **Zonage patrimonial** | 1 | Non concerné / Site inscrit-classé / Périmètre ABF | `zonagePatrimonial` |
 | 16 | **Zone ZAER (ENR)** | 1 | Non / Oui / Oui avec PV ombrière | `zoneAccelerationEnr` |
 | 17 | **Zonage ABC (logement)** | 0.5 | A / Abis / B1 / B2 / C | `zonageAbcLogement` |
-| 18 | **Raccordement eau** (dérivé de la surface bâtie) | 1 | Oui (bâti > 20 m²) / Non / Non déterminé (surface bâtie indisponible) | `raccordementEau` |
-| ~~19~~ | ~~**Distance ITE fret**~~ | ~~0.5~~ | ~~< 1 km (bon état) / < 1 km (mauvais état) / > 1 km~~ | ~~`distanceIte`~~ — **désactivé temporairement, en attente validation Cerema** |
+| 18 | **Distance ITE fret** | 0.5 | < 1 km (bon état) / < 1 km (mauvais état) / > 1 km | `distanceIte` |
 
-### Critères complémentaires saisis (9)
+### Critères complémentaires saisis (10)
 
 | # | Critère | Poids | Valeurs | Champ DTO |
 |---|---------|-------|---------|-----------|
 | 19 | **Type de propriétaire** | 1 | Public / Privé / Copropriété-indivision / Mixte / Ne sait pas | `typeProprietaire` |
+| 20 | **Raccordement eau** (dérivé automatiquement de la surface bâtie) | 1 | Oui (bâti > 20 m²) / Non / Non déterminé (surface bâtie indisponible) | `raccordementEau` |
 | 21 | **État du bâti et infrastructure** | 2 | Dégradation inexistante / Très importante / Moyenne / Hétérogène / Pas de bâti / Ne sait pas | `etatBatiInfrastructure` |
 | 22 | **Présence de pollution** | 2 | Non / Déjà gérée / Oui-composés volatils / Oui-autres composés / Oui-amiante / Ne sait pas | `presencePollution` |
 | 23 | **Valeur architecturale et historique** | 1 | Sans intérêt / Ordinaire / Intérêt remarquable / Pas de bâti / Ne sait pas | `valeurArchitecturaleHistorique` |
