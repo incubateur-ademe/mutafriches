@@ -11,8 +11,9 @@ import { NOMBRE_CRITERES_UTILISES } from "./algorithme.constants";
  * l'algorithme »). Mettre à jour les valeurs attendues ci-dessous ET la doc.
  */
 describe("POIDS_CRITERES — cohérence avec la doc de l'algorithme", () => {
-  const NOMBRE_CRITERES_ATTENDU = 28;
-  const POIDS_TOTAL_ATTENDU = 30;
+  // distanceIte (0.5) désactivé temporairement — en attente validation Cerema
+  const NOMBRE_CRITERES_ATTENDU = 27;
+  const POIDS_TOTAL_ATTENDU = 29.5;
 
   it(`comporte exactement ${NOMBRE_CRITERES_ATTENDU} critères`, () => {
     expect(NOMBRE_CRITERES_UTILISES).toBe(NOMBRE_CRITERES_ATTENDU);

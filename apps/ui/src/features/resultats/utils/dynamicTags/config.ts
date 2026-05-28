@@ -13,7 +13,6 @@ import {
   QualitePaysage,
   QualiteVoieDesserte,
   RaccordementEau,
-  DistanceIte,
 } from "@mutafriches/shared-types";
 import { TagInputData, UsageTagsConfig } from "./types";
 import {
@@ -354,12 +353,9 @@ const resolveZonageAbcLogement = (data: TagInputData): string | null => {
   return zonage === "abis" || zonage === "a" ? "Zone A logement" : null;
 };
 
-// --- Accès au fret ferroviaire (ITE) ---
-// Tag informationnel affiché si une ITE en bon état est à moins d'1 km du site,
-// quel que soit l'usage. L'algorithme ne valorise ce critère que pour Industrie
-// (TRES_POSITIF), mais le tag reste utile à afficher pour les autres usages.
-const resolveAccesFret = (data: TagInputData): string | null => {
-  return data.enrichmentData.distanceIte === DistanceIte.MOINS_1KM_BON_ETAT ? "accès Fret" : null;
+// --- Accès au fret ferroviaire (ITE) — désactivé, en attente validation Cerema ---
+const resolveAccesFret = (_data: TagInputData): string | null => {
+  return null;
 };
 
 // ============================================================================

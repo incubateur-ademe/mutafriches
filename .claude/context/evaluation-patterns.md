@@ -81,9 +81,10 @@ OrchestrateurService.calculerMutabilite()
 
 ## Algorithme de scoring
 
-### Matrice 28 critères × 7 usages
+### Matrice 27 critères × 7 usages
 
-L'algorithme évalue 28 critères pour chacun des 7 usages possibles d'une friche.
+L'algorithme évalue 27 critères pour chacun des 7 usages possibles d'une friche.
+Note : `distanceIte` (poids 0.5) est temporairement désactivé en attente de validation Cerema.
 
 #### Les 7 usages
 
@@ -105,13 +106,13 @@ POSITIF      = 1
 TRES_POSITIF = 2
 ```
 
-#### Les 28 critères (18 enrichis + 10 complémentaires)
+#### Les 27 critères (17 enrichis + 10 complémentaires)
 
 > Source de vérité : `POIDS_CRITERES` dans `algorithme.config.ts`. La répartition
 > enrichis/complémentaires suit `DonneesComplementairesInputDto` (champs saisis par
 > l'utilisateur).
 
-**Enrichis automatiquement** (poids total : 18.5) :
+**Enrichis automatiquement** (poids total : 18) :
 
 | Critère | Poids | Type |
 |---------|-------|------|
@@ -132,7 +133,7 @@ TRES_POSITIF = 2
 | `zonagePatrimonial` | 1 | Enum (3 valeurs) |
 | `zoneAccelerationEnr` | 1 | Enum (3 valeurs) |
 | `zonageAbcLogement` | 0.5 | Enum (A / Abis / B1 / B2 / C) |
-| `distanceIte` | 0.5 | Enum (<1km bon état / <1km mauvais état / >1km) |
+| ~~`distanceIte`~~ | ~~0.5~~ | ~~Enum (<1km bon état / <1km mauvais état / >1km)~~ — **désactivé temporairement** |
 
 **Complémentaires manuels** (poids total : 11.5) :
 
@@ -149,7 +150,7 @@ TRES_POSITIF = 2
 | `presenceEspecesProtegees` | 1 | Enum (Oui / Non / Ne sait pas) |
 | `presenceZoneHumide` | 1 | Enum (Oui / Non / Ne sait pas) |
 
-**Poids total : 30**
+**Poids total : 29.5**
 
 ### Formule de calcul
 

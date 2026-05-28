@@ -248,7 +248,8 @@ describe("EnrichissementService", () => {
       expect(result.codeInsee).toBe("29232");
       expect(result.commune).toBe("Quimper");
       expect(result.surfaceSite).toBe(1000);
-      expect(result.sourcesUtilisees).toHaveLength(11);
+      // ITE fret désactivé temporairement (était 11 avec ITE)
+      expect(result.sourcesUtilisees).toHaveLength(10);
     });
 
     it("devrait persister l'enrichissement avec statut SUCCES", async () => {
