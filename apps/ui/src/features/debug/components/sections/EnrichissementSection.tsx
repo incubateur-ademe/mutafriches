@@ -43,8 +43,7 @@ export const EnrichissementSection: React.FC<EnrichissementSectionProps> = ({
         <dt>Distance transport en commun</dt>
         <dd>{formatDistance(enrichmentData.distanceTransportCommun)}</dd>
 
-        <dt>Distance ITE fret</dt>
-        <dd>{enrichmentData.distanceIte ?? "Non disponible"}</dd>
+        {/* Distance ITE fret — désactivé, en attente validation Cerema */}
 
         <dt>Commerces / services</dt>
         <dd>

@@ -254,25 +254,7 @@ export const QualificationEnvironnementPage: React.FC = () => {
             tooltip="Indiquez la qualité de la desserte du site par les voies de circulation."
           />
 
-          <EnrichedInfoField
-            id="distance-ite-fret"
-            label="Distance à une installation de chargement industrielle"
-            value={uiData?.distanceIte}
-            tooltip={
-              <>
-                Récupéré depuis la base ITE 3000 du Cerema (Installations Terminales Embranchées
-                fret) :<br />
-                <a
-                  href="https://www.data.gouv.fr/datasets/base-de-donnees-des-installations-terminales-embranchees-fret-en-france-ite-3000"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="fr-link fr-text--xs"
-                >
-                  data.gouv.fr/datasets/base-ite-3000
-                </a>
-              </>
-            }
-          />
+          {/* Distance ITE fret — désactivé, en attente validation Cerema */}
         </div>
 
         <hr className="fr-my-4w" />

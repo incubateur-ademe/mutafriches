@@ -16,15 +16,15 @@ import {
   ZonageReglementaire,
   ZoneAccelerationEnr,
   ZonageAbcLogement,
-  DistanceIte,
 } from "@mutafriches/shared-types";
 import { ScoreImpact, ScoreParUsage } from "./algorithme.types";
 
 // Configuration des poids
-// 28 critères au total, poids total = 30 (source de vérité de la doc de l'algo)
+// 27 critères au total, poids total = 29.5 (source de vérité de la doc de l'algo)
+// Note : distanceIte (0.5) désactivé temporairement — en attente validation Cerema
 export const POIDS_CRITERES = {
   // ------------------------------------------------
-  // 18 critères enrichis automatiquement (module enrichissement) — poids 18.5
+  // 17 critères enrichis automatiquement (module enrichissement) — poids 18
   // ------------------------------------------------
   surfaceSite: 2,
   surfaceBati: 2,
@@ -43,7 +43,7 @@ export const POIDS_CRITERES = {
   zonagePatrimonial: 1,
   zoneAccelerationEnr: 1,
   zonageAbcLogement: 0.5,
-  distanceIte: 0.5,
+  // distanceIte: 0.5, // Désactivé — en attente validation Cerema
 
   // ------------------------------------------------
   // 10 critères saisis (données complémentaires utilisateur) — poids 11.5
@@ -1157,34 +1157,6 @@ export const MATRICE_SCORING = {
     },
   },
 
-  // Distance à une Installation Terminale Embranchée (ITE) fret
-  distanceIte: {
-    [DistanceIte.MOINS_1KM_BON_ETAT]: {
-      [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
-      [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
-      [UsageType.CULTURE]: ScoreImpact.NEUTRE,
-      [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
-      [UsageType.INDUSTRIE]: ScoreImpact.TRES_POSITIF,
-      [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
-      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
-    },
-    [DistanceIte.MOINS_1KM_MAUVAIS_ETAT]: {
-      [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
-      [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
-      [UsageType.CULTURE]: ScoreImpact.NEUTRE,
-      [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
-      [UsageType.INDUSTRIE]: ScoreImpact.POSITIF,
-      [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
-      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
-    },
-    [DistanceIte.PLUS_1KM]: {
-      [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
-      [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
-      [UsageType.CULTURE]: ScoreImpact.NEUTRE,
-      [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
-      [UsageType.INDUSTRIE]: ScoreImpact.NEUTRE,
-      [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
-      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
-    },
-  },
+  // Distance ITE fret — désactivé, en attente validation Cerema
+  // distanceIte: { ... }
 } as const;
