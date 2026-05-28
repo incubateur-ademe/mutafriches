@@ -145,7 +145,7 @@ export const MATRICE_SCORING = {
       [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
       [UsageType.INDUSTRIE]: ScoreImpact.NEUTRE,
       [UsageType.RENATURATION]: ScoreImpact.NEGATIF,
-      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEGATIF,
+      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.POSITIF,
     },
 
     [EtatBatiInfrastructure.PAS_DE_BATI]: {
@@ -434,7 +434,7 @@ export const MATRICE_SCORING = {
       [UsageType.TERTIAIRE]: ScoreImpact.TRES_NEGATIF,
       [UsageType.INDUSTRIE]: ScoreImpact.TRES_NEGATIF,
       [UsageType.RENATURATION]: ScoreImpact.TRES_POSITIF,
-      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.POSITIF,
+      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
     },
 
     [ZonageReglementaire.ZONE_AGRICOLE_A]: {
@@ -986,7 +986,7 @@ export const MATRICE_SCORING = {
         [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
         [UsageType.INDUSTRIE]: ScoreImpact.TRES_POSITIF,
         [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
-        [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.TRES_NEGATIF,
+        [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEGATIF,
       };
     if (value < 2)
       return {
@@ -996,7 +996,7 @@ export const MATRICE_SCORING = {
         [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
         [UsageType.INDUSTRIE]: ScoreImpact.POSITIF,
         [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
-        [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEGATIF,
+        [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.POSITIF,
       };
     if (value < 5)
       return {
@@ -1015,7 +1015,7 @@ export const MATRICE_SCORING = {
       [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
       [UsageType.INDUSTRIE]: ScoreImpact.TRES_NEGATIF,
       [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
-      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.TRES_POSITIF,
+      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEGATIF,
     };
   },
 
@@ -1052,7 +1052,7 @@ export const MATRICE_SCORING = {
         [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
         [UsageType.INDUSTRIE]: ScoreImpact.NEUTRE,
         [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
-        [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
+        [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.TRES_POSITIF,
       };
     if (value < 5)
       return {

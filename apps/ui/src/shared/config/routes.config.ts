@@ -22,6 +22,9 @@ export const ROUTES = {
   DOCUMENTATION_INTEGRATION: "/documentation-integration",
   API: "/api",
 
+  // Statut technique
+  STATUT_IMPORTS: "/statut-imports",
+
   // Pages de test
   TESTS: "/tests",
   TEST_MUTABILITE: "/test/algorithme",
