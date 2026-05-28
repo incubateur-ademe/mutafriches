@@ -1,0 +1,76 @@
+name: API monitoring — check des APIs externes
+
+on:
+  schedule:
+    # Quotidien à 05:00 UTC (juste après le prefetch CCI92 à 04:00)
+    - cron: "0 5 * * *"
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environnement à vérifier"
+        required: true
+        type: choice
+        default: production
+        options:
+          - production
+          - staging
+          - both
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: Check ${{ matrix.env.name }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        env:
+          - name: production
+            url_var: PROD_API_URL
+          - name: staging
+            url_var: STAGING_API_URL
+    steps:
+      - name: Determine if should run
+        id: check
+        env:
+          EVENT: ${{ github.event_name }}
+          ENV_NAME: ${{ matrix.env.name }}
+          SELECTED: ${{ github.event.inputs.environment }}
+        run: |
+          if [ "$EVENT" = "schedule" ] || [ "$SELECTED" = "both" ] || [ "$SELECTED" = "$ENV_NAME" ]; then
+            echo "should_run=true" >> $GITHUB_OUTPUT
+          else
+            echo "should_run=false" >> $GITHUB_OUTPUT
+            echo "Environnement $ENV_NAME non sélectionné — skip"
+          fi
+
+      - name: Trigger health-check on ${{ matrix.env.name }}
+        if: steps.check.outputs.should_run == 'true'
+        env:
+          API_URL: ${{ vars[matrix.env.url_var] }}
+          REFRESH_TOKEN: ${{ secrets.API_REFRESH_TOKEN }}
+        run: |
+          if [ -z "$API_URL" ]; then
+            echo "Variable ${{ matrix.env.url_var }} non configurée — skip"
+            exit 0
+          fi
+          if [ -z "$REFRESH_TOKEN" ]; then
+            echo "Secret API_REFRESH_TOKEN non configuré — abandon"
+            exit 1
+          fi
+          echo "Déclenchement du health-check sur $API_URL"
+          curl -fsS -X POST \
+            -H "X-Refresh-Token: $REFRESH_TOKEN" \
+            -H "Content-Type: application/json" \
+            "$API_URL/api/donnees-externes/apis/refresh" \
+            -o /tmp/snapshot.json
+          echo "--- Résumé du snapshot ---"
+          jq '.summary' /tmp/snapshot.json
+          # Échec si au moins une API est down (exit code != 0 pour signaler en CI)
+          DOWN_COUNT=$(jq -r '.summary.down' /tmp/snapshot.json)
+          if [ "$DOWN_COUNT" -gt 0 ]; then
+            echo "::warning::$DOWN_COUNT API(s) en panne — vérifier la page Données externes"
+            jq -r '.apis[] | select(.status == "down") | "  - \(.name): \(.error // "-")"' /tmp/snapshot.json
+          fi

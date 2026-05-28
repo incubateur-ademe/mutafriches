@@ -9,22 +9,14 @@ import {
   HttpStatus,
   UseGuards,
 } from "@nestjs/common";
-import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiBody,
-  ApiBadRequestResponse,
-  ApiNotFoundResponse,
-  ApiQuery,
-  ApiForbiddenResponse,
-} from "@nestjs/swagger";
+import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiQuery } from "@nestjs/swagger";
 import { Request } from "express";
 import { EnrichissementOutputDto, isValidParcelId } from "@mutafriches/shared-types";
 import { EnrichissementService } from "./services/enrichissement.service";
 import { OrigineDetectionService } from "../shared/services/origine-detection.service";
 import { IntegrateurOriginGuard } from "../shared/guards";
-import { EnrichirSiteSwaggerDto } from "./dto/input/enrichir-site.dto";
+import { ApiOriginAuth, ApiStandardErrors } from "../shared/swagger";
+import { EnrichirSiteSwaggerDto, ENRICHIR_SITE_BODY_EXAMPLES } from "./dto/input/enrichir-site.dto";
 import { EnrichissementSwaggerDto } from "./dto/output/enrichissement.dto";
 
 @ApiTags("enrichissement")
@@ -49,22 +41,33 @@ export class EnrichissementController {
     Si les deux sont fournis, \`identifiants\` est prioritaire.
     `,
   })
-  @ApiBody({ type: EnrichirSiteSwaggerDto })
-  @ApiQuery({ name: "iframe", required: false, type: Boolean, description: "Mode iframe" })
+  @ApiBody({ type: EnrichirSiteSwaggerDto, examples: ENRICHIR_SITE_BODY_EXAMPLES })
+  @ApiQuery({
+    name: "iframe",
+    required: false,
+    type: Boolean,
+    description: "Mode iframe (utilisé pour le tracking d'origine).",
+  })
   @ApiQuery({
     name: "integrateur",
     required: false,
     type: String,
-    description: "Nom de l'intégrateur",
+    description: "Nom de l'intégrateur (ex : `benefriches`). Utilisé pour le tracking d'origine.",
+  })
+  @ApiQuery({
+    name: "acceptDegradedCache",
+    required: false,
+    type: Boolean,
+    description:
+      "Si `true`, accepte un résultat depuis le cache même si certaines sources ont échoué lors du précédent enrichissement (résultat partiel). Par défaut `false`.",
   })
   @ApiResponse({
     status: 201,
     description: "Enrichissement réussi",
     type: EnrichissementSwaggerDto,
   })
-  @ApiBadRequestResponse({ description: "Format d'identifiant invalide" })
-  @ApiNotFoundResponse({ description: "Parcelle introuvable" })
-  @ApiForbiddenResponse({ description: "Origine non autorisée" })
+  @ApiOriginAuth("integrateur")
+  @ApiStandardErrors({ notFound: true })
   async enrichirParcelle(
     @Body() input: EnrichirSiteSwaggerDto,
     @Query("iframe") isIframe?: boolean,

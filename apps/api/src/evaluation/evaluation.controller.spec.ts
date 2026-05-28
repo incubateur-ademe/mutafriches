@@ -26,6 +26,8 @@ import { createTestingModuleWithTwoServices } from "../shared/__test-helpers__/t
 import { createMockOrchestrateurService } from "./__test-helpers__/evaluation.mocks";
 import { createMockOrigineDetectionService } from "../shared/__test-helpers__/origine-detection.mocks";
 import { EvaluationBuilder } from "./__test-helpers__/evaluation.builder";
+import { APP_VERSION } from "../shared/utils/version.utils";
+import { VERSION_COURANTE } from "./services/algorithme/versions";
 
 describe("EvaluationController", () => {
   let controller: EvaluationController;
@@ -424,7 +426,7 @@ describe("EvaluationController", () => {
           },
           usages: Object.values(UsageType),
         },
-        version: { api: "1.0.0", algorithme: "1.1.0" },
+        version: { api: APP_VERSION, algorithme: VERSION_COURANTE },
       });
     });
 
@@ -433,8 +435,8 @@ describe("EvaluationController", () => {
       const result = controller.getMetadata();
 
       // Assert
-      expect(result.version.api).toBe("1.0.0");
-      expect(result.version.algorithme).toBe("1.1.0");
+      expect(result.version.api).toBe(APP_VERSION);
+      expect(result.version.algorithme).toBe(VERSION_COURANTE);
     });
 
     it("devrait inclure tous les enums enrichissement", () => {

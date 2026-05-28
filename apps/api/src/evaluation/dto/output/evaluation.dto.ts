@@ -71,11 +71,12 @@ export class EvaluationSwaggerDto {
   mutabilite: MutabiliteOutputDto;
 
   @ApiProperty({
-    description: "Métadonnées de l'évaluation",
+    description:
+      "Métadonnées de l'évaluation. `source` indique le canal d'appel (`api` pour cet endpoint, `iframe` ou `standalone` pour les évaluations créées via les autres canaux). `integrator` est renseigné si l'évaluation a été déclenchée par un intégrateur tiers identifié.",
     example: {
-      versionAlgorithme: "1.0.0",
-      source: "iframe",
-      integrator: "urbanvitaliz",
+      versionAlgorithme: "v1.9",
+      source: "api",
+      integrator: "benefriches",
       dureeCalculMs: 1250,
     },
   })

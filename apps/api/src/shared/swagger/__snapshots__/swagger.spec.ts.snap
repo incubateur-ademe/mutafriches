@@ -1,0 +1,39 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Swagger OpenAPI document > garantit la stabilité du snapshot des chemins exposés 1`] = `
+{
+  "/api/donnees-externes/apis": [
+    "get",
+  ],
+  "/api/donnees-externes/apis/refresh": [
+    "post",
+  ],
+  "/api/donnees-externes/imports": [
+    "get",
+  ],
+  "/api/stats": [
+    "get",
+  ],
+  "/enrichissement": [
+    "post",
+  ],
+  "/evaluation/algorithme/versions": [
+    "get",
+  ],
+  "/evaluation/calculer": [
+    "post",
+  ],
+  "/evaluation/comparer": [
+    "post",
+  ],
+  "/evaluation/metadata": [
+    "get",
+  ],
+  "/evaluation/{id}": [
+    "get",
+  ],
+  "/health": [
+    "get",
+  ],
+}
+`;

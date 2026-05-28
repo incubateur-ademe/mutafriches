@@ -28,10 +28,12 @@ export interface ImportStatusItem {
   sourcePath: string | null;
   /** Taille du fichier source en octets */
   fileSizeBytes: number | null;
+  /** URL publique de la source officielle (page data.gouv.fr / INSEE / Cerema...) */
+  docUrl: string;
 }
 
 /**
- * Réponse de l'endpoint GET /api/import-status.
+ * Réponse de l'endpoint GET /api/donnees-externes/imports.
  */
 export interface ImportStatusOutput {
   /** Date de génération de la réponse (ISO8601) */

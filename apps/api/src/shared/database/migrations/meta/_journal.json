@@ -141,6 +141,13 @@
       "when": 1779267254572,
       "tag": "0019_ite_fret_adresse",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1779267254573,
+      "tag": "0020_api_health_snapshots",
+      "breakpoints": true
     }
   ]
 }

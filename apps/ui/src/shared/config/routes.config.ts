@@ -23,7 +23,7 @@ export const ROUTES = {
   API: "/api",
 
   // Statut technique
-  STATUT_IMPORTS: "/statut-imports",
+  DONNEES_EXTERNES: "/donnees-externes",
 
   // Pages de test
   TESTS: "/tests",

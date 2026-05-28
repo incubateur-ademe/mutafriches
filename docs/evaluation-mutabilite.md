@@ -1,7 +1,8 @@
 # Documentation de l'Algorithme Mutafriches
 
-> **Version** : 2.0
-> **Date** : Mars 2026
+> **Version doc** : 2.1
+> **Date** : Mai 2026
+> **Algorithme** : v1.9
 > **Objectif** : Évaluer la mutabilité des friches urbaines pour 7 usages potentiels
 
 ---
@@ -12,7 +13,7 @@
 
 Mutafriches est un algorithme d'aide à la décision qui évalue le potentiel de reconversion d'une friche urbaine.
 
-Il analyse **24 critères** pour déterminer le meilleur usage futur parmi **7 possibilités**, en produisant :
+Il analyse **28 critères** pour déterminer le meilleur usage futur parmi **7 possibilités**, en produisant :
 
 - Un **indice de mutabilité** (0-100%) pour chaque usage
 - Un **classement** des usages par ordre de pertinence
@@ -45,11 +46,11 @@ Il analyse **24 critères** pour déterminer le meilleur usage futur parmi **7 p
  ┌─────────────┐         ┌─────────────┐          ┌─────────────┐
  │  COLLECTE   │         │ CONSULTATION│          │   CALCUL    │
  │     DES     │  ────→  │   MATRICE   │  ────→   │     DES     │
- │  24 CRITÈRES│         │  DE SCORING │          │   POINTS    │
+ │  28 CRITÈRES│         │  DE SCORING │          │   POINTS    │
  └─────────────┘         └─────────────┘          └─────────────┘
-  État friche             24 critères ×            Score × Poids
+  État friche             28 critères ×            Score × Poids
   Situation               7 usages =               Pour chaque
-  Réglementation          168 valeurs              usage
+  Réglementation          196 valeurs              usage
   Patrimoine              
   Écosystème              
        │                        │                        │
@@ -70,29 +71,29 @@ Il analyse **24 critères** pour déterminer le meilleur usage futur parmi **7 p
            │  CLASSEMENT │           │  FIABILITÉ  │
            │  1er → 7ème │           │    0-10     │
            └─────────────┘           └─────────────┘
-             Tri par %                 Poids/25.5
+             Tri par %                 Poids/30
 ```
 
 ### Étape 1 : Collecte des données
 
-L'algorithme collecte **24 critères** répartis en **2 sources** :
+L'algorithme collecte **28 critères** répartis en **2 sources** :
 
-- **17 critères enrichis automatiquement** via le module d'enrichissement (APIs externes)
-- **7 critères complémentaires** saisis manuellement par l'utilisateur
+- **18 critères enrichis automatiquement** via le module d'enrichissement (APIs externes)
+- **10 critères complémentaires** saisis manuellement par l'utilisateur
 
 #### Synthèse des critères et leurs poids
 
 | Source | Nb critères | Poids total |
 |--------|------------|-------------|
-| Enrichissement automatique | 17 | 17.5 |
-| Données complémentaires (saisie) | 7 | 8 |
-| **TOTAL** | **24** | **25.5** |
+| Enrichissement automatique | 18 | 18.5 |
+| Données complémentaires (saisie) | 10 | 11.5 |
+| **TOTAL** | **28** | **30** |
 
 ### Étape 2 : Matrice de scoring
 
 L'algorithme utilise une **matrice de scoring unique** qui définit comment chaque valeur de critère impacte chaque usage.
 
-Cette matrice contient 24 critères × 7 usages = 168 correspondances de base (davantage avec les valeurs multiples par critère).
+Cette matrice contient 28 critères × 7 usages = 196 correspondances de base (davantage avec les valeurs multiples par critère).
 
 #### Structure de la matrice
 
@@ -220,7 +221,7 @@ Indicateur de confiance basé sur la somme des poids des critères renseignés :
 Fiabilité = (Poids_critères_renseignés / Poids_total) × 10
 ```
 
-Le poids total est de **25.5** (somme de tous les poids des 24 critères). Chaque critère contribue proportionnellement à son poids.
+Le poids total est de **30** (somme de tous les poids des 28 critères). Chaque critère contribue proportionnellement à son poids.
 
 #### Grille d'interprétation
 
@@ -237,9 +238,9 @@ La fiabilité **ne modifie pas** le classement. C'est un indicateur séparé qui
 
 ---
 
-## Liste des 24 critères actifs
+## Liste des 28 critères actifs
 
-### Critères enrichis automatiquement (17)
+### Critères enrichis automatiquement (18)
 
 | # | Critère | Poids | Valeurs | Champ DTO |
 |---|---------|-------|---------|-----------|
@@ -258,23 +259,27 @@ La fiabilité **ne modifie pas** le classement. C'est un indicateur séparé qui
 | 13 | **Zonage environnemental** | 1 | Hors zone / Réserve naturelle / Natura 2000 / ZNIEFF / Proximité zone | `zonageEnvironnemental` |
 | 14 | **Zonage réglementaire (PLU)** | 2 | Zone U (habitat/équipement/activité) / AU / Activités / CC constructible / CC non-constructible / Agricole / Naturelle / Ne sait pas | `zonageReglementaire` |
 | 15 | **Zonage patrimonial** | 1 | Non concerné / Site inscrit-classé / Périmètre ABF | `zonagePatrimonial` |
-| 16 | **Trame verte et bleue** | 1 | Hors trame / Réservoir biodiversité / Corridor à préserver / Corridor à restaurer / Ne sait pas | `trameVerteEtBleue` |
-| 17 | **Zone ZAER (ENR)** | 1 | Non / Oui / Oui avec PV ombrière | `zoneAccelerationEnr` |
+| 16 | **Zone ZAER (ENR)** | 1 | Non / Oui / Oui avec PV ombrière | `zoneAccelerationEnr` |
+| 17 | **Zonage ABC (logement)** | 0.5 | A / Abis / B1 / B2 / C | `zonageAbcLogement` |
+| 18 | **Distance ITE fret** | 0.5 | < 1 km (bon état) / < 1 km (mauvais état) / > 1 km | `distanceIte` |
 
-### Critères complémentaires saisis (7)
+### Critères complémentaires saisis (10)
 
 | # | Critère | Poids | Valeurs | Champ DTO |
 |---|---------|-------|---------|-----------|
-| 18 | **Type de propriétaire** | 1 | Public / Privé / Copropriété-indivision / Mixte / Ne sait pas | `typeProprietaire` |
-| 19 | **Raccordement eau** | 1 | Oui / Non / Ne sait pas | `raccordementEau` |
-| 20 | **État du bâti et infrastructure** | 2 | Dégradation inexistante / Très importante / Moyenne / Hétérogène / Pas de bâti / Ne sait pas | `etatBatiInfrastructure` |
-| 21 | **Présence de pollution** | 2 | Non / Déjà gérée / Oui-composés volatils / Oui-autres composés / Oui-amiante / Ne sait pas | `presencePollution` |
-| 22 | **Valeur architecturale et historique** | 1 | Sans intérêt / Ordinaire / Intérêt remarquable / Pas de bâti / Ne sait pas | `valeurArchitecturaleHistorique` |
-| 23 | **Qualité du paysage** | 1 | Sans intérêt / Ordinaire / Intérêt remarquable / Ne sait pas | `qualitePaysage` |
-| 24 | **Qualité voie de desserte** | 0.5 | Accessible / Dégradée / Peu accessible / Ne sait pas | `qualiteVoieDesserte` |
+| 19 | **Type de propriétaire** | 1 | Public / Privé / Copropriété-indivision / Mixte / Ne sait pas | `typeProprietaire` |
+| 20 | **Raccordement eau** | 1 | Oui / Non / Ne sait pas | `raccordementEau` |
+| 21 | **État du bâti et infrastructure** | 2 | Dégradation inexistante / Très importante / Moyenne / Hétérogène / Pas de bâti / Ne sait pas | `etatBatiInfrastructure` |
+| 22 | **Présence de pollution** | 2 | Non / Déjà gérée / Oui-composés volatils / Oui-autres composés / Oui-amiante / Ne sait pas | `presencePollution` |
+| 23 | **Valeur architecturale et historique** | 1 | Sans intérêt / Ordinaire / Intérêt remarquable / Pas de bâti / Ne sait pas | `valeurArchitecturaleHistorique` |
+| 24 | **Qualité du paysage** | 1 | Sans intérêt / Ordinaire / Intérêt remarquable / Ne sait pas | `qualitePaysage` |
+| 25 | **Qualité voie de desserte** | 0.5 | Accessible / Dégradée / Peu accessible / Ne sait pas | `qualiteVoieDesserte` |
+| 26 | **Trame verte et bleue** | 1 | Hors trame / Réservoir biodiversité / Corridor à préserver / Corridor à restaurer / Ne sait pas | `trameVerteEtBleue` |
+| 27 | **Présence d'espèces protégées** | 1 | Oui / Non / Ne sait pas | `presenceEspecesProtegees` |
+| 28 | **Présence de zone humide** | 1 | Oui / Non / Ne sait pas | `presenceZoneHumide` |
 
 ---
 
-> **Dernière mise à jour** : Mars 2026
+> **Dernière mise à jour** : Mai 2026 (algorithme v1.9)
 > **Contact** : <samir.benfares@beta.gouv.fr>
 > **Repository** : [https://github.com/incubateur-ademe/mutafriches](https://github.com/incubateur-ademe/mutafriches)

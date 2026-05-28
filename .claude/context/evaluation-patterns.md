@@ -9,19 +9,19 @@ apps/api/src/evaluation/
 ├── dto/
 │   ├── input/
 │   │   ├── calculer-mutabilite.dto.ts       # Entrée : données enrichies + complémentaires
-│   │   └── donnees-complementaires.dto.ts   # 8 champs manuels saisis par l'utilisateur
+│   │   └── donnees-complementaires.dto.ts   # 10 champs manuels saisis par l'utilisateur
 │   └── output/
 │       ├── evaluation.dto.ts                # Évaluation complète (GET /evaluation/:id)
 │       ├── metadata.dto.ts                  # Enums et versions (GET /evaluation/metadata)
 │       └── mutabilite.dto.ts                # Résultats de calcul (POST /evaluation/calculer)
 ├── entities/
-│   ├── site.entity.ts                       # Objet métier central (24 critères)
+│   ├── site.entity.ts                       # Objet métier central (28 critères)
 │   └── evaluation.entity.ts                 # Évaluation persistée (snapshots + résultats)
 ├── repositories/
 │   └── evaluation.repository.ts             # Persistance + cache (Drizzle ORM)
 ├── services/
 │   ├── algorithme/
-│   │   ├── algorithme.config.ts             # Matrice 24×7 (critères × usages)
+│   │   ├── algorithme.config.ts             # Matrice 28×7 (critères × usages)
 │   │   ├── algorithme.constants.ts          # Seuils, poids, niveaux
 │   │   ├── algorithme.types.ts              # Types internes algorithme
 │   │   ├── fiabilite.calculator.ts          # Calcul fiabilité (0-10)
@@ -81,9 +81,9 @@ OrchestrateurService.calculerMutabilite()
 
 ## Algorithme de scoring
 
-### Matrice 24 critères × 7 usages
+### Matrice 28 critères × 7 usages
 
-L'algorithme évalue 24 critères pour chacun des 7 usages possibles d'une friche.
+L'algorithme évalue 28 critères pour chacun des 7 usages possibles d'une friche.
 
 #### Les 7 usages
 
@@ -105,9 +105,13 @@ POSITIF      = 1
 TRES_POSITIF = 2
 ```
 
-#### Les 24 critères (14 enrichis + 8 complémentaires + 2 dérivés)
+#### Les 28 critères (18 enrichis + 10 complémentaires)
 
-**Enrichis automatiquement** (poids total : 18) :
+> Source de vérité : `POIDS_CRITERES` dans `algorithme.config.ts`. La répartition
+> enrichis/complémentaires suit `DonneesComplementairesInputDto` (champs saisis par
+> l'utilisateur).
+
+**Enrichis automatiquement** (poids total : 18.5) :
 
 | Critère | Poids | Type |
 |---------|-------|------|
@@ -127,8 +131,10 @@ TRES_POSITIF = 2
 | `zonageEnvironnemental` | 1 | Enum (5 valeurs) |
 | `zonagePatrimonial` | 1 | Enum (3 valeurs) |
 | `zoneAccelerationEnr` | 1 | Enum (3 valeurs) |
+| `zonageAbcLogement` | 0.5 | Enum (A / Abis / B1 / B2 / C) |
+| `distanceIte` | 0.5 | Enum (<1km bon état / <1km mauvais état / >1km) |
 
-**Complémentaires manuels** (poids total : 10) :
+**Complémentaires manuels** (poids total : 11.5) :
 
 | Critère | Poids | Type |
 |---------|-------|------|
@@ -140,8 +146,10 @@ TRES_POSITIF = 2
 | `qualitePaysage` | 1 | Enum (4 valeurs) |
 | `qualiteVoieDesserte` | 0.5 | Enum (4 valeurs) |
 | `trameVerteEtBleue` | 1 | Enum (5 valeurs) |
+| `presenceEspecesProtegees` | 1 | Enum (Oui / Non / Ne sait pas) |
+| `presenceZoneHumide` | 1 | Enum (Oui / Non / Ne sait pas) |
 
-**Poids total : 28**
+**Poids total : 30**
 
 ### Formule de calcul
 
@@ -235,13 +243,14 @@ noteArrondie = Math.round(note × 2) / 2          // Arrondi au 0.5
 - **TTL** : 24 heures
 - **Clé** : `siteId` (identifiant cadastral)
 - **Invalidation** : si les données complémentaires contiennent `"ne-sait-pas"` → pas de cache
-- **Comparaison** : les 8 champs complémentaires sont comparés un par un
+- **Comparaison** : les 10 champs complémentaires sont comparés un par un
 
 ```typescript
-// Les 8 champs comparés pour la validité du cache
+// Les 10 champs comparés pour la validité du cache
 typeProprietaire, raccordementEau, etatBatiInfrastructure,
 presencePollution, valeurArchitecturaleHistorique,
-qualitePaysage, qualiteVoieDesserte, trameVerteEtBleue
+qualitePaysage, qualiteVoieDesserte, trameVerteEtBleue,
+presenceEspecesProtegees, presenceZoneHumide
 ```
 
 ### Logique
@@ -268,7 +277,7 @@ Enrichissement → Site → Évaluation
 ### Vérification de complétude
 
 ```typescript
-// Vérifie que les 8 champs complémentaires obligatoires sont renseignés
+// Vérifie que les 10 champs complémentaires obligatoires sont renseignés
 site.estComplete(): boolean
 
 // Calcule le taux de complétude (0 à 1)
@@ -293,7 +302,7 @@ site.calculerTauxCompletude(): number
 
 1. Ajouter le champ dans `Site` (`entities/site.entity.ts`)
 2. Ajouter la ligne dans `MATRICE_SCORING` (`algorithme.config.ts`) avec les 7 scores
-3. Ajouter le poids dans `POIDS_CRITERES` (`algorithme.constants.ts`)
+3. Ajouter le poids dans `POIDS_CRITERES` (`algorithme.config.ts`)
 4. Ajouter l'extraction dans `CalculService.extraireCriteres()`
 5. Ajouter la condition dans `FiabiliteCalculator` si c'est un critère complémentaire
 6. Mettre à jour les types partagés dans `packages/shared-types/`
@@ -317,7 +326,7 @@ Modifier uniquement les seuils dans la fonction. Ne pas changer la structure.
 
 ### Modifier les poids
 
-Les poids sont dans `POIDS_CRITERES` (`algorithme.constants.ts`). Le poids total (28) est recalculé automatiquement par le `FiabiliteCalculator`.
+Les poids sont dans `POIDS_CRITERES` (`algorithme.config.ts`). Le poids total (30) est recalculé automatiquement par le `FiabiliteCalculator`.
 
 ---
 
@@ -325,7 +334,7 @@ Les poids sont dans `POIDS_CRITERES` (`algorithme.constants.ts`). Le poids total
 
 ### Algorithme
 
-- [ ] Matrice 24×7 cohérente (chaque critère a un score pour chaque usage)
+- [ ] Matrice 28×7 cohérente (chaque critère a un score pour chaque usage)
 - [ ] Poids déclarés dans `POIDS_CRITERES` pour chaque critère
 - [ ] Score NEUTRE (0.5) géré dans les deux sens (avantages + contraintes)
 - [ ] Critères ignorés si `undefined`, `null`, ou `"ne-sait-pas"`
@@ -340,7 +349,7 @@ Les poids sont dans `POIDS_CRITERES` (`algorithme.constants.ts`). Le poids total
 ### Cache
 
 - [ ] Invalidation si `"ne-sait-pas"` présent dans les complémentaires
-- [ ] Comparaison des 8 champs complémentaires pour la clé de cache
+- [ ] Comparaison des 10 champs complémentaires pour la clé de cache
 - [ ] TTL de 24 heures respecté
 
 ### Tests

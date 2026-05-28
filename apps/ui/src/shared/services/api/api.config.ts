@@ -30,8 +30,9 @@ export const API_CONFIG = {
     metabase: {
       embedUrl: "/api/metabase/embed-url",
     },
-    importStatus: {
-      lister: "/api/import-status",
+    donneesExternes: {
+      imports: "/api/donnees-externes/imports",
+      apis: "/api/donnees-externes/apis",
     },
     // Legacy endpoints (deprecated - pour compatibilité)
     friches: {
