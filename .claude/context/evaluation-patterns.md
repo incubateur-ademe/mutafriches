@@ -15,13 +15,13 @@ apps/api/src/evaluation/
 │       ├── metadata.dto.ts                  # Enums et versions (GET /evaluation/metadata)
 │       └── mutabilite.dto.ts                # Résultats de calcul (POST /evaluation/calculer)
 ├── entities/
-│   ├── site.entity.ts                       # Objet métier central (28 critères)
+│   ├── site.entity.ts                       # Objet métier central (27 critères)
 │   └── evaluation.entity.ts                 # Évaluation persistée (snapshots + résultats)
 ├── repositories/
 │   └── evaluation.repository.ts             # Persistance + cache (Drizzle ORM)
 ├── services/
 │   ├── algorithme/
-│   │   ├── algorithme.config.ts             # Matrice 28×7 (critères × usages)
+│   │   ├── algorithme.config.ts             # Matrice 27×7 (critères × usages)
 │   │   ├── algorithme.constants.ts          # Seuils, poids, niveaux
 │   │   ├── algorithme.types.ts              # Types internes algorithme
 │   │   ├── fiabilite.calculator.ts          # Calcul fiabilité (0-10)
@@ -327,7 +327,7 @@ Modifier uniquement les seuils dans la fonction. Ne pas changer la structure.
 
 ### Modifier les poids
 
-Les poids sont dans `POIDS_CRITERES` (`algorithme.config.ts`). Le poids total (30) est recalculé automatiquement par le `FiabiliteCalculator`.
+Les poids sont dans `POIDS_CRITERES` (`algorithme.config.ts`). Le poids total (29.5) est recalculé automatiquement par le `FiabiliteCalculator`.
 
 ---
 
@@ -335,7 +335,7 @@ Les poids sont dans `POIDS_CRITERES` (`algorithme.config.ts`). Le poids total (3
 
 ### Algorithme
 
-- [ ] Matrice 28×7 cohérente (chaque critère a un score pour chaque usage)
+- [ ] Matrice 27×7 cohérente (chaque critère a un score pour chaque usage)
 - [ ] Poids déclarés dans `POIDS_CRITERES` pour chaque critère
 - [ ] Score NEUTRE (0.5) géré dans les deux sens (avantages + contraintes)
 - [ ] Critères ignorés si `undefined`, `null`, ou `"ne-sait-pas"`
