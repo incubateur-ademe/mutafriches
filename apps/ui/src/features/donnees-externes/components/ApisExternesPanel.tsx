@@ -126,9 +126,17 @@ export function ApisExternesPanel() {
               <div className="fr-table__content">
                 <table>
                   <caption>
-                    APIs externes utilisées par les adapters d'enrichissement
+                    APIs externes interrogées pour enrichir automatiquement les analyses
                     <div className="fr-table__caption__desc">
-                      Résultat du dernier health-check journalier (cron GitHub Actions).
+                      Résultat du dernier health-check journalier (
+                      <a
+                        href="https://github.com/incubateur-ademe/mutafriches/actions/workflows/api-monitoring.yml"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        cron GitHub Actions
+                      </a>
+                      ).
                     </div>
                   </caption>
                   <thead>

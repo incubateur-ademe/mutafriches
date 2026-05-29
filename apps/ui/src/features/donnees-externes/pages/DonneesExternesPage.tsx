@@ -35,15 +35,16 @@ export function DonneesExternesPage() {
 
         <h1 id="donnees-externes">Données externes</h1>
         <p className="fr-text--lead fr-mb-6w">
-          Vue d'ensemble des sources de données externes utilisées par Mutafriches : référentiels
-          importés en base et APIs distantes interrogées par les adapters d'enrichissement.
+          Vue d'ensemble des sources de données externes utilisées par Mutafriches : les APIs
+          distantes interrogées pour enrichir automatiquement les analyses et les référentiels
+          importés en base.
         </p>
 
         <DsfrTabs
           ariaLabel="Données externes : sélection de l'onglet"
           tabs={[
-            { id: "imports", label: "Imports", panel: <ImportsPanel /> },
             { id: "apis", label: "APIs externes", panel: <ApisExternesPanel /> },
+            { id: "imports", label: "Imports", panel: <ImportsPanel /> },
           ]}
         />
       </div>
