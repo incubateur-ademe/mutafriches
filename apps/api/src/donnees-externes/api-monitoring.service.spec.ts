@@ -140,7 +140,7 @@ describe("ApiMonitoringService", () => {
 
       expect(result.summary.down).toBe(API_MONITORING_ENTRIES.length);
       expect(result.apis[0].httpStatus).toBeNull();
-      expect(result.apis[0].error).toContain("timeout");
+      expect(result.apis[0].error).toContain("Délai d'attente");
     });
 
     it("appelle bien GET ou POST selon la méthode configurée", async () => {

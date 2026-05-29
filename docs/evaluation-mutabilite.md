@@ -50,7 +50,7 @@ Il analyse **27 critères** pour déterminer le meilleur usage futur parmi **7 p
  └─────────────┘         └─────────────┘          └─────────────┘
   État friche             27 critères ×            Score × Poids
   Situation               7 usages =               Pour chaque
-  Réglementation          196 valeurs              usage
+  Réglementation          189 valeurs              usage
   Patrimoine              
   Écosystème              
        │                        │                        │
@@ -71,7 +71,7 @@ Il analyse **27 critères** pour déterminer le meilleur usage futur parmi **7 p
            │  CLASSEMENT │           │  FIABILITÉ  │
            │  1er → 7ème │           │    0-10     │
            └─────────────┘           └─────────────┘
-             Tri par %                 Poids/30
+             Tri par %                 Poids/29.5
 ```
 
 ### Étape 1 : Collecte des données

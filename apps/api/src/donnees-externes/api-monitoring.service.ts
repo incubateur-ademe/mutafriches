@@ -130,9 +130,9 @@ export class ApiMonitoringService {
     } catch (error: unknown) {
       const elapsed = Date.now() - start;
       const err = error as { message?: string };
-      const message = err?.message ?? String(error);
-      this.logger.debug(`Health-check ${entry.key} échoué : ${message}`);
-      return this.toHealthItem(entry, "down", null, elapsed, message);
+      const messageBrut = err?.message ?? String(error);
+      this.logger.debug(`Health-check ${entry.key} échoué : ${messageBrut}`);
+      return this.toHealthItem(entry, "down", null, elapsed, this.traduireErreur(messageBrut));
     }
   }
 
@@ -147,10 +147,32 @@ export class ApiMonitoringService {
     // 5xx ou autres => l'API est en panne.
     const serverResponded = httpStatus >= 200 && httpStatus < 500;
     if (!serverResponded) {
-      return this.toHealthItem(entry, "down", httpStatus, elapsed, `HTTP ${httpStatus}`);
+      return this.toHealthItem(
+        entry,
+        "down",
+        httpStatus,
+        elapsed,
+        `Erreur serveur (HTTP ${httpStatus})`,
+      );
     }
     const status: ApiHealthStatus = elapsed < SLOW_THRESHOLD_MS ? "up" : "slow";
     return this.toHealthItem(entry, status, httpStatus, elapsed, null);
+  }
+
+  /**
+   * Traduit les messages d'erreur techniques (axios / réseau) en français lisible.
+   */
+  private traduireErreur(message: string): string {
+    const m = message.toLowerCase();
+    if (m.includes("timeout")) return "Délai d'attente dépassé (5 s)";
+    if (m.includes("etimedout")) return "Délai de connexion dépassé";
+    if (m.includes("enotfound") || m.includes("eai_again")) return "Hôte introuvable (erreur DNS)";
+    if (m.includes("econnrefused")) return "Connexion refusée par le serveur";
+    if (m.includes("econnreset") || m.includes("socket hang up")) return "Connexion interrompue";
+    if (m.includes("cert") || m.includes("ssl") || m.includes("tls"))
+      return "Erreur de certificat SSL";
+    if (m.includes("network")) return "Erreur réseau";
+    return "Erreur réseau inattendue";
   }
 
   private toHealthItem(
