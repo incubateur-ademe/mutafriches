@@ -6,16 +6,22 @@ import {
   ModeUtilisation,
   ContexteEvenement,
   UsageType,
+  TypeEvenement,
+  BesoinMultisites,
 } from "@mutafriches/shared-types";
 import { EvenementUtilisateur } from "../entities/evenement.entity";
 import { EvenementRepository } from "../repositories/evenement.repository";
+import { ContactService } from "../../contact/contact.service";
 
 /** Regex pour valider les pages (pathname) */
 const PAGE_REGEX = /^\/[a-z0-9\-/]*$/i;
 
 @Injectable()
 export class EvenementService {
-  constructor(private readonly evenementRepository: EvenementRepository) {}
+  constructor(
+    private readonly evenementRepository: EvenementRepository,
+    private readonly contactService: ContactService,
+  ) {}
 
   async enregistrerEvenement(
     input: EvenementInputDto,
@@ -26,6 +32,18 @@ export class EvenementService {
       ref?: string;
     },
   ): Promise<EvenementOutputDto> {
+    // Demande de contact multisites : on lit l'email AVANT sanitization
+    // (l'email ne doit jamais finir dans la table evenements, mais sert aux effets de bord)
+    if (input.typeEvenement === TypeEvenement.DEMANDE_CONTACT_MULTISITES && input.donnees?.email) {
+      await this.contactService.traiterDemande({
+        email: input.donnees.email,
+        besoin: input.donnees.besoin ?? "",
+        evaluationId: input.evaluationId,
+        sessionId: input.sessionId,
+        integrateur: metadata?.integrateur,
+      });
+    }
+
     const evenement = new EvenementUtilisateur({
       id: this.genererIdEvenement(),
       typeEvenement: input.typeEvenement,
@@ -151,6 +169,15 @@ export class EvenementService {
     // surfaceTotaleM2: doit etre un nombre entre 0 et 1 000 000
     if (donnees.surfaceTotaleM2 !== undefined && typeof donnees.surfaceTotaleM2 === "number") {
       sanitized.surfaceTotaleM2 = Math.max(0, Math.min(1_000_000, donnees.surfaceTotaleM2));
+    }
+
+    // besoin: doit etre une valeur de l'enum BesoinMultisites (stat anonyme).
+    // Note: email n'est volontairement PAS recopie ici pour ne jamais le persister dans l'evenement.
+    if (donnees.besoin !== undefined) {
+      const besoinValues = Object.values(BesoinMultisites) as string[];
+      if (besoinValues.includes(String(donnees.besoin))) {
+        sanitized.besoin = donnees.besoin as BesoinMultisites;
+      }
     }
 
     return Object.keys(sanitized).length > 0 ? sanitized : undefined;

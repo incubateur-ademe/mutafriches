@@ -8,12 +8,17 @@ import {
 } from "@mutafriches/shared-types";
 import { EvenementService } from "./evenement.service";
 import { EvenementRepository } from "../repositories/evenement.repository";
+import { ContactService } from "../../contact/contact.service";
 
 describe("EvenementService - Sécurité", () => {
   let service: EvenementService;
 
   const mockRepository = {
     enregistrerEvenement: vi.fn().mockResolvedValue(undefined),
+  };
+
+  const mockContactService = {
+    traiterDemande: vi.fn().mockResolvedValue(undefined),
   };
 
   beforeEach(async () => {
@@ -23,6 +28,10 @@ describe("EvenementService - Sécurité", () => {
         {
           provide: EvenementRepository,
           useValue: mockRepository,
+        },
+        {
+          provide: ContactService,
+          useValue: mockContactService,
         },
       ],
     }).compile();
@@ -465,6 +474,44 @@ describe("EvenementService - Sécurité", () => {
       const savedEvent = vi.mocked(mockRepository.enregistrerEvenement).mock.calls[0][0];
       expect(savedEvent.typeEvenement).toBe(TypeEvenement.EVALUATION_TERMINEE);
       expect(savedEvent.evaluationId).toBe("eval-123");
+    });
+  });
+
+  describe("Demande de contact multisites", () => {
+    it("devrait router vers ContactService et ne pas persister l'email dans l'événement", async () => {
+      const input = {
+        typeEvenement: TypeEvenement.DEMANDE_CONTACT_MULTISITES,
+        evaluationId: "eval-123",
+        donnees: {
+          email: "user@example.com",
+          besoin: "suivi_comparaison",
+        },
+      };
+
+      await service.enregistrerEvenement(input);
+
+      // ContactService appelé avec l'email lu avant sanitization
+      expect(mockContactService.traiterDemande).toHaveBeenCalledOnce();
+      expect(mockContactService.traiterDemande.mock.calls[0][0]).toMatchObject({
+        email: "user@example.com",
+        besoin: "suivi_comparaison",
+      });
+
+      // L'email n'est jamais persisté dans l'événement, mais le besoin l'est
+      const savedEvent = vi.mocked(mockRepository.enregistrerEvenement).mock.calls[0][0];
+      expect(savedEvent.donnees).not.toHaveProperty("email");
+      expect(savedEvent.donnees?.besoin).toBe("suivi_comparaison");
+    });
+
+    it("ne devrait pas appeler ContactService si l'email est absent", async () => {
+      const input = {
+        typeEvenement: TypeEvenement.DEMANDE_CONTACT_MULTISITES,
+        donnees: { besoin: "suivi_comparaison" },
+      };
+
+      await service.enregistrerEvenement(input);
+
+      expect(mockContactService.traiterDemande).not.toHaveBeenCalled();
     });
   });
 });

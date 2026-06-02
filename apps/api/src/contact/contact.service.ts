@@ -1,0 +1,92 @@
+import { Injectable, Logger } from "@nestjs/common";
+import { BesoinMultisites } from "@mutafriches/shared-types";
+import { ContactRepository } from "./contact.repository";
+import { MailerService } from "../mailer/mailer.service";
+import { contactConfirmationTemplate } from "../mailer/templates/contact-confirmation.template";
+import { contactNotificationTemplate } from "../mailer/templates/contact-notification.template";
+
+export interface TraiterDemandeParams {
+  email: string;
+  besoin: BesoinMultisites | string;
+  evaluationId?: string;
+  sessionId?: string;
+  integrateur?: string;
+}
+
+// Validation email simple, suffisante en complement de la saisie cote UI
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+@Injectable()
+export class ContactService {
+  private readonly logger = new Logger(ContactService.name);
+
+  constructor(
+    private readonly contactRepository: ContactRepository,
+    private readonly mailerService: MailerService,
+  ) {}
+
+  estEmailValide(email: string | undefined): boolean {
+    return typeof email === "string" && email.length <= 255 && EMAIL_REGEX.test(email);
+  }
+
+  estBesoinValide(besoin: unknown): boolean {
+    return (Object.values(BesoinMultisites) as string[]).includes(String(besoin));
+  }
+
+  // Persiste la demande et envoie les deux emails (confirmation + notification equipe).
+  // Ne throw jamais : une erreur ici ne doit pas casser le tracking d'evenement appelant.
+  async traiterDemande(params: TraiterDemandeParams): Promise<void> {
+    if (!this.estEmailValide(params.email) || !this.estBesoinValide(params.besoin)) {
+      this.logger.warn("Demande de contact ignorée : email ou besoin invalide");
+      return;
+    }
+
+    const id = `dc-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+
+    try {
+      await this.contactRepository.enregistrerDemande({
+        id,
+        email: params.email,
+        besoin: String(params.besoin),
+        evaluationId: params.evaluationId,
+        sessionId: params.sessionId,
+        integrateur: params.integrateur,
+      });
+    } catch (error: unknown) {
+      const err = error as Error;
+      this.logger.error(`Échec persistance demande de contact : ${err.message}`);
+      return;
+    }
+
+    // Notification equipe
+    const notificationEmail = process.env.CONTACT_NOTIFICATION_EMAIL;
+    if (notificationEmail) {
+      await this.mailerService.envoyer({
+        to: notificationEmail,
+        subject: "Nouvelle demande de contact multisites",
+        html: contactNotificationTemplate({
+          email: params.email,
+          besoin: params.besoin,
+          date: new Date(),
+          evaluationId: params.evaluationId,
+        }),
+      });
+    }
+
+    // Confirmation utilisateur
+    const confirmation = await this.mailerService.envoyer({
+      to: params.email,
+      subject: "Votre demande Mutafriches a bien été reçue",
+      html: contactConfirmationTemplate(params.besoin),
+    });
+
+    if (confirmation.success) {
+      try {
+        await this.contactRepository.marquerMailConfirmationEnvoye(id);
+      } catch (error: unknown) {
+        const err = error as Error;
+        this.logger.warn(`Mise à jour mailConfirmationEnvoyé échouée : ${err.message}`);
+      }
+    }
+  }
+}
