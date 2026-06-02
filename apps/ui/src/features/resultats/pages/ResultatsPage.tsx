@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useEventTracking } from "../../../shared/hooks/useEventTracking";
-import { MutabiliteOutputDto, TypeEvenement } from "@mutafriches/shared-types";
+import { MutabiliteOutputDto, TypeEvenement, BesoinMultisites } from "@mutafriches/shared-types";
 import { buildMutabilityInput, buildDonneesComplementaires } from "../utils/mutability.mapper";
 import { ROUTES } from "../../../shared/config/routes.config";
 import { Layout } from "../../../shared/components/layout/Layout";
@@ -16,6 +16,7 @@ import { createIframeCommunicator } from "../../../shared/iframe/iframeCommunica
 import { IframeEvaluationSummaryDto } from "../../../shared/iframe/iframe.types";
 import { evaluationService } from "../../../shared/services/api/api.evaluation.service";
 import { ModalInfo } from "../../../shared/components/common/ModalInfo";
+import { ContactMultisitesModal } from "../components/ContactMultisitesModal";
 import { VERSION_ALGO } from "@mutafriches/shared-types";
 import { DebugPanelGate } from "../../debug/components/DebugPanelGate";
 import { ComparaisonAlgoPanelGate } from "../../comparaison-algo/components/ComparaisonAlgoPanelGate";
@@ -79,7 +80,8 @@ export const ResultatsPage: React.FC = () => {
   const { parentOrigin, integrator } = useIframe();
 
   // Hook tracking
-  const { track, trackExporterResultats, trackEvaluationTerminee } = useEventTracking();
+  const { track, trackExporterResultats, trackDemandeContactMultisites, trackEvaluationTerminee } =
+    useEventTracking();
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -91,6 +93,9 @@ export const ResultatsPage: React.FC = () => {
 
   // Modal nouvelle analyse
   const [isNewAnalysisModalOpen, setIsNewAnalysisModalOpen] = useState(false);
+
+  // Modal contact multisites
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
 
   // Un seul ref pour tracker si on a déjà initialisé
   const hasInitializedRef = React.useRef(false);
@@ -239,6 +244,11 @@ export const ResultatsPage: React.FC = () => {
     setIsNewAnalysisModalOpen(false);
     resetForm();
     navigate(ROUTES.ANALYSER);
+  };
+
+  // Handler pour soumettre la demande de contact multisites
+  const handleContactSubmit = async (email: string, besoin: BesoinMultisites) => {
+    await trackDemandeContactMultisites(email, besoin, mutabilityData?.evaluationId);
   };
 
   // Handler pour modifier les données
@@ -433,6 +443,19 @@ export const ResultatsPage: React.FC = () => {
             </button>
           )}
         </div>
+
+        {/* CTA : analyse multisites */}
+        <div className="fr-callout fr-callout--blue-ecume fr-mt-4w">
+          <h3 className="fr-callout__title">Analysez plusieurs sites en parallèle</h3>
+          <p className="fr-callout__text">
+            Accélérez vos analyses en qualifiant plusieurs sites simultanément. Comparez les
+            résultats à l'échelle d'un territoire et identifiez plus facilement les opportunités
+            pour construire votre stratégie territoriale.
+          </p>
+          <button className="fr-btn fr-btn--secondary" onClick={() => setIsContactModalOpen(true)}>
+            Analyser plusieurs sites
+          </button>
+        </div>
       </div>
 
       {/* Modal d'export */}
@@ -476,6 +499,13 @@ export const ResultatsPage: React.FC = () => {
         <p>Voulez-vous vraiment démarrer une nouvelle analyse ?</p>
         <p className="fr-text--sm">Les données actuelles seront perdues.</p>
       </ModalInfo>
+
+      {/* Modal de contact multisites */}
+      <ContactMultisitesModal
+        isOpen={isContactModalOpen}
+        onClose={() => setIsContactModalOpen(false)}
+        onSubmit={handleContactSubmit}
+      />
 
       {/* Panneau de diagnostic (dev/staging uniquement) */}
       <DebugPanelGate
