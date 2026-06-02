@@ -26,6 +26,19 @@ export enum TypeEvenement {
   INTERET_MULTI_PARCELLES = "interet_multi_parcelles",
   INTERET_MISE_EN_RELATION = "interet_mise_en_relation",
   INTERET_EXPORT_RESULTATS = "interet_export_resultats",
+
+  // Demande de mise en relation multisites (modale "Etre contacte")
+  DEMANDE_CONTACT_MULTISITES = "demande_contact_multisites",
+}
+
+/**
+ * Besoin exprime par l'utilisateur dans la modale de contact multisites
+ */
+export enum BesoinMultisites {
+  // Liste de sites a suivre et comparer dans un espace dedie
+  SUIVI_COMPARAISON = "suivi_comparaison",
+  // Integrer Mutafriches a ses outils metier (SIG, portail cartographique, etc.)
+  INTEGRATION_OUTILS = "integration_outils",
 }
 
 export enum ModeUtilisation {
