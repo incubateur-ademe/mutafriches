@@ -245,6 +245,8 @@ pnpm build                  # Build complet (shared-types + API + UI)
 pnpm db:start               # Démarrer PostgreSQL (Docker)
 pnpm db:stop                # Arrêter PostgreSQL
 pnpm db:reset               # Reset complet (supprime les données)
+pnpm mail:start             # Démarrer MailHog (capture SMTP locale, UI sur http://localhost:8026)
+pnpm mail:stop              # Arrêter MailHog
 pnpm db:generate            # Générer les migrations Drizzle
 pnpm db:migrate             # Appliquer les migrations
 pnpm db:push                # Synchroniser le schéma directement
@@ -366,6 +368,15 @@ Un test dédié (`versions.spec.ts`) doit garantir l'ordre antéchronologique st
 | POST /enrichissement | IntegrateurOriginGuard | Bypass | Origines whitelistées |
 | POST /evaluation/calculer | IntegrateurOriginGuard | Bypass | Origines whitelistées |
 | POST /evenements | OriginGuard | localhost + Mutafriches | Mutafriches uniquement |
+
+### Envoi d'emails (SMTP)
+
+Transport SMTP via `nodemailer` (cf. ADR-0015). En local : **MailHog** (`pnpm mail:start`, UI sur http://localhost:8026). En production : **relais SMTP Brevo**. Le `MailerService` se dégrade gracieusement : si `SMTP_HOST` est absent, l'envoi est ignoré sans lever d'exception.
+
+- `SMTP_HOST` / `SMTP_PORT` / `SMTP_SECURE` : serveur SMTP (local : `localhost`/`1026`/`false` ; prod : `smtp-relay.brevo.com`/`587`/`false`)
+- `SMTP_USER` / `SMTP_PASS` : identifiants SMTP (vides en local pour MailHog ; login + clé SMTP Brevo en prod)
+- `MAIL_SENDER_EMAIL` / `MAIL_SENDER_NAME` : expéditeur des emails
+- `CONTACT_NOTIFICATION_EMAIL` : adresse de l'équipe notifiée à chaque demande de contact multisites
 
 ## Documentation contextuelle
 
