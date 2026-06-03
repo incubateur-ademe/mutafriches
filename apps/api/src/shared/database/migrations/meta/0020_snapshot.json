@@ -1,9 +1,41 @@
 {
-  "id": "18ef501b-ed3e-44a3-aaad-0ab2dcc80527",
-  "prevId": "51e1382b-a504-4dfb-8ab0-5e40d59c567f",
+  "id": "eb697f69-b87b-450a-87fa-962b74246df9",
+  "prevId": "742c41dd-1e03-4e4a-bb62-21893af94b43",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
+    "public.api_health_snapshots": {
+      "name": "api_health_snapshots",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "checked_at": {
+          "name": "checked_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "data": {
+          "name": "data",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.communes": {
       "name": "communes",
       "schema": "",
@@ -899,9 +931,15 @@
           "primaryKey": false,
           "notNull": true
         },
-        "code_insee": {
-          "name": "code_insee",
-          "type": "varchar(5)",
+        "adresse": {
+          "name": "adresse",
+          "type": "varchar(500)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "code_postal": {
+          "name": "code_postal",
+          "type": "varchar(50)",
           "primaryKey": false,
           "notNull": false
         },
@@ -911,15 +949,9 @@
           "primaryKey": false,
           "notNull": false
         },
-        "departement": {
-          "name": "departement",
-          "type": "varchar(3)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "region": {
-          "name": "region",
-          "type": "varchar(100)",
+        "code_siret": {
+          "name": "code_siret",
+          "type": "varchar(50)",
           "primaryKey": false,
           "notNull": false
         },
@@ -949,11 +981,11 @@
         }
       },
       "indexes": {
-        "raw_ite_fret_code_insee_idx": {
-          "name": "raw_ite_fret_code_insee_idx",
+        "raw_ite_fret_code_postal_idx": {
+          "name": "raw_ite_fret_code_postal_idx",
           "columns": [
             {
-              "expression": "code_insee",
+              "expression": "code_postal",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
