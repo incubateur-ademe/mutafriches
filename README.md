@@ -102,6 +102,7 @@ pnpm start:dev
 - API : **<http://localhost:3000>**
 - Documentation Swagger : **<http://localhost:3000/api>**
 - Drizzle Studio : **<http://localhost:4983>** (après `pnpm db:studio`)
+- MailHog (emails capturés) : **<http://localhost:8026>** (après `pnpm mail:start`)
 
 ## 🛠️ Scripts disponibles
 
@@ -129,6 +130,20 @@ pnpm db:reset               # Reset complet (supprime les données)
 pnpm db:push                # Synchroniser le schéma
 pnpm db:studio              # Interface graphique Drizzle Studio
 ```
+
+### Emails (MailHog en local)
+
+L'envoi d'emails passe par SMTP (`nodemailer`). En local, on utilise **MailHog** pour capturer les emails sans rien envoyer réellement (cf. ADR-0015).
+
+```bash
+pnpm mail:start             # Démarrer MailHog (Docker)
+pnpm mail:stop              # Arrêter MailHog
+```
+
+- Interface web pour consulter les emails capturés : **http://localhost:8026**
+- SMTP exposé sur le port **1026** (configuré dans `.env` via `SMTP_HOST` / `SMTP_PORT`)
+- Si `SMTP_HOST` est absent du `.env`, l'envoi est ignoré sans erreur (dégradation gracieuse)
+- En production : relais SMTP Brevo (`SMTP_HOST=smtp-relay.brevo.com`, port `587`, identifiants Brevo)
 
 ### Qualité de code & Tests
 
