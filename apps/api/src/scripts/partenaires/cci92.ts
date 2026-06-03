@@ -1,24 +1,9 @@
-/**
- * Liste des sites à pré-chauffer par partenaire, pour le cache d'enrichissement.
- *
- * Registre keyé par slug (identique au slug UI dans
- * apps/ui/src/features/partenaires/partners/<slug>/index.ts).
- *
- * Liste statique miroir de la data UI
- * (apps/ui/src/features/partenaires/partners/<slug>/parcelles.ts, regroupée par idtup).
- * Si la liste change côté UI, mettre à jour ici aussi.
- *
- * Note : n'ajouter ici qu'un partenaire dont les IDU sont réels. Un partenaire avec des
- * identifiants fictifs (placeholder) ferait échouer le pré-chauffe et l'alarme du cron.
- */
+import { SitePrefetch } from "./types";
 
-export interface SitePrefetch {
-  idtup: string;
-  commune: string;
-  parcelles: string[];
-}
-
-const CCI92_SITES: SitePrefetch[] = [
+// Liste statique miroir de la data UI, regroupée par idtup
+// (apps/ui/src/features/partenaires/partners/cci92/parcelles.ts).
+// Si la liste change côté UI, mettre à jour ici aussi.
+export const CCI92_SITES: SitePrefetch[] = [
   {
     idtup: "uf920250027182",
     commune: "COLOMBES",
@@ -103,9 +88,3 @@ const CCI92_SITES: SitePrefetch[] = [
     parcelles: ["920500000N0559", "920500000N0560", "920500000N0562"],
   },
 ];
-
-// Registre des partenaires à pré-chauffer. Ajouter un partenaire = ajouter une entrée ici.
-export const PARTENAIRES_PREFETCH: Record<string, SitePrefetch[]> = {
-  "cci-92": CCI92_SITES,
-  // TODO(aura) : ajouter AURA ici une fois les IDU réels fournis (cf. UI partners/aura).
-};
