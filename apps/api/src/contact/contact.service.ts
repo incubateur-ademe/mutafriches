@@ -1,5 +1,5 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { BesoinMultisites } from "@mutafriches/shared-types";
+import { BesoinMultisites, isValidEmail } from "@mutafriches/shared-types";
 import { ContactRepository } from "./contact.repository";
 import { MailerService } from "../mailer/mailer.service";
 import { contactConfirmationTemplate } from "../mailer/templates/contact-confirmation.template";
@@ -13,9 +13,6 @@ export interface TraiterDemandeParams {
   integrateur?: string;
 }
 
-// Validation email simple, suffisante en complement de la saisie cote UI
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
 @Injectable()
 export class ContactService {
   private readonly logger = new Logger(ContactService.name);
@@ -26,7 +23,7 @@ export class ContactService {
   ) {}
 
   estEmailValide(email: string | undefined): boolean {
-    return typeof email === "string" && email.length <= 255 && EMAIL_REGEX.test(email);
+    return isValidEmail(email);
   }
 
   estBesoinValide(besoin: unknown): boolean {
