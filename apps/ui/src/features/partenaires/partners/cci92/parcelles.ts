@@ -1,16 +1,6 @@
-export interface CCI92Parcelle {
-  idpar: string;
-  commune: string;
-  idtup: string;
-}
+import type { PartnerParcelle } from "../../core/types";
 
-export interface CCI92Site {
-  idtup: string;
-  commune: string;
-  parcelles: string[];
-}
-
-const PARCELLES_CCI92: CCI92Parcelle[] = [
+export const PARCELLES_CCI92: PartnerParcelle[] = [
   { idpar: "920250000B0203", commune: "COLOMBES", idtup: "uf920250027182" },
   { idpar: "920250000B0206", commune: "COLOMBES", idtup: "uf920250027182" },
   { idpar: "920250000B0245", commune: "COLOMBES", idtup: "uf920250027182" },
@@ -61,31 +51,3 @@ const PARCELLES_CCI92: CCI92Parcelle[] = [
   { idpar: "920500000N0560", commune: "NANTERRE", idtup: "uf920500026067" },
   { idpar: "920500000N0562", commune: "NANTERRE", idtup: "uf920500026067" },
 ];
-
-function groupByIdtup(parcelles: CCI92Parcelle[]): CCI92Site[] {
-  const map = new Map<string, CCI92Site>();
-  for (const p of parcelles) {
-    const existing = map.get(p.idtup);
-    if (existing) {
-      existing.parcelles.push(p.idpar);
-    } else {
-      map.set(p.idtup, { idtup: p.idtup, commune: p.commune, parcelles: [p.idpar] });
-    }
-  }
-  return Array.from(map.values());
-}
-
-function groupByCommune(sites: CCI92Site[]): Record<string, CCI92Site[]> {
-  const result: Record<string, CCI92Site[]> = {};
-  for (const site of sites) {
-    if (!result[site.commune]) {
-      result[site.commune] = [];
-    }
-    result[site.commune].push(site);
-  }
-  return result;
-}
-
-export const CCI92_SITES: CCI92Site[] = groupByIdtup(PARCELLES_CCI92);
-
-export const CCI92_SITES_BY_COMMUNE: Record<string, CCI92Site[]> = groupByCommune(CCI92_SITES);

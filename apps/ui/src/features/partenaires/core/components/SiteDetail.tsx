@@ -11,12 +11,12 @@ import { DonneesComplementairesSection } from "@features/debug/components/sectio
 import { EnrichmentLoadingCallout } from "@features/analyser/components/EnrichmentLoadingCallout";
 import { buildDonneesComplementaires } from "@features/resultats/utils/mutability.mapper";
 import { DsfrAccordion } from "@shared/components/dsfr/DsfrAccordion";
-import { CCI92DonneesForm } from "./CCI92DonneesForm";
-import { CCI92Site } from "../data/parcelles-cci92";
-import { downloadJson } from "../utils/download-json";
+import { DonneesForm } from "./DonneesForm";
+import type { PartnerSite } from "../types";
+import { downloadJson } from "../download-json";
 
-interface CCI92SiteDetailProps {
-  site: CCI92Site;
+interface SiteDetailProps {
+  site: PartnerSite;
   enrichmentData: EnrichissementOutputDto | null;
   mutabilityData: MutabiliteOutputDto | null;
   manualData: Record<string, string>;
@@ -46,7 +46,7 @@ const BADGE_CALCULE = {
   icon: "fr-icon-calculator-line",
 };
 
-export const CCI92SiteDetail: React.FC<CCI92SiteDetailProps> = ({
+export const SiteDetail: React.FC<SiteDetailProps> = ({
   site,
   enrichmentData,
   mutabilityData,
@@ -78,7 +78,7 @@ export const CCI92SiteDetail: React.FC<CCI92SiteDetailProps> = ({
   };
 
   return (
-    <div className="cci92-detail">
+    <div className="mf-ms-detail">
       {/* En-tête du site */}
       <div className="fr-callout fr-callout--blue-ecume fr-mb-2w">
         <h2 className="fr-callout__title fr-h4">{site.commune}</h2>
@@ -146,7 +146,7 @@ export const CCI92SiteDetail: React.FC<CCI92SiteDetailProps> = ({
               defaultOpen={isQualPhase}
               highlight={isQualPhase}
             >
-              <CCI92DonneesForm values={manualData} onChange={onManualDataChange} />
+              <DonneesForm values={manualData} onChange={onManualDataChange} />
             </DsfrAccordion>
 
             <div className="fr-mt-2w fr-mb-3w">

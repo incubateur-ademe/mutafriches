@@ -38,11 +38,17 @@ export const ROUTES = {
 
   // Partenaires
   PARTENAIRES: "/partenaires",
-  CCI_92: "/partenaires/cci-92",
+  PARTENAIRE_DETAIL: "/partenaires/:slug", // route dynamique résolue via le registre
+  CCI_92: "/partenaires/cci-92", // conservé comme constante de lien (matche la route dynamique)
 
   // Legacy (pour compatibilité temporaire)
   DEBUG: "/debug",
 } as const;
+
+/**
+ * Construit l'URL de la page d'un partenaire à partir de son slug
+ */
+export const partenaireRoute = (slug: string): string => `/partenaires/${slug}`;
 
 /**
  * Mapping des étapes de qualification

@@ -3,7 +3,7 @@ import { FormSelectField } from "@features/qualification/components";
 import { SITE_FIELDS } from "@features/qualification/config/fields/site.fields";
 import { ENVIRONNEMENT_FIELDS } from "@features/qualification/config/fields/environnement.fields";
 
-interface CCI92DonneesFormProps {
+interface DonneesFormProps {
   values: Record<string, string>;
   onChange: (fieldName: string, value: string) => void;
 }
@@ -33,9 +33,9 @@ const TOOLTIPS: Record<string, string> = {
     "Renseignez si votre site est concerné ou non par la présence d'une zone humide.",
 };
 
-export const CCI92DonneesForm: React.FC<CCI92DonneesFormProps> = ({ values, onChange }) => {
+export const DonneesForm: React.FC<DonneesFormProps> = ({ values, onChange }) => {
   return (
-    <div className="cci92-form">
+    <div className="mf-ms-form">
       <p className="fr-mb-3w">
         Renseignez les informations que vous connaissez sur le site. Les champs non remplis seront
         considérés comme inconnus.

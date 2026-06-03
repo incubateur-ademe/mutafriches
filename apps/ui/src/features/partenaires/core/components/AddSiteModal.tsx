@@ -1,13 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
-interface CCI92AddSiteModalProps {
+interface AddSiteModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (idpars: string[]) => { invalidIdpars: string[]; success: boolean };
 }
 
-const CCI92AddSiteModalInner: React.FC<{
+const AddSiteModalInner: React.FC<{
   onClose: () => void;
   onSubmit: (idpars: string[]) => { invalidIdpars: string[]; success: boolean };
 }> = ({ onClose, onSubmit }) => {
@@ -63,7 +63,7 @@ const CCI92AddSiteModalInner: React.FC<{
   const modalContent = (
     <>
       <div
-        className="cci92-modal__backdrop"
+        className="mf-ms-modal__backdrop"
         onClick={onClose}
         aria-hidden="true"
         style={{
@@ -76,7 +76,7 @@ const CCI92AddSiteModalInner: React.FC<{
       <div
         role="dialog"
         aria-modal="true"
-        aria-labelledby="cci92-add-modal-title"
+        aria-labelledby="mf-ms-add-modal-title"
         className="fr-modal__body"
         style={{
           position: "fixed",
@@ -104,12 +104,12 @@ const CCI92AddSiteModalInner: React.FC<{
         </div>
 
         <div className="fr-modal__content" style={{ padding: "0 1.5rem 1rem" }}>
-          <h1 id="cci92-add-modal-title" className="fr-modal__title fr-h4 fr-mb-2w">
+          <h1 id="mf-ms-add-modal-title" className="fr-modal__title fr-h4 fr-mb-2w">
             Ajouter un site
           </h1>
 
           <div className="fr-input-group fr-mb-2w">
-            <label className="fr-label" htmlFor="cci92-add-textarea">
+            <label className="fr-label" htmlFor="mf-ms-add-textarea">
               Identifiants de parcelles
               <span className="fr-hint-text">
                 Un identifiant par ligne (14 caractères). Si plusieurs parcelles forment une unité
@@ -119,7 +119,7 @@ const CCI92AddSiteModalInner: React.FC<{
             </label>
             <textarea
               ref={textareaRef}
-              id="cci92-add-textarea"
+              id="mf-ms-add-textarea"
               className="fr-input"
               rows={6}
               value={value}
@@ -169,11 +169,7 @@ const CCI92AddSiteModalInner: React.FC<{
   return createPortal(modalContent, document.body);
 };
 
-export const CCI92AddSiteModal: React.FC<CCI92AddSiteModalProps> = ({
-  isOpen,
-  onClose,
-  onSubmit,
-}) => {
+export const AddSiteModal: React.FC<AddSiteModalProps> = ({ isOpen, onClose, onSubmit }) => {
   if (!isOpen) return null;
-  return <CCI92AddSiteModalInner onClose={onClose} onSubmit={onSubmit} />;
+  return <AddSiteModalInner onClose={onClose} onSubmit={onSubmit} />;
 };

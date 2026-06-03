@@ -1,22 +1,26 @@
-import React, { useState, useCallback, useRef } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
+import { Link, useParams } from "react-router-dom";
 import { EnrichissementOutputDto, MutabiliteOutputDto } from "@mutafriches/shared-types";
 import { Layout } from "@shared/components/layout/Layout";
+import { ROUTES } from "@shared/config/routes.config";
 import { enrichissementService } from "@shared/services/api/api.enrichissement.service";
 import { evaluationService } from "@shared/services/api/api.evaluation.service";
 import { buildMutabilityInput } from "@features/resultats/utils/mutability.mapper";
 import { useAlgorithmeVersions } from "@features/comparaison-algo/hooks/useAlgorithmeVersions";
-import { CCI92SiteList } from "../components/CCI92SiteList";
-import { CCI92SiteDetail } from "../components/CCI92SiteDetail";
-import { CCI92AddSiteModal } from "../components/CCI92AddSiteModal";
-import { CCI92Site } from "../data/parcelles-cci92";
+import { SiteList } from "../components/SiteList";
+import { SiteDetail } from "../components/SiteDetail";
+import { AddSiteModal } from "../components/AddSiteModal";
 import { useCustomSites } from "../hooks/useCustomSites";
+import { getPartnerBySlug } from "../../registry";
+import type { PartnerConfig, PartnerSite } from "../types";
 import "@features/debug/components/DebugPanel.css";
-import "./CCI92Page.css";
+import "../partenaires.css";
 
 type LoadingState = "idle" | "enriching" | "calculating";
 
-export const CCI92Page: React.FC = () => {
-  const [selectedSite, setSelectedSite] = useState<CCI92Site | null>(null);
+// Orchestrateur générique : caches enrichissement/mutabilité, saisie manuelle, version d'algo.
+const MultisiteView: React.FC<{ config: PartnerConfig }> = ({ config }) => {
+  const [selectedSite, setSelectedSite] = useState<PartnerSite | null>(null);
   const [loadingState, setLoadingState] = useState<LoadingState>("idle");
   const [error, setError] = useState<string | null>(null);
 
@@ -27,17 +31,20 @@ export const CCI92Page: React.FC = () => {
   const [enrichmentData, setEnrichmentData] = useState<EnrichissementOutputDto | null>(null);
   const [mutabilityData, setMutabilityData] = useState<MutabiliteOutputDto | null>(null);
   const [manualData, setManualData] = useState<Record<string, string>>({});
-  // Identifiants des sites déjà enrichis (état réactif pour la liste, le cache reste dans les refs)
-  const [enrichedSiteIds, setEnrichedSiteIds] = useState<Set<string>>(new Set());
 
   const { versions } = useAlgorithmeVersions();
-  // Version dérivée des versions disponibles (la plus récente), pas de sélecteur côté UI
-  const selectedVersion = versions[0]?.version ?? "";
+  const [selectedVersion, setSelectedVersion] = useState<string>("");
 
-  const { customSites, addSite, removeSite, clearAll } = useCustomSites();
+  const { customSites, addSite, removeSite, clearAll } = useCustomSites(config.storageKey);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
-  const handleSelectSite = useCallback(async (site: CCI92Site) => {
+  useEffect(() => {
+    if (!selectedVersion && versions.length > 0) {
+      setSelectedVersion(versions[0].version);
+    }
+  }, [versions, selectedVersion]);
+
+  const handleSelectSite = useCallback(async (site: PartnerSite) => {
     setSelectedSite(site);
     setError(null);
 
@@ -61,7 +68,6 @@ export const CCI92Page: React.FC = () => {
         acceptDegradedCache: true,
       });
       enrichmentCacheRef.current.set(site.idtup, result);
-      setEnrichedSiteIds((prev) => new Set(prev).add(site.idtup));
       setEnrichmentData(result);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Erreur lors de l'enrichissement";
@@ -108,11 +114,6 @@ export const CCI92Page: React.FC = () => {
     enrichmentCacheRef.current.delete(idtup);
     mutabilityCacheRef.current.delete(idtup);
     manualDataRef.current.delete(idtup);
-    setEnrichedSiteIds((prev) => {
-      const next = new Set(prev);
-      next.delete(idtup);
-      return next;
-    });
   }, []);
 
   const handleAddSiteSubmit = useCallback(
@@ -155,18 +156,18 @@ export const CCI92Page: React.FC = () => {
     <Layout fullWidth>
       <div className="fr-container fr-py-4w">
         <div className="fr-mb-4w">
-          <h1 className="fr-h3">Mutafriches — CCI Hauts-de-Seine (92)</h1>
-          <p className="fr-text--lg">
-            Qualification et mutabilité des friches sur le territoire de la CCI 92.
-          </p>
+          <h1 className="fr-h3">Mutafriches — {config.nom}</h1>
+          <p className="fr-text--lg">{config.sousTitre}</p>
         </div>
 
         <div className="fr-grid-row fr-grid-row--gutters">
           <div className="fr-col-12 fr-col-md-4">
-            <CCI92SiteList
+            <SiteList
+              titre={config.sidemenuTitre}
+              sitesByCommune={config.sitesByCommune}
               selectedSiteId={selectedSite?.idtup ?? null}
               onSelectSite={handleSelectSite}
-              enrichedSiteIds={enrichedSiteIds}
+              enrichmentCache={enrichmentCacheRef.current}
               customSites={customSites}
               onAddSiteClick={() => setIsAddModalOpen(true)}
               onRemoveCustomSite={handleRemoveCustomSite}
@@ -175,7 +176,7 @@ export const CCI92Page: React.FC = () => {
           </div>
           <div className="fr-col-12 fr-col-md-8">
             {selectedSite ? (
-              <CCI92SiteDetail
+              <SiteDetail
                 site={selectedSite}
                 enrichmentData={enrichmentData}
                 mutabilityData={mutabilityData}
@@ -200,11 +201,33 @@ export const CCI92Page: React.FC = () => {
         </div>
       </div>
 
-      <CCI92AddSiteModal
+      <AddSiteModal
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
         onSubmit={handleAddSiteSubmit}
       />
     </Layout>
   );
+};
+
+// Résout le partenaire depuis le slug de l'URL. La key force le remontage à chaque partenaire.
+export const MultisitePage: React.FC = () => {
+  const { slug } = useParams<{ slug: string }>();
+  const config = getPartnerBySlug(slug);
+
+  if (!config) {
+    return (
+      <Layout>
+        <div className="fr-my-6w">
+          <h1 className="fr-h3">Partenaire introuvable</h1>
+          <p className="fr-text--lg">Aucun partenaire ne correspond à cette adresse.</p>
+          <Link to={ROUTES.PARTENAIRES} className="fr-btn">
+            Retour aux partenaires
+          </Link>
+        </div>
+      </Layout>
+    );
+  }
+
+  return <MultisiteView key={config.slug} config={config} />;
 };

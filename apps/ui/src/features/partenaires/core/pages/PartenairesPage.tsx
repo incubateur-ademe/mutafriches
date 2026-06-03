@@ -1,23 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Layout } from "@shared/components/layout/Layout";
-import { ROUTES } from "@shared/config/routes.config";
-
-interface Partenaire {
-  nom: string;
-  description: string;
-  to: string;
-  logo?: string;
-}
-
-const PARTENAIRES: Partenaire[] = [
-  {
-    nom: "CCI Hauts-de-Seine (92)",
-    description:
-      "POC de qualification et mutabilité des friches sur le territoire de la CCI 92 (Colombes, Gennevilliers, Nanterre).",
-    to: ROUTES.CCI_92,
-  },
-];
+import { partenaireRoute } from "@shared/config/routes.config";
+import { PARTNERS } from "../../registry";
 
 export const PartenairesPage: React.FC = () => {
   return (
@@ -31,13 +16,13 @@ export const PartenairesPage: React.FC = () => {
       </div>
 
       <div className="fr-grid-row fr-grid-row--gutters">
-        {PARTENAIRES.map((p) => (
-          <div key={p.to} className="fr-col-12 fr-col-md-6 fr-col-lg-4">
+        {PARTNERS.map((p) => (
+          <div key={p.slug} className="fr-col-12 fr-col-md-6 fr-col-lg-4">
             <div className="fr-card fr-enlarge-link">
               <div className="fr-card__body">
                 <div className="fr-card__content">
                   <h3 className="fr-card__title">
-                    <Link to={p.to}>{p.nom}</Link>
+                    <Link to={partenaireRoute(p.slug)}>{p.nom}</Link>
                   </h3>
                   <p className="fr-card__desc">{p.description}</p>
                 </div>

@@ -1,34 +1,37 @@
 import React from "react";
-import { CCI92Site, CCI92_SITES_BY_COMMUNE } from "../data/parcelles-cci92";
+import { EnrichissementOutputDto } from "@mutafriches/shared-types";
+import type { PartnerSite } from "../types";
 import { CUSTOM_COMMUNE_LABEL } from "../hooks/useCustomSites";
 
-interface CCI92SiteListProps {
+interface SiteListProps {
+  titre: string;
+  sitesByCommune: Record<string, PartnerSite[]>;
   selectedSiteId: string | null;
-  onSelectSite: (site: CCI92Site) => void;
-  enrichedSiteIds: Set<string>;
-  customSites: CCI92Site[];
+  onSelectSite: (site: PartnerSite) => void;
+  enrichmentCache: Map<string, EnrichissementOutputDto>;
+  customSites: PartnerSite[];
   onAddSiteClick: () => void;
   onRemoveCustomSite: (idtup: string) => void;
   onClearCustomSites: () => void;
 }
 
 const renderSiteButton = (
-  site: CCI92Site,
+  site: PartnerSite,
   selectedSiteId: string | null,
   isEnriched: boolean,
-  onSelectSite: (site: CCI92Site) => void,
+  onSelectSite: (site: PartnerSite) => void,
   onRemove?: (idtup: string) => void,
 ) => {
   const isSelected = site.idtup === selectedSiteId;
   return (
-    <li key={site.idtup} className="fr-sidemenu__item cci92-site-row">
+    <li key={site.idtup} className="fr-sidemenu__item mf-ms-site-row">
       <button
         type="button"
-        className={`cci92-site-btn ${isSelected ? "cci92-site-btn--active" : ""}`}
+        className={`mf-ms-site-btn ${isSelected ? "mf-ms-site-btn--active" : ""}`}
         onClick={() => onSelectSite(site)}
         aria-current={isSelected ? "page" : undefined}
       >
-        <span className="cci92-site-btn__label">
+        <span className="mf-ms-site-btn__label">
           {site.idtup}
           <span className="fr-badge fr-badge--sm fr-badge--info fr-ml-1w">
             {site.parcelles.length} parcelle{site.parcelles.length > 1 ? "s" : ""}
@@ -36,7 +39,7 @@ const renderSiteButton = (
         </span>
         {isEnriched && (
           <span
-            className="fr-icon-check-line fr-icon--sm cci92-site-btn__check"
+            className="fr-icon-check-line fr-icon--sm mf-ms-site-btn__check"
             aria-label="Enrichi"
           />
         )}
@@ -44,7 +47,7 @@ const renderSiteButton = (
       {onRemove && (
         <button
           type="button"
-          className="cci92-site-remove fr-icon-delete-line"
+          className="mf-ms-site-remove fr-icon-delete-line"
           onClick={() => onRemove(site.idtup)}
           aria-label={`Supprimer le site ${site.idtup}`}
           title="Supprimer ce site"
@@ -54,23 +57,23 @@ const renderSiteButton = (
   );
 };
 
-export const CCI92SiteList: React.FC<CCI92SiteListProps> = ({
+export const SiteList: React.FC<SiteListProps> = ({
+  titre,
+  sitesByCommune,
   selectedSiteId,
   onSelectSite,
-  enrichedSiteIds,
+  enrichmentCache,
   customSites,
   onAddSiteClick,
   onRemoveCustomSite,
   onClearCustomSites,
 }) => {
-  const communes = Object.keys(CCI92_SITES_BY_COMMUNE).sort();
+  const communes = Object.keys(sitesByCommune).sort();
 
   return (
-    <nav className="fr-sidemenu" aria-label="Liste des sites CCI 92">
+    <nav className="fr-sidemenu" aria-label={titre}>
       <div className="fr-sidemenu__inner">
-        <div className="fr-sidemenu__title" id="cci92-sidemenu-title">
-          Sites CCI 92
-        </div>
+        <div className="fr-sidemenu__title">{titre}</div>
 
         <div className="fr-mb-2w">
           <button
@@ -83,8 +86,8 @@ export const CCI92SiteList: React.FC<CCI92SiteListProps> = ({
         </div>
 
         {customSites.length > 0 && (
-          <details className="cci92-commune-group" open>
-            <summary className="cci92-commune-group__summary">
+          <details className="mf-ms-commune-group" open>
+            <summary className="mf-ms-commune-group__summary">
               {CUSTOM_COMMUNE_LABEL} ({customSites.length} site{customSites.length > 1 ? "s" : ""})
             </summary>
             <ul className="fr-sidemenu__list">
@@ -92,13 +95,13 @@ export const CCI92SiteList: React.FC<CCI92SiteListProps> = ({
                 renderSiteButton(
                   site,
                   selectedSiteId,
-                  enrichedSiteIds.has(site.idtup),
+                  enrichmentCache.has(site.idtup),
                   onSelectSite,
                   onRemoveCustomSite,
                 ),
               )}
             </ul>
-            <div className="cci92-clear-all">
+            <div className="mf-ms-clear-all">
               <button
                 type="button"
                 className="fr-btn fr-btn--tertiary-no-outline fr-btn--sm"
@@ -111,10 +114,10 @@ export const CCI92SiteList: React.FC<CCI92SiteListProps> = ({
         )}
 
         {communes.map((commune) => {
-          const sites = CCI92_SITES_BY_COMMUNE[commune];
+          const sites = sitesByCommune[commune];
           return (
-            <details key={commune} className="cci92-commune-group" open>
-              <summary className="cci92-commune-group__summary">
+            <details key={commune} className="mf-ms-commune-group" open>
+              <summary className="mf-ms-commune-group__summary">
                 {commune} ({sites.length} site{sites.length > 1 ? "s" : ""})
               </summary>
               <ul className="fr-sidemenu__list">
@@ -122,7 +125,7 @@ export const CCI92SiteList: React.FC<CCI92SiteListProps> = ({
                   renderSiteButton(
                     site,
                     selectedSiteId,
-                    enrichedSiteIds.has(site.idtup),
+                    enrichmentCache.has(site.idtup),
                     onSelectSite,
                   ),
                 )}

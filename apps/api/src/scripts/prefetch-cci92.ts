@@ -28,7 +28,7 @@ interface SiteCCI92 {
   parcelles: string[];
 }
 
-// Liste statique miroir de apps/ui/src/features/cci92/data/parcelles-cci92.ts
+// Liste statique miroir de apps/ui/src/features/partenaires/partners/cci92/parcelles.ts
 // Si la liste change côté UI, mettre à jour ici aussi.
 const CCI92_SITES: SiteCCI92[] = [
   {

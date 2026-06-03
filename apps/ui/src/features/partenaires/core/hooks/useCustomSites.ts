@@ -1,21 +1,19 @@
 import { useCallback, useEffect, useState } from "react";
 import { isValidParcelId, normalizeParcelId } from "@mutafriches/shared-types";
-import type { CCI92Site } from "../data/parcelles-cci92";
-import { STORAGE_KEYS } from "@shared/config/storage-keys.config";
+import type { PartnerSite } from "../types";
 
-const STORAGE_KEY = STORAGE_KEYS.CCI92_CUSTOM_SITES;
 const STORAGE_VERSION = 1;
 
 export const CUSTOM_COMMUNE_LABEL = "Ajouts personnalisés";
 
 interface StoredPayload {
   version: number;
-  sites: CCI92Site[];
+  sites: PartnerSite[];
 }
 
-function loadFromStorage(): CCI92Site[] {
+function loadFromStorage(storageKey: string): PartnerSite[] {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(storageKey);
     if (!raw) return [];
     const parsed = JSON.parse(raw) as StoredPayload;
     if (parsed?.version !== STORAGE_VERSION || !Array.isArray(parsed.sites)) {
@@ -33,26 +31,26 @@ function loadFromStorage(): CCI92Site[] {
   }
 }
 
-function saveToStorage(sites: CCI92Site[]): void {
+function saveToStorage(storageKey: string, sites: PartnerSite[]): void {
   try {
     const payload: StoredPayload = { version: STORAGE_VERSION, sites };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+    localStorage.setItem(storageKey, JSON.stringify(payload));
   } catch {
     // Quota dépassé ou storage indisponible : on ignore
   }
 }
 
 export interface AddSiteResult {
-  added: CCI92Site | null;
+  added: PartnerSite | null;
   invalidIdpars: string[];
 }
 
-export function useCustomSites() {
-  const [customSites, setCustomSites] = useState<CCI92Site[]>(() => loadFromStorage());
+export function useCustomSites(storageKey: string) {
+  const [customSites, setCustomSites] = useState<PartnerSite[]>(() => loadFromStorage(storageKey));
 
   useEffect(() => {
-    saveToStorage(customSites);
-  }, [customSites]);
+    saveToStorage(storageKey, customSites);
+  }, [storageKey, customSites]);
 
   const addSite = useCallback((rawIdpars: string[]): AddSiteResult => {
     const cleaned = Array.from(new Set(rawIdpars.map((s) => s.trim()).filter((s) => s.length > 0)));
@@ -72,7 +70,7 @@ export function useCustomSites() {
     }
 
     const idtup = valid.length === 1 ? valid[0] : `custom-${Date.now().toString(36)}`;
-    const newSite: CCI92Site = {
+    const newSite: PartnerSite = {
       idtup,
       commune: CUSTOM_COMMUNE_LABEL,
       parcelles: valid,
