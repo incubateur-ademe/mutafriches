@@ -39,7 +39,7 @@
     "db:ademe-sites:import": "pnpm --filter api run db:ademe-sites:import",
     "db:epci:import": "pnpm --filter api run db:epci:import",
     "db:ite-fret:import": "pnpm --filter api run db:ite-fret:import",
-    "cci92:prefetch": "pnpm --filter api run cci92:prefetch",
+    "partenaires:prefetch": "pnpm --filter api run partenaires:prefetch",
     "validate": "pnpm format && pnpm lint:fix && pnpm typecheck && pnpm test",
     "setup": "bash scripts/setup.sh",
     "clean": "pnpm -r clean && rm -rf node_modules",

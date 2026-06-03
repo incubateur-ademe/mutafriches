@@ -1,4 +1,4 @@
-name: CCI 92 cache prefetch
+name: Partenaires cache prefetch
 
 on:
   schedule:
@@ -15,10 +15,11 @@ on:
           - production
           - staging
           - both
-  # TODO: retirer ce trigger avant merge sur main
-  push:
-    branches:
-      - feat/cci-92
+      partenaire:
+        description: "Slug d'un partenaire à pré-chauffer (vide = tous)"
+        required: false
+        type: string
+        default: ""
 
 permissions:
   contents: read
@@ -43,10 +44,7 @@ jobs:
           ENV_NAME: ${{ matrix.env.name }}
           SELECTED: ${{ github.event.inputs.environment }}
         run: |
-          # Trigger push (test) → staging uniquement
-          if [ "$EVENT" = "push" ] && [ "$ENV_NAME" = "staging" ]; then
-            echo "should_run=true" >> $GITHUB_OUTPUT
-          elif [ "$EVENT" = "schedule" ] || [ "$SELECTED" = "both" ] || [ "$SELECTED" = "$ENV_NAME" ]; then
+          if [ "$EVENT" = "schedule" ] || [ "$SELECTED" = "both" ] || [ "$SELECTED" = "$ENV_NAME" ]; then
             echo "should_run=true" >> $GITHUB_OUTPUT
           else
             echo "should_run=false" >> $GITHUB_OUTPUT
@@ -84,11 +82,13 @@ jobs:
         if: steps.check.outputs.should_run == 'true'
         env:
           API_URL: ${{ vars[matrix.env.url_var] }}
-          CCI92_PREFETCH_DELAY_MS: 2000
+          # Vide en mode planifié : pré-chauffe tous les partenaires du registre
+          PARTENAIRE: ${{ github.event.inputs.partenaire }}
+          PREFETCH_DELAY_MS: 2000
         run: |
           if [ -z "$API_URL" ]; then
             echo "Variable ${{ matrix.env.url_var }} non configurée — skip"
             exit 0
           fi
           echo "Pré-chauffe sur $API_URL"
-          pnpm cci92:prefetch
+          pnpm partenaires:prefetch

@@ -87,8 +87,10 @@ découpage par domaine métier.
 - La `storageKey` doit être **unique par partenaire** : une collision mélangerait les sites
   ajoutés manuellement entre partenaires.
 - Le `slug` du registre doit rester cohérent avec l'URL communiquée aux partenaires.
-- Le script de préchauffage côté API (`apps/api/src/scripts/prefetch-cci92.ts`) garde une liste
-  miroir des parcelles : à maintenir en cohérence (pas encore généralisé par partenaire).
+- Le préchauffage du cache côté API est généralisé (`apps/api/src/scripts/prefetch-partenaires.ts`
+  + registre `partenaires.prefetch-data.ts`, keyé par slug) : il garde une liste miroir des
+  parcelles, à maintenir en cohérence avec la data UI. Le slug du registre prefetch doit
+  correspondre au slug UI.
 
 ### Migration (réalisée)
 
@@ -108,4 +110,4 @@ découpage par domaine métier.
 - Registre : `apps/ui/src/features/partenaires/registry.ts`
 - Routing : `apps/ui/src/App.tsx`, `apps/ui/src/shared/config/routes.config.ts`
 - Recette d'ajout d'un partenaire : `apps/ui/src/features/partenaires/README.md`
-- Préchauffage API : `apps/api/src/scripts/prefetch-cci92.ts`
+- Préchauffage API : `apps/api/src/scripts/prefetch-partenaires.ts`, `partenaires.prefetch-data.ts`, `.github/workflows/partenaires-prefetch.yml`
