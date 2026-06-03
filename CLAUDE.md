@@ -377,6 +377,7 @@ Transport SMTP via `nodemailer` (cf. ADR-0015). En local : **MailHog** (`pnpm ma
 - `SMTP_USER` / `SMTP_PASS` : identifiants SMTP (vides en local pour MailHog ; login + clé SMTP Brevo en prod)
 - `MAIL_SENDER_EMAIL` / `MAIL_SENDER_NAME` : expéditeur des emails
 - `CONTACT_NOTIFICATION_EMAIL` : adresse de l'équipe notifiée à chaque demande de contact multisites
+- `CONTACT_DASHBOARD_URL` : lien Metabase listant les demandes de contact, inclus dans l'email de notification équipe
 
 ## Documentation contextuelle
 

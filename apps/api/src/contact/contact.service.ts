@@ -13,6 +13,10 @@ export interface TraiterDemandeParams {
   integrateur?: string;
 }
 
+// Dashboard Metabase listant les demandes de contact (surchargeable via CONTACT_DASHBOARD_URL)
+const CONTACT_DASHBOARD_URL_DEFAUT =
+  "https://metabase.mutafriches.beta.gouv.fr/dashboard/10-demandes-de-contact";
+
 @Injectable()
 export class ContactService {
   private readonly logger = new Logger(ContactService.name);
@@ -66,6 +70,7 @@ export class ContactService {
           besoin: params.besoin,
           date: new Date(),
           evaluationId: params.evaluationId,
+          dashboardUrl: process.env.CONTACT_DASHBOARD_URL || CONTACT_DASHBOARD_URL_DEFAUT,
         }),
       });
     }

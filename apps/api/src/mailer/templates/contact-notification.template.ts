@@ -6,6 +6,7 @@ export interface ContactNotificationData {
   besoin: BesoinMultisites | string;
   date: Date;
   evaluationId?: string;
+  dashboardUrl?: string;
 }
 
 // Email de notification envoyé à l'équipe à chaque demande de contact multisites
@@ -41,6 +42,13 @@ export function contactNotificationTemplate(data: ContactNotificationData): stri
           : ""
       }
     </table>
+    ${
+      data.dashboardUrl
+        ? `<p style="margin-top: 24px;">
+      <a href="${data.dashboardUrl}">Voir toutes les demandes de contact sur Metabase</a>
+    </p>`
+        : ""
+    }
   </body>
 </html>`;
 }
