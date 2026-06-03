@@ -444,17 +444,28 @@ export const ResultatsPage: React.FC = () => {
           )}
         </div>
 
-        {/* CTA : analyse multisites */}
-        <div className="fr-callout fr-callout--blue-ecume fr-mt-4w">
-          <h3 className="fr-callout__title">Analysez plusieurs sites en parallèle</h3>
-          <p className="fr-callout__text">
+        {/* CTA : analyse multisites — carte fond bleu clair identique a la page d'accueil (IntegrationSection) */}
+        <div
+          className="fr-mt-4w"
+          // Carte arrondie fond bleu clair, non couverte par une classe DSFR (reprise de la landing)
+          style={{ padding: "2.5rem", backgroundColor: "#f1f7ff", borderRadius: "24px" }}
+        >
+          <h6 className="fr-mb-2w">Analysez plusieurs sites en parallèle</h6>
+          <p className="fr-mb-3w">
             Accélérez vos analyses en qualifiant plusieurs sites simultanément. Comparez les
             résultats à l'échelle d'un territoire et identifiez plus facilement les opportunités
             pour construire votre stratégie territoriale.
           </p>
-          <button className="fr-btn fr-btn--secondary" onClick={() => setIsContactModalOpen(true)}>
-            Analyser plusieurs sites
-          </button>
+          <ul className="fr-btns-group fr-btns-group--center fr-btns-group--inline">
+            <li>
+              <button
+                className="fr-btn fr-btn--secondary"
+                onClick={() => setIsContactModalOpen(true)}
+              >
+                Analyser plusieurs sites
+              </button>
+            </li>
+          </ul>
         </div>
       </div>
 

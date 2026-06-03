@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { BesoinMultisites } from "@mutafriches/shared-types";
+import { BesoinMultisites, isValidEmail } from "@mutafriches/shared-types";
 import { ModalInfo } from "../../../shared/components/common/ModalInfo";
 
 interface ContactMultisitesModalProps {
@@ -21,8 +21,6 @@ const OPTIONS_BESOIN: { value: BesoinMultisites; label: string }[] = [
   },
 ];
 
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
 export const ContactMultisitesModal: React.FC<ContactMultisitesModalProps> = ({
   isOpen,
   onClose,
@@ -33,7 +31,7 @@ export const ContactMultisitesModal: React.FC<ContactMultisitesModalProps> = ({
   const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  const emailValide = EMAIL_REGEX.test(email);
+  const emailValide = isValidEmail(email);
   const peutEnvoyer = besoin !== "" && emailValide && !submitting;
 
   // Réinitialise l'état interne à la fermeture pour repartir du formulaire au prochain ouvrage
@@ -62,7 +60,7 @@ export const ContactMultisitesModal: React.FC<ContactMultisitesModalProps> = ({
         title="Merci !"
         isOpen={isOpen}
         onClose={handleClose}
-        icon="fr-icon-checkbox-circle-line"
+        showIcon={false}
       >
         <p>Votre demande a bien été envoyée. Nous serons rapidement en contact.</p>
       </ModalInfo>
@@ -75,12 +73,7 @@ export const ContactMultisitesModal: React.FC<ContactMultisitesModalProps> = ({
       title="Quel est votre besoin ?"
       isOpen={isOpen}
       onClose={handleClose}
-      icon="fr-icon-team-line"
-      actions={
-        <button className="fr-btn" onClick={handleSubmit} disabled={!peutEnvoyer}>
-          Être contacté
-        </button>
-      }
+      showIcon={false}
     >
       <p>
         Dites-nous comment vous souhaitez analyser plusieurs sites avec Mutafriches. Nous vous
@@ -124,6 +117,14 @@ export const ContactMultisitesModal: React.FC<ContactMultisitesModalProps> = ({
           required
         />
       </div>
+
+      <ul className="fr-btns-group fr-btns-group--center fr-btns-group--inline fr-mt-2w">
+        <li>
+          <button className="fr-btn" onClick={handleSubmit} disabled={!peutEnvoyer}>
+            Être contacté
+          </button>
+        </li>
+      </ul>
     </ModalInfo>
   );
 };
