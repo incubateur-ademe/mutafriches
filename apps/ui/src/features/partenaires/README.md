@@ -25,14 +25,55 @@ partenaires/
 └── registry.ts              # PARTNERS[] — source unique de vérité
 ```
 
+Côté API, un miroir sert à pré-chauffer le cache d'enrichissement (cron quotidien) :
+
+```
+apps/api/src/scripts/
+├── prefetch-partenaires.ts          # runner générique (cf. workflow partenaires-prefetch.yml)
+└── partenaires/
+    ├── types.ts                     # SitePrefetch
+    ├── cci92.ts                     # CCI92_SITES (sites regroupés par idtup)
+    └── registry.ts                  # PARTENAIRES_PREFETCH keyé par slug
+```
+
 - **Routing** : route dynamique unique `/partenaires/:slug` (cf. `routes.config.ts`,
   `PARTENAIRE_DETAIL`). `MultisitePage` résout le `slug` via `getPartnerBySlug()` et remonte
   l'orchestrateur avec `key={slug}` (état + localStorage propres par partenaire).
 - **Hub** : `/partenaires` liste automatiquement toutes les entrées du registre.
 
-## Ajouter un partenaire en 2 étapes
+## Ajouter un partenaire — checklist
 
-### 1. Créer le dossier du partenaire
+Remplacer `<slug>` par le slug du partenaire (minuscules, sans espace, ex. `aura`).
+
+**UI — obligatoire (rend la page et la carte visibles)**
+
+- [ ] Créer `partners/<slug>/parcelles.ts` — la liste des IDU (cf. exemple ci-dessous)
+- [ ] Créer `partners/<slug>/index.ts` — le `PartnerConfig` (`slug`, `nom`, `description`,
+      `sousTitre`, `sidemenuTitre`, `storageKey` **unique**)
+- [ ] Modifier `registry.ts` — importer le config et l'ajouter au tableau `PARTNERS`
+
+**Prefetch CI — recommandé (cache chaud), uniquement avec des IDU réels**
+
+- [ ] Créer `apps/api/src/scripts/partenaires/<slug>.ts` — sites regroupés par `idtup` (miroir de
+      la data UI)
+- [ ] Modifier `apps/api/src/scripts/partenaires/registry.ts` — ajouter `"<slug>": <SLUG>_SITES`
+      à `PARTENAIRES_PREFETCH`
+
+**Production — avant mise en ligne (si le partenaire appelle l'API directement)**
+
+- [ ] Ajouter l'origine du partenaire à `ALLOWED_INTEGRATOR_ORIGINS` (var d'env Scalingo) —
+      aucun code à modifier (cf. `IntegrateurOriginGuard`)
+
+**Vérification**
+
+- [ ] `pnpm validate` (format + lint + typecheck + test) au vert
+- [ ] `/partenaires` affiche la carte, `/partenaires/<slug>` charge, un site s'enrichit et son
+      indice de mutabilité se calcule
+
+> Aucun changement de routing ni de composant : la route `/partenaires/<slug>` et la carte du hub
+> apparaissent automatiquement dès que le registre UI est mis à jour.
+
+### Détail — fichiers à créer
 
 `partners/<slug>/parcelles.ts` — la liste des parcelles (IDU 14 caractères). Des parcelles
 partageant le même `idtup` sont regroupées en un seul site (mono ou multi-parcelle).
@@ -68,9 +109,7 @@ export const AURA_CONFIG: PartnerConfig = {
 };
 ```
 
-### 2. Enregistrer le partenaire
-
-Dans `registry.ts` :
+Enregistrement dans `registry.ts` :
 
 ```ts
 import { AURA_CONFIG } from "./partners/aura";
@@ -78,8 +117,30 @@ import { AURA_CONFIG } from "./partners/aura";
 export const PARTNERS: PartnerConfig[] = [CCI92_CONFIG, AURA_CONFIG];
 ```
 
-C'est tout. La page `/partenaires/aura` et la carte sur le hub `/partenaires` apparaissent
-automatiquement. Aucun changement de routing ni de composant.
+La page `/partenaires/aura` et la carte sur le hub `/partenaires` apparaissent alors
+automatiquement.
+
+`apps/api/src/scripts/partenaires/<slug>.ts` (prefetch, IDU réels uniquement) — sites
+regroupés par `idtup`, miroir de la data UI :
+
+```ts
+import { SitePrefetch } from "./types";
+
+export const AURA_SITES: SitePrefetch[] = [
+  { idtup: "ufAURA0001", commune: "TRELAZE", parcelles: ["49353000AC0045", "49353000AC0046"] },
+];
+```
+
+Enregistrement dans `apps/api/src/scripts/partenaires/registry.ts` :
+
+```ts
+import { AURA_SITES } from "./aura";
+
+export const PARTENAIRES_PREFETCH: Record<string, SitePrefetch[]> = {
+  "cci-92": CCI92_SITES,
+  aura: AURA_SITES,
+};
+```
 
 ## Conventions
 
