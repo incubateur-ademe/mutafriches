@@ -4,6 +4,80 @@
   "version": "7",
   "dialect": "postgresql",
   "tables": {
+    "public.communes": {
+      "name": "communes",
+      "schema": "",
+      "columns": {
+        "code_insee": {
+          "name": "code_insee",
+          "type": "varchar(5)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "nom": {
+          "name": "nom",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "departement": {
+          "name": "departement",
+          "type": "varchar(3)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "epci_siren": {
+          "name": "epci_siren",
+          "type": "varchar(9)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "imported_at": {
+          "name": "imported_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "idx_communes_epci_siren": {
+          "name": "idx_communes_epci_siren",
+          "columns": [
+            {
+              "expression": "epci_siren",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "communes_epci_siren_epci_siren_fk": {
+          "name": "communes_epci_siren_epci_siren_fk",
+          "tableFrom": "communes",
+          "tableTo": "epci",
+          "columnsFrom": [
+            "epci_siren"
+          ],
+          "columnsTo": [
+            "siren"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.enrichissements": {
       "name": "enrichissements",
       "schema": "",
@@ -192,6 +266,62 @@
           "with": {}
         }
       },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.epci": {
+      "name": "epci",
+      "schema": "",
+      "columns": {
+        "siren": {
+          "name": "siren",
+          "type": "varchar(9)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "nom": {
+          "name": "nom",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nature_juridique": {
+          "name": "nature_juridique",
+          "type": "varchar(10)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "departement_siege": {
+          "name": "departement_siege",
+          "type": "varchar(3)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nb_communes": {
+          "name": "nb_communes",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "population": {
+          "name": "population",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "imported_at": {
+          "name": "imported_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
@@ -1143,7 +1273,8 @@
         "jauge_depassee",
         "interet_multi_parcelles",
         "interet_mise_en_relation",
-        "interet_export_resultats"
+        "interet_export_resultats",
+        "demande_contact_multisites"
       ]
     }
   },

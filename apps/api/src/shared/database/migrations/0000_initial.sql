@@ -4,6 +4,25 @@
 CREATE EXTENSION IF NOT EXISTS postgis;
 
 
+-- Table evaluations : forme d'origine (avant 0012/0014/0015), altérée par les migrations suivantes.
+-- Recréée ici en IF NOT EXISTS pour les bases vierges. Inerte sur les bases existantes
+-- (migrate est basé sur le timestamp du journal : 0000 ne se rejoue jamais une fois 0020 appliqué).
+CREATE TABLE IF NOT EXISTS "evaluations" (
+	"id" varchar(50) PRIMARY KEY NOT NULL,
+	"parcelle_id" varchar(20) NOT NULL,
+	"code_insee" varchar(5) NOT NULL,
+	"date_calcul" timestamp DEFAULT now() NOT NULL,
+	"donnees_enrichissement" jsonb NOT NULL,
+	"donnees_complementaires" jsonb NOT NULL,
+	"resultats" jsonb NOT NULL,
+	"fiabilite" numeric NOT NULL,
+	"version_algorithme" varchar(20) NOT NULL,
+	"source_utilisation" varchar(20) NOT NULL,
+	"integrateur" varchar(255),
+	"utilisateur_id" varchar(50),
+	"commentaire" varchar(1000)
+);
+
 CREATE TABLE IF NOT EXISTS "evenements_utilisateur" (
 	"id" varchar(50) PRIMARY KEY NOT NULL,
 	"type_evenement" varchar(50) NOT NULL,
