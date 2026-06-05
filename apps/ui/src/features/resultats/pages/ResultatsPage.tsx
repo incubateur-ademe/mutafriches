@@ -9,7 +9,6 @@ import { LoadingCallout } from "../../../shared/components/common/LoadingCallout
 import { ErrorAlert } from "../../../shared/components/common/ErrorAlert";
 import { PodiumCard } from "../components/PodiumCard";
 import { ResultsTable } from "../components/ResultTable";
-import { PartnerCard } from "../components/PartnerCard";
 import { useFormContext } from "../../../shared/form/useFormContext";
 import { useIframe, useIframeCallback, useIsIframeMode } from "../../../shared/iframe/useIframe";
 import { createIframeCommunicator } from "../../../shared/iframe/iframeCommunication";
@@ -385,34 +384,6 @@ export const ResultatsPage: React.FC = () => {
 
             {/* Table des résultats */}
             <ResultsTable results={mutabilityData.resultats} />
-
-            {/* Accordéon Écosystème friches */}
-            <div className="fr-mt-4w">
-              <section className="fr-accordion">
-                <h4 className="fr-accordion__title">
-                  <button className="fr-accordion__btn" aria-expanded="false" aria-controls="tools">
-                    Aller plus loin grâce à l'écosystème friches
-                  </button>
-                </h4>
-                <div className="fr-collapse" id="tools">
-                  <div className="fr-grid-row fr-grid-row--gutters">
-                    <PartnerCard
-                      logo="/images/logo-urbanvitaliz.svg"
-                      logoAlt="Logo Urban Vitaliz"
-                      description="Pour être accompagné dans votre projet de réhabilitation par des conseillers compétents."
-                      url="https://urbanvitaliz.fr"
-                    />
-
-                    <PartnerCard
-                      logo="/images/logo-cartofriches.svg"
-                      logoAlt="Logo Cartofriches"
-                      description="Rendez votre friche visible sur l'inventaire national pour la rendre trouvable par des porteurs de projet."
-                      url="https://cartofriches.cerema.fr"
-                    />
-                  </div>
-                </div>
-              </section>
-            </div>
           </>
         )}
 
@@ -444,13 +415,13 @@ export const ResultatsPage: React.FC = () => {
           )}
         </div>
 
-        {/* CTA : analyse multisites — carte fond bleu clair identique a la page d'accueil (IntegrationSection) */}
+        {/* CTA : analyse multisites — carte arrondie fond vert clair (vert du badge EXCELLENT) */}
         <div
           className="fr-mt-4w"
-          // Carte arrondie fond bleu clair, non couverte par une classe DSFR (reprise de la landing)
-          style={{ padding: "2.5rem", backgroundColor: "#f1f7ff", borderRadius: "24px" }}
+          // Fond vert clair (#B8FEC9, badge EXCELLENT), non couvert par une classe DSFR
+          style={{ padding: "2.5rem", backgroundColor: "#B8FEC9", borderRadius: "24px" }}
         >
-          <h6 className="fr-mb-2w">Analysez plusieurs sites en parallèle</h6>
+          <h4 className="fr-mb-2w">Analysez plusieurs sites en parallèle</h4>
           <p className="fr-mb-3w">
             Accélérez vos analyses en qualifiant plusieurs sites simultanément. Comparez les
             résultats à l'échelle d'un territoire et identifiez plus facilement les opportunités
@@ -460,6 +431,8 @@ export const ResultatsPage: React.FC = () => {
             <li>
               <button
                 className="fr-btn fr-btn--secondary"
+                // Fond blanc forcé : le secondary DSFR est transparent et laisse voir le vert
+                style={{ backgroundColor: "#fff" }}
                 onClick={() => setIsContactModalOpen(true)}
               >
                 Analyser plusieurs sites
