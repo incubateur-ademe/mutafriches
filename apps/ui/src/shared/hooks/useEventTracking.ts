@@ -98,6 +98,13 @@ export function useEventTracking() {
     [track],
   );
 
+  const trackOuvertureModaleMultisites = useCallback(
+    (evaluationId?: string) => {
+      return track(TypeEvenement.OUVERTURE_MODALE_MULTISITES, { evaluationId });
+    },
+    [track],
+  );
+
   const trackDemandeContactMultisites = useCallback(
     (email: string, besoin: BesoinMultisites, evaluationId?: string) => {
       return track(TypeEvenement.DEMANDE_CONTACT_MULTISITES, {
@@ -151,6 +158,7 @@ export function useEventTracking() {
     trackInteretMultiParcelles,
     trackInteretMiseEnRelation,
     trackExporterResultats,
+    trackOuvertureModaleMultisites,
     trackDemandeContactMultisites,
     trackEvaluationTerminee,
     trackParcelleAjoutee,

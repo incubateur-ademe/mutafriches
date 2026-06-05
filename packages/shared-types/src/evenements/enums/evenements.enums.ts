@@ -27,6 +27,8 @@ export enum TypeEvenement {
   INTERET_MISE_EN_RELATION = "interet_mise_en_relation",
   INTERET_EXPORT_RESULTATS = "interet_export_resultats",
 
+  // Ouverture de la modale multisites (clic sur le CTA "Analyser plusieurs sites")
+  OUVERTURE_MODALE_MULTISITES = "ouverture_modale_multisites",
   // Demande de mise en relation multisites (modale "Etre contacte")
   DEMANDE_CONTACT_MULTISITES = "demande_contact_multisites",
 }

@@ -79,8 +79,13 @@ export const ResultatsPage: React.FC = () => {
   const { parentOrigin, integrator } = useIframe();
 
   // Hook tracking
-  const { track, trackExporterResultats, trackDemandeContactMultisites, trackEvaluationTerminee } =
-    useEventTracking();
+  const {
+    track,
+    trackExporterResultats,
+    trackOuvertureModaleMultisites,
+    trackDemandeContactMultisites,
+    trackEvaluationTerminee,
+  } = useEventTracking();
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -433,7 +438,10 @@ export const ResultatsPage: React.FC = () => {
                 className="fr-btn fr-btn--secondary"
                 // Fond blanc forcé : le secondary DSFR est transparent et laisse voir le vert
                 style={{ backgroundColor: "#fff" }}
-                onClick={() => setIsContactModalOpen(true)}
+                onClick={() => {
+                  trackOuvertureModaleMultisites(mutabilityData?.evaluationId);
+                  setIsContactModalOpen(true);
+                }}
               >
                 Analyser plusieurs sites
               </button>
