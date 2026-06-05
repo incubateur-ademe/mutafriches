@@ -122,3 +122,8 @@ export function getAppConfig(): AppConfig {
   }
   return instance;
 }
+
+// Réinitialise le singleton. Réservé aux tests qui manipulent process.env.
+export function resetAppConfig(): void {
+  instance = undefined;
+}

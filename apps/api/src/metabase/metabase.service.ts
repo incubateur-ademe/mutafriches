@@ -1,5 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import * as jwt from "jsonwebtoken";
+import { getAppConfig } from "../config";
 
 @Injectable()
 export class MetabaseService {
@@ -10,9 +11,10 @@ export class MetabaseService {
   private readonly dashboardId: number;
 
   constructor() {
-    this.siteUrl = process.env.METABASE_SITE_URL;
-    this.secretKey = process.env.METABASE_SECRET_KEY;
-    this.dashboardId = parseInt(process.env.METABASE_DASHBOARD_ID ?? "3", 10);
+    const metabase = getAppConfig().metabase;
+    this.siteUrl = metabase.siteUrl;
+    this.secretKey = metabase.secretKey;
+    this.dashboardId = metabase.dashboardId;
 
     if (!this.isConfigured()) {
       this.logger.warn(

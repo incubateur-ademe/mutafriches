@@ -1,6 +1,7 @@
 import { Injectable, Logger } from "@nestjs/common";
 import * as nodemailer from "nodemailer";
 import type { Transporter } from "nodemailer";
+import { getAppConfig } from "../config";
 
 export interface EnvoyerMailParams {
   to: string;
@@ -19,27 +20,24 @@ export class MailerService {
   private transporter: Transporter | null = null;
 
   private getTransporter(): Transporter | null {
-    const host = process.env.SMTP_HOST;
-    if (!host) return null;
+    const mail = getAppConfig().mail;
+    if (!mail.smtpHost) return null;
 
     if (!this.transporter) {
       this.transporter = nodemailer.createTransport({
-        host,
-        port: parseInt(process.env.SMTP_PORT || "1025", 10),
-        secure: process.env.SMTP_SECURE === "true",
+        host: mail.smtpHost,
+        port: mail.smtpPort,
+        secure: mail.smtpSecure,
         // MailHog n'exige pas d'authentification : on n'envoie auth que si renseignee
-        auth: process.env.SMTP_USER
-          ? { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS }
-          : undefined,
+        auth: mail.smtpUser ? { user: mail.smtpUser, pass: mail.smtpPass } : undefined,
       });
     }
     return this.transporter;
   }
 
   private getExpediteur(): string {
-    const email = process.env.MAIL_SENDER_EMAIL || "contact@mutafriches.beta.gouv.fr";
-    const nom = process.env.MAIL_SENDER_NAME || "Mutafriches";
-    return `"${nom}" <${email}>`;
+    const mail = getAppConfig().mail;
+    return `"${mail.senderName}" <${mail.senderEmail}>`;
   }
 
   // Envoie un email. Ne throw jamais : retourne success=false en cas d'echec

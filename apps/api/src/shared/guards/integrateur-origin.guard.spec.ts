@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { ExecutionContext, ForbiddenException } from "@nestjs/common";
 import { IntegrateurOriginGuard } from "./integrateur-origin.guard";
+import { resetAppConfig } from "../../config";
 
 function createMockExecutionContext(headers: Record<string, string> = {}): ExecutionContext {
   return {
@@ -20,10 +21,12 @@ describe("IntegrateurOriginGuard", () => {
   beforeEach(() => {
     vi.resetModules();
     process.env = { ...originalEnv };
+    resetAppConfig();
   });
 
   afterEach(() => {
     process.env = originalEnv;
+    resetAppConfig();
   });
 
   describe("Mode developpement (bypass)", () => {

@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { BesoinMultisites } from "@mutafriches/shared-types";
 import { ContactService } from "./contact.service";
+import { resetAppConfig } from "../config";
 
 describe("ContactService", () => {
   let service: ContactService;
@@ -17,11 +18,13 @@ describe("ContactService", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    resetAppConfig();
     service = new ContactService(mockRepository as never, mockMailer as never);
   });
 
   afterEach(() => {
     process.env = { ...envInitial };
+    resetAppConfig();
   });
 
   it("persiste la demande et envoie confirmation + notification", async () => {

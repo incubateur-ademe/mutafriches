@@ -1,6 +1,7 @@
 import { ExecutionContext, ForbiddenException } from "@nestjs/common";
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { OriginGuard } from "./origin.guard";
+import { resetAppConfig } from "../../config";
 
 describe("OriginGuard (Evenements - Mutafriches uniquement)", () => {
   let guard: OriginGuard;
@@ -21,11 +22,13 @@ describe("OriginGuard (Evenements - Mutafriches uniquement)", () => {
   beforeEach(() => {
     originalNodeEnv = process.env.NODE_ENV;
     delete process.env.ALLOWED_ORIGINS;
+    resetAppConfig();
   });
 
   afterEach(() => {
     process.env.NODE_ENV = originalNodeEnv;
     delete process.env.ALLOWED_ORIGINS;
+    resetAppConfig();
   });
 
   describe("Origines Mutafriches (toujours autorisees)", () => {

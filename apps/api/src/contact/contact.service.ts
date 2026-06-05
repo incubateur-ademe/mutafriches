@@ -4,6 +4,7 @@ import { ContactRepository } from "./contact.repository";
 import { MailerService } from "../mailer/mailer.service";
 import { contactConfirmationTemplate } from "../mailer/templates/contact-confirmation.template";
 import { contactNotificationTemplate } from "../mailer/templates/contact-notification.template";
+import { getAppConfig } from "../config";
 
 export interface TraiterDemandeParams {
   email: string;
@@ -12,10 +13,6 @@ export interface TraiterDemandeParams {
   sessionId?: string;
   integrateur?: string;
 }
-
-// Dashboard Metabase listant les demandes de contact (surchargeable via CONTACT_DASHBOARD_URL)
-const CONTACT_DASHBOARD_URL_DEFAUT =
-  "https://metabase.mutafriches.beta.gouv.fr/dashboard/10-demandes-de-contact";
 
 @Injectable()
 export class ContactService {
@@ -60,17 +57,17 @@ export class ContactService {
     }
 
     // Notification equipe
-    const notificationEmail = process.env.CONTACT_NOTIFICATION_EMAIL;
-    if (notificationEmail) {
+    const mailConfig = getAppConfig().mail;
+    if (mailConfig.notificationEmail) {
       await this.mailerService.envoyer({
-        to: notificationEmail,
+        to: mailConfig.notificationEmail,
         subject: "Nouvelle demande de contact multisites",
         html: contactNotificationTemplate({
           email: params.email,
           besoin: params.besoin,
           date: new Date(),
           evaluationId: params.evaluationId,
-          dashboardUrl: process.env.CONTACT_DASHBOARD_URL || CONTACT_DASHBOARD_URL_DEFAUT,
+          dashboardUrl: mailConfig.dashboardUrl,
         }),
       });
     }

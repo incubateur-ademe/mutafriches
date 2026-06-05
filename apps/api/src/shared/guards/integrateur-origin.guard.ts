@@ -7,6 +7,7 @@ import {
 } from "@nestjs/common";
 import { Request } from "express";
 import { isDevelopment } from "../utils";
+import { getAppConfig } from "../../config";
 
 // Domaines autorises par defaut pour les integrateurs
 // Correspond à la liste des domaines de chacun des integrateurs connus
@@ -26,7 +27,7 @@ export class IntegrateurOriginGuard implements CanActivate {
   private readonly allowedOrigins: string[];
 
   constructor() {
-    const envOrigins = process.env.ALLOWED_INTEGRATOR_ORIGINS;
+    const envOrigins = getAppConfig().origins.allowedIntegrators;
     this.allowedOrigins = envOrigins
       ? [...DEFAULT_ALLOWED_ORIGINS, ...envOrigins.split(",").map((o) => o.trim())]
       : DEFAULT_ALLOWED_ORIGINS;

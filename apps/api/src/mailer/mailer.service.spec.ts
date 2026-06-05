@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import * as nodemailer from "nodemailer";
 import { MailerService } from "./mailer.service";
+import { resetAppConfig } from "../config";
 
 const sendMailMock = vi.fn();
 
@@ -14,11 +15,13 @@ describe("MailerService", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    resetAppConfig();
     service = new MailerService();
   });
 
   afterEach(() => {
     process.env = { ...envInitial };
+    resetAppConfig();
   });
 
   it("envoie un email quand SMTP_HOST est configuré", async () => {

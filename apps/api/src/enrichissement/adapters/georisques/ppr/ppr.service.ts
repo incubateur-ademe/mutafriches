@@ -1,4 +1,5 @@
 import { Injectable, Logger } from "@nestjs/common";
+import { getAppConfig } from "../../../../config";
 import { HttpService } from "@nestjs/axios";
 import { firstValueFrom } from "rxjs";
 import { ApiResponse } from "../../shared/api-response.types";
@@ -27,7 +28,7 @@ export class PprService {
   private readonly baseUrl: string;
 
   constructor(private readonly httpService: HttpService) {
-    this.baseUrl = process.env.GEORISQUES_API_URL || GEORISQUES_API_BASE_URL;
+    this.baseUrl = getAppConfig().externalApis.georisquesUrl ?? GEORISQUES_API_BASE_URL;
 
     this.logger.warn(
       "Le service PPR utilise une API marquée comme OBSOLETE par GeoRisques. " +

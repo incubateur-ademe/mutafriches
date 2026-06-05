@@ -7,6 +7,7 @@ import {
 } from "@nestjs/common";
 import { Request } from "express";
 import { isDevelopment } from "../../shared/utils";
+import { getAppConfig } from "../../config";
 
 /**
  * Guard pour les evenements (tracking interne)
@@ -24,7 +25,7 @@ export class OriginGuard implements CanActivate {
   private readonly allowedOrigins: string[];
 
   constructor() {
-    const envOrigins = process.env.ALLOWED_ORIGINS;
+    const envOrigins = getAppConfig().origins.allowed;
     if (envOrigins) {
       this.allowedOrigins = envOrigins.split(",").map((o) => o.trim());
     } else {
