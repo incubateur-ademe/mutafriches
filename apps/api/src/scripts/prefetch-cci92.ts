@@ -20,6 +20,8 @@
  *   - CCI92_PREFETCH_DELAY_MS : pause entre chaque appel (défaut 1000)
  */
 
+import { getAppConfig } from "../config";
+
 interface SiteCCI92 {
   idtup: string;
   commune: string;
@@ -114,8 +116,8 @@ const CCI92_SITES: SiteCCI92[] = [
   },
 ];
 
-const API_URL = process.env.API_URL ?? "http://localhost:3000";
-const DELAY_MS = Number(process.env.CCI92_PREFETCH_DELAY_MS ?? 1000);
+const API_URL = getAppConfig().scripts.apiUrl;
+const DELAY_MS = getAppConfig().scripts.cci92PrefetchDelayMs;
 
 interface PrefetchResult {
   idtup: string;

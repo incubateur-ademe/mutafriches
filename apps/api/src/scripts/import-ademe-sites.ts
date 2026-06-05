@@ -20,6 +20,7 @@
  */
 
 import { readFileSync } from "fs";
+import { getAppConfig } from "../config";
 import * as path from "path";
 import { drizzle } from "drizzle-orm/postgres-js";
 import { sql } from "drizzle-orm";
@@ -90,38 +91,7 @@ async function importAdemeSites(): Promise<void> {
   console.log(`Fichier lu: ${geojson.features.length} features`);
 
   // Connexion a la base
-  let dbConfig: {
-    host: string;
-    port: number;
-    user: string;
-    password: string;
-    database: string;
-    ssl?: { rejectUnauthorized: boolean };
-  };
-
-  if (process.env.SCALINGO_POSTGRESQL_URL) {
-    const url = new URL(process.env.SCALINGO_POSTGRESQL_URL);
-    dbConfig = {
-      host: url.hostname,
-      port: parseInt(url.port),
-      user: url.username,
-      password: url.password,
-      database: url.pathname.slice(1),
-      ssl: { rejectUnauthorized: false },
-    };
-    console.log("Connexion a PostgreSQL (Scalingo)");
-  } else {
-    const host = process.env.DB_HOST || "localhost";
-    const port = process.env.DB_PORT || "5432";
-    dbConfig = {
-      host,
-      port: parseInt(port),
-      user: process.env.DB_USER || "mutafriches_user",
-      password: process.env.DB_PASSWORD || "mutafriches_password",
-      database: process.env.DB_NAME || "mutafriches",
-    };
-    console.log(`Connexion a PostgreSQL (Local) sur ${host}:${port}`);
-  }
+  const dbConfig = getAppConfig().database;
 
   const client = postgres(dbConfig);
   const db = drizzle(client);
