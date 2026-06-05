@@ -2,7 +2,10 @@ import { Injectable, Logger } from "@nestjs/common";
 import { BesoinMultisites, isValidEmail } from "@mutafriches/shared-types";
 import { ContactRepository } from "./contact.repository";
 import { MailService } from "../mailer/mail.service";
-import { contactConfirmationTemplate } from "../mailer/templates/contact-confirmation.template";
+import {
+  CONTACT_CONFIRMATION_SUBJECT,
+  contactConfirmationTemplate,
+} from "../mailer/templates/contact-confirmation.template";
 import { contactNotificationTemplate } from "../mailer/templates/contact-notification.template";
 import { getAppConfig } from "../config";
 
@@ -75,8 +78,8 @@ export class ContactService {
     // Confirmation utilisateur
     const confirmation = await this.mailService.send({
       to: params.email,
-      subject: "Votre demande Mutafriches a bien été reçue",
-      html: contactConfirmationTemplate(params.besoin),
+      subject: CONTACT_CONFIRMATION_SUBJECT,
+      html: contactConfirmationTemplate(),
     });
 
     if (confirmation.success) {

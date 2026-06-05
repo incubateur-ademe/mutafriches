@@ -13,6 +13,15 @@ export function paragraph(html: string): string {
   return `<p style="font-size: 14px; line-height: 1.5; color: ${COULEUR_TEXTE}; margin: 0 0 16px;">${html}</p>`;
 }
 
+export function subheading(texte: string): string {
+  return `<h2 style="font-size: 15px; color: ${COULEUR_TEXTE}; margin: 24px 0 8px;">${texte}</h2>`;
+}
+
+export function list(items: string[]): string {
+  const elements = items.map((item) => `<li style="margin: 0 0 4px;">${item}</li>`).join("");
+  return `<ul style="font-size: 14px; line-height: 1.5; color: ${COULEUR_TEXTE}; margin: 0 0 16px; padding-left: 20px;">${elements}</ul>`;
+}
+
 export function button(options: { href: string; label: string }): string {
   return `<p style="margin: 24px 0;">
     <a href="${options.href}" style="display: inline-block; background-color: ${COULEUR_BLEU}; color: #ffffff; text-decoration: none; padding: 10px 20px; font-size: 14px; border-radius: 4px;">${options.label}</a>
