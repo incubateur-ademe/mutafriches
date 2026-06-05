@@ -342,6 +342,8 @@ Un test dédié (`versions.spec.ts`) doit garantir l'ordre antéchronologique st
 
 ## Variables d'environnement
 
+Toutes les variables sont lues via la classe centralisée **`AppConfig`** (`apps/api/src/config/`), validée au démarrage (fail-fast). Ne JAMAIS lire `process.env` directement dans un service : injecter `AppConfig` ou utiliser `getAppConfig()` (singleton, pour les scripts hors DI). Ajouter une nouvelle variable = l'ajouter dans `env.validation.ts` (décorateur de validation) puis exposer un getter typé dans `app.config.ts`. Voir ADR-0016.
+
 ### Environnement d'exécution
 
 - `NODE_ENV` : `development`, `staging`, ou `production`
