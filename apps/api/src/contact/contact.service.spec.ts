@@ -64,6 +64,16 @@ describe("ContactService", () => {
     expect(mockRepository.enregistrerDemande).not.toHaveBeenCalled();
   });
 
+  it("accepte et persiste le besoin 'Je ne sais pas'", async () => {
+    await service.traiterDemande({
+      email: "user@example.com",
+      besoin: BesoinMultisites.NE_SAIT_PAS,
+    });
+
+    expect(mockRepository.enregistrerDemande).toHaveBeenCalledOnce();
+    expect(mockRepository.enregistrerDemande.mock.calls[0][0].besoin).toBe("ne-sait-pas");
+  });
+
   it("n'envoie pas la notification équipe si CONTACT_NOTIFICATION_EMAIL absent", async () => {
     delete process.env.CONTACT_NOTIFICATION_EMAIL;
 

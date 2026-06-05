@@ -39,6 +39,8 @@ export enum BesoinMultisites {
   SUIVI_COMPARAISON = "suivi_comparaison",
   // Integrer Mutafriches a ses outils metier (SIG, portail cartographique, etc.)
   INTEGRATION_OUTILS = "integration_outils",
+  // L'utilisateur ne sait pas encore quel besoin il a
+  NE_SAIT_PAS = "ne-sait-pas",
 }
 
 export enum ModeUtilisation {

@@ -19,6 +19,10 @@ const OPTIONS_BESOIN: { value: BesoinMultisites; label: string }[] = [
     label:
       "Je souhaite intégrer Mutafriches à mes outils métier (SIG, portail cartographique, application interne, etc.) pour automatiser l'analyse de plusieurs sites.",
   },
+  {
+    value: BesoinMultisites.NE_SAIT_PAS,
+    label: "Je ne sais pas encore, je souhaite être recontacté pour en discuter.",
+  },
 ];
 
 export const ContactMultisitesModal: React.FC<ContactMultisitesModalProps> = ({

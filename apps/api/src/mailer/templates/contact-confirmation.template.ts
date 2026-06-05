@@ -6,6 +6,7 @@ const LIBELLES_BESOIN: Record<string, string> = {
     "Suivre et comparer une liste de sites dans un espace dédié",
   [BesoinMultisites.INTEGRATION_OUTILS]:
     "Intégrer Mutafriches à vos outils métier (SIG, portail cartographique, etc.)",
+  [BesoinMultisites.NE_SAIT_PAS]: "Ne sait pas encore / à préciser",
 };
 
 export function libelleBesoin(besoin: BesoinMultisites | string): string {
