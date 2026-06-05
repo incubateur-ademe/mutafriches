@@ -13,7 +13,7 @@ describe("ContactService", () => {
   };
 
   const mockMailer = {
-    envoyer: vi.fn().mockResolvedValue({ success: true }),
+    send: vi.fn().mockResolvedValue({ success: true }),
   };
 
   beforeEach(() => {
@@ -38,8 +38,8 @@ describe("ContactService", () => {
 
     expect(mockRepository.enregistrerDemande).toHaveBeenCalledOnce();
     // Notification equipe + confirmation utilisateur
-    expect(mockMailer.envoyer).toHaveBeenCalledTimes(2);
-    const destinataires = mockMailer.envoyer.mock.calls.map((c) => c[0].to);
+    expect(mockMailer.send).toHaveBeenCalledTimes(2);
+    const destinataires = mockMailer.send.mock.calls.map((c) => c[0].to);
     expect(destinataires).toContain("equipe@example.com");
     expect(destinataires).toContain("user@example.com");
     expect(mockRepository.marquerMailConfirmationEnvoye).toHaveBeenCalledOnce();
@@ -52,7 +52,7 @@ describe("ContactService", () => {
     });
 
     expect(mockRepository.enregistrerDemande).not.toHaveBeenCalled();
-    expect(mockMailer.envoyer).not.toHaveBeenCalled();
+    expect(mockMailer.send).not.toHaveBeenCalled();
   });
 
   it("ignore une demande avec besoin invalide", async () => {
@@ -73,7 +73,7 @@ describe("ContactService", () => {
     });
 
     // Seulement la confirmation utilisateur
-    expect(mockMailer.envoyer).toHaveBeenCalledOnce();
-    expect(mockMailer.envoyer.mock.calls[0][0].to).toBe("user@example.com");
+    expect(mockMailer.send).toHaveBeenCalledOnce();
+    expect(mockMailer.send.mock.calls[0][0].to).toBe("user@example.com");
   });
 });

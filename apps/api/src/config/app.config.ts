@@ -81,18 +81,34 @@ export class AppConfig {
   }
 
   get mail() {
+    const senderEmail = this.env.MAIL_SENDER_EMAIL ?? "contact@mutafriches.beta.gouv.fr";
+    const senderName = this.env.MAIL_SENDER_NAME ?? "Mutafriches";
     return {
+      // Transport
+      brevoApiKey: this.env.BREVO_API_KEY,
       smtpHost: this.env.SMTP_HOST,
       smtpPort: this.env.SMTP_PORT ?? 1025,
       smtpSecure: this.env.SMTP_SECURE === "true",
       smtpUser: this.env.SMTP_USER,
       smtpPass: this.env.SMTP_PASS,
-      senderEmail: this.env.MAIL_SENDER_EMAIL ?? "contact@mutafriches.beta.gouv.fr",
-      senderName: this.env.MAIL_SENDER_NAME ?? "Mutafriches",
+      // Expéditeur / réponse
+      senderEmail,
+      senderName,
+      replyToEmail: this.env.EMAIL_REPLY_TO ?? senderEmail,
+      replyToName: senderName,
+      // Garde-fou staging : redirige tous les destinataires vers cette boîte
+      devInbox: this.env.EMAIL_DEV_INBOX,
+      // Contact multisites
       notificationEmail: this.env.CONTACT_NOTIFICATION_EMAIL,
       dashboardUrl:
         this.env.CONTACT_DASHBOARD_URL ??
         "https://metabase.mutafriches.beta.gouv.fr/dashboard/10-demandes-de-contact",
+    };
+  }
+
+  get app() {
+    return {
+      baseUrl: this.env.APP_BASE_URL ?? "https://mutafriches.beta.gouv.fr",
     };
   }
 

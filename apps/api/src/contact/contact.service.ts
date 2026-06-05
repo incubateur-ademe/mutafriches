@@ -1,7 +1,7 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { BesoinMultisites, isValidEmail } from "@mutafriches/shared-types";
 import { ContactRepository } from "./contact.repository";
-import { MailerService } from "../mailer/mailer.service";
+import { MailService } from "../mailer/mail.service";
 import { contactConfirmationTemplate } from "../mailer/templates/contact-confirmation.template";
 import { contactNotificationTemplate } from "../mailer/templates/contact-notification.template";
 import { getAppConfig } from "../config";
@@ -20,7 +20,7 @@ export class ContactService {
 
   constructor(
     private readonly contactRepository: ContactRepository,
-    private readonly mailerService: MailerService,
+    private readonly mailService: MailService,
   ) {}
 
   estEmailValide(email: string | undefined): boolean {
@@ -59,7 +59,7 @@ export class ContactService {
     // Notification equipe
     const mailConfig = getAppConfig().mail;
     if (mailConfig.notificationEmail) {
-      await this.mailerService.envoyer({
+      await this.mailService.send({
         to: mailConfig.notificationEmail,
         subject: "Nouvelle demande de contact multisites",
         html: contactNotificationTemplate({
@@ -73,7 +73,7 @@ export class ContactService {
     }
 
     // Confirmation utilisateur
-    const confirmation = await this.mailerService.envoyer({
+    const confirmation = await this.mailService.send({
       to: params.email,
       subject: "Votre demande Mutafriches a bien été reçue",
       html: contactConfirmationTemplate(params.besoin),

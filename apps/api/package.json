@@ -38,6 +38,7 @@
     "cci92:prefetch": "node dist/src/scripts/prefetch-cci92.js"
   },
   "dependencies": {
+    "@getbrevo/brevo": "^5.0.4",
     "@mutafriches/shared-types": "workspace:*",
     "@nestjs/axios": "^4.0.1",
     "@nestjs/common": "^11.1.24",
@@ -57,6 +58,7 @@
     "drizzle-kit": "^0.31.10",
     "drizzle-orm": "^0.45.2",
     "express": "^5.2.1",
+    "html-to-text": "^10.0.0",
     "jsonwebtoken": "^9.0.3",
     "nodemailer": "^8.0.10",
     "postgres": "^3.4.9",
@@ -73,6 +75,7 @@
     "@swc/core": "^1.15.40",
     "@types/express": "^5.0.6",
     "@types/geojson": "^7946.0.16",
+    "@types/html-to-text": "^9.0.4",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/nodemailer": "^8.0.0",
     "@types/pg": "^8.20.0",

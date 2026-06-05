@@ -34,4 +34,24 @@ describe("validateEnvironment", () => {
   it("rejette un SMTP_SECURE hors true/false", () => {
     expect(() => validateEnvironment({ SMTP_SECURE: "oui" })).toThrow(/SMTP_SECURE/);
   });
+
+  describe("garde-fou EMAIL_DEV_INBOX", () => {
+    it("accepte une boîte de test sur un domaine autorisé hors production", () => {
+      expect(() =>
+        validateEnvironment({ NODE_ENV: "staging", EMAIL_DEV_INBOX: "test@beta.gouv.fr" }),
+      ).not.toThrow();
+    });
+
+    it("interdit EMAIL_DEV_INBOX en production", () => {
+      expect(() =>
+        validateEnvironment({ NODE_ENV: "production", EMAIL_DEV_INBOX: "test@beta.gouv.fr" }),
+      ).toThrow(/production/);
+    });
+
+    it("rejette un domaine non autorisé", () => {
+      expect(() =>
+        validateEnvironment({ NODE_ENV: "staging", EMAIL_DEV_INBOX: "test@gmail.com" }),
+      ).toThrow(/domaine/i);
+    });
+  });
 });
