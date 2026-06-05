@@ -66,3 +66,9 @@
 .podium-card .fr-tags-group {
   justify-content: center;
 }
+
+/* Tags decoratifs (non cliquables) : reprend la teinte bleu-France des tags cliquables DSFR */
+.podium-card .fr-tag {
+  color: var(--text-action-high-blue-france);
+  background-color: var(--background-action-low-blue-france);
+}
