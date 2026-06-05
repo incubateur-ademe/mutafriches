@@ -131,19 +131,23 @@ pnpm db:push                # Synchroniser le schéma
 pnpm db:studio              # Interface graphique Drizzle Studio
 ```
 
-### Emails (MailHog en local)
+### Emails (MailHog en local, Brevo en staging/prod)
 
-L'envoi d'emails passe par SMTP (`nodemailer`). En local, on utilise **MailHog** pour capturer les emails sans rien envoyer réellement (cf. ADR-0015).
+La brique email (`apps/api/src/mailer/`) **bascule de transport automatiquement** (cf. ADR-0017) :
+
+- **local / dev** (ou `BREVO_API_KEY` absente) → SMTP vers **MailHog**
+- **staging / prod** (avec `BREVO_API_KEY`) → **API HTTP Brevo**
 
 ```bash
 pnpm mail:start             # Démarrer MailHog (Docker)
 pnpm mail:stop              # Arrêter MailHog
 ```
 
-- Interface web pour consulter les emails capturés : **http://localhost:8026**
-- SMTP exposé sur le port **1026** (configuré dans `.env` via `SMTP_HOST` / `SMTP_PORT`)
-- Si `SMTP_HOST` est absent du `.env`, l'envoi est ignoré sans erreur (dégradation gracieuse)
-- En production : relais SMTP Brevo (`SMTP_HOST=smtp-relay.brevo.com`, port `587`, identifiants Brevo)
+**Tester en local** : `pnpm mail:start`, déclencher un envoi (ex. modale « Analyser plusieurs sites » → « Être contacté »), puis consulter **http://localhost:8026**. SMTP exposé sur le port **1026**.
+
+**Tester en staging** : définir `BREVO_API_KEY` **et** `EMAIL_DEV_INBOX` (boîte `@beta.gouv.fr`) — tous les emails sont alors redirigés vers cette boîte avec un sujet préfixé `[STAGING → destinataire]`. `EMAIL_DEV_INBOX` est **interdite en production**.
+
+Variables : `BREVO_API_KEY`, `MAIL_SENDER_EMAIL` / `MAIL_SENDER_NAME`, `EMAIL_REPLY_TO`, `EMAIL_DEV_INBOX`, `APP_BASE_URL` (voir `apps/api/.env.example`).
 
 ### Qualité de code & Tests
 

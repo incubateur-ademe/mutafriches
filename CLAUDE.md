@@ -371,15 +371,17 @@ Toutes les variables sont lues via la classe centralisée **`AppConfig`** (`apps
 | POST /evaluation/calculer | IntegrateurOriginGuard | Bypass | Origines whitelistées |
 | POST /evenements | OriginGuard | localhost + Mutafriches | Mutafriches uniquement |
 
-### Envoi d'emails (SMTP)
+### Envoi d'emails
 
-Transport SMTP via `nodemailer` (cf. ADR-0015). En local : **MailHog** (`pnpm mail:start`, UI sur http://localhost:8026). En production : **relais SMTP Brevo**. Le `MailerService` se dégrade gracieusement : si `SMTP_HOST` est absent, l'envoi est ignoré sans lever d'exception.
+Brique `apps/api/src/mailer/` : `MailService` injectable + abstraction `EmailProvider` (cf. ADR-0017). **Bascule automatique** : MailHog si environnement local **OU** `BREVO_API_KEY` absente ; sinon **API HTTP Brevo** (`@getbrevo/brevo`). `MailService.send()` valide les destinataires, génère un fallback texte (`html-to-text`), applique la redirection staging, et renvoie toujours `{ success, messageId?, error? }` sans throw. Local : **MailHog** (`pnpm mail:start`, UI http://localhost:8026). Templates : kit HTML inline (`templates/kit.ts`).
 
-- `SMTP_HOST` / `SMTP_PORT` / `SMTP_SECURE` : serveur SMTP (local : `localhost`/`1026`/`false` ; prod : `smtp-relay.brevo.com`/`587`/`false`)
-- `SMTP_USER` / `SMTP_PASS` : identifiants SMTP (vides en local pour MailHog ; login + clé SMTP Brevo en prod)
-- `MAIL_SENDER_EMAIL` / `MAIL_SENDER_NAME` : expéditeur des emails
-- `CONTACT_NOTIFICATION_EMAIL` : adresse de l'équipe notifiée à chaque demande de contact multisites
-- `CONTACT_DASHBOARD_URL` : lien Metabase listant les demandes de contact, inclus dans l'email de notification équipe
+- `BREVO_API_KEY` : clé API Brevo (staging/prod). Absente → MailHog.
+- `SMTP_HOST` / `SMTP_PORT` / `SMTP_SECURE` / `SMTP_USER` / `SMTP_PASS` : serveur SMTP local (MailHog : `localhost`/`1026`/`false`, sans auth)
+- `MAIL_SENDER_EMAIL` / `MAIL_SENDER_NAME` : expéditeur ; `EMAIL_REPLY_TO` : adresse de réponse (défaut = expéditeur)
+- `EMAIL_DEV_INBOX` : **redirection staging** (réécrit tous les destinataires, préfixe le sujet). **Interdite en prod**, restreinte à `beta.gouv.fr` / `incubateur.ademe.dev` (validé au boot).
+- `APP_BASE_URL` : base des liens dans les emails
+- `CONTACT_NOTIFICATION_EMAIL` : équipe notifiée à chaque demande de contact multisites
+- `CONTACT_DASHBOARD_URL` : lien Metabase des demandes, inclus dans l'email de notification équipe
 
 ## Documentation contextuelle
 

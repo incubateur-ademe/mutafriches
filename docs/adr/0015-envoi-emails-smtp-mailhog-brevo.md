@@ -1,7 +1,7 @@
 # ADR-0015 : Envoi d'emails transactionnels via SMTP (MailHog en local, Brevo en production)
 
 **Date** : 2026-06-02
-**Statut** : Accepté
+**Statut** : Mis à jour par ADR-0017 (le transport prod passe du relais SMTP Brevo à l'API HTTP Brevo via une abstraction provider). MailHog en local reste valable.
 
 ## Contexte
 
