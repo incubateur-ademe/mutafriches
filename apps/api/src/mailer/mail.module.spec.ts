@@ -39,4 +39,10 @@ describe("createEmailProvider (bascule de transport)", () => {
     delete process.env.BREVO_API_KEY;
     expect(provider()).toBeInstanceOf(SmtpProvider);
   });
+
+  it("retombe sur SMTP en staging si la clé Brevo est vide ou composée d'espaces", () => {
+    process.env.NODE_ENV = "staging";
+    process.env.BREVO_API_KEY = "   ";
+    expect(provider()).toBeInstanceOf(SmtpProvider);
+  });
 });

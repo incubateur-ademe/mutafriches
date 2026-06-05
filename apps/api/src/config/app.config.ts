@@ -84,8 +84,8 @@ export class AppConfig {
     const senderEmail = this.env.MAIL_SENDER_EMAIL ?? "contact@mutafriches.beta.gouv.fr";
     const senderName = this.env.MAIL_SENDER_NAME ?? "Mutafriches";
     return {
-      // Transport
-      brevoApiKey: this.env.BREVO_API_KEY,
+      // Transport. Clé vide ou composée d'espaces -> undefined (bascule MailHog).
+      brevoApiKey: this.env.BREVO_API_KEY?.trim() || undefined,
       smtpHost: this.env.SMTP_HOST,
       smtpPort: this.env.SMTP_PORT ?? 1025,
       smtpSecure: this.env.SMTP_SECURE === "true",
