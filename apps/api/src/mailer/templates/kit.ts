@@ -3,7 +3,6 @@
 
 const COULEUR_TEXTE = "#161616";
 const COULEUR_BLEU = "#000091"; // Bleu France
-const COULEUR_GRIS = "#666666";
 
 export function heading(texte: string): string {
   return `<h1 style="font-size: 20px; color: ${COULEUR_TEXTE}; margin: 0 0 16px;">${texte}</h1>`;
@@ -58,7 +57,6 @@ export function layout(options: { title: string; children: string }): string {
             <tr>
               <td style="padding: 32px;">
                 ${options.children}
-                <p style="font-size: 12px; color: ${COULEUR_GRIS}; margin: 24px 0 0;">Mutafriches</p>
               </td>
             </tr>
           </table>
