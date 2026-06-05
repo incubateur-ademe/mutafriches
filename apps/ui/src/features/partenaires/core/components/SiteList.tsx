@@ -1,5 +1,4 @@
 import React from "react";
-import { EnrichissementOutputDto } from "@mutafriches/shared-types";
 import type { PartnerSite } from "../types";
 import { CUSTOM_COMMUNE_LABEL } from "../hooks/useCustomSites";
 
@@ -8,7 +7,7 @@ interface SiteListProps {
   sitesByCommune: Record<string, PartnerSite[]>;
   selectedSiteId: string | null;
   onSelectSite: (site: PartnerSite) => void;
-  enrichmentCache: Map<string, EnrichissementOutputDto>;
+  enrichedSiteIds: Set<string>;
   customSites: PartnerSite[];
   onAddSiteClick: () => void;
   onRemoveCustomSite: (idtup: string) => void;
@@ -62,7 +61,7 @@ export const SiteList: React.FC<SiteListProps> = ({
   sitesByCommune,
   selectedSiteId,
   onSelectSite,
-  enrichmentCache,
+  enrichedSiteIds,
   customSites,
   onAddSiteClick,
   onRemoveCustomSite,
@@ -95,7 +94,7 @@ export const SiteList: React.FC<SiteListProps> = ({
                 renderSiteButton(
                   site,
                   selectedSiteId,
-                  enrichmentCache.has(site.idtup),
+                  enrichedSiteIds.has(site.idtup),
                   onSelectSite,
                   onRemoveCustomSite,
                 ),
@@ -125,7 +124,7 @@ export const SiteList: React.FC<SiteListProps> = ({
                   renderSiteButton(
                     site,
                     selectedSiteId,
-                    enrichmentCache.has(site.idtup),
+                    enrichedSiteIds.has(site.idtup),
                     onSelectSite,
                   ),
                 )}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useRef } from "react";
+import React, { useState, useCallback, useRef } from "react";
 import { Link, useParams } from "react-router-dom";
 import { EnrichissementOutputDto, MutabiliteOutputDto } from "@mutafriches/shared-types";
 import { Layout } from "@shared/components/layout/Layout";
@@ -28,21 +28,18 @@ const MultisiteView: React.FC<{ config: PartnerConfig }> = ({ config }) => {
   const mutabilityCacheRef = useRef(new Map<string, MutabiliteOutputDto>());
   const manualDataRef = useRef(new Map<string, Record<string, string>>());
 
+  // IDs des sites enrichis suivis en state (le ref ne peut pas être lu pendant le rendu)
+  const [enrichedSiteIds, setEnrichedSiteIds] = useState<Set<string>>(new Set());
+
   const [enrichmentData, setEnrichmentData] = useState<EnrichissementOutputDto | null>(null);
   const [mutabilityData, setMutabilityData] = useState<MutabiliteOutputDto | null>(null);
   const [manualData, setManualData] = useState<Record<string, string>>({});
 
   const { versions } = useAlgorithmeVersions();
-  const [selectedVersion, setSelectedVersion] = useState<string>("");
+  const selectedVersion = versions[0]?.version ?? "";
 
   const { customSites, addSite, removeSite, clearAll } = useCustomSites(config.storageKey);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-
-  useEffect(() => {
-    if (!selectedVersion && versions.length > 0) {
-      setSelectedVersion(versions[0].version);
-    }
-  }, [versions, selectedVersion]);
 
   const handleSelectSite = useCallback(async (site: PartnerSite) => {
     setSelectedSite(site);
@@ -68,6 +65,7 @@ const MultisiteView: React.FC<{ config: PartnerConfig }> = ({ config }) => {
         acceptDegradedCache: true,
       });
       enrichmentCacheRef.current.set(site.idtup, result);
+      setEnrichedSiteIds((prev) => new Set(prev).add(site.idtup));
       setEnrichmentData(result);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Erreur lors de l'enrichissement";
@@ -114,6 +112,11 @@ const MultisiteView: React.FC<{ config: PartnerConfig }> = ({ config }) => {
     enrichmentCacheRef.current.delete(idtup);
     mutabilityCacheRef.current.delete(idtup);
     manualDataRef.current.delete(idtup);
+    setEnrichedSiteIds((prev) => {
+      const next = new Set(prev);
+      next.delete(idtup);
+      return next;
+    });
   }, []);
 
   const handleAddSiteSubmit = useCallback(
@@ -167,7 +170,7 @@ const MultisiteView: React.FC<{ config: PartnerConfig }> = ({ config }) => {
               sitesByCommune={config.sitesByCommune}
               selectedSiteId={selectedSite?.idtup ?? null}
               onSelectSite={handleSelectSite}
-              enrichmentCache={enrichmentCacheRef.current}
+              enrichedSiteIds={enrichedSiteIds}
               customSites={customSites}
               onAddSiteClick={() => setIsAddModalOpen(true)}
               onRemoveCustomSite={handleRemoveCustomSite}
