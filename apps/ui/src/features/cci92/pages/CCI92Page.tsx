@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useRef } from "react";
+import React, { useState, useCallback, useRef } from "react";
 import { EnrichissementOutputDto, MutabiliteOutputDto } from "@mutafriches/shared-types";
 import { Layout } from "@shared/components/layout/Layout";
 import { enrichissementService } from "@shared/services/api/api.enrichissement.service";
@@ -27,18 +27,15 @@ export const CCI92Page: React.FC = () => {
   const [enrichmentData, setEnrichmentData] = useState<EnrichissementOutputDto | null>(null);
   const [mutabilityData, setMutabilityData] = useState<MutabiliteOutputDto | null>(null);
   const [manualData, setManualData] = useState<Record<string, string>>({});
+  // Identifiants des sites déjà enrichis (état réactif pour la liste, le cache reste dans les refs)
+  const [enrichedSiteIds, setEnrichedSiteIds] = useState<Set<string>>(new Set());
 
   const { versions } = useAlgorithmeVersions();
-  const [selectedVersion, setSelectedVersion] = useState<string>("");
+  // Version dérivée des versions disponibles (la plus récente), pas de sélecteur côté UI
+  const selectedVersion = versions[0]?.version ?? "";
 
   const { customSites, addSite, removeSite, clearAll } = useCustomSites();
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-
-  useEffect(() => {
-    if (!selectedVersion && versions.length > 0) {
-      setSelectedVersion(versions[0].version);
-    }
-  }, [versions, selectedVersion]);
 
   const handleSelectSite = useCallback(async (site: CCI92Site) => {
     setSelectedSite(site);
@@ -64,6 +61,7 @@ export const CCI92Page: React.FC = () => {
         acceptDegradedCache: true,
       });
       enrichmentCacheRef.current.set(site.idtup, result);
+      setEnrichedSiteIds((prev) => new Set(prev).add(site.idtup));
       setEnrichmentData(result);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Erreur lors de l'enrichissement";
@@ -110,6 +108,11 @@ export const CCI92Page: React.FC = () => {
     enrichmentCacheRef.current.delete(idtup);
     mutabilityCacheRef.current.delete(idtup);
     manualDataRef.current.delete(idtup);
+    setEnrichedSiteIds((prev) => {
+      const next = new Set(prev);
+      next.delete(idtup);
+      return next;
+    });
   }, []);
 
   const handleAddSiteSubmit = useCallback(
@@ -163,7 +166,7 @@ export const CCI92Page: React.FC = () => {
             <CCI92SiteList
               selectedSiteId={selectedSite?.idtup ?? null}
               onSelectSite={handleSelectSite}
-              enrichmentCache={enrichmentCacheRef.current}
+              enrichedSiteIds={enrichedSiteIds}
               customSites={customSites}
               onAddSiteClick={() => setIsAddModalOpen(true)}
               onRemoveCustomSite={handleRemoveCustomSite}

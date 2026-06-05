@@ -1,12 +1,11 @@
 import React from "react";
-import { EnrichissementOutputDto } from "@mutafriches/shared-types";
 import { CCI92Site, CCI92_SITES_BY_COMMUNE } from "../data/parcelles-cci92";
 import { CUSTOM_COMMUNE_LABEL } from "../hooks/useCustomSites";
 
 interface CCI92SiteListProps {
   selectedSiteId: string | null;
   onSelectSite: (site: CCI92Site) => void;
-  enrichmentCache: Map<string, EnrichissementOutputDto>;
+  enrichedSiteIds: Set<string>;
   customSites: CCI92Site[];
   onAddSiteClick: () => void;
   onRemoveCustomSite: (idtup: string) => void;
@@ -58,7 +57,7 @@ const renderSiteButton = (
 export const CCI92SiteList: React.FC<CCI92SiteListProps> = ({
   selectedSiteId,
   onSelectSite,
-  enrichmentCache,
+  enrichedSiteIds,
   customSites,
   onAddSiteClick,
   onRemoveCustomSite,
@@ -93,7 +92,7 @@ export const CCI92SiteList: React.FC<CCI92SiteListProps> = ({
                 renderSiteButton(
                   site,
                   selectedSiteId,
-                  enrichmentCache.has(site.idtup),
+                  enrichedSiteIds.has(site.idtup),
                   onSelectSite,
                   onRemoveCustomSite,
                 ),
@@ -123,7 +122,7 @@ export const CCI92SiteList: React.FC<CCI92SiteListProps> = ({
                   renderSiteButton(
                     site,
                     selectedSiteId,
-                    enrichmentCache.has(site.idtup),
+                    enrichedSiteIds.has(site.idtup),
                     onSelectSite,
                   ),
                 )}

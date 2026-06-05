@@ -205,6 +205,8 @@ export const ResultatsPage: React.FC = () => {
     });
 
     if (state.mutabilityResult) {
+      // Initialisation unique au montage (garde hasInitializedRef) : setState intentionnel
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setMutabilityData(state.mutabilityResult);
       sendIframeMessages(state.mutabilityResult);
     } else {
