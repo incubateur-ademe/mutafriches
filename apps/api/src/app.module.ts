@@ -10,6 +10,7 @@ import { DonneesExternesModule } from "./donnees-externes/donnees-externes.modul
 import { MetabaseModule } from "./metabase/metabase.module";
 import { DatabaseModule } from "./shared/database/database.module";
 import { SharedModule } from "./shared/shared.module";
+import { ConfigModule } from "./config";
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { SharedModule } from "./shared/shared.module";
         limit: 100, // 100 requêtes par minute par IP
       },
     ]),
+    ConfigModule,
     SharedModule,
     DatabaseModule,
     EnrichissementModule,

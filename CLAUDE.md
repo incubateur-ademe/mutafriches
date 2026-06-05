@@ -245,6 +245,8 @@ pnpm build                  # Build complet (shared-types + API + UI)
 pnpm db:start               # Démarrer PostgreSQL (Docker)
 pnpm db:stop                # Arrêter PostgreSQL
 pnpm db:reset               # Reset complet (supprime les données)
+pnpm mail:start             # Démarrer MailHog (capture SMTP locale, UI sur http://localhost:8026)
+pnpm mail:stop              # Arrêter MailHog
 pnpm db:generate            # Générer les migrations Drizzle
 pnpm db:migrate             # Appliquer les migrations
 pnpm db:push                # Synchroniser le schéma directement
@@ -340,6 +342,8 @@ Un test dédié (`versions.spec.ts`) doit garantir l'ordre antéchronologique st
 
 ## Variables d'environnement
 
+Toutes les variables sont lues via la classe centralisée **`AppConfig`** (`apps/api/src/config/`), validée au démarrage (fail-fast). Ne JAMAIS lire `process.env` directement dans un service : injecter `AppConfig` ou utiliser `getAppConfig()` (singleton, pour les scripts hors DI). Ajouter une nouvelle variable = l'ajouter dans `env.validation.ts` (décorateur de validation) puis exposer un getter typé dans `app.config.ts`. Voir ADR-0016.
+
 ### Environnement d'exécution
 
 - `NODE_ENV` : `development`, `staging`, ou `production`
@@ -366,6 +370,18 @@ Un test dédié (`versions.spec.ts`) doit garantir l'ordre antéchronologique st
 | POST /enrichissement | IntegrateurOriginGuard | Bypass | Origines whitelistées |
 | POST /evaluation/calculer | IntegrateurOriginGuard | Bypass | Origines whitelistées |
 | POST /evenements | OriginGuard | localhost + Mutafriches | Mutafriches uniquement |
+
+### Envoi d'emails
+
+Brique `apps/api/src/mailer/` : `MailService` injectable + abstraction `EmailProvider` (cf. ADR-0017). **Bascule automatique** : MailHog si environnement local **OU** `BREVO_API_KEY` absente ; sinon **API HTTP Brevo** (`@getbrevo/brevo`). `MailService.send()` valide les destinataires, génère un fallback texte (`html-to-text`), applique la redirection staging, et renvoie toujours `{ success, messageId?, error? }` sans throw. Local : **MailHog** (`pnpm mail:start`, UI http://localhost:8026). Templates : kit HTML inline (`templates/kit.ts`).
+
+- `BREVO_API_KEY` : clé API Brevo (staging/prod). Absente → MailHog.
+- `SMTP_HOST` / `SMTP_PORT` / `SMTP_SECURE` / `SMTP_USER` / `SMTP_PASS` : serveur SMTP local (MailHog : `localhost`/`1026`/`false`, sans auth)
+- `MAIL_SENDER_EMAIL` / `MAIL_SENDER_NAME` : expéditeur ; `EMAIL_REPLY_TO` : adresse de réponse (défaut = expéditeur)
+- `EMAIL_DEV_INBOX` : **redirection staging** (réécrit tous les destinataires, préfixe le sujet). **Interdite en prod**, restreinte à `beta.gouv.fr` / `incubateur.ademe.dev` (validé au boot).
+- `APP_BASE_URL` : base des liens dans les emails
+- `CONTACT_NOTIFICATION_EMAIL` : équipe notifiée à chaque demande de contact multisites
+- `CONTACT_DASHBOARD_URL` : lien Metabase des demandes, inclus dans l'email de notification équipe
 
 ## Documentation contextuelle
 

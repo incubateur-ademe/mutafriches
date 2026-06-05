@@ -19,6 +19,16 @@ services:
       start_period: 30s
     restart: unless-stopped
 
+  # Serveur SMTP de capture pour tester les emails en local (UI web sur :8026)
+  # Ports hote decales (1026/8026) pour cohabiter avec d'autres MailHog locaux
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: mutafriches-mailhog
+    ports:
+      - "1026:1025"
+      - "8026:8025"
+    restart: unless-stopped
+
 volumes:
   postgres_data:
     driver: local

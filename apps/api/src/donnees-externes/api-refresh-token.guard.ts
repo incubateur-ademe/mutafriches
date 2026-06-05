@@ -6,6 +6,8 @@ import {
   UnauthorizedException,
 } from "@nestjs/common";
 import type { Request } from "express";
+import { getAppConfig } from "../config";
+import { isDevelopment } from "../shared/utils";
 
 /**
  * Guard qui protège l'endpoint POST /api/donnees-externes/apis/refresh.
@@ -26,11 +28,11 @@ export class ApiRefreshTokenGuard implements CanActivate {
 
   canActivate(context: ExecutionContext): boolean {
     const request = context.switchToHttp().getRequest<Request>();
-    const expectedToken = process.env.API_REFRESH_TOKEN;
+    const expectedToken = getAppConfig().scripts.apiRefreshToken;
     const providedToken = request.headers["x-refresh-token"];
 
     if (!expectedToken) {
-      if (process.env.NODE_ENV === "development") {
+      if (isDevelopment()) {
         this.logger.warn(
           "API_REFRESH_TOKEN non définie — bypass autorisé en mode développement uniquement",
         );

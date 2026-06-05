@@ -6,6 +6,7 @@ interface ModalInfoProps {
   children: React.ReactNode;
   isOpen: boolean;
   onClose: () => void;
+  showIcon?: boolean;
   icon?: string;
   size?: "sm" | "md" | "lg";
   actions?: React.ReactNode;
@@ -17,6 +18,7 @@ export const ModalInfo: React.FC<ModalInfoProps> = ({
   children,
   isOpen,
   onClose,
+  showIcon = true,
   icon = "fr-icon-info-line",
   size = "md",
   actions,
@@ -88,7 +90,8 @@ export const ModalInfo: React.FC<ModalInfoProps> = ({
               </div>
               <div className="fr-modal__content">
                 <h2 id={`${id}-title`} className="fr-modal__title">
-                  <span className={`${icon} fr-icon--lg`} aria-hidden="true"></span> {title}
+                  {showIcon && <span className={`${icon} fr-icon--lg`} aria-hidden="true"></span>}{" "}
+                  {title}
                 </h2>
                 {children}
               </div>

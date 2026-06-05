@@ -8,11 +8,15 @@ import { Request, Response, NextFunction } from "express";
 import { ValidationPipe, Logger } from "@nestjs/common";
 import { isProduction } from "./shared/utils";
 import { buildSwaggerConfig, getSwaggerSetupOptions } from "./shared/swagger";
+import { getAppConfig } from "./config";
 
 async function bootstrap() {
   const logger = new Logger("Bootstrap");
 
   try {
+    // Fail-fast : valide les variables d'environnement avant tout démarrage
+    const config = getAppConfig();
+
     const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
     // TODO : Revoir la configuration CORS
@@ -70,7 +74,7 @@ async function bootstrap() {
       });
     }
 
-    const port = process.env.PORT || 3000;
+    const port = config.runtime.port;
     const host = isProduction() ? "0.0.0.0" : "localhost";
 
     await app.listen(port, host);

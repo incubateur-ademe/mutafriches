@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useMemo } from "react";
 import {
   UsageResultat,
   UsageResultatDetaille,
@@ -22,7 +22,6 @@ interface PodiumCardProps {
 }
 
 export const PodiumCard: React.FC<PodiumCardProps> = ({ result, enrichmentData, manualData }) => {
-  const [showTags, setShowTags] = useState(false);
   const usageInfo = getUsageInfo(result.usage);
   const badgeConfig = getBadgeConfig(result.indiceMutabilite);
 
@@ -60,11 +59,6 @@ export const PodiumCard: React.FC<PodiumCardProps> = ({ result, enrichmentData, 
     return usageInfo.tags;
   }, [result, enrichmentData, manualData, usageInfo.tags]);
 
-  const handleToggleTags = (e: React.MouseEvent) => {
-    e.preventDefault();
-    setShowTags(!showTags);
-  };
-
   return (
     <div className="fr-col-12 fr-col-md-4">
       <div className="podium-card">
@@ -87,20 +81,14 @@ export const PodiumCard: React.FC<PodiumCardProps> = ({ result, enrichmentData, 
         {/* Titre */}
         <h5 className="podium-card__title">{usageInfo.label}</h5>
 
-        {/* Tags ou lien "En savoir plus" */}
-        {showTags ? (
-          <div className="fr-tags-group fr-tags-group--sm fr-mb-2w fr-mt-2w">
-            {dynamicTags.map((tag, index) => (
-              <a href="#" key={index} className="fr-tag fr-mt-2v">
-                {tag}
-              </a>
-            ))}
-          </div>
-        ) : (
-          <a href="#" className="fr-link fr-mt-2w fr-mb-4w" onClick={handleToggleTags}>
-            En savoir plus
-          </a>
-        )}
+        {/* Tags affichés directement */}
+        <div className="fr-tags-group fr-tags-group--sm fr-mb-2w fr-mt-2w">
+          {dynamicTags.map((tag, index) => (
+            <p key={index} className="fr-tag fr-mt-2v">
+              {tag}
+            </p>
+          ))}
+        </div>
       </div>
     </div>
   );

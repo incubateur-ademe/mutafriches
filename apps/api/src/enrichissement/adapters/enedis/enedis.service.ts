@@ -3,6 +3,7 @@ import { HttpService } from "@nestjs/axios";
 import { firstValueFrom } from "rxjs";
 import { catchError, timeout } from "rxjs/operators";
 
+import { getAppConfig } from "../../../config";
 import { ApiResponse } from "../shared/api-response.types";
 import { calculateDistance } from "../shared/distance.utils";
 import {
@@ -24,11 +25,8 @@ import {
 @Injectable()
 export class EnedisService {
   private readonly logger = new Logger(EnedisService.name);
-  private readonly baseUrl = process.env.ENEDIS_API_URL || ENEDIS_API_BASE_URL;
-  private readonly timeoutMs = parseInt(
-    process.env.ENEDIS_API_TIMEOUT || String(ENEDIS_TIMEOUT_MS),
-    10,
-  );
+  private readonly baseUrl = getAppConfig().externalApis.enedisUrl ?? ENEDIS_API_BASE_URL;
+  private readonly timeoutMs = getAppConfig().externalApis.enedisTimeoutMs ?? ENEDIS_TIMEOUT_MS;
 
   constructor(private readonly httpService: HttpService) {}
 

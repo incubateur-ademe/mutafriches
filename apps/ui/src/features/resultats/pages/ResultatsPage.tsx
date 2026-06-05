@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useEventTracking } from "../../../shared/hooks/useEventTracking";
-import { MutabiliteOutputDto, TypeEvenement } from "@mutafriches/shared-types";
+import { MutabiliteOutputDto, TypeEvenement, BesoinMultisites } from "@mutafriches/shared-types";
 import { buildMutabilityInput, buildDonneesComplementaires } from "../utils/mutability.mapper";
 import { ROUTES } from "../../../shared/config/routes.config";
 import { Layout } from "../../../shared/components/layout/Layout";
@@ -9,13 +9,13 @@ import { LoadingCallout } from "../../../shared/components/common/LoadingCallout
 import { ErrorAlert } from "../../../shared/components/common/ErrorAlert";
 import { PodiumCard } from "../components/PodiumCard";
 import { ResultsTable } from "../components/ResultTable";
-import { PartnerCard } from "../components/PartnerCard";
 import { useFormContext } from "../../../shared/form/useFormContext";
 import { useIframe, useIframeCallback, useIsIframeMode } from "../../../shared/iframe/useIframe";
 import { createIframeCommunicator } from "../../../shared/iframe/iframeCommunication";
 import { IframeEvaluationSummaryDto } from "../../../shared/iframe/iframe.types";
 import { evaluationService } from "../../../shared/services/api/api.evaluation.service";
 import { ModalInfo } from "../../../shared/components/common/ModalInfo";
+import { ContactMultisitesModal } from "../components/ContactMultisitesModal";
 import { VERSION_ALGO } from "@mutafriches/shared-types";
 import { DebugPanelGate } from "../../debug/components/DebugPanelGate";
 import { ComparaisonAlgoPanelGate } from "../../comparaison-algo/components/ComparaisonAlgoPanelGate";
@@ -79,7 +79,8 @@ export const ResultatsPage: React.FC = () => {
   const { parentOrigin, integrator } = useIframe();
 
   // Hook tracking
-  const { track, trackExporterResultats, trackEvaluationTerminee } = useEventTracking();
+  const { track, trackExporterResultats, trackDemandeContactMultisites, trackEvaluationTerminee } =
+    useEventTracking();
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -91,6 +92,9 @@ export const ResultatsPage: React.FC = () => {
 
   // Modal nouvelle analyse
   const [isNewAnalysisModalOpen, setIsNewAnalysisModalOpen] = useState(false);
+
+  // Modal contact multisites
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
 
   // Un seul ref pour tracker si on a déjà initialisé
   const hasInitializedRef = React.useRef(false);
@@ -241,6 +245,11 @@ export const ResultatsPage: React.FC = () => {
     navigate(ROUTES.ANALYSER);
   };
 
+  // Handler pour soumettre la demande de contact multisites
+  const handleContactSubmit = async (email: string, besoin: BesoinMultisites) => {
+    await trackDemandeContactMultisites(email, besoin, mutabilityData?.evaluationId);
+  };
+
   // Handler pour modifier les données
   const handleModifyData = () => {
     navigate(ROUTES.QUALIFICATION_SITE);
@@ -375,34 +384,6 @@ export const ResultatsPage: React.FC = () => {
 
             {/* Table des résultats */}
             <ResultsTable results={mutabilityData.resultats} />
-
-            {/* Accordéon Écosystème friches */}
-            <div className="fr-mt-4w">
-              <section className="fr-accordion">
-                <h4 className="fr-accordion__title">
-                  <button className="fr-accordion__btn" aria-expanded="false" aria-controls="tools">
-                    Aller plus loin grâce à l'écosystème friches
-                  </button>
-                </h4>
-                <div className="fr-collapse" id="tools">
-                  <div className="fr-grid-row fr-grid-row--gutters">
-                    <PartnerCard
-                      logo="/images/logo-urbanvitaliz.svg"
-                      logoAlt="Logo Urban Vitaliz"
-                      description="Pour être accompagné dans votre projet de réhabilitation par des conseillers compétents."
-                      url="https://urbanvitaliz.fr"
-                    />
-
-                    <PartnerCard
-                      logo="/images/logo-cartofriches.svg"
-                      logoAlt="Logo Cartofriches"
-                      description="Rendez votre friche visible sur l'inventaire national pour la rendre trouvable par des porteurs de projet."
-                      url="https://cartofriches.cerema.fr"
-                    />
-                  </div>
-                </div>
-              </section>
-            </div>
           </>
         )}
 
@@ -432,6 +413,32 @@ export const ResultatsPage: React.FC = () => {
               {callbackLabel}
             </button>
           )}
+        </div>
+
+        {/* CTA : analyse multisites — carte arrondie fond vert clair (vert du badge EXCELLENT) */}
+        <div
+          className="fr-mt-4w"
+          // Fond vert clair (#B8FEC9, badge EXCELLENT), non couvert par une classe DSFR
+          style={{ padding: "2.5rem", backgroundColor: "#B8FEC9", borderRadius: "24px" }}
+        >
+          <h4 className="fr-mb-2w">Analysez plusieurs sites en parallèle</h4>
+          <p className="fr-mb-3w">
+            Accélérez vos analyses en qualifiant plusieurs sites simultanément. Comparez les
+            résultats à l'échelle d'un territoire et identifiez plus facilement les opportunités
+            pour construire votre stratégie territoriale.
+          </p>
+          <ul className="fr-btns-group fr-btns-group--center fr-btns-group--inline">
+            <li>
+              <button
+                className="fr-btn fr-btn--secondary"
+                // Fond blanc forcé : le secondary DSFR est transparent et laisse voir le vert
+                style={{ backgroundColor: "#fff" }}
+                onClick={() => setIsContactModalOpen(true)}
+              >
+                Analyser plusieurs sites
+              </button>
+            </li>
+          </ul>
         </div>
       </div>
 
@@ -476,6 +483,13 @@ export const ResultatsPage: React.FC = () => {
         <p>Voulez-vous vraiment démarrer une nouvelle analyse ?</p>
         <p className="fr-text--sm">Les données actuelles seront perdues.</p>
       </ModalInfo>
+
+      {/* Modal de contact multisites */}
+      <ContactMultisitesModal
+        isOpen={isContactModalOpen}
+        onClose={() => setIsContactModalOpen(false)}
+        onSubmit={handleContactSubmit}
+      />
 
       {/* Panneau de diagnostic (dev/staging uniquement) */}
       <DebugPanelGate

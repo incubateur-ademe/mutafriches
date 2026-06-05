@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import * as jwt from "jsonwebtoken";
 import { MetabaseService } from "./metabase.service";
+import { resetAppConfig } from "../config";
 
 describe("MetabaseService", () => {
   const originalEnv = process.env;
@@ -8,10 +9,12 @@ describe("MetabaseService", () => {
   beforeEach(() => {
     vi.restoreAllMocks();
     process.env = { ...originalEnv };
+    resetAppConfig();
   });
 
   afterEach(() => {
     process.env = originalEnv;
+    resetAppConfig();
   });
 
   describe("isConfigured", () => {
