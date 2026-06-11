@@ -2,3 +2,18 @@ packages:
   - "apps/*"
   - "packages/*"
 minimumReleaseAge: 1440 # 1 jour (en minutes)
+
+# Empêche pnpm de purger interactivement node_modules au runtime (TTY-less).
+# Sans ça, `pnpm start` sur Scalingo plante avec ERR_PNPM_ABORTED_REMOVE_MODULES_DIR_NO_TTY
+# si pnpm détecte une discrepancy entre node_modules installé et la config courante.
+confirmModulesPurge: false
+
+# pnpm >=11 refuse de continuer tant que chaque dépendance avec un script de build n'est pas
+# catégorisée (ERR_PNPM_IGNORED_BUILDS, exit 1) — ce qui casserait `pnpm install` au build
+# Scalingo. allowBuilds = allow-list par-dessus `ignore-scripts=true` (.npmrc) : true pour les
+# vrais builds natifs, false pour la pure télémétrie. Remplace `onlyBuiltDependencies` (pnpm 9-10).
+allowBuilds:
+  esbuild: true # bundler (vite/vitest/drizzle-kit) — binaire natif par plateforme
+  "@swc/core": true # compilateur natif (unplugin-swc, tests)
+  "@nestjs/core": false # postinstall = message de funding, inutile
+  "@scarf/scarf": false # télémétrie, à ne pas exécuter

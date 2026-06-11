@@ -231,6 +231,28 @@ SCALINGO_POSTGRESQL_URL=<fourni par addon PostgreSQL>
 git push scalingo main
 ```
 
+### Bypass de pnpm au runtime (pnpm ≥ 10.16)
+
+> ⚠️ Ne pas réintroduire d'appel `pnpm` dans le `Procfile`.
+
+À partir de pnpm 10.16, chaque invocation `pnpm <x>` lance un `runDepsStatusCheck` au boot
+du conteneur. Le packaging du slug Scalingo casse les hardlinks du store pnpm : pnpm croit
+détecter une divergence de `node_modules`, tente de le purger sans TTY et plante
+(`ERR_PNPM_ABORTED_REMOVE_MODULES_DIR_NO_TTY`, ou `SIGKILL` au timeout de boot). Réf
+[pnpm#9966](https://github.com/pnpm/pnpm/issues/9966).
+
+Conséquence : **le runtime n'appelle jamais pnpm**.
+
+- `Procfile` → `web: node apps/api/dist/src/main` (Node direct) et
+  `postdeploy: cd apps/api && ./node_modules/.bin/drizzle-kit migrate` (shim `.bin` direct,
+  jamais préfixé par `node` — c'est un script shell). `drizzle-kit` est en **dependencies**
+  d'`apps/api` pour survivre au prune des `devDependencies`.
+- `pnpm-workspace.yaml` → `confirmModulesPurge: false` sécurise les one-shot
+  `scalingo run pnpm …`, et `allowBuilds: { … : false }` évite que pnpm ≥ 11 ne bloque
+  `pnpm install` (build Scalingo) sur `ERR_PNPM_IGNORED_BUILDS`.
+
+Le **build** (`scalingo-postbuild`) utilise toujours pnpm — seul le runtime est concerné.
+
 ## 📊 Tracking Événements
 
 Système de tracking léger pour mesurer l'engagement utilisateur :
