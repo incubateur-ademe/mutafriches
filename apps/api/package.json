@@ -41,9 +41,9 @@
     "@getbrevo/brevo": "^5.0.4",
     "@mutafriches/shared-types": "workspace:*",
     "@nestjs/axios": "^4.0.1",
-    "@nestjs/common": "^11.1.24",
-    "@nestjs/core": "^11.1.24",
-    "@nestjs/platform-express": "^11.1.24",
+    "@nestjs/common": "^11.1.26",
+    "@nestjs/core": "^11.1.26",
+    "@nestjs/platform-express": "^11.1.26",
     "@nestjs/swagger": "^11.4.4",
     "@nestjs/throttler": "^6.5.0",
     "@turf/area": "^7.3.5",
@@ -68,11 +68,11 @@
     "uuid": "^14.0.0"
   },
   "devDependencies": {
-    "@nestjs/cli": "^11.0.21",
+    "@nestjs/cli": "^11.0.23",
     "@nestjs/schematics": "^11.1.0",
-    "@nestjs/testing": "^11.1.24",
+    "@nestjs/testing": "^11.1.26",
     "@swc/cli": "^0.8.1",
-    "@swc/core": "^1.15.40",
+    "@swc/core": "^1.15.41",
     "@types/express": "^5.0.6",
     "@types/geojson": "^7946.0.16",
     "@types/html-to-text": "^9.0.4",
@@ -89,6 +89,6 @@
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
     "unplugin-swc": "^1.5.5",
-    "vitest": "^4.1.4"
+    "vitest": "^4.1.8"
   }
 }
