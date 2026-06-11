@@ -197,6 +197,40 @@ describe("EnrichissementController", () => {
       expect(result.fiabilite).toBe(6.5);
     });
 
+    it("devrait normaliser l'identifiant mono-parcelle avant appel (cle de cache canonique)", async () => {
+      // Arrange : section brute "0B" (envoyee par le prefetch) vs normalisee "B" (envoyee par l'UI)
+      enrichissementService.enrichir.mockResolvedValue(mockOutput);
+
+      // Act
+      await controller.enrichirParcelle({ identifiant: "920250000B0203" });
+
+      // Assert : le service recoit la forme normalisee, identique a celle de l'UI
+      expect(enrichissementService.enrichir).toHaveBeenCalledWith(
+        "92025000B0203",
+        SourceUtilisation.API_DIRECTE,
+        undefined,
+        false,
+      );
+    });
+
+    it("devrait normaliser les identifiants multi-parcelles avant appel (cle de cache canonique)", async () => {
+      // Arrange
+      enrichissementService.enrichirSite.mockResolvedValue(mockOutput);
+
+      // Act : identifiants bruts (sections "0B"/"0E"), comme envoyes par le prefetch
+      await controller.enrichirParcelle({
+        identifiants: ["920250000B0203", "920360000E0031"],
+      });
+
+      // Assert : le service site recoit les formes normalisees
+      expect(enrichissementService.enrichirSite).toHaveBeenCalledWith(
+        ["92025000B0203", "92036000E0031"],
+        SourceUtilisation.API_DIRECTE,
+        undefined,
+        false,
+      );
+    });
+
     it("devrait gerer plusieurs appels successifs", async () => {
       // Arrange
       enrichissementService.enrichir.mockResolvedValue(mockOutput);
