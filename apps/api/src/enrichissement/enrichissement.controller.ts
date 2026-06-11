@@ -11,7 +11,11 @@ import {
 } from "@nestjs/common";
 import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiQuery } from "@nestjs/swagger";
 import { Request } from "express";
-import { EnrichissementOutputDto, isValidParcelId } from "@mutafriches/shared-types";
+import {
+  EnrichissementOutputDto,
+  isValidParcelId,
+  normalizeParcelId,
+} from "@mutafriches/shared-types";
 import { EnrichissementService } from "./services/enrichissement.service";
 import { OrigineDetectionService } from "../shared/services/origine-detection.service";
 import { IntegrateurOriginGuard } from "../shared/guards";
@@ -104,16 +108,22 @@ export class EnrichissementController {
         }
       }
 
+      // Normaliser sous forme canonique : la clé de cache doit être identique quel que
+      // soit le client (UI, intégrateurs, prefetch), qu'il envoie la section brute "0X"
+      // ou normalisée "X". Sans ça, le prefetch chauffe le cache sous une clé qui ne
+      // correspond jamais aux requêtes de l'UI (cache miss systématique).
+      const identifiantsNormalises = identifiants.map((id) => normalizeParcelId(id));
+
       const origine = this.origineDetectionService.detecterOrigine(req, isIframe, integrateur);
 
       this.logger.log(
-        `Enrichissement ${identifiants.length > 1 ? "site" : "parcelle"} : ${identifiants.join(", ")}`,
+        `Enrichissement ${identifiantsNormalises.length > 1 ? "site" : "parcelle"} : ${identifiantsNormalises.join(", ")}`,
       );
 
       // Mono-parcelle : utiliser le flux existant
-      if (identifiants.length === 1) {
+      if (identifiantsNormalises.length === 1) {
         return await this.enrichissementService.enrichir(
-          identifiants[0],
+          identifiantsNormalises[0],
           origine.source,
           origine.integrateur,
           acceptDegradedCache,
@@ -122,7 +132,7 @@ export class EnrichissementController {
 
       // Multi-parcelle : utiliser le nouveau flux site
       return await this.enrichissementService.enrichirSite(
-        identifiants,
+        identifiantsNormalises,
         origine.source,
         origine.integrateur,
         acceptDegradedCache,

@@ -53,7 +53,9 @@ Le module d'enrichissement est le cœur de Mutafriches. Il enrichit automatiquem
 ### Cache
 
 - **TTL** : 24 heures
-- **Critères de validité** : statut=SUCCESS, sources_echouees vide, date < TTL
+- **Clé** : identifiant(s) cadastral(aux) **normalisé(s)** (`normalizeParcelId`, section `0X` → `X`). La normalisation est appliquée à l'entrée du controller, donc le stockage et la lecture partagent toujours la même forme canonique quel que soit le client (UI, intégrateurs, prefetch). Ne JAMAIS indexer ou interroger le cache avec un identifiant brut : un mélange brut/normalisé produit un cache miss systématique.
+- **Critères de validité** : statut=SUCCES, sources_echouees vide, date < TTL
+- **`acceptDegradedCache`** : si `true`, accepte aussi les statuts PARTIEL/ECHEC avec données (utilisé par les pages partenaires pré-chauffées via le script de prefetch, où la fraîcheur prime sur la complétude)
 - **Logging non-bloquant** : enregistrement en base pour analytics
 
 ---
