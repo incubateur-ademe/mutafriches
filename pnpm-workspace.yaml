@@ -17,3 +17,12 @@ allowBuilds:
   "@swc/core": true # compilateur natif (unplugin-swc, tests)
   "@nestjs/core": false # postinstall = message de funding, inutile
   "@scarf/scarf": false # télémétrie, à ne pas exécuter
+
+# Force des versions patchées pour des CVE de transitifs (DoS) qu'aucune dép directe ne couvre.
+# Runtime express : qs et path-to-regexp servent à parser query strings / matcher les routes.
+overrides:
+  qs: ">=6.15.2" # GHSA-... DoS arrayLimit / qs.stringify (via express)
+  path-to-regexp: ">=8.4.0" # DoS + ReDoS sur le matching de routes (via express>router)
+  # esbuild 0.18 vulnérable (dev-server SSRF) tiré par le loader de config deprecated de drizzle-kit.
+  # Override scopé à ce sous-arbre uniquement (vite/vitest gardent leur esbuild 0.28).
+  "@esbuild-kit/core-utils>esbuild": ">=0.25.0"
