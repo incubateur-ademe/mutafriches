@@ -1,4 +1,4 @@
-import React, { useEffect, useId, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import L from "leaflet";
 import type { GeoJsonObject } from "geojson";
 import { Coordonnees, GeometrieParcelle } from "@mutafriches/shared-types";
@@ -49,6 +49,19 @@ export const SiteMap: React.FC<SiteMapProps> = ({ geometrie, centre, height = "2
     changeBaseLayer(activeLayer);
   }, [activeLayer, changeBaseLayer]);
 
+  // Couche GeoJSON du site, conservée pour pouvoir recadrer à la demande
+  const geoLayerRef = useRef<L.GeoJSON | null>(null);
+
+  const recadrer = useCallback(() => {
+    const map = mapRef.current;
+    const layer = geoLayerRef.current;
+    if (!map || !layer) return;
+    const bounds = layer.getBounds();
+    if (bounds.isValid()) {
+      map.fitBounds(bounds, { padding: [20, 20], maxZoom: 18 });
+    }
+  }, [mapRef]);
+
   // Rend l'emprise du site et cadre la vue dessus
   useEffect(() => {
     const map = mapRef.current;
@@ -56,6 +69,7 @@ export const SiteMap: React.FC<SiteMapProps> = ({ geometrie, centre, height = "2
 
     const layer = L.geoJSON(geometrie as GeoJsonObject, { style: () => SITE_STYLE });
     layer.addTo(map);
+    geoLayerRef.current = layer;
 
     const bounds = layer.getBounds();
     if (bounds.isValid()) {
@@ -64,12 +78,23 @@ export const SiteMap: React.FC<SiteMapProps> = ({ geometrie, centre, height = "2
 
     return () => {
       layer.remove();
+      geoLayerRef.current = null;
     };
   }, [geometrie, mapRef]);
 
   return (
     <div className="mf-ms-map">
-      <MapLayerSelector activeLayer={activeLayer} onLayerChange={setActiveLayer} />
+      <div className="mf-ms-map__toolbar">
+        <MapLayerSelector activeLayer={activeLayer} onLayerChange={setActiveLayer} />
+        <button
+          type="button"
+          className="fr-btn fr-btn--secondary fr-btn--sm fr-icon-zoom-in-line fr-btn--icon-left"
+          onClick={recadrer}
+          title="Recadrer sur le site"
+        >
+          Recadrer
+        </button>
+      </div>
       {/* Leaflet impose une hauteur explicite sur le conteneur */}
       <div id={containerId} className="fr-mt-4v" style={{ height, width: "100%" }} />
     </div>

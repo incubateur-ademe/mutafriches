@@ -135,3 +135,12 @@
   border-radius: 4px;
   overflow: hidden;
 }
+
+/* Barre d'outils : sélecteur de fond à gauche, bouton de recadrage à droite */
+.mf-ms-map__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
