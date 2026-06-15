@@ -1,9 +1,9 @@
-import React, { useEffect, useId, useMemo } from "react";
+import React, { useEffect, useId, useMemo, useState } from "react";
 import L from "leaflet";
 import type { GeoJsonObject } from "geojson";
 import { Coordonnees, GeometrieParcelle } from "@mutafriches/shared-types";
 import { useLeafletMap } from "@shared/hooks/useLeafletMap";
-import { useMapBaseLayers } from "@shared/hooks/useMapBaseLayers";
+import { MapLayerType } from "@shared/config/map-layers.config";
 import { MapLayerSelector } from "@features/analyser/components/parcelle-map/MapLayerSelector";
 import "@features/analyser/components/parcelle-map/MapLayerSelector.css";
 
@@ -28,7 +28,8 @@ export const SiteMap: React.FC<SiteMapProps> = ({ geometrie, centre, height = "2
   const reactId = useId();
   const containerId = useMemo(() => `site-map-${reactId.replace(/:/g, "")}`, [reactId]);
 
-  const { activeLayer, setActiveLayer } = useMapBaseLayers();
+  // Fond de carte local, par défaut "tous" (indépendant du choix de la carte de l'analyseur)
+  const [activeLayer, setActiveLayer] = useState<MapLayerType>("tous");
 
   const initialCenter = useMemo<[number, number] | undefined>(
     () => (centre ? [centre.latitude, centre.longitude] : undefined),
@@ -70,7 +71,7 @@ export const SiteMap: React.FC<SiteMapProps> = ({ geometrie, centre, height = "2
     <div className="mf-ms-map">
       <MapLayerSelector activeLayer={activeLayer} onLayerChange={setActiveLayer} />
       {/* Leaflet impose une hauteur explicite sur le conteneur */}
-      <div id={containerId} style={{ height, width: "100%" }} />
+      <div id={containerId} className="fr-mt-4v" style={{ height, width: "100%" }} />
     </div>
   );
 };
