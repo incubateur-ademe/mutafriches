@@ -18,13 +18,6 @@ export function Tests() {
       href: "/test/iframe",
       image: "/illustrations/undraw_personal-site_z6pl.svg",
     },
-    {
-      id: "test-algorithme",
-      title: "Test Algorithme",
-      description: "Tester l'algorithme de calcul de mutabilité et les indices de fiabilité",
-      href: "/test/algorithme",
-      image: "/illustrations/undraw_file-search_cbur.svg",
-    },
   ];
 
   return (
