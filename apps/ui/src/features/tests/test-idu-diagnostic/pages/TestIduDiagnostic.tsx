@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Layout } from "@shared/components/layout/Layout";
 import { diagnostiquerIdu, DiagnosticResult, DiagnosticStatut } from "../diagnostic";
+import "./TestIduDiagnostic.css";
 
 const BADGE: Record<DiagnosticStatut, { label: string; variant: string }> = {
   trouvee: { label: "Trouvée", variant: "success" },
@@ -12,10 +13,34 @@ const BADGE: Record<DiagnosticStatut, { label: string; variant: string }> = {
   erreur: { label: "Erreur API", variant: "error" },
 };
 
+// Concurrence maximale d'appels au cadastre (évite de saturer apicarto sur de grandes listes)
+const CONCURRENCE = 6;
+
+// Exécute fn sur chaque item avec une concurrence bornée, en préservant l'ordre.
+async function mapPool<T, R>(
+  items: T[],
+  limit: number,
+  fn: (item: T) => Promise<R>,
+  onDone: () => void,
+): Promise<R[]> {
+  const results = new Array<R>(items.length);
+  let cursor = 0;
+  const worker = async () => {
+    while (cursor < items.length) {
+      const index = cursor++;
+      results[index] = await fn(items[index]);
+      onDone();
+    }
+  };
+  await Promise.all(Array.from({ length: Math.min(limit, items.length) }, worker));
+  return results;
+}
+
 export function TestIduDiagnostic() {
   const [value, setValue] = useState("");
   const [results, setResults] = useState<DiagnosticResult[]>([]);
   const [loading, setLoading] = useState(false);
+  const [progress, setProgress] = useState({ done: 0, total: 0 });
 
   const handleDiagnostiquer = async () => {
     const idus = Array.from(
@@ -30,8 +55,11 @@ export function TestIduDiagnostic() {
 
     setLoading(true);
     setResults([]);
+    setProgress({ done: 0, total: idus.length });
     try {
-      const res = await Promise.all(idus.map((idu) => diagnostiquerIdu(idu)));
+      const res = await mapPool(idus, CONCURRENCE, diagnostiquerIdu, () =>
+        setProgress((p) => ({ ...p, done: p.done + 1 })),
+      );
       setResults(res);
     } finally {
       setLoading(false);
@@ -88,7 +116,7 @@ export function TestIduDiagnostic() {
 
         <button
           type="button"
-          className="fr-btn fr-mb-4w"
+          className="fr-btn fr-mb-2w"
           onClick={handleDiagnostiquer}
           disabled={loading}
           aria-busy={loading}
@@ -96,16 +124,25 @@ export function TestIduDiagnostic() {
           {loading ? "Diagnostic en cours..." : "Diagnostiquer"}
         </button>
 
-        {results.length > 0 && (
+        {loading && (
+          <p className="fr-mb-4w" role="status" aria-live="polite">
+            <span className="idu-diagnostic-spinner fr-mr-2v" aria-hidden="true" />
+            Diagnostic en cours… {progress.done}/{progress.total}
+          </p>
+        )}
+
+        {!loading && results.length > 0 && (
           <div className="fr-table fr-table--bordered">
             <table>
               <thead>
                 <tr>
+                  <th scope="col" className="idu-statut-col">
+                    Statut
+                  </th>
                   <th scope="col">IDU</th>
                   <th scope="col">Commune</th>
                   <th scope="col">Section</th>
                   <th scope="col">Numéro</th>
-                  <th scope="col">Statut</th>
                   <th scope="col">Détail</th>
                 </tr>
               </thead>
@@ -114,17 +151,17 @@ export function TestIduDiagnostic() {
                   const badge = BADGE[r.statut];
                   return (
                     <tr key={`${r.iduSaisi}-${i}`}>
+                      <td className="idu-statut-col">
+                        <span className={`fr-badge fr-badge--sm fr-badge--${badge.variant}`}>
+                          {badge.label}
+                        </span>
+                      </td>
                       <td>
                         <code>{r.iduSaisi}</code>
                       </td>
                       <td>{r.commune ?? "—"}</td>
                       <td>{r.parts?.section ?? "—"}</td>
                       <td>{r.parts?.numero ?? "—"}</td>
-                      <td>
-                        <span className={`fr-badge fr-badge--sm fr-badge--${badge.variant}`}>
-                          {badge.label}
-                        </span>
-                      </td>
                       <td className="fr-text--sm">{r.message}</td>
                     </tr>
                   );

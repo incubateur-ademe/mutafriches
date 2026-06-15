@@ -1,0 +1,22 @@
+/* DSFR ne fournit pas de spinner ; petit indicateur animé basé sur les couleurs DSFR. */
+.idu-diagnostic-spinner {
+  display: inline-block;
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 2px solid var(--border-default-grey, #dddddd);
+  border-top-color: var(--border-action-high-blue-france, #000091);
+  border-radius: 50%;
+  animation: idu-diagnostic-spin 0.7s linear infinite;
+  vertical-align: middle;
+}
+
+@keyframes idu-diagnostic-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Colonne Statut : élargie et placée en première position */
+.idu-statut-col {
+  min-width: 11rem;
+}

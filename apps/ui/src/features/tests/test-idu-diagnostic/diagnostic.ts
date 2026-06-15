@@ -79,14 +79,13 @@ export async function diagnostiquerIdu(iduSaisi: string): Promise<DiagnosticResu
 
   const iduNormalise = padParcelleSection(normalizeParcelId(idu));
   const parts = parseIdu(iduNormalise);
-  const commune = await fetchCommuneNom(parts.codeInsee);
 
-  let exact;
-  try {
-    exact = await fetchParcelByRef(parts.codeInsee, parts.section, parts.numero);
-  } catch {
-    exact = null;
-  }
+  // Appels indépendants lancés en parallèle (nom de commune + existence de la parcelle)
+  const [commune, exact] = await Promise.all([
+    fetchCommuneNom(parts.codeInsee),
+    fetchParcelByRef(parts.codeInsee, parts.section, parts.numero),
+  ]);
+
   if (exact === null) {
     return {
       iduSaisi,

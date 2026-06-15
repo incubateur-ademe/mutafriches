@@ -4,6 +4,14 @@ import { Layout } from "../../../shared/components/layout/Layout";
 export function Tests() {
   const testPages = [
     {
+      id: "test-idu-diagnostic",
+      title: "Diagnostic IDU",
+      description:
+        "Diagnostiquer pourquoi un identifiant cadastral (IDU) est trouvé ou rejeté par le cadastre",
+      href: "/test/idu-diagnostic",
+      image: "/illustrations/undraw_file-search_cbur.svg",
+    },
+    {
       id: "test-iframe",
       title: "Test IFrame",
       description: "Tester l'intégration en IFrame et la communication entre l'iframe et le parent",
@@ -15,14 +23,6 @@ export function Tests() {
       title: "Test Algorithme",
       description: "Tester l'algorithme de calcul de mutabilité et les indices de fiabilité",
       href: "/test/algorithme",
-      image: "/illustrations/undraw_file-search_cbur.svg",
-    },
-    {
-      id: "test-idu-diagnostic",
-      title: "Diagnostic IDU",
-      description:
-        "Diagnostiquer pourquoi un identifiant cadastral (IDU) est trouvé ou rejeté par le cadastre",
-      href: "/test/idu-diagnostic",
       image: "/illustrations/undraw_file-search_cbur.svg",
     },
   ];
@@ -63,7 +63,7 @@ export function Tests() {
 
         <div className="fr-grid-row fr-grid-row--gutters fr-mb-12v">
           {testPages.map((test) => (
-            <div key={test.id} className="fr-col-12 fr-col-sm-6 fr-col-lg-6">
+            <div key={test.id} className="fr-col-12 fr-col-sm-6 fr-col-lg-4">
               <div className="fr-card fr-enlarge-link">
                 <div className="fr-card__body">
                   <div className="fr-card__content">
