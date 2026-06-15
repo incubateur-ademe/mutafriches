@@ -84,7 +84,7 @@ jobs:
           API_URL: ${{ vars[matrix.env.url_var] }}
           # Vide en mode planifié : pré-chauffe tous les partenaires du registre
           PARTENAIRE: ${{ github.event.inputs.partenaire }}
-          PREFETCH_DELAY_MS: 2000
+          PARTENAIRES_PREFETCH_DELAY_MS: 2000
         run: |
           if [ -z "$API_URL" ]; then
             echo "Variable ${{ matrix.env.url_var }} non configurée — skip"

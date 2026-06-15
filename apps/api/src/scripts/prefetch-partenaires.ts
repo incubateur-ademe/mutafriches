@@ -16,18 +16,21 @@
  *   - Quotidien (le TTL serveur est de 24h)
  *   - Après les 4h du matin (heure creuse, APIs tierces moins chargées)
  *
- * Variables d'environnement :
+ * Variables d'environnement (lues via AppConfig, cf. ADR-0016) :
  *   - API_URL : base URL de l'API (défaut http://localhost:3000)
  *   - PARTENAIRE : slug d'un partenaire pour limiter le pré-chauffe (défaut : tous)
- *   - PREFETCH_DELAY_MS : pause entre chaque appel (défaut 1000)
+ *   - PARTENAIRES_PREFETCH_DELAY_MS : pause entre chaque appel (défaut 1000)
  */
 
+import { getAppConfig } from "../config";
 import { PARTENAIRES_PREFETCH } from "./partenaires/registry";
 import { SitePrefetch } from "./partenaires/types";
 
-const API_URL = process.env.API_URL ?? "http://localhost:3000";
-const DELAY_MS = Number(process.env.PREFETCH_DELAY_MS ?? 1000);
-const PARTENAIRE_FILTRE = process.env.PARTENAIRE?.trim();
+const {
+  apiUrl: API_URL,
+  partenairesPrefetchDelayMs: DELAY_MS,
+  partenaireFiltre: PARTENAIRE_FILTRE,
+} = getAppConfig().scripts;
 
 interface PrefetchResult {
   partenaire: string;

@@ -159,7 +159,11 @@ export class EnvironmentVariables {
   @IsOptional()
   @Type(() => Number)
   @IsInt()
-  CCI92_PREFETCH_DELAY_MS?: number;
+  PARTENAIRES_PREFETCH_DELAY_MS?: number;
+
+  @IsOptional()
+  @IsString()
+  PARTENAIRE?: string;
 }
 
 // Valide les variables d'environnement et retourne l'objet typé.
