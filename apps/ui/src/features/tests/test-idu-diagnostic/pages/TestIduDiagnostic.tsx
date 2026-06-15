@@ -20,8 +20,8 @@ const CONCURRENCE = 6;
 // Cadastre IGN (Géoportail) : couche parcellaire + lien général et lien centré sur une commune
 const CADASTRE_LAYER = "CADASTRALPARCELS.PARCELLAIRE_EXPRESS::GEOPORTAIL:OGC:WMTS(1)";
 const LIEN_CADASTRE = `https://www.geoportail.gouv.fr/carte?l0=${CADASTRE_LAYER}`;
-const lienCadastreCommune = ([lon, lat]: [number, number]): string =>
-  `https://www.geoportail.gouv.fr/carte?c=${lon},${lat}&z=18&l0=${CADASTRE_LAYER}`;
+const lienGeoportail = ([lon, lat]: [number, number], zoom: number): string =>
+  `https://www.geoportail.gouv.fr/carte?c=${lon},${lat}&z=${zoom}&l0=${CADASTRE_LAYER}`;
 
 // Exécute fn sur chaque item avec une concurrence bornée, en préservant l'ordre.
 async function mapPool<T, R>(
@@ -156,6 +156,7 @@ export function TestIduDiagnostic() {
                   <th scope="col" className="idu-statut-col">
                     Statut
                   </th>
+                  <th scope="col">Vérif. 2ᵉ source</th>
                   <th scope="col">IDU</th>
                   <th scope="col">Commune</th>
                   <th scope="col">Section</th>
@@ -166,10 +167,22 @@ export function TestIduDiagnostic() {
               <tbody>
                 {results.map((r, i) => {
                   const badge = BADGE[r.statut];
+                  const cibleGeo = r.coordonnees ?? r.centreCommune;
                   return (
                     <tr key={`${r.iduSaisi}-${i}`}>
                       <td className="idu-statut-col">
                         <p className={`fr-badge fr-badge--${badge.variant}`}>{badge.label}</p>
+                      </td>
+                      <td>
+                        {r.geocodeurTrouve === undefined ? (
+                          "—"
+                        ) : (
+                          <p
+                            className={`fr-badge fr-badge--${r.geocodeurTrouve ? "success" : "warning"}`}
+                          >
+                            {r.geocodeurTrouve ? "Présente" : "Absente"}
+                          </p>
+                        )}
                       </td>
                       <td>
                         <code>{r.iduSaisi}</code>
@@ -179,16 +192,25 @@ export function TestIduDiagnostic() {
                       <td>{r.parts?.numero ?? "—"}</td>
                       <td className="fr-text--sm">
                         {r.message}
-                        {r.statut !== "trouvee" && r.centreCommune && (
+                        {r.adresse && (
+                          <>
+                            <br />
+                            <span className="fr-text--xs">
+                              {r.statut === "trouvee" ? "Adresse : " : "À proximité : "}
+                              {r.adresse}
+                            </span>
+                          </>
+                        )}
+                        {cibleGeo && (
                           <>
                             <br />
                             <a
                               className="fr-link fr-link--sm fr-icon-external-link-line fr-link--icon-right"
-                              href={lienCadastreCommune(r.centreCommune)}
+                              href={lienGeoportail(cibleGeo, r.coordonnees ? 19 : 18)}
                               target="_blank"
                               rel="noopener noreferrer"
                             >
-                              Consulter le cadastre ({r.commune})
+                              Voir sur le Géoportail
                             </a>
                           </>
                         )}

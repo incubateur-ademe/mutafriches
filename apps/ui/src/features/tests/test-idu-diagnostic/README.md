@@ -32,6 +32,23 @@ On colle un ou plusieurs IDU ; pour chacun :
 | **Numéro introuvable** | La section existe mais le numéro est absent. Si des **voisins** sont présents (ex. 0265 et 0267 mais pas 0266), la parcelle a très probablement été **redécoupée / fusionnée / renumérotée** depuis l'export du partenaire. |
 | **Erreur API** | API Carto ou geo.api indisponible. |
 
+## Confirmation par une 2ᵉ source (géocodeur IGN)
+
+Chaque IDU est aussi interrogé sur le **géocodeur IGN** (`data.geopf.fr/geocodage`, index
+`parcel`), **indépendant d'apicarto**. La colonne « Vérif. 2ᵉ source » affiche :
+
+- **Absente** : le géocodeur ne trouve pas non plus la parcelle → un KO confirmé par deux
+  services IGN distincts (preuve solide que ce n'est pas un souci de notre API).
+- **Présente** : le géocodeur trouve la parcelle.
+
+## Localisation et adresse
+
+- **Parcelle trouvée** : centroïde de sa géométrie → adresse BAN + lien Géoportail centré dessus.
+- **Parcelle KO** : la parcelle n'a plus de géométrie ; on situe la zone via le **voisin réel le
+  plus proche en numéro** (centroïde réel d'apicarto) → adresse du secteur + lien Géoportail.
+  Attention : les numéros voisins ne sont pas forcément contigus dans l'espace, le lien donne le
+  secteur de la section, pas l'emplacement exact de la parcelle disparue.
+
 ## Liens vers le cadastre
 
 - Un lien général **Consulter le cadastre (Géoportail IGN)** est affiché en tête de page.

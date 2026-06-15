@@ -1,4 +1,5 @@
 import { isValidParcelId, normalizeParcelId, padParcelleSection } from "@mutafriches/shared-types";
+import type { Geometry } from "geojson";
 import {
   fetchParcelByRef,
   fetchSectionParcels,
@@ -29,7 +30,10 @@ export interface DiagnosticResult {
   message: string;
   voisins?: string[]; // numéros voisins présents (cas numero-introuvable)
   contenance?: number; // surface en m² (cas trouvee)
-  centreCommune?: [number, number]; // [lon, lat] du centre de la commune (lien cadastre)
+  centreCommune?: [number, number]; // [lon, lat] centre de la commune (repli lien cadastre)
+  geocodeurTrouve?: boolean; // 2e source IGN (géocodeur) : true=présente, false=absente
+  coordonnees?: [number, number]; // [lon, lat] : parcelle (trouvée) ou voisin réel (KO)
+  adresse?: string; // adresse BAN la plus proche des coordonnées
 }
 
 /**
@@ -71,8 +75,54 @@ async function fetchCommune(codeInsee: string): Promise<CommuneInfo> {
 }
 
 /**
+ * 2e source IGN indépendante d'apicarto : le géocodeur (data.geopf.fr, index parcel).
+ * Renvoie true si la parcelle est trouvée, false si absente, undefined en cas d'erreur.
+ */
+async function geocodeParcelle(parts: IduParts): Promise<boolean | undefined> {
+  const municipalitycode = parts.codeInsee.slice(parts.departement.length);
+  const url =
+    `https://data.geopf.fr/geocodage/search?index=parcel&departmentcode=${parts.departement}` +
+    `&municipalitycode=${municipalitycode}&section=${parts.section}&number=${parts.numero}`;
+  try {
+    const res = await fetch(url);
+    if (!res.ok) return undefined;
+    const data = (await res.json()) as { features?: unknown[] };
+    return (data.features?.length ?? 0) > 0;
+  } catch {
+    return undefined;
+  }
+}
+
+/** Adresse BAN la plus proche d'un point [lon, lat]. */
+async function reverseAdresse([lon, lat]: [number, number]): Promise<string | undefined> {
+  try {
+    const res = await fetch(`https://api-adresse.data.gouv.fr/reverse/?lon=${lon}&lat=${lat}`);
+    if (!res.ok) return undefined;
+    const data = (await res.json()) as { features?: { properties?: { label?: string } }[] };
+    return data.features?.[0]?.properties?.label;
+  } catch {
+    return undefined;
+  }
+}
+
+/** Centroïde approché (moyenne des sommets de l'anneau extérieur). */
+function centroid(geom: Geometry): [number, number] | undefined {
+  let ring: number[][] | undefined;
+  if (geom.type === "Polygon") ring = geom.coordinates[0];
+  else if (geom.type === "MultiPolygon") ring = geom.coordinates[0]?.[0];
+  if (!ring || ring.length === 0) return undefined;
+  let x = 0;
+  let y = 0;
+  for (const pt of ring) {
+    x += pt[0];
+    y += pt[1];
+  }
+  return [x / ring.length, y / ring.length];
+}
+
+/**
  * Diagnostique un IDU : format, commune, section, existence de la parcelle.
- * Source : API Carto IGN (cadastre actuel) + geo.api.gouv.fr pour le nom de commune.
+ * Sources : API Carto IGN (cadastre actuel) + géocodeur IGN (2e source) + geo.api + BAN.
  */
 export async function diagnostiquerIdu(iduSaisi: string): Promise<DiagnosticResult> {
   const idu = iduSaisi.trim();
@@ -89,10 +139,11 @@ export async function diagnostiquerIdu(iduSaisi: string): Promise<DiagnosticResu
   const iduNormalise = padParcelleSection(normalizeParcelId(idu));
   const parts = parseIdu(iduNormalise);
 
-  // Appels indépendants lancés en parallèle (commune + existence de la parcelle)
-  const [communeInfo, exact] = await Promise.all([
+  // Appels indépendants en parallèle : commune + existence (apicarto) + 2e source (géocodeur)
+  const [communeInfo, exact, geocodeurTrouve] = await Promise.all([
     fetchCommune(parts.codeInsee),
     fetchParcelByRef(parts.codeInsee, parts.section, parts.numero),
+    geocodeParcelle(parts),
   ]);
   const commune = communeInfo.nom;
   const centreCommune = communeInfo.centre;
@@ -104,22 +155,28 @@ export async function diagnostiquerIdu(iduSaisi: string): Promise<DiagnosticResu
       parts,
       commune: commune ?? undefined,
       centreCommune,
+      geocodeurTrouve,
       statut: "erreur",
       message: "Erreur lors de l'appel au cadastre (API Carto).",
     };
   }
 
   if (exact.features.length > 0) {
-    const props = exact.features[0].properties;
+    const feature = exact.features[0];
+    const coordonnees = centroid(feature.geometry);
+    const adresse = coordonnees ? await reverseAdresse(coordonnees) : undefined;
     return {
       iduSaisi,
       iduNormalise,
       parts,
-      commune: commune ?? props.nom_com,
+      commune: commune ?? feature.properties.nom_com,
       centreCommune,
+      geocodeurTrouve,
+      coordonnees,
+      adresse,
       statut: "trouvee",
       message: "Parcelle trouvée dans le cadastre actuel.",
-      contenance: props.contenance,
+      contenance: feature.properties.contenance,
     };
   }
 
@@ -132,6 +189,7 @@ export async function diagnostiquerIdu(iduSaisi: string): Promise<DiagnosticResu
       iduSaisi,
       iduNormalise,
       parts,
+      geocodeurTrouve,
       statut: "commune-inconnue",
       message: `Code commune ${parts.codeInsee} introuvable dans le cadastre.`,
     };
@@ -144,12 +202,13 @@ export async function diagnostiquerIdu(iduSaisi: string): Promise<DiagnosticResu
       parts,
       commune: commune ?? undefined,
       centreCommune,
+      geocodeurTrouve,
       statut: "section-absente",
       message: `Section ${parts.section} absente du cadastre pour ${commune ?? parts.codeInsee}.`,
     };
   }
 
-  // Section peuplée mais numéro absent : on cherche les voisins (signe d'un redécoupage)
+  // Section peuplée mais numéro absent : voisins (signe d'un redécoupage) + ancrage géographique
   const cible = parseInt(parts.numero, 10);
   const voisins = features
     .map((f) => f.properties.numero)
@@ -157,12 +216,24 @@ export async function diagnostiquerIdu(iduSaisi: string): Promise<DiagnosticResu
     .filter((n) => Math.abs(parseInt(n, 10) - cible) <= 3)
     .sort((a, b) => parseInt(a, 10) - parseInt(b, 10));
 
+  // Voisin réel le plus proche en numéro (géométrie disponible) pour situer la zone
+  const voisinFeature = features
+    .filter((f) => typeof f.properties.numero === "string")
+    .map((f) => ({ f, d: Math.abs(parseInt(f.properties.numero as string, 10) - cible) }))
+    .filter((x) => x.d > 0)
+    .sort((a, b) => a.d - b.d)[0]?.f;
+  const coordonnees = voisinFeature ? centroid(voisinFeature.geometry) : undefined;
+  const adresse = coordonnees ? await reverseAdresse(coordonnees) : undefined;
+
   return {
     iduSaisi,
     iduNormalise,
     parts,
     commune: commune ?? undefined,
     centreCommune,
+    geocodeurTrouve,
+    coordonnees,
+    adresse,
     statut: "numero-introuvable",
     message: voisins.length
       ? `Numéro ${parts.numero} absent — voisins présents (${voisins.join(", ")}) : parcelle vraisemblablement redécoupée ou renumérotée.`
