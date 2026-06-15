@@ -1,5 +1,6 @@
 import { SitePrefetch } from "./types";
 import { CCI92_SITES } from "./cci92";
+import { AURA_SITES } from "./aura";
 
 /**
  * Registre des partenaires à pré-chauffer, keyé par slug (identique au slug UI dans
@@ -12,6 +13,5 @@ import { CCI92_SITES } from "./cci92";
  */
 export const PARTENAIRES_PREFETCH: Record<string, SitePrefetch[]> = {
   "cci-92": CCI92_SITES,
-  // TODO(aura) : créer ./aura.ts et l'ajouter ici une fois les IDU réels fournis
-  // (cf. UI partners/aura, actuellement en données placeholder).
+  aura: AURA_SITES,
 };
