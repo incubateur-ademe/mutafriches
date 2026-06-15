@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Layout } from "@shared/components/layout/Layout";
+import { EnrichmentLoadingCallout } from "@features/analyser/components/EnrichmentLoadingCallout";
 import { diagnostiquerIdu, DiagnosticResult, DiagnosticStatut } from "../diagnostic";
 import "./TestIduDiagnostic.css";
 
@@ -141,10 +142,10 @@ export function TestIduDiagnostic() {
         </button>
 
         {loading && (
-          <p className="fr-mb-4w" role="status" aria-live="polite">
-            <span className="idu-diagnostic-spinner fr-mr-2v" aria-hidden="true" />
-            Diagnostic en cours… {progress.done}/{progress.total}
-          </p>
+          <EnrichmentLoadingCallout
+            title="Diagnostic des parcelles en cours..."
+            subtitle={`${progress.done} / ${progress.total} parcelles analysées`}
+          />
         )}
 
         {!loading && results.length > 0 && (
@@ -168,9 +169,7 @@ export function TestIduDiagnostic() {
                   return (
                     <tr key={`${r.iduSaisi}-${i}`}>
                       <td className="idu-statut-col">
-                        <span className={`fr-badge fr-badge--sm fr-badge--${badge.variant}`}>
-                          {badge.label}
-                        </span>
+                        <p className={`fr-badge fr-badge--${badge.variant}`}>{badge.label}</p>
                       </td>
                       <td>
                         <code>{r.iduSaisi}</code>
