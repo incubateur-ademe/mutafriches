@@ -128,3 +128,10 @@
   text-align: right;
   border-top: 1px solid var(--border-default-grey, #e5e5e5);
 }
+
+/* Carte de l'emprise du site */
+.mf-ms-map > div:last-child {
+  border: 1px solid var(--border-default-grey, #e5e5e5);
+  border-radius: 4px;
+  overflow: hidden;
+}

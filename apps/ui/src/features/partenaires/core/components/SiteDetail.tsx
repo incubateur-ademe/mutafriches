@@ -12,6 +12,7 @@ import { EnrichmentLoadingCallout } from "@features/analyser/components/Enrichme
 import { buildDonneesComplementaires } from "@features/resultats/utils/mutability.mapper";
 import { DsfrAccordion } from "@shared/components/dsfr/DsfrAccordion";
 import { DonneesForm } from "./DonneesForm";
+import { SiteMap } from "./SiteMap";
 import type { PartnerSite } from "../types";
 import { downloadJson } from "../download-json";
 
@@ -65,6 +66,9 @@ export const SiteDetail: React.FC<SiteDetailProps> = ({
   const hasManualInput = Object.values(manualData).some((v) => v && v !== "");
   const isQualPhase = phase === "qualification";
 
+  // Emprise du site : union en multi-parcelle, polygone complet sinon
+  const geometrieSite = enrichmentData?.geometrieSite ?? enrichmentData?.geometrie;
+
   const handleExportMutabilite = () => {
     if (!enrichmentData || !mutabilityData) return;
     const payload = {
@@ -93,6 +97,17 @@ export const SiteDetail: React.FC<SiteDetailProps> = ({
           )}
         </p>
       </div>
+
+      {/* Carte de l'emprise du site (dès que la géométrie est enrichie) */}
+      {geometrieSite && (
+        <div className="fr-mb-2w">
+          <SiteMap
+            key={site.idtup}
+            geometrie={geometrieSite}
+            centre={enrichmentData?.coordonnees}
+          />
+        </div>
+      )}
 
       {/* Erreur */}
       {error && (
