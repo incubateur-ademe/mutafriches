@@ -16,6 +16,12 @@ const BADGE: Record<DiagnosticStatut, { label: string; variant: string }> = {
 // Concurrence maximale d'appels au cadastre (évite de saturer apicarto sur de grandes listes)
 const CONCURRENCE = 6;
 
+// Cadastre IGN (Géoportail) : couche parcellaire + lien général et lien centré sur une commune
+const CADASTRE_LAYER = "CADASTRALPARCELS.PARCELLAIRE_EXPRESS::GEOPORTAIL:OGC:WMTS(1)";
+const LIEN_CADASTRE = `https://www.geoportail.gouv.fr/carte?l0=${CADASTRE_LAYER}`;
+const lienCadastreCommune = ([lon, lat]: [number, number]): string =>
+  `https://www.geoportail.gouv.fr/carte?c=${lon},${lat}&z=18&l0=${CADASTRE_LAYER}`;
+
 // Exécute fn sur chaque item avec une concurrence bornée, en préservant l'ordre.
 async function mapPool<T, R>(
   items: T[],
@@ -92,9 +98,19 @@ export function TestIduDiagnostic() {
         </nav>
 
         <h1 id="diagnostic-idu">Diagnostic IDU</h1>
-        <p className="fr-text--lead fr-mb-4w">
+        <p className="fr-text--lead fr-mb-1w">
           Vérifie pourquoi un identifiant cadastral (IDU) est trouvé ou rejeté par le cadastre IGN :
           format, commune, section, et existence du numéro de parcelle.
+        </p>
+        <p className="fr-mb-4w">
+          <a
+            className="fr-link fr-icon-external-link-line fr-link--icon-right"
+            href={LIEN_CADASTRE}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Consulter le cadastre (Géoportail IGN)
+          </a>
         </p>
 
         <div className="fr-input-group fr-mb-2w">
@@ -162,7 +178,22 @@ export function TestIduDiagnostic() {
                       <td>{r.commune ?? "—"}</td>
                       <td>{r.parts?.section ?? "—"}</td>
                       <td>{r.parts?.numero ?? "—"}</td>
-                      <td className="fr-text--sm">{r.message}</td>
+                      <td className="fr-text--sm">
+                        {r.message}
+                        {r.statut !== "trouvee" && r.centreCommune && (
+                          <>
+                            <br />
+                            <a
+                              className="fr-link fr-link--sm fr-icon-external-link-line fr-link--icon-right"
+                              href={lienCadastreCommune(r.centreCommune)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              Consulter le cadastre ({r.commune})
+                            </a>
+                          </>
+                        )}
+                      </td>
                     </tr>
                   );
                 })}

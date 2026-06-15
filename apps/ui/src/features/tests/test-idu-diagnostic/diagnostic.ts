@@ -29,6 +29,7 @@ export interface DiagnosticResult {
   message: string;
   voisins?: string[]; // numéros voisins présents (cas numero-introuvable)
   contenance?: number; // surface en m² (cas trouvee)
+  centreCommune?: [number, number]; // [lon, lat] du centre de la commune (lien cadastre)
 }
 
 /**
@@ -50,14 +51,22 @@ export function parseIdu(iduPad: string): IduParts {
   return { departement, codeInsee: departement + commune, prefixe, section, numero };
 }
 
-async function fetchCommuneNom(codeInsee: string): Promise<string | null> {
+interface CommuneInfo {
+  nom: string | null;
+  centre?: [number, number]; // [lon, lat]
+}
+
+async function fetchCommune(codeInsee: string): Promise<CommuneInfo> {
   try {
-    const res = await fetch(`https://geo.api.gouv.fr/communes/${codeInsee}?fields=nom`);
-    if (!res.ok) return null;
-    const data = (await res.json()) as { nom?: string };
-    return data?.nom ?? null;
+    const res = await fetch(`https://geo.api.gouv.fr/communes/${codeInsee}?fields=nom,centre`);
+    if (!res.ok) return { nom: null };
+    const data = (await res.json()) as {
+      nom?: string;
+      centre?: { coordinates?: [number, number] };
+    };
+    return { nom: data?.nom ?? null, centre: data?.centre?.coordinates };
   } catch {
-    return null;
+    return { nom: null };
   }
 }
 
@@ -80,11 +89,13 @@ export async function diagnostiquerIdu(iduSaisi: string): Promise<DiagnosticResu
   const iduNormalise = padParcelleSection(normalizeParcelId(idu));
   const parts = parseIdu(iduNormalise);
 
-  // Appels indépendants lancés en parallèle (nom de commune + existence de la parcelle)
-  const [commune, exact] = await Promise.all([
-    fetchCommuneNom(parts.codeInsee),
+  // Appels indépendants lancés en parallèle (commune + existence de la parcelle)
+  const [communeInfo, exact] = await Promise.all([
+    fetchCommune(parts.codeInsee),
     fetchParcelByRef(parts.codeInsee, parts.section, parts.numero),
   ]);
+  const commune = communeInfo.nom;
+  const centreCommune = communeInfo.centre;
 
   if (exact === null) {
     return {
@@ -92,6 +103,7 @@ export async function diagnostiquerIdu(iduSaisi: string): Promise<DiagnosticResu
       iduNormalise,
       parts,
       commune: commune ?? undefined,
+      centreCommune,
       statut: "erreur",
       message: "Erreur lors de l'appel au cadastre (API Carto).",
     };
@@ -104,6 +116,7 @@ export async function diagnostiquerIdu(iduSaisi: string): Promise<DiagnosticResu
       iduNormalise,
       parts,
       commune: commune ?? props.nom_com,
+      centreCommune,
       statut: "trouvee",
       message: "Parcelle trouvée dans le cadastre actuel.",
       contenance: props.contenance,
@@ -130,6 +143,7 @@ export async function diagnostiquerIdu(iduSaisi: string): Promise<DiagnosticResu
       iduNormalise,
       parts,
       commune: commune ?? undefined,
+      centreCommune,
       statut: "section-absente",
       message: `Section ${parts.section} absente du cadastre pour ${commune ?? parts.codeInsee}.`,
     };
@@ -148,6 +162,7 @@ export async function diagnostiquerIdu(iduSaisi: string): Promise<DiagnosticResu
     iduNormalise,
     parts,
     commune: commune ?? undefined,
+    centreCommune,
     statut: "numero-introuvable",
     message: voisins.length
       ? `Numéro ${parts.numero} absent — voisins présents (${voisins.join(", ")}) : parcelle vraisemblablement redécoupée ou renumérotée.`

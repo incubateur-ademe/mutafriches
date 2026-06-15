@@ -32,6 +32,13 @@ On colle un ou plusieurs IDU ; pour chacun :
 | **Numéro introuvable** | La section existe mais le numéro est absent. Si des **voisins** sont présents (ex. 0265 et 0267 mais pas 0266), la parcelle a très probablement été **redécoupée / fusionnée / renumérotée** depuis l'export du partenaire. |
 | **Erreur API** | API Carto ou geo.api indisponible. |
 
+## Liens vers le cadastre
+
+- Un lien général **Consulter le cadastre (Géoportail IGN)** est affiché en tête de page.
+- Pour chaque ligne **KO** (parcelle non trouvée), un lien ouvre le Géoportail **centré sur la
+  commune** (couche parcellaire activée) pour retrouver visuellement la parcelle actuelle. Le
+  centre de la commune provient de `geo.api.gouv.fr` (champ `centre`).
+
 ## Le cas typique « numéro introuvable »
 
 Le cadastre ne contient que les **parcelles courantes**. Quand une parcelle est divisée ou
