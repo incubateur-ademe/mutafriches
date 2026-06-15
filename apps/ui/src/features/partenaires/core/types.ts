@@ -10,6 +10,7 @@ export interface PartnerSite {
   idtup: string;
   commune: string;
   parcelles: string[];
+  nom?: string; // libellé d'affichage (défaut : idtup). Utile pour les sites multi-parcelles.
 }
 
 // Descripteur d'un partenaire : porte tout le spécifique (libellés, data, storage).

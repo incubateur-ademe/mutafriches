@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo, useState } from "react";
 import type { PartnerSite } from "../types";
 import { CUSTOM_COMMUNE_LABEL } from "../hooks/useCustomSites";
 
@@ -12,6 +12,20 @@ interface SiteListProps {
   onAddSiteClick: () => void;
   onRemoveCustomSite: (idtup: string) => void;
   onClearCustomSites: () => void;
+}
+
+// Au-delà de ce nombre de communes, les groupes sont repliés par défaut.
+const COLLAPSE_THRESHOLD = 6;
+
+// Un site correspond à la recherche si sa commune, son libellé, son idtup ou une de ses
+// parcelles contient la requête.
+function matchSite(site: PartnerSite, q: string): boolean {
+  return (
+    site.commune.toLowerCase().includes(q) ||
+    (site.nom?.toLowerCase().includes(q) ?? false) ||
+    site.idtup.toLowerCase().includes(q) ||
+    site.parcelles.some((p) => p.toLowerCase().includes(q))
+  );
 }
 
 const renderSiteButton = (
@@ -31,7 +45,7 @@ const renderSiteButton = (
         aria-current={isSelected ? "page" : undefined}
       >
         <span className="mf-ms-site-btn__label">
-          {site.idtup}
+          {site.nom ?? site.idtup}
           <span className="fr-badge fr-badge--sm fr-badge--info fr-ml-1w">
             {site.parcelles.length} parcelle{site.parcelles.length > 1 ? "s" : ""}
           </span>
@@ -67,12 +81,61 @@ export const SiteList: React.FC<SiteListProps> = ({
   onRemoveCustomSite,
   onClearCustomSites,
 }) => {
-  const communes = Object.keys(sitesByCommune).sort();
+  const communes = useMemo(() => Object.keys(sitesByCommune).sort(), [sitesByCommune]);
+
+  const [query, setQuery] = useState("");
+  const q = query.trim().toLowerCase();
+  const isSearching = q.length > 0;
+
+  // Repli par défaut : tout ouvert si peu de communes, sinon tout replié.
+  const [openSet, setOpenSet] = useState<Set<string>>(() =>
+    communes.length <= COLLAPSE_THRESHOLD ? new Set(communes) : new Set(),
+  );
+
+  const isOpen = (commune: string) => isSearching || openSet.has(commune);
+  const handleToggle = (commune: string, open: boolean) => {
+    if (isSearching) return; // en recherche, l'ouverture est forcée
+    setOpenSet((prev) => {
+      const next = new Set(prev);
+      if (open) next.add(commune);
+      else next.delete(commune);
+      return next;
+    });
+  };
+
+  // Récap (totaux du jeu de données complet, sites perso inclus)
+  const totalSites = useMemo(
+    () => Object.values(sitesByCommune).reduce((n, s) => n + s.length, 0) + customSites.length,
+    [sitesByCommune, customSites.length],
+  );
+
+  // Filtrage par la recherche
+  const filteredCommunes = useMemo(() => {
+    return communes
+      .map((commune) => {
+        const all = sitesByCommune[commune];
+        if (!isSearching) return { commune, sites: all };
+        const communeMatch = commune.toLowerCase().includes(q);
+        return { commune, sites: communeMatch ? all : all.filter((s) => matchSite(s, q)) };
+      })
+      .filter((g) => g.sites.length > 0);
+  }, [communes, sitesByCommune, isSearching, q]);
+
+  const filteredCustom = useMemo(
+    () => (isSearching ? customSites.filter((s) => matchSite(s, q)) : customSites),
+    [customSites, isSearching, q],
+  );
+
+  const aucunResultat = isSearching && filteredCommunes.length === 0 && filteredCustom.length === 0;
 
   return (
     <nav className="fr-sidemenu" aria-label={titre}>
       <div className="fr-sidemenu__inner">
         <div className="fr-sidemenu__title">{titre}</div>
+        <p className="fr-text--xs fr-mb-1w" style={{ color: "var(--text-mention-grey)" }}>
+          {totalSites} site{totalSites > 1 ? "s" : ""} · {communes.length} commune
+          {communes.length > 1 ? "s" : ""}
+        </p>
 
         <div className="fr-mb-2w">
           <button
@@ -84,13 +147,34 @@ export const SiteList: React.FC<SiteListProps> = ({
           </button>
         </div>
 
-        {customSites.length > 0 && (
+        <div className="fr-input-group fr-mb-2w">
+          <label className="fr-label fr-sr-only" htmlFor="mf-ms-site-search">
+            Rechercher un site
+          </label>
+          <input
+            id="mf-ms-site-search"
+            type="search"
+            className="fr-input fr-input--sm"
+            placeholder="Rechercher (commune, IDU…)"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
+        </div>
+
+        {aucunResultat && (
+          <p className="fr-text--sm fr-mb-2w" style={{ color: "var(--text-mention-grey)" }}>
+            Aucun site ne correspond à « {query} ».
+          </p>
+        )}
+
+        {filteredCustom.length > 0 && (
           <details className="mf-ms-commune-group" open>
             <summary className="mf-ms-commune-group__summary">
-              {CUSTOM_COMMUNE_LABEL} ({customSites.length} site{customSites.length > 1 ? "s" : ""})
+              {CUSTOM_COMMUNE_LABEL} ({filteredCustom.length} site
+              {filteredCustom.length > 1 ? "s" : ""})
             </summary>
             <ul className="fr-sidemenu__list">
-              {customSites.map((site) =>
+              {filteredCustom.map((site) =>
                 renderSiteButton(
                   site,
                   selectedSiteId,
@@ -112,26 +196,28 @@ export const SiteList: React.FC<SiteListProps> = ({
           </details>
         )}
 
-        {communes.map((commune) => {
-          const sites = sitesByCommune[commune];
-          return (
-            <details key={commune} className="mf-ms-commune-group" open>
-              <summary className="mf-ms-commune-group__summary">
-                {commune} ({sites.length} site{sites.length > 1 ? "s" : ""})
-              </summary>
-              <ul className="fr-sidemenu__list">
-                {sites.map((site) =>
-                  renderSiteButton(
-                    site,
-                    selectedSiteId,
-                    enrichedSiteIds.has(site.idtup),
-                    onSelectSite,
-                  ),
-                )}
-              </ul>
-            </details>
-          );
-        })}
+        {filteredCommunes.map(({ commune, sites }) => (
+          <details
+            key={commune}
+            className="mf-ms-commune-group"
+            open={isOpen(commune)}
+            onToggle={(e) => handleToggle(commune, e.currentTarget.open)}
+          >
+            <summary className="mf-ms-commune-group__summary">
+              {commune} ({sites.length} site{sites.length > 1 ? "s" : ""})
+            </summary>
+            <ul className="fr-sidemenu__list">
+              {sites.map((site) =>
+                renderSiteButton(
+                  site,
+                  selectedSiteId,
+                  enrichedSiteIds.has(site.idtup),
+                  onSelectSite,
+                ),
+              )}
+            </ul>
+          </details>
+        ))}
       </div>
     </nav>
   );

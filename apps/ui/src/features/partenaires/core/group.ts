@@ -11,7 +11,15 @@ export function groupByIdtup(parcelles: PartnerParcelle[]): PartnerSite[] {
       map.set(p.idtup, { idtup: p.idtup, commune: p.commune, parcelles: [p.idpar] });
     }
   }
-  return Array.from(map.values());
+  // Libellé d'affichage des sites multi-parcelles : la première parcelle (le badge donne le nombre).
+  // L'idtup synthétique (ex. "aura-04") reste l'identifiant technique mais n'est plus affiché.
+  const sites = Array.from(map.values());
+  for (const site of sites) {
+    if (site.parcelles.length > 1) {
+      site.nom = site.parcelles[0];
+    }
+  }
+  return sites;
 }
 
 export function groupByCommune(sites: PartnerSite[]): Record<string, PartnerSite[]> {
