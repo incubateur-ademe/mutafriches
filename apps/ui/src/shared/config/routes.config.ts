@@ -35,6 +35,7 @@ export const ROUTES = {
   TEST_MUTABILITE: "/test/algorithme",
   TEST_IFRAME: "/test/iframe",
   TEST_CALLBACK: "/test/callback",
+  TEST_IDU_DIAGNOSTIC: "/test/idu-diagnostic",
 
   // Partenaires
   PARTENAIRES: "/partenaires",

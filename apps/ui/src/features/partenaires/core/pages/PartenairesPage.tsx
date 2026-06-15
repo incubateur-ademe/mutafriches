@@ -28,7 +28,7 @@ export const PartenairesPage: React.FC = () => {
 
       <div className="fr-grid-row fr-grid-row--gutters">
         {PARTNERS.map((p) => (
-          <div key={p.slug} className="fr-col-12 fr-col-md-6 fr-col-lg-4">
+          <div key={p.slug} className="fr-col-12 fr-col-md-6 fr-col-lg-6">
             <div className="fr-card fr-enlarge-link">
               <div className="fr-card__body">
                 <div className="fr-card__content">

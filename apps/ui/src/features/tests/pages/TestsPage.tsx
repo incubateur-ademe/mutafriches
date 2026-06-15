@@ -17,6 +17,14 @@ export function Tests() {
       href: "/test/algorithme",
       image: "/illustrations/undraw_file-search_cbur.svg",
     },
+    {
+      id: "test-idu-diagnostic",
+      title: "Diagnostic IDU",
+      description:
+        "Diagnostiquer pourquoi un identifiant cadastral (IDU) est trouvé ou rejeté par le cadastre",
+      href: "/test/idu-diagnostic",
+      image: "/illustrations/undraw_file-search_cbur.svg",
+    },
   ];
 
   return (

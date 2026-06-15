@@ -6,6 +6,7 @@ import { FormProvider } from "./shared/form/FormProvider";
 import { TestMutability } from "./features/tests/test-mutabilite/pages/TestMutability";
 import { TestIframe } from "./features/tests/test-iframe/pages/TestIframe";
 import { TestCallback } from "./features/tests/test-iframe/pages/TestCallback";
+import { TestIduDiagnostic } from "./features/tests/test-idu-diagnostic/pages/TestIduDiagnostic";
 import { useEventTracking } from "./shared/hooks/useEventTracking";
 import { useEffect, useRef } from "react";
 import { TypeEvenement } from "@mutafriches/shared-types";
@@ -84,6 +85,7 @@ function AppContent() {
         <Route path={ROUTES.TEST_MUTABILITE} element={<TestMutability />} />
         <Route path={ROUTES.TEST_IFRAME} element={<TestIframe />} />
         <Route path={ROUTES.TEST_CALLBACK} element={<TestCallback />} />
+        <Route path={ROUTES.TEST_IDU_DIAGNOSTIC} element={<TestIduDiagnostic />} />
       </Routes>
     </>
   );
