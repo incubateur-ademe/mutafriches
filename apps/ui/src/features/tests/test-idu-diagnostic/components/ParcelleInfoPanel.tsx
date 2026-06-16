@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { lienGeoportail } from "../geoportail";
+import { lienGeoportail, LIEN_CADASTRE_GOUV } from "../geoportail";
 
 export interface ParcelleInfo {
   idu: string;
@@ -94,14 +94,28 @@ export function ParcelleInfoCard({ info, onRemove }: ParcelleInfoCardProps) {
         )}
       </ul>
 
-      <a
-        className="fr-link fr-icon-external-link-line fr-link--icon-right fr-mt-1w"
-        href={lienGeoportail(info.coords, 19)}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Voir sur le cadastre (Géoportail)
-      </a>
+      <ul className="fr-mt-2w" style={{ listStyle: "none", padding: 0, margin: 0 }}>
+        <li>
+          <a
+            className="fr-link fr-icon-external-link-line fr-link--icon-right"
+            href={lienGeoportail(info.coords, 20)}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Voir sur le Géoportail (parcelle centrée)
+          </a>
+        </li>
+        <li className="fr-mt-1w">
+          <a
+            className="fr-link fr-icon-external-link-line fr-link--icon-right"
+            href={LIEN_CADASTRE_GOUV}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Plan cadastral officiel (DGFiP)
+          </a>
+        </li>
+      </ul>
     </div>
   );
 }
