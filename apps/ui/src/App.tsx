@@ -5,7 +5,7 @@ import { IframeProvider } from "./shared/iframe/IframeProvider";
 import { FormProvider } from "./shared/form/FormProvider";
 import { TestIframe } from "./features/tests/test-iframe/pages/TestIframe";
 import { TestCallback } from "./features/tests/test-iframe/pages/TestCallback";
-import { TestIduDiagnostic } from "./features/tests/test-idu-diagnostic/pages/TestIduDiagnostic";
+import { DiagnosticParcellePage } from "./features/tests/test-idu-diagnostic/pages/DiagnosticParcellePage";
 import { useEventTracking } from "./shared/hooks/useEventTracking";
 import { useEffect, useRef } from "react";
 import { TypeEvenement } from "@mutafriches/shared-types";
@@ -83,7 +83,7 @@ function AppContent() {
         <Route path={ROUTES.TESTS} element={<Tests />} />
         <Route path={ROUTES.TEST_IFRAME} element={<TestIframe />} />
         <Route path={ROUTES.TEST_CALLBACK} element={<TestCallback />} />
-        <Route path={ROUTES.TEST_IDU_DIAGNOSTIC} element={<TestIduDiagnostic />} />
+        <Route path={ROUTES.TEST_DIAGNOSTIC_PARCELLE} element={<DiagnosticParcellePage />} />
       </Routes>
     </>
   );

@@ -1,10 +1,16 @@
-# Diagnostic IDU
+# Diagnostic parcelle
 
-Page outil (`/test/idu-diagnostic`) qui explique **pourquoi un identifiant cadastral (IDU) est
-trouvé ou rejeté** par le cadastre IGN. Utile pour qualifier les rejets remontés par les
-partenaires (AURA, CCI 92…) sans avoir à interroger l'API à la main.
+Page outil (`/test/diagnostic-parcelle`) à deux onglets (`DsfrTabs`) :
 
-## Fonctionnement
+- **Diagnostic IDU** : explique **pourquoi un IDU est trouvé ou rejeté** par le cadastre IGN
+  (qualifier les rejets remontés par les partenaires sans interroger l'API à la main).
+- **Infos parcelle** : carte Leaflet cliquable + recherche d'adresse pour **retrouver l'IDU** et
+  les informations d'une parcelle. Réutilise `useLeafletMap` (clic → IDU), `AddressSearchBar`,
+  `MapLayerSelector` et `searchParcelWithFallback`. Le panneau affiche l'IDU (avec bouton copier),
+  commune/section/numéro/surface, et un lien Géoportail centré. La carte étant montée cachée dans
+  l'onglet, un `IntersectionObserver` appelle `invalidateSize()` quand l'onglet devient visible.
+
+## Onglet « Diagnostic IDU »
 
 On colle un ou plusieurs IDU ; pour chacun :
 
@@ -68,6 +74,10 @@ couvrant la même emprise (recherche par point sur la carte, ou via cadastre.gou
 
 - `diagnostic.ts` — logique pure (`parseIdu`, `diagnostiquerIdu`) + verdicts
 - `diagnostic.spec.ts` — tests unitaires
-- `pages/TestIduDiagnostic.tsx` — UI (saisie + tableau de résultats)
+- `geoportail.ts` — liens cadastre IGN partagés
+- `pages/DiagnosticParcellePage.tsx` — coquille + onglets (`DsfrTabs`)
+- `components/DiagnosticIduTab.tsx` — onglet Diagnostic IDU (saisie + tableau)
+- `components/InfosParcelleTab.tsx` — onglet Infos parcelle (carte + recherche d'adresse)
+- `components/ParcelleInfoPanel.tsx` — panneau d'infos (IDU, copier, lien cadastre)
 - Cadastre : `shared/services/cadastre/api.cadastre.service.ts`
-  (`fetchParcelByRef`, `fetchSectionParcels`)
+  (`fetchParcelByRef`, `fetchSectionParcels`, `searchParcelWithFallback`)

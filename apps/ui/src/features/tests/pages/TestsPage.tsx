@@ -4,11 +4,11 @@ import { Layout } from "../../../shared/components/layout/Layout";
 export function Tests() {
   const testPages = [
     {
-      id: "test-idu-diagnostic",
-      title: "Diagnostic IDU",
+      id: "test-diagnostic-parcelle",
+      title: "Diagnostic parcelle",
       description:
-        "Diagnostiquer pourquoi un identifiant cadastral (IDU) est trouvé ou rejeté par le cadastre",
-      href: "/test/idu-diagnostic",
+        "Diagnostiquer un IDU (trouvé/rejeté par le cadastre) ou retrouver l'IDU d'une parcelle depuis la carte ou une adresse",
+      href: "/test/diagnostic-parcelle",
       image: "/illustrations/undraw_file-search_cbur.svg",
     },
     {
