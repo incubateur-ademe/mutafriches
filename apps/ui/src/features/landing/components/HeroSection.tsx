@@ -21,7 +21,7 @@ export function HeroSection() {
             </p>
 
             <p className="inline-block text-xs font-bold tracking-wide uppercase text-[var(--text-mention-grey)] mb-6">
-              <strong>Plus de 600 sites déjà évalués !</strong>
+              <strong>Plus de 1300 sites déjà évalués !</strong>
             </p>
 
             <div>
