@@ -10,9 +10,6 @@ export const CADASTRE_LAYER = "CADASTRALPARCELS.PARCELLAIRE_EXPRESS::GEOPORTAIL:
 // Lien général (entête de page) : cadastre seul, sans centrage
 export const LIEN_CADASTRE = `https://www.geoportail.gouv.fr/carte?l0=${CADASTRE_LAYER}`;
 
-// Cadastre officiel DGFiP (consultation/extrait) — pas de deep-link parcelle possible (appli en session)
-export const LIEN_CADASTRE_GOUV = "https://www.cadastre.gouv.fr/";
-
 // Lien Géoportail centré sur une parcelle (ortho + cadastre en surimpression)
 export const lienGeoportail = ([lon, lat]: [number, number], zoom: number): string =>
   `https://www.geoportail.gouv.fr/carte?c=${lon},${lat}&z=${zoom}` +
