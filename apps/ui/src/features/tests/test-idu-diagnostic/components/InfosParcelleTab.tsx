@@ -29,6 +29,18 @@ function centroidOf(geom: Geometry): [number, number] {
   return [x / ring.length, y / ring.length];
 }
 
+// Adresse BAN la plus proche d'un point [lon, lat].
+async function reverseAdresse([lon, lat]: [number, number]): Promise<string | undefined> {
+  try {
+    const res = await fetch(`https://api-adresse.data.gouv.fr/reverse/?lon=${lon}&lat=${lat}`);
+    if (!res.ok) return undefined;
+    const data = (await res.json()) as { features?: { properties?: { label?: string } }[] };
+    return data.features?.[0]?.properties?.label;
+  } catch {
+    return undefined;
+  }
+}
+
 function toInfo(p: SelectedParcelle): ParcelleInfo {
   return {
     idu: p.idu,
@@ -48,6 +60,8 @@ function InfosParcelleContent() {
   const { activeLayer, setActiveLayer } = useMapBaseLayers();
   // IDU dont les infos sont affichées : si la sélection change, les infos se masquent d'elles-mêmes
   const [iduInfos, setIduInfos] = useState<string | null>(null);
+  // Adresse résolue (BAN), associée à un IDU pour éviter les courses entre deux résolutions
+  const [adresseInfo, setAdresseInfo] = useState<{ idu: string; label: string } | null>(null);
 
   // Reprise de la logique de la page analyser, en mode parcelle unique
   const {
@@ -95,6 +109,17 @@ function InfosParcelleContent() {
 
   const selected = parcelleCount > 0 ? Array.from(selectedParcelles.values())[0] : null;
 
+  // Affiche les infos de la parcelle et résout son adresse (BAN)
+  const afficherInfos = (p: SelectedParcelle) => {
+    setIduInfos(p.idu);
+    setAdresseInfo(null);
+    void reverseAdresse(centroidOf(p.geometry)).then((label) => {
+      if (label) setAdresseInfo({ idu: p.idu, label });
+    });
+  };
+
+  const adresse = selected && adresseInfo?.idu === selected.idu ? adresseInfo.label : undefined;
+
   return (
     <div className="fr-grid-row fr-grid-row--gutters">
       <div className="fr-col-12 fr-col-md-8">
@@ -136,7 +161,7 @@ function InfosParcelleContent() {
                 type="button"
                 className="fr-btn"
                 style={{ margin: 0 }}
-                onClick={() => setIduInfos(selected.idu)}
+                onClick={() => afficherInfos(selected)}
               >
                 Diagnostic parcelle
               </button>
@@ -152,7 +177,7 @@ function InfosParcelleContent() {
 
       <div className="fr-col-12 fr-col-md-4">
         {selected && iduInfos === selected.idu ? (
-          <ParcelleInfoCard info={toInfo(selected)} />
+          <ParcelleInfoCard info={{ ...toInfo(selected), adresse }} />
         ) : (
           <div className="fr-callout">
             <p className="fr-callout__text">

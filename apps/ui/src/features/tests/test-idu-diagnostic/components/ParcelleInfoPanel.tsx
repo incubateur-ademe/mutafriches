@@ -7,6 +7,7 @@ export interface ParcelleInfo {
   section?: string;
   numero?: string;
   contenance?: number;
+  adresse?: string;
   coords: [number, number];
 }
 
@@ -84,6 +85,11 @@ export function ParcelleInfoCard({ info, onRemove }: ParcelleInfoCardProps) {
         {info.contenance != null && (
           <li>
             <strong>Surface :</strong> {info.contenance} m²{ha ? ` (${ha} ha)` : ""}
+          </li>
+        )}
+        {info.adresse && (
+          <li>
+            <strong>Adresse :</strong> {info.adresse}
           </li>
         )}
       </ul>
