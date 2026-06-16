@@ -12,7 +12,7 @@ export interface ParcelleInfo {
 
 interface ParcelleInfoCardProps {
   info: ParcelleInfo;
-  onRemove: (idu: string) => void;
+  onRemove?: (idu: string) => void;
 }
 
 export function ParcelleInfoCard({ info, onRemove }: ParcelleInfoCardProps) {
@@ -46,13 +46,15 @@ export function ParcelleInfoCard({ info, onRemove }: ParcelleInfoCardProps) {
             <code>{info.idu}</code>
           </p>
         </div>
-        <button
-          type="button"
-          className="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-icon-delete-line"
-          onClick={() => onRemove(info.idu)}
-          title="Retirer cette parcelle"
-          aria-label={`Retirer la parcelle ${info.idu}`}
-        />
+        {onRemove && (
+          <button
+            type="button"
+            className="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-icon-delete-line"
+            onClick={() => onRemove(info.idu)}
+            title="Retirer cette parcelle"
+            aria-label={`Retirer la parcelle ${info.idu}`}
+          />
+        )}
       </div>
 
       <button

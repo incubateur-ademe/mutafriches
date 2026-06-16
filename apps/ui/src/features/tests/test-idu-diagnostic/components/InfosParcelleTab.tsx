@@ -12,11 +12,12 @@ import "@features/analyser/components/parcelle-map/MapLayerSelector.css";
 import { AddressSearchBar } from "@features/analyser/components/parcelle-map/AddressSearchBar";
 import { ParcelleInfoCard, ParcelleInfo } from "./ParcelleInfoPanel";
 
-const HIGHLIGHT_STYLE: L.PathOptions = {
+// Sélection bleue, cohérente avec la page analyser
+const SELECTED_STYLE: L.PathOptions = {
   color: "#000091",
   weight: 2,
   fillColor: "#000091",
-  fillOpacity: 0.2,
+  fillOpacity: 0.5,
 };
 
 // Centroïde approché (moyenne des sommets de l'anneau extérieur) pour le lien Géoportail.
@@ -51,34 +52,29 @@ function InfosParcelleContent() {
   const containerId = useMemo(() => `infos-parcelle-map-${reactId.replace(/:/g, "")}`, [reactId]);
 
   const [activeLayer, setActiveLayer] = useState<MapLayerType>("tous");
-  const [selected, setSelected] = useState<Map<string, SelectedParcelle>>(() => new Map());
+  const [selected, setSelected] = useState<SelectedParcelle | null>(null);
+  const [infosAffichees, setInfosAffichees] = useState(false);
   const [loading, setLoading] = useState(false);
   const [introuvable, setIntrouvable] = useState(false);
   const highlightRef = useRef<L.LayerGroup | null>(null);
 
-  const ajouter = (p: SelectedParcelle) => {
+  // Nouvelle sélection : on remplace la précédente et on masque les infos jusqu'au clic du bouton
+  const selectionner = (p: SelectedParcelle) => {
     setIntrouvable(false);
-    setSelected((prev) => {
-      const next = new Map(prev);
-      next.set(p.idu, p);
-      return next;
-    });
+    setInfosAffichees(false);
+    setSelected(p);
   };
-
-  const retirer = (idu: string) =>
-    setSelected((prev) => {
-      const next = new Map(prev);
-      next.delete(idu);
-      return next;
-    });
 
   const { mapRef, flyToLocation, changeBaseLayer } = useLeafletMap({
     containerId,
     initialZoom: 18,
     baseLayer: activeLayer,
     onParcelleClick: (idu, geometry, properties, contenance) =>
-      ajouter({ idu, geometry, properties, contenance }),
-    onEmptyClick: () => {},
+      selectionner({ idu, geometry, properties, contenance }),
+    onEmptyClick: () => {
+      setSelected(null);
+      setInfosAffichees(false);
+    },
   });
 
   useEffect(() => {
@@ -94,15 +90,15 @@ function InfosParcelleContent() {
     return () => observer.disconnect();
   }, [containerId, mapRef]);
 
-  // Surbrillance des parcelles sélectionnées sur la carte
+  // Surbrillance de la parcelle sélectionnée
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
     if (!highlightRef.current) highlightRef.current = L.layerGroup().addTo(map);
     const group = highlightRef.current;
     group.clearLayers();
-    for (const p of selected.values()) {
-      L.geoJSON(p.geometry as GeoJsonObject, { style: () => HIGHLIGHT_STYLE }).addTo(group);
+    if (selected) {
+      L.geoJSON(selected.geometry as GeoJsonObject, { style: () => SELECTED_STYLE }).addTo(group);
     }
   }, [selected, mapRef]);
 
@@ -110,12 +106,14 @@ function InfosParcelleContent() {
     flyToLocation(lat, lng, 19);
     setLoading(true);
     setIntrouvable(false);
+    setInfosAffichees(false);
+    setSelected(null);
     const fc = await searchParcelWithFallback(lng, lat);
     setLoading(false);
     const feature = fc?.features?.[0];
     if (feature) {
       const idu = padParcelleSection(normalizeParcelId(extractIdu(feature.properties)));
-      ajouter({
+      selectionner({
         idu,
         geometry: feature.geometry,
         properties: feature.properties,
@@ -126,8 +124,6 @@ function InfosParcelleContent() {
     }
   };
 
-  const infos = Array.from(selected.values()).map(toInfo);
-
   return (
     <div className="fr-grid-row fr-grid-row--gutters">
       <div className="fr-col-12 fr-col-md-8">
@@ -137,19 +133,48 @@ function InfosParcelleContent() {
         <div className="fr-mb-2w">
           <MapLayerSelector activeLayer={activeLayer} onLayerChange={setActiveLayer} />
         </div>
-        {/* Leaflet impose une hauteur explicite sur le conteneur */}
+
+        {/* Carte + bouton d'action en overlay (style proche de la page analyser) */}
         <div
-          id={containerId}
           style={{
+            position: "relative",
             height: "520px",
             width: "100%",
             border: "1px solid var(--border-default-grey)",
             borderRadius: "4px",
             overflow: "hidden",
           }}
-        />
+        >
+          {/* Leaflet impose une hauteur explicite sur le conteneur */}
+          <div id={containerId} style={{ height: "100%", width: "100%" }} />
+
+          {selected && (
+            <div
+              style={{
+                position: "absolute",
+                bottom: 12,
+                right: 12,
+                zIndex: 1000,
+                background: "rgba(255, 255, 255, 0.9)",
+                borderRadius: "0.5rem",
+                padding: "0.5rem",
+                boxShadow: "0 2px 8px rgba(0, 0, 0, 0.15)",
+              }}
+            >
+              <button
+                type="button"
+                className="fr-btn"
+                style={{ margin: 0 }}
+                onClick={() => setInfosAffichees(true)}
+              >
+                Diagnostic parcelle
+              </button>
+            </div>
+          )}
+        </div>
+
         <p className="fr-hint-text fr-mt-1w">
-          Cliquez une ou plusieurs parcelles sur la carte, ou recherchez une adresse.
+          Cliquez une parcelle (ou recherchez une adresse), puis « Diagnostic parcelle ».
         </p>
       </div>
 
@@ -164,17 +189,18 @@ function InfosParcelleContent() {
             <p className="fr-callout__text">Aucune parcelle trouvée à cet emplacement.</p>
           </div>
         )}
-        {infos.length === 0 && !loading && !introuvable && (
+        {!loading && !introuvable && infosAffichees && selected && (
+          <ParcelleInfoCard info={toInfo(selected)} />
+        )}
+        {!loading && !introuvable && !(infosAffichees && selected) && (
           <div className="fr-callout">
             <p className="fr-callout__text">
-              Cliquez une parcelle ou recherchez une adresse pour afficher son IDU et ses
-              informations.
+              {selected
+                ? "Cliquez « Diagnostic parcelle » pour afficher les informations."
+                : "Cliquez une parcelle ou recherchez une adresse pour la sélectionner."}
             </p>
           </div>
         )}
-        {infos.map((info) => (
-          <ParcelleInfoCard key={info.idu} info={info} onRemove={retirer} />
-        ))}
       </div>
     </div>
   );
