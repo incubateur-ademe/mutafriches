@@ -1,58 +1,91 @@
-import { useEffect, useId, useMemo, useState } from "react";
-import centroid from "@turf/centroid";
-import type { Geometry } from "geojson";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
+import L from "leaflet";
+import type { Geometry, GeoJsonObject } from "geojson";
 import { normalizeParcelId, padParcelleSection } from "@mutafriches/shared-types";
 import { extractIdu } from "@shared/utils/geo.utils";
 import { useLeafletMap } from "@shared/hooks/useLeafletMap";
 import { MapLayerType } from "@shared/config/map-layers.config";
 import { searchParcelWithFallback } from "@shared/services/cadastre/api.cadastre.service";
-import type { ParcelleProperties } from "@shared/services/cadastre/api.cadastre.types";
+import type { SelectedParcelle } from "@shared/types/parcelle-selection.types";
 import { MapLayerSelector } from "@features/analyser/components/parcelle-map/MapLayerSelector";
 import "@features/analyser/components/parcelle-map/MapLayerSelector.css";
 import { AddressSearchBar } from "@features/analyser/components/parcelle-map/AddressSearchBar";
-import { ParcelleInfoPanel, ParcelleInfo } from "./ParcelleInfoPanel";
+import { ParcelleInfoCard, ParcelleInfo } from "./ParcelleInfoPanel";
 
-function toInfo(geometry: Geometry, props: ParcelleProperties): ParcelleInfo {
-  const idu = padParcelleSection(normalizeParcelId(extractIdu(props)));
-  const c = centroid({ type: "Feature", geometry, properties: {} }).geometry.coordinates;
+const HIGHLIGHT_STYLE: L.PathOptions = {
+  color: "#000091",
+  weight: 2,
+  fillColor: "#000091",
+  fillOpacity: 0.2,
+};
+
+// Centroïde approché (moyenne des sommets de l'anneau extérieur) pour le lien Géoportail.
+function centroidOf(geom: Geometry): [number, number] {
+  let ring: number[][] = [];
+  if (geom.type === "Polygon") ring = geom.coordinates[0];
+  else if (geom.type === "MultiPolygon") ring = geom.coordinates[0]?.[0] ?? [];
+  if (ring.length === 0) return [0, 0];
+  let x = 0;
+  let y = 0;
+  for (const p of ring) {
+    x += p[0];
+    y += p[1];
+  }
+  return [x / ring.length, y / ring.length];
+}
+
+function toInfo(p: SelectedParcelle): ParcelleInfo {
   return {
-    idu,
-    commune: props.nom_com ?? props.commune,
-    section: props.section,
-    numero: props.numero,
-    contenance: props.contenance,
-    coords: [c[0], c[1]],
+    idu: p.idu,
+    commune: p.properties.nom_com ?? p.properties.commune,
+    section: p.properties.section,
+    numero: p.properties.numero,
+    contenance: p.contenance,
+    coords: centroidOf(p.geometry),
   };
 }
 
-export function InfosParcelleTab() {
+// Contenu réel : la carte Leaflet n'est montée que lorsque l'onglet est visible (cf. wrapper).
+function InfosParcelleContent() {
   const reactId = useId();
   const containerId = useMemo(() => `infos-parcelle-map-${reactId.replace(/:/g, "")}`, [reactId]);
 
   const [activeLayer, setActiveLayer] = useState<MapLayerType>("tous");
-  const [info, setInfo] = useState<ParcelleInfo | null>(null);
+  const [selected, setSelected] = useState<Map<string, SelectedParcelle>>(() => new Map());
   const [loading, setLoading] = useState(false);
   const [introuvable, setIntrouvable] = useState(false);
+  const highlightRef = useRef<L.LayerGroup | null>(null);
+
+  const ajouter = (p: SelectedParcelle) => {
+    setIntrouvable(false);
+    setSelected((prev) => {
+      const next = new Map(prev);
+      next.set(p.idu, p);
+      return next;
+    });
+  };
+
+  const retirer = (idu: string) =>
+    setSelected((prev) => {
+      const next = new Map(prev);
+      next.delete(idu);
+      return next;
+    });
 
   const { mapRef, flyToLocation, changeBaseLayer } = useLeafletMap({
     containerId,
     initialZoom: 18,
     baseLayer: activeLayer,
-    onParcelleClick: (_idu, geometry, properties, contenance) => {
-      setIntrouvable(false);
-      setInfo(toInfo(geometry, { ...properties, contenance }));
-    },
-    onEmptyClick: () => {
-      setInfo(null);
-      setIntrouvable(true);
-    },
+    onParcelleClick: (idu, geometry, properties, contenance) =>
+      ajouter({ idu, geometry, properties, contenance }),
+    onEmptyClick: () => {},
   });
 
   useEffect(() => {
     changeBaseLayer(activeLayer);
   }, [activeLayer, changeBaseLayer]);
 
-  // La carte est montée cachée dans l'onglet : on recalcule sa taille quand il devient visible
+  // Recalcule la taille de la carte si l'onglet redevient visible après avoir été masqué
   useEffect(() => {
     const el = document.getElementById(containerId);
     if (!el) return;
@@ -61,17 +94,39 @@ export function InfosParcelleTab() {
     return () => observer.disconnect();
   }, [containerId, mapRef]);
 
+  // Surbrillance des parcelles sélectionnées sur la carte
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    if (!highlightRef.current) highlightRef.current = L.layerGroup().addTo(map);
+    const group = highlightRef.current;
+    group.clearLayers();
+    for (const p of selected.values()) {
+      L.geoJSON(p.geometry as GeoJsonObject, { style: () => HIGHLIGHT_STYLE }).addTo(group);
+    }
+  }, [selected, mapRef]);
+
   const handleAddress = async (lat: number, lng: number) => {
     flyToLocation(lat, lng, 19);
     setLoading(true);
     setIntrouvable(false);
-    setInfo(null);
     const fc = await searchParcelWithFallback(lng, lat);
     setLoading(false);
     const feature = fc?.features?.[0];
-    if (feature) setInfo(toInfo(feature.geometry, feature.properties));
-    else setIntrouvable(true);
+    if (feature) {
+      const idu = padParcelleSection(normalizeParcelId(extractIdu(feature.properties)));
+      ajouter({
+        idu,
+        geometry: feature.geometry,
+        properties: feature.properties,
+        contenance: feature.properties.contenance ?? 0,
+      });
+    } else {
+      setIntrouvable(true);
+    }
   };
+
+  const infos = Array.from(selected.values()).map(toInfo);
 
   return (
     <div className="fr-grid-row fr-grid-row--gutters">
@@ -93,10 +148,58 @@ export function InfosParcelleTab() {
             overflow: "hidden",
           }}
         />
+        <p className="fr-hint-text fr-mt-1w">
+          Cliquez une ou plusieurs parcelles sur la carte, ou recherchez une adresse.
+        </p>
       </div>
+
       <div className="fr-col-12 fr-col-md-4">
-        <ParcelleInfoPanel info={info} loading={loading} introuvable={introuvable} />
+        {loading && (
+          <div className="fr-callout">
+            <p className="fr-callout__text">Recherche de la parcelle…</p>
+          </div>
+        )}
+        {introuvable && (
+          <div className="fr-callout fr-callout--brown-cafe">
+            <p className="fr-callout__text">Aucune parcelle trouvée à cet emplacement.</p>
+          </div>
+        )}
+        {infos.length === 0 && !loading && !introuvable && (
+          <div className="fr-callout">
+            <p className="fr-callout__text">
+              Cliquez une parcelle ou recherchez une adresse pour afficher son IDU et ses
+              informations.
+            </p>
+          </div>
+        )}
+        {infos.map((info) => (
+          <ParcelleInfoCard key={info.idu} info={info} onRemove={retirer} />
+        ))}
       </div>
+    </div>
+  );
+}
+
+// Wrapper : monte le contenu (et la carte Leaflet) seulement quand l'onglet devient visible,
+// pour que la carte s'initialise avec une taille correcte (DsfrTabs garde les panneaux montés mais
+// masqués via l'attribut hidden).
+export function InfosParcelleTab() {
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const el = wrapperRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver((entries) => {
+      if (entries.some((e) => e.isIntersecting)) setVisible(true);
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div ref={wrapperRef} style={{ minHeight: "560px" }}>
+      {visible && <InfosParcelleContent />}
     </div>
   );
 }
