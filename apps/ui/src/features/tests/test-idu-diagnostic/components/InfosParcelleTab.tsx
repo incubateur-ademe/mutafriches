@@ -1,16 +1,18 @@
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import type { Geometry } from "geojson";
-import { normalizeParcelId, padParcelleSection } from "@mutafriches/shared-types";
-import { extractIdu } from "@shared/utils/geo.utils";
 import { useLeafletMap } from "@shared/hooks/useLeafletMap";
+import { useMapBaseLayers } from "@shared/hooks/useMapBaseLayers";
+import { useParcelleSelection } from "@shared/hooks/useParcelleSelection";
 import { useMapParcelleRenderer } from "@shared/hooks/useMapParcelleRenderer";
-import { MapLayerType } from "@shared/config/map-layers.config";
-import { searchParcelWithFallback } from "@shared/services/cadastre/api.cadastre.service";
 import type { SelectedParcelle } from "@shared/types/parcelle-selection.types";
 import { MapLayerSelector } from "@features/analyser/components/parcelle-map/MapLayerSelector";
-import "@features/analyser/components/parcelle-map/MapLayerSelector.css";
 import { AddressSearchBar } from "@features/analyser/components/parcelle-map/AddressSearchBar";
+import "@features/analyser/components/parcelle-map/MapLayerSelector.css";
+import "@features/analyser/components/parcelle-map/ParcelleActions.css";
 import { ParcelleInfoCard, ParcelleInfo } from "./ParcelleInfoPanel";
+
+// Centre par défaut stable (référence constante : sinon useLeafletMap recrée la carte à chaque rendu)
+const DEFAULT_CENTER: [number, number] = [47.4456, -0.4721]; // Trélazé
 
 // Centroïde approché (moyenne des sommets de l'anneau extérieur) pour le lien Géoportail.
 function centroidOf(geom: Geometry): [number, number] {
@@ -38,57 +40,44 @@ function toInfo(p: SelectedParcelle): ParcelleInfo {
   };
 }
 
-const NOOP = () => {};
-
 // Contenu réel : la carte Leaflet n'est montée que lorsque l'onglet est visible (cf. wrapper).
 function InfosParcelleContent() {
   const reactId = useId();
   const containerId = useMemo(() => `infos-parcelle-map-${reactId.replace(/:/g, "")}`, [reactId]);
 
-  const [activeLayer, setActiveLayer] = useState<MapLayerType>("tous");
-  const [selected, setSelected] = useState<SelectedParcelle | null>(null);
-  const [infosAffichees, setInfosAffichees] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [introuvable, setIntrouvable] = useState(false);
+  const { activeLayer, setActiveLayer } = useMapBaseLayers();
+  // IDU dont les infos sont affichées : si la sélection change, les infos se masquent d'elles-mêmes
+  const [iduInfos, setIduInfos] = useState<string | null>(null);
 
-  // Nouvelle sélection : on remplace la précédente et on masque les infos jusqu'au clic du bouton
-  const selectionner = (p: SelectedParcelle) => {
-    setIntrouvable(false);
-    setInfosAffichees(false);
-    setSelected(p);
-  };
+  // Reprise de la logique de la page analyser, en mode parcelle unique
+  const {
+    selectedParcelles,
+    previewParcelle,
+    selectionState,
+    parcelleCount,
+    handleParcelleClick,
+    confirmAdd,
+    removeParcelle,
+    clearPreview,
+  } = useParcelleSelection({ singleSelection: true });
 
-  const { mapRef, flyToLocation, changeBaseLayer } = useLeafletMap({
+  const { flyToLocation, changeBaseLayer, mapRef } = useLeafletMap({
     containerId,
-    initialZoom: 18,
+    initialCenter: DEFAULT_CENTER,
+    initialZoom: 17,
     baseLayer: activeLayer,
-    onParcelleClick: (idu, geometry, properties, contenance) =>
-      selectionner({ idu, geometry, properties, contenance }),
-    onEmptyClick: () => {
-      setSelected(null);
-      setInfosAffichees(false);
-    },
+    onParcelleClick: handleParcelleClick,
+    onEmptyClick: clearPreview,
   });
-
-  // Surbrillance bleue via le renderer éprouvé de la page analyser (parcelle unique)
-  const selectedParcelles = useMemo(() => {
-    const map = new Map<string, SelectedParcelle>();
-    if (selected) map.set(selected.idu, selected);
-    return map;
-  }, [selected]);
 
   useMapParcelleRenderer({
     mapRef,
     selectedParcelles,
-    previewParcelle: null,
-    selectionState: "idle",
-    onConfirmAdd: NOOP,
-    onRemoveParcelle: NOOP,
+    previewParcelle,
+    selectionState,
+    onConfirmAdd: confirmAdd,
+    onRemoveParcelle: removeParcelle,
   });
-
-  useEffect(() => {
-    changeBaseLayer(activeLayer);
-  }, [activeLayer, changeBaseLayer]);
 
   // Recalcule la taille de la carte si l'onglet redevient visible après avoir été masqué
   useEffect(() => {
@@ -99,39 +88,24 @@ function InfosParcelleContent() {
     return () => observer.disconnect();
   }, [containerId, mapRef]);
 
-  const handleAddress = async (lat: number, lng: number) => {
-    flyToLocation(lat, lng, 19);
-    setLoading(true);
-    setIntrouvable(false);
-    setInfosAffichees(false);
-    setSelected(null);
-    const fc = await searchParcelWithFallback(lng, lat);
-    setLoading(false);
-    const feature = fc?.features?.[0];
-    if (feature) {
-      const idu = padParcelleSection(normalizeParcelId(extractIdu(feature.properties)));
-      selectionner({
-        idu,
-        geometry: feature.geometry,
-        properties: feature.properties,
-        contenance: feature.properties.contenance ?? 0,
-      });
-    } else {
-      setIntrouvable(true);
-    }
+  const handleLayerChange = (layer: typeof activeLayer) => {
+    setActiveLayer(layer);
+    changeBaseLayer(layer);
   };
+
+  const selected = parcelleCount > 0 ? Array.from(selectedParcelles.values())[0] : null;
 
   return (
     <div className="fr-grid-row fr-grid-row--gutters">
       <div className="fr-col-12 fr-col-md-8">
         <div className="fr-mb-2w">
-          <AddressSearchBar onAddressSelected={handleAddress} />
+          <AddressSearchBar onAddressSelected={(lat, lng) => flyToLocation(lat, lng, 18)} />
         </div>
         <div className="fr-mb-2w">
-          <MapLayerSelector activeLayer={activeLayer} onLayerChange={setActiveLayer} />
+          <MapLayerSelector activeLayer={activeLayer} onLayerChange={handleLayerChange} />
         </div>
 
-        {/* Carte + bouton d'action en overlay (style proche de la page analyser) */}
+        {/* Carte + bouton d'action en overlay (façon page analyser) */}
         <div
           style={{
             position: "relative",
@@ -162,7 +136,7 @@ function InfosParcelleContent() {
                 type="button"
                 className="fr-btn"
                 style={{ margin: 0 }}
-                onClick={() => setInfosAffichees(true)}
+                onClick={() => setIduInfos(selected.idu)}
               >
                 Diagnostic parcelle
               </button>
@@ -171,25 +145,15 @@ function InfosParcelleContent() {
         </div>
 
         <p className="fr-hint-text fr-mt-1w">
-          Cliquez une parcelle (ou recherchez une adresse), puis « Diagnostic parcelle ».
+          Cliquez une parcelle (ou recherchez une adresse), validez avec ⊕, puis « Diagnostic
+          parcelle ».
         </p>
       </div>
 
       <div className="fr-col-12 fr-col-md-4">
-        {loading && (
-          <div className="fr-callout">
-            <p className="fr-callout__text">Recherche de la parcelle…</p>
-          </div>
-        )}
-        {introuvable && (
-          <div className="fr-callout fr-callout--brown-cafe">
-            <p className="fr-callout__text">Aucune parcelle trouvée à cet emplacement.</p>
-          </div>
-        )}
-        {!loading && !introuvable && infosAffichees && selected && (
+        {selected && iduInfos === selected.idu ? (
           <ParcelleInfoCard info={toInfo(selected)} />
-        )}
-        {!loading && !introuvable && !(infosAffichees && selected) && (
+        ) : (
           <div className="fr-callout">
             <p className="fr-callout__text">
               {selected
