@@ -1,9 +1,9 @@
 import { useEffect, useId, useMemo, useRef, useState } from "react";
-import L from "leaflet";
-import type { Geometry, GeoJsonObject } from "geojson";
+import type { Geometry } from "geojson";
 import { normalizeParcelId, padParcelleSection } from "@mutafriches/shared-types";
 import { extractIdu } from "@shared/utils/geo.utils";
 import { useLeafletMap } from "@shared/hooks/useLeafletMap";
+import { useMapParcelleRenderer } from "@shared/hooks/useMapParcelleRenderer";
 import { MapLayerType } from "@shared/config/map-layers.config";
 import { searchParcelWithFallback } from "@shared/services/cadastre/api.cadastre.service";
 import type { SelectedParcelle } from "@shared/types/parcelle-selection.types";
@@ -11,14 +11,6 @@ import { MapLayerSelector } from "@features/analyser/components/parcelle-map/Map
 import "@features/analyser/components/parcelle-map/MapLayerSelector.css";
 import { AddressSearchBar } from "@features/analyser/components/parcelle-map/AddressSearchBar";
 import { ParcelleInfoCard, ParcelleInfo } from "./ParcelleInfoPanel";
-
-// Sélection bleue, cohérente avec la page analyser
-const SELECTED_STYLE: L.PathOptions = {
-  color: "#000091",
-  weight: 2,
-  fillColor: "#000091",
-  fillOpacity: 0.5,
-};
 
 // Centroïde approché (moyenne des sommets de l'anneau extérieur) pour le lien Géoportail.
 function centroidOf(geom: Geometry): [number, number] {
@@ -46,6 +38,8 @@ function toInfo(p: SelectedParcelle): ParcelleInfo {
   };
 }
 
+const NOOP = () => {};
+
 // Contenu réel : la carte Leaflet n'est montée que lorsque l'onglet est visible (cf. wrapper).
 function InfosParcelleContent() {
   const reactId = useId();
@@ -56,7 +50,6 @@ function InfosParcelleContent() {
   const [infosAffichees, setInfosAffichees] = useState(false);
   const [loading, setLoading] = useState(false);
   const [introuvable, setIntrouvable] = useState(false);
-  const highlightRef = useRef<L.LayerGroup | null>(null);
 
   // Nouvelle sélection : on remplace la précédente et on masque les infos jusqu'au clic du bouton
   const selectionner = (p: SelectedParcelle) => {
@@ -77,6 +70,22 @@ function InfosParcelleContent() {
     },
   });
 
+  // Surbrillance bleue via le renderer éprouvé de la page analyser (parcelle unique)
+  const selectedParcelles = useMemo(() => {
+    const map = new Map<string, SelectedParcelle>();
+    if (selected) map.set(selected.idu, selected);
+    return map;
+  }, [selected]);
+
+  useMapParcelleRenderer({
+    mapRef,
+    selectedParcelles,
+    previewParcelle: null,
+    selectionState: "idle",
+    onConfirmAdd: NOOP,
+    onRemoveParcelle: NOOP,
+  });
+
   useEffect(() => {
     changeBaseLayer(activeLayer);
   }, [activeLayer, changeBaseLayer]);
@@ -89,18 +98,6 @@ function InfosParcelleContent() {
     observer.observe(el);
     return () => observer.disconnect();
   }, [containerId, mapRef]);
-
-  // Surbrillance de la parcelle sélectionnée
-  useEffect(() => {
-    const map = mapRef.current;
-    if (!map) return;
-    if (!highlightRef.current) highlightRef.current = L.layerGroup().addTo(map);
-    const group = highlightRef.current;
-    group.clearLayers();
-    if (selected) {
-      L.geoJSON(selected.geometry as GeoJsonObject, { style: () => SELECTED_STYLE }).addTo(group);
-    }
-  }, [selected, mapRef]);
 
   const handleAddress = async (lat: number, lng: number) => {
     flyToLocation(lat, lng, 19);
