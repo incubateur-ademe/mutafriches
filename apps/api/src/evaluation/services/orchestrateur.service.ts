@@ -80,6 +80,7 @@ export class OrchestrateurService {
         cached.resultats,
         origine,
         nombreParcelles,
+        input.visitorId,
       );
 
       const evaluationId = await this.evaluationRepository.save(evaluation, cached.id);
@@ -124,6 +125,7 @@ export class OrchestrateurService {
       resultats,
       origine,
       nombreParcelles,
+      input.visitorId,
     );
 
     // Sauvegarde l'évaluation et retourne l'id

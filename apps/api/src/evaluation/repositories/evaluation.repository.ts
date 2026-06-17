@@ -51,6 +51,8 @@ export class EvaluationRepository {
       sourceUtilisation: evaluation.origine.source,
       integrateur: evaluation.origine.integrateur,
       versionAlgorithme: evaluation.versionAlgorithme,
+      // Identifiant visiteur anonyme persistant (mesure de récurrence cross-visite)
+      utilisateurId: evaluation.visitorId ?? null,
       evaluationSourceId,
     });
 

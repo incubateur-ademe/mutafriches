@@ -8,6 +8,7 @@
 
 - **[Module Enrichissement](./enrichissement.md)** - Collecte automatique des données via APIs externes
 - **[Algorithme d'Évaluation](./evaluation-mutabilite.md)** - Calcul des indices de mutabilité
+- **[Tracking & Analytics](./analytics-tracking.md)** - Événements, session vs utilisateur, requêtes Metabase
 
 ### Pour les intégrateurs
 

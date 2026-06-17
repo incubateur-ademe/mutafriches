@@ -15,4 +15,10 @@ export interface CalculerMutabiliteInputDto {
    * Données complémentaires saisies par l'utilisateur
    */
   donneesComplementaires: DonneesComplementairesInputDto;
+
+  /**
+   * Identifiant visiteur anonyme persistant (localStorage), stable entre visites.
+   * Persisté dans evaluations.utilisateur_id pour mesurer la récurrence cross-visite.
+   */
+  visitorId?: string;
 }

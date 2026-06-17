@@ -8,6 +8,7 @@ import { apiClient } from "./api.client";
 import { API_CONFIG } from "./api.config";
 import { ApiError } from "./api.types";
 import type { CalculerMutabiliteOptions } from "./api.types";
+import { getOrCreateVisitorId } from "./api.utils";
 
 class EvaluationService {
   /**
@@ -50,9 +51,11 @@ class EvaluationService {
       }
     }
 
-    return apiClient.post<MutabiliteOutputDto>(API_CONFIG.endpoints.evaluation.calculer, input, {
-      params,
-    });
+    return apiClient.post<MutabiliteOutputDto>(
+      API_CONFIG.endpoints.evaluation.calculer,
+      { ...input, visitorId: getOrCreateVisitorId() },
+      { params },
+    );
   }
 
   /**

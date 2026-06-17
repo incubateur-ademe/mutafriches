@@ -169,6 +169,13 @@
       "when": 1779267254576,
       "tag": "0023_ouverture_modale_multisites",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1781692006782,
+      "tag": "0024_strong_wolfpack",
+      "breakpoints": true
     }
   ]
 }

@@ -1,4 +1,4 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import {
   CalculerMutabiliteInputDto as ICalculerMutabiliteInput,
   EnrichissementOutputDto,
@@ -23,4 +23,10 @@ export class CalculerMutabiliteSwaggerDto implements ICalculerMutabiliteInput {
     type: DonneesComplementairesSwaggerDto,
   })
   donneesComplementaires: DonneesComplementairesInputDto;
+
+  @ApiPropertyOptional({
+    description:
+      "Identifiant visiteur anonyme persistant (localStorage). Permet de mesurer la récurrence cross-visite.",
+  })
+  visitorId?: string;
 }

@@ -21,6 +21,7 @@ export class EvenementRepository {
       integrateur: evenement.integrateur || null,
       userAgent: evenement.userAgent || null,
       sessionId: evenement.sessionId || null,
+      visitorId: evenement.visitorId || null,
     });
   }
 }
