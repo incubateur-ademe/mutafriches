@@ -23,6 +23,7 @@ import {
   GeometrieParcelle,
   CalculerMutabiliteInputDto,
   RaccordementEau,
+  deriverRaccordementEau,
 } from "@mutafriches/shared-types";
 
 /**
@@ -135,6 +136,9 @@ export class Site {
       Object.assign(site, donneesComplementaires);
     }
 
+    // Raccordement eau dérivé automatiquement de la surface bâtie (fait autorité sur la saisie)
+    site.raccordementEau = deriverRaccordementEau(site.surfaceBati);
+
     return site;
   }
 
@@ -214,6 +218,9 @@ export class Site {
       site.presenceEspecesProtegees = donneesComplementaires.presenceEspecesProtegees;
       site.presenceZoneHumide = donneesComplementaires.presenceZoneHumide;
     }
+
+    // Raccordement eau dérivé automatiquement de la surface bâtie (fait autorité sur la saisie)
+    site.raccordementEau = deriverRaccordementEau(site.surfaceBati);
 
     return site;
   }
