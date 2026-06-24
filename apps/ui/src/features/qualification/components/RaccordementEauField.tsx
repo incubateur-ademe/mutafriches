@@ -15,7 +15,7 @@ const BADGES: Record<RaccordementEau, { label: string; className: string }> = {
   },
   [RaccordementEau.NON]: {
     label: "Non",
-    className: "fr-badge fr-badge--info fr-icon-information-line fr-badge--icon-left",
+    className: "fr-badge fr-badge--success fr-icon-information-line fr-badge--icon-left",
   },
   [RaccordementEau.NE_SAIT_PAS]: {
     label: "Non déterminé",
