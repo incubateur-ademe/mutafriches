@@ -156,6 +156,15 @@ pnpm format && pnpm lint && pnpm typecheck && pnpm test
 
 Si des erreurs apparaissent, les corriger immédiatement et relancer jusqu'à ce que tout passe. Ne JAMAIS considérer une tâche comme terminée sans cette vérification.
 
+### Version de l'application
+
+Quand une **feature est terminée et vérifiée**, il est recommandé d'incrémenter la version de l'application dans le `package.json` racine via un **commit dédié** (séparé du commit de la feature).
+
+- Versionnage **SemVer** : `feat` → bump **mineur** (`1.11.0` → `1.12.0`), `fix` → bump **patch** (`1.11.0` → `1.11.1`), changement cassant → bump **majeur**.
+- Seul le `package.json` racine porte la version (les sous-packages n'en ont pas).
+- Commit dédié : `chore(release): vX.Y.Z`.
+- Ne PAS confondre avec le versionnage de l'algorithme de mutabilité (voir section dédiée), qui est indépendant.
+
 ### ADR automatique
 
 Quand une tâche implique un **choix architectural significatif**, créer automatiquement un ADR dans `docs/adr/` via le skill `/adr`. Déclencheurs :

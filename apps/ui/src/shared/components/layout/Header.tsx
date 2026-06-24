@@ -134,6 +134,15 @@ export function Header() {
                   Analyser un site
                 </Link>
               </li>
+              <li className="fr-nav__item">
+                <Link
+                  to={ROUTES.DONNEES_UTILISEES}
+                  className="fr-nav__link"
+                  aria-current={isActive(ROUTES.DONNEES_UTILISEES) ? "page" : undefined}
+                >
+                  Données utilisées
+                </Link>
+              </li>
             </ul>
           </nav>
         </div>
