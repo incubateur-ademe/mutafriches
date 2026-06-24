@@ -340,7 +340,7 @@ function App() {
               </li>
               <li className="fr-footer__bottom-item">
                 <a id="footer__bottom-link-7" href="#" className="fr-footer__bottom-link">
-                  Données personnelles
+                  Politique de confidentialité
                 </a>
               </li>
               <li className="fr-footer__bottom-item">
