@@ -9,6 +9,8 @@ import { LoadingCallout } from "../../../shared/components/common/LoadingCallout
 import { ErrorAlert } from "../../../shared/components/common/ErrorAlert";
 import { PodiumCard } from "../components/PodiumCard";
 import { ResultsTable } from "../components/ResultTable";
+import { SiteRecapBanner } from "../components/SiteRecapBanner";
+import { SiteRecapModal } from "../components/SiteRecapModal";
 import { useFormContext } from "../../../shared/form/useFormContext";
 import { useIframe, useIframeCallback, useIsIframeMode } from "../../../shared/iframe/useIframe";
 import { createIframeCommunicator } from "../../../shared/iframe/iframeCommunication";
@@ -51,6 +53,9 @@ export const ResultatsPage: React.FC = () => {
 
   // Modal contact multisites
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+
+  // Modal récapitulatif du site
+  const [isRecapModalOpen, setIsRecapModalOpen] = useState(false);
 
   // Un seul ref pour tracker si on a déjà initialisé
   const hasInitializedRef = React.useRef(false);
@@ -313,6 +318,14 @@ export const ResultatsPage: React.FC = () => {
               </button>
             </div>
 
+            <SiteRecapBanner
+              commune={state.uiData?.commune}
+              identifiantParcelle={state.uiData?.identifiantParcelle}
+              nombreParcelles={state.uiData?.nombreParcelles}
+              surface={state.uiData?.surfaceParcelle}
+              onVoirRecap={() => setIsRecapModalOpen(true)}
+            />
+
             <div
               className="fr-mb-1w"
               style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}
@@ -446,6 +459,14 @@ export const ResultatsPage: React.FC = () => {
         <p>Voulez-vous vraiment démarrer une nouvelle analyse ?</p>
         <p className="fr-text--sm">Les données actuelles seront perdues.</p>
       </ModalInfo>
+
+      {/* Modal récapitulatif du site */}
+      <SiteRecapModal
+        isOpen={isRecapModalOpen}
+        onClose={() => setIsRecapModalOpen(false)}
+        enrichissement={state.enrichmentData}
+        complementaires={donneesComplementaires}
+      />
 
       {/* Modal de contact multisites */}
       <ContactMultisitesModal

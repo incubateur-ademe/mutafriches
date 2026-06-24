@@ -4,6 +4,7 @@ import {
   fetchParcelByRef,
   fetchSectionParcels,
 } from "@shared/services/cadastre/api.cadastre.service";
+import { extraireDepartement } from "@shared/utils/cadastre.utils";
 
 export type DiagnosticStatut =
   | "trouvee"
@@ -41,10 +42,7 @@ export interface DiagnosticResult {
  * Gère métropole (dépt 2 car.), DOM (97x, 3 car.) et Corse (2A/2B).
  */
 export function parseIdu(iduPad: string): IduParts {
-  let departement: string;
-  if (/^97\d/.test(iduPad)) departement = iduPad.slice(0, 3);
-  else if (/^2[AB]/i.test(iduPad)) departement = iduPad.slice(0, 2);
-  else departement = iduPad.slice(0, 2);
+  const departement = extraireDepartement(iduPad);
 
   const rest = iduPad.slice(departement.length); // commune(3) + préfixe(3) + section(2) + numéro(4)
   const commune = rest.slice(0, 3);

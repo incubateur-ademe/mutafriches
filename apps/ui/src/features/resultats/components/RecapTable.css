@@ -1,0 +1,11 @@
+/* En-tête de section : ligne pleine largeur, fond bleu clair DSFR (non couvert par DSFR) */
+.recap-table__section-title {
+  background-color: var(--background-alt-blue-france);
+  text-transform: uppercase;
+  font-size: 0.875rem;
+}
+
+/* Colonnes Saisie et Source centrées, conformément à la maquette */
+.recap-table__center {
+  text-align: center;
+}
