@@ -78,15 +78,15 @@ Il analyse **27 critères** pour déterminer le meilleur usage futur parmi **7 p
 
 L'algorithme collecte **27 critères** répartis en **2 sources** :
 
-- **17 critères enrichis automatiquement** via le module d'enrichissement (APIs externes)
-- **10 critères complémentaires** saisis manuellement par l'utilisateur
+- **18 critères enrichis ou dérivés automatiquement** (17 via les APIs externes + `raccordementEau` dérivé de la surface bâtie)
+- **9 critères complémentaires** saisis manuellement par l'utilisateur
 
 #### Synthèse des critères et leurs poids
 
 | Source | Nb critères | Poids total |
 |--------|------------|-------------|
-| Enrichissement automatique | 17 | 18 |
-| Données complémentaires (saisie) | 10 | 11.5 |
+| Enrichissement / dérivation automatique | 18 | 19 |
+| Données complémentaires (saisie) | 9 | 10.5 |
 | **TOTAL** | **27** | **29.5** |
 
 ### Étape 2 : Matrice de scoring
@@ -240,7 +240,7 @@ La fiabilité **ne modifie pas** le classement. C'est un indicateur séparé qui
 
 ## Liste des 27 critères actifs
 
-### Critères enrichis automatiquement (17)
+### Critères enrichis ou dérivés automatiquement (18)
 
 | # | Critère | Poids | Valeurs | Champ DTO |
 |---|---------|-------|---------|-----------|
@@ -261,14 +261,14 @@ La fiabilité **ne modifie pas** le classement. C'est un indicateur séparé qui
 | 15 | **Zonage patrimonial** | 1 | Non concerné / Site inscrit-classé / Périmètre ABF | `zonagePatrimonial` |
 | 16 | **Zone ZAER (ENR)** | 1 | Non / Oui / Oui avec PV ombrière | `zoneAccelerationEnr` |
 | 17 | **Zonage ABC (logement)** | 0.5 | A / Abis / B1 / B2 / C | `zonageAbcLogement` |
-| ~~18~~ | ~~**Distance ITE fret**~~ | ~~0.5~~ | ~~< 1 km (bon état) / < 1 km (mauvais état) / > 1 km~~ | ~~`distanceIte`~~ — **désactivé temporairement, en attente validation Cerema** |
+| 18 | **Raccordement eau** (dérivé de la surface bâtie) | 1 | Oui (bâti > 20 m²) / Non / Non déterminé (surface bâtie indisponible) | `raccordementEau` |
+| ~~19~~ | ~~**Distance ITE fret**~~ | ~~0.5~~ | ~~< 1 km (bon état) / < 1 km (mauvais état) / > 1 km~~ | ~~`distanceIte`~~ — **désactivé temporairement, en attente validation Cerema** |
 
-### Critères complémentaires saisis (10)
+### Critères complémentaires saisis (9)
 
 | # | Critère | Poids | Valeurs | Champ DTO |
 |---|---------|-------|---------|-----------|
 | 19 | **Type de propriétaire** | 1 | Public / Privé / Copropriété-indivision / Mixte / Ne sait pas | `typeProprietaire` |
-| 20 | **Raccordement eau** | 1 | Oui / Non / Ne sait pas | `raccordementEau` |
 | 21 | **État du bâti et infrastructure** | 2 | Dégradation inexistante / Très importante / Moyenne / Hétérogène / Pas de bâti / Ne sait pas | `etatBatiInfrastructure` |
 | 22 | **Présence de pollution** | 2 | Non / Déjà gérée / Oui-composés volatils / Oui-autres composés / Oui-amiante / Ne sait pas | `presencePollution` |
 | 23 | **Valeur architecturale et historique** | 1 | Sans intérêt / Ordinaire / Intérêt remarquable / Pas de bâti / Ne sait pas | `valeurArchitecturaleHistorique` |

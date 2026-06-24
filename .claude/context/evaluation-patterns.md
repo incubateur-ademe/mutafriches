@@ -9,7 +9,7 @@ apps/api/src/evaluation/
 ├── dto/
 │   ├── input/
 │   │   ├── calculer-mutabilite.dto.ts       # Entrée : données enrichies + complémentaires
-│   │   └── donnees-complementaires.dto.ts   # 10 champs manuels saisis par l'utilisateur
+│   │   └── donnees-complementaires.dto.ts   # 9 champs saisis + raccordementEau dérivé (surface bâtie)
 │   └── output/
 │       ├── evaluation.dto.ts                # Évaluation complète (GET /evaluation/:id)
 │       ├── metadata.dto.ts                  # Enums et versions (GET /evaluation/metadata)
@@ -106,13 +106,14 @@ POSITIF      = 1
 TRES_POSITIF = 2
 ```
 
-#### Les 27 critères (17 enrichis + 10 complémentaires)
+#### Les 27 critères (18 enrichis/dérivés + 9 complémentaires)
 
-> Source de vérité : `POIDS_CRITERES` dans `algorithme.config.ts`. La répartition
-> enrichis/complémentaires suit `DonneesComplementairesInputDto` (champs saisis par
-> l'utilisateur).
+> Source de vérité : `POIDS_CRITERES` dans `algorithme.config.ts` (les poids ne changent
+> pas avec la dérivation). `raccordementEau` reste structurellement dans
+> `DonneesComplementairesInputDto` (et donc dans le snapshot de cache) mais sa valeur est
+> désormais **dérivée automatiquement** de `surfaceBati`, plus saisie par l'utilisateur.
 
-**Enrichis automatiquement** (poids total : 18) :
+**Enrichis ou dérivés automatiquement** (poids total : 19) :
 
 | Critère | Poids | Type |
 |---------|-------|------|
@@ -133,14 +134,14 @@ TRES_POSITIF = 2
 | `zonagePatrimonial` | 1 | Enum (3 valeurs) |
 | `zoneAccelerationEnr` | 1 | Enum (3 valeurs) |
 | `zonageAbcLogement` | 0.5 | Enum (A / Abis / B1 / B2 / C) |
+| `raccordementEau` | 1 | Dérivé de `surfaceBati` : >20m² => OUI, ≤20 => NON, indisponible => NE_SAIT_PAS |
 | ~~`distanceIte`~~ | ~~0.5~~ | ~~Enum (<1km bon état / <1km mauvais état / >1km)~~ — **désactivé temporairement** |
 
-**Complémentaires manuels** (poids total : 11.5) :
+**Complémentaires manuels** (poids total : 10.5) :
 
 | Critère | Poids | Type |
 |---------|-------|------|
 | `typeProprietaire` | 1 | Enum (5 valeurs dont NE_SAIT_PAS) |
-| `raccordementEau` | 1 | Enum (3 valeurs dont NE_SAIT_PAS) |
 | `etatBatiInfrastructure` | 2 | Enum (6 valeurs) |
 | `presencePollution` | 2 | Enum (6 valeurs) |
 | `valeurArchitecturaleHistorique` | 1 | Enum (6 valeurs) |
