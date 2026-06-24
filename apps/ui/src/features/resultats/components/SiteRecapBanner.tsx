@@ -55,7 +55,12 @@ export const SiteRecapBanner: React.FC<SiteRecapBannerProps> = ({
         </span>
       </div>
 
-      <button type="button" className="fr-link" onClick={onVoirRecap}>
+      <button
+        type="button"
+        className="fr-link"
+        style={{ textDecoration: "underline" }}
+        onClick={onVoirRecap}
+      >
         voir récapitulatif du site
       </button>
     </div>

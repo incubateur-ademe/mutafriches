@@ -35,7 +35,7 @@ export const SiteRecapModal: React.FC<SiteRecapModalProps> = ({
       title="Récapitulatif du site"
       isOpen={isOpen}
       onClose={onClose}
-      size="lg"
+      size="xl"
       icon="fr-icon-map-pin-2-line"
     >
       <RecapTable sections={sections} />

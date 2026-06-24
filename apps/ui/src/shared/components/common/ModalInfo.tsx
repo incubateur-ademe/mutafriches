@@ -8,7 +8,7 @@ interface ModalInfoProps {
   onClose: () => void;
   showIcon?: boolean;
   icon?: string;
-  size?: "sm" | "md" | "lg";
+  size?: "sm" | "md" | "lg" | "xl";
   actions?: React.ReactNode;
 }
 
@@ -32,6 +32,9 @@ export const ModalInfo: React.FC<ModalInfoProps> = ({
         return "fr-col-12 fr-col-md-6 fr-col-lg-4";
       case "lg":
         return "fr-col-12 fr-col-md-10 fr-col-lg-8";
+      case "xl":
+        // Pleine largeur du conteneur : récapitulatif large (tableau complet)
+        return "fr-col-12";
       default:
         return "fr-col-12 fr-col-md-8 fr-col-lg-6";
     }
