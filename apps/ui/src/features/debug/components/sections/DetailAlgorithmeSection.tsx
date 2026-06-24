@@ -4,6 +4,7 @@ import type {
   UsageResultatDetaille,
   DetailCritere,
 } from "@mutafriches/shared-types";
+import { CRITERES_METADATA } from "@mutafriches/shared-types";
 import { DsfrAccordion } from "@shared/components/dsfr/DsfrAccordion";
 import { getMutabilityColor } from "../../utils/debug.helpers";
 
@@ -16,39 +17,6 @@ const USAGE_LABELS: Record<string, string> = {
   industrie: "Industrie",
   renaturation: "Renaturation",
   photovoltaique: "Photovoltaïque",
-};
-
-/** Labels français pour les noms de critères techniques */
-const CRITERE_LABELS: Record<string, string> = {
-  typeProprietaire: "Type de propriétaire",
-  surfaceSite: "Surface du site",
-  surfaceBati: "Surface bâtie",
-  etatBatiInfrastructure: "État du bâti",
-  presencePollution: "Présence de pollution",
-  siteEnCentreVille: "Site en centre-ville",
-  tauxLogementsVacants: "Taux de logements vacants",
-  raccordementEau: "Raccordement eau",
-  qualiteVoieDesserte: "Qualité de la voie de desserte",
-  distanceAutoroute: "Distance autoroute",
-  distanceTransportCommun: "Distance transport en commun",
-  proximiteCommercesServices: "Commerces et services",
-  distanceRaccordementElectrique: "Distance raccordement électrique",
-  zonageReglementaire: "Zonage réglementaire",
-  risqueRetraitGonflementArgile: "Retrait gonflement argiles",
-  risqueCavitesSouterraines: "Cavités souterraines",
-  risqueInondation: "Inondations",
-  presenceRisquesTechnologiques: "Risques technologiques",
-  zonagePatrimonial: "Zonage patrimonial",
-  qualitePaysage: "Qualité du paysage",
-  valeurArchitecturaleHistorique: "Valeur architecturale / historique",
-  zonageEnvironnemental: "Zonage environnemental",
-  trameVerteEtBleue: "Trame verte et bleue",
-  presenceRisquesNaturels: "Risques naturels",
-  zoneAccelerationEnr: "Zone d'accélération EnR",
-  presenceEspecesProtegees: "Présence d'espèces protégées",
-  presenceZoneHumide: "Présence d'une zone humide",
-  zonageAbcLogement: "Zonage ABC logement",
-  distanceIte: "Distance à une installation de chargement industrielle",
 };
 
 /** Critères à mettre en évidence (poids élevé et/ou intérêt analytique) */
@@ -138,7 +106,7 @@ export const DetailAlgorithmeSection: React.FC<DetailAlgorithmeSectionProps> = (
     return (
       <tr key={`${critere.critere}-${type}`} className={rowClass}>
         <td className="detail-algo__critere-name">
-          {CRITERE_LABELS[critere.critere] ?? critere.critere}
+          {CRITERES_METADATA[critere.critere]?.label ?? critere.critere}
         </td>
         <td className="detail-algo__critere-valeur">{formatValeur(critere.valeur)}</td>
         <td>

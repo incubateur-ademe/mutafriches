@@ -1,5 +1,15 @@
 import React from "react";
-import { EnrichissementOutputDto } from "@mutafriches/shared-types";
+import {
+  EnrichissementOutputDto,
+  libelleEnum,
+  RGA_LABELS,
+  CAVITES_LABELS,
+  INONDATION_LABELS,
+  ZONAGE_REGLEMENTAIRE_LABELS,
+  ZONAGE_ENVIRONNEMENTAL_LABELS,
+  ZONAGE_PATRIMONIAL_LABELS,
+  ZONAGE_ABC_LOGEMENT_LABELS,
+} from "@mutafriches/shared-types";
 import { DsfrAccordion } from "@shared/components/dsfr/DsfrAccordion";
 import {
   formatDistance,
@@ -99,7 +109,7 @@ export const EnrichissementSection: React.FC<EnrichissementSectionProps> = ({
                     : "fr-badge--info"
             }`}
           >
-            {enrichmentData.risqueRetraitGonflementArgile ?? "Non disponible"}
+            {libelleEnum(RGA_LABELS, enrichmentData.risqueRetraitGonflementArgile)}
           </span>
         </dd>
 
@@ -114,7 +124,7 @@ export const EnrichissementSection: React.FC<EnrichissementSectionProps> = ({
                   : "fr-badge--info"
             }`}
           >
-            {enrichmentData.risqueCavitesSouterraines ?? "Non disponible"}
+            {libelleEnum(CAVITES_LABELS, enrichmentData.risqueCavitesSouterraines)}
           </span>
         </dd>
 
@@ -129,7 +139,7 @@ export const EnrichissementSection: React.FC<EnrichissementSectionProps> = ({
                   : "fr-badge--info"
             }`}
           >
-            {enrichmentData.risqueInondation ?? "Non disponible"}
+            {libelleEnum(INONDATION_LABELS, enrichmentData.risqueInondation)}
           </span>
         </dd>
 
@@ -147,16 +157,16 @@ export const EnrichissementSection: React.FC<EnrichissementSectionProps> = ({
       <h4 className="debug-panel__subtitle">Zonages</h4>
       <dl className="debug-panel__data-grid">
         <dt>R&eacute;glementaire</dt>
-        <dd>{enrichmentData.zonageReglementaire ?? "Non disponible"}</dd>
+        <dd>{libelleEnum(ZONAGE_REGLEMENTAIRE_LABELS, enrichmentData.zonageReglementaire)}</dd>
 
         <dt>Environnemental</dt>
-        <dd>{enrichmentData.zonageEnvironnemental ?? "Non disponible"}</dd>
+        <dd>{libelleEnum(ZONAGE_ENVIRONNEMENTAL_LABELS, enrichmentData.zonageEnvironnemental)}</dd>
 
         <dt>Patrimonial</dt>
-        <dd>{enrichmentData.zonagePatrimonial ?? "Non disponible"}</dd>
+        <dd>{libelleEnum(ZONAGE_PATRIMONIAL_LABELS, enrichmentData.zonagePatrimonial)}</dd>
 
         <dt>ABC logement</dt>
-        <dd>{enrichmentData.zonageAbcLogement ?? "Non disponible"}</dd>
+        <dd>{libelleEnum(ZONAGE_ABC_LOGEMENT_LABELS, enrichmentData.zonageAbcLogement)}</dd>
       </dl>
 
       {/* Énergies renouvelables (ZAER) */}

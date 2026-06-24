@@ -2,6 +2,7 @@
  * Utilitaires pour le panneau de diagnostic debug.
  * Ce panneau n'est visible qu'en environnement de dev ou staging.
  */
+import { CRITERES_METADATA } from "@mutafriches/shared-types";
 
 /**
  * Verifie si le panneau debug est active dans l'environnement courant.
@@ -50,26 +51,11 @@ export function formatBoolean(value: boolean | null | undefined): string {
 }
 
 /**
- * Mapping des cles techniques des donnees complementaires vers les labels francais.
- */
-const LABELS_DONNEES_COMPLEMENTAIRES: Record<string, string> = {
-  typeProprietaire: "Type de propri\u00E9taire",
-  raccordementEau: "Raccordement eau",
-  etatBatiInfrastructure: "\u00C9tat du b\u00E2ti et infrastructures",
-  presencePollution: "Pr\u00E9sence de pollution",
-  valeurArchitecturaleHistorique: "Valeur architecturale / historique",
-  qualitePaysage: "Qualit\u00E9 du paysage",
-  qualiteVoieDesserte: "Qualit\u00E9 de la voie de desserte",
-  trameVerteEtBleue: "Trame verte et bleue",
-  presenceEspecesProtegees: "Pr\u00E9sence d'esp\u00E8ces prot\u00E9g\u00E9es",
-  presenceZoneHumide: "Pr\u00E9sence d'une zone humide",
-};
-
-/**
- * Retourne le label francais pour une cle de donnees complementaires.
+ * Retourne le label francais pour une cle de donnees complementaires,
+ * depuis le registre partage des criteres (shared-types).
  */
 export function getManualDataLabel(key: string): string {
-  return LABELS_DONNEES_COMPLEMENTAIRES[key] ?? key;
+  return CRITERES_METADATA[key]?.label ?? key;
 }
 
 /**
