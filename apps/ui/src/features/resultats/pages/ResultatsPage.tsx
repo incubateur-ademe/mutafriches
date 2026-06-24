@@ -4,7 +4,6 @@ import { useEventTracking } from "../../../shared/hooks/useEventTracking";
 import {
   MutabiliteOutputDto,
   TypeEvenement,
-  BesoinMultisites,
   UsageResultat,
   UsageResultatDetaille,
 } from "@mutafriches/shared-types";
@@ -45,7 +44,6 @@ export const ResultatsPage: React.FC = () => {
     trackOuvertureModaleMultisites,
     trackOuvertureRecapSite,
     trackOuvertureDetailUsage,
-    trackDemandeContactMultisites,
     trackEvaluationTerminee,
   } = useEventTracking();
 
@@ -224,11 +222,6 @@ export const ResultatsPage: React.FC = () => {
     setIsNewAnalysisModalOpen(false);
     resetForm();
     navigate(ROUTES.ANALYSER);
-  };
-
-  // Handler pour soumettre la demande de contact multisites
-  const handleContactSubmit = async (email: string, besoin: BesoinMultisites) => {
-    await trackDemandeContactMultisites(email, besoin, mutabilityData?.evaluationId);
   };
 
   // Handler pour modifier les données
@@ -502,7 +495,6 @@ export const ResultatsPage: React.FC = () => {
       <ContactMultisitesModal
         isOpen={isContactModalOpen}
         onClose={() => setIsContactModalOpen(false)}
-        onSubmit={handleContactSubmit}
       />
 
       {/* Panneau de diagnostic (dev/staging uniquement) */}

@@ -4,7 +4,6 @@ import {
   EvenementInputDto,
   ContexteEvenement,
   UsageType,
-  BesoinMultisites,
   UsageResultat,
 } from "@mutafriches/shared-types";
 import { useIframe, useIsIframeMode } from "../iframe/useIframe";
@@ -128,16 +127,6 @@ export function useEventTracking() {
     [track],
   );
 
-  const trackDemandeContactMultisites = useCallback(
-    (email: string, besoin: BesoinMultisites, evaluationId?: string) => {
-      return track(TypeEvenement.DEMANDE_CONTACT_MULTISITES, {
-        evaluationId,
-        donnees: { email, besoin },
-      });
-    },
-    [track],
-  );
-
   const trackEvaluationTerminee = useCallback(
     (evaluationId: string, identifiantCadastral?: string) => {
       return track(TypeEvenement.EVALUATION_TERMINEE, {
@@ -184,7 +173,6 @@ export function useEventTracking() {
     trackOuvertureModaleMultisites,
     trackOuvertureRecapSite,
     trackOuvertureDetailUsage,
-    trackDemandeContactMultisites,
     trackEvaluationTerminee,
     trackParcelleAjoutee,
     trackParcelleSupprimee,
