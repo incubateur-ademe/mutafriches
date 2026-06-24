@@ -1,3 +1,4 @@
+import { STORAGE_KEYS } from "../../config/storage-keys.config";
 import type { ApiError, ApiErrorResponse } from "./api.types";
 
 /**
@@ -6,9 +7,6 @@ import type { ApiError, ApiErrorResponse } from "./api.types";
 export const generateSessionId = (): string => {
   return `session-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
 };
-
-/** Clé localStorage de l'identifiant visiteur anonyme */
-const VISITOR_ID_STORAGE_KEY = "mutafriches_visitor_id";
 
 /** Identifiant visiteur en mémoire si localStorage indisponible (navigation privée, storage tiers bloqué) */
 let visitorIdMemoryFallback: string | undefined;
@@ -27,10 +25,10 @@ const genererUuid = (): string => {
  */
 export const getOrCreateVisitorId = (): string => {
   try {
-    const existant = window.localStorage.getItem(VISITOR_ID_STORAGE_KEY);
+    const existant = window.localStorage.getItem(STORAGE_KEYS.VISITOR_ID);
     if (existant) return existant;
     const nouveau = genererUuid();
-    window.localStorage.setItem(VISITOR_ID_STORAGE_KEY, nouveau);
+    window.localStorage.setItem(STORAGE_KEYS.VISITOR_ID, nouveau);
     return nouveau;
   } catch {
     // localStorage indisponible : repli en mémoire pour la durée de la session

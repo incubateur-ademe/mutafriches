@@ -33,7 +33,7 @@ export function Footer() {
               </li>
               <li className="fr-footer__bottom-item" key="donnees-personnelles">
                 <a className="fr-footer__bottom-link" href={ROUTES.POLITIQUE_CONFIDENTIALITE}>
-                  Données personnelles
+                  Politique de confidentialité
                 </a>
               </li>
               <li className="fr-footer__bottom-item" key="accessibilite">

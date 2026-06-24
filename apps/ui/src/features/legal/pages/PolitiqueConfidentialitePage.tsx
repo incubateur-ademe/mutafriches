@@ -68,7 +68,7 @@ export const PolitiqueConfidentialitePage: React.FC = () => {
         contact sont conservées le temps nécessaire au traitement de la demande, puis archivées
         conformément aux délais légaux applicables.
       </p>
-      <p className="fr-text--sm fr-mb-0">
+      <p className="fr-text--sm fr-mb-2w">
         Cette durée est provisoire et fera l'objet d'une politique de purge dédiée.
       </p>
 

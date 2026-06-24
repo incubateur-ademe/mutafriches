@@ -8,6 +8,7 @@ import {
 } from "@mutafriches/shared-types";
 import { useIframe, useIsIframeMode } from "../iframe/useIframe";
 import { evenementsService } from "../services/api/api.evenements.service";
+import { STORAGE_KEYS } from "../config/storage-keys.config";
 
 export function useEventTracking() {
   const isIframeMode = useIsIframeMode();
@@ -20,12 +21,12 @@ export function useEventTracking() {
     const refParam = urlParams.get("ref");
 
     // Stocker en sessionStorage si présent dans l'URL
-    if (sourceParam) sessionStorage.setItem("mutafriches_source", sourceParam);
-    if (refParam) sessionStorage.setItem("mutafriches_ref", refParam);
+    if (sourceParam) sessionStorage.setItem(STORAGE_KEYS.SOURCE, sourceParam);
+    if (refParam) sessionStorage.setItem(STORAGE_KEYS.REF, refParam);
 
     // Récupérer depuis sessionStorage
-    const source = sessionStorage.getItem("mutafriches_source");
-    const ref = sessionStorage.getItem("mutafriches_ref");
+    const source = sessionStorage.getItem(STORAGE_KEYS.SOURCE);
+    const ref = sessionStorage.getItem(STORAGE_KEYS.REF);
 
     return { source, ref };
   }, []);

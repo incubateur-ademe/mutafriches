@@ -1,5 +1,6 @@
 import { EnrichissementOutputDto, MutabiliteOutputDto } from "@mutafriches/shared-types";
 import { ParcelleUiModel } from "../types/parcelle.models";
+import { STORAGE_KEYS } from "../config/storage-keys.config";
 
 export interface FormState {
   // Étape 1 - Données d'enrichissement
@@ -40,7 +41,7 @@ export interface FormContextType {
   resetForm: () => void;
 }
 
-export const STORAGE_KEY = "mutafriches-form-state";
+export const STORAGE_KEY = STORAGE_KEYS.FORM_STATE;
 
 export const initialState: FormState = {
   currentStep: 1,

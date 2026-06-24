@@ -2,6 +2,7 @@
 import React, { useMemo } from "react";
 import { DEFAULT_IFRAME_CONTEXT, INTEGRATORS } from "./IframeContext.constants";
 import { IframeContext } from "./IframeContext";
+import { STORAGE_KEYS } from "../config/storage-keys.config";
 
 interface IframeProviderProps {
   children: React.ReactNode;
@@ -26,24 +27,24 @@ export function IframeProvider({ children }: IframeProviderProps) {
     // Gérer le tracking source/ref
     if (integratorParam && INTEGRATORS[integratorParam]) {
       // Mode iframe : stocker dans sessionStorage
-      sessionStorage.setItem("mutafriches_source", integratorParam);
+      sessionStorage.setItem(STORAGE_KEYS.SOURCE, integratorParam);
       const refParam = params.get("ref") || `iframe-${integratorParam}`;
-      sessionStorage.setItem("mutafriches_ref", refParam);
+      sessionStorage.setItem(STORAGE_KEYS.REF, refParam);
     } else {
       // Mode standalone sans intégrateur
       const sourceParam = params.get("source");
       const refParam = params.get("ref");
 
       if (sourceParam) {
-        sessionStorage.setItem("mutafriches_source", sourceParam);
+        sessionStorage.setItem(STORAGE_KEYS.SOURCE, sourceParam);
       } else {
-        sessionStorage.removeItem("mutafriches_source");
+        sessionStorage.removeItem(STORAGE_KEYS.SOURCE);
       }
 
       if (refParam) {
-        sessionStorage.setItem("mutafriches_ref", refParam);
+        sessionStorage.setItem(STORAGE_KEYS.REF, refParam);
       } else {
-        sessionStorage.removeItem("mutafriches_ref");
+        sessionStorage.removeItem(STORAGE_KEYS.REF);
       }
     }
 
