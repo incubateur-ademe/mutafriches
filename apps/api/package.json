@@ -60,7 +60,7 @@
     "express": "^5.2.1",
     "html-to-text": "^10.0.0",
     "jsonwebtoken": "^9.0.3",
-    "nodemailer": "^8.0.10",
+    "nodemailer": "^9.0.1",
     "postgres": "^3.4.9",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
