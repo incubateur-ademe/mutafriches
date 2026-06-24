@@ -40,35 +40,45 @@ export const UsageDetailModal: React.FC<UsageDetailModalProps> = ({
   const totalPositif = avantages + contraintes;
   const partAvantages = totalPositif > 0 ? (avantages / totalPositif) * 100 : 0;
 
+  // En-tête : badge potentiel, puis titre avec illustration, puis ligne compatibilité
+  const header =
+    usage && badge && info ? (
+      <div>
+        <span
+          className="fr-badge fr-badge--sm"
+          style={{ color: badge.textColor, backgroundColor: badge.backgroundColor }}
+        >
+          {badge.label}
+        </span>
+        <h2
+          id="modal-detail-usage-title"
+          className="fr-modal__title fr-mt-1w"
+          style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
+        >
+          <img src={info.image} alt="" width={32} height={32} />
+          {info.label}
+        </h2>
+        <p className="fr-mb-0 fr-mt-1w">
+          <strong>{Math.round(usage.indiceMutabilite)} % de compatibilité</strong>{" "}
+          <span style={{ fontWeight: 400 }}>Indice = avantages / (avantages + contraintes)</span>
+        </p>
+      </div>
+    ) : undefined;
+
   return (
     <ModalInfo
       id="modal-detail-usage"
       title={info?.label ?? "Détail de l'usage"}
-      showIcon={false}
+      header={header}
       size="xl"
       isOpen={isOpen}
       onClose={onClose}
     >
       {usage && badge && (
         <>
-          <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "1rem" }}>
-            <span
-              className="fr-badge fr-badge--sm"
-              style={{ color: badge.textColor, backgroundColor: badge.backgroundColor }}
-            >
-              {badge.label}
-            </span>
-            <span>
-              <strong>{Math.round(usage.indiceMutabilite)} %</strong> de compatibilité
-            </span>
-            <span className="fr-text--sm" style={{ color: "var(--text-mention-grey)" }}>
-              Indice = avantages / (avantages + contraintes)
-            </span>
-          </div>
-
           {/* Barre avantages / contraintes */}
           <div
-            className="fr-mt-2w"
+            className="fr-mt-3w"
             style={{
               display: "flex",
               height: "10px",
