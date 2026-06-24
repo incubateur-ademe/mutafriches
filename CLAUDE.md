@@ -146,6 +146,15 @@ Règles :
 
 ## Workflow obligatoire
 
+### Découpage et livraison d'une feature
+
+Pour **chaque feature identifiée** (un groupe cohérent de modifications, typiquement une nouvelle conversation) :
+
+- **Découper en commits** atomiques et cohérents (un commit = une étape qui laisse `pnpm validate` vert).
+- **Réutiliser / mutualiser** le code existant dès que possible plutôt que de dupliquer (composants, services, types partagés).
+- **Justifier les choix** : dans la description des commits (le pourquoi), et via un ADR (`/adr`) si le choix est architecturalement significatif.
+- **Proposer à l'utilisateur des tests manuels E2E côté UI** à réaliser lui-même, en fin de feature : un parcours pas à pas couvrant le comportement attendu.
+
 ### Vérification post-implémentation
 
 Après toute implémentation ou modification de code, TOUJOURS lancer la vérification complète :
