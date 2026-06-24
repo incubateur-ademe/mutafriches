@@ -1,4 +1,5 @@
 export { EnrichedInfoField } from "./EnrichedInfoField";
+export { RaccordementEauField } from "./RaccordementEauField";
 export { FormSelectField } from "./FormSelectField";
 export type { SelectOption, FormFieldConfig } from "./FormSelectField";
 export { PollutionField } from "./PollutionField";

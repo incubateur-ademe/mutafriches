@@ -3,7 +3,6 @@ import {
   EtatBatiInfrastructure,
   PresencePollution,
   ValeurArchitecturale,
-  RaccordementEau,
 } from "@mutafriches/shared-types";
 import { FormFieldConfig, SelectOption } from "../types";
 
@@ -27,20 +26,6 @@ export const SITE_FIELDS: Record<string, FormFieldConfig<string>> = {
       { value: TypeProprietaire.COPRO_INDIVISION, label: "Copropriété / Indivision" },
       { value: TypeProprietaire.NE_SAIT_PAS, label: "Ne sait pas" },
     ] as SelectOption<TypeProprietaire>[],
-  },
-
-  raccordementEau: {
-    id: "reseau-eaux",
-    name: "raccordementEau",
-    label: "Site connecté aux réseaux d'eau",
-    required: true,
-    section: "site",
-    options: [
-      SELECT_OPTION_PLACEHOLDER,
-      { value: RaccordementEau.OUI, label: "Oui" },
-      { value: RaccordementEau.NON, label: "Non" },
-      { value: RaccordementEau.NE_SAIT_PAS, label: "Ne sait pas" },
-    ] as SelectOption<RaccordementEau>[],
   },
 
   etatBatiInfrastructure: {

@@ -5,7 +5,6 @@ import {
   PresencePollution,
   PresenceZoneHumide,
   ValeurArchitecturale,
-  RaccordementEau,
   TrameVerteEtBleue,
   QualitePaysage,
   QualiteVoieDesserte,
@@ -37,7 +36,6 @@ export type FormFieldConfig<T = string> = {
  */
 export type SiteFormValues = {
   typeProprietaire: TypeProprietaire | "";
-  raccordementEau: RaccordementEau | "";
   etatBatiInfrastructure: EtatBatiInfrastructure | "";
   presencePollution: PresencePollution | "";
   valeurArchitecturaleHistorique: ValeurArchitecturale | "";
@@ -64,7 +62,6 @@ export type ManualFormValues = SiteFormValues & EnvironnementFormValues;
  */
 export const DEFAULT_SITE_VALUES: SiteFormValues = {
   typeProprietaire: "",
-  raccordementEau: "",
   etatBatiInfrastructure: "",
   presencePollution: "",
   valeurArchitecturaleHistorique: "",

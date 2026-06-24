@@ -19,9 +19,10 @@ export interface DonneesComplementairesInputDto {
   // Propriété
   typeProprietaire: TypeProprietaire;
 
-  // Infrastructure
-  // Dérivé automatiquement de la surface bâtie côté serveur ; n'a plus à être saisi.
+  // Dérivé automatiquement de la surface bâtie
   raccordementEau?: RaccordementEau;
+
+  // Infrastructure
   etatBatiInfrastructure: EtatBatiInfrastructure;
 
   // Environnement
