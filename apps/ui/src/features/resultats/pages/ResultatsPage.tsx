@@ -20,55 +20,6 @@ import { VERSION_ALGO } from "@mutafriches/shared-types";
 import { DebugPanelGate } from "../../debug/components/DebugPanelGate";
 import { ComparaisonAlgoPanelGate } from "../../comparaison-algo/components/ComparaisonAlgoPanelGate";
 
-// Seuils pour les messages contextuels
-const SEUIL_SURFACE_HECTARE = 10000; // 1 hectare en m2
-const SEUIL_ECART_FORTE_DISPARITE = 30; // 30% d'écart entre usages successifs
-const SEUIL_ECART_FAIBLE = 10; // 10% d'écart pour usages proches
-const NB_USAGES_PROCHES_REQUIS = 3; // Nombre d'usages proches pour déclencher le message
-
-/**
- * Analyse les résultats de mutabilité pour afficher des messages contextuels adaptés.
- */
-function analyserResultats(
-  resultats: { indiceMutabilite: number }[],
-  surfaceSite: number,
-): {
-  messageForteDisparite: boolean;
-  messageMixteUsages: boolean;
-  messageEtudeProgrammatique: boolean;
-} {
-  // Règle 2 : Vérifier s'il y a un écart > 30% entre deux usages successifs
-  let messageForteDisparite = false;
-  for (let i = 0; i < resultats.length - 1; i++) {
-    const ecart = Math.abs(resultats[i].indiceMutabilite - resultats[i + 1].indiceMutabilite);
-    if (ecart > SEUIL_ECART_FORTE_DISPARITE) {
-      messageForteDisparite = true;
-      break;
-    }
-  }
-
-  // Règle 1 : Surface > 1 hectare (sauf si règle 2 s'applique)
-  const messageMixteUsages = !messageForteDisparite && surfaceSite > SEUIL_SURFACE_HECTARE;
-
-  // Règle 3 : Vérifier si 3 usages sont éloignés de moins de 10%
-  // On cherche une séquence de 3 usages consécutifs avec écarts < 10%
-  let messageEtudeProgrammatique = false;
-  if (resultats.length >= NB_USAGES_PROCHES_REQUIS) {
-    for (let i = 0; i <= resultats.length - NB_USAGES_PROCHES_REQUIS; i++) {
-      const groupe = resultats.slice(i, i + NB_USAGES_PROCHES_REQUIS);
-      const ecartMax =
-        Math.max(...groupe.map((r) => r.indiceMutabilite)) -
-        Math.min(...groupe.map((r) => r.indiceMutabilite));
-      if (ecartMax < SEUIL_ECART_FAIBLE) {
-        messageEtudeProgrammatique = true;
-        break;
-      }
-    }
-  }
-
-  return { messageForteDisparite, messageMixteUsages, messageEtudeProgrammatique };
-}
-
 export const ResultatsPage: React.FC = () => {
   const navigate = useNavigate();
   const { state, setMutabilityResult, setCurrentStep, canAccessStep, resetForm } = useFormContext();
@@ -301,43 +252,21 @@ export const ResultatsPage: React.FC = () => {
           Modifier les données
         </button>
 
-        <h1 className="fr-mt-4w">Analyse de mutabilité</h1>
-        {(() => {
-          const surfaceSite = state.enrichmentData?.surfaceSite ?? 0;
-          const resultats = mutabilityData?.resultats ?? [];
-          const { messageForteDisparite, messageMixteUsages, messageEtudeProgrammatique } =
-            analyserResultats(resultats, surfaceSite);
-
-          return (
-            <p className="fr-text--lead">
-              Ces résultats constituent <strong>une première orientation</strong>, fondée sur des
-              données dont la fiabilité et la précision peuvent varier. Ils doivent être{" "}
-              <strong>croisés avec votre connaissance</strong> du territoire et ne se substituent
-              pas à des études de programmation.
-              {messageForteDisparite && (
-                <>
-                  <br />
-                  <br /> Les résultats font apparaître une forte disparité entre les usages, il
-                  semble que certains soient très peu adaptés à votre site.
-                </>
-              )}
-              {messageMixteUsages && (
-                <>
-                  <br />
-                  <br /> Aussi, compte tenu de la surface du site (plus d'un hectare), il vous est
-                  recommandé de privilégier un mixte d'usages dans votre programmation.
-                </>
-              )}
-              {messageEtudeProgrammatique && (
-                <>
-                  <br />
-                  <br /> Votre site semble adapté à plusieurs usages, une étude programmatique
-                  permettra de mieux qualifier le besoin et la programmation à mettre en œuvre.
-                </>
-              )}
-            </p>
-          );
-        })()}
+        <div className="fr-mt-4w" style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
+          <h1 className="fr-mb-2w">Analyse de mutabilité</h1>
+          <button
+            aria-describedby="tooltip-analyse"
+            type="button"
+            className="fr-btn--tooltip fr-btn"
+          >
+            infobulle
+          </button>
+          <span className="fr-tooltip fr-placement" id="tooltip-analyse" role="tooltip">
+            Ces résultats constituent une première orientation, basée sur les éléments que nous
+            avons recueillis et que vous avez renseigné. Ils doivent être croisés avec votre
+            connaissance du territoire et ne se substituent pas à des études de programmation.
+          </span>
+        </div>
 
         {isLoading && (
           <LoadingCallout
@@ -360,9 +289,9 @@ export const ResultatsPage: React.FC = () => {
             >
               {/* Indice de fiabilité */}
               <div style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
-                <p className="fr-text fr-mb-0">
-                  <strong>Indice de fiabilité : {mutabilityData.fiabilite.note}/10</strong>
-                </p>
+                <h5 className="fr-mb-0">
+                  Indice de fiabilité : {mutabilityData.fiabilite.note}/10
+                </h5>
                 <button
                   aria-describedby="tooltip-fiabilite"
                   type="button"
@@ -377,11 +306,29 @@ export const ResultatsPage: React.FC = () => {
               </div>
 
               <button
-                className="fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-download-line fr-btn--sm"
+                className="fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-download-line"
                 onClick={handleExport}
               >
                 Exporter les résultats
               </button>
+            </div>
+
+            <div
+              className="fr-mb-1w"
+              style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}
+            >
+              <h4 className="fr-mb-0">Usages les plus compatibles</h4>
+              <button
+                aria-describedby="tooltip-usages"
+                type="button"
+                className="fr-btn--tooltip fr-btn"
+              >
+                infobulle
+              </button>
+              <span className="fr-tooltip fr-placement" id="tooltip-usages" role="tooltip">
+                Pour les sites de plus d'un hectare, il vous est recommandé de privilégier un mixte
+                d'usages dans votre programmation.
+              </span>
             </div>
 
             <div className="fr-grid-row fr-grid-row--gutters fr-mb-4w">

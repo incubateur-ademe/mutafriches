@@ -12,20 +12,14 @@ interface ResultsTableProps {
  */
 export const ResultsTable: React.FC<ResultsTableProps> = ({ results }) => {
   return (
-    <div className="fr-mt-4w">
-      <div className="fr-table fr-table--bordered">
+    <div className="fr-mt-2w">
+      <h4 className="fr-mb-1w">Tous les usages</h4>
+      <div className="fr-table fr-table--bordered fr-table--no-caption">
         <div className="fr-table__wrapper">
           <div className="fr-table__container">
             <div className="fr-table__content">
               <table>
-                <caption>
-                  Tous les usages
-                  <div className="fr-table__caption__desc">
-                    Vous trouverez ici la liste complète des usages analysés et une première
-                    approche de leur compatibilité avec les caractéristiques de votre site.
-                  </div>
-                </caption>
-
+                <caption>Tous les usages</caption>
                 <thead>
                   <tr>
                     <th scope="col">Rang</th>
