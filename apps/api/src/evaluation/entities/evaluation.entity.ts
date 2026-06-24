@@ -28,6 +28,9 @@ export class Evaluation {
   origine: OrigineUtilisation;
   versionAlgorithme: string;
 
+  // Identifiant visiteur anonyme persistant (stocké en base dans utilisateur_id)
+  visitorId?: string;
+
   constructor(
     siteId: string,
     codeInsee: string,
@@ -36,6 +39,7 @@ export class Evaluation {
     resultats: MutabiliteOutputDto,
     origine: OrigineUtilisation,
     nombreParcelles?: number,
+    visitorId?: string,
   ) {
     this.siteId = siteId;
     this.nombreParcelles = nombreParcelles;
@@ -46,6 +50,7 @@ export class Evaluation {
     this.resultats = resultats;
     this.origine = origine;
     this.versionAlgorithme = VERSION_ALGO;
+    this.visitorId = visitorId;
   }
 
   /**

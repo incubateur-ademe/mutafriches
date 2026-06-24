@@ -26,11 +26,14 @@ export const evenements_utilisateur = pgTable(
     integrateur: varchar("integrateur", { length: 255 }),
     userAgent: varchar("user_agent", { length: 500 }),
     sessionId: varchar("session_id", { length: 100 }),
+    // Identifiant visiteur anonyme persistant (localStorage), stable entre visites
+    visitorId: varchar("visitor_id", { length: 50 }),
   },
   (table) => [
     index("idx_type_evenement").on(table.typeEvenement),
     index("idx_evaluation_id").on(table.evaluationId),
     index("idx_date_creation").on(table.dateCreation),
     index("idx_session_id").on(table.sessionId),
+    index("idx_visitor_id").on(table.visitorId),
   ],
 );

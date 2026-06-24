@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
 import { isValidParcelId, normalizeParcelId } from "@mutafriches/shared-types";
 import type { CCI92Site } from "../data/parcelles-cci92";
+import { STORAGE_KEYS } from "@shared/config/storage-keys.config";
 
-const STORAGE_KEY = "cci92-custom-sites";
+const STORAGE_KEY = STORAGE_KEYS.CCI92_CUSTOM_SITES;
 const STORAGE_VERSION = 1;
 
 export const CUSTOM_COMMUNE_LABEL = "Ajouts personnalisés";

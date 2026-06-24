@@ -3,6 +3,8 @@
  * Utilise les flux WMTS de la Géoplateforme : https://data.geopf.fr/wmts
  */
 
+import { STORAGE_KEYS } from "./storage-keys.config";
+
 /** Type pour les couches de tuiles individuelles */
 export type TileLayerType = "plan" | "orthophotos" | "cadastre";
 
@@ -77,7 +79,7 @@ export const DEFAULT_MAP_LAYER: MapLayerType = "tous";
 /**
  * Clés de stockage localStorage pour la persistance des choix
  */
-export const MAP_LAYER_STORAGE_KEY = "mutafriches:map-layer";
+export const MAP_LAYER_STORAGE_KEY = STORAGE_KEYS.MAP_LAYER;
 
 /** Liste ordonnée des couches de tuiles (pour le mode "tous") */
 export const TILE_LAYERS: TileLayerType[] = ["orthophotos", "plan", "cadastre"];

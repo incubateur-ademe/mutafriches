@@ -14,6 +14,7 @@ export class EvenementUtilisateur {
   integrateur?: string;
   userAgent?: string;
   sessionId?: string;
+  visitorId?: string;
 
   constructor(data: {
     id: string;
@@ -28,6 +29,7 @@ export class EvenementUtilisateur {
     integrateur?: string;
     userAgent?: string;
     sessionId?: string;
+    visitorId?: string;
   }) {
     Object.assign(this, data);
   }

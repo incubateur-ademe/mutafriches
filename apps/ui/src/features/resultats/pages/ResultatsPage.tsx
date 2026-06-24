@@ -168,6 +168,12 @@ export const ResultatsPage: React.FC = () => {
       setMutabilityData(result);
       sendIframeMessages(result);
 
+      // Tracker l'affichage des résultats avec l'evaluationId (dédoublonnage analytics)
+      track(TypeEvenement.RESULTATS_MUTABILITE, {
+        evaluationId: result.evaluationId || undefined,
+        identifiantCadastral: state.identifiantSite || undefined,
+      });
+
       // Tracker l'événement d'évaluation terminée (seulement si evaluationId valide)
       if (result.evaluationId) {
         await trackEvaluationTerminee(result.evaluationId, state.identifiantSite || undefined);
@@ -192,6 +198,7 @@ export const ResultatsPage: React.FC = () => {
     iframeCommunicator,
     integrator,
     state.identifiantSite,
+    track,
     trackEvaluationTerminee,
   ]);
 
@@ -208,17 +215,18 @@ export const ResultatsPage: React.FC = () => {
     hasInitializedRef.current = true;
     setCurrentStep(4); // Étape 4 = résultats
 
-    // Tracker l'arrivée sur la page
-    track(TypeEvenement.RESULTATS_MUTABILITE, {
-      identifiantCadastral: state.identifiantSite || undefined,
-    });
-
     if (state.mutabilityResult) {
+      // Résultat déjà disponible : tracker l'affichage des résultats avec l'evaluationId connu
+      track(TypeEvenement.RESULTATS_MUTABILITE, {
+        evaluationId: state.mutabilityResult.evaluationId || undefined,
+        identifiantCadastral: state.identifiantSite || undefined,
+      });
       // Initialisation unique au montage (garde hasInitializedRef) : setState intentionnel
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setMutabilityData(state.mutabilityResult);
       sendIframeMessages(state.mutabilityResult);
     } else {
+      // Calcul asynchrone : le tracking est fait dans calculateMutability une fois l'evaluationId disponible
       calculateMutability();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -37,6 +37,14 @@ export class EvenementInputDto implements IEvenementInput {
 
   @IsOptional()
   @IsString()
+  @MaxLength(50)
+  @Matches(/^[a-z0-9-]+$/i, {
+    message: "visitorId contient des caractères non autorisés",
+  })
+  visitorId?: string;
+
+  @IsOptional()
+  @IsString()
   @MaxLength(100)
   ref?: string;
 

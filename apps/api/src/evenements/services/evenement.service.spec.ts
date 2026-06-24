@@ -477,6 +477,44 @@ describe("EvenementService - Sécurité", () => {
     });
   });
 
+  describe("Identifiant visiteur (visitorId)", () => {
+    it("devrait propager le visitorId à l'événement enregistré", async () => {
+      const input = {
+        typeEvenement: TypeEvenement.RESULTATS_MUTABILITE,
+        visitorId: "550e8400-e29b-41d4-a716-446655440000",
+      };
+
+      await service.enregistrerEvenement(input);
+
+      const savedEvent = vi.mocked(mockRepository.enregistrerEvenement).mock.calls[0][0];
+      expect(savedEvent.visitorId).toBe("550e8400-e29b-41d4-a716-446655440000");
+    });
+
+    it("devrait gérer l'absence de visitorId sans erreur", async () => {
+      const input = {
+        typeEvenement: TypeEvenement.RESULTATS_MUTABILITE,
+      };
+
+      await service.enregistrerEvenement(input);
+
+      const savedEvent = vi.mocked(mockRepository.enregistrerEvenement).mock.calls[0][0];
+      expect(savedEvent.visitorId).toBeUndefined();
+    });
+
+    it("devrait sanitiser le visitorId (caractères dangereux supprimés)", async () => {
+      const input = {
+        typeEvenement: TypeEvenement.RESULTATS_MUTABILITE,
+        visitorId: "abc<script>123",
+      };
+
+      await service.enregistrerEvenement(input);
+
+      const savedEvent = vi.mocked(mockRepository.enregistrerEvenement).mock.calls[0][0];
+      expect(savedEvent.visitorId).not.toContain("<");
+      expect(savedEvent.visitorId).not.toContain(">");
+    });
+  });
+
   describe("Demande de contact multisites", () => {
     it("devrait router vers ContactService et ne pas persister l'email dans l'événement", async () => {
       const input = {

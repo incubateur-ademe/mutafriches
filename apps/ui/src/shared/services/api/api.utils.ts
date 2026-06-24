@@ -1,10 +1,42 @@
+import { STORAGE_KEYS } from "../../config/storage-keys.config";
 import type { ApiError, ApiErrorResponse } from "./api.types";
 
 /**
- * Génère un ID de session unique
+ * Génère un ID de session unique (par chargement d'app, non persisté)
  */
 export const generateSessionId = (): string => {
   return `session-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+};
+
+/** Identifiant visiteur en mémoire si localStorage indisponible (navigation privée, storage tiers bloqué) */
+let visitorIdMemoryFallback: string | undefined;
+
+/** Génère un UUID anonyme, avec repli si crypto.randomUUID indisponible */
+const genererUuid = (): string => {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID();
+  }
+  return `${Date.now().toString(16)}-${Math.random().toString(16).substring(2, 10)}`;
+};
+
+/**
+ * Récupère (ou crée) un identifiant visiteur anonyme stable entre visites.
+ * Persisté en localStorage ; repli en mémoire si le storage est inaccessible.
+ */
+export const getOrCreateVisitorId = (): string => {
+  try {
+    const existant = window.localStorage.getItem(STORAGE_KEYS.VISITOR_ID);
+    if (existant) return existant;
+    const nouveau = genererUuid();
+    window.localStorage.setItem(STORAGE_KEYS.VISITOR_ID, nouveau);
+    return nouveau;
+  } catch {
+    // localStorage indisponible : repli en mémoire pour la durée de la session
+    if (!visitorIdMemoryFallback) {
+      visitorIdMemoryFallback = genererUuid();
+    }
+    return visitorIdMemoryFallback;
+  }
 };
 
 /**

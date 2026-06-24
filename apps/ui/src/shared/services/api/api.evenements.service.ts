@@ -2,20 +2,22 @@ import type { EvenementInputDto } from "@mutafriches/shared-types";
 import { apiClient } from "./api.client";
 import { API_CONFIG } from "./api.config";
 import type { ApiCallOptions } from "./api.types";
-import { generateSessionId } from "./api.utils";
+import { generateSessionId, getOrCreateVisitorId } from "./api.utils";
 
 class EvenementsService {
   private sessionId: string;
+  private visitorId: string;
 
   constructor() {
     this.sessionId = generateSessionId();
+    this.visitorId = getOrCreateVisitorId();
   }
 
   /**
    * Enregistrer un événement utilisateur
    */
   async enregistrerEvenement(
-    input: Omit<EvenementInputDto, "sessionId">,
+    input: Omit<EvenementInputDto, "sessionId" | "visitorId">,
     options?: ApiCallOptions,
   ): Promise<void> {
     try {
@@ -34,6 +36,7 @@ class EvenementsService {
         {
           ...input,
           sessionId: this.sessionId,
+          visitorId: this.visitorId,
         },
         { params },
       );

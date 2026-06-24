@@ -33,6 +33,8 @@ export interface EvenementInputDto {
   identifiantCadastral?: string;
   donnees?: EvenementDonnees;
   sessionId?: string;
+  /** Identifiant visiteur anonyme persistant (localStorage), stable entre visites */
+  visitorId?: string;
   sourceCampagne?: string;
   ref?: string;
   integrateur?: string;

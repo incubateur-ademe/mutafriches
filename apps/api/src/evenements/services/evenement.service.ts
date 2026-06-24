@@ -57,6 +57,7 @@ export class EvenementService {
       integrateur: this.sanitizeString(metadata?.integrateur),
       userAgent: this.sanitizeUserAgent(metadata?.userAgent),
       sessionId: this.sanitizeString(input.sessionId),
+      visitorId: this.sanitizeString(input.visitorId),
     });
 
     await this.evenementRepository.enregistrerEvenement(evenement);
