@@ -21,8 +21,8 @@ export const PartenairesPage: React.FC = () => {
           Consultez la liste des sources de données externes (APIs distantes) et des référentiels
           importés en base utilisés par Mutafriches pour enrichir les analyses.
         </p>
-        <Link className="fr-btn fr-btn--secondary" to={ROUTES.DONNEES_EXTERNES}>
-          Voir les données externes
+        <Link className="fr-btn fr-btn--secondary" to={ROUTES.DONNEES_UTILISEES}>
+          Voir les données utilisées
         </Link>
       </div>
 

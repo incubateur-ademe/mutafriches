@@ -4,7 +4,7 @@ import { DsfrTabs } from "../../../shared/components/dsfr/DsfrTabs";
 import { ImportsPanel } from "../components/ImportsPanel";
 import { ApisExternesPanel } from "../components/ApisExternesPanel";
 
-export function DonneesExternesPage() {
+export function DonneesUtiliseesPage() {
   return (
     <Layout>
       <div className="content-editorial fr-col-12">
@@ -13,11 +13,11 @@ export function DonneesExternesPage() {
             type="button"
             className="fr-breadcrumb__button"
             aria-expanded="false"
-            aria-controls="breadcrumb-donnees-externes"
+            aria-controls="breadcrumb-donnees-utilisees"
           >
             Voir le Fil d'Ariane
           </button>
-          <div className="fr-collapse" id="breadcrumb-donnees-externes">
+          <div className="fr-collapse" id="breadcrumb-donnees-utilisees">
             <ol className="fr-breadcrumb__list">
               <li>
                 <Link className="fr-breadcrumb__link" to="/">
@@ -26,14 +26,14 @@ export function DonneesExternesPage() {
               </li>
               <li>
                 <a className="fr-breadcrumb__link" aria-current="page">
-                  Données externes
+                  Données utilisées
                 </a>
               </li>
             </ol>
           </div>
         </nav>
 
-        <h1 id="donnees-externes">Données externes</h1>
+        <h1 id="donnees-utilisees">Données utilisées</h1>
         <p className="fr-text--lead fr-mb-6w">
           Vue d'ensemble des sources de données externes utilisées par Mutafriches : les APIs
           distantes interrogées pour enrichir automatiquement les analyses et les référentiels
@@ -41,7 +41,7 @@ export function DonneesExternesPage() {
         </p>
 
         <DsfrTabs
-          ariaLabel="Données externes : sélection de l'onglet"
+          ariaLabel="Données utilisées : sélection de l'onglet"
           tabs={[
             { id: "apis", label: "APIs externes", panel: <ApisExternesPanel /> },
             { id: "imports", label: "Imports", panel: <ImportsPanel /> },
