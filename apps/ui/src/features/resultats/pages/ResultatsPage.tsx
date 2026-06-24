@@ -43,6 +43,8 @@ export const ResultatsPage: React.FC = () => {
     track,
     trackExporterResultats,
     trackOuvertureModaleMultisites,
+    trackOuvertureRecapSite,
+    trackOuvertureDetailUsage,
     trackDemandeContactMultisites,
     trackEvaluationTerminee,
   } = useEventTracking();
@@ -333,7 +335,10 @@ export const ResultatsPage: React.FC = () => {
               identifiantParcelle={state.uiData?.identifiantParcelle}
               nombreParcelles={state.uiData?.nombreParcelles}
               surface={state.uiData?.surfaceParcelle}
-              onVoirRecap={() => setIsRecapModalOpen(true)}
+              onVoirRecap={() => {
+                trackOuvertureRecapSite(mutabilityData?.evaluationId);
+                setIsRecapModalOpen(true);
+              }}
             />
 
             <div
@@ -368,9 +373,10 @@ export const ResultatsPage: React.FC = () => {
             {/* Table des résultats */}
             <ResultsTable
               results={mutabilityData.resultats}
-              onVoirDetail={(result: UsageResultat) =>
-                setUsageDetail(result as UsageResultatDetaille)
-              }
+              onVoirDetail={(result: UsageResultat) => {
+                trackOuvertureDetailUsage(result, mutabilityData.evaluationId);
+                setUsageDetail(result as UsageResultatDetaille);
+              }}
             />
           </>
         )}
