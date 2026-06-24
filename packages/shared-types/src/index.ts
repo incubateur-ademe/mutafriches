@@ -3,6 +3,9 @@ export * from "./enrichissement";
 export * from "./evaluation";
 export * from "./evenements";
 
+// Récapitulatif du site (registre des critères + builder)
+export * from "./recapitulatif";
+
 // Stats
 export * from "./stats";
 

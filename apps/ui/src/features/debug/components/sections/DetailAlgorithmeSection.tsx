@@ -4,6 +4,7 @@ import type {
   UsageResultatDetaille,
   DetailCritere,
 } from "@mutafriches/shared-types";
+import { CRITERES_METADATA, getImpactCritere } from "@mutafriches/shared-types";
 import { DsfrAccordion } from "@shared/components/dsfr/DsfrAccordion";
 import { getMutabilityColor } from "../../utils/debug.helpers";
 
@@ -18,69 +19,12 @@ const USAGE_LABELS: Record<string, string> = {
   photovoltaique: "Photovoltaïque",
 };
 
-/** Labels français pour les noms de critères techniques */
-const CRITERE_LABELS: Record<string, string> = {
-  typeProprietaire: "Type de propriétaire",
-  surfaceSite: "Surface du site",
-  surfaceBati: "Surface bâtie",
-  etatBatiInfrastructure: "État du bâti",
-  presencePollution: "Présence de pollution",
-  siteEnCentreVille: "Site en centre-ville",
-  tauxLogementsVacants: "Taux de logements vacants",
-  raccordementEau: "Raccordement eau",
-  qualiteVoieDesserte: "Qualité de la voie de desserte",
-  distanceAutoroute: "Distance autoroute",
-  distanceTransportCommun: "Distance transport en commun",
-  proximiteCommercesServices: "Commerces et services",
-  distanceRaccordementElectrique: "Distance raccordement électrique",
-  zonageReglementaire: "Zonage réglementaire",
-  risqueRetraitGonflementArgile: "Retrait gonflement argiles",
-  risqueCavitesSouterraines: "Cavités souterraines",
-  risqueInondation: "Inondations",
-  presenceRisquesTechnologiques: "Risques technologiques",
-  zonagePatrimonial: "Zonage patrimonial",
-  qualitePaysage: "Qualité du paysage",
-  valeurArchitecturaleHistorique: "Valeur architecturale / historique",
-  zonageEnvironnemental: "Zonage environnemental",
-  trameVerteEtBleue: "Trame verte et bleue",
-  presenceRisquesNaturels: "Risques naturels",
-  zoneAccelerationEnr: "Zone d'accélération EnR",
-  presenceEspecesProtegees: "Présence d'espèces protégées",
-  presenceZoneHumide: "Présence d'une zone humide",
-  zonageAbcLogement: "Zonage ABC logement",
-  distanceIte: "Distance à une installation de chargement industrielle",
-};
-
 /** Critères à mettre en évidence (poids élevé et/ou intérêt analytique) */
 const CRITERES_SURLIGNER = new Set([
   "zonageReglementaire",
   "zonageEnvironnemental",
   "zonagePatrimonial",
 ]);
-
-/**
- * Retourne le label d'impact pour un scoreBrut
- */
-function getImpactLabel(scoreBrut: number): string {
-  if (scoreBrut >= 2) return "Très positif";
-  if (scoreBrut >= 1) return "Positif";
-  if (scoreBrut > 0 && scoreBrut < 1) return "Neutre";
-  if (scoreBrut >= -1 && scoreBrut < 0) return "Négatif";
-  if (scoreBrut < -1) return "Très négatif";
-  return "Neutre";
-}
-
-/**
- * Retourne la classe CSS pour la couleur d'un score
- */
-function getScoreClassName(scoreBrut: number): string {
-  if (scoreBrut >= 2) return "detail-algo__score--tres-positif";
-  if (scoreBrut >= 1) return "detail-algo__score--positif";
-  if (scoreBrut > 0 && scoreBrut < 1) return "detail-algo__score--neutre";
-  if (scoreBrut >= -1 && scoreBrut < 0) return "detail-algo__score--negatif";
-  if (scoreBrut < -1) return "detail-algo__score--tres-negatif";
-  return "detail-algo__score--neutre";
-}
 
 /**
  * Formate la valeur d'un critère pour l'affichage
@@ -138,12 +82,14 @@ export const DetailAlgorithmeSection: React.FC<DetailAlgorithmeSectionProps> = (
     return (
       <tr key={`${critere.critere}-${type}`} className={rowClass}>
         <td className="detail-algo__critere-name">
-          {CRITERE_LABELS[critere.critere] ?? critere.critere}
+          {CRITERES_METADATA[critere.critere]?.label ?? critere.critere}
         </td>
         <td className="detail-algo__critere-valeur">{formatValeur(critere.valeur)}</td>
         <td>
-          <span className={`detail-algo__impact-badge ${getScoreClassName(critere.scoreBrut)}`}>
-            {getImpactLabel(critere.scoreBrut)} ({critere.scoreBrut > 0 ? "+" : ""}
+          <span
+            className={`detail-algo__impact-badge detail-algo__score--${getImpactCritere(critere.scoreBrut).niveau}`}
+          >
+            {getImpactCritere(critere.scoreBrut).label} ({critere.scoreBrut > 0 ? "+" : ""}
             {critere.scoreBrut})
           </span>
         </td>

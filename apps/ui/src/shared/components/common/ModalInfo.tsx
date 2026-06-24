@@ -8,8 +8,10 @@ interface ModalInfoProps {
   onClose: () => void;
   showIcon?: boolean;
   icon?: string;
-  size?: "sm" | "md" | "lg";
+  size?: "sm" | "md" | "lg" | "xl";
   actions?: React.ReactNode;
+  /** En-tête personnalisé remplaçant le titre par défaut (doit porter id `${id}-title`) */
+  header?: React.ReactNode;
 }
 
 export const ModalInfo: React.FC<ModalInfoProps> = ({
@@ -22,6 +24,7 @@ export const ModalInfo: React.FC<ModalInfoProps> = ({
   icon = "fr-icon-info-line",
   size = "md",
   actions,
+  header,
 }) => {
   const dialogRef = useRef<HTMLDialogElement>(null);
 
@@ -32,6 +35,9 @@ export const ModalInfo: React.FC<ModalInfoProps> = ({
         return "fr-col-12 fr-col-md-6 fr-col-lg-4";
       case "lg":
         return "fr-col-12 fr-col-md-10 fr-col-lg-8";
+      case "xl":
+        // Pleine largeur du conteneur : récapitulatif large (tableau complet)
+        return "fr-col-12";
       default:
         return "fr-col-12 fr-col-md-8 fr-col-lg-6";
     }
@@ -89,10 +95,12 @@ export const ModalInfo: React.FC<ModalInfoProps> = ({
                 </button>
               </div>
               <div className="fr-modal__content">
-                <h2 id={`${id}-title`} className="fr-modal__title">
-                  {showIcon && <span className={`${icon} fr-icon--lg`} aria-hidden="true"></span>}{" "}
-                  {title}
-                </h2>
+                {header ?? (
+                  <h2 id={`${id}-title`} className="fr-modal__title">
+                    {showIcon && <span className={`${icon} fr-icon--lg`} aria-hidden="true"></span>}{" "}
+                    {title}
+                  </h2>
+                )}
                 {children}
               </div>
               {actions && (

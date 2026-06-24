@@ -81,7 +81,7 @@ describe("debug.helpers", () => {
   describe("getManualDataLabel", () => {
     it("retourne le label fran\u00E7ais pour une cl\u00E9 connue", () => {
       expect(getManualDataLabel("typeProprietaire")).toBe("Type de propri\u00E9taire");
-      expect(getManualDataLabel("raccordementEau")).toBe("Raccordement eau");
+      expect(getManualDataLabel("raccordementEau")).toBe("Raccordement aux r\u00E9seaux d'eau");
       expect(getManualDataLabel("presencePollution")).toBe("Pr\u00E9sence de pollution");
     });
 
