@@ -5,12 +5,14 @@ import "./ResultTable.css";
 
 interface ResultsTableProps {
   results: UsageResultat[];
+  /** Ouvre la modale de détail pour l'usage cliqué */
+  onVoirDetail?: (result: UsageResultat) => void;
 }
 
 /**
  * Tableau complet des résultats de mutabilité pour tous les usages
  */
-export const ResultsTable: React.FC<ResultsTableProps> = ({ results }) => {
+export const ResultsTable: React.FC<ResultsTableProps> = ({ results, onVoirDetail }) => {
   return (
     <div className="fr-mt-2w">
       <h4 className="fr-mb-1w">Tous les usages</h4>
@@ -59,15 +61,27 @@ export const ResultsTable: React.FC<ResultsTableProps> = ({ results }) => {
                           </div>
                         </td>
                         <td>
-                          <span
-                            className="result-table__badge"
-                            style={{
-                              color: badgeConfig.textColor,
-                              backgroundColor: badgeConfig.backgroundColor,
-                            }}
-                          >
-                            {badgeConfig.label}
-                          </span>
+                          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                            <span
+                              className="result-table__badge"
+                              style={{
+                                color: badgeConfig.textColor,
+                                backgroundColor: badgeConfig.backgroundColor,
+                              }}
+                            >
+                              {badgeConfig.label}
+                            </span>
+                            {onVoirDetail && (
+                              <button
+                                type="button"
+                                className="fr-btn fr-btn--tertiary-no-outline fr-btn--sm fr-icon-question-line"
+                                title={`Voir le détail de l'usage ${getUsageInfo(result.usage).label}`}
+                                onClick={() => onVoirDetail(result)}
+                              >
+                                Voir le détail
+                              </button>
+                            )}
+                          </div>
                         </td>
                       </tr>
                     );

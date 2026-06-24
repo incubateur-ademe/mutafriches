@@ -1,7 +1,13 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useEventTracking } from "../../../shared/hooks/useEventTracking";
-import { MutabiliteOutputDto, TypeEvenement, BesoinMultisites } from "@mutafriches/shared-types";
+import {
+  MutabiliteOutputDto,
+  TypeEvenement,
+  BesoinMultisites,
+  UsageResultat,
+  UsageResultatDetaille,
+} from "@mutafriches/shared-types";
 import { buildMutabilityInput, buildDonneesComplementaires } from "../utils/mutability.mapper";
 import { ROUTES } from "../../../shared/config/routes.config";
 import { Layout } from "../../../shared/components/layout/Layout";
@@ -11,6 +17,7 @@ import { PodiumCard } from "../components/PodiumCard";
 import { ResultsTable } from "../components/ResultTable";
 import { SiteRecapBanner } from "../components/SiteRecapBanner";
 import { SiteRecapModal } from "../components/SiteRecapModal";
+import { UsageDetailModal } from "../components/UsageDetailModal";
 import { useFormContext } from "../../../shared/form/useFormContext";
 import { useIframe, useIframeCallback, useIsIframeMode } from "../../../shared/iframe/useIframe";
 import { createIframeCommunicator } from "../../../shared/iframe/iframeCommunication";
@@ -56,6 +63,9 @@ export const ResultatsPage: React.FC = () => {
 
   // Modal récapitulatif du site
   const [isRecapModalOpen, setIsRecapModalOpen] = useState(false);
+
+  // Modal détail d'un usage
+  const [usageDetail, setUsageDetail] = useState<UsageResultatDetaille | null>(null);
 
   // Un seul ref pour tracker si on a déjà initialisé
   const hasInitializedRef = React.useRef(false);
@@ -356,7 +366,12 @@ export const ResultatsPage: React.FC = () => {
             </div>
 
             {/* Table des résultats */}
-            <ResultsTable results={mutabilityData.resultats} />
+            <ResultsTable
+              results={mutabilityData.resultats}
+              onVoirDetail={(result: UsageResultat) =>
+                setUsageDetail(result as UsageResultatDetaille)
+              }
+            />
           </>
         )}
 
@@ -464,6 +479,15 @@ export const ResultatsPage: React.FC = () => {
       <SiteRecapModal
         isOpen={isRecapModalOpen}
         onClose={() => setIsRecapModalOpen(false)}
+        enrichissement={state.enrichmentData}
+        complementaires={donneesComplementaires}
+      />
+
+      {/* Modal détail d'un usage */}
+      <UsageDetailModal
+        isOpen={!!usageDetail}
+        onClose={() => setUsageDetail(null)}
+        usage={usageDetail}
         enrichissement={state.enrichmentData}
         complementaires={donneesComplementaires}
       />
