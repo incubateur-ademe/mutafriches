@@ -124,7 +124,9 @@ export class AppConfig {
     return {
       apiUrl: this.env.API_URL ?? "http://localhost:3000",
       apiRefreshToken: this.env.API_REFRESH_TOKEN,
-      cci92PrefetchDelayMs: this.env.CCI92_PREFETCH_DELAY_MS ?? 1000,
+      partenairesPrefetchDelayMs: this.env.PARTENAIRES_PREFETCH_DELAY_MS ?? 1000,
+      // Slug pour limiter le pré-chauffe à un partenaire (vide = tous)
+      partenaireFiltre: this.env.PARTENAIRE?.trim() || undefined,
     };
   }
 }

@@ -1,0 +1,8 @@
+/* Colonne Statut : élargie, placée en première position, badge sur une seule ligne */
+.idu-statut-col {
+  min-width: 13rem;
+}
+
+.idu-statut-col .fr-badge {
+  white-space: nowrap;
+}

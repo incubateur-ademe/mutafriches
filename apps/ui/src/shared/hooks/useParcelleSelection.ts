@@ -74,6 +74,11 @@ export interface UseParcelleSelectionOptions {
   onParcelleAdded?: (nombreParcelles: number, surfaceTotaleM2: number) => void;
   onParcelleRemoved?: (nombreParcelles: number, surfaceTotaleM2: number) => void;
   onMaxSizeReached?: (nombreParcelles: number, surfaceTotaleM2: number) => void;
+  /**
+   * Mode parcelle unique : un nouveau clic remplace la sélection, sans contrôle
+   * d'adjacence ni de surface. Désactivé par défaut (comportement multi-parcelles).
+   */
+  singleSelection?: boolean;
 }
 
 /**
@@ -117,6 +122,13 @@ export function useParcelleSelection(
         return;
       }
 
+      // Mode parcelle unique : preview directe, sans contrôle d'adjacence ni de surface
+      if (options?.singleSelection) {
+        setPreviewParcelle({ idu, geometry, properties, contenance, clickCoords });
+        setSelectionState("previewing");
+        return;
+      }
+
       // Cas 2 : vérifier la surface maximale (uniquement en multi-parcelles)
       if (selectedParcelles.size > 0 && totalArea + contenance > MAX_SITE_AREA_M2) {
         setPreviewParcelle({ idu, geometry, properties, contenance, clickCoords });
@@ -151,7 +163,8 @@ export function useParcelleSelection(
     const { idu, geometry, properties, contenance } = previewParcelle;
 
     setSelectedParcelles((prev) => {
-      const next = new Map(prev);
+      // Mode parcelle unique : la nouvelle sélection remplace la précédente
+      const next = options?.singleSelection ? new Map() : new Map(prev);
       next.set(idu, { idu, geometry, properties, contenance });
 
       let newTotalArea = 0;

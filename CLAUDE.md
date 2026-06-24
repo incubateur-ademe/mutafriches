@@ -207,6 +207,8 @@ Règles :
 - **Une seule ligne** de description (pas de listes à puces, pas de paragraphes).
 - Préférer le **pourquoi** au quoi (le diff montre déjà le quoi).
 - **Aucune mention d'auteur ou de co-auteur** dans le corps du commit (pas de `Co-Authored-By`, pas de `Generated with`, etc.). L'auteur git suffit.
+- Committer uniquement à la demande explicite de l'utilisateur.
+- **Ne jamais `git push`** (ni `push --force`, ni création/mise à jour de PR distante) : les push sont gérés **exclusivement par l'utilisateur**. Se limiter au commit local.
 
 ### Compaction du contexte
 

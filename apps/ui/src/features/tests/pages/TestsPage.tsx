@@ -4,18 +4,19 @@ import { Layout } from "../../../shared/components/layout/Layout";
 export function Tests() {
   const testPages = [
     {
+      id: "test-diagnostic-parcelle",
+      title: "Diagnostic parcelle",
+      description:
+        "Diagnostiquer un IDU (trouvé/rejeté par le cadastre) ou retrouver l'IDU d'une parcelle depuis la carte ou une adresse",
+      href: "/test/diagnostic-parcelle",
+      image: "/illustrations/undraw_file-search_cbur.svg",
+    },
+    {
       id: "test-iframe",
       title: "Test IFrame",
       description: "Tester l'intégration en IFrame et la communication entre l'iframe et le parent",
       href: "/test/iframe",
       image: "/illustrations/undraw_personal-site_z6pl.svg",
-    },
-    {
-      id: "test-algorithme",
-      title: "Test Algorithme",
-      description: "Tester l'algorithme de calcul de mutabilité et les indices de fiabilité",
-      href: "/test/algorithme",
-      image: "/illustrations/undraw_file-search_cbur.svg",
     },
   ];
 

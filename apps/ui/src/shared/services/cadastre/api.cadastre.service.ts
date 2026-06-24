@@ -83,6 +83,69 @@ export async function fetchParcelsAroundPoint(
 }
 
 /**
+ * Interroge l'API Carto IGN par référence cadastrale (code INSEE + section + numéro).
+ * Utilisé pour le diagnostic d'un IDU (sans coordonnées).
+ *
+ * @returns FeatureCollection (0 feature si la parcelle n'existe pas dans le cadastre actuel)
+ */
+export async function fetchParcelByRef(
+  codeInsee: string,
+  section: string,
+  numero: string,
+): Promise<ApiCartoFeatureCollection | null> {
+  const params = new URLSearchParams();
+  params.set("code_insee", codeInsee);
+  params.set("section", section);
+  params.set("numero", numero);
+  params.set("_limit", "1");
+
+  const url = `${API_BASE_URL}/parcelle?${params.toString()}`;
+
+  try {
+    const res = await fetch(url);
+    if (!res.ok) {
+      console.error("Erreur API Carto (ref):", await res.text());
+      return null;
+    }
+    return (await res.json()) as ApiCartoFeatureCollection;
+  } catch (error) {
+    console.error("Erreur fetch parcelle (ref):", error);
+    return null;
+  }
+}
+
+/**
+ * Récupère les parcelles d'une section (code INSEE + section).
+ * Sert au diagnostic : déterminer si la section existe et lister les numéros présents.
+ *
+ * @param limit - Nombre maximum de parcelles renvoyées (défaut 200)
+ */
+export async function fetchSectionParcels(
+  codeInsee: string,
+  section: string,
+  limit = 200,
+): Promise<ApiCartoFeatureCollection | null> {
+  const params = new URLSearchParams();
+  params.set("code_insee", codeInsee);
+  params.set("section", section);
+  params.set("_limit", String(limit));
+
+  const url = `${API_BASE_URL}/parcelle?${params.toString()}`;
+
+  try {
+    const res = await fetch(url);
+    if (!res.ok) {
+      console.error("Erreur API Carto (section):", await res.text());
+      return null;
+    }
+    return (await res.json()) as ApiCartoFeatureCollection;
+  } catch (error) {
+    console.error("Erreur fetch parcelles (section):", error);
+    return null;
+  }
+}
+
+/**
  * Recherche une parcelle avec stratégie de fallback
  * (point exact -> buffer 5m -> buffer 10m)
  *
