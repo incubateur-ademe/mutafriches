@@ -11,15 +11,15 @@ interface RaccordementEauFieldProps {
 const BADGES: Record<RaccordementEau, { label: string; className: string }> = {
   [RaccordementEau.OUI]: {
     label: "Oui",
-    className: "fr-badge fr-badge--success fr-icon-checkbox-line fr-badge--icon-left",
+    className: "fr-badge fr-badge--green-emeraude fr-icon-checkbox-line fr-badge--icon-left",
   },
   [RaccordementEau.NON]: {
     label: "Non",
-    className: "fr-badge fr-badge--success fr-icon-information-line fr-badge--icon-left",
+    className: "fr-badge fr-badge--green-emeraude fr-icon-information-line fr-badge--icon-left",
   },
   [RaccordementEau.NE_SAIT_PAS]: {
     label: "Non déterminé",
-    className: "fr-badge fr-badge--yellow-tournesol fr-icon-question-line fr-badge--icon-left",
+    className: "fr-badge fr-badge--green-emeraude fr-icon-question-line fr-badge--icon-left",
   },
 };
 
