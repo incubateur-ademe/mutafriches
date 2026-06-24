@@ -1,6 +1,6 @@
 {
   "name": "mutafriches",
-  "version": "1.12.0",
+  "version": "1.13.0",
   "private": true,
   "description": "Monorepo pour l'analyse de mutabilité des friches urbaines",
   "packageManager": "pnpm@11.5.3",
