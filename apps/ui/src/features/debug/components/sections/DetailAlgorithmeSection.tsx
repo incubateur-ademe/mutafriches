@@ -4,7 +4,7 @@ import type {
   UsageResultatDetaille,
   DetailCritere,
 } from "@mutafriches/shared-types";
-import { CRITERES_METADATA } from "@mutafriches/shared-types";
+import { CRITERES_METADATA, getImpactCritere } from "@mutafriches/shared-types";
 import { DsfrAccordion } from "@shared/components/dsfr/DsfrAccordion";
 import { getMutabilityColor } from "../../utils/debug.helpers";
 
@@ -25,30 +25,6 @@ const CRITERES_SURLIGNER = new Set([
   "zonageEnvironnemental",
   "zonagePatrimonial",
 ]);
-
-/**
- * Retourne le label d'impact pour un scoreBrut
- */
-function getImpactLabel(scoreBrut: number): string {
-  if (scoreBrut >= 2) return "Très positif";
-  if (scoreBrut >= 1) return "Positif";
-  if (scoreBrut > 0 && scoreBrut < 1) return "Neutre";
-  if (scoreBrut >= -1 && scoreBrut < 0) return "Négatif";
-  if (scoreBrut < -1) return "Très négatif";
-  return "Neutre";
-}
-
-/**
- * Retourne la classe CSS pour la couleur d'un score
- */
-function getScoreClassName(scoreBrut: number): string {
-  if (scoreBrut >= 2) return "detail-algo__score--tres-positif";
-  if (scoreBrut >= 1) return "detail-algo__score--positif";
-  if (scoreBrut > 0 && scoreBrut < 1) return "detail-algo__score--neutre";
-  if (scoreBrut >= -1 && scoreBrut < 0) return "detail-algo__score--negatif";
-  if (scoreBrut < -1) return "detail-algo__score--tres-negatif";
-  return "detail-algo__score--neutre";
-}
 
 /**
  * Formate la valeur d'un critère pour l'affichage
@@ -110,8 +86,10 @@ export const DetailAlgorithmeSection: React.FC<DetailAlgorithmeSectionProps> = (
         </td>
         <td className="detail-algo__critere-valeur">{formatValeur(critere.valeur)}</td>
         <td>
-          <span className={`detail-algo__impact-badge ${getScoreClassName(critere.scoreBrut)}`}>
-            {getImpactLabel(critere.scoreBrut)} ({critere.scoreBrut > 0 ? "+" : ""}
+          <span
+            className={`detail-algo__impact-badge detail-algo__score--${getImpactCritere(critere.scoreBrut).niveau}`}
+          >
+            {getImpactCritere(critere.scoreBrut).label} ({critere.scoreBrut > 0 ? "+" : ""}
             {critere.scoreBrut})
           </span>
         </td>
