@@ -25,6 +25,9 @@ import { StatistiquesPage } from "./features/statistiques/pages/StatistiquesPage
 import { CCI92Page } from "./features/cci92/pages/CCI92Page";
 import { PartenairesPage } from "./features/cci92/pages/PartenairesPage";
 import { DonneesExternesPage } from "./features/donnees-externes/pages/DonneesExternesPage";
+import { MentionsLegalesPage } from "./features/legal/pages/MentionsLegalesPage";
+import { PolitiqueConfidentialitePage } from "./features/legal/pages/PolitiqueConfidentialitePage";
+import { AccessibilitePage } from "./features/legal/pages/AccessibilitePage";
 
 function AppContent() {
   const { track } = useEventTracking();
@@ -66,6 +69,11 @@ function AppContent() {
 
         {/* Statut technique */}
         <Route path={ROUTES.DONNEES_EXTERNES} element={<DonneesExternesPage />} />
+
+        {/* Pages légales */}
+        <Route path={ROUTES.MENTIONS_LEGALES} element={<MentionsLegalesPage />} />
+        <Route path={ROUTES.POLITIQUE_CONFIDENTIALITE} element={<PolitiqueConfidentialitePage />} />
+        <Route path={ROUTES.ACCESSIBILITE} element={<AccessibilitePage />} />
 
         {/* Partenaires */}
         <Route path={ROUTES.PARTENAIRES} element={<PartenairesPage />} />

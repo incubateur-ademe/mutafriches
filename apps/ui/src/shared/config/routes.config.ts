@@ -25,6 +25,11 @@ export const ROUTES = {
   // Statut technique
   DONNEES_EXTERNES: "/donnees-externes",
 
+  // Pages légales
+  MENTIONS_LEGALES: "/mentions-legales",
+  POLITIQUE_CONFIDENTIALITE: "/politique-de-confidentialite",
+  ACCESSIBILITE: "/accessibilite",
+
   // Pages de test
   TESTS: "/tests",
   TEST_MUTABILITE: "/test/algorithme",

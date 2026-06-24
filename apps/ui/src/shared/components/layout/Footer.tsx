@@ -27,12 +27,17 @@ export function Footer() {
           <div className="fr-footer__bottom">
             <ul className="fr-footer__bottom-list">
               <li className="fr-footer__bottom-item" key="mentions-legales">
-                <a className="fr-footer__bottom-link" href="/mentions-legales">
+                <a className="fr-footer__bottom-link" href={ROUTES.MENTIONS_LEGALES}>
                   Mentions légales
                 </a>
               </li>
+              <li className="fr-footer__bottom-item" key="donnees-personnelles">
+                <a className="fr-footer__bottom-link" href={ROUTES.POLITIQUE_CONFIDENTIALITE}>
+                  Données personnelles
+                </a>
+              </li>
               <li className="fr-footer__bottom-item" key="accessibilite">
-                <a className="fr-footer__bottom-link" href="/accessibilite">
+                <a className="fr-footer__bottom-link" href={ROUTES.ACCESSIBILITE}>
                   Accessibilité : non conforme
                 </a>
               </li>
