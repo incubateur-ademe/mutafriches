@@ -31,6 +31,11 @@ export enum TypeEvenement {
   OUVERTURE_MODALE_MULTISITES = "ouverture_modale_multisites",
   // Demande de mise en relation multisites (modale "Etre contacte")
   DEMANDE_CONTACT_MULTISITES = "demande_contact_multisites",
+
+  // Ouverture du recapitulatif du site (clic "voir recapitulatif du site")
+  OUVERTURE_RECAP_SITE = "ouverture_recap_site",
+  // Ouverture du detail d'un usage (clic "voir le detail" dans le tableau des usages)
+  OUVERTURE_DETAIL_USAGE = "ouverture_detail_usage",
 }
 
 /**

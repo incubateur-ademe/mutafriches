@@ -15,6 +15,10 @@ export interface EvenementDonnees {
   commentaire?: string;
   /** Usage concerne pour les interets */
   usageConcerne?: UsageType | string;
+  /** Rang de l'usage (1 = meilleur) au moment de l'evenement */
+  rang?: number;
+  /** Indice de mutabilite (0-100) de l'usage au moment de l'evenement */
+  indiceMutabilite?: number;
   /** Nombre de champs saisis dans les donnees complementaires */
   nombreChampsSaisis?: number;
   /** Nombre de parcelles dans la sélection au moment de l'événement */
