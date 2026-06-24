@@ -337,6 +337,61 @@ describe("OrchestrateurService", () => {
       expect(result.evaluationId).toBe("eval-new");
     });
 
+    it("devrait propager le visitorId à l'évaluation sauvegardée (calcul complet)", async () => {
+      evaluationRepository.findValidCache.mockResolvedValue(null);
+
+      const mockSite = new Site();
+      mockSite.identifiantParcelle = "490055000AI0001";
+      vi.spyOn(Site, "fromEnrichissement").mockReturnValue(mockSite);
+      vi.spyOn(mockSite, "estComplete").mockReturnValue(true);
+
+      calculService.calculer.mockResolvedValue({
+        fiabilite: { note: 7.5, text: "Bonne" },
+        resultats: [],
+      } as any);
+      evaluationRepository.save.mockResolvedValue("eval-new");
+
+      const input = {
+        donneesEnrichies: mockEnrichissement,
+        donneesComplementaires: mockDonneesComplementaires,
+        visitorId: "550e8400-e29b-41d4-a716-446655440000",
+      };
+
+      await service.calculerMutabilite(input);
+
+      const saveCall = evaluationRepository.save.mock.calls[0] as [
+        { visitorId?: string },
+        ...any[],
+      ];
+      expect(saveCall[0].visitorId).toBe("550e8400-e29b-41d4-a716-446655440000");
+    });
+
+    it("devrait propager le visitorId à l'évaluation sauvegardée (cache hit)", async () => {
+      const cachedEvaluation = {
+        id: "cached-eval-123",
+        resultats: { fiabilite: { note: 8 }, resultats: [] },
+        donneesEnrichissement: mockEnrichissement,
+        donneesComplementaires: mockDonneesComplementaires,
+      };
+
+      evaluationRepository.findValidCache.mockResolvedValue(cachedEvaluation);
+      evaluationRepository.save.mockResolvedValue("new-eval-456");
+
+      const input = {
+        donneesEnrichies: mockEnrichissement,
+        donneesComplementaires: mockDonneesComplementaires,
+        visitorId: "550e8400-e29b-41d4-a716-446655440000",
+      };
+
+      await service.calculerMutabilite(input);
+
+      const saveCall = evaluationRepository.save.mock.calls[0] as [
+        { visitorId?: string },
+        ...any[],
+      ];
+      expect(saveCall[0].visitorId).toBe("550e8400-e29b-41d4-a716-446655440000");
+    });
+
     it("devrait effectuer le calcul si donnees complementaires contiennent 'je ne sais pas'", async () => {
       // findValidCache retourne null car il detecte "je ne sais pas"
       evaluationRepository.findValidCache.mockResolvedValue(null);
