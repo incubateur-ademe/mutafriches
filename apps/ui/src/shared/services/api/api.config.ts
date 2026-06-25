@@ -34,6 +34,9 @@ export const API_CONFIG = {
       imports: "/api/donnees-externes/imports",
       apis: "/api/donnees-externes/apis",
     },
+    cartofriches: {
+      recherche: "/api/cartofriches/recherche",
+    },
     // Legacy endpoints (deprecated - pour compatibilité)
     friches: {
       enrichir: "/friches/enrichir",
