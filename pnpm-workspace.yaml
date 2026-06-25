@@ -23,6 +23,25 @@ allowBuilds:
 overrides:
   qs: ">=6.15.2" # GHSA-... DoS arrayLimit / qs.stringify (via express)
   path-to-regexp: ">=8.4.0" # DoS + ReDoS sur le matching de routes (via express>router)
-  # esbuild 0.18 vulnérable (dev-server SSRF) tiré par le loader de config deprecated de drizzle-kit.
-  # Override scopé à ce sous-arbre uniquement (vite/vitest gardent leur esbuild 0.28).
-  "@esbuild-kit/core-utils>esbuild": ">=0.25.0"
+
+  # Vulnérabilités Dependabot (juin 2026) sur transitifs. Seul form-data touche le runtime réel
+  # (axios) ; le reste est outillage dev/build (nestjs-cli, swc-cli, drizzle-kit, vite) jamais
+  # exécuté sur le serveur déployé. Overrides scopés par version pour minimatch/brace-expansion
+  # afin de ne pas casser les consommateurs des majeures plus anciennes.
+  form-data: ">=4.0.6" # GHSA-hmw2-7cc7-3qxx CRLF injection (via axios)
+  multer: ">=2.2.0" # GHSA-72gw/3p4h DoS multipart (bundlé NestJS, aucun endpoint upload)
+  piscina: ">=4.9.3" # GHSA-x9g3-xrwr-cwfg prototype pollution (via @swc/cli)
+  fast-uri: ">=3.1.2" # GHSA-v39h/q3j6 host confusion + path traversal (via @nestjs/schematics)
+  rollup: ">=4.59.0" # GHSA-mw96-cpmx-2vgc path traversal (via vite/unplugin-swc)
+  js-yaml: ">=4.2.0" # GHSA-h67p-54hq-rp68 DoS merge keys (via @nestjs/swagger)
+  yauzl: ">=3.2.1" # GHSA-gmq8-994r-jv83 off-by-one (via @swc/cli)
+  "@babel/core": ">=7.29.6" # GHSA-4x5r-pxfx-6jf8 arbitrary file read (dev/vite)
+  diff: ">=4.0.4" # GHSA-73rr-hh4g-fpgx DoS parsePatch (outillage dev)
+  "minimatch@<3.1.3": ">=3.1.3" # GHSA-7r86-cg39-jmmj ReDoS (consommateurs v3)
+  "minimatch@>=9.0.0 <9.0.7": ">=9.0.7" # GHSA-23c5/3ppc/7r86 ReDoS (consommateurs v9)
+  "brace-expansion@>=2.0.0 <2.0.3": ">=2.0.3" # GHSA-... DoS séquence zéro-pas
+
+  # esbuild : dev-server (lecture fichier arbitraire sur Windows). Bump global vers le patch ;
+  # le loader de config deprecated de drizzle-kit (@esbuild-kit) suit le même floor.
+  esbuild: ">=0.28.1" # GHSA-g7r4-m6w7-qqqr
+  "@esbuild-kit/core-utils>esbuild": ">=0.28.1"
