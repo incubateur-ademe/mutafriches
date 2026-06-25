@@ -3,13 +3,14 @@ import { Layout } from "@shared/components/layout/Layout";
 import { ParcelleSelectionMap } from "../../../analyser/components/parcelle-map/ParcelleSelectionMap";
 import { useComparaisonCartofriches } from "../hooks/useComparaisonCartofriches";
 import { SitesComparaisonTable } from "../components/SitesComparaisonTable";
+import { PrechargementPanel } from "../components/PrechargementPanel";
 
 /**
  * Page de test : comparer les données sources Mutafriches et Cartofriches (Cerema) sur une
  * liste de sites, pour instruire les écarts. Sélection des parcelles via la carte existante.
  */
 export function ComparaisonCartofrichesPage() {
-  const { sites, chargement, erreur, ajouterSite, retirerSite, vider } =
+  const { sites, chargement, erreur, progression, ajouterSite, chargerSites, retirerSite, vider } =
     useComparaisonCartofriches();
 
   return (
@@ -48,11 +49,19 @@ export function ComparaisonCartofrichesPage() {
           par l'API (rarement, version beta).
         </p>
 
+        <PrechargementPanel
+          onCharger={(listes) => void chargerSites(listes)}
+          desactive={chargement}
+        />
+
         <ParcelleSelectionMap onAnalyze={(identifiants) => void ajouterSite(identifiants)} />
 
         {chargement ? (
           <p className="fr-mt-2w">
-            <span className="fr-icon-refresh-line" aria-hidden="true" /> Comparaison en cours…
+            <span className="fr-icon-refresh-line" aria-hidden="true" />{" "}
+            {progression
+              ? `Comparaison en cours… ${progression.enCours}/${progression.total}`
+              : "Comparaison en cours…"}
           </p>
         ) : null}
 
