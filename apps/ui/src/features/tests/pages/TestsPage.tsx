@@ -18,6 +18,14 @@ export function Tests() {
       href: "/test/iframe",
       image: "/illustrations/undraw_personal-site_z6pl.svg",
     },
+    {
+      id: "test-comparaison-cartofriches",
+      title: "Comparaison Cartofriches",
+      description:
+        "Comparer les données sources Mutafriches et Cartofriches (Cerema) sur une liste de sites et exporter les écarts",
+      href: "/test/comparaison-cartofriches",
+      image: "/illustrations/undraw_file-search_cbur.svg",
+    },
   ];
 
   return (
