@@ -12,6 +12,9 @@ export * from "./stats";
 // Données externes (statut des imports + monitoring APIs externes)
 export * from "./donnees-externes";
 
+// Cartofriches (comparaison avec l'API Cerema)
+export * from "./cartofriches";
+
 // Shared
 export * from "./shared";
 
