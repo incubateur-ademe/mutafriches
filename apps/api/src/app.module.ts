@@ -8,6 +8,7 @@ import { EvenementsModule } from "./evenements/evenements.module";
 import { StatsModule } from "./stats/stats.module";
 import { PartenairesModule } from "./partenaires/partenaires.module";
 import { DonneesExternesModule } from "./donnees-externes/donnees-externes.module";
+import { CartofrichesModule } from "./cartofriches/cartofriches.module";
 import { MetabaseModule } from "./metabase/metabase.module";
 import { DatabaseModule } from "./shared/database/database.module";
 import { SharedModule } from "./shared/shared.module";
@@ -30,6 +31,7 @@ import { ConfigModule } from "./config";
     StatsModule,
     PartenairesModule,
     DonneesExternesModule,
+    CartofrichesModule,
     MetabaseModule,
   ],
   controllers: [AppController],
