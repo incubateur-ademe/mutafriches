@@ -102,7 +102,6 @@ pnpm start:dev
 - API : **<http://localhost:3000>**
 - Documentation Swagger : **<http://localhost:3000/api>**
 - Drizzle Studio : **<http://localhost:4983>** (après `pnpm db:studio`)
-- MailHog (emails capturés) : **<http://localhost:8026>** (après `pnpm mail:start`)
 
 ## 🛠️ Scripts disponibles
 
@@ -131,23 +130,14 @@ pnpm db:push                # Synchroniser le schéma
 pnpm db:studio              # Interface graphique Drizzle Studio
 ```
 
-### Emails (MailHog en local, Brevo en staging/prod)
+### Contact multisites (calendrier ZCal)
 
-La brique email (`apps/api/src/mailer/`) **bascule de transport automatiquement** (cf. ADR-0017) :
+La modale « Analyser plusieurs sites » embarque un **calendrier ZCal** en iframe pour la prise
+de rendez-vous (cf. ADR-0020). Aucune donnée nominative n'est collectée ni stockée, et l'application
+n'envoie plus d'e-mails transactionnels.
 
-- **local / dev** (ou `BREVO_API_KEY` absente) → SMTP vers **MailHog**
-- **staging / prod** (avec `BREVO_API_KEY`) → **API HTTP Brevo**
-
-```bash
-pnpm mail:start             # Démarrer MailHog (Docker)
-pnpm mail:stop              # Arrêter MailHog
-```
-
-**Tester en local** : `pnpm mail:start`, déclencher un envoi (ex. modale « Analyser plusieurs sites » → « Être contacté »), puis consulter **http://localhost:8026**. SMTP exposé sur le port **1026**.
-
-**Tester en staging** : définir `BREVO_API_KEY` **et** `EMAIL_DEV_INBOX` (boîte `@beta.gouv.fr`) — tous les emails sont alors redirigés vers cette boîte avec un sujet préfixé `[STAGING → destinataire]`. `EMAIL_DEV_INBOX` est **interdite en production**.
-
-Variables : `BREVO_API_KEY`, `MAIL_SENDER_EMAIL` / `MAIL_SENDER_NAME`, `EMAIL_REPLY_TO`, `EMAIL_DEV_INBOX`, `APP_BASE_URL` (voir `apps/api/.env.example`).
+L'URL du calendrier est configurable côté UI via `VITE_ZCAL_URL` (défaut : calendrier de l'équipe,
+voir `apps/ui/.env.example`).
 
 ### Qualité de code & Tests
 

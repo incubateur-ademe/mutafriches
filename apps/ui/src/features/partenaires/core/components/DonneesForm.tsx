@@ -16,7 +16,6 @@ const ALL_FIELDS = [
 const TOOLTIPS: Record<string, string> = {
   typeProprietaire:
     "Renseignez à quel type de propriétaire le site appartient. Cette donnée permet d'apprécier la dureté foncière.",
-  raccordementEau: "Indiquez si le site est desservi par les réseaux d'eau potable et usées.",
   etatBatiInfrastructure:
     "Renseignez l'état des constructions présentes sur le site. Le menu déroulant vous propose une graduation de l'état de dégradation.",
   presencePollution:

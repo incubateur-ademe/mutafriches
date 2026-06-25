@@ -29,25 +29,11 @@ export enum TypeEvenement {
 
   // Ouverture de la modale multisites (clic sur le CTA "Analyser plusieurs sites")
   OUVERTURE_MODALE_MULTISITES = "ouverture_modale_multisites",
-  // Demande de mise en relation multisites (modale "Etre contacte")
-  DEMANDE_CONTACT_MULTISITES = "demande_contact_multisites",
 
   // Ouverture du recapitulatif du site (clic "voir recapitulatif du site")
   OUVERTURE_RECAP_SITE = "ouverture_recap_site",
   // Ouverture du detail d'un usage (clic "voir le detail" dans le tableau des usages)
   OUVERTURE_DETAIL_USAGE = "ouverture_detail_usage",
-}
-
-/**
- * Besoin exprime par l'utilisateur dans la modale de contact multisites
- */
-export enum BesoinMultisites {
-  // Liste de sites a suivre et comparer dans un espace dedie
-  SUIVI_COMPARAISON = "suivi_comparaison",
-  // Integrer Mutafriches a ses outils metier (SIG, portail cartographique, etc.)
-  INTEGRATION_OUTILS = "integration_outils",
-  // L'utilisateur ne sait pas encore quel besoin il a
-  NE_SAIT_PAS = "ne-sait-pas",
 }
 
 export enum ModeUtilisation {

@@ -31,21 +31,6 @@ describe("AppConfig", () => {
     expect(config.database.ssl).toEqual({ rejectUnauthorized: false });
   });
 
-  it("applique les valeurs par défaut du mail et du dashboard", () => {
-    delete process.env.MAIL_SENDER_EMAIL;
-    delete process.env.CONTACT_DASHBOARD_URL;
-    const config = new AppConfig();
-    expect(config.mail.senderEmail).toBe("contact@mutafriches.beta.gouv.fr");
-    expect(config.mail.dashboardUrl).toContain("/dashboard/10-demandes-de-contact");
-  });
-
-  it("convertit SMTP_SECURE en booléen", () => {
-    process.env.SMTP_SECURE = "true";
-    expect(new AppConfig().mail.smtpSecure).toBe(true);
-    process.env.SMTP_SECURE = "false";
-    expect(new AppConfig().mail.smtpSecure).toBe(false);
-  });
-
   it("throw au constructeur si une variable est invalide", () => {
     process.env.PORT = "pas-un-nombre";
     expect(() => new AppConfig()).toThrow(/PORT/);

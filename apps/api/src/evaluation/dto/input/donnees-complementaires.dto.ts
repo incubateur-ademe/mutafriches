@@ -32,11 +32,12 @@ export class DonneesComplementairesSwaggerDto implements IDonneesComplementaires
 
   @ApiProperty({
     enum: RaccordementEau,
+    required: false,
     description:
-      "Le site est-il raccordé aux réseaux d'eau potable et d'assainissement collectifs ?",
+      "Raccordement aux réseaux d'eau potable et d'assainissement. Dérivé automatiquement de la surface bâtie (BDNB) côté serveur : valeur fournie ignorée, champ inutile à transmettre.",
     example: RaccordementEau.OUI,
   })
-  raccordementEau: RaccordementEau;
+  raccordementEau?: RaccordementEau;
 
   @ApiProperty({
     enum: EtatBatiInfrastructure,

@@ -1,4 +1,4 @@
-import { TypeEvenement, ContexteEvenement, BesoinMultisites } from "../enums";
+import { TypeEvenement, ContexteEvenement } from "../enums";
 import { UsageType } from "../../evaluation/enums";
 
 /**
@@ -25,10 +25,6 @@ export interface EvenementDonnees {
   nombreParcelles?: number;
   /** Surface cumulée du site en m² au moment de l'événement */
   surfaceTotaleM2?: number;
-  /** Email de contact (demande multisites) — consommé pour l'envoi de mail, jamais persisté dans l'évènement */
-  email?: string;
-  /** Besoin exprimé dans la modale de contact multisites */
-  besoin?: BesoinMultisites | string;
 }
 
 export interface EvenementInputDto {
@@ -72,13 +68,5 @@ export interface InteretExportResultatsDto extends EvenementInputDto {
   donnees?: {
     usageConcerne?: UsageType | string;
     contexte?: ContexteEvenement | string;
-  };
-}
-
-export interface DemandeContactMultisitesDto extends EvenementInputDto {
-  typeEvenement: TypeEvenement.DEMANDE_CONTACT_MULTISITES;
-  donnees: {
-    email: string;
-    besoin: BesoinMultisites | string;
   };
 }

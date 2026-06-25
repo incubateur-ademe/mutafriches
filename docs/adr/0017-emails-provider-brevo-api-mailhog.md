@@ -1,7 +1,7 @@
 # ADR-0017 : Abstraction du transport email (Brevo API + MailHog) via provider
 
 **Date** : 2026-06-03
-**Statut** : Accepté (met à jour l'ADR-0015)
+**Statut** : Remplacé par ADR-0020 (suppression de la brique e-mail avec le passage du contact multisites au calendrier ZCal). Conservé comme référence d'implémentation en cas de réintroduction d'un envoi d'e-mails.
 
 ## Contexte
 

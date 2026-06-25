@@ -1,7 +1,7 @@
 # ADR-0015 : Envoi d'emails transactionnels via SMTP (MailHog en local, Brevo en production)
 
 **Date** : 2026-06-02
-**Statut** : Mis à jour par ADR-0017 (le transport prod passe du relais SMTP Brevo à l'API HTTP Brevo via une abstraction provider). MailHog en local reste valable.
+**Statut** : Remplacé par ADR-0020 (suppression de la brique e-mail avec le passage du contact multisites au calendrier ZCal). Conservé comme référence d'implémentation en cas de réintroduction d'un envoi d'e-mails.
 
 ## Contexte
 

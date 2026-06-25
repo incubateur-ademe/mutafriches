@@ -146,6 +146,15 @@ Règles :
 
 ## Workflow obligatoire
 
+### Découpage et livraison d'une feature
+
+Pour **chaque feature identifiée** (un groupe cohérent de modifications, typiquement une nouvelle conversation) :
+
+- **Découper en commits** atomiques et cohérents (un commit = une étape qui laisse `pnpm validate` vert).
+- **Réutiliser / mutualiser** le code existant dès que possible plutôt que de dupliquer (composants, services, types partagés).
+- **Justifier les choix** : dans la description des commits (le pourquoi), et via un ADR (`/adr`) si le choix est architecturalement significatif.
+- **Proposer à l'utilisateur des tests manuels E2E côté UI** à réaliser lui-même, en fin de feature : un parcours pas à pas couvrant le comportement attendu.
+
 ### Vérification post-implémentation
 
 Après toute implémentation ou modification de code, TOUJOURS lancer la vérification complète :
@@ -256,8 +265,6 @@ pnpm build                  # Build complet (shared-types + API + UI)
 pnpm db:start               # Démarrer PostgreSQL (Docker)
 pnpm db:stop                # Arrêter PostgreSQL
 pnpm db:reset               # Reset complet (supprime les données)
-pnpm mail:start             # Démarrer MailHog (capture SMTP locale, UI sur http://localhost:8026)
-pnpm mail:stop              # Arrêter MailHog
 pnpm db:generate            # Générer les migrations Drizzle
 pnpm db:migrate             # Appliquer les migrations
 pnpm db:push                # Synchroniser le schéma directement
@@ -382,17 +389,12 @@ Toutes les variables sont lues via la classe centralisée **`AppConfig`** (`apps
 | POST /evaluation/calculer | IntegrateurOriginGuard | Bypass | Origines whitelistées |
 | POST /evenements | OriginGuard | localhost + Mutafriches | Mutafriches uniquement |
 
-### Envoi d'emails
+### Contact multisites (calendrier ZCal)
 
-Brique `apps/api/src/mailer/` : `MailService` injectable + abstraction `EmailProvider` (cf. ADR-0017). **Bascule automatique** : MailHog si environnement local **OU** `BREVO_API_KEY` absente ; sinon **API HTTP Brevo** (`@getbrevo/brevo`). `MailService.send()` valide les destinataires, génère un fallback texte (`html-to-text`), applique la redirection staging, et renvoie toujours `{ success, messageId?, error? }` sans throw. Local : **MailHog** (`pnpm mail:start`, UI http://localhost:8026). Templates : kit HTML inline (`templates/kit.ts`).
+La modale « Analyser plusieurs sites » (page résultats) embarque un **calendrier ZCal** en iframe pour la prise de rendez-vous (cf. ADR-0020). **Aucune donnée nominative n'est collectée ni stockée**, et l'application **n'envoie plus d'e-mails transactionnels** (la brique `mailer/`, le module `contact/` et la table `demandes_contact` ont été supprimés). L'ouverture de la modale reste tracée (`OUVERTURE_MODALE_MULTISITES`, sans PII).
 
-- `BREVO_API_KEY` : clé API Brevo (staging/prod). Absente → MailHog.
-- `SMTP_HOST` / `SMTP_PORT` / `SMTP_SECURE` / `SMTP_USER` / `SMTP_PASS` : serveur SMTP local (MailHog : `localhost`/`1026`/`false`, sans auth)
-- `MAIL_SENDER_EMAIL` / `MAIL_SENDER_NAME` : expéditeur ; `EMAIL_REPLY_TO` : adresse de réponse (défaut = expéditeur)
-- `EMAIL_DEV_INBOX` : **redirection staging** (réécrit tous les destinataires, préfixe le sujet). **Interdite en prod**, restreinte à `beta.gouv.fr` / `incubateur.ademe.dev` (validé au boot).
-- `APP_BASE_URL` : base des liens dans les emails
-- `CONTACT_NOTIFICATION_EMAIL` : équipe notifiée à chaque demande de contact multisites
-- `CONTACT_DASHBOARD_URL` : lien Metabase des demandes, inclus dans l'email de notification équipe
+- `VITE_ZCAL_URL` (UI) : URL du calendrier ZCal embarqué (défaut : calendrier de l'équipe). Config dans `apps/ui/src/shared/config/zcal.config.ts`.
+- Réintroduire un envoi d'e-mails imposerait de recréer une brique dédiée : voir les ADR-0015 / 0017 (remplacés) comme référence d'implémentation.
 
 ## Documentation contextuelle
 

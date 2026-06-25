@@ -10,21 +10,27 @@ import { StepNavigation } from "../components/StepNavigation";
 import { SiteFormValues, DEFAULT_SITE_VALUES, ValidationErrors } from "../config/types";
 import { SITE_FIELDS } from "../config/fields/site.fields";
 import { validateSiteForm } from "../config/validators";
-import { EnrichedInfoField, FormSelectField, PollutionField } from "../components";
-import { PresencePollution } from "@mutafriches/shared-types";
+import {
+  EnrichedInfoField,
+  FormSelectField,
+  PollutionField,
+  RaccordementEauField,
+} from "../components";
+import { PresencePollution, deriverRaccordementEau } from "@mutafriches/shared-types";
 import { DebugPanelGate } from "../../debug/components/DebugPanelGate";
 
 export const QualificationSitePage: React.FC = () => {
   const navigate = useNavigate();
   const { state, setManualData, setCurrentStep, canAccessStep } = useFormContext();
   const { track } = useEventTracking();
+  // Raccordement eau déduit automatiquement de la surface bâtie enrichie (BDNB)
+  const raccordementEauAuto = deriverRaccordementEau(state.enrichmentData?.surfaceBati);
   const hasTrackedVisit = useRef(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [values, setValues] = useState<SiteFormValues>({
     ...DEFAULT_SITE_VALUES,
     typeProprietaire:
       (state.manualData?.typeProprietaire as SiteFormValues["typeProprietaire"]) || "",
-    raccordementEau: (state.manualData?.raccordementEau as SiteFormValues["raccordementEau"]) || "",
     etatBatiInfrastructure:
       (state.manualData?.etatBatiInfrastructure as SiteFormValues["etatBatiInfrastructure"]) || "",
     presencePollution:
@@ -86,6 +92,8 @@ export const QualificationSitePage: React.FC = () => {
       const updatedManualData = {
         ...state.manualData,
         ...values,
+        // Valeur dérivée, jamais saisie par l'utilisateur
+        raccordementEau: raccordementEauAuto,
       };
       setManualData(updatedManualData);
       navigate(ROUTES.QUALIFICATION_ENVIRONNEMENT);
@@ -232,12 +240,9 @@ export const QualificationSitePage: React.FC = () => {
             }
           />
 
-          <FormSelectField
-            field={SITE_FIELDS.raccordementEau}
-            value={values.raccordementEau}
-            onChange={(v) => handleChange("raccordementEau", v)}
-            error={touched.raccordementEau ? errors.raccordementEau : undefined}
-            tooltip="Indiquez si le site est desservi par les réseaux d'eau potable et usées."
+          <RaccordementEauField
+            value={raccordementEauAuto}
+            tooltip="Déduit automatiquement de la présence de bâti sur le site (surface bâtie BDNB). Un site nu est considéré non raccordé."
           />
         </div>
 

@@ -183,6 +183,13 @@
       "when": 1782302905381,
       "tag": "0025_tracking_recap_detail_usage",
       "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1782313225478,
+      "tag": "0026_rare_medusa",
+      "breakpoints": true
     }
   ]
 }
