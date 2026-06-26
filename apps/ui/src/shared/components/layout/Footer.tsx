@@ -62,6 +62,9 @@ export function Footer() {
                   Pages de tests
                 </a>
               </li>
+              <li className="fr-footer__bottom-item">
+                <span className="fr-footer__bottom-link">Version {APP_VERSION}</span>
+              </li>
             </ul>
             <div className="fr-footer__bottom-copy">
               <p>
@@ -75,7 +78,6 @@ export function Footer() {
                   licence etalab-2.0
                 </a>
               </p>
-              <p className="fr-text--xs fr-mt-1v fr-mb-0">Version {APP_VERSION}</p>
             </div>
           </div>
         </div>
