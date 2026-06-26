@@ -1,4 +1,5 @@
 import { ROUTES } from "../../config/routes.config";
+import { APP_VERSION } from "../../config/version.config";
 
 export function Footer() {
   return (
@@ -74,6 +75,7 @@ export function Footer() {
                   licence etalab-2.0
                 </a>
               </p>
+              <p className="fr-text--xs fr-mt-1v fr-mb-0">Version {APP_VERSION}</p>
             </div>
           </div>
         </div>
