@@ -1,9 +1,19 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
+import { readFileSync } from "fs";
+
+// Source unique de version : le package.json racine du monorepo (identique à /health côté API)
+const rootPackageJson = JSON.parse(
+  readFileSync(path.resolve(__dirname, "../../package.json"), "utf-8"),
+) as { version: string };
 
 export default defineConfig({
   plugins: [react()],
+  // Injecté au build pour afficher la version sans appel réseau
+  define: {
+    __APP_VERSION__: JSON.stringify(rootPackageJson.version),
+  },
   css: {
     lightningcss: { errorRecovery: true },
   },

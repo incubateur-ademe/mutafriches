@@ -40,6 +40,8 @@ export default [
       globals: {
         ...globals.browser,
         ...globals.node,
+        // Injecté au build par Vite (define) — voir apps/ui/vite.config.ts
+        __APP_VERSION__: "readonly",
       },
     },
   },
