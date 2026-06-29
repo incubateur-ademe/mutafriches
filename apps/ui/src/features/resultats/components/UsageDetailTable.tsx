@@ -7,8 +7,10 @@ interface UsageDetailTableProps {
   sections: DetailUsageSection[];
 }
 
+// Le poids est une magnitude (toujours positif) : pas de signe pour éviter
+// de le confondre avec le sens de l'impact (positif/négatif).
 function formatPonderation(poids: number): string {
-  return `+${poids.toFixed(1)}`;
+  return poids.toFixed(1);
 }
 
 /**
