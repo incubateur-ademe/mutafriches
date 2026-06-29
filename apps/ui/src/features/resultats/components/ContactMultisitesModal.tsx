@@ -1,6 +1,6 @@
 import React from "react";
 import { ModalInfo } from "../../../shared/components/common/ModalInfo";
-import { ZCAL_CONFIG } from "../../../shared/config/zcal.config";
+import { ZcalEmbed } from "../../../shared/components/common/ZcalEmbed";
 
 interface ContactMultisitesModalProps {
   isOpen: boolean;
@@ -25,13 +25,7 @@ export const ContactMultisitesModal: React.FC<ContactMultisitesModalProps> = ({
         Mutafriches.
       </p>
 
-      <iframe
-        title="Prise de rendez-vous avec l'équipe Mutafriches"
-        src={ZCAL_CONFIG.embedUrl}
-        loading="lazy"
-        // Hauteur imposée par le widget ZCal, non couverte par une classe DSFR
-        style={{ border: "none", width: "100%", minHeight: "640px", height: "70vh" }}
-      />
+      <ZcalEmbed active={isOpen} />
     </ModalInfo>
   );
 };
