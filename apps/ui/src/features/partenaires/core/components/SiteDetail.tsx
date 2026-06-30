@@ -156,7 +156,7 @@ export const SiteDetail: React.FC<SiteDetailProps> = ({
           {/* Section saisie */}
           <div key={`saisie-${phase}`}>
             <DsfrAccordion
-              title="Données complémentaires"
+              title="Connaissance terrain"
               badge={BADGE_SAISIE}
               defaultOpen={isQualPhase}
               highlight={isQualPhase}
