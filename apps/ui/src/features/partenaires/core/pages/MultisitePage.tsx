@@ -162,17 +162,15 @@ const MultisiteView: React.FC<{ config: PartnerConfig }> = ({ config }) => {
       <div className="fr-container fr-py-4w">
         <div className="fr-mb-4w">
           <div className="flex items-start justify-between gap-4">
-            <h1 className="fr-h3 fr-mb-1w">Mutafriches — {config.nom}</h1>
+            <h1 className="fr-h3 fr-mb-1w">{config.nom}</h1>
             <PartagerButton slug={config.slug} nom={config.nom} />
           </div>
-          <p className="fr-text--lg fr-mb-1w">{config.sousTitre}</p>
           <DonneesExternesLink />
         </div>
 
         <div className="fr-grid-row fr-grid-row--gutters">
           <div className="fr-col-12 fr-col-md-4">
             <SiteList
-              titre={config.sidemenuTitre}
               sitesByCommune={config.sitesByCommune}
               selectedSiteId={selectedSite?.idtup ?? null}
               onSelectSite={handleSelectSite}

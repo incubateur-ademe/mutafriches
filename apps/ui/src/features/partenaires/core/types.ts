@@ -18,8 +18,7 @@ export interface PartnerConfig {
   slug: string; // segment d'URL : /partenaires/:slug
   nom: string; // titre de la page et de la carte sur le hub
   description: string; // texte de la carte sur le hub
-  sousTitre: string; // sous-titre affiché en tête de page
-  sidemenuTitre: string; // titre de la liste latérale des sites
+  departement: string; // code département INSEE (ex : "49", "92", "2A", "971") — pas encore affiché
   storageKey: string; // clé localStorage des sites ajoutés manuellement
   sites: PartnerSite[];
   sitesByCommune: Record<string, PartnerSite[]>;
