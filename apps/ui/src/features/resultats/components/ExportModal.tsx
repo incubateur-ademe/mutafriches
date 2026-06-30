@@ -24,11 +24,11 @@ export const ExportModal: React.FC<ExportModalProps> = ({
     icon="fr-icon-download-line"
   >
     <p className="fr-text--sm">Choisissez le format d'export de votre analyse de mutabilité.</p>
-    <ul className="fr-btns-group">
+    <ul className="fr-btns-group fr-btns-group--icon-left">
       <li>
         <button
           type="button"
-          className="fr-btn fr-btn--icon-left fr-icon-download-line"
+          className="fr-btn fr-icon-download-line"
           onClick={onExportPdf}
           disabled={pdfLoading}
           aria-busy={pdfLoading}
@@ -39,7 +39,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
       <li>
         <button
           type="button"
-          className="fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-code-s-slash-line"
+          className="fr-btn fr-btn--secondary fr-icon-code-s-slash-line"
           onClick={onExportJson}
           disabled={pdfLoading}
         >
