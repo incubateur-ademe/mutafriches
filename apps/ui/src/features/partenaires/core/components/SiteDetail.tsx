@@ -167,24 +167,26 @@ export const SiteDetail: React.FC<SiteDetailProps> = ({
               highlight={isQualPhase}
             >
               <DonneesForm values={manualData} onChange={onManualDataChange} />
-            </DsfrAccordion>
 
-            <div className="fr-mt-2w fr-mb-3w">
-              <button
-                type="button"
-                className="fr-btn"
-                onClick={onCalculerMutabilite}
-                disabled={!hasManualInput || isCalculating}
-                aria-busy={isCalculating}
-              >
-                {isCalculating ? "Calcul en cours..." : "Calculer la mutabilité"}
-              </button>
               {!hasManualInput && (
-                <p className="fr-hint-text fr-mt-1w">
+                <p className="fr-hint-text fr-mt-2w fr-mb-1w">
                   Saisissez au moins une donnée complémentaire pour activer le calcul.
                 </p>
               )}
-            </div>
+              <ul className="fr-btns-group fr-btns-group--inline fr-btns-group--right fr-mt-2w">
+                <li>
+                  <button
+                    type="button"
+                    className="fr-btn"
+                    onClick={onCalculerMutabilite}
+                    disabled={!hasManualInput || isCalculating}
+                    aria-busy={isCalculating}
+                  >
+                    {isCalculating ? "Calcul en cours..." : "Calculer la mutabilité"}
+                  </button>
+                </li>
+              </ul>
+            </DsfrAccordion>
           </div>
 
           {/* Section mutabilité (uniquement après calcul) */}
