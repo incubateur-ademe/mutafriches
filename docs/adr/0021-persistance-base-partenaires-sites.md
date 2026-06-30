@@ -71,7 +71,7 @@ Le prefetch existant (`apps/api/src/scripts/prefetch-partenaires.ts`) réchauffe
 - **Source de seed** = ce registry statique (déjà au format `idtup` / `commune` / `parcelles`) : le seed le lit et upsert dans `partenaire_sites`. Lignage clair : registry → seed → base.
 - **Le prefetch lit ensuite la base** (`partenaire_sites`) au lieu du registry statique, devenant la source unique. Les sites « custom » ajoutés par les utilisateurs (`origine = custom`) sont donc réchauffés au prochain passage du prefetch, sans modification du script.
 - **`POST /partenaires/:slug/sites` réchauffe le cache comme effet de bord** : l'ajout enrichit déjà le site pour obtenir le centroïde (nécessaire à BAN), ce qui peuple `enrichissements`/`sites`. Pas de double appel.
-- Le registry statique `scripts/partenaires/` pourra être retiré une fois la base seedée sur tous les environnements (nettoyage en fin de Phase 3).
+- Le registry statique `scripts/partenaires/` est **conservé** : il reste la source de seed reproductible et l'historique versionné de la configuration des partenaires (rejouable à tout moment). La base en est la projection, pas un remplacement.
 
 ## Options envisagées
 
@@ -109,7 +109,7 @@ Livraison en 3 phases, chacune laissant `pnpm validate` vert et livrable indépe
 
 1. **Fondation lecture** : tables + migration + script de seed depuis le registry de prefetch + `GET /partenaires/:slug` ; l'UI lit les sites via l'API avec fallback statique le temps de la bascule ; le prefetch bascule sur la base comme source.
 2. **Noms éditables + source de vérité** : `nom_defaut` calculé dans le seed (enrichissement + BAN reverse) ; `PATCH` rename (LWW) ; branchement du bouton « Modifier site ».
-3. **Ajout de site en base + persistance locale de la saisie** : `POST` add-site (en base, réchauffe le cache) ; migration best-effort des sites `localStorage` existants vers la base ; persistance localStorage des données manuelles « Connaissance terrain » + mutabilité (extension de `useCustomSites`) pour survivre au refresh. Nettoyage du registry statique `scripts/partenaires/` une fois la base seedée partout.
+3. **Ajout de site en base + persistance locale de la saisie** : `POST` add-site (en base, réchauffe le cache) ; persistance localStorage des données manuelles « Connaissance terrain » + mutabilité (`useSiteUserData`) pour survivre au refresh. Le registry statique `scripts/partenaires/` est conservé (source de seed + historique). Pas de suppression de site pour l'instant.
 
 ## Liens
 
