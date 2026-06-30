@@ -164,6 +164,15 @@ export function useEventTracking() {
     [track],
   );
 
+  const trackPartagePartenaire = useCallback(
+    (partenaireSlug: string) => {
+      return track(TypeEvenement.PARTAGE_PAGE_PARTENAIRE, {
+        donnees: { partenaireSlug },
+      });
+    },
+    [track],
+  );
+
   return {
     track,
     trackFeedback,
@@ -177,5 +186,6 @@ export function useEventTracking() {
     trackParcelleAjoutee,
     trackParcelleSupprimee,
     trackJaugeDepassee,
+    trackPartagePartenaire,
   };
 }
