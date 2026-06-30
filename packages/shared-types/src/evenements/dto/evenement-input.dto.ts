@@ -27,6 +27,8 @@ export interface EvenementDonnees {
   surfaceTotaleM2?: number;
   /** Slug du partenaire concerné (ex: page partenaire partagée) */
   partenaireSlug?: string;
+  /** Format d'export choisi (ex: "pdf", "json") */
+  format?: string;
 }
 
 export interface EvenementInputDto {
