@@ -13,11 +13,14 @@ import { buildDonneesComplementaires } from "@features/resultats/utils/mutabilit
 import { DsfrAccordion } from "@shared/components/dsfr/DsfrAccordion";
 import { DonneesForm } from "./DonneesForm";
 import { SiteMap } from "./SiteMap";
+import { PartagerButton } from "./PartagerButton";
 import type { PartnerSite } from "../types";
 import { downloadJson } from "../download-json";
 
 interface SiteDetailProps {
   site: PartnerSite;
+  partenaireSlug: string;
+  partenaireNom: string;
   enrichmentData: EnrichissementOutputDto | null;
   mutabilityData: MutabiliteOutputDto | null;
   manualData: Record<string, string>;
@@ -49,6 +52,8 @@ const BADGE_CALCULE = {
 
 export const SiteDetail: React.FC<SiteDetailProps> = ({
   site,
+  partenaireSlug,
+  partenaireNom,
   enrichmentData,
   mutabilityData,
   manualData,
@@ -197,15 +202,24 @@ export const SiteDetail: React.FC<SiteDetailProps> = ({
                 <DetailAlgorithmeSection mutabilityData={mutabilityData} noWrapper />
               </DsfrAccordion>
 
-              <div className="fr-mt-2w">
-                <button
-                  type="button"
-                  className="fr-btn fr-btn--secondary fr-icon-download-line fr-btn--icon-left"
-                  onClick={handleExportMutabilite}
-                >
-                  Télécharger l'analyse complète (JSON)
-                </button>
-              </div>
+              <ul className="fr-btns-group fr-btns-group--inline fr-btns-group--right fr-btns-group--icon-left fr-mt-2w">
+                <li>
+                  <button
+                    type="button"
+                    className="fr-btn fr-btn--secondary fr-icon-download-line"
+                    onClick={handleExportMutabilite}
+                  >
+                    Télécharger l'analyse complète (JSON)
+                  </button>
+                </li>
+                <li>
+                  <PartagerButton
+                    slug={partenaireSlug}
+                    nom={partenaireNom}
+                    className="fr-btn fr-btn--secondary fr-icon-share-line"
+                  />
+                </li>
+              </ul>
             </div>
           )}
         </>
