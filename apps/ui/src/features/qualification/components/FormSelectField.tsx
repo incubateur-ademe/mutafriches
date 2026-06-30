@@ -43,7 +43,6 @@ export const FormSelectField: React.FC<FormSelectFieldProps> = ({
       <div className={`fr-select-group ${error ? "fr-select-group--error" : ""}`}>
         <label className="fr-label" htmlFor={field.id}>
           <strong>{field.label}</strong>
-          {field.required && " *"}
           {field.hint && <span className="fr-hint-text">{field.hint}</span>}
           {tooltip && (
             <>
