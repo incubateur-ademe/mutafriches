@@ -23,3 +23,11 @@ export interface PartenaireOutputDto {
   departement: string;
   sites: PartenaireSiteOutputDto[];
 }
+
+/** Réponse de POST /api/partenaires/:slug/sites */
+export interface AjouterSitePartenaireOutputDto {
+  /** Site créé (ou existant si déjà présent), null si aucun IDU valide. */
+  site: PartenaireSiteOutputDto | null;
+  /** IDU rejetés (format invalide). */
+  invalidIdpars: string[];
+}

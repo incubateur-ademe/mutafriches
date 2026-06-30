@@ -21,6 +21,7 @@ import type { Coordonnees, EnrichissementOutputDto } from "@mutafriches/shared-t
 import { getAppConfig } from "../config";
 import { partenaires } from "../shared/database/schemas/partenaires.schema";
 import { partenaireSites } from "../shared/database/schemas/partenaire-sites.schema";
+import { reverseRueProche } from "../partenaires/ban-reverse.util";
 import { PARTENAIRES_META, PARTENAIRES_PREFETCH } from "./partenaires/registry";
 
 const { apiUrl: API_URL, partenairesPrefetchDelayMs: DELAY_MS } = getAppConfig().scripts;
@@ -40,19 +41,6 @@ async function getCentroide(parcelles: string[]): Promise<Coordonnees | null> {
   if (!res.ok) return null;
   const data = (await res.json()) as EnrichissementOutputDto;
   return data.coordonnees ?? null;
-}
-
-// Nom de la rue la plus proche (BAN reverse).
-async function reverseRueProche(latitude: number, longitude: number): Promise<string | null> {
-  const res = await fetch(
-    `https://api-adresse.data.gouv.fr/reverse/?lon=${longitude}&lat=${latitude}`,
-  );
-  if (!res.ok) return null;
-  const data = (await res.json()) as {
-    features?: { properties?: { name?: string; street?: string } }[];
-  };
-  const props = data.features?.[0]?.properties;
-  return props?.street ?? props?.name ?? null;
 }
 
 async function upsertPartenaires(db: ReturnType<typeof drizzle>, slugs: string[]): Promise<void> {
