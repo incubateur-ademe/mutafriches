@@ -163,6 +163,14 @@ export class EvenementService {
       // Si invalide, on ignore silencieusement
     }
 
+    // format: format d'export (liste blanche courte)
+    if (donnees.format !== undefined && typeof donnees.format === "string") {
+      if (["pdf", "json"].includes(donnees.format)) {
+        sanitized.format = donnees.format;
+      }
+      // Si invalide, on ignore silencieusement
+    }
+
     return Object.keys(sanitized).length > 0 ? sanitized : undefined;
   }
 }

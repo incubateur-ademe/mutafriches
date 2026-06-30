@@ -90,10 +90,10 @@ export function useEventTracking() {
   );
 
   const trackExporterResultats = useCallback(
-    (evaluationId: string, usageConcerne?: UsageType) => {
+    (evaluationId: string, format?: "pdf" | "json") => {
       return track(TypeEvenement.INTERET_EXPORT_RESULTATS, {
         evaluationId,
-        donnees: { usageConcerne },
+        donnees: { format },
       });
     },
     [track],
