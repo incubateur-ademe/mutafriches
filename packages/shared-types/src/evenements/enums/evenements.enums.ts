@@ -34,6 +34,9 @@ export enum TypeEvenement {
   OUVERTURE_RECAP_SITE = "ouverture_recap_site",
   // Ouverture du detail d'un usage (clic "voir le detail" dans le tableau des usages)
   OUVERTURE_DETAIL_USAGE = "ouverture_detail_usage",
+
+  // Partage d'une page partenaire (clic sur le bouton "Partager")
+  PARTAGE_PAGE_PARTENAIRE = "partage_page_partenaire",
 }
 
 export enum ModeUtilisation {

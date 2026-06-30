@@ -11,6 +11,7 @@ import { SiteList } from "../components/SiteList";
 import { SiteDetail } from "../components/SiteDetail";
 import { AddSiteModal } from "../components/AddSiteModal";
 import { DonneesExternesLink } from "../components/DonneesExternesLink";
+import { PartagerButton } from "../components/PartagerButton";
 import { useCustomSites } from "../hooks/useCustomSites";
 import { getPartnerBySlug } from "../../registry";
 import type { PartnerConfig, PartnerSite } from "../types";
@@ -160,7 +161,10 @@ const MultisiteView: React.FC<{ config: PartnerConfig }> = ({ config }) => {
     <Layout fullWidth>
       <div className="fr-container fr-py-4w">
         <div className="fr-mb-4w">
-          <h1 className="fr-h3">Mutafriches — {config.nom}</h1>
+          <div className="flex items-start justify-between gap-4">
+            <h1 className="fr-h3 fr-mb-1w">Mutafriches — {config.nom}</h1>
+            <PartagerButton slug={config.slug} nom={config.nom} />
+          </div>
           <p className="fr-text--lg fr-mb-1w">{config.sousTitre}</p>
           <DonneesExternesLink />
         </div>
