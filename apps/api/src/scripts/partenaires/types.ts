@@ -3,4 +3,6 @@ export interface SitePrefetch {
   idtup: string;
   commune: string;
   parcelles: string[];
+  /** Nom fourni par le partenaire (devient le nom partagé du site au seed). */
+  nom?: string;
 }

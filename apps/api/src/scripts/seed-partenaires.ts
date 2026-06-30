@@ -69,6 +69,7 @@ async function upsertPartenaires(db: ReturnType<typeof drizzle>, slugs: string[]
           idtup: site.idtup,
           parcelles: site.parcelles,
           commune: site.commune,
+          nom: site.nom ?? null,
           origine: "seed",
         })
         .onConflictDoNothing();
@@ -80,10 +81,18 @@ async function upsertPartenaires(db: ReturnType<typeof drizzle>, slugs: string[]
 // Renseigne nom_defaut pour les sites qui n'en ont pas encore (best-effort).
 async function backfillNomsDefaut(db: ReturnType<typeof drizzle>, slugs: string[]): Promise<void> {
   for (const slug of slugs) {
+    // Seuls les sites sans nom du tout (ni nom partenaire, ni nom par défaut) nécessitent
+    // un calcul BAN. Les sites déjà nommés (ex. DDT 88) sont ignorés (gain de temps).
     const sites = await db
       .select()
       .from(partenaireSites)
-      .where(and(eq(partenaireSites.partenaireSlug, slug), isNull(partenaireSites.nomDefaut)));
+      .where(
+        and(
+          eq(partenaireSites.partenaireSlug, slug),
+          isNull(partenaireSites.nomDefaut),
+          isNull(partenaireSites.nom),
+        ),
+      );
 
     if (sites.length > 0) {
       console.info(`Partenaire ${slug} : calcul des noms par défaut (${sites.length} sites)...`);

@@ -1,6 +1,7 @@
 import { SitePrefetch } from "./types";
 import { CCI92_SITES } from "./cci92";
 import { AURA_SITES } from "./aura";
+import { DDT_VOSGES_SITES } from "./ddt-vosges";
 
 /**
  * Registre des partenaires à pré-chauffer, keyé par slug (identique au slug UI dans
@@ -14,6 +15,7 @@ import { AURA_SITES } from "./aura";
 export const PARTENAIRES_PREFETCH: Record<string, SitePrefetch[]> = {
   "cci-92": CCI92_SITES,
   aura: AURA_SITES,
+  "ddt-vosges": DDT_VOSGES_SITES,
 };
 
 /** Métadonnées d'un partenaire pour le seed en base (db:partenaires:seed). */
@@ -40,5 +42,11 @@ export const PARTENAIRES_META: Record<string, PartenaireMeta> = {
     description:
       "Qualification et mutabilité des friches sur le territoire de l'AURA (Maine-et-Loire).",
     departement: "49",
+  },
+  "ddt-vosges": {
+    nom: "DDT des Vosges (88)",
+    description:
+      "Qualification et mutabilité des friches du département des Vosges, base de la DDT 88.",
+    departement: "88",
   },
 };
