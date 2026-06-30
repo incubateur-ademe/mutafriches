@@ -9,6 +9,7 @@
 - **[Module Enrichissement](./enrichissement.md)** - Collecte automatique des données via APIs externes
 - **[Algorithme d'Évaluation](./evaluation-mutabilite.md)** - Calcul des indices de mutabilité
 - **[Tracking & Analytics](./analytics-tracking.md)** - Événements, session vs utilisateur, requêtes Metabase
+- **[Ajouter un partenaire](./ajout-partenaire.md)** - Todolist pour publier une nouvelle page partenaire multisite
 
 ### Pour les intégrateurs
 
