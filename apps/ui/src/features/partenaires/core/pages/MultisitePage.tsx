@@ -14,6 +14,7 @@ import { DonneesExternesLink } from "../components/DonneesExternesLink";
 import { PartagerButton } from "../components/PartagerButton";
 import { useCustomSites } from "../hooks/useCustomSites";
 import { usePartenaireSites } from "../hooks/usePartenaireSites";
+import { useSiteUserData } from "../hooks/useSiteUserData";
 import { getPartnerBySlug } from "../../registry";
 import type { PartnerConfig, PartnerSite } from "../types";
 import "@features/debug/components/DebugPanel.css";
@@ -28,8 +29,9 @@ const MultisiteView: React.FC<{ config: PartnerConfig }> = ({ config }) => {
   const [error, setError] = useState<string | null>(null);
 
   const enrichmentCacheRef = useRef(new Map<string, EnrichissementOutputDto>());
-  const mutabilityCacheRef = useRef(new Map<string, MutabiliteOutputDto>());
-  const manualDataRef = useRef(new Map<string, Record<string, string>>());
+
+  // Saisie « Connaissance terrain » + mutabilité : persistées en local par site (ADR-0021, phase 3).
+  const userData = useSiteUserData(config.storageKey);
 
   // IDs des sites enrichis suivis en state (le ref ne peut pas être lu pendant le rendu)
   const [enrichedSiteIds, setEnrichedSiteIds] = useState<Set<string>>(new Set());
@@ -55,50 +57,50 @@ const MultisiteView: React.FC<{ config: PartnerConfig }> = ({ config }) => {
     [renommerSite],
   );
 
-  const handleSelectSite = useCallback(async (site: PartnerSite) => {
-    setSelectedSite(site);
-    setError(null);
+  const handleSelectSite = useCallback(
+    async (site: PartnerSite) => {
+      setSelectedSite(site);
+      setError(null);
 
-    const cachedManual = manualDataRef.current.get(site.idtup) || {};
-    setManualData(cachedManual);
+      setManualData(userData.getManualData(site.idtup));
+      setMutabilityData(userData.getMutability(site.idtup));
 
-    const cachedMutability = mutabilityCacheRef.current.get(site.idtup) || null;
-    setMutabilityData(cachedMutability);
+      const cachedEnrichment = enrichmentCacheRef.current.get(site.idtup);
+      if (cachedEnrichment) {
+        setEnrichmentData(cachedEnrichment);
+        setLoadingState("idle");
+        return;
+      }
 
-    const cachedEnrichment = enrichmentCacheRef.current.get(site.idtup);
-    if (cachedEnrichment) {
-      setEnrichmentData(cachedEnrichment);
-      setLoadingState("idle");
-      return;
-    }
-
-    setEnrichmentData(null);
-    setLoadingState("enriching");
-    try {
-      const result = await enrichissementService.enrichirSite(site.parcelles, {
-        acceptDegradedCache: true,
-      });
-      enrichmentCacheRef.current.set(site.idtup, result);
-      setEnrichedSiteIds((prev) => new Set(prev).add(site.idtup));
-      setEnrichmentData(result);
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Erreur lors de l'enrichissement";
-      setError(message);
-    } finally {
-      setLoadingState("idle");
-    }
-  }, []);
+      setEnrichmentData(null);
+      setLoadingState("enriching");
+      try {
+        const result = await enrichissementService.enrichirSite(site.parcelles, {
+          acceptDegradedCache: true,
+        });
+        enrichmentCacheRef.current.set(site.idtup, result);
+        setEnrichedSiteIds((prev) => new Set(prev).add(site.idtup));
+        setEnrichmentData(result);
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : "Erreur lors de l'enrichissement";
+        setError(message);
+      } finally {
+        setLoadingState("idle");
+      }
+    },
+    [userData],
+  );
 
   const handleManualDataChange = useCallback(
     (fieldName: string, value: string) => {
       if (!selectedSite) return;
       const updated = { ...manualData, [fieldName]: value };
       setManualData(updated);
-      manualDataRef.current.set(selectedSite.idtup, updated);
-      mutabilityCacheRef.current.delete(selectedSite.idtup);
+      userData.setManualData(selectedSite.idtup, updated);
+      userData.clearMutability(selectedSite.idtup);
       setMutabilityData(null);
     },
-    [selectedSite, manualData],
+    [selectedSite, manualData, userData],
   );
 
   const handleCalculerMutabilite = useCallback(async () => {
@@ -112,7 +114,7 @@ const MultisiteView: React.FC<{ config: PartnerConfig }> = ({ config }) => {
         modeDetaille: true,
         versionAlgorithme: selectedVersion || undefined,
       });
-      mutabilityCacheRef.current.set(selectedSite.idtup, result);
+      userData.setMutability(selectedSite.idtup, result);
       setMutabilityData(result);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Erreur lors du calcul de mutabilité";
@@ -120,18 +122,20 @@ const MultisiteView: React.FC<{ config: PartnerConfig }> = ({ config }) => {
     } finally {
       setLoadingState("idle");
     }
-  }, [selectedSite, enrichmentData, manualData, selectedVersion]);
+  }, [selectedSite, enrichmentData, manualData, selectedVersion, userData]);
 
-  const cleanupCachesForSite = useCallback((idtup: string) => {
-    enrichmentCacheRef.current.delete(idtup);
-    mutabilityCacheRef.current.delete(idtup);
-    manualDataRef.current.delete(idtup);
-    setEnrichedSiteIds((prev) => {
-      const next = new Set(prev);
-      next.delete(idtup);
-      return next;
-    });
-  }, []);
+  const cleanupCachesForSite = useCallback(
+    (idtup: string) => {
+      enrichmentCacheRef.current.delete(idtup);
+      userData.remove(idtup);
+      setEnrichedSiteIds((prev) => {
+        const next = new Set(prev);
+        next.delete(idtup);
+        return next;
+      });
+    },
+    [userData],
+  );
 
   const handleAddSiteSubmit = useCallback(
     (idpars: string[]) => {
