@@ -15,7 +15,8 @@ partenaires/
 │   ├── group.ts             # groupByIdtup / groupByCommune
 │   ├── download-json.ts
 │   ├── partenaires.css      # classes mf-ms-*
-│   ├── hooks/useCustomSites.ts
+│   ├── hooks/usePartenaireSites.ts   # sites lus/ajoutés/renommés via l'API (repli statique)
+│   ├── hooks/useSiteUserData.ts      # Connaissance terrain + mutabilité (localStorage par utilisateur)
 │   ├── components/          # SiteList, SiteDetail, DonneesForm, AddSiteModal
 │   └── pages/               # MultisitePage (orchestrateur), PartenairesPage (hub)
 ├── partners/                # un dossier autonome par partenaire
@@ -144,7 +145,9 @@ export const PARTENAIRES_PREFETCH: Record<string, SitePrefetch[]> = {
 ## Conventions
 
 - `slug` : en minuscules, sans espace (segment d'URL).
-- `storageKey` : unique par partenaire (sinon les sites ajoutés manuellement se mélangeraient).
+- `storageKey` : unique par partenaire. Sert de base aux données locales par utilisateur
+  (« Connaissance terrain » + mutabilité, cf. `useSiteUserData`). Les sites ajoutés sont en base
+  (POST `/api/partenaires/:slug/sites`), plus en localStorage.
 - Le calcul utilise les routes API standard (`/enrichissement`, `/evaluation/calculer` en
   `modeDetaille`) via les services partagés — rien de spécifique côté partenaire.
 

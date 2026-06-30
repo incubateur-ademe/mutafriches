@@ -1,16 +1,12 @@
 import React, { useMemo, useState } from "react";
 import type { PartnerSite } from "../types";
-import { CUSTOM_COMMUNE_LABEL } from "../hooks/useCustomSites";
 
 interface SiteListProps {
   sitesByCommune: Record<string, PartnerSite[]>;
   selectedSiteId: string | null;
   onSelectSite: (site: PartnerSite) => void;
   enrichedSiteIds: Set<string>;
-  customSites: PartnerSite[];
   onAddSiteClick: () => void;
-  onRemoveCustomSite: (idtup: string) => void;
-  onClearCustomSites: () => void;
 }
 
 // Au-delà de ce nombre de communes, les groupes sont repliés par défaut.
@@ -32,7 +28,6 @@ const renderSiteButton = (
   selectedSiteId: string | null,
   isEnriched: boolean,
   onSelectSite: (site: PartnerSite) => void,
-  onRemove?: (idtup: string) => void,
 ) => {
   const isSelected = site.idtup === selectedSiteId;
   return (
@@ -56,15 +51,6 @@ const renderSiteButton = (
           />
         )}
       </button>
-      {onRemove && (
-        <button
-          type="button"
-          className="mf-ms-site-remove fr-icon-delete-line"
-          onClick={() => onRemove(site.idtup)}
-          aria-label={`Supprimer le site ${site.idtup}`}
-          title="Supprimer ce site"
-        />
-      )}
     </li>
   );
 };
@@ -74,10 +60,7 @@ export const SiteList: React.FC<SiteListProps> = ({
   selectedSiteId,
   onSelectSite,
   enrichedSiteIds,
-  customSites,
   onAddSiteClick,
-  onRemoveCustomSite,
-  onClearCustomSites,
 }) => {
   const communes = useMemo(() => Object.keys(sitesByCommune).sort(), [sitesByCommune]);
 
@@ -101,10 +84,10 @@ export const SiteList: React.FC<SiteListProps> = ({
     });
   };
 
-  // Récap (totaux du jeu de données complet, sites perso inclus)
+  // Récap (total du jeu de données)
   const totalSites = useMemo(
-    () => Object.values(sitesByCommune).reduce((n, s) => n + s.length, 0) + customSites.length,
-    [sitesByCommune, customSites.length],
+    () => Object.values(sitesByCommune).reduce((n, s) => n + s.length, 0),
+    [sitesByCommune],
   );
 
   // Filtrage par la recherche
@@ -119,12 +102,7 @@ export const SiteList: React.FC<SiteListProps> = ({
       .filter((g) => g.sites.length > 0);
   }, [communes, sitesByCommune, isSearching, q]);
 
-  const filteredCustom = useMemo(
-    () => (isSearching ? customSites.filter((s) => matchSite(s, q)) : customSites),
-    [customSites, isSearching, q],
-  );
-
-  const aucunResultat = isSearching && filteredCommunes.length === 0 && filteredCustom.length === 0;
+  const aucunResultat = isSearching && filteredCommunes.length === 0;
 
   return (
     <nav className="fr-sidemenu">
@@ -162,35 +140,6 @@ export const SiteList: React.FC<SiteListProps> = ({
           <p className="fr-text--sm fr-mb-2w" style={{ color: "var(--text-mention-grey)" }}>
             Aucun site ne correspond à « {query} ».
           </p>
-        )}
-
-        {filteredCustom.length > 0 && (
-          <details className="mf-ms-commune-group" open>
-            <summary className="mf-ms-commune-group__summary">
-              {CUSTOM_COMMUNE_LABEL} ({filteredCustom.length} site
-              {filteredCustom.length > 1 ? "s" : ""})
-            </summary>
-            <ul className="fr-sidemenu__list">
-              {filteredCustom.map((site) =>
-                renderSiteButton(
-                  site,
-                  selectedSiteId,
-                  enrichedSiteIds.has(site.idtup),
-                  onSelectSite,
-                  onRemoveCustomSite,
-                ),
-              )}
-            </ul>
-            <div className="mf-ms-clear-all">
-              <button
-                type="button"
-                className="fr-btn fr-btn--tertiary-no-outline fr-btn--sm"
-                onClick={onClearCustomSites}
-              >
-                Tout effacer
-              </button>
-            </div>
-          </details>
         )}
 
         {filteredCommunes.map(({ commune, sites }) => (

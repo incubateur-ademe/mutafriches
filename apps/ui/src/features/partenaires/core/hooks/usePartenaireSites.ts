@@ -17,9 +17,15 @@ function toPartnerSite(site: PartenaireSiteOutputDto): PartnerSite {
  * Charge les sites d'un partenaire depuis l'API, avec repli sur la config statique.
  * Rendu instantané depuis le statique, remplacé par la donnée API au retour (ADR-0021, phase 1).
  */
+export interface AjouterSiteResultat {
+  site: PartnerSite | null;
+  invalidIdpars: string[];
+}
+
 export function usePartenaireSites(config: PartnerConfig): {
   sitesByCommune: Record<string, PartnerSite[]>;
   renommerSite: (id: string, nom: string) => Promise<PartnerSite>;
+  ajouterSite: (parcelles: string[]) => Promise<AjouterSiteResultat>;
 } {
   const [sitesByCommune, setSitesByCommune] = useState(config.sitesByCommune);
 
@@ -54,5 +60,22 @@ export function usePartenaireSites(config: PartnerConfig): {
     [config.slug],
   );
 
-  return { sitesByCommune, renommerSite };
+  const ajouterSite = useCallback(
+    async (parcelles: string[]): Promise<AjouterSiteResultat> => {
+      const res = await partenairesService.ajouterSite(config.slug, parcelles);
+      if (!res.site) return { site: null, invalidIdpars: res.invalidIdpars };
+
+      const site = toPartnerSite(res.site);
+      setSitesByCommune((prev) => {
+        const existants = prev[site.commune] ?? [];
+        // Évite un doublon si le site existait déjà (idempotence côté API).
+        if (existants.some((s) => s.id === site.id)) return prev;
+        return { ...prev, [site.commune]: [...existants, site] };
+      });
+      return { site, invalidIdpars: res.invalidIdpars };
+    },
+    [config.slug],
+  );
+
+  return { sitesByCommune, renommerSite, ajouterSite };
 }
