@@ -52,40 +52,39 @@ export const EvaluationSection: React.FC<EvaluationSectionProps> = ({
             )}
           </span>
         </div>
-      </div>
-
-      {/* Detail criteres si disponible */}
-      {fiabilite.detailCriteres && fiabilite.detailCriteres.length > 0 && (
-        <details style={{ marginBottom: "0.75rem", fontSize: "0.8125rem" }}>
-          <summary style={{ cursor: "pointer", fontWeight: 600, fontSize: "0.75rem" }}>
-            D&eacute;tail des crit&egrave;res de fiabilit&eacute;
-          </summary>
-          <table className="debug-panel__usage-table" style={{ marginTop: "0.25rem" }}>
-            <thead>
-              <tr>
-                <th>Crit&egrave;re</th>
-                <th>Poids</th>
-                <th>Renseign&eacute;</th>
-              </tr>
-            </thead>
-            <tbody>
-              {fiabilite.detailCriteres.map((c, i) => (
-                <tr key={i}>
-                  <td>{c.critere}</td>
-                  <td>{c.poids}</td>
-                  <td>
-                    <span
-                      className={`fr-badge fr-badge--sm ${c.renseigne ? "fr-badge--success" : "fr-badge--warning"}`}
-                    >
-                      {c.renseigne ? "Oui" : "Non"}
-                    </span>
-                  </td>
+        {/* Detail criteres si disponible */}
+        {fiabilite.detailCriteres && fiabilite.detailCriteres.length > 0 && (
+          <details className="debug-panel__fiabilite-criteres">
+            <summary style={{ cursor: "pointer", fontWeight: 600, fontSize: "0.75rem" }}>
+              D&eacute;tail des crit&egrave;res de fiabilit&eacute;
+            </summary>
+            <table className="debug-panel__usage-table" style={{ marginTop: "0.25rem" }}>
+              <thead>
+                <tr>
+                  <th>Crit&egrave;re</th>
+                  <th>Poids</th>
+                  <th>Renseign&eacute;</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </details>
-      )}
+              </thead>
+              <tbody>
+                {fiabilite.detailCriteres.map((c, i) => (
+                  <tr key={i}>
+                    <td>{c.critere}</td>
+                    <td>{c.poids}</td>
+                    <td>
+                      <span
+                        className={`fr-badge fr-badge--sm ${c.renseigne ? "fr-badge--success" : "fr-badge--warning"}`}
+                      >
+                        {c.renseigne ? "Oui" : "Non"}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </details>
+        )}
+      </div>
 
       {/* Tableau des 7 usages */}
       <h4 className="debug-panel__subtitle">Classement des usages</h4>
@@ -133,11 +132,8 @@ export const EvaluationSection: React.FC<EvaluationSectionProps> = ({
       {evaluationId && (
         <div style={{ marginTop: "0.75rem" }}>
           <dt className="fr-text--xs" style={{ color: "var(--text-mention-grey)" }}>
-            ID &eacute;valuation
+            ID &eacute;valuation : {evaluationId}
           </dt>
-          <dd style={{ fontFamily: "monospace", fontSize: "0.75rem", wordBreak: "break-all" }}>
-            {evaluationId}
-          </dd>
         </div>
       )}
     </>

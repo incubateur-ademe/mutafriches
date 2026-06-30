@@ -165,6 +165,7 @@
 /* Bloc fiabilite */
 .debug-panel__fiabilite {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 1rem;
   padding: 0.75rem;
@@ -180,6 +181,12 @@
 }
 
 .debug-panel__fiabilite-details {
+  font-size: 0.8125rem;
+}
+
+/* Détail des critères : dernière ligne, pleine largeur sous le score et les détails */
+.debug-panel__fiabilite-criteres {
+  flex-basis: 100%;
   font-size: 0.8125rem;
 }
 
