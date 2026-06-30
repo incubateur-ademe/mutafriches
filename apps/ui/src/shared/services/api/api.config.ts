@@ -27,6 +27,9 @@ export const API_CONFIG = {
     evenements: {
       enregistrer: "/evenements",
     },
+    partenaires: {
+      get: (slug: string) => `/api/partenaires/${slug}`,
+    },
     metabase: {
       embedUrl: "/api/metabase/embed-url",
     },

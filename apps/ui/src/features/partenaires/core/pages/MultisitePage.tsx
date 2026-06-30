@@ -13,6 +13,7 @@ import { AddSiteModal } from "../components/AddSiteModal";
 import { DonneesExternesLink } from "../components/DonneesExternesLink";
 import { PartagerButton } from "../components/PartagerButton";
 import { useCustomSites } from "../hooks/useCustomSites";
+import { usePartenaireSites } from "../hooks/usePartenaireSites";
 import { getPartnerBySlug } from "../../registry";
 import type { PartnerConfig, PartnerSite } from "../types";
 import "@features/debug/components/DebugPanel.css";
@@ -42,6 +43,9 @@ const MultisiteView: React.FC<{ config: PartnerConfig }> = ({ config }) => {
 
   const { customSites, addSite, removeSite, clearAll } = useCustomSites(config.storageKey);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+
+  // Sites lus en base (repli sur la config statique). Cf. ADR-0021, phase 1.
+  const { sitesByCommune } = usePartenaireSites(config);
 
   const handleSelectSite = useCallback(async (site: PartnerSite) => {
     setSelectedSite(site);
@@ -171,7 +175,7 @@ const MultisiteView: React.FC<{ config: PartnerConfig }> = ({ config }) => {
         <div className="fr-grid-row fr-grid-row--gutters">
           <div className="fr-col-12 fr-col-md-4">
             <SiteList
-              sitesByCommune={config.sitesByCommune}
+              sitesByCommune={sitesByCommune}
               selectedSiteId={selectedSite?.idtup ?? null}
               onSelectSite={handleSelectSite}
               enrichedSiteIds={enrichedSiteIds}
