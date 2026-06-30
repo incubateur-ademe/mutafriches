@@ -154,6 +154,15 @@ export class EvenementService {
       sanitized.surfaceTotaleM2 = Math.max(0, Math.min(1_000_000, donnees.surfaceTotaleM2));
     }
 
+    // partenaireSlug: slug court (minuscules, chiffres, tirets)
+    if (donnees.partenaireSlug !== undefined && typeof donnees.partenaireSlug === "string") {
+      const slug = donnees.partenaireSlug.substring(0, 50);
+      if (/^[a-z0-9-]+$/.test(slug)) {
+        sanitized.partenaireSlug = slug;
+      }
+      // Si invalide, on ignore silencieusement
+    }
+
     return Object.keys(sanitized).length > 0 ? sanitized : undefined;
   }
 }

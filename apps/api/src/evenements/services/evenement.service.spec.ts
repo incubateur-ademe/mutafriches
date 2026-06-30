@@ -332,6 +332,34 @@ describe("EvenementService - Sécurité", () => {
       expect(savedEvent.donnees?.usageConcerne).toBeUndefined();
     });
 
+    it("devrait accepter un partenaireSlug valide", async () => {
+      const input = {
+        typeEvenement: TypeEvenement.PARTAGE_PAGE_PARTENAIRE,
+        donnees: {
+          partenaireSlug: "aura",
+        },
+      };
+
+      await service.enregistrerEvenement(input);
+
+      const savedEvent = vi.mocked(mockRepository.enregistrerEvenement).mock.calls[0][0];
+      expect(savedEvent.donnees?.partenaireSlug).toBe("aura");
+    });
+
+    it("devrait rejeter un partenaireSlug invalide (caractères non autorisés)", async () => {
+      const input = {
+        typeEvenement: TypeEvenement.PARTAGE_PAGE_PARTENAIRE,
+        donnees: {
+          partenaireSlug: "AURA<script>",
+        },
+      };
+
+      await service.enregistrerEvenement(input);
+
+      const savedEvent = vi.mocked(mockRepository.enregistrerEvenement).mock.calls[0][0];
+      expect(savedEvent.donnees?.partenaireSlug).toBeUndefined();
+    });
+
     it("devrait valider page avec regex (pathname valide)", async () => {
       const input = {
         typeEvenement: TypeEvenement.VISITE,
