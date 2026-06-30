@@ -129,7 +129,7 @@ export const PollutionField: React.FC<PollutionFieldProps> = ({
       <div className="fr-col-12 fr-col-md-6">
         <div className={`fr-select-group ${error ? "fr-select-group--error" : ""}`}>
           <label className="fr-label" htmlFor="presence-pollution">
-            <strong>Présence de pollution *</strong>
+            <strong>Présence de pollution</strong>
             {tooltip && (
               <>
                 <button
@@ -179,7 +179,7 @@ export const PollutionField: React.FC<PollutionFieldProps> = ({
             aria-labelledby="pollution-type-legend"
           >
             <legend className="fr-fieldset__legend" id="pollution-type-legend">
-              <strong>Type de pollution *</strong>
+              <strong>Type de pollution</strong>
             </legend>
             {POLLUTION_TYPES.map((type) => (
               <div
