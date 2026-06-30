@@ -9,6 +9,9 @@ export * from "./recapitulatif";
 // Stats
 export * from "./stats";
 
+// Partenaires (pages multisites)
+export * from "./partenaires";
+
 // Données externes (statut des imports + monitoring APIs externes)
 export * from "./donnees-externes";
 

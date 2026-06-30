@@ -6,6 +6,7 @@ import { EnrichissementModule } from "./enrichissement/enrichissement.module";
 import { EvaluationModule } from "./evaluation/evaluation.module";
 import { EvenementsModule } from "./evenements/evenements.module";
 import { StatsModule } from "./stats/stats.module";
+import { PartenairesModule } from "./partenaires/partenaires.module";
 import { DonneesExternesModule } from "./donnees-externes/donnees-externes.module";
 import { MetabaseModule } from "./metabase/metabase.module";
 import { DatabaseModule } from "./shared/database/database.module";
@@ -27,6 +28,7 @@ import { ConfigModule } from "./config";
     EvaluationModule,
     EvenementsModule,
     StatsModule,
+    PartenairesModule,
     DonneesExternesModule,
     MetabaseModule,
   ],
