@@ -1,29 +1,20 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Layout } from "@shared/components/layout/Layout";
-import { ROUTES, partenaireRoute } from "@shared/config/routes.config";
+import { partenaireRoute } from "@shared/config/routes.config";
 import { PARTNERS } from "../../registry";
+import { DonneesExternesLink } from "../components/DonneesExternesLink";
 
 export const PartenairesPage: React.FC = () => {
   return (
     <Layout>
       <div className="fr-mb-4w">
         <h1 className="fr-h3">Partenaires</h1>
-        <p className="fr-text--lg">
+        <p className="fr-text--lg fr-mb-1w">
           Pages dédiées aux partenaires de Mutafriches pour la qualification et la mutabilité de
           listes de friches spécifiques à leur territoire.
         </p>
-      </div>
-
-      <div className="fr-callout fr-icon-database-line fr-mb-4w">
-        <h2 className="fr-callout__title fr-h6">Sources de données et jeux de données</h2>
-        <p className="fr-callout__text fr-text--sm">
-          Consultez la liste des sources de données externes (APIs distantes) et des référentiels
-          importés en base utilisés par Mutafriches pour enrichir les analyses.
-        </p>
-        <Link className="fr-btn fr-btn--secondary" to={ROUTES.DONNEES_UTILISEES}>
-          Voir les données utilisées
-        </Link>
+        <DonneesExternesLink />
       </div>
 
       <div className="fr-grid-row fr-grid-row--gutters">
