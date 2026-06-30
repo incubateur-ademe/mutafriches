@@ -7,6 +7,7 @@ export interface PartnerParcelle {
 }
 
 export interface PartnerSite {
+  id?: string; // identifiant DB (présent si le site vient de l'API ; absent pour statique/custom)
   idtup: string;
   commune: string;
   parcelles: string[];

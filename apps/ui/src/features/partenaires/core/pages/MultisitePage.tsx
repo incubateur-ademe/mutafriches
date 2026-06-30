@@ -45,7 +45,15 @@ const MultisiteView: React.FC<{ config: PartnerConfig }> = ({ config }) => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   // Sites lus en base (repli sur la config statique). Cf. ADR-0021, phase 1.
-  const { sitesByCommune } = usePartenaireSites(config);
+  const { sitesByCommune, renommerSite } = usePartenaireSites(config);
+
+  const handleRenameSite = useCallback(
+    async (id: string, nom: string) => {
+      const updated = await renommerSite(id, nom);
+      setSelectedSite((prev) => (prev?.id === id ? updated : prev));
+    },
+    [renommerSite],
+  );
 
   const handleSelectSite = useCallback(async (site: PartnerSite) => {
     setSelectedSite(site);
@@ -191,6 +199,7 @@ const MultisiteView: React.FC<{ config: PartnerConfig }> = ({ config }) => {
                 site={selectedSite}
                 partenaireSlug={config.slug}
                 partenaireNom={config.nom}
+                onRenameSite={handleRenameSite}
                 enrichmentData={enrichmentData}
                 mutabilityData={mutabilityData}
                 manualData={manualData}
