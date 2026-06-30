@@ -187,6 +187,8 @@ const MultisiteView: React.FC<{ config: PartnerConfig }> = ({ config }) => {
             {selectedSite ? (
               <SiteDetail
                 site={selectedSite}
+                partenaireSlug={config.slug}
+                partenaireNom={config.nom}
                 enrichmentData={enrichmentData}
                 mutabilityData={mutabilityData}
                 manualData={manualData}
