@@ -14,6 +14,7 @@ import { DsfrAccordion } from "@shared/components/dsfr/DsfrAccordion";
 import { DonneesForm } from "./DonneesForm";
 import { SiteMap } from "./SiteMap";
 import { PartagerButton } from "./PartagerButton";
+import { RenameSiteModal } from "./RenameSiteModal";
 import type { PartnerSite } from "../types";
 import { downloadJson } from "../download-json";
 
@@ -67,27 +68,14 @@ export const SiteDetail: React.FC<SiteDetailProps> = ({
   onCalculerMutabilite,
   onRenameSite,
 }) => {
-  const [isEditingNom, setIsEditingNom] = useState(false);
-  const [nomInput, setNomInput] = useState("");
-  const [savingNom, setSavingNom] = useState(false);
+  const [isRenameOpen, setIsRenameOpen] = useState(false);
 
   const canRename = Boolean(site.id && onRenameSite);
   const titreSite = site.nom ? `${site.nom}, ${site.commune}` : site.commune;
 
-  const ouvrirEditionNom = () => {
-    setNomInput(site.nom ?? "");
-    setIsEditingNom(true);
-  };
-
-  const enregistrerNom = async () => {
+  const enregistrerNom = async (nom: string): Promise<void> => {
     if (!site.id || !onRenameSite) return;
-    setSavingNom(true);
-    try {
-      await onRenameSite(site.id, nomInput);
-      setIsEditingNom(false);
-    } finally {
-      setSavingNom(false);
-    }
+    await onRenameSite(site.id, nom);
   };
 
   // Phase dérivée : présence de mutabilityData → mutabilite, sinon qualification.
@@ -114,67 +102,38 @@ export const SiteDetail: React.FC<SiteDetailProps> = ({
 
   return (
     <div className="mf-ms-detail">
-      {/* En-tête du site */}
+      {/* En-tête du site (hauteur limitée : la liste des parcelles défile) */}
       <div className="fr-callout fr-callout--blue-ecume fr-mb-2w">
         <div className="flex items-start justify-between gap-4">
           <h2 className="fr-callout__title fr-h4 fr-mb-0">{titreSite}</h2>
-          {canRename && !isEditingNom && (
+          {canRename && (
             <button
               type="button"
               className="fr-btn fr-btn--secondary fr-btn--sm fr-icon-edit-line fr-btn--icon-left"
-              onClick={ouvrirEditionNom}
+              onClick={() => setIsRenameOpen(true)}
             >
               Modifier site
             </button>
           )}
         </div>
 
-        {isEditingNom && (
-          <div className="fr-mt-1w">
-            <input
-              className="fr-input"
-              value={nomInput}
-              onChange={(e) => setNomInput(e.target.value)}
-              placeholder="Nom du site (laisser vide pour le nom par défaut)"
-              aria-label="Nom du site"
-            />
-            <ul className="fr-btns-group fr-btns-group--inline fr-btns-group--right fr-mt-1w">
-              <li>
-                <button
-                  type="button"
-                  className="fr-btn fr-btn--sm"
-                  onClick={enregistrerNom}
-                  disabled={savingNom}
-                  aria-busy={savingNom}
-                >
-                  Enregistrer
-                </button>
-              </li>
-              <li>
-                <button
-                  type="button"
-                  className="fr-btn fr-btn--secondary fr-btn--sm"
-                  onClick={() => setIsEditingNom(false)}
-                  disabled={savingNom}
-                >
-                  Annuler
-                </button>
-              </li>
-            </ul>
-          </div>
-        )}
-
-        <p className="fr-callout__text fr-text--sm">
+        <p className="fr-text--sm fr-mt-1w fr-mb-1v">
           Identifiant : <strong>{site.idtup}</strong>
-          <br />
-          <br />
-          {site.parcelles.length > 1 && (
-            <>
-              {site.parcelles.length} parcelles : {site.parcelles.join(", ")}
-            </>
-          )}
         </p>
+        <div className="fr-text--sm max-h-20 overflow-y-auto">
+          {site.parcelles.length} parcelle{site.parcelles.length > 1 ? "s" : ""} :{" "}
+          {site.parcelles.join(", ")}
+        </div>
       </div>
+
+      {canRename && (
+        <RenameSiteModal
+          isOpen={isRenameOpen}
+          initialNom={site.nom ?? ""}
+          onClose={() => setIsRenameOpen(false)}
+          onSubmit={enregistrerNom}
+        />
+      )}
 
       {/* Carte de l'emprise du site (dès que la géométrie est enrichie) */}
       {geometrieSite && (
