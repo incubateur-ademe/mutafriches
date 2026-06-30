@@ -9,6 +9,9 @@ import {
   ZONAGE_ENVIRONNEMENTAL_LABELS,
   ZONAGE_PATRIMONIAL_LABELS,
   ZONAGE_ABC_LOGEMENT_LABELS,
+  RACCORDEMENT_EAU_LABELS,
+  RaccordementEau,
+  deriverRaccordementEau,
 } from "@mutafriches/shared-types";
 import { DsfrAccordion } from "@shared/components/dsfr/DsfrAccordion";
 import {
@@ -70,6 +73,23 @@ export const EnrichissementSection: React.FC<EnrichissementSectionProps> = ({
       <dl className="debug-panel__data-grid">
         <dt>Distance raccordement &eacute;lectrique</dt>
         <dd>{formatDistance(enrichmentData.distanceRaccordementElectrique)}</dd>
+
+        <dt>Site connect&eacute; aux r&eacute;seaux d&apos;eau</dt>
+        <dd>
+          {(() => {
+            // Dérivé de la surface bâtie (cf. raccordement-eau.derivation.ts)
+            const raccordementEau = deriverRaccordementEau(enrichmentData.surfaceBati);
+            return (
+              <span
+                className={`fr-badge fr-badge--sm ${
+                  raccordementEau === RaccordementEau.OUI ? "fr-badge--success" : "fr-badge--info"
+                }`}
+              >
+                {libelleEnum(RACCORDEMENT_EAU_LABELS, raccordementEau)}
+              </span>
+            );
+          })()}
+        </dd>
       </dl>
 
       {/* Contexte urbain */}
