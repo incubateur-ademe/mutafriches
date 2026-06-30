@@ -201,7 +201,12 @@ export const SiteDetail: React.FC<SiteDetailProps> = ({
               </DsfrAccordion>
 
               <DsfrAccordion title="Détail de l'algorithme" badge={BADGE_CALCULE} defaultOpen>
-                <DetailAlgorithmeSection mutabilityData={mutabilityData} noWrapper />
+                <DetailAlgorithmeSection
+                  mutabilityData={mutabilityData}
+                  enrichissement={enrichmentData ?? undefined}
+                  complementaires={buildDonneesComplementaires(manualData)}
+                  noWrapper
+                />
               </DsfrAccordion>
 
               <ul className="fr-btns-group fr-btns-group--inline fr-btns-group--right fr-btns-group--icon-left fr-mt-2w">

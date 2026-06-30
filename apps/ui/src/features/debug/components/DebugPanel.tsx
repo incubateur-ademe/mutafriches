@@ -10,6 +10,7 @@ import { DiagnosticRisquesSection } from "./sections/DiagnosticRisquesSection";
 import { DiagnosticZonagesSection } from "./sections/DiagnosticZonagesSection";
 import { SourcesMetadataSection } from "./sections/SourcesMetadataSection";
 import { RawJsonSection } from "./sections/RawJsonSection";
+import { buildDonneesComplementaires } from "@features/resultats/utils/mutability.mapper";
 import "./DebugPanel.css";
 
 export interface DebugPanelProps {
@@ -113,7 +114,11 @@ export const DebugPanel: React.FC<DebugPanelProps> = ({
 
           <EvaluationSection mutabilityData={mutabilityData} />
 
-          <DetailAlgorithmeSection mutabilityData={mutabilityData} />
+          <DetailAlgorithmeSection
+            mutabilityData={mutabilityData}
+            enrichissement={enrichmentData}
+            complementaires={buildDonneesComplementaires(manualData ?? {})}
+          />
 
           <DiagnosticRisquesSection enrichmentData={enrichmentData} />
 
