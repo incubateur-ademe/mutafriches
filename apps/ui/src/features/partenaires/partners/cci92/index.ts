@@ -9,8 +9,7 @@ export const CCI92_CONFIG: PartnerConfig = {
   nom: "CCI Hauts-de-Seine (92)",
   description:
     "POC de qualification et mutabilité des friches sur le territoire de la CCI 92 (Colombes, Gennevilliers, Nanterre).",
-  sousTitre: "Qualification et mutabilité des friches sur le territoire de la CCI 92.",
-  sidemenuTitre: "Sites CCI 92",
+  departement: "92",
   storageKey: "cci92-custom-sites",
   sites,
   sitesByCommune: groupByCommune(sites),

@@ -3,7 +3,6 @@ import type { PartnerSite } from "../types";
 import { CUSTOM_COMMUNE_LABEL } from "../hooks/useCustomSites";
 
 interface SiteListProps {
-  titre: string;
   sitesByCommune: Record<string, PartnerSite[]>;
   selectedSiteId: string | null;
   onSelectSite: (site: PartnerSite) => void;
@@ -71,7 +70,6 @@ const renderSiteButton = (
 };
 
 export const SiteList: React.FC<SiteListProps> = ({
-  titre,
   sitesByCommune,
   selectedSiteId,
   onSelectSite,
@@ -129,9 +127,8 @@ export const SiteList: React.FC<SiteListProps> = ({
   const aucunResultat = isSearching && filteredCommunes.length === 0 && filteredCustom.length === 0;
 
   return (
-    <nav className="fr-sidemenu" aria-label={titre}>
+    <nav className="fr-sidemenu">
       <div className="fr-sidemenu__inner">
-        <div className="fr-sidemenu__title">{titre}</div>
         <p className="fr-text--xs fr-mb-1w" style={{ color: "var(--text-mention-grey)" }}>
           {totalSites} site{totalSites > 1 ? "s" : ""} · {communes.length} commune
           {communes.length > 1 ? "s" : ""}

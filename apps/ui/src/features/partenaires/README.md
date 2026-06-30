@@ -49,7 +49,7 @@ Remplacer `<slug>` par le slug du partenaire (minuscules, sans espace, ex. `aura
 
 - [ ] Créer `partners/<slug>/parcelles.ts` — la liste des IDU (cf. exemple ci-dessous)
 - [ ] Créer `partners/<slug>/index.ts` — le `PartnerConfig` (`slug`, `nom`, `description`,
-      `sousTitre`, `sidemenuTitre`, `storageKey` **unique**)
+      `departement`, `storageKey` **unique**)
 - [ ] Modifier `registry.ts` — importer le config et l'ajouter au tableau `PARTNERS`
 
 **Prefetch CI — recommandé (cache chaud), uniquement avec des IDU réels**
@@ -101,8 +101,7 @@ export const AURA_CONFIG: PartnerConfig = {
   slug: "aura", // → /partenaires/aura
   nom: "AURA — Agence d'urbanisme de la région angevine",
   description: "Qualification et mutabilité des friches du territoire d'AURA.",
-  sousTitre: "Qualification et mutabilité des friches sur le territoire d'AURA.",
-  sidemenuTitre: "Sites AURA",
+  departement: "49", // code département INSEE (pas encore affiché)
   storageKey: "aura-custom-sites", // doit être unique par partenaire
   sites,
   sitesByCommune: groupByCommune(sites),
