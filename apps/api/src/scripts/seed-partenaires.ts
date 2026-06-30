@@ -97,12 +97,18 @@ async function backfillNomsDefaut(db: ReturnType<typeof drizzle>, slugs: string[
       .from(partenaireSites)
       .where(and(eq(partenaireSites.partenaireSlug, slug), isNull(partenaireSites.nomDefaut)));
 
+    if (sites.length > 0) {
+      console.info(`Partenaire ${slug} : calcul des noms par défaut (${sites.length} sites)...`);
+    }
+
     let nommes = 0;
-    for (const site of sites) {
+    for (let i = 0; i < sites.length; i++) {
+      const site = sites[i];
+      let rue: string | null = null;
       try {
         const coord = await getCentroide(site.parcelles as string[]);
         if (coord) {
-          const rue = await reverseRueProche(coord.latitude, coord.longitude);
+          rue = await reverseRueProche(coord.latitude, coord.longitude);
           if (rue) {
             await db
               .update(partenaireSites)
@@ -114,6 +120,9 @@ async function backfillNomsDefaut(db: ReturnType<typeof drizzle>, slugs: string[
       } catch {
         // Best-effort : on laisse nom_defaut à NULL, un prochain passage réessaiera.
       }
+      console.info(
+        `  [${i + 1}/${sites.length}] ${site.idtup} (${site.commune}) -> ${rue ?? "(non trouvé)"}`,
+      );
       await sleep(DELAY_MS);
     }
     if (sites.length > 0) {
