@@ -5,7 +5,10 @@ interface SiteListProps {
   sitesByCommune: Record<string, PartnerSite[]>;
   selectedSiteId: string | null;
   onSelectSite: (site: PartnerSite) => void;
-  enrichedSiteIds: Set<string>;
+  /** Sites avec une saisie « Connaissance terrain » en localStorage (simple check). */
+  qualifiedSiteIds: Set<string>;
+  /** Sites avec une mutabilité calculée en localStorage (double check). */
+  evaluatedSiteIds: Set<string>;
   onAddSiteClick: () => void;
 }
 
@@ -23,10 +26,41 @@ function matchSite(site: PartnerSite, q: string): boolean {
   );
 }
 
+// Simple check = qualification saisie en local ; double check = qualification + mutabilité.
+const renderStatusIcon = (qualified: boolean, evaluated: boolean) => {
+  if (evaluated) {
+    return (
+      <span
+        className="mf-ms-site-btn__check"
+        aria-label="Qualifié et mutabilité calculée"
+        title="Qualifié et mutabilité calculée"
+      >
+        <span className="fr-icon-check-line fr-icon--sm" aria-hidden="true" />
+        <span
+          className="fr-icon-check-line fr-icon--sm"
+          aria-hidden="true"
+          style={{ marginLeft: "-0.45rem" }}
+        />
+      </span>
+    );
+  }
+  if (qualified) {
+    return (
+      <span
+        className="fr-icon-check-line fr-icon--sm mf-ms-site-btn__check"
+        aria-label="Qualifié"
+        title="Qualifié"
+      />
+    );
+  }
+  return null;
+};
+
 const renderSiteButton = (
   site: PartnerSite,
   selectedSiteId: string | null,
-  isEnriched: boolean,
+  qualified: boolean,
+  evaluated: boolean,
   onSelectSite: (site: PartnerSite) => void,
 ) => {
   const isSelected = site.idtup === selectedSiteId;
@@ -44,12 +78,7 @@ const renderSiteButton = (
             {site.parcelles.length} parcelle{site.parcelles.length > 1 ? "s" : ""}
           </span>
         </span>
-        {isEnriched && (
-          <span
-            className="fr-icon-check-line fr-icon--sm mf-ms-site-btn__check"
-            aria-label="Enrichi"
-          />
-        )}
+        {renderStatusIcon(qualified, evaluated)}
       </button>
     </li>
   );
@@ -59,7 +88,8 @@ export const SiteList: React.FC<SiteListProps> = ({
   sitesByCommune,
   selectedSiteId,
   onSelectSite,
-  enrichedSiteIds,
+  qualifiedSiteIds,
+  evaluatedSiteIds,
   onAddSiteClick,
 }) => {
   const communes = useMemo(() => Object.keys(sitesByCommune).sort(), [sitesByCommune]);
@@ -157,7 +187,8 @@ export const SiteList: React.FC<SiteListProps> = ({
                 renderSiteButton(
                   site,
                   selectedSiteId,
-                  enrichedSiteIds.has(site.idtup),
+                  qualifiedSiteIds.has(site.idtup),
+                  evaluatedSiteIds.has(site.idtup),
                   onSelectSite,
                 ),
               )}

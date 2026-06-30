@@ -46,7 +46,14 @@ export interface SiteUserDataStore {
   setMutability(idtup: string, data: MutabiliteOutputDto): void;
   clearMutability(idtup: string): void;
   remove(idtup: string): void;
+  /** idtups ayant une saisie « Connaissance terrain » (qualification lancée). */
+  qualifiedIds(): Set<string>;
+  /** idtups ayant une mutabilité calculée (qualification + évaluation). */
+  evaluatedIds(): Set<string>;
 }
+
+const aUneSaisie = (data: Record<string, string>): boolean =>
+  Object.values(data).some((v) => v && v !== "");
 
 export function useSiteUserData(storageKey: string): SiteUserDataStore {
   const mapRef = useRef<Map<string, SiteUserData> | null>(null);
@@ -79,6 +86,20 @@ export function useSiteUserData(storageKey: string): SiteUserDataStore {
       remove: (idtup) => {
         map().delete(idtup);
         persist();
+      },
+      qualifiedIds: () => {
+        const set = new Set<string>();
+        for (const [idtup, d] of map()) {
+          if (aUneSaisie(d.manualData)) set.add(idtup);
+        }
+        return set;
+      },
+      evaluatedIds: () => {
+        const set = new Set<string>();
+        for (const [idtup, d] of map()) {
+          if (d.mutability) set.add(idtup);
+        }
+        return set;
       },
     };
   }, [storageKey]);

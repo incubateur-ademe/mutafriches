@@ -32,9 +32,6 @@ const MultisiteView: React.FC<{ config: PartnerConfig }> = ({ config }) => {
   // Saisie « Connaissance terrain » + mutabilité : persistées en local par site (ADR-0021, phase 3).
   const userData = useSiteUserData(config.storageKey);
 
-  // IDs des sites enrichis suivis en state (le ref ne peut pas être lu pendant le rendu)
-  const [enrichedSiteIds, setEnrichedSiteIds] = useState<Set<string>>(new Set());
-
   const [enrichmentData, setEnrichmentData] = useState<EnrichissementOutputDto | null>(null);
   const [mutabilityData, setMutabilityData] = useState<MutabiliteOutputDto | null>(null);
   const [manualData, setManualData] = useState<Record<string, string>>({});
@@ -77,7 +74,6 @@ const MultisiteView: React.FC<{ config: PartnerConfig }> = ({ config }) => {
           acceptDegradedCache: true,
         });
         enrichmentCacheRef.current.set(site.idtup, result);
-        setEnrichedSiteIds((prev) => new Set(prev).add(site.idtup));
         setEnrichmentData(result);
       } catch (err: unknown) {
         const message = err instanceof Error ? err.message : "Erreur lors de l'enrichissement";
@@ -136,6 +132,10 @@ const MultisiteView: React.FC<{ config: PartnerConfig }> = ({ config }) => {
     [ajouterSite, handleSelectSite],
   );
 
+  // Recalculés à chaque rendu : les actions (saisie, calcul) modifient un state → re-rendu.
+  const qualifiedSiteIds = userData.qualifiedIds();
+  const evaluatedSiteIds = userData.evaluatedIds();
+
   return (
     <Layout fullWidth>
       <div className="fr-container fr-py-4w">
@@ -153,7 +153,8 @@ const MultisiteView: React.FC<{ config: PartnerConfig }> = ({ config }) => {
               sitesByCommune={sitesByCommune}
               selectedSiteId={selectedSite?.idtup ?? null}
               onSelectSite={handleSelectSite}
-              enrichedSiteIds={enrichedSiteIds}
+              qualifiedSiteIds={qualifiedSiteIds}
+              evaluatedSiteIds={evaluatedSiteIds}
               onAddSiteClick={() => setIsAddModalOpen(true)}
             />
           </div>
