@@ -185,7 +185,7 @@ export const SiteDetail: React.FC<SiteDetailProps> = ({
           {/* Section mutabilité (uniquement après calcul) */}
           {mutabilityData && phase === "mutabilite" && (
             <div key={`mutabilite-${phase}`}>
-              <DsfrAccordion title="Données complémentaires (saisies)" badge={BADGE_SAISIE}>
+              <DsfrAccordion title="Connaissance terrain (saisie)" badge={BADGE_SAISIE}>
                 <DonneesComplementairesSection manualData={manualData} noWrapper />
               </DsfrAccordion>
 

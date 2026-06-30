@@ -34,12 +34,7 @@ const TOOLTIPS: Record<string, string> = {
 
 export const DonneesForm: React.FC<DonneesFormProps> = ({ values, onChange }) => {
   return (
-    <div className="mf-ms-form">
-      <p className="fr-mb-3w">
-        Renseignez les informations que vous connaissez sur le site. Les champs non remplis seront
-        considérés comme inconnus.
-      </p>
-
+    <div>
       {ALL_FIELDS.map((section) => (
         <fieldset key={section.title} className="fr-fieldset fr-mb-2w">
           <legend className="fr-fieldset__legend fr-text--bold">{section.title}</legend>
