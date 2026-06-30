@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { PartenaireSiteOutputDto } from "@mutafriches/shared-types";
 import { partenairesService } from "@shared/services/api/api.partenaires.service";
 import { groupByCommune } from "../group";
@@ -10,7 +10,7 @@ import type { PartnerConfig, PartnerSite } from "../types";
 function toPartnerSite(site: PartenaireSiteOutputDto): PartnerSite {
   const nom =
     site.nom ?? site.nomDefaut ?? (site.parcelles.length > 1 ? site.parcelles[0] : undefined);
-  return { idtup: site.idtup, commune: site.commune, parcelles: site.parcelles, nom };
+  return { id: site.id, idtup: site.idtup, commune: site.commune, parcelles: site.parcelles, nom };
 }
 
 /**
@@ -19,6 +19,7 @@ function toPartnerSite(site: PartenaireSiteOutputDto): PartnerSite {
  */
 export function usePartenaireSites(config: PartnerConfig): {
   sitesByCommune: Record<string, PartnerSite[]>;
+  renommerSite: (id: string, nom: string) => Promise<PartnerSite>;
 } {
   const [sitesByCommune, setSitesByCommune] = useState(config.sitesByCommune);
 
@@ -38,5 +39,20 @@ export function usePartenaireSites(config: PartnerConfig): {
     };
   }, [config.slug]);
 
-  return { sitesByCommune };
+  const renommerSite = useCallback(
+    async (id: string, nom: string): Promise<PartnerSite> => {
+      const updated = toPartnerSite(await partenairesService.renommerSite(config.slug, id, nom));
+      setSitesByCommune((prev) => {
+        const next: Record<string, PartnerSite[]> = {};
+        for (const [commune, sites] of Object.entries(prev)) {
+          next[commune] = sites.map((s) => (s.id === id ? updated : s));
+        }
+        return next;
+      });
+      return updated;
+    },
+    [config.slug],
+  );
+
+  return { sitesByCommune, renommerSite };
 }

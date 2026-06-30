@@ -29,6 +29,7 @@ export const API_CONFIG = {
     },
     partenaires: {
       get: (slug: string) => `/api/partenaires/${slug}`,
+      renommerSite: (slug: string, id: string) => `/api/partenaires/${slug}/sites/${id}`,
     },
     metabase: {
       embedUrl: "/api/metabase/embed-url",

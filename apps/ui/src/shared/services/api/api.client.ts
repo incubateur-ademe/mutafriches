@@ -96,6 +96,17 @@ class ApiClient {
   }
 
   /**
+   * Requête PATCH
+   */
+  async patch<T>(endpoint: string, body?: unknown, options?: HttpRequestOptions): Promise<T> {
+    return this.request<T>(endpoint, {
+      ...options,
+      method: "PATCH",
+      body: body ? JSON.stringify(body) : undefined,
+    });
+  }
+
+  /**
    * Requête DELETE
    */
   async delete<T>(endpoint: string, options?: HttpRequestOptions): Promise<T> {

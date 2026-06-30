@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { EnrichissementOutputDto, MutabiliteOutputDto } from "@mutafriches/shared-types";
 import { SiteIdentificationSection } from "@features/debug/components/sections/SiteIdentificationSection";
 import { EnrichissementSection } from "@features/debug/components/sections/EnrichissementSection";
@@ -30,6 +30,8 @@ interface SiteDetailProps {
   selectedVersion: string;
   onManualDataChange: (fieldName: string, value: string) => void;
   onCalculerMutabilite: () => void;
+  // Renomme le site en base (présent seulement si le site vient de l'API).
+  onRenameSite?: (id: string, nom: string) => Promise<void>;
 }
 
 type Phase = "qualification" | "mutabilite";
@@ -63,7 +65,31 @@ export const SiteDetail: React.FC<SiteDetailProps> = ({
   selectedVersion,
   onManualDataChange,
   onCalculerMutabilite,
+  onRenameSite,
 }) => {
+  const [isEditingNom, setIsEditingNom] = useState(false);
+  const [nomInput, setNomInput] = useState("");
+  const [savingNom, setSavingNom] = useState(false);
+
+  const canRename = Boolean(site.id && onRenameSite);
+  const titreSite = site.nom ? `${site.nom}, ${site.commune}` : site.commune;
+
+  const ouvrirEditionNom = () => {
+    setNomInput(site.nom ?? "");
+    setIsEditingNom(true);
+  };
+
+  const enregistrerNom = async () => {
+    if (!site.id || !onRenameSite) return;
+    setSavingNom(true);
+    try {
+      await onRenameSite(site.id, nomInput);
+      setIsEditingNom(false);
+    } finally {
+      setSavingNom(false);
+    }
+  };
+
   // Phase dérivée : présence de mutabilityData → mutabilite, sinon qualification.
   // La modification d'un champ vide mutabilityData (cf. handler dans la page) → retour qualification.
   const phase: Phase = mutabilityData ? "mutabilite" : "qualification";
@@ -90,7 +116,54 @@ export const SiteDetail: React.FC<SiteDetailProps> = ({
     <div className="mf-ms-detail">
       {/* En-tête du site */}
       <div className="fr-callout fr-callout--blue-ecume fr-mb-2w">
-        <h2 className="fr-callout__title fr-h4">{site.commune}</h2>
+        <div className="flex items-start justify-between gap-4">
+          <h2 className="fr-callout__title fr-h4 fr-mb-0">{titreSite}</h2>
+          {canRename && !isEditingNom && (
+            <button
+              type="button"
+              className="fr-btn fr-btn--secondary fr-btn--sm fr-icon-edit-line fr-btn--icon-left"
+              onClick={ouvrirEditionNom}
+            >
+              Modifier site
+            </button>
+          )}
+        </div>
+
+        {isEditingNom && (
+          <div className="fr-mt-1w">
+            <input
+              className="fr-input"
+              value={nomInput}
+              onChange={(e) => setNomInput(e.target.value)}
+              placeholder="Nom du site (laisser vide pour le nom par défaut)"
+              aria-label="Nom du site"
+            />
+            <ul className="fr-btns-group fr-btns-group--inline fr-btns-group--right fr-mt-1w">
+              <li>
+                <button
+                  type="button"
+                  className="fr-btn fr-btn--sm"
+                  onClick={enregistrerNom}
+                  disabled={savingNom}
+                  aria-busy={savingNom}
+                >
+                  Enregistrer
+                </button>
+              </li>
+              <li>
+                <button
+                  type="button"
+                  className="fr-btn fr-btn--secondary fr-btn--sm"
+                  onClick={() => setIsEditingNom(false)}
+                  disabled={savingNom}
+                >
+                  Annuler
+                </button>
+              </li>
+            </ul>
+          </div>
+        )}
+
         <p className="fr-callout__text fr-text--sm">
           Identifiant : <strong>{site.idtup}</strong>
           <br />
