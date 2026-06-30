@@ -32,12 +32,12 @@ interface SiteDetailProps {
 type Phase = "qualification" | "mutabilite";
 
 const BADGE_DONNEES_NATIONALES = {
-  label: "données nationales",
+  label: "automatique",
   variant: "success",
   icon: "fr-icon-checkbox-line",
 };
 const BADGE_SAISIE = {
-  label: "données à remplir",
+  label: "manuelle",
   variant: "green-tilleul-verveine",
   icon: "fr-icon-edit-line",
 };
