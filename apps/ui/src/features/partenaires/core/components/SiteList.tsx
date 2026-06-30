@@ -39,7 +39,7 @@ const renderStatusIcon = (qualified: boolean, evaluated: boolean) => {
         <span
           className="fr-icon-check-line fr-icon--sm"
           aria-hidden="true"
-          style={{ marginLeft: "-0.45rem" }}
+          style={{ marginLeft: "-0.75rem" }}
         />
       </span>
     );
