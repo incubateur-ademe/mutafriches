@@ -15,3 +15,30 @@ export const PARTENAIRES_PREFETCH: Record<string, SitePrefetch[]> = {
   "cci-92": CCI92_SITES,
   aura: AURA_SITES,
 };
+
+/** Métadonnées d'un partenaire pour le seed en base (db:partenaires:seed). */
+export interface PartenaireMeta {
+  nom: string;
+  description: string;
+  departement: string;
+}
+
+/**
+ * Métadonnées par slug, utilisées par le seed. Le prefetch n'en a pas besoin.
+ * Doit rester cohérent avec les configs UI (partners/<slug>/index.ts) tant que
+ * l'UI lit encore le registre statique (cf. ADR-0021).
+ */
+export const PARTENAIRES_META: Record<string, PartenaireMeta> = {
+  "cci-92": {
+    nom: "CCI Hauts-de-Seine (92)",
+    description:
+      "POC de qualification et mutabilité des friches sur le territoire de la CCI 92 (Colombes, Gennevilliers, Nanterre).",
+    departement: "92",
+  },
+  aura: {
+    nom: "Agence d'urbanisme de la région angevine",
+    description:
+      "Qualification et mutabilité des friches sur le territoire de l'AURA (Maine-et-Loire).",
+    departement: "49",
+  },
+};
