@@ -73,8 +73,8 @@ const renderSiteButton = (
         aria-current={isSelected ? "page" : undefined}
       >
         <span className="mf-ms-site-btn__label">
-          {site.nom ?? site.idtup}
-          <span className="fr-badge fr-badge--sm fr-badge--info fr-ml-1w">
+          <span className="mf-ms-site-btn__name">{site.nom ?? site.idtup}</span>
+          <span className="fr-badge fr-badge--sm fr-badge--info">
             {site.parcelles.length} parcelle{site.parcelles.length > 1 ? "s" : ""}
           </span>
         </span>
