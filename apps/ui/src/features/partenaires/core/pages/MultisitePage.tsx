@@ -12,7 +12,6 @@ import { SiteDetail } from "../components/SiteDetail";
 import { AddSiteModal } from "../components/AddSiteModal";
 import { DonneesExternesLink } from "../components/DonneesExternesLink";
 import { PartagerButton } from "../components/PartagerButton";
-import { useCustomSites } from "../hooks/useCustomSites";
 import { usePartenaireSites } from "../hooks/usePartenaireSites";
 import { useSiteUserData } from "../hooks/useSiteUserData";
 import { getPartnerBySlug } from "../../registry";
@@ -43,11 +42,10 @@ const MultisiteView: React.FC<{ config: PartnerConfig }> = ({ config }) => {
   const { versions } = useAlgorithmeVersions();
   const selectedVersion = versions[0]?.version ?? "";
 
-  const { customSites, addSite, removeSite, clearAll } = useCustomSites(config.storageKey);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
-  // Sites lus en base (repli sur la config statique). Cf. ADR-0021, phase 1.
-  const { sitesByCommune, renommerSite } = usePartenaireSites(config);
+  // Sites lus en base (repli sur la config statique). Cf. ADR-0021, phases 1 et 3.
+  const { sitesByCommune, renommerSite, ajouterSite } = usePartenaireSites(config);
 
   const handleRenameSite = useCallback(
     async (id: string, nom: string) => {
@@ -124,54 +122,19 @@ const MultisiteView: React.FC<{ config: PartnerConfig }> = ({ config }) => {
     }
   }, [selectedSite, enrichmentData, manualData, selectedVersion, userData]);
 
-  const cleanupCachesForSite = useCallback(
-    (idtup: string) => {
-      enrichmentCacheRef.current.delete(idtup);
-      userData.remove(idtup);
-      setEnrichedSiteIds((prev) => {
-        const next = new Set(prev);
-        next.delete(idtup);
-        return next;
-      });
-    },
-    [userData],
-  );
-
   const handleAddSiteSubmit = useCallback(
-    (idpars: string[]) => {
-      const result = addSite(idpars);
+    async (idpars: string[]) => {
+      const result = await ajouterSite(idpars);
+      if (result.site) {
+        await handleSelectSite(result.site);
+      }
       return {
         invalidIdpars: result.invalidIdpars,
-        success: result.added !== null,
+        success: result.site !== null,
       };
     },
-    [addSite],
+    [ajouterSite, handleSelectSite],
   );
-
-  const handleRemoveCustomSite = useCallback(
-    (idtup: string) => {
-      cleanupCachesForSite(idtup);
-      if (selectedSite?.idtup === idtup) {
-        setSelectedSite(null);
-        setEnrichmentData(null);
-        setMutabilityData(null);
-        setManualData({});
-      }
-      removeSite(idtup);
-    },
-    [removeSite, selectedSite, cleanupCachesForSite],
-  );
-
-  const handleClearCustomSites = useCallback(() => {
-    customSites.forEach((s) => cleanupCachesForSite(s.idtup));
-    if (selectedSite && customSites.some((s) => s.idtup === selectedSite.idtup)) {
-      setSelectedSite(null);
-      setEnrichmentData(null);
-      setMutabilityData(null);
-      setManualData({});
-    }
-    clearAll();
-  }, [clearAll, customSites, selectedSite, cleanupCachesForSite]);
 
   return (
     <Layout fullWidth>
@@ -191,10 +154,7 @@ const MultisiteView: React.FC<{ config: PartnerConfig }> = ({ config }) => {
               selectedSiteId={selectedSite?.idtup ?? null}
               onSelectSite={handleSelectSite}
               enrichedSiteIds={enrichedSiteIds}
-              customSites={customSites}
               onAddSiteClick={() => setIsAddModalOpen(true)}
-              onRemoveCustomSite={handleRemoveCustomSite}
-              onClearCustomSites={handleClearCustomSites}
             />
           </div>
           <div className="fr-col-12 fr-col-md-8">

@@ -28,6 +28,7 @@ export const API_CONFIG = {
     },
     partenaires: {
       get: (slug: string) => `/api/partenaires/${slug}`,
+      sites: (slug: string) => `/api/partenaires/${slug}/sites`,
       renommerSite: (slug: string, id: string) => `/api/partenaires/${slug}/sites/${id}`,
     },
     metabase: {
