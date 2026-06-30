@@ -28,6 +28,16 @@ export class PartenairesService {
     };
   }
 
+  // Renomme un site. nom vide => réinitialise au nom par défaut (null en base).
+  async renommerSite(slug: string, id: string, nom: string): Promise<PartenaireSiteOutputDto> {
+    const valeur = nom.trim() === "" ? null : nom.trim();
+    const site = await this.partenaireRepository.renommerSite(slug, id, valeur);
+    if (!site) {
+      throw new NotFoundException(`Site introuvable : ${id}`);
+    }
+    return this.toSiteDto(site);
+  }
+
   private toSiteDto(site: PartenaireSite): PartenaireSiteOutputDto {
     return {
       id: site.id,
