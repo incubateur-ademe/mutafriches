@@ -7,7 +7,7 @@ import {
 } from "@mutafriches/shared-types";
 import { ModalInfo } from "../../../shared/components/common/ModalInfo";
 import { getBadgeConfig, getUsageInfo } from "../utils/usagesLabels.utils";
-import { UsageDetailTable } from "./UsageDetailTable";
+import { UsageDetailTable, UsageRatioBar } from "@shared/components/recap";
 
 interface UsageDetailModalProps {
   isOpen: boolean;
@@ -37,8 +37,6 @@ export const UsageDetailModal: React.FC<UsageDetailModalProps> = ({
   const badge = usage ? getBadgeConfig(usage.indiceMutabilite) : null;
   const avantages = usage?.avantages ?? 0;
   const contraintes = usage?.contraintes ?? 0;
-  const totalPositif = avantages + contraintes;
-  const partAvantages = totalPositif > 0 ? (avantages / totalPositif) * 100 : 0;
 
   // En-tête : badge potentiel, puis titre avec illustration, puis ligne compatibilité
   const header =
@@ -76,28 +74,7 @@ export const UsageDetailModal: React.FC<UsageDetailModalProps> = ({
     >
       {usage && badge && (
         <>
-          {/* Barre avantages / contraintes */}
-          <div
-            className="fr-mt-3w"
-            style={{
-              display: "flex",
-              height: "10px",
-              borderRadius: "5px",
-              overflow: "hidden",
-              backgroundColor: "var(--background-contrast-grey)",
-            }}
-          >
-            <div style={{ width: `${partAvantages}%`, backgroundColor: "#B8FEC9" }} />
-            <div style={{ flex: 1, backgroundColor: "#FFBDBE" }} />
-          </div>
-          <div
-            className="fr-mb-3w fr-mt-1w"
-            style={{ display: "flex", justifyContent: "space-between" }}
-          >
-            <span className="fr-text--sm">Avantages : {avantages.toFixed(1)}</span>
-            <span className="fr-text--sm">Contraintes : {contraintes.toFixed(1)}</span>
-          </div>
-
+          <UsageRatioBar avantages={avantages} contraintes={contraintes} />
           <UsageDetailTable sections={sections} />
         </>
       )}

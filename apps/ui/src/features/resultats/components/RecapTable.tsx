@@ -1,7 +1,7 @@
 import React from "react";
 import { RecapitulatifSection } from "@mutafriches/shared-types";
-import { SaisieBadge, SourceBadge } from "./RecapBadges";
-import "./RecapTable.css";
+import { SaisieBadge, SourceBadge } from "@shared/components/recap";
+import "@shared/components/recap/RecapTable.css";
 
 interface RecapTableProps {
   sections: RecapitulatifSection[];

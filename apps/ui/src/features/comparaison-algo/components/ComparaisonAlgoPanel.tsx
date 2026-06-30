@@ -5,6 +5,7 @@ import type {
   EnrichissementOutputDto,
 } from "@mutafriches/shared-types";
 import { DetailAlgorithmeSection } from "../../debug/components/sections/DetailAlgorithmeSection";
+import { buildDonneesComplementaires } from "../../resultats/utils/mutability.mapper";
 import "../../debug/components/DebugPanel.css";
 import { useAlgorithmeVersions } from "../hooks/useAlgorithmeVersions";
 import { useComparaisonAlgo } from "../hooks/useComparaisonAlgo";
@@ -175,7 +176,14 @@ export const ComparaisonAlgoPanel: React.FC<ComparaisonAlgoPanelProps> = ({
                       : `Diagnostic de l'algorithme ${version}`;
                     return (
                       <div key={version} className="fr-mt-2w">
-                        <DetailAlgorithmeSection mutabilityData={versionData} title={titre} />
+                        <DetailAlgorithmeSection
+                          mutabilityData={versionData}
+                          enrichissement={enrichmentData}
+                          complementaires={buildDonneesComplementaires(
+                            donneesComplementaires ?? {},
+                          )}
+                          title={titre}
+                        />
                       </div>
                     );
                   })}
