@@ -9,6 +9,8 @@ const STORAGE_VERSION = 1;
 interface SiteUserData {
   manualData: Record<string, string>;
   mutability: MutabiliteOutputDto | null;
+  /** La qualification (enrichissement) a été lancée et terminée pour ce site. */
+  qualified?: boolean;
 }
 
 interface StoredPayload {
@@ -46,14 +48,21 @@ export interface SiteUserDataStore {
   setMutability(idtup: string, data: MutabiliteOutputDto): void;
   clearMutability(idtup: string): void;
   remove(idtup: string): void;
-  /** idtups ayant une saisie « Connaissance terrain » (qualification lancée). */
+  /** Marque la qualification (enrichissement) comme terminée pour ce site. */
+  markQualified(idtup: string): void;
+  /** idtups dont la qualification a tourné (simple check). */
   qualifiedIds(): Set<string>;
-  /** idtups ayant une mutabilité calculée (qualification + évaluation). */
+  /** idtups ayant une mutabilité calculée (double check). */
   evaluatedIds(): Set<string>;
 }
 
 const aUneSaisie = (data: Record<string, string>): boolean =>
   Object.values(data).some((v) => v && v !== "");
+
+// Un site est « qualifié » si l'enrichissement a tourné, ou s'il porte déjà une
+// saisie / une mutabilité (compatibilité avec les données déjà en localStorage).
+const estQualifie = (d: SiteUserData): boolean =>
+  Boolean(d.qualified) || aUneSaisie(d.manualData) || Boolean(d.mutability);
 
 export function useSiteUserData(storageKey: string): SiteUserDataStore {
   const mapRef = useRef<Map<string, SiteUserData> | null>(null);
@@ -87,10 +96,17 @@ export function useSiteUserData(storageKey: string): SiteUserDataStore {
         map().delete(idtup);
         persist();
       },
+      markQualified: (idtup) => {
+        const e = entry(idtup);
+        if (!e.qualified) {
+          map().set(idtup, { ...e, qualified: true });
+          persist();
+        }
+      },
       qualifiedIds: () => {
         const set = new Set<string>();
         for (const [idtup, d] of map()) {
-          if (aUneSaisie(d.manualData)) set.add(idtup);
+          if (estQualifie(d)) set.add(idtup);
         }
         return set;
       },

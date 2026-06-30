@@ -63,6 +63,7 @@ const MultisiteView: React.FC<{ config: PartnerConfig }> = ({ config }) => {
       const cachedEnrichment = enrichmentCacheRef.current.get(site.idtup);
       if (cachedEnrichment) {
         setEnrichmentData(cachedEnrichment);
+        userData.markQualified(site.idtup);
         setLoadingState("idle");
         return;
       }
@@ -75,6 +76,8 @@ const MultisiteView: React.FC<{ config: PartnerConfig }> = ({ config }) => {
         });
         enrichmentCacheRef.current.set(site.idtup, result);
         setEnrichmentData(result);
+        // Qualification (enrichissement) terminée : persiste le statut (simple check).
+        userData.markQualified(site.idtup);
       } catch (err: unknown) {
         const message = err instanceof Error ? err.message : "Erreur lors de l'enrichissement";
         setError(message);
