@@ -2,11 +2,11 @@
 
 ## Vue d'ensemble
 
-Le module d'enrichissement est le cœur de Mutafriches. Il enrichit automatiquement les données d'une parcelle cadastrale en interrogeant **24 sources de données externes** (APIs publiques françaises) et **3 bases locales PostGIS**.
+Le module d'enrichissement est le cœur de Mutafriches. Il enrichit automatiquement les données d'une parcelle cadastrale en interrogeant une dizaine d'**APIs publiques externes** (dont GéoRisques, qui expose 13 endpoints) et **3 bases locales PostGIS**.
 
 **Endpoint** : `POST /enrichissement`
 **Entrée** : Identifiant(s) cadastral(s) — mono-parcelle ou multi-parcelle (1 à 20 parcelles)
-**Sortie** : Site enrichi avec ~25 critères de mutabilité
+**Sortie** : Site enrichi avec l'ensemble des critères de mutabilité déductibles automatiquement (les critères complémentaires — pollution, état bâti, paysage, trame verte et bleue, etc. — sont saisis manuellement lors de l'évaluation)
 
 ---
 
@@ -22,21 +22,28 @@ Le module d'enrichissement est le cœur de Mutafriches. Il enrichit automatiquem
    └─ Multi-parcelle : chargement toutes parcelles,
       calcul centroïde, géométrie union, parcelle prédominante
    ↓
-3. Enrichissement parallélisé de 9 domaines :
+3. Enrichissement SÉQUENTIEL des domaines (dans l'ordre du code) :
    ├─ ÉNERGIE (Enedis)
    ├─ TRANSPORT (Service Public + IGN + data.gouv)
-   ├─ URBANISME (LOVAC + BPE)
+   │    └─ ITE FRET (Cerema) — DÉSACTIVÉ (en attente validation)
+   ├─ URBANISME (LOVAC + Zonage ABC logement + BPE)
    ├─ RISQUES NATURELS (RGA + Cavités + Inondation)
    ├─ RISQUES TECHNOLOGIQUES (SIS + ICPE)
-   ├─ POLLUTION (ADEME + SIS + ICPE)
+   ├─ GEORISQUES BRUT (13 APIs pour intégrateurs)
    ├─ ZONAGES (Environnemental + Patrimonial + Réglementaire)
-   ├─ ENR / ZAER (Géoplateforme WFS)
-   └─ GEORISQUES BRUT (13 APIs pour intégrateurs)
+   ├─ POLLUTION (ADEME + SIS + ICPE)
+   └─ ENR / ZAER (Géoplateforme WFS)
    ↓
 4. Construction DTO + Logging
    ↓
 5. Retour résultat + Mise en cache
 ```
+
+> **Note sur la parallélisation** : les domaines sont exécutés **séquentiellement** par
+> l'orchestrateur (`await` chaînés dans `enrichissement.service.ts`). La parallélisation
+> (`Promise.allSettled`) n'intervient qu'**à l'intérieur** de certains domaines : Risques
+> naturels (6 APIs), Risques technologiques (2), GéoRisques brut (13), Pollution (3) et
+> Zonages (3 sous-services).
 
 ### Gestion des erreurs
 
@@ -214,6 +221,13 @@ RAYON_RECHERCHE_TRANSPORT_M = 2000  // 2 km
 - `500m - 1km` : correctement desservi
 - `> 1km` : mal desservi
 
+#### 3.4 Distance ITE fret — DÉSACTIVÉ
+
+Le service `IteFretEnrichissementService` (source `ITE_FRET`, champ `distanceIte`) est
+implémenté mais **son appel est désactivé** dans l'orchestrateur (en attente de validation
+Cerema). Tant qu'il est désactivé, `distanceIte` reste `undefined` et le critère
+correspondant est ignoré par l'algorithme de mutabilité.
+
 ### Champs enrichis
 
 ```typescript
@@ -221,6 +235,7 @@ RAYON_RECHERCHE_TRANSPORT_M = 2000  // 2 km
   siteEnCentreVille: boolean              // true si distance mairie <= 1000m
   distanceAutoroute: number               // Distance en mètres
   distanceTransportCommun: number | null  // Distance en mètres ou null si aucun
+  // distanceIte?: "moins-1km-bon-etat" | "moins-1km-mauvais-etat" | "plus-1km"  // DÉSACTIVÉ
 }
 ```
 
@@ -229,13 +244,14 @@ RAYON_RECHERCHE_TRANSPORT_M = 2000  // 2 km
 ## 4. Domaine URBANISME
 
 ### Responsabilité
-Évaluer le dynamisme urbain de la zone (logements vacants, commerces/services).
+Évaluer le dynamisme urbain de la zone (logements vacants, tension du marché du logement, commerces/services).
 
 ### APIs utilisées
 
 | API | Source | Données récupérées |
 |-----|--------|-------------------|
 | **LOVAC** | `data.gouv.fr` | Taux de logements vacants par commune |
+| **Zonage ABC logement** | `data.gouv.fr` | Zonage A/Abis/B1/B2/C (tension du marché du logement) par commune |
 | **BPE** | Base locale PostGIS | Commerces et services de proximité (Base Permanente des Équipements INSEE) |
 
 ### Règles de gestion
@@ -254,12 +270,23 @@ RAYON_RECHERCHE_TRANSPORT_M = 2000  // 2 km
 - `8% - 10%` : Vacance moyenne
 - `> 10%` : Forte vacance
 
-#### 4.2 Proximité commerces/services (BPE)
+#### 4.2 Zonage ABC logement
+
+**API** : Zonage ABC logement (`data.gouv.fr`), recherche par code INSEE.
+
+**Algorithme** :
+1. Recherche du zonage de la commune via son code INSEE
+2. Retour de la zone : `Abis`, `A`, `B1`, `B2` ou `C` (tension décroissante du marché)
+3. Si commune absente du référentiel → champ manquant
+
+**Valeurs** (`ZonageAbcLogement`) : `abis` | `a` | `b1` | `b2` | `c`
+
+#### 4.3 Proximité commerces/services (BPE)
 
 **Algorithme** :
 1. Recherche PostGIS dans rayon de 500m autour de la parcelle
 2. Codes BPE recherchés :
-   - **Alimentation** : B104-B207 (hypermarché, supermarché, épicerie, boulangerie, boucherie, poissonnerie)
+   - **Alimentation** : B104, B105, B201, B202, B204, B206, B207 (hypermarché, supermarché, épicerie, boulangerie, boucherie, poissonnerie)
    - **Services** : A203 (banque), A206-A208 (poste), D307 (pharmacie)
 3. `proximiteCommercesServices = true` si au moins 1 établissement trouvé
 
@@ -273,6 +300,7 @@ RAYON_RECHERCHE_COMMERCES_M = 500  // 500m (distance de marche standard)
 ```typescript
 {
   tauxLogementsVacants: number        // Taux en % (ex: 12.5)
+  zonageAbcLogement?: "abis" | "a" | "b1" | "b2" | "c"  // Tension du marché du logement
   proximiteCommercesServices: boolean // true si commerce/service à moins de 500m
 }
 ```
@@ -709,18 +737,21 @@ GEORISQUES_RAYONS_DEFAUT = {
 
 ## Résumé des Sources de Données
 
-### Sources Externes (24)
+### APIs externes
 
-| Domaine | API | Sources |
-|---------|-----|---------|
-| Cadastre | IGN Cadastre, BDNB (3 sources : bâtiment, surface bâtie, risques) | 4 |
-| Énergie | Enedis | 1 |
-| Transport | Service Public, IGN WFS | 2 |
-| Urbanisme | data.gouv LOVAC | 1 |
-| Zonages | API Carto Nature, API Carto GPU | 2 |
-| ENR | ZAER WFS Géoplateforme | 1 |
-| GeoRisques | 13 APIs GeoRisques | 13 |
-| **TOTAL** | | **24** |
+Une dizaine d'APIs externes distinctes sont interrogées (GéoRisques compte pour 1 API mais
+expose 13 endpoints, appelés séparément).
+
+| Domaine | API(s) externe(s) |
+|---------|-------------------|
+| Cadastre | IGN Cadastre, BDNB |
+| Énergie | Enedis |
+| Transport | API Service Public, IGN WFS |
+| Urbanisme | data.gouv LOVAC, data.gouv Zonage ABC logement |
+| Zonages | API Carto Nature, API Carto GPU |
+| ENR | ZAER WFS Géoplateforme |
+| Risques | GéoRisques (1 API, 13 endpoints) |
+| Transport (désactivé) | ITE Fret / Cerema — non appelé actuellement |
 
 ### Bases Locales PostGIS (3)
 
@@ -739,7 +770,9 @@ GEORISQUES_RAYONS_DEFAUT = {
 
 - **Cache hit** : < 50ms (lecture PostgreSQL)
 - **Cache miss** : 2-5 secondes (dépend des APIs externes)
-- **Parallélisation** : 9 domaines + 13 APIs GeoRisques en simultané
+- **Parallélisation** : domaines exécutés **séquentiellement** ; parallélisation
+  (`Promise.allSettled`) uniquement **intra-domaine** (GéoRisques 13 APIs, Risques naturels 6,
+  Pollution 3, Zonages 3, Risques techno 2)
 
 ### Stratégie de résilience
 
@@ -778,8 +811,12 @@ GEORISQUES_RAYONS_DEFAUT = {
   distanceAutoroute: number
   distanceTransportCommun: number | null
 
+  // === TRANSPORT (suite) ===
+  distanceIte?: DistanceIte             // DÉSACTIVÉ (en attente Cerema) — reste undefined
+
   // === URBANISME ===
   tauxLogementsVacants: number
+  zonageAbcLogement?: ZonageAbcLogement // "abis" | "a" | "b1" | "b2" | "c"
   proximiteCommercesServices: boolean
 
   // === RISQUES NATURELS (3 critères indépendants) ===
@@ -797,21 +834,29 @@ GEORISQUES_RAYONS_DEFAUT = {
   zonageEnvironnemental?: string
   zonagePatrimonial?: string
   zonageReglementaire?: string
-  trameVerteEtBleue?: string
+  trameVerteEtBleue?: string            // NON enrichi ici : champ complémentaire manuel (saisi en évaluation), simple passe-plat, undefined à l'enrichissement
 
   // === ENR / ZAER ===
   zaer?: ZaerEnrichissement             // Données ZAER détaillées
+  zoneAccelerationEnr?: string          // Critère calculé : "non" | "oui" | "oui-solaire-pv-ombriere"
 
-  // === GEORISQUES BRUT (deprecated) ===
+  // === DIAGNOSTIC ZONAGES (dev/staging uniquement, absent en production) ===
+  diagnosticZonages?: DiagnosticZonages // Données brutes des APIs de zonage
+
+  // === GEORISQUES BRUT (deprecated, à supprimer) ===
   risquesGeorisques?: any               // Données brutes pour intégrateurs avancés
 
   // === MÉTADONNÉES ===
   sourcesUtilisees: string[]
   champsManquants: string[]
   sourcesEchouees: string[]
-  fiabilite: number                     // Indice 0-10
 }
 ```
+
+> **Note** : le DTO d'enrichissement ne contient **pas** de champ `fiabilite`. L'indice de
+> fiabilité (0-10) est calculé plus tard, lors de l'évaluation de mutabilité, pas à
+> l'enrichissement. Source de vérité : `EnrichissementOutputDto` dans
+> `packages/shared-types/src/enrichissement/dto/enrichissement-output.dto.ts`.
 
 ---
 
@@ -854,6 +899,7 @@ GEORISQUES_RAYONS_DEFAUT = {
 | Distance raccordement élec | Énergie | `distanceRaccordementElectrique` | Enedis |
 | Commerces/services proximité | Urbanisme | `proximiteCommercesServices` | BPE (local) |
 | Taux logements vacants | Urbanisme | `tauxLogementsVacants` | LOVAC data.gouv |
+| Zonage ABC logement | Urbanisme | `zonageAbcLogement` | Zonage ABC data.gouv |
 | Risque RGA | Risques Naturels | `risqueRetraitGonflementArgile` | GeoRisques RGA |
 | Risque cavités | Risques Naturels | `risqueCavitesSouterraines` | GeoRisques Cavités |
 | Risque inondation | Risques Naturels | `risqueInondation` | GeoRisques TRI + AZI + PAPI + PPR |
@@ -899,15 +945,16 @@ GEORISQUES_RAYONS_DEFAUT = {
 - **Utilisation** : Zonages environnementaux (Natura 2000, ZNIEFF, Parcs) et patrimoniaux (Monuments Historiques, Sites Classés)
 - **Documentation** : https://apicarto.ign.fr/api/doc
 - **Adapters** :
-  - `apps/api/src/enrichissement/adapters/api-carto-nature/`
-  - `apps/api/src/enrichissement/adapters/api-carto-gpu/`
+  - `apps/api/src/enrichissement/adapters/api-carto/nature/`
+  - `apps/api/src/enrichissement/adapters/api-carto/gpu/`
 
-### data.gouv.fr (LOVAC, Transport)
+### data.gouv.fr (LOVAC, Zonage ABC, Transport)
 - **URL** : `https://www.data.gouv.fr/api`
-- **Utilisation** : Logements vacants (LOVAC), arrêts de transport
+- **Utilisation** : Logements vacants (LOVAC), zonage ABC logement, arrêts de transport
 - **Documentation** : https://www.data.gouv.fr/fr/doc/api
 - **Adapters** :
   - `apps/api/src/enrichissement/adapters/datagouv-lovac/`
+  - `apps/api/src/enrichissement/adapters/datagouv-zonage-abc/`
   - `apps/api/src/enrichissement/repositories/transport-stops.repository.ts` (données locales)
 
 ### API Service Public
@@ -930,6 +977,6 @@ GEORISQUES_RAYONS_DEFAUT = {
 
 ---
 
-**Version** : 2.0
-**Dernière mise à jour** : 2026-03-11
+**Version** : 2.1
+**Dernière mise à jour** : 2026-07-01
 **Projet** : Mutafriches - Beta.gouv / ADEME
