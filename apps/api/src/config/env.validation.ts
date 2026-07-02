@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import { plainToInstance, Type } from "class-transformer";
+import { plainToInstance, Transform, Type } from "class-transformer";
 import { IsIn, IsInt, IsOptional, IsString, Max, Min, validateSync } from "class-validator";
 
 export type NodeEnv = "development" | "production" | "staging" | "test";
@@ -12,8 +12,12 @@ export class EnvironmentVariables {
   @IsIn(["development", "production", "staging", "test"])
   NODE_ENV?: NodeEnv;
 
+  // PORT absent ou vide (ex. conteneur one-off "scalingo run") => traité comme non fourni.
+  // (Sans ça, "" est converti en 0 par @Type et échoue @Min(1).)
   @IsOptional()
-  @Type(() => Number)
+  @Transform(({ value }) =>
+    value === "" || value === null || value === undefined ? undefined : Number(value),
+  )
   @IsInt()
   @Min(1)
   @Max(65535)
