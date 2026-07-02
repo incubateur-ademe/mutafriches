@@ -19,7 +19,8 @@
  *   - Après les 4h du matin (heure creuse, APIs tierces moins chargées)
  *
  * Variables d'environnement (lues via AppConfig, cf. ADR-0016) :
- *   - API_URL : base URL de l'API (défaut http://localhost:3000)
+ *   - API_URL : base URL de l'API (défaut selon l'environnement : prod = mutafriches.beta.gouv.fr,
+ *     staging = mutafriches.incubateur.ademe.dev, sinon http://localhost:3000)
  *   - PARTENAIRE : slug d'un partenaire pour limiter le pré-chauffe (défaut : tous)
  *   - PARTENAIRES_PREFETCH_DELAY_MS : pause entre chaque appel (défaut 1000)
  */
