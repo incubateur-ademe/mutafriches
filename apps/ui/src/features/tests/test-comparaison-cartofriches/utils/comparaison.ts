@@ -170,6 +170,17 @@ const LABEL_ITE: Record<DistanceIte, string> = {
   [DistanceIte.PLUS_1KM]: "> 1 km",
 };
 
+/** Marge (km) autour du seuil de 1 km en deçà de laquelle un écart est signalé comme sensible */
+const MARGE_SEUIL_ITE_KM = 0.3;
+
+/** Distance ITE la plus proche côté Cerema (min des deux volets renseignés) */
+function distanceIteMinCerema(friche: FrichesCerema): number | null {
+  const distances = [friche.distance_ite_bon, friche.distance_ite_mauvais].filter(
+    (d): d is number => d !== null && d !== undefined,
+  );
+  return distances.length > 0 ? Math.min(...distances) : null;
+}
+
 /** Compare la distance à une ITE fret (sujet d'écart principal) */
 function comparerIte(enrich: EnrichissementOutputDto, friche: FrichesCerema): LigneEcart {
   const mutaCat = enrich.distanceIte;
@@ -180,6 +191,14 @@ function comparerIte(enrich: EnrichissementOutputDto, friche: FrichesCerema): Li
     friche.distance_ite_mauvais,
     " km",
   )}`;
+
+  // Note enrichie quand l'écart tient à une distance Cerema proche du seuil de 1 km
+  let note = "Catégorie reconstituée depuis les distances Cerema (seuil 1 km)";
+  const distMin = distanceIteMinCerema(friche);
+  if (ecart && distMin !== null && Math.abs(distMin - 1) <= MARGE_SEUIL_ITE_KM) {
+    note = `Distance Cerema (${fmtNombre(distMin, " km")}) proche du seuil de 1 km — écart sensible au point de mesure`;
+  }
+
   return {
     cle: "distanceIte",
     label: "Distance ITE fret",
@@ -187,7 +206,7 @@ function comparerIte(enrich: EnrichissementOutputDto, friche: FrichesCerema): Li
     cartofriches: `${LABEL_ITE[cfCat]} (${detailCf})`,
     ecart,
     comparable,
-    note: "Catégorie reconstituée depuis les distances Cerema (seuil 1 km)",
+    note,
   };
 }
 

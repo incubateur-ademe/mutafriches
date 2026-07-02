@@ -93,6 +93,18 @@ describe("comparerSites", () => {
     const ite = lignes.find((l) => l.cle === "distanceIte");
     expect(ite?.ecart).toBe(true);
     expect(ite?.cartofriches).toContain("1.22 km");
+    // 1.22 km est proche du seuil de 1 km → note enrichie
+    expect(ite?.note).toContain("proche du seuil");
+  });
+
+  it("n'ajoute pas la note 'proche du seuil' pour un écart franc (ITE très éloignée)", () => {
+    const lignes = comparerSites(
+      enrich({ distanceIte: DistanceIte.MOINS_1KM_MAUVAIS_ETAT }),
+      friche({ distance_ite_bon: 5, distance_ite_mauvais: 4 }),
+    );
+    const ite = lignes.find((l) => l.cle === "distanceIte");
+    expect(ite?.ecart).toBe(true);
+    expect(ite?.note).not.toContain("proche du seuil");
   });
 
   it("ne signale pas d'écart ITE quand les catégories concordent", () => {
