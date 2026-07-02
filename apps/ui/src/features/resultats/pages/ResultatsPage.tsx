@@ -23,7 +23,7 @@ import { createIframeCommunicator } from "../../../shared/iframe/iframeCommunica
 import { IframeEvaluationSummaryDto } from "../../../shared/iframe/iframe.types";
 import { evaluationService } from "../../../shared/services/api/api.evaluation.service";
 import { ModalInfo } from "../../../shared/components/common/ModalInfo";
-import { ExportModal } from "../components/ExportModal";
+import { ExportModal, type ExportSelection } from "../components/ExportModal";
 import { generateMutabilitePdf } from "../export/generateMutabilitePdf";
 import { buildResultatsJson } from "../export/buildResultatsJson";
 import { downloadBlob, exportFileName } from "../export/downloadFile";
@@ -260,36 +260,40 @@ export const ResultatsPage: React.FC = () => {
     };
   }, [mutabilityData, state.enrichmentData, state.uiData, donneesComplementaires]);
 
-  const handleExportPdf = useCallback(async () => {
-    const data = buildExportData();
-    if (!data) return;
-    if (data.mutabilite.evaluationId) {
-      void trackExporterResultats(data.mutabilite.evaluationId, "pdf");
-    }
-    setPdfLoading(true);
-    try {
-      await generateMutabilitePdf(data);
-      setIsExportModalOpen(false);
-    } catch (err) {
-      console.error("Erreur export PDF:", err);
-    } finally {
-      setPdfLoading(false);
-    }
-  }, [buildExportData, trackExporterResultats]);
+  // Exporte les formats sélectionnés (PDF et/ou JSON), avec tracking par format.
+  const handleExportFormats = useCallback(
+    async (selection: ExportSelection) => {
+      const data = buildExportData();
+      if (!data || (!selection.pdf && !selection.json)) return;
+      const evaluationId = data.mutabilite.evaluationId;
 
-  const handleExportJson = useCallback(() => {
-    const data = buildExportData();
-    if (!data) return;
-    if (data.mutabilite.evaluationId) {
-      void trackExporterResultats(data.mutabilite.evaluationId, "json");
-    }
-    const json = JSON.stringify(buildResultatsJson(data), null, 2);
-    downloadBlob(
-      new Blob([json], { type: "application/json" }),
-      exportFileName(data.site.commune, "json"),
-    );
-    setIsExportModalOpen(false);
-  }, [buildExportData, trackExporterResultats]);
+      // JSON : synchrone
+      if (selection.json) {
+        if (evaluationId) void trackExporterResultats(evaluationId, "json");
+        const json = JSON.stringify(buildResultatsJson(data), null, 2);
+        downloadBlob(
+          new Blob([json], { type: "application/json" }),
+          exportFileName(data.site.commune, "json"),
+        );
+      }
+
+      // PDF : asynchrone (génération à la demande)
+      if (selection.pdf) {
+        if (evaluationId) void trackExporterResultats(evaluationId, "pdf");
+        setPdfLoading(true);
+        try {
+          await generateMutabilitePdf(data);
+        } catch (err) {
+          console.error("Erreur export PDF:", err);
+        } finally {
+          setPdfLoading(false);
+        }
+      }
+
+      setIsExportModalOpen(false);
+    },
+    [buildExportData, trackExporterResultats],
+  );
 
   if (!canAccessStep(3)) {
     return null;
@@ -480,9 +484,8 @@ export const ResultatsPage: React.FC = () => {
       <ExportModal
         isOpen={isExportModalOpen}
         onClose={() => setIsExportModalOpen(false)}
-        onExportPdf={handleExportPdf}
-        onExportJson={handleExportJson}
-        pdfLoading={pdfLoading}
+        onExport={handleExportFormats}
+        loading={pdfLoading}
       />
 
       {/* Modal de confirmation nouvelle analyse */}
