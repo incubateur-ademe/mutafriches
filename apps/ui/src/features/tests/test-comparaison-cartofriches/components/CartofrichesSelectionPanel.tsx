@@ -4,6 +4,7 @@ import { cartofrichesService } from "@shared/services/api/api.cartofriches.servi
 import type { CommuneSuggestion } from "@shared/services/geo/api.commune.service";
 import { CommuneSearchInput } from "./CommuneSearchInput";
 import { CartofrichesFrichesMap } from "./CartofrichesFrichesMap";
+import { couleurStatut, libelleStatut } from "./fricheMarkerIcon";
 
 interface CartofrichesSelectionPanelProps {
   /** Compare une friche (ses parcelles) et l'ajoute au comparatif */
@@ -85,6 +86,22 @@ export function CartofrichesSelectionPanel({
               refcadSurvolee={survolee}
               onHoverFriche={setSurvolee}
             />
+            <div className="fr-mt-1w fr-text--xs" style={{ display: "flex", gap: "1rem" }}>
+              <span style={{ display: "inline-flex", alignItems: "center", gap: "0.25rem" }}>
+                <span
+                  className="mf-cf-statut-dot"
+                  style={{ background: couleurStatut("sans projet") }}
+                />
+                Sans projet
+              </span>
+              <span style={{ display: "inline-flex", alignItems: "center", gap: "0.25rem" }}>
+                <span
+                  className="mf-cf-statut-dot"
+                  style={{ background: couleurStatut("avec projet") }}
+                />
+                Avec projet / reconvertie
+              </span>
+            </div>
           </div>
 
           <div className="fr-col-12 fr-col-md-5">
@@ -113,15 +130,28 @@ export function CartofrichesSelectionPanel({
                     onMouseEnter={() => setSurvolee(cle)}
                     onMouseLeave={() => setSurvolee(null)}
                   >
-                    <div className="fr-text--sm" style={{ fontWeight: 500 }}>
+                    <div
+                      className="fr-text--sm"
+                      style={{
+                        fontWeight: 500,
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.4rem",
+                      }}
+                    >
+                      <span
+                        className="mf-cf-statut-dot"
+                        style={{ background: couleurStatut(friche.statut) }}
+                        title={libelleStatut(friche.statut)}
+                      />
                       {friche.nom ?? cle}
                     </div>
                     <div
                       className="fr-text--xs fr-mb-1w"
                       style={{ color: "var(--text-mention-grey)" }}
                     >
-                      {formatSurface(friche.surface)} · {friche.refcad.length} parcelle
-                      {friche.refcad.length > 1 ? "s" : ""}
+                      {libelleStatut(friche.statut)} · {formatSurface(friche.surface)} ·{" "}
+                      {friche.refcad.length} parcelle{friche.refcad.length > 1 ? "s" : ""}
                     </div>
                     <button
                       type="button"

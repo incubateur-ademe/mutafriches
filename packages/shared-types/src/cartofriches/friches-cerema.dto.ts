@@ -88,6 +88,8 @@ export interface FricheCarte {
   refcad: string[];
   /** Surface de l'unité foncière en m² */
   surface: number | null;
+  /** Statut du site (ex: "friche sans projet", "friche avec projet", "friche reconvertie") */
+  statut: string | null;
   /** Emprise GeoJSON de la friche (Polygon / MultiPolygon) */
   geometry: GeometrieParcelle | null;
 }

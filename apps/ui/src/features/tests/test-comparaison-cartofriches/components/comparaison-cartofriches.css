@@ -47,3 +47,18 @@
   color: var(--text-default-success, #18753c);
   flex-shrink: 0;
 }
+
+/* Marqueurs de friches (divIcon SVG) : neutralise le fond/bordure par défaut de Leaflet */
+.mf-cf-marker {
+  background: transparent;
+  border: none;
+}
+
+/* Pastille de couleur de statut (légende + liste) */
+.mf-cf-statut-dot {
+  display: inline-block;
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+}

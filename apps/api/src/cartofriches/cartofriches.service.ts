@@ -72,6 +72,7 @@ export class CartofrichesService {
         nom: props.site_nom ?? null,
         refcad: parserRefcad(props.unite_fonciere_refcad),
         surface: props.unite_fonciere_surface ?? props.site_surface ?? null,
+        statut: props.site_statut ?? null,
         geometry: feature.geometry,
       };
     });

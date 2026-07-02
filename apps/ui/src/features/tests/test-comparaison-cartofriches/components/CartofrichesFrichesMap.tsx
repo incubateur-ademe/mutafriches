@@ -4,6 +4,7 @@ import "leaflet/dist/leaflet.css";
 import type { GeoJsonObject } from "geojson";
 import type { FricheCarte } from "@mutafriches/shared-types";
 import { getGeoportalWMTSUrl, MAP_LAYERS } from "@shared/config/map-layers.config";
+import { fricheMarkerIcon } from "./fricheMarkerIcon";
 
 interface CartofrichesFrichesMapProps {
   friches: FricheCarte[];
@@ -16,18 +17,12 @@ interface CartofrichesFrichesMapProps {
 
 const MAP_ID = "cartofriches-friches-map";
 
-// Styles DSFR (bleu France) — alignés sur useMapParcelleRenderer
-const STYLE_NORMAL: L.PathOptions = {
-  color: "#6a6af4",
+// Emprise affichée au survol d'une friche (bleu France)
+const STYLE_EMPRISE: L.PathOptions = {
+  color: "#000091",
   weight: 2,
   fillColor: "#6a6af4",
-  fillOpacity: 0.25,
-};
-const STYLE_HIGHLIGHT: L.PathOptions = {
-  color: "#000091",
-  weight: 3,
-  fillColor: "#6a6af4",
-  fillOpacity: 0.55,
+  fillOpacity: 0.3,
 };
 
 /** Clé stable d'une friche (jointure de ses références cadastrales) */
@@ -36,8 +31,8 @@ function cleFriche(friche: FricheCarte): string {
 }
 
 /**
- * Carte Leaflet dédiée affichant les emprises des friches Cartofriches d'une commune.
- * Les emprises sont cliquables (→ comparaison) et se surlignent au survol de la liste.
+ * Carte Leaflet dédiée affichant les friches Cartofriches d'une commune sous forme de
+ * marqueurs colorés par statut (façon Cartofriches). L'emprise s'affiche au survol.
  */
 export function CartofrichesFrichesMap({
   friches,
@@ -47,8 +42,8 @@ export function CartofrichesFrichesMap({
   height = "480px",
 }: CartofrichesFrichesMapProps) {
   const mapRef = useRef<L.Map | null>(null);
-  const layersRef = useRef<Map<string, L.GeoJSON>>(new Map());
-  // Callbacks dans des refs pour éviter de recréer les couches à chaque render
+  const markersRef = useRef<Map<string, { marker: L.Marker; friche: FricheCarte }>>(new Map());
+  const hoverLayerRef = useRef<L.GeoJSON | null>(null);
   const onSelectRef = useRef(onSelectFriche);
   const onHoverRef = useRef(onHoverFriche);
   useEffect(() => {
@@ -68,7 +63,6 @@ export function CartofrichesFrichesMap({
       maxZoom: plan.maxZoom,
     }).addTo(map);
     mapRef.current = map;
-    // Corrige le rendu si le conteneur a été monté masqué (onglet)
     setTimeout(() => map.invalidateSize(), 0);
 
     return () => {
@@ -77,44 +71,59 @@ export function CartofrichesFrichesMap({
     };
   }, []);
 
-  // Rendu des emprises à chaque changement de friches
+  // Rendu des marqueurs à chaque changement de friches
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
 
-    layersRef.current.forEach((layer) => layer.remove());
-    layersRef.current.clear();
+    markersRef.current.forEach(({ marker }) => marker.remove());
+    markersRef.current.clear();
+    if (hoverLayerRef.current) {
+      hoverLayerRef.current.remove();
+      hoverLayerRef.current = null;
+    }
 
     const bounds = L.latLngBounds([]);
 
     for (const friche of friches) {
       if (!friche.geometry) continue;
       const cle = cleFriche(friche);
-      const layer = L.geoJSON(friche.geometry as unknown as GeoJsonObject, { style: STYLE_NORMAL });
-      layer.on("click", () => onSelectRef.current(friche));
-      layer.on("mouseover", () => {
-        layer.setStyle(STYLE_HIGHLIGHT);
-        onHoverRef.current?.(cle);
-      });
-      layer.on("mouseout", () => {
-        layer.setStyle(STYLE_NORMAL);
-        onHoverRef.current?.(null);
-      });
-      layer.bindTooltip(friche.nom ?? cle, { sticky: true });
-      layer.addTo(map);
-      layersRef.current.set(cle, layer);
-      bounds.extend(layer.getBounds());
+      const centre = L.geoJSON(friche.geometry as unknown as GeoJsonObject)
+        .getBounds()
+        .getCenter();
+      const marker = L.marker(centre, { icon: fricheMarkerIcon(friche.statut, false) });
+      marker.bindTooltip(friche.nom ?? cle);
+      marker.on("click", () => onSelectRef.current(friche));
+      marker.on("mouseover", () => onHoverRef.current?.(cle));
+      marker.on("mouseout", () => onHoverRef.current?.(null));
+      marker.addTo(map);
+      markersRef.current.set(cle, { marker, friche });
+      bounds.extend(centre);
     }
 
     if (bounds.isValid()) {
-      map.fitBounds(bounds, { padding: [24, 24], maxZoom: 17 });
+      map.fitBounds(bounds, { padding: [32, 32], maxZoom: 15 });
     }
   }, [friches]);
 
-  // Highlight synchronisé depuis la liste
+  // Highlight synchronisé (survol depuis la liste ou la carte) : marqueur agrandi + emprise
   useEffect(() => {
-    layersRef.current.forEach((layer, cle) => {
-      layer.setStyle(cle === refcadSurvolee ? STYLE_HIGHLIGHT : STYLE_NORMAL);
+    const map = mapRef.current;
+    if (!map) return;
+
+    if (hoverLayerRef.current) {
+      hoverLayerRef.current.remove();
+      hoverLayerRef.current = null;
+    }
+
+    markersRef.current.forEach(({ marker, friche }, cle) => {
+      const actif = cle === refcadSurvolee;
+      marker.setIcon(fricheMarkerIcon(friche.statut, actif));
+      if (actif && friche.geometry) {
+        hoverLayerRef.current = L.geoJSON(friche.geometry as unknown as GeoJsonObject, {
+          style: STYLE_EMPRISE,
+        }).addTo(map);
+      }
     });
   }, [refcadSurvolee]);
 
