@@ -1,5 +1,7 @@
+import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Layout } from "@shared/components/layout/Layout";
+import { LoadingCallout } from "@shared/components/common/LoadingCallout";
 import { SITES_REFERENCE } from "../config/sites-reference";
 import { useComparaisonCartofriches } from "../hooks/useComparaisonCartofriches";
 import { SitesComparaisonTable } from "../components/SitesComparaisonTable";
@@ -25,6 +27,17 @@ export function ComparaisonCartofrichesPage() {
     vider,
     estCompare,
   } = useComparaisonCartofriches();
+
+  const resultatsRef = useRef<HTMLDivElement>(null);
+  const chargementPrecedent = useRef(false);
+
+  // Scroll vers les résultats dès qu'une comparaison se termine (utile surtout sur mobile)
+  useEffect(() => {
+    if (chargementPrecedent.current && !chargement && sites.length > 0) {
+      resultatsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+    chargementPrecedent.current = chargement;
+  }, [chargement, sites.length]);
 
   const comparerTout = (): void => {
     void chargerSites(SITES_REFERENCE.map((site) => site.parcelles));
@@ -84,12 +97,14 @@ export function ComparaisonCartofrichesPage() {
             />
 
             {chargement ? (
-              <p className="fr-mt-2w">
-                <span className="fr-icon-refresh-line" aria-hidden="true" />{" "}
-                {progression
-                  ? `Comparaison en cours… ${progression.enCours}/${progression.total}`
-                  : "Comparaison en cours…"}
-              </p>
+              <LoadingCallout
+                title="Comparaison en cours…"
+                message={
+                  progression
+                    ? `Site ${progression.enCours} sur ${progression.total}`
+                    : "Enrichissement Mutafriches et interrogation de Cartofriches"
+                }
+              />
             ) : null}
 
             {erreur ? (
@@ -98,7 +113,9 @@ export function ComparaisonCartofrichesPage() {
               </div>
             ) : null}
 
-            <SitesComparaisonTable sites={sites} onRetirer={retirerSite} onVider={vider} />
+            <div ref={resultatsRef}>
+              <SitesComparaisonTable sites={sites} onRetirer={retirerSite} onVider={vider} />
+            </div>
           </div>
         </div>
       </div>
