@@ -1,8 +1,12 @@
 import { Controller, Get, Query } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
-import type { CartofrichesRechercheResult } from "@mutafriches/shared-types";
+import type {
+  CartofrichesCommuneResult,
+  CartofrichesRechercheResult,
+} from "@mutafriches/shared-types";
 import { CartofrichesService } from "./cartofriches.service";
 import { RechercheCartofrichesQueryDto } from "./dto/recherche-cartofriches.query.dto";
+import { CommuneCartofrichesQueryDto } from "./dto/commune-cartofriches.query.dto";
 
 /**
  * Endpoint de diagnostic : relaie l'API Cartofriches du Cerema pour comparer ses données
@@ -24,5 +28,18 @@ export class CartofrichesController {
     @Query() query: RechercheCartofrichesQueryDto,
   ): Promise<CartofrichesRechercheResult> {
     return this.cartofrichesService.rechercher(query.identifiant, query.codeInsee);
+  }
+
+  @Get("commune")
+  @ApiOperation({
+    summary: "Liste les friches Cartofriches d'une commune (avec emprises)",
+    description:
+      "Récupère les friches d'une commune via l'API geofriches du Cerema (GeoJSON, fields=all), pour l'affichage carte + liste.",
+  })
+  @ApiResponse({ status: 200, description: "Friches de la commune" })
+  async getCommune(
+    @Query() query: CommuneCartofrichesQueryDto,
+  ): Promise<CartofrichesCommuneResult> {
+    return this.cartofrichesService.getFrichesCommune(query.codeInsee);
   }
 }

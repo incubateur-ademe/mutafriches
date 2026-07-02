@@ -1,6 +1,11 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { CartofrichesRechercheResult, FrichesCerema } from "@mutafriches/shared-types";
-import { CartofrichesAdapter } from "./cartofriches.adapter";
+import {
+  CartofrichesCommuneResult,
+  CartofrichesRechercheResult,
+  FricheCarte,
+  FrichesCerema,
+} from "@mutafriches/shared-types";
+import { CartofrichesAdapter, GeoFricheFeature } from "./cartofriches.adapter";
 import {
   CARTOFRICHES_CACHE_TTL_MS,
   CARTOFRICHES_FICHE_URL_BASE,
@@ -10,6 +15,11 @@ import { nettoyerFriche, normaliserIdentifiant, parserRefcad } from "./cartofric
 
 interface CacheEntry {
   friches: FrichesCerema[];
+  expiry: number;
+}
+
+interface GeoCacheEntry {
+  features: GeoFricheFeature[];
   expiry: number;
 }
 
@@ -24,8 +34,54 @@ interface CacheEntry {
 export class CartofrichesService {
   private readonly logger = new Logger(CartofrichesService.name);
   private readonly cache = new Map<string, CacheEntry>();
+  private readonly geoCache = new Map<string, GeoCacheEntry>();
 
   constructor(private readonly adapter: CartofrichesAdapter) {}
+
+  /**
+   * Récupère les friches d'une commune pour l'affichage carte + liste (emprises incluses).
+   */
+  async getFrichesCommune(codeInsee: string): Promise<CartofrichesCommuneResult> {
+    const startTime = Date.now();
+
+    const cached = this.geoCache.get(codeInsee);
+    let features: GeoFricheFeature[];
+
+    if (cached && cached.expiry > Date.now()) {
+      features = cached.features;
+    } else {
+      const result = await this.adapter.getGeofrichesParCommune(codeInsee);
+      if (!result.success || !result.data) {
+        return {
+          friches: [],
+          source: CARTOFRICHES_SOURCE,
+          responseTimeMs: Date.now() - startTime,
+          erreur: result.error,
+        };
+      }
+      features = result.data;
+      this.geoCache.set(codeInsee, {
+        features,
+        expiry: Date.now() + CARTOFRICHES_CACHE_TTL_MS,
+      });
+    }
+
+    const friches: FricheCarte[] = features.map((feature) => {
+      const props = feature.properties;
+      return {
+        nom: props.site_nom ?? null,
+        refcad: parserRefcad(props.unite_fonciere_refcad),
+        surface: props.unite_fonciere_surface ?? props.site_surface ?? null,
+        geometry: feature.geometry,
+      };
+    });
+
+    return {
+      friches,
+      source: CARTOFRICHES_SOURCE,
+      responseTimeMs: Date.now() - startTime,
+    };
+  }
 
   /**
    * Recherche la friche Cartofriches correspondant à un identifiant cadastral.
@@ -40,7 +96,7 @@ export class CartofrichesService {
       .map((id) => normaliserIdentifiant(id))
       .filter((id) => id.length > 0);
 
-    const frichesResult = await this.getFrichesCommune(codeInsee);
+    const frichesResult = await this.chargerFrichesCommuneCache(codeInsee);
 
     if (!frichesResult.success) {
       return {
@@ -89,9 +145,10 @@ export class CartofrichesService {
   }
 
   /**
-   * Récupère les friches d'une commune avec cache mémoire court.
+   * Récupère les friches d'une commune (endpoint friches/, sans géométrie) avec cache mémoire court.
+   * Utilisé par la recherche par identifiant cadastral.
    */
-  private async getFrichesCommune(
+  private async chargerFrichesCommuneCache(
     codeInsee: string,
   ): Promise<{ success: boolean; friches: FrichesCerema[]; error?: string }> {
     const cached = this.cache.get(codeInsee);

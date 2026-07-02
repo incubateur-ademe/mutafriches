@@ -2,6 +2,9 @@
 
 exports[`Swagger OpenAPI document > garantit la stabilité du snapshot des chemins exposés 1`] = `
 {
+  "/api/cartofriches/commune": [
+    "get",
+  ],
   "/api/cartofriches/recherche": [
     "get",
   ],

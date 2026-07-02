@@ -1,4 +1,7 @@
-import type { CartofrichesRechercheResult } from "@mutafriches/shared-types";
+import type {
+  CartofrichesCommuneResult,
+  CartofrichesRechercheResult,
+} from "@mutafriches/shared-types";
 import { apiClient } from "./api.client";
 import { API_CONFIG } from "./api.config";
 
@@ -13,6 +16,15 @@ class CartofrichesService {
   async rechercher(identifiant: string, codeInsee: string): Promise<CartofrichesRechercheResult> {
     return apiClient.get<CartofrichesRechercheResult>(API_CONFIG.endpoints.cartofriches.recherche, {
       params: { identifiant, codeInsee },
+    });
+  }
+
+  /**
+   * Récupère les friches Cartofriches d'une commune (emprises + refcad) pour l'affichage carte + liste.
+   */
+  async getFrichesCommune(codeInsee: string): Promise<CartofrichesCommuneResult> {
+    return apiClient.get<CartofrichesCommuneResult>(API_CONFIG.endpoints.cartofriches.commune, {
+      params: { codeInsee },
     });
   }
 }

@@ -54,7 +54,10 @@ describe("CartofrichesService", () => {
   let adapter: CartofrichesAdapter;
 
   beforeEach(() => {
-    adapter = { getFrichesParCommune: vi.fn() } as unknown as CartofrichesAdapter;
+    adapter = {
+      getFrichesParCommune: vi.fn(),
+      getGeofrichesParCommune: vi.fn(),
+    } as unknown as CartofrichesAdapter;
     service = new CartofrichesService(adapter);
   });
 
@@ -135,5 +138,70 @@ describe("CartofrichesService", () => {
     await service.rechercher("49353000AC0628", "49353");
 
     expect(adapter.getFrichesParCommune).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("CartofrichesService.getFrichesCommune", () => {
+  let service: CartofrichesService;
+  let adapter: CartofrichesAdapter;
+
+  beforeEach(() => {
+    adapter = {
+      getFrichesParCommune: vi.fn(),
+      getGeofrichesParCommune: vi.fn(),
+    } as unknown as CartofrichesAdapter;
+    service = new CartofrichesService(adapter);
+  });
+
+  it("mappe les features GeoJSON en friches carte (nom, refcad, surface, géométrie)", async () => {
+    vi.mocked(adapter.getGeofrichesParCommune).mockResolvedValue({
+      success: true,
+      data: [
+        {
+          type: "Feature",
+          geometry: { type: "MultiPolygon", coordinates: [[[[0, 0]]]] },
+          properties: createFriche({
+            site_nom: "CAVAL",
+            unite_fonciere_surface: 4091,
+            unite_fonciere_refcad: "['49353000AC0628']",
+          }),
+        },
+      ],
+      source: CARTOFRICHES_SOURCE,
+    });
+
+    const result = await service.getFrichesCommune("49353");
+
+    expect(result.friches).toHaveLength(1);
+    expect(result.friches[0].nom).toBe("CAVAL");
+    expect(result.friches[0].refcad).toEqual(["49353000AC0628"]);
+    expect(result.friches[0].surface).toBe(4091);
+    expect(result.friches[0].geometry?.type).toBe("MultiPolygon");
+  });
+
+  it("remonte l'erreur si l'API geofriches échoue", async () => {
+    vi.mocked(adapter.getGeofrichesParCommune).mockResolvedValue({
+      success: false,
+      error: "503",
+      source: CARTOFRICHES_SOURCE,
+    });
+
+    const result = await service.getFrichesCommune("49353");
+
+    expect(result.friches).toEqual([]);
+    expect(result.erreur).toBe("503");
+  });
+
+  it("met en cache les friches d'une commune (un seul appel adapter)", async () => {
+    vi.mocked(adapter.getGeofrichesParCommune).mockResolvedValue({
+      success: true,
+      data: [],
+      source: CARTOFRICHES_SOURCE,
+    });
+
+    await service.getFrichesCommune("49353");
+    await service.getFrichesCommune("49353");
+
+    expect(adapter.getGeofrichesParCommune).toHaveBeenCalledTimes(1);
   });
 });

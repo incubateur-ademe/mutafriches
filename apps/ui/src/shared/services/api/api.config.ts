@@ -40,6 +40,7 @@ export const API_CONFIG = {
     },
     cartofriches: {
       recherche: "/api/cartofriches/recherche",
+      commune: "/api/cartofriches/commune",
     },
   },
 } as const;

@@ -2,7 +2,7 @@ import { Injectable, Logger } from "@nestjs/common";
 import { HttpService } from "@nestjs/axios";
 import { firstValueFrom } from "rxjs";
 import { timeout } from "rxjs/operators";
-import { FrichesCerema } from "@mutafriches/shared-types";
+import { FrichesCerema, GeometrieParcelle } from "@mutafriches/shared-types";
 import { ApiResponse } from "../enrichissement/adapters/shared/api-response.types";
 import {
   CARTOFRICHES_API_BASE_URL,
@@ -16,6 +16,20 @@ interface PaginatedFrichesResponse {
   count: number;
   next: string | null;
   results: FrichesCerema[];
+}
+
+/** Feature GeoJSON renvoyée par l'endpoint geofriches (properties = FrichesCerema partiel) */
+export interface GeoFricheFeature {
+  type: "Feature";
+  geometry: GeometrieParcelle | null;
+  properties: FrichesCerema;
+}
+
+interface GeoFrichesCollection {
+  type: "FeatureCollection";
+  count: number;
+  next: string | null;
+  features: GeoFricheFeature[];
 }
 
 /**
@@ -73,6 +87,59 @@ export class CartofrichesAdapter {
     } catch (error: unknown) {
       const err = error as Error;
       this.logger.warn(`Erreur API Cartofriches (commune ${codeInsee}) : ${err.message}`);
+      return {
+        success: false,
+        error: err.message,
+        source: CARTOFRICHES_SOURCE,
+        responseTimeMs: Date.now() - startTime,
+      };
+    }
+  }
+
+  /**
+   * Récupère les friches d'une commune en GeoJSON (emprises géométriques incluses),
+   * pour l'affichage carte + liste. Pagination suivie automatiquement.
+   */
+  async getGeofrichesParCommune(codeInsee: string): Promise<ApiResponse<GeoFricheFeature[]>> {
+    const startTime = Date.now();
+    const url = `${CARTOFRICHES_API_BASE_URL}/cartofriches/geofriches/`;
+
+    try {
+      const features: GeoFricheFeature[] = [];
+      let page = 1;
+
+      while (page <= CARTOFRICHES_MAX_PAGES) {
+        const response = await firstValueFrom(
+          this.httpService
+            .get(url, {
+              params: {
+                code_insee: codeInsee,
+                fields: "all",
+                page_size: CARTOFRICHES_PAGE_SIZE,
+                page,
+              },
+            })
+            .pipe(timeout(CARTOFRICHES_TIMEOUT_MS)),
+        );
+
+        const data = response.data as GeoFrichesCollection;
+        features.push(...(data.features ?? []));
+
+        if (!data.next) {
+          break;
+        }
+        page += 1;
+      }
+
+      return {
+        success: true,
+        data: features,
+        source: CARTOFRICHES_SOURCE,
+        responseTimeMs: Date.now() - startTime,
+      };
+    } catch (error: unknown) {
+      const err = error as Error;
+      this.logger.warn(`Erreur API geofriches (commune ${codeInsee}) : ${err.message}`);
       return {
         success: false,
         error: err.message,

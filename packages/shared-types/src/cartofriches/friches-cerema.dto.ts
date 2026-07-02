@@ -1,3 +1,5 @@
+import { GeometrieParcelle } from "../shared/types/common.types";
+
 /**
  * Données d'une friche issue de l'API Cartofriches du Cerema.
  *
@@ -74,6 +76,30 @@ export interface FrichesCerema {
   p_pv: number | null;
 
   [key: string]: unknown;
+}
+
+/**
+ * Friche Cartofriches allégée pour l'affichage carte + liste (emprise géométrique incluse).
+ */
+export interface FricheCarte {
+  /** Nom de la friche */
+  nom: string | null;
+  /** Références cadastrales parsées (identifiants de parcelles) */
+  refcad: string[];
+  /** Surface de l'unité foncière en m² */
+  surface: number | null;
+  /** Emprise GeoJSON de la friche (Polygon / MultiPolygon) */
+  geometry: GeometrieParcelle | null;
+}
+
+/**
+ * Résultat de la récupération des friches d'une commune (pour l'onglet « Depuis Cartofriches »).
+ */
+export interface CartofrichesCommuneResult {
+  friches: FricheCarte[];
+  source: string;
+  responseTimeMs?: number;
+  erreur?: string;
 }
 
 /**
