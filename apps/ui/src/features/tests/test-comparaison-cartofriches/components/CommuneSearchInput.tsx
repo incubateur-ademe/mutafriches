@@ -61,7 +61,7 @@ export function CommuneSearchInput({ onCommuneSelected, desactive }: CommuneSear
   };
 
   return (
-    <div ref={wrapperRef} style={{ position: "relative" }}>
+    <div ref={wrapperRef}>
       <div className="fr-input-group">
         <label className="fr-label" htmlFor="cartofriches-commune-search">
           Commune
@@ -84,12 +84,11 @@ export function CommuneSearchInput({ onCommuneSelected, desactive }: CommuneSear
       </div>
 
       {showSuggestions && suggestions.length > 0 ? (
+        // Rendu dans le flux (pas en overlay absolu) : le conteneur DSFR .fr-tabs applique
+        // overflow:hidden, ce qui clipperait une liste positionnée en absolute.
         <ul
-          className="fr-p-1w"
+          className="fr-p-1w fr-mt-1w"
           style={{
-            position: "absolute",
-            zIndex: 1000,
-            width: "100%",
             listStyle: "none",
             margin: 0,
             border: "1px solid var(--border-default-grey)",
