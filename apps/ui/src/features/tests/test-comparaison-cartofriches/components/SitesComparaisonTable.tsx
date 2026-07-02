@@ -25,13 +25,7 @@ function badgeSynthese(site: SiteCompare): { label: string; variant: string } {
  */
 export function SitesComparaisonTable({ sites, onRetirer, onVider }: SitesComparaisonTableProps) {
   if (sites.length === 0) {
-    return (
-      <div className="fr-callout fr-mt-4w">
-        <p className="fr-callout__text">
-          Sélectionnez une parcelle sur la carte puis lancez l'analyse pour l'ajouter au comparatif.
-        </p>
-      </div>
-    );
+    return null;
   }
 
   const handleExport = (): void => {

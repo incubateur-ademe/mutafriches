@@ -39,7 +39,7 @@ export function CartofrichesFrichesMap({
   onSelectFriche,
   refcadSurvolee,
   onHoverFriche,
-  height = "480px",
+  height = "640px",
 }: CartofrichesFrichesMapProps) {
   const mapRef = useRef<L.Map | null>(null);
   const markersRef = useRef<Map<string, { marker: L.Marker; friche: FricheCarte }>>(new Map());

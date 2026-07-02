@@ -116,7 +116,7 @@ export function CartofrichesSelectionPanel({
                 listStyle: "none",
                 margin: 0,
                 padding: 0,
-                maxHeight: "440px",
+                maxHeight: "640px",
                 overflowY: "auto",
               }}
             >

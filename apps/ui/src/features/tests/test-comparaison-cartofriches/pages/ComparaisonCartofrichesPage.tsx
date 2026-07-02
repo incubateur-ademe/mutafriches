@@ -122,7 +122,7 @@ export function ComparaisonCartofrichesPage() {
               label: "Depuis Mutafriches",
               panel: (
                 <ParcelleSelectionMap
-                  height="480px"
+                  height="640px"
                   onAnalyze={(identifiants) => void ajouterSite(identifiants)}
                 />
               ),
