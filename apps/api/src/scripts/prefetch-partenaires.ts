@@ -25,7 +25,7 @@
  */
 
 import { drizzle } from "drizzle-orm/postgres-js";
-import * as postgres from "postgres";
+import postgres from "postgres";
 import { eq } from "drizzle-orm";
 import { getAppConfig } from "../config";
 import { partenaireSites } from "../shared/database/schemas/partenaire-sites.schema";

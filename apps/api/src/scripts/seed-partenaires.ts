@@ -14,7 +14,7 @@
  *   PARTENAIRE=cci-92 pnpm db:partenaires:seed    # un seul partenaire
  */
 import { drizzle } from "drizzle-orm/postgres-js";
-import * as postgres from "postgres";
+import postgres from "postgres";
 import { v4 as uuidv4 } from "uuid";
 import { and, eq, isNull } from "drizzle-orm";
 import type { Coordonnees, EnrichissementOutputDto } from "@mutafriches/shared-types";
