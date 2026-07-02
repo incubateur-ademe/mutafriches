@@ -1,4 +1,4 @@
-# ADR-0022 : Librairie d'export PDF des résultats — @react-pdf/renderer
+# ADR-0023 : Librairie d'export PDF des résultats — @react-pdf/renderer
 
 **Date** : 2026-06-30
 **Statut** : Accepté
