@@ -47,7 +47,18 @@ export function EcartsDetail({ lignes }: EcartsDetailProps) {
                   <span className={`fr-badge fr-badge--sm ${badge.variant}`}>{badge.label}</span>
                   {ligne.magnitude ? ` ${ligne.magnitude}` : ""}
                 </td>
-                <td className="fr-text--xs">{ligne.note ?? ""}</td>
+                <td className="fr-text--xs">
+                  {ligne.note ?? ""}
+                  {ligne.warning ? (
+                    <span
+                      className="fr-badge fr-badge--sm fr-badge--warning fr-icon-warning-line fr-badge--icon-left fr-mt-1v"
+                      title={ligne.warning}
+                      style={{ display: "flex", marginTop: "0.25rem" }}
+                    >
+                      {ligne.warning}
+                    </span>
+                  ) : null}
+                </td>
               </tr>
             );
           })}

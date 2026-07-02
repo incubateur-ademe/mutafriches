@@ -13,3 +13,17 @@ export function extraireDepartement(identifiant?: string): string {
   if (/^2[AB]/i.test(identifiant)) return identifiant.slice(0, 2).toUpperCase();
   return identifiant.slice(0, 2);
 }
+
+/**
+ * Extrait le code INSEE de la commune depuis un identifiant cadastral (IDU) :
+ * département + 3 caractères de commune. Cohérent avec l'extraction backend.
+ *
+ * @example
+ * extraireCodeInsee("49353000AC0628") // "49353"
+ * extraireCodeInsee("2A0040000B0045") // "2A004"
+ */
+export function extraireCodeInsee(identifiant?: string): string {
+  const departement = extraireDepartement(identifiant);
+  if (!departement || !identifiant) return "";
+  return identifiant.slice(0, departement.length + 3).toUpperCase();
+}

@@ -1,6 +1,8 @@
 import { useCallback, useState } from "react";
+import { normalizeParcelId } from "@mutafriches/shared-types";
 import { enrichissementService } from "@shared/services/api/api.enrichissement.service";
 import { cartofrichesService } from "@shared/services/api/api.cartofriches.service";
+import { extraireCodeInsee } from "@shared/utils/cadastre.utils";
 import { comparerSites, scoreCartofriches } from "../utils/comparaison";
 import type { SiteCompare } from "../utils/export-csv";
 
@@ -26,11 +28,17 @@ export function useComparaisonCartofriches() {
     setEtat({ site: null, chargement: true, erreur: null });
 
     try {
-      const enrich = await enrichissementService.enrichirSite(identifiants);
-      const recherche = await cartofrichesService.rechercher(
-        enrich.identifiantParcelle,
-        enrich.codeInsee,
-      );
+      // Le code INSEE et l'identifiant Cartofriches se déduisent de l'entrée : on peut donc
+      // lancer l'enrichissement Mutafriches et la recherche Cartofriches en parallèle.
+      const identifiantsNormalises = identifiants.map((id) => normalizeParcelId(id));
+      const codeInsee = extraireCodeInsee(identifiantsNormalises[0]);
+      const identifiantCartofriches = identifiantsNormalises.join(",");
+
+      const [enrich, recherche] = await Promise.all([
+        enrichissementService.enrichirSite(identifiants),
+        cartofrichesService.rechercher(identifiantCartofriches, codeInsee),
+      ]);
+
       const site: SiteCompare = {
         identifiant: enrich.identifiantParcelle,
         commune: enrich.commune,

@@ -107,6 +107,24 @@ describe("comparerSites", () => {
     expect(ite?.note).not.toContain("proche du seuil");
   });
 
+  it("signale l'anomalie Cartofriches quand la donnée API (1.22 km) arrondit à 1 km", () => {
+    const lignes = comparerSites(
+      enrich({ distanceIte: DistanceIte.MOINS_1KM_MAUVAIS_ETAT }),
+      friche({ distance_ite_bon: 2.63, distance_ite_mauvais: 1.22 }),
+    );
+    const ite = lignes.find((l) => l.cle === "distanceIte");
+    expect(ite?.warning).toContain("se contredit");
+  });
+
+  it("ne signale pas d'anomalie quand la distance API est franchement > 1 km", () => {
+    const lignes = comparerSites(
+      enrich({ distanceIte: DistanceIte.MOINS_1KM_MAUVAIS_ETAT }),
+      friche({ distance_ite_bon: 5, distance_ite_mauvais: 4 }),
+    );
+    const ite = lignes.find((l) => l.cle === "distanceIte");
+    expect(ite?.warning).toBeUndefined();
+  });
+
   it("ne signale pas d'écart ITE quand les catégories concordent", () => {
     const lignes = comparerSites(
       enrich({ distanceIte: DistanceIte.MOINS_1KM_BON_ETAT }),

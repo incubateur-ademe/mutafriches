@@ -1,5 +1,20 @@
 import { describe, expect, it } from "vitest";
-import { extraireDepartement } from "./cadastre.utils";
+import { extraireCodeInsee, extraireDepartement } from "./cadastre.utils";
+
+describe("extraireCodeInsee", () => {
+  it("extrait le code INSEE métropole (5 caractères)", () => {
+    expect(extraireCodeInsee("49353000AC0628")).toBe("49353");
+  });
+
+  it("extrait le code INSEE corse", () => {
+    expect(extraireCodeInsee("2a0040000B0045")).toBe("2A004");
+  });
+
+  it("retourne une chaîne vide pour un identifiant invalide", () => {
+    expect(extraireCodeInsee(undefined)).toBe("");
+    expect(extraireCodeInsee("4")).toBe("");
+  });
+});
 
 describe("extraireDepartement", () => {
   it("extrait un département métropolitain (2 chiffres)", () => {

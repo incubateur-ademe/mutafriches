@@ -29,6 +29,8 @@ export interface LigneEcart {
   magnitude?: string;
   /** Précision sur la nature de l'écart */
   note?: string;
+  /** Avertissement : incohérence interne de Cartofriches (donnée API vs fiche) */
+  warning?: string;
 }
 
 const ABSENT = "—";
@@ -199,6 +201,16 @@ function comparerIte(enrich: EnrichissementOutputDto, friche: FrichesCerema): Li
     note = `Distance Cerema (${fmtNombre(distMin, " km")}) proche du seuil de 1 km — écart sensible au point de mesure`;
   }
 
+  // Anomalie Cartofriches : sa fiche (texte de la modale) arrondit la distance au km et
+  // affiche « moins d'1 km » lorsque la distance arrondit à 1, alors que sa donnée API
+  // dépasse 1 km. Détecté quand la distance la plus proche est dans ]1 km ; 1,5 km[.
+  let warning: string | undefined;
+  if (distMin !== null && distMin > 1 && Math.round(distMin) <= 1) {
+    warning =
+      `Anomalie Cartofriches : sa donnée API indique ${fmtNombre(distMin, " km")} (> 1 km), ` +
+      `mais sa fiche affiche « moins d'1 km » (distance arrondie à 1 km). Cartofriches se contredit.`;
+  }
+
   return {
     cle: "distanceIte",
     label: "Distance ITE fret",
@@ -207,6 +219,7 @@ function comparerIte(enrich: EnrichissementOutputDto, friche: FrichesCerema): Li
     ecart,
     comparable,
     note,
+    warning,
   };
 }
 
