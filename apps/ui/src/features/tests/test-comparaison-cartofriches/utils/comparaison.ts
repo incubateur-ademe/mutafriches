@@ -107,20 +107,28 @@ function comparerTexte(
 /** Compare la présence de pollution (booléen Mutafriches vs indices Cerema) */
 function comparerPollution(enrich: EnrichissementOutputDto, friche: FrichesCerema): LigneEcart {
   const mutafriches = enrich.siteReferencePollue === true;
-  // Cartofriches : référencé Basol/Basias ou pollution du sol déclarée
-  const polluCf =
-    !!friche.site_numero_basol ||
-    !!friche.site_numero_basias ||
-    (friche.sol_pollution_existe ?? "").toLowerCase() === "oui";
-  const ecart = mutafriches !== polluCf;
+
+  // Cartofriches : pollution avérée si référencé Basol/Basias ou pollution du sol déclarée "oui".
+  // L'absence d'info (Basol/Basias absents ET sol_pollution_existe "inconnu"/vide) N'est PAS
+  // une absence de pollution : on ne compare pas dans ce cas (évite un faux écart).
+  const basol = !!friche.site_numero_basol || !!friche.site_numero_basias;
+  const solExiste = (friche.sol_pollution_existe ?? "").toLowerCase();
+  const infoConnue = basol || solExiste === "oui" || solExiste === "non";
+  const polluCf = basol || solExiste === "oui";
+
+  const comparable = infoConnue;
+  const ecart = comparable && mutafriches !== polluCf;
+
   return {
     cle: "siteReferencePollue",
     label: "Site référencé pollué",
     mutafriches: mutafriches ? "Oui" : "Non",
-    cartofriches: polluCf ? "Oui" : "Non",
+    cartofriches: infoConnue ? (polluCf ? "Oui" : "Non") : "Non renseigné",
     ecart,
-    comparable: true,
-    note: "Basol/Basias + pollution sol côté Cartofriches",
+    comparable,
+    note: infoConnue
+      ? "Basol/Basias + pollution sol côté Cartofriches"
+      : "Pollution non renseignée côté Cartofriches",
   };
 }
 

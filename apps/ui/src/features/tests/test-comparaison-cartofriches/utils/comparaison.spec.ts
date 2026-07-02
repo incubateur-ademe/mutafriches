@@ -123,6 +123,21 @@ describe("comparerSites", () => {
     expect(pollu?.cartofriches).toBe("Oui");
   });
 
+  it("ne compare pas la pollution quand elle est non renseignée côté Cartofriches", () => {
+    const lignes = comparerSites(
+      enrich({ siteReferencePollue: true }),
+      friche({
+        site_numero_basol: null,
+        site_numero_basias: null,
+        sol_pollution_existe: "inconnu",
+      }),
+    );
+    const pollu = lignes.find((l) => l.cle === "siteReferencePollue");
+    expect(pollu?.comparable).toBe(false);
+    expect(pollu?.ecart).toBe(false);
+    expect(pollu?.cartofriches).toBe("Non renseigné");
+  });
+
   it("compte uniquement les écarts comparables", () => {
     const lignes = comparerSites(
       enrich({ surfaceSite: 5000, distanceIte: DistanceIte.PLUS_1KM }),
