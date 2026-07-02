@@ -25,11 +25,23 @@ export function SiteComparaisonDetail({ site }: SiteComparaisonDetailProps) {
 
   return (
     <section className="fr-mt-4w">
-      <div className="fr-grid-row fr-grid-row--middle fr-mb-2w">
-        <div className="fr-col">
-          <h2 className="fr-h4 fr-mb-1v">
-            {site.commune} — {site.identifiant}
-          </h2>
+      <div
+        className="fr-mb-2w"
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "flex-start",
+          gap: "1rem",
+        }}
+      >
+        <div style={{ minWidth: 0 }}>
+          <h2 className="fr-h4 fr-mb-1v">{site.commune}</h2>
+          <p
+            className="fr-text--xs fr-mb-1v"
+            style={{ color: "var(--text-mention-grey)", wordBreak: "break-all" }}
+          >
+            {site.identifiant.split(",").join(", ")}
+          </p>
           <p className="fr-mb-0">
             <span className={`fr-badge fr-badge--sm ${badge.variant}`}>{badge.label}</span>
             <span className="fr-ml-2w fr-text--sm">
@@ -37,7 +49,7 @@ export function SiteComparaisonDetail({ site }: SiteComparaisonDetailProps) {
             </span>
           </p>
         </div>
-        <div className="fr-col-auto">
+        <div style={{ flexShrink: 0 }}>
           <button
             type="button"
             className="fr-btn fr-btn--secondary fr-icon-download-line fr-btn--icon-left"

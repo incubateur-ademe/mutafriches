@@ -92,10 +92,9 @@ describe("comparerSites", () => {
     );
     const ite = lignes.find((l) => l.cle === "distanceIte");
     expect(ite?.ecart).toBe(true);
+    // Distances réelles affichées dans chaque colonne
+    expect(ite?.mutafriches).toContain("850 m");
     expect(ite?.cartofriches).toContain("1.22 km");
-    // Distances réelles des deux côtés dans la note
-    expect(ite?.note).toContain("850 m");
-    expect(ite?.note).toContain("1.22 km");
     // 1.22 km est proche du seuil de 1 km → note enrichie
     expect(ite?.note).toContain("proche du seuil");
   });

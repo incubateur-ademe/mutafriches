@@ -189,25 +189,27 @@ function comparerIte(enrich: EnrichissementOutputDto, friche: FrichesCerema): Li
   const cfCat = categorieIteDepuisCerema(friche);
   const comparable = !!mutaCat;
   const ecart = comparable && mutaCat !== cfCat;
-  const detailCf = `bon: ${fmtNombre(friche.distance_ite_bon, " km")} / mauvais: ${fmtNombre(
+  const distMin = distanceIteMinCerema(friche);
+  const distMutaM = enrich.distanceIteMetres;
+
+  // Colonne Mutafriches : catégorie + distance réelle à l'ITE la plus proche (m)
+  const mutaAffiche = mutaCat
+    ? `${LABEL_ITE[mutaCat]}${distMutaM !== null && distMutaM !== undefined ? ` — ${distMutaM} m` : ""}`
+    : ABSENT;
+
+  // Colonne Cartofriches : catégorie + distance réelle la plus proche (km) + détail bon/mauvais
+  const detailCf = `bon ${fmtNombre(friche.distance_ite_bon, " km")} / mauvais ${fmtNombre(
     friche.distance_ite_mauvais,
     " km",
   )}`;
+  const cfAffiche = `${LABEL_ITE[cfCat]} — ${
+    distMin !== null ? `la plus proche ${fmtNombre(distMin, " km")} (${detailCf})` : detailCf
+  }`;
 
-  // Note : distances réelles des deux côtés
-  const distMutaM = enrich.distanceIteMetres;
-  const mutaDist =
-    distMutaM !== null && distMutaM !== undefined ? `${distMutaM} m` : "aucune ITE dans le rayon";
-  let note =
-    `Distances réelles — Mutafriches : ${mutaDist} ; ` +
-    `Cartofriches : bon ${fmtNombre(friche.distance_ite_bon, " km")} / mauvais ${fmtNombre(
-      friche.distance_ite_mauvais,
-      " km",
-    )} (seuil 1 km)`;
-
-  const distMin = distanceIteMinCerema(friche);
+  // Note : rappel du principe de reconstitution, précisé si l'écart tient au seuil de 1 km
+  let note = "Catégorie reconstituée depuis les distances Cerema (seuil 1 km)";
   if (ecart && distMin !== null && Math.abs(distMin - 1) <= MARGE_SEUIL_ITE_KM) {
-    note += " — distance Cerema proche du seuil de 1 km, écart sensible au point de mesure";
+    note = `Distance Cerema (${fmtNombre(distMin, " km")}) proche du seuil de 1 km — écart sensible au point de mesure`;
   }
 
   // Anomalie Cartofriches : sa fiche (texte de la modale) arrondit la distance au km et
@@ -223,8 +225,8 @@ function comparerIte(enrich: EnrichissementOutputDto, friche: FrichesCerema): Li
   return {
     cle: "distanceIte",
     label: "Distance ITE fret",
-    mutafriches: mutaCat ? LABEL_ITE[mutaCat] : ABSENT,
-    cartofriches: `${LABEL_ITE[cfCat]} (${detailCf})`,
+    mutafriches: mutaAffiche,
+    cartofriches: cfAffiche,
     ecart,
     comparable,
     note,
