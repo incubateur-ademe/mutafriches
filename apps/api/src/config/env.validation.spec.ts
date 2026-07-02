@@ -19,9 +19,10 @@ describe("validateEnvironment", () => {
     expect(() => validateEnvironment({ PORT: "abc" })).toThrow(/PORT/);
   });
 
-  it("accepte un PORT vide (conteneur one-off scalingo run)", () => {
-    expect(() => validateEnvironment({ PORT: "" })).not.toThrow();
+  it("accepte un PORT vide ou nul (conteneur one-off scalingo run)", () => {
     expect(validateEnvironment({ PORT: "" }).PORT).toBeUndefined();
+    expect(validateEnvironment({ PORT: "0" }).PORT).toBeUndefined();
+    expect(() => validateEnvironment({ PORT: "0" })).not.toThrow();
   });
 
   it("rejette un NODE_ENV inconnu", () => {
