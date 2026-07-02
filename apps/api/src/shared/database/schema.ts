@@ -10,6 +10,8 @@ import { epci } from "./schemas/epci.schema";
 import { communes } from "./schemas/communes.schema";
 import { rawIteFret } from "./schemas/raw-ite-fret.schema";
 import { apiHealthSnapshots } from "./schemas/api-health-snapshots.schema";
+import { partenaires } from "./schemas/partenaires.schema";
+import { partenaireSites } from "./schemas/partenaire-sites.schema";
 
 // Export individuel pour drizzle-kit
 export {
@@ -26,6 +28,8 @@ export {
   communes,
   rawIteFret,
   apiHealthSnapshots,
+  partenaires,
+  partenaireSites,
 };
 
 // Export groupé pour drizzle ORM
@@ -42,4 +46,6 @@ export const schema = {
   communes,
   rawIteFret,
   apiHealthSnapshots,
+  partenaires,
+  partenaireSites,
 };

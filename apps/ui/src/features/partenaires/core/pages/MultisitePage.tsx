@@ -11,7 +11,9 @@ import { SiteList } from "../components/SiteList";
 import { SiteDetail } from "../components/SiteDetail";
 import { AddSiteModal } from "../components/AddSiteModal";
 import { DonneesExternesLink } from "../components/DonneesExternesLink";
-import { useCustomSites } from "../hooks/useCustomSites";
+import { PartagerButton } from "../components/PartagerButton";
+import { usePartenaireSites } from "../hooks/usePartenaireSites";
+import { useSiteUserData } from "../hooks/useSiteUserData";
 import { getPartnerBySlug } from "../../registry";
 import type { PartnerConfig, PartnerSite } from "../types";
 import "@features/debug/components/DebugPanel.css";
@@ -26,11 +28,9 @@ const MultisiteView: React.FC<{ config: PartnerConfig }> = ({ config }) => {
   const [error, setError] = useState<string | null>(null);
 
   const enrichmentCacheRef = useRef(new Map<string, EnrichissementOutputDto>());
-  const mutabilityCacheRef = useRef(new Map<string, MutabiliteOutputDto>());
-  const manualDataRef = useRef(new Map<string, Record<string, string>>());
 
-  // IDs des sites enrichis suivis en state (le ref ne peut pas être lu pendant le rendu)
-  const [enrichedSiteIds, setEnrichedSiteIds] = useState<Set<string>>(new Set());
+  // Saisie « Connaissance terrain » + mutabilité : persistées en local par site (ADR-0021, phase 3).
+  const userData = useSiteUserData(config.storageKey);
 
   const [enrichmentData, setEnrichmentData] = useState<EnrichissementOutputDto | null>(null);
   const [mutabilityData, setMutabilityData] = useState<MutabiliteOutputDto | null>(null);
@@ -39,53 +39,65 @@ const MultisiteView: React.FC<{ config: PartnerConfig }> = ({ config }) => {
   const { versions } = useAlgorithmeVersions();
   const selectedVersion = versions[0]?.version ?? "";
 
-  const { customSites, addSite, removeSite, clearAll } = useCustomSites(config.storageKey);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
-  const handleSelectSite = useCallback(async (site: PartnerSite) => {
-    setSelectedSite(site);
-    setError(null);
+  // Sites lus en base (repli sur la config statique). Cf. ADR-0021, phases 1 et 3.
+  const { sitesByCommune, renommerSite, ajouterSite } = usePartenaireSites(config);
 
-    const cachedManual = manualDataRef.current.get(site.idtup) || {};
-    setManualData(cachedManual);
+  const handleRenameSite = useCallback(
+    async (id: string, nom: string) => {
+      const updated = await renommerSite(id, nom);
+      setSelectedSite((prev) => (prev?.id === id ? updated : prev));
+    },
+    [renommerSite],
+  );
 
-    const cachedMutability = mutabilityCacheRef.current.get(site.idtup) || null;
-    setMutabilityData(cachedMutability);
+  const handleSelectSite = useCallback(
+    async (site: PartnerSite) => {
+      setSelectedSite(site);
+      setError(null);
 
-    const cachedEnrichment = enrichmentCacheRef.current.get(site.idtup);
-    if (cachedEnrichment) {
-      setEnrichmentData(cachedEnrichment);
-      setLoadingState("idle");
-      return;
-    }
+      setManualData(userData.getManualData(site.idtup));
+      setMutabilityData(userData.getMutability(site.idtup));
 
-    setEnrichmentData(null);
-    setLoadingState("enriching");
-    try {
-      const result = await enrichissementService.enrichirSite(site.parcelles, {
-        acceptDegradedCache: true,
-      });
-      enrichmentCacheRef.current.set(site.idtup, result);
-      setEnrichedSiteIds((prev) => new Set(prev).add(site.idtup));
-      setEnrichmentData(result);
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Erreur lors de l'enrichissement";
-      setError(message);
-    } finally {
-      setLoadingState("idle");
-    }
-  }, []);
+      const cachedEnrichment = enrichmentCacheRef.current.get(site.idtup);
+      if (cachedEnrichment) {
+        setEnrichmentData(cachedEnrichment);
+        userData.markQualified(site.idtup);
+        setLoadingState("idle");
+        return;
+      }
+
+      setEnrichmentData(null);
+      setLoadingState("enriching");
+      try {
+        const result = await enrichissementService.enrichirSite(site.parcelles, {
+          acceptDegradedCache: true,
+        });
+        enrichmentCacheRef.current.set(site.idtup, result);
+        setEnrichmentData(result);
+        // Qualification (enrichissement) terminée : persiste le statut (simple check).
+        userData.markQualified(site.idtup);
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : "Erreur lors de l'enrichissement";
+        setError(message);
+      } finally {
+        setLoadingState("idle");
+      }
+    },
+    [userData],
+  );
 
   const handleManualDataChange = useCallback(
     (fieldName: string, value: string) => {
       if (!selectedSite) return;
       const updated = { ...manualData, [fieldName]: value };
       setManualData(updated);
-      manualDataRef.current.set(selectedSite.idtup, updated);
-      mutabilityCacheRef.current.delete(selectedSite.idtup);
+      userData.setManualData(selectedSite.idtup, updated);
+      userData.clearMutability(selectedSite.idtup);
       setMutabilityData(null);
     },
-    [selectedSite, manualData],
+    [selectedSite, manualData, userData],
   );
 
   const handleCalculerMutabilite = useCallback(async () => {
@@ -99,7 +111,7 @@ const MultisiteView: React.FC<{ config: PartnerConfig }> = ({ config }) => {
         modeDetaille: true,
         versionAlgorithme: selectedVersion || undefined,
       });
-      mutabilityCacheRef.current.set(selectedSite.idtup, result);
+      userData.setMutability(selectedSite.idtup, result);
       setMutabilityData(result);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Erreur lors du calcul de mutabilité";
@@ -107,82 +119,55 @@ const MultisiteView: React.FC<{ config: PartnerConfig }> = ({ config }) => {
     } finally {
       setLoadingState("idle");
     }
-  }, [selectedSite, enrichmentData, manualData, selectedVersion]);
-
-  const cleanupCachesForSite = useCallback((idtup: string) => {
-    enrichmentCacheRef.current.delete(idtup);
-    mutabilityCacheRef.current.delete(idtup);
-    manualDataRef.current.delete(idtup);
-    setEnrichedSiteIds((prev) => {
-      const next = new Set(prev);
-      next.delete(idtup);
-      return next;
-    });
-  }, []);
+  }, [selectedSite, enrichmentData, manualData, selectedVersion, userData]);
 
   const handleAddSiteSubmit = useCallback(
-    (idpars: string[]) => {
-      const result = addSite(idpars);
+    async (idpars: string[]) => {
+      const result = await ajouterSite(idpars);
+      if (result.site) {
+        await handleSelectSite(result.site);
+      }
       return {
         invalidIdpars: result.invalidIdpars,
-        success: result.added !== null,
+        success: result.site !== null,
       };
     },
-    [addSite],
+    [ajouterSite, handleSelectSite],
   );
 
-  const handleRemoveCustomSite = useCallback(
-    (idtup: string) => {
-      cleanupCachesForSite(idtup);
-      if (selectedSite?.idtup === idtup) {
-        setSelectedSite(null);
-        setEnrichmentData(null);
-        setMutabilityData(null);
-        setManualData({});
-      }
-      removeSite(idtup);
-    },
-    [removeSite, selectedSite, cleanupCachesForSite],
-  );
-
-  const handleClearCustomSites = useCallback(() => {
-    customSites.forEach((s) => cleanupCachesForSite(s.idtup));
-    if (selectedSite && customSites.some((s) => s.idtup === selectedSite.idtup)) {
-      setSelectedSite(null);
-      setEnrichmentData(null);
-      setMutabilityData(null);
-      setManualData({});
-    }
-    clearAll();
-  }, [clearAll, customSites, selectedSite, cleanupCachesForSite]);
+  // Recalculés à chaque rendu : les actions (saisie, calcul) modifient un state → re-rendu.
+  const qualifiedSiteIds = userData.qualifiedIds();
+  const evaluatedSiteIds = userData.evaluatedIds();
 
   return (
     <Layout fullWidth>
       <div className="fr-container fr-py-4w">
         <div className="fr-mb-4w">
-          <h1 className="fr-h3">Mutafriches — {config.nom}</h1>
-          <p className="fr-text--lg fr-mb-1w">{config.sousTitre}</p>
+          <div className="flex items-start justify-between gap-4">
+            <h1 className="fr-h3 fr-mb-1w">{config.nom}</h1>
+            <PartagerButton slug={config.slug} nom={config.nom} />
+          </div>
           <DonneesExternesLink />
         </div>
 
         <div className="fr-grid-row fr-grid-row--gutters">
           <div className="fr-col-12 fr-col-md-4">
             <SiteList
-              titre={config.sidemenuTitre}
-              sitesByCommune={config.sitesByCommune}
+              sitesByCommune={sitesByCommune}
               selectedSiteId={selectedSite?.idtup ?? null}
               onSelectSite={handleSelectSite}
-              enrichedSiteIds={enrichedSiteIds}
-              customSites={customSites}
+              qualifiedSiteIds={qualifiedSiteIds}
+              evaluatedSiteIds={evaluatedSiteIds}
               onAddSiteClick={() => setIsAddModalOpen(true)}
-              onRemoveCustomSite={handleRemoveCustomSite}
-              onClearCustomSites={handleClearCustomSites}
             />
           </div>
           <div className="fr-col-12 fr-col-md-8">
             {selectedSite ? (
               <SiteDetail
                 site={selectedSite}
+                partenaireSlug={config.slug}
+                partenaireNom={config.nom}
+                onRenameSite={handleRenameSite}
                 enrichmentData={enrichmentData}
                 mutabilityData={mutabilityData}
                 manualData={manualData}

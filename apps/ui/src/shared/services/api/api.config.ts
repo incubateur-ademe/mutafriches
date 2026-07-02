@@ -13,7 +13,6 @@ const getApiUrl = (): string => {
 export const API_CONFIG = {
   baseUrl: getApiUrl(),
   endpoints: {
-    // Nouveaux endpoints DDD
     enrichissement: {
       enrichir: "/enrichissement",
     },
@@ -27,17 +26,17 @@ export const API_CONFIG = {
     evenements: {
       enregistrer: "/evenements",
     },
+    partenaires: {
+      get: (slug: string) => `/api/partenaires/${slug}`,
+      sites: (slug: string) => `/api/partenaires/${slug}/sites`,
+      renommerSite: (slug: string, id: string) => `/api/partenaires/${slug}/sites/${id}`,
+    },
     metabase: {
       embedUrl: "/api/metabase/embed-url",
     },
     donneesExternes: {
       imports: "/api/donnees-externes/imports",
       apis: "/api/donnees-externes/apis",
-    },
-    // Legacy endpoints (deprecated - pour compatibilité)
-    friches: {
-      enrichir: "/friches/enrichir",
-      calculer: "/friches/calculer",
     },
   },
 } as const;

@@ -1,17 +1,15 @@
 import React, { useMemo, useState } from "react";
 import type { PartnerSite } from "../types";
-import { CUSTOM_COMMUNE_LABEL } from "../hooks/useCustomSites";
 
 interface SiteListProps {
-  titre: string;
   sitesByCommune: Record<string, PartnerSite[]>;
   selectedSiteId: string | null;
   onSelectSite: (site: PartnerSite) => void;
-  enrichedSiteIds: Set<string>;
-  customSites: PartnerSite[];
+  /** Sites avec une saisie « Connaissance terrain » en localStorage (simple check). */
+  qualifiedSiteIds: Set<string>;
+  /** Sites avec une mutabilité calculée en localStorage (double check). */
+  evaluatedSiteIds: Set<string>;
   onAddSiteClick: () => void;
-  onRemoveCustomSite: (idtup: string) => void;
-  onClearCustomSites: () => void;
 }
 
 // Au-delà de ce nombre de communes, les groupes sont repliés par défaut.
@@ -28,12 +26,42 @@ function matchSite(site: PartnerSite, q: string): boolean {
   );
 }
 
+// Simple check = qualification saisie en local ; double check = qualification + mutabilité.
+const renderStatusIcon = (qualified: boolean, evaluated: boolean) => {
+  if (evaluated) {
+    return (
+      <span
+        className="mf-ms-site-btn__check"
+        aria-label="Qualifié et mutabilité calculée"
+        title="Qualifié et mutabilité calculée"
+      >
+        <span className="fr-icon-check-line fr-icon--sm" aria-hidden="true" />
+        <span
+          className="fr-icon-check-line fr-icon--sm"
+          aria-hidden="true"
+          style={{ marginLeft: "-0.75rem" }}
+        />
+      </span>
+    );
+  }
+  if (qualified) {
+    return (
+      <span
+        className="fr-icon-check-line fr-icon--sm mf-ms-site-btn__check"
+        aria-label="Qualifié"
+        title="Qualifié"
+      />
+    );
+  }
+  return null;
+};
+
 const renderSiteButton = (
   site: PartnerSite,
   selectedSiteId: string | null,
-  isEnriched: boolean,
+  qualified: boolean,
+  evaluated: boolean,
   onSelectSite: (site: PartnerSite) => void,
-  onRemove?: (idtup: string) => void,
 ) => {
   const isSelected = site.idtup === selectedSiteId;
   return (
@@ -45,41 +73,24 @@ const renderSiteButton = (
         aria-current={isSelected ? "page" : undefined}
       >
         <span className="mf-ms-site-btn__label">
-          {site.nom ?? site.idtup}
-          <span className="fr-badge fr-badge--sm fr-badge--info fr-ml-1w">
+          <span className="mf-ms-site-btn__name">{site.nom ?? site.idtup}</span>
+          <span className="fr-badge fr-badge--sm fr-badge--info">
             {site.parcelles.length} parcelle{site.parcelles.length > 1 ? "s" : ""}
           </span>
         </span>
-        {isEnriched && (
-          <span
-            className="fr-icon-check-line fr-icon--sm mf-ms-site-btn__check"
-            aria-label="Enrichi"
-          />
-        )}
+        {renderStatusIcon(qualified, evaluated)}
       </button>
-      {onRemove && (
-        <button
-          type="button"
-          className="mf-ms-site-remove fr-icon-delete-line"
-          onClick={() => onRemove(site.idtup)}
-          aria-label={`Supprimer le site ${site.idtup}`}
-          title="Supprimer ce site"
-        />
-      )}
     </li>
   );
 };
 
 export const SiteList: React.FC<SiteListProps> = ({
-  titre,
   sitesByCommune,
   selectedSiteId,
   onSelectSite,
-  enrichedSiteIds,
-  customSites,
+  qualifiedSiteIds,
+  evaluatedSiteIds,
   onAddSiteClick,
-  onRemoveCustomSite,
-  onClearCustomSites,
 }) => {
   const communes = useMemo(() => Object.keys(sitesByCommune).sort(), [sitesByCommune]);
 
@@ -103,10 +114,10 @@ export const SiteList: React.FC<SiteListProps> = ({
     });
   };
 
-  // Récap (totaux du jeu de données complet, sites perso inclus)
+  // Récap (total du jeu de données)
   const totalSites = useMemo(
-    () => Object.values(sitesByCommune).reduce((n, s) => n + s.length, 0) + customSites.length,
-    [sitesByCommune, customSites.length],
+    () => Object.values(sitesByCommune).reduce((n, s) => n + s.length, 0),
+    [sitesByCommune],
   );
 
   // Filtrage par la recherche
@@ -121,17 +132,11 @@ export const SiteList: React.FC<SiteListProps> = ({
       .filter((g) => g.sites.length > 0);
   }, [communes, sitesByCommune, isSearching, q]);
 
-  const filteredCustom = useMemo(
-    () => (isSearching ? customSites.filter((s) => matchSite(s, q)) : customSites),
-    [customSites, isSearching, q],
-  );
-
-  const aucunResultat = isSearching && filteredCommunes.length === 0 && filteredCustom.length === 0;
+  const aucunResultat = isSearching && filteredCommunes.length === 0;
 
   return (
-    <nav className="fr-sidemenu" aria-label={titre}>
+    <nav className="fr-sidemenu">
       <div className="fr-sidemenu__inner">
-        <div className="fr-sidemenu__title">{titre}</div>
         <p className="fr-text--xs fr-mb-1w" style={{ color: "var(--text-mention-grey)" }}>
           {totalSites} site{totalSites > 1 ? "s" : ""} · {communes.length} commune
           {communes.length > 1 ? "s" : ""}
@@ -167,35 +172,6 @@ export const SiteList: React.FC<SiteListProps> = ({
           </p>
         )}
 
-        {filteredCustom.length > 0 && (
-          <details className="mf-ms-commune-group" open>
-            <summary className="mf-ms-commune-group__summary">
-              {CUSTOM_COMMUNE_LABEL} ({filteredCustom.length} site
-              {filteredCustom.length > 1 ? "s" : ""})
-            </summary>
-            <ul className="fr-sidemenu__list">
-              {filteredCustom.map((site) =>
-                renderSiteButton(
-                  site,
-                  selectedSiteId,
-                  enrichedSiteIds.has(site.idtup),
-                  onSelectSite,
-                  onRemoveCustomSite,
-                ),
-              )}
-            </ul>
-            <div className="mf-ms-clear-all">
-              <button
-                type="button"
-                className="fr-btn fr-btn--tertiary-no-outline fr-btn--sm"
-                onClick={onClearCustomSites}
-              >
-                Tout effacer
-              </button>
-            </div>
-          </details>
-        )}
-
         {filteredCommunes.map(({ commune, sites }) => (
           <details
             key={commune}
@@ -211,7 +187,8 @@ export const SiteList: React.FC<SiteListProps> = ({
                 renderSiteButton(
                   site,
                   selectedSiteId,
-                  enrichedSiteIds.has(site.idtup),
+                  qualifiedSiteIds.has(site.idtup),
+                  evaluatedSiteIds.has(site.idtup),
                   onSelectSite,
                 ),
               )}

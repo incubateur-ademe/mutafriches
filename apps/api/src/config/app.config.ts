@@ -88,9 +88,18 @@ export class AppConfig {
     };
   }
 
+  // URL de l'app pour les scripts (prefetch, seed) : par défaut l'URL publique de
+  // l'environnement courant, pour qu'un `pnpm partenaires:prefetch` suffise sur Scalingo.
+  // Surchargeable via API_URL.
+  private get defaultApiUrl(): string {
+    if (isProduction()) return "https://mutafriches.beta.gouv.fr";
+    if (isStaging()) return "https://mutafriches.incubateur.ademe.dev";
+    return "http://localhost:3000";
+  }
+
   get scripts() {
     return {
-      apiUrl: this.env.API_URL ?? "http://localhost:3000",
+      apiUrl: this.env.API_URL ?? this.defaultApiUrl,
       apiRefreshToken: this.env.API_REFRESH_TOKEN,
       partenairesPrefetchDelayMs: this.env.PARTENAIRES_PREFETCH_DELAY_MS ?? 1000,
       // Slug pour limiter le pré-chauffe à un partenaire (vide = tous)

@@ -35,6 +35,7 @@
     "db:ademe-sites:import": "node dist/src/scripts/import-ademe-sites.js",
     "db:epci:import": "node dist/src/scripts/import-epci-communes.js",
     "db:ite-fret:import": "node dist/src/scripts/import-ite-fret.js",
+    "db:partenaires:seed": "node dist/src/scripts/seed-partenaires.js",
     "partenaires:prefetch": "node dist/src/scripts/prefetch-partenaires.js"
   },
   "dependencies": {

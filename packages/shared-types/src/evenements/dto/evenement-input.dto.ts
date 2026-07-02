@@ -25,6 +25,10 @@ export interface EvenementDonnees {
   nombreParcelles?: number;
   /** Surface cumulée du site en m² au moment de l'événement */
   surfaceTotaleM2?: number;
+  /** Slug du partenaire concerné (ex: page partenaire partagée) */
+  partenaireSlug?: string;
+  /** Format d'export choisi (ex: "pdf", "json") */
+  format?: string;
 }
 
 export interface EvenementInputDto {

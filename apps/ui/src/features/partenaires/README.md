@@ -15,7 +15,8 @@ partenaires/
 │   ├── group.ts             # groupByIdtup / groupByCommune
 │   ├── download-json.ts
 │   ├── partenaires.css      # classes mf-ms-*
-│   ├── hooks/useCustomSites.ts
+│   ├── hooks/usePartenaireSites.ts   # sites lus/ajoutés/renommés via l'API (repli statique)
+│   ├── hooks/useSiteUserData.ts      # Connaissance terrain + mutabilité (localStorage par utilisateur)
 │   ├── components/          # SiteList, SiteDetail, DonneesForm, AddSiteModal
 │   └── pages/               # MultisitePage (orchestrateur), PartenairesPage (hub)
 ├── partners/                # un dossier autonome par partenaire
@@ -49,7 +50,7 @@ Remplacer `<slug>` par le slug du partenaire (minuscules, sans espace, ex. `aura
 
 - [ ] Créer `partners/<slug>/parcelles.ts` — la liste des IDU (cf. exemple ci-dessous)
 - [ ] Créer `partners/<slug>/index.ts` — le `PartnerConfig` (`slug`, `nom`, `description`,
-      `sousTitre`, `sidemenuTitre`, `storageKey` **unique**)
+      `departement`, `storageKey` **unique**)
 - [ ] Modifier `registry.ts` — importer le config et l'ajouter au tableau `PARTNERS`
 
 **Prefetch CI — recommandé (cache chaud), uniquement avec des IDU réels**
@@ -101,8 +102,7 @@ export const AURA_CONFIG: PartnerConfig = {
   slug: "aura", // → /partenaires/aura
   nom: "AURA — Agence d'urbanisme de la région angevine",
   description: "Qualification et mutabilité des friches du territoire d'AURA.",
-  sousTitre: "Qualification et mutabilité des friches sur le territoire d'AURA.",
-  sidemenuTitre: "Sites AURA",
+  departement: "49", // code département INSEE (pas encore affiché)
   storageKey: "aura-custom-sites", // doit être unique par partenaire
   sites,
   sitesByCommune: groupByCommune(sites),
@@ -145,7 +145,9 @@ export const PARTENAIRES_PREFETCH: Record<string, SitePrefetch[]> = {
 ## Conventions
 
 - `slug` : en minuscules, sans espace (segment d'URL).
-- `storageKey` : unique par partenaire (sinon les sites ajoutés manuellement se mélangeraient).
+- `storageKey` : unique par partenaire. Sert de base aux données locales par utilisateur
+  (« Connaissance terrain » + mutabilité, cf. `useSiteUserData`). Les sites ajoutés sont en base
+  (POST `/api/partenaires/:slug/sites`), plus en localStorage.
 - Le calcul utilise les routes API standard (`/enrichissement`, `/evaluation/calculer` en
   `modeDetaille`) via les services partagés — rien de spécifique côté partenaire.
 

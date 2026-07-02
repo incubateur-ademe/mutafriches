@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import { plainToInstance, Type } from "class-transformer";
+import { plainToInstance, Transform, Type } from "class-transformer";
 import { IsIn, IsInt, IsOptional, IsString, Max, Min, validateSync } from "class-validator";
 
 export type NodeEnv = "development" | "production" | "staging" | "test";
@@ -12,8 +12,15 @@ export class EnvironmentVariables {
   @IsIn(["development", "production", "staging", "test"])
   NODE_ENV?: NodeEnv;
 
+  // PORT absent, vide ou <= 0 (ex. conteneur one-off "scalingo run") => traité comme non
+  // fourni (l'app retombe sur le défaut 3000). Les valeurs non numériques restent rejetées.
   @IsOptional()
-  @Type(() => Number)
+  @Transform(({ value }) => {
+    if (value === "" || value === null || value === undefined) return undefined;
+    const n = Number(value);
+    if (Number.isNaN(n)) return value; // laisse @IsInt rejeter les non-numériques (ex. "abc")
+    return n < 1 ? undefined : n; // 0 / négatif => non fourni
+  })
   @IsInt()
   @Min(1)
   @Max(65535)

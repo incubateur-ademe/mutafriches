@@ -9,8 +9,8 @@ interface DonneesFormProps {
 }
 
 const ALL_FIELDS = [
-  { title: "Caractéristiques du site", fields: Object.values(SITE_FIELDS) },
-  { title: "Environnement du site", fields: Object.values(ENVIRONNEMENT_FIELDS) },
+  { title: "LE SITE ET SON BÂTI", fields: Object.values(SITE_FIELDS) },
+  { title: "L'ENVIRONNEMENT DU SITE", fields: Object.values(ENVIRONNEMENT_FIELDS) },
 ];
 
 const TOOLTIPS: Record<string, string> = {
@@ -34,15 +34,10 @@ const TOOLTIPS: Record<string, string> = {
 
 export const DonneesForm: React.FC<DonneesFormProps> = ({ values, onChange }) => {
   return (
-    <div className="mf-ms-form">
-      <p className="fr-mb-3w">
-        Renseignez les informations que vous connaissez sur le site. Les champs non remplis seront
-        considérés comme inconnus.
-      </p>
-
+    <div>
       {ALL_FIELDS.map((section) => (
         <fieldset key={section.title} className="fr-fieldset fr-mb-2w">
-          <legend className="fr-fieldset__legend fr-text--bold">{section.title}</legend>
+          <legend className="fr-fieldset__legend fr-text--lg fr-text--bold">{section.title}</legend>
           <div className="fr-fieldset__element">
             <div className="fr-grid-row fr-grid-row--gutters">
               {section.fields.map((field) => (

@@ -1,19 +1,22 @@
 import React, { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
+type AddSiteSubmit = (idpars: string[]) => Promise<{ invalidIdpars: string[]; success: boolean }>;
+
 interface AddSiteModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (idpars: string[]) => { invalidIdpars: string[]; success: boolean };
+  onSubmit: AddSiteSubmit;
 }
 
 const AddSiteModalInner: React.FC<{
   onClose: () => void;
-  onSubmit: (idpars: string[]) => { invalidIdpars: string[]; success: boolean };
+  onSubmit: AddSiteSubmit;
 }> = ({ onClose, onSubmit }) => {
   const [value, setValue] = useState("");
   const [invalidIdpars, setInvalidIdpars] = useState<string[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   useEffect(() => {
@@ -28,7 +31,7 @@ const AddSiteModalInner: React.FC<{
     return () => document.removeEventListener("keydown", handleKey);
   }, [onClose]);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const lines = value
       .split(/[\n,;]/)
       .map((s) => s.trim())
@@ -40,24 +43,31 @@ const AddSiteModalInner: React.FC<{
       return;
     }
 
-    const result = onSubmit(lines);
+    setSubmitting(true);
+    try {
+      const result = await onSubmit(lines);
 
-    if (!result.success) {
-      setErrorMessage(
-        "Aucun identifiant valide. Format attendu : 14 caractères (ex. 920500000K0010).",
-      );
-      setInvalidIdpars(result.invalidIdpars);
-      return;
+      if (!result.success) {
+        setErrorMessage(
+          "Aucun identifiant valide. Format attendu : 14 caractères (ex. 920500000K0010).",
+        );
+        setInvalidIdpars(result.invalidIdpars);
+        return;
+      }
+
+      if (result.invalidIdpars.length > 0) {
+        setErrorMessage(
+          `Site ajouté. Certains identifiants ont été ignorés car invalides : ${result.invalidIdpars.join(", ")}`,
+        );
+        setInvalidIdpars(result.invalidIdpars);
+      }
+
+      onClose();
+    } catch {
+      setErrorMessage("Erreur lors de l'ajout du site. Réessayez.");
+    } finally {
+      setSubmitting(false);
     }
-
-    if (result.invalidIdpars.length > 0) {
-      setErrorMessage(
-        `Site ajouté. Certains identifiants ont été ignorés car invalides : ${result.invalidIdpars.join(", ")}`,
-      );
-      setInvalidIdpars(result.invalidIdpars);
-    }
-
-    onClose();
   };
 
   const modalContent = (
@@ -151,12 +161,23 @@ const AddSiteModalInner: React.FC<{
         >
           <ul className="fr-btns-group fr-btns-group--inline-reverse fr-btns-group--right">
             <li>
-              <button type="button" className="fr-btn" onClick={handleSubmit}>
-                Ajouter
+              <button
+                type="button"
+                className="fr-btn"
+                onClick={handleSubmit}
+                disabled={submitting}
+                aria-busy={submitting}
+              >
+                {submitting ? "Ajout en cours..." : "Ajouter"}
               </button>
             </li>
             <li>
-              <button type="button" className="fr-btn fr-btn--secondary" onClick={onClose}>
+              <button
+                type="button"
+                className="fr-btn fr-btn--secondary"
+                onClick={onClose}
+                disabled={submitting}
+              >
                 Annuler
               </button>
             </li>

@@ -90,10 +90,10 @@ export function useEventTracking() {
   );
 
   const trackExporterResultats = useCallback(
-    (evaluationId: string, usageConcerne?: UsageType) => {
+    (evaluationId: string, format?: "pdf" | "json") => {
       return track(TypeEvenement.INTERET_EXPORT_RESULTATS, {
         evaluationId,
-        donnees: { usageConcerne },
+        donnees: { format },
       });
     },
     [track],
@@ -164,6 +164,15 @@ export function useEventTracking() {
     [track],
   );
 
+  const trackPartagePartenaire = useCallback(
+    (partenaireSlug: string) => {
+      return track(TypeEvenement.PARTAGE_PAGE_PARTENAIRE, {
+        donnees: { partenaireSlug },
+      });
+    },
+    [track],
+  );
+
   return {
     track,
     trackFeedback,
@@ -177,5 +186,6 @@ export function useEventTracking() {
     trackParcelleAjoutee,
     trackParcelleSupprimee,
     trackJaugeDepassee,
+    trackPartagePartenaire,
   };
 }

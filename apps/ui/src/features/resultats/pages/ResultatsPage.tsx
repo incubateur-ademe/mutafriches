@@ -23,6 +23,11 @@ import { createIframeCommunicator } from "../../../shared/iframe/iframeCommunica
 import { IframeEvaluationSummaryDto } from "../../../shared/iframe/iframe.types";
 import { evaluationService } from "../../../shared/services/api/api.evaluation.service";
 import { ModalInfo } from "../../../shared/components/common/ModalInfo";
+import { ExportModal, type ExportSelection } from "../components/ExportModal";
+import { generateMutabilitePdf } from "../export/generateMutabilitePdf";
+import { buildResultatsJson } from "../export/buildResultatsJson";
+import { downloadBlob, exportFileName } from "../export/downloadFile";
+import type { ResultatsExportData } from "../export/types";
 import { ContactMultisitesModal } from "../components/ContactMultisitesModal";
 import { VERSION_ALGO } from "@mutafriches/shared-types";
 import { DebugPanelGate } from "../../debug/components/DebugPanelGate";
@@ -50,10 +55,10 @@ export const ResultatsPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [mutabilityData, setMutabilityData] = useState<MutabiliteOutputDto | null>(null);
-  const [trackingExporterEnvoye, setTrackingExporterEnvoye] = useState(false);
 
   // Modal export
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const [pdfLoading, setPdfLoading] = useState(false);
 
   // Modal nouvelle analyse
   const [isNewAnalysisModalOpen, setIsNewAnalysisModalOpen] = useState(false);
@@ -198,17 +203,9 @@ export const ResultatsPage: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Handler pour exporter les résultats
-  const handleExport = async () => {
-    if (!mutabilityData?.evaluationId || trackingExporterEnvoye) return;
-
-    try {
-      await trackExporterResultats(mutabilityData.evaluationId);
-      setTrackingExporterEnvoye(true);
-    } catch (err) {
-      console.error("Erreur tracking export:", err);
-    }
-
+  // Ouvre la modale de choix de format (le tracking se fait au choix du format).
+  const handleExport = () => {
+    if (!mutabilityData) return;
     setIsExportModalOpen(true);
   };
 
@@ -246,6 +243,60 @@ export const ResultatsPage: React.FC = () => {
     if (!state.manualData) return undefined;
     return buildDonneesComplementaires(state.manualData);
   }, [state.manualData]);
+
+  // Données communes aux exports PDF et JSON.
+  const buildExportData = useCallback((): ResultatsExportData | null => {
+    if (!mutabilityData) return null;
+    return {
+      mutabilite: mutabilityData,
+      enrichissement: state.enrichmentData ?? undefined,
+      complementaires: donneesComplementaires,
+      site: {
+        identifiant: state.uiData?.identifiantParcelle,
+        commune: state.uiData?.commune,
+        parcelles:
+          state.enrichmentData?.identifiantsParcelles ??
+          [state.uiData?.identifiantParcelle ?? ""].filter(Boolean),
+        nombreParcelles: state.uiData?.nombreParcelles,
+        surfaceM2: state.enrichmentData?.surfaceSite,
+      },
+    };
+  }, [mutabilityData, state.enrichmentData, state.uiData, donneesComplementaires]);
+
+  // Exporte les formats sélectionnés (PDF et/ou JSON), avec tracking par format.
+  const handleExportFormats = useCallback(
+    async (selection: ExportSelection) => {
+      const data = buildExportData();
+      if (!data || (!selection.pdf && !selection.json)) return;
+      const evaluationId = data.mutabilite.evaluationId;
+
+      // JSON : synchrone
+      if (selection.json) {
+        if (evaluationId) void trackExporterResultats(evaluationId, "json");
+        const json = JSON.stringify(buildResultatsJson(data), null, 2);
+        downloadBlob(
+          new Blob([json], { type: "application/json" }),
+          exportFileName(data.site.commune, "json"),
+        );
+      }
+
+      // PDF : asynchrone (génération à la demande)
+      if (selection.pdf) {
+        if (evaluationId) void trackExporterResultats(evaluationId, "pdf");
+        setPdfLoading(true);
+        try {
+          await generateMutabilitePdf(data);
+        } catch (err) {
+          console.error("Erreur export PDF:", err);
+        } finally {
+          setPdfLoading(false);
+        }
+      }
+
+      setIsExportModalOpen(false);
+    },
+    [buildExportData, trackExporterResultats],
+  );
 
   if (!canAccessStep(3)) {
     return null;
@@ -432,22 +483,13 @@ export const ResultatsPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Modal d'export */}
-      <ModalInfo
-        id="modal-export"
-        title="Export des résultats"
+      {/* Modal d'export (choix du format) */}
+      <ExportModal
         isOpen={isExportModalOpen}
         onClose={() => setIsExportModalOpen(false)}
-        icon="fr-icon-download-line"
-      >
-        <p>
-          La fonctionnalité d'export PDF est en cours de développement et sera bientôt disponible !
-        </p>
-        <p className="fr-text--sm">
-          Vous pourrez exporter vos résultats d'analyse en format PDF pour les partager ou les
-          conserver.
-        </p>
-      </ModalInfo>
+        onExport={handleExportFormats}
+        loading={pdfLoading}
+      />
 
       {/* Modal de confirmation nouvelle analyse */}
       <ModalInfo

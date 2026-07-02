@@ -76,9 +76,19 @@
 
 .mf-ms-site-btn__label {
   display: flex;
+  flex-wrap: wrap; /* nom + badge passent sur 2 lignes si trop large */
   align-items: center;
-  gap: 0.5rem;
-  word-break: break-all;
+  gap: 0.25rem 0.5rem;
+}
+
+/* Le nom peut couper (aux espaces en priorité), le badge reste insécable */
+.mf-ms-site-btn__name {
+  overflow-wrap: anywhere;
+}
+
+.mf-ms-site-btn__label .fr-badge {
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .mf-ms-site-btn__check {
@@ -88,13 +98,6 @@
 
 /* Sections de détail */
 .mf-ms-detail__sections {
-  margin-top: 1rem;
-}
-
-/* Formulaire */
-.mf-ms-form {
-  border-top: 2px solid var(--border-default-grey, #e5e5e5);
-  padding-top: 1rem;
   margin-top: 1rem;
 }
 

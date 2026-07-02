@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { EnrichissementOutputDto, MutabiliteOutputDto } from "@mutafriches/shared-types";
 import { SiteIdentificationSection } from "@features/debug/components/sections/SiteIdentificationSection";
 import { EnrichissementSection } from "@features/debug/components/sections/EnrichissementSection";
@@ -13,11 +13,15 @@ import { buildDonneesComplementaires } from "@features/resultats/utils/mutabilit
 import { DsfrAccordion } from "@shared/components/dsfr/DsfrAccordion";
 import { DonneesForm } from "./DonneesForm";
 import { SiteMap } from "./SiteMap";
+import { PartagerButton } from "./PartagerButton";
+import { RenameSiteModal } from "./RenameSiteModal";
 import type { PartnerSite } from "../types";
 import { downloadJson } from "../download-json";
 
 interface SiteDetailProps {
   site: PartnerSite;
+  partenaireSlug: string;
+  partenaireNom: string;
   enrichmentData: EnrichissementOutputDto | null;
   mutabilityData: MutabiliteOutputDto | null;
   manualData: Record<string, string>;
@@ -27,17 +31,19 @@ interface SiteDetailProps {
   selectedVersion: string;
   onManualDataChange: (fieldName: string, value: string) => void;
   onCalculerMutabilite: () => void;
+  // Renomme le site en base (présent seulement si le site vient de l'API).
+  onRenameSite?: (id: string, nom: string) => Promise<void>;
 }
 
 type Phase = "qualification" | "mutabilite";
 
 const BADGE_DONNEES_NATIONALES = {
-  label: "données nationales",
+  label: "automatique",
   variant: "success",
   icon: "fr-icon-checkbox-line",
 };
 const BADGE_SAISIE = {
-  label: "données à remplir",
+  label: "manuelle",
   variant: "green-tilleul-verveine",
   icon: "fr-icon-edit-line",
 };
@@ -49,6 +55,8 @@ const BADGE_CALCULE = {
 
 export const SiteDetail: React.FC<SiteDetailProps> = ({
   site,
+  partenaireSlug,
+  partenaireNom,
   enrichmentData,
   mutabilityData,
   manualData,
@@ -58,7 +66,18 @@ export const SiteDetail: React.FC<SiteDetailProps> = ({
   selectedVersion,
   onManualDataChange,
   onCalculerMutabilite,
+  onRenameSite,
 }) => {
+  const [isRenameOpen, setIsRenameOpen] = useState(false);
+
+  const canRename = Boolean(site.id && onRenameSite);
+  const titreSite = site.nom ? `${site.nom}, ${site.commune}` : site.commune;
+
+  const enregistrerNom = async (nom: string): Promise<void> => {
+    if (!site.id || !onRenameSite) return;
+    await onRenameSite(site.id, nom);
+  };
+
   // Phase dérivée : présence de mutabilityData → mutabilite, sinon qualification.
   // La modification d'un champ vide mutabilityData (cf. handler dans la page) → retour qualification.
   const phase: Phase = mutabilityData ? "mutabilite" : "qualification";
@@ -83,20 +102,38 @@ export const SiteDetail: React.FC<SiteDetailProps> = ({
 
   return (
     <div className="mf-ms-detail">
-      {/* En-tête du site */}
+      {/* En-tête du site (hauteur limitée : la liste des parcelles défile) */}
       <div className="fr-callout fr-callout--blue-ecume fr-mb-2w">
-        <h2 className="fr-callout__title fr-h4">{site.commune}</h2>
-        <p className="fr-callout__text fr-text--sm">
-          Identifiant : <strong>{site.idtup}</strong>
-          <br />
-          <br />
-          {site.parcelles.length > 1 && (
-            <>
-              {site.parcelles.length} parcelles : {site.parcelles.join(", ")}
-            </>
+        <div className="flex items-start justify-between gap-4">
+          <h2 className="fr-callout__title fr-h4 fr-mb-0">{titreSite}</h2>
+          {canRename && (
+            <button
+              type="button"
+              className="fr-btn fr-btn--secondary fr-btn--sm fr-icon-edit-line fr-btn--icon-left"
+              onClick={() => setIsRenameOpen(true)}
+            >
+              Modifier site
+            </button>
           )}
+        </div>
+
+        <p className="fr-text--sm fr-mt-1w fr-mb-1v">
+          Identifiant : <strong>{site.idtup}</strong>
         </p>
+        <div className="fr-text--sm max-h-20 overflow-y-auto">
+          {site.parcelles.length} parcelle{site.parcelles.length > 1 ? "s" : ""} :{" "}
+          {site.parcelles.join(", ")}
+        </div>
       </div>
+
+      {canRename && (
+        <RenameSiteModal
+          isOpen={isRenameOpen}
+          initialNom={site.nom ?? ""}
+          onClose={() => setIsRenameOpen(false)}
+          onSubmit={enregistrerNom}
+        />
+      )}
 
       {/* Carte de l'emprise du site (dès que la géométrie est enrichie) */}
       {geometrieSite && (
@@ -156,36 +193,38 @@ export const SiteDetail: React.FC<SiteDetailProps> = ({
           {/* Section saisie */}
           <div key={`saisie-${phase}`}>
             <DsfrAccordion
-              title="Données complémentaires"
+              title="Connaissance terrain"
               badge={BADGE_SAISIE}
               defaultOpen={isQualPhase}
               highlight={isQualPhase}
             >
               <DonneesForm values={manualData} onChange={onManualDataChange} />
-            </DsfrAccordion>
 
-            <div className="fr-mt-2w fr-mb-3w">
-              <button
-                type="button"
-                className="fr-btn"
-                onClick={onCalculerMutabilite}
-                disabled={!hasManualInput || isCalculating}
-                aria-busy={isCalculating}
-              >
-                {isCalculating ? "Calcul en cours..." : "Calculer la mutabilité"}
-              </button>
               {!hasManualInput && (
-                <p className="fr-hint-text fr-mt-1w">
+                <p className="fr-hint-text fr-mt-2w fr-mb-1w">
                   Saisissez au moins une donnée complémentaire pour activer le calcul.
                 </p>
               )}
-            </div>
+              <ul className="fr-btns-group fr-btns-group--inline fr-btns-group--right fr-mt-2w">
+                <li>
+                  <button
+                    type="button"
+                    className="fr-btn"
+                    onClick={onCalculerMutabilite}
+                    disabled={!hasManualInput || isCalculating}
+                    aria-busy={isCalculating}
+                  >
+                    {isCalculating ? "Calcul en cours..." : "Calculer la mutabilité"}
+                  </button>
+                </li>
+              </ul>
+            </DsfrAccordion>
           </div>
 
           {/* Section mutabilité (uniquement après calcul) */}
           {mutabilityData && phase === "mutabilite" && (
             <div key={`mutabilite-${phase}`}>
-              <DsfrAccordion title="Données complémentaires (saisies)" badge={BADGE_SAISIE}>
+              <DsfrAccordion title="Connaissance terrain (saisie)" badge={BADGE_SAISIE}>
                 <DonneesComplementairesSection manualData={manualData} noWrapper />
               </DsfrAccordion>
 
@@ -194,18 +233,32 @@ export const SiteDetail: React.FC<SiteDetailProps> = ({
               </DsfrAccordion>
 
               <DsfrAccordion title="Détail de l'algorithme" badge={BADGE_CALCULE} defaultOpen>
-                <DetailAlgorithmeSection mutabilityData={mutabilityData} noWrapper />
+                <DetailAlgorithmeSection
+                  mutabilityData={mutabilityData}
+                  enrichissement={enrichmentData}
+                  complementaires={buildDonneesComplementaires(manualData)}
+                  noWrapper
+                />
               </DsfrAccordion>
 
-              <div className="fr-mt-2w">
-                <button
-                  type="button"
-                  className="fr-btn fr-btn--secondary fr-icon-download-line fr-btn--icon-left"
-                  onClick={handleExportMutabilite}
-                >
-                  Télécharger l'analyse complète (JSON)
-                </button>
-              </div>
+              <ul className="fr-btns-group fr-btns-group--inline fr-btns-group--right fr-btns-group--icon-left fr-mt-2w">
+                <li>
+                  <button
+                    type="button"
+                    className="fr-btn fr-btn--secondary fr-icon-download-line"
+                    onClick={handleExportMutabilite}
+                  >
+                    Télécharger l'analyse complète (JSON)
+                  </button>
+                </li>
+                <li>
+                  <PartagerButton
+                    slug={partenaireSlug}
+                    nom={partenaireNom}
+                    className="fr-btn fr-btn--secondary fr-icon-share-line"
+                  />
+                </li>
+              </ul>
             </div>
           )}
         </>
