@@ -48,6 +48,8 @@ export interface EnrichissementOutputDto {
   proximiteCommercesServices: boolean;
   /** Catégorie de distance à une Installation Terminale Embranchée fret (ITE) */
   distanceIte?: DistanceIte;
+  /** Distance réelle en mètres à l'ITE la plus proche (si trouvée dans le rayon de recherche) */
+  distanceIteMetres?: number;
 
   // Infrastructure
   /** Distance en mètres (convertie en km à la frontière de l'algorithme) */

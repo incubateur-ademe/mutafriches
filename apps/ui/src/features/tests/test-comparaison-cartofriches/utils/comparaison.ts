@@ -194,11 +194,20 @@ function comparerIte(enrich: EnrichissementOutputDto, friche: FrichesCerema): Li
     " km",
   )}`;
 
-  // Note enrichie quand l'écart tient à une distance Cerema proche du seuil de 1 km
-  let note = "Catégorie reconstituée depuis les distances Cerema (seuil 1 km)";
+  // Note : distances réelles des deux côtés
+  const distMutaM = enrich.distanceIteMetres;
+  const mutaDist =
+    distMutaM !== null && distMutaM !== undefined ? `${distMutaM} m` : "aucune ITE dans le rayon";
+  let note =
+    `Distances réelles — Mutafriches : ${mutaDist} ; ` +
+    `Cartofriches : bon ${fmtNombre(friche.distance_ite_bon, " km")} / mauvais ${fmtNombre(
+      friche.distance_ite_mauvais,
+      " km",
+    )} (seuil 1 km)`;
+
   const distMin = distanceIteMinCerema(friche);
   if (ecart && distMin !== null && Math.abs(distMin - 1) <= MARGE_SEUIL_ITE_KM) {
-    note = `Distance Cerema (${fmtNombre(distMin, " km")}) proche du seuil de 1 km — écart sensible au point de mesure`;
+    note += " — distance Cerema proche du seuil de 1 km, écart sensible au point de mesure";
   }
 
   // Anomalie Cartofriches : sa fiche (texte de la modale) arrondit la distance au km et

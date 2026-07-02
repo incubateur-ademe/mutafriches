@@ -87,12 +87,15 @@ describe("comparerSites", () => {
   it("détecte un écart ITE : Mutafriches < 1km mauvais vs Cerema > 1km", () => {
     // Cas réel observé : modale dit < 1km mais distance_ite_mauvais = 1.22 km
     const lignes = comparerSites(
-      enrich({ distanceIte: DistanceIte.MOINS_1KM_MAUVAIS_ETAT }),
+      enrich({ distanceIte: DistanceIte.MOINS_1KM_MAUVAIS_ETAT, distanceIteMetres: 850 }),
       friche({ distance_ite_bon: 2.63, distance_ite_mauvais: 1.22 }),
     );
     const ite = lignes.find((l) => l.cle === "distanceIte");
     expect(ite?.ecart).toBe(true);
     expect(ite?.cartofriches).toContain("1.22 km");
+    // Distances réelles des deux côtés dans la note
+    expect(ite?.note).toContain("850 m");
+    expect(ite?.note).toContain("1.22 km");
     // 1.22 km est proche du seuil de 1 km → note enrichie
     expect(ite?.note).toContain("proche du seuil");
   });

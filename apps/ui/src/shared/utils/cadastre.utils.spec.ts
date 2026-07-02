@@ -10,6 +10,10 @@ describe("extraireCodeInsee", () => {
     expect(extraireCodeInsee("2a0040000B0045")).toBe("2A004");
   });
 
+  it("résout les arrondissements (Paris) vers le code commune", () => {
+    expect(extraireCodeInsee("75113000AB0001")).toBe("75056");
+  });
+
   it("retourne une chaîne vide pour un identifiant invalide", () => {
     expect(extraireCodeInsee(undefined)).toBe("");
     expect(extraireCodeInsee("4")).toBe("");
