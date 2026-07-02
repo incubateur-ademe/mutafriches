@@ -57,7 +57,8 @@ const s = StyleSheet.create({
     fontSize: 7,
     color: "#7b7b7b",
   },
-  footerText: { flexGrow: 1, textAlign: "center" },
+  footerText: { width: "100%", textAlign: "center" },
+  footerPage: { position: "absolute", right: 0 },
   // Titres
   h1: { fontSize: 18, fontFamily: "Helvetica-Bold", marginBottom: 10 },
   h2: { fontSize: 13, fontFamily: "Helvetica-Bold", marginTop: 16, marginBottom: 8 },
@@ -156,9 +157,12 @@ const Header: React.FC = () => (
 const Footer: React.FC<{ site: string }> = ({ site }) => (
   <View style={s.footer} fixed>
     <Text style={s.footerText}>
-      Mutafriches Ademe ⎢ Analyse de mutabilité Site {site} ⎢ {moisAnnee()}
+      Mutafriches Ademe - Analyse de mutabilité Site {site} - {moisAnnee()}
     </Text>
-    <Text render={({ pageNumber, totalPages }) => `${pageNumber}/${totalPages}`} />
+    <Text
+      style={s.footerPage}
+      render={({ pageNumber, totalPages }) => `${pageNumber}/${totalPages}`}
+    />
   </View>
 );
 
