@@ -8,10 +8,12 @@ import type {
 export interface ResultatsExportData {
   mutabilite: MutabiliteOutputDto;
   enrichissement?: EnrichissementOutputDto;
-  complementaires?: Partial<DonneesComplementairesInputDto>;
+  complementaires?: DonneesComplementairesInputDto;
   site: {
     identifiant?: string;
+    nom?: string;
     commune?: string;
+    parcelles?: string[];
     nombreParcelles?: number;
     surfaceM2?: number;
   };

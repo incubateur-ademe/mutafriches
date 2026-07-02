@@ -254,6 +254,9 @@ export const ResultatsPage: React.FC = () => {
       site: {
         identifiant: state.uiData?.identifiantParcelle,
         commune: state.uiData?.commune,
+        parcelles:
+          state.enrichmentData?.identifiantsParcelles ??
+          [state.uiData?.identifiantParcelle ?? ""].filter(Boolean),
         nombreParcelles: state.uiData?.nombreParcelles,
         surfaceM2: state.enrichmentData?.surfaceSite,
       },

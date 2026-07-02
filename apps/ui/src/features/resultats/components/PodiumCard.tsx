@@ -1,18 +1,11 @@
 import React, { useMemo } from "react";
 import {
   UsageResultat,
-  UsageResultatDetaille,
   EnrichissementOutputDto,
   DonneesComplementairesInputDto,
 } from "@mutafriches/shared-types";
 import { getUsageInfo, getBadgeConfig } from "../utils/usagesLabels.utils";
-import {
-  generateTagsForUsage,
-  getCritereTagLabel,
-  SEUIL_POIDS_PONDERE_TAG,
-  MAX_TAGS_PAR_USAGE,
-} from "../utils/dynamicTags";
-import type { TagInputData } from "../utils/dynamicTags";
+import { getPodiumTags } from "../utils/podiumTags";
 import "./PodiumCard.css";
 
 interface PodiumCardProps {
@@ -25,39 +18,10 @@ export const PodiumCard: React.FC<PodiumCardProps> = ({ result, enrichmentData, 
   const usageInfo = getUsageInfo(result.usage);
   const badgeConfig = getBadgeConfig(result.indiceMutabilite);
 
-  // Génération des tags basés sur les avantages pondérés de l'algorithme
-  const dynamicTags = useMemo(() => {
-    const detaille = result as UsageResultatDetaille;
-    const detailsCalcul = detaille.detailsCalcul;
-
-    // Si les données détaillées sont disponibles, utiliser les vrais avantages de l'algo
-    if (detailsCalcul?.detailsAvantages) {
-      const tags = detailsCalcul.detailsAvantages
-        // Exclure les critères NEUTRE (scoreBrut = 0.5) qui comptent dans avantages ET contraintes
-        .filter((c) => c.scoreBrut > 0.5)
-        // Filtrer par seuil de poids pondéré
-        .filter((c) => c.scorePondere >= SEUIL_POIDS_PONDERE_TAG)
-        // Trier par poids pondéré décroissant
-        .sort((a, b) => b.scorePondere - a.scorePondere)
-        // Limiter le nombre de tags
-        .slice(0, MAX_TAGS_PAR_USAGE)
-        // Convertir en label court lisible
-        .map((c) => getCritereTagLabel(c.critere, c.valeur))
-        .filter((label): label is string => label !== null);
-
-      if (tags.length > 0) return tags;
-    }
-
-    // Fallback sur les tags dynamiques basés sur les données d'entrée
-    if (enrichmentData && manualData) {
-      const tagInputData: TagInputData = { enrichmentData, manualData };
-      const { tags } = generateTagsForUsage(result.usage, tagInputData);
-      return tags;
-    }
-
-    // Fallback sur les tags statiques
-    return usageInfo.tags;
-  }, [result, enrichmentData, manualData, usageInfo.tags]);
+  const dynamicTags = useMemo(
+    () => getPodiumTags(result, enrichmentData, manualData),
+    [result, enrichmentData, manualData],
+  );
 
   return (
     <div className="fr-col-12 fr-col-md-4">
