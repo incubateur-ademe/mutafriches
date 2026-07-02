@@ -4,47 +4,32 @@ import { Layout } from "@shared/components/layout/Layout";
 import { LoadingCallout } from "@shared/components/common/LoadingCallout";
 import { DsfrTabs } from "@shared/components/dsfr/DsfrTabs";
 import { ParcelleSelectionMap } from "../../../analyser/components/parcelle-map/ParcelleSelectionMap";
-import { SITES_REFERENCE } from "../config/sites-reference";
 import { useComparaisonCartofriches } from "../hooks/useComparaisonCartofriches";
-import { SitesComparaisonTable } from "../components/SitesComparaisonTable";
+import { SiteComparaisonDetail } from "../components/SiteComparaisonDetail";
 import { SitesReferencePanel } from "../components/SitesReferencePanel";
 import { CollageIdentifiantsPanel } from "../components/CollageIdentifiantsPanel";
 import { CartofrichesSelectionPanel } from "../components/CartofrichesSelectionPanel";
 
 /**
- * Page de test : comparer les données sources Mutafriches et Cartofriches (Cerema) sur une
- * liste de sites, pour instruire les écarts.
+ * Page de test : comparer les données sources Mutafriches et Cartofriches (Cerema) pour un
+ * site à la fois.
  *
- * Organisation : un bloc à 4 onglets pour ajouter des sites (Cartofriches, sites de référence,
- * collage d'identifiants, carte Mutafriches), puis les résultats.
+ * On sélectionne un site (Cartofriches, référence, collage ou carte Mutafriches) ; la
+ * comparaison remplace le résultat courant et un panneau complet s'affiche.
  */
 export function ComparaisonCartofrichesPage() {
-  const {
-    sites,
-    chargement,
-    erreur,
-    progression,
-    ajouterSite,
-    chargerSites,
-    retirerSite,
-    vider,
-    estCompare,
-  } = useComparaisonCartofriches();
+  const { site, chargement, erreur, comparerSite } = useComparaisonCartofriches();
 
-  const resultatsRef = useRef<HTMLDivElement>(null);
+  const resultatRef = useRef<HTMLDivElement>(null);
   const chargementPrecedent = useRef(false);
 
-  // Scroll vers les résultats dès qu'une comparaison se termine (utile surtout sur mobile)
+  // Scroll vers le panneau de résultat dès qu'une comparaison se termine
   useEffect(() => {
-    if (chargementPrecedent.current && !chargement && sites.length > 0) {
-      resultatsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (chargementPrecedent.current && !chargement && site) {
+      resultatRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     }
     chargementPrecedent.current = chargement;
-  }, [chargement, sites.length]);
-
-  const comparerTout = (): void => {
-    void chargerSites(SITES_REFERENCE.map((site) => site.parcelles));
-  };
+  }, [chargement, site]);
 
   return (
     <Layout>
@@ -73,8 +58,8 @@ export function ComparaisonCartofrichesPage() {
 
         <h1 id="comparaison-cartofriches">Comparaison Mutafriches / Cartofriches</h1>
         <p className="fr-text--lead fr-mb-1w">
-          Comparez les données sources Mutafriches et Cartofriches (Cerema) sur une liste de sites,
-          pour instruire les écarts.
+          Comparez les données sources Mutafriches et Cartofriches (Cerema) pour un site, en
+          cliquant sur celui que vous souhaitez comparer.
         </p>
         <p className="fr-mb-4w fr-text--sm">
           La comparaison porte sur les données sources (surface, commune, pollution, ZAER, distance
@@ -83,14 +68,14 @@ export function ComparaisonCartofrichesPage() {
         </p>
 
         <DsfrTabs
-          ariaLabel="Ajouter des sites à comparer"
+          ariaLabel="Choisir un site à comparer"
           tabs={[
             {
               id: "cartofriches",
               label: "Depuis Cartofriches",
               panel: (
                 <CartofrichesSelectionPanel
-                  onComparer={(refcad) => void ajouterSite(refcad)}
+                  onComparer={(refcad) => void comparerSite(refcad)}
                   desactive={chargement}
                 />
               ),
@@ -100,9 +85,7 @@ export function ComparaisonCartofrichesPage() {
               label: "Sites de référence",
               panel: (
                 <SitesReferencePanel
-                  onComparerSite={(parcelles) => void ajouterSite(parcelles)}
-                  onComparerTout={comparerTout}
-                  estCompare={estCompare}
+                  onComparerSite={(parcelles) => void comparerSite(parcelles)}
                   desactive={chargement}
                 />
               ),
@@ -112,7 +95,7 @@ export function ComparaisonCartofrichesPage() {
               label: "Coller des identifiants",
               panel: (
                 <CollageIdentifiantsPanel
-                  onCharger={(listes) => void chargerSites(listes)}
+                  onComparer={(identifiants) => void comparerSite(identifiants)}
                   desactive={chargement}
                 />
               ),
@@ -123,7 +106,7 @@ export function ComparaisonCartofrichesPage() {
               panel: (
                 <ParcelleSelectionMap
                   height="640px"
-                  onAnalyze={(identifiants) => void ajouterSite(identifiants)}
+                  onAnalyze={(identifiants) => void comparerSite(identifiants)}
                 />
               ),
             },
@@ -133,11 +116,7 @@ export function ComparaisonCartofrichesPage() {
         {chargement ? (
           <LoadingCallout
             title="Comparaison en cours…"
-            message={
-              progression
-                ? `Site ${progression.enCours} sur ${progression.total}`
-                : "Enrichissement Mutafriches et interrogation de Cartofriches"
-            }
+            message="Enrichissement Mutafriches et interrogation de Cartofriches"
           />
         ) : null}
 
@@ -147,9 +126,7 @@ export function ComparaisonCartofrichesPage() {
           </div>
         ) : null}
 
-        <div ref={resultatsRef}>
-          <SitesComparaisonTable sites={sites} onRetirer={retirerSite} onVider={vider} />
-        </div>
+        <div ref={resultatRef}>{site ? <SiteComparaisonDetail site={site} /> : null}</div>
       </div>
     </Layout>
   );

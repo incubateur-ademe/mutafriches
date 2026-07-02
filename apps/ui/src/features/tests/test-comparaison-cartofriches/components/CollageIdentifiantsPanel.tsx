@@ -1,25 +1,20 @@
 import { useState } from "react";
 import { parseIdentifiantsColles } from "../utils/parse-identifiants";
+import "./comparaison-cartofriches.css";
 
 interface CollageIdentifiantsPanelProps {
-  onCharger: (listes: string[][]) => void;
+  /** Compare un site à partir de ses identifiants */
+  onComparer: (identifiants: string[]) => void;
   desactive: boolean;
 }
 
 /**
- * Saisie libre d'identifiants cadastraux à comparer (un identifiant = un site mono-parcelle).
- * Utilisé comme contenu de l'onglet « Coller des identifiants ».
+ * Saisie libre d'identifiants cadastraux. Chaque identifiant collé peut être comparé
+ * unitairement (un identifiant = un site mono-parcelle).
  */
-export function CollageIdentifiantsPanel({ onCharger, desactive }: CollageIdentifiantsPanelProps) {
+export function CollageIdentifiantsPanel({ onComparer, desactive }: CollageIdentifiantsPanelProps) {
   const [texte, setTexte] = useState("");
-  const nbColles = parseIdentifiantsColles(texte).length;
-
-  const chargerColles = (): void => {
-    const listes = parseIdentifiantsColles(texte);
-    if (listes.length > 0) {
-      onCharger(listes);
-    }
-  };
+  const identifiants = parseIdentifiantsColles(texte).map((liste) => liste[0]);
 
   return (
     <div className="fr-p-2w">
@@ -27,13 +22,13 @@ export function CollageIdentifiantsPanel({ onCharger, desactive }: CollageIdenti
         <label className="fr-label" htmlFor="cartofriches-coller">
           Identifiants cadastraux
           <span className="fr-hint-text">
-            Séparés par un retour ligne, une virgule ou un espace. Un identifiant par site.
+            Séparés par un retour ligne, une virgule ou un espace.
           </span>
         </label>
         <textarea
           id="cartofriches-coller"
           className="fr-input"
-          rows={5}
+          rows={4}
           value={texte}
           onChange={(e) => setTexte(e.target.value)}
           placeholder={"49353000AC0628\n49353000AV1255"}
@@ -41,14 +36,23 @@ export function CollageIdentifiantsPanel({ onCharger, desactive }: CollageIdenti
         />
       </div>
 
-      <button
-        type="button"
-        className="fr-btn fr-icon-search-line fr-btn--icon-left"
-        onClick={chargerColles}
-        disabled={desactive || nbColles === 0}
-      >
-        Comparer {nbColles > 0 ? `${nbColles} ` : ""}identifiant{nbColles > 1 ? "s" : ""}
-      </button>
+      {identifiants.length > 0 ? (
+        <ul className="mf-cf-sidebar__list">
+          {identifiants.map((identifiant) => (
+            <li key={identifiant}>
+              <button
+                type="button"
+                className="mf-cf-site-btn"
+                onClick={() => onComparer([identifiant])}
+                disabled={desactive}
+              >
+                <span>{identifiant}</span>
+                <span className="fr-icon-search-line fr-icon--sm" aria-hidden="true" />
+              </button>
+            </li>
+          ))}
+        </ul>
+      ) : null}
     </div>
   );
 }
