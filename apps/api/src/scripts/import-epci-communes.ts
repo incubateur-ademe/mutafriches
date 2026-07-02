@@ -31,7 +31,7 @@
 import { drizzle } from "drizzle-orm/postgres-js";
 import { getAppConfig } from "../config";
 import { sql } from "drizzle-orm";
-import * as postgres from "postgres";
+import postgres from "postgres";
 
 const ETALAB_VERSION = "5.3.0";
 const EPCI_URL = `https://unpkg.com/@etalab/decoupage-administratif@${ETALAB_VERSION}/data/epci.json`;

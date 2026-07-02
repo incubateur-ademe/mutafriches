@@ -22,7 +22,7 @@ import { createInterface } from "readline";
 import * as path from "path";
 import { drizzle } from "drizzle-orm/postgres-js";
 import { sql } from "drizzle-orm";
-import * as postgres from "postgres";
+import postgres from "postgres";
 
 // Configuration
 const SEPARATOR = ";";

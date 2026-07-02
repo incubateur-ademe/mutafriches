@@ -26,7 +26,7 @@ import { getAppConfig } from "../config";
 import * as path from "path";
 import { drizzle } from "drizzle-orm/postgres-js";
 import { sql } from "drizzle-orm";
-import * as postgres from "postgres";
+import postgres from "postgres";
 
 const GEOJSON_PATH = path.resolve(__dirname, "./data/base-ite-3000.geojson");
 const BATCH_SIZE = 100;

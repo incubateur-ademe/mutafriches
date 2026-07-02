@@ -1,6 +1,6 @@
 import { Injectable, OnModuleInit, OnModuleDestroy, Logger } from "@nestjs/common";
 import { drizzle } from "drizzle-orm/postgres-js";
-import * as postgres from "postgres";
+import postgres from "postgres";
 import { schema } from "./schema";
 import { getAppConfig } from "../../config";
 

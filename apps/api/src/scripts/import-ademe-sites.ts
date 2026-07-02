@@ -24,7 +24,7 @@ import { getAppConfig } from "../config";
 import * as path from "path";
 import { drizzle } from "drizzle-orm/postgres-js";
 import { sql } from "drizzle-orm";
-import * as postgres from "postgres";
+import postgres from "postgres";
 
 // Configuration
 const GEOJSON_PATH = path.resolve(__dirname, "./data/donnees-ademe-sites-pollues.geojson");
