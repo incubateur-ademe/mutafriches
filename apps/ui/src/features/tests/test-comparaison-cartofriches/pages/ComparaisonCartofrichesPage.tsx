@@ -2,18 +2,21 @@ import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Layout } from "@shared/components/layout/Layout";
 import { LoadingCallout } from "@shared/components/common/LoadingCallout";
+import { DsfrTabs } from "@shared/components/dsfr/DsfrTabs";
+import { ParcelleSelectionMap } from "../../../analyser/components/parcelle-map/ParcelleSelectionMap";
 import { SITES_REFERENCE } from "../config/sites-reference";
 import { useComparaisonCartofriches } from "../hooks/useComparaisonCartofriches";
 import { SitesComparaisonTable } from "../components/SitesComparaisonTable";
-import { SitesReferenceSidebar } from "../components/SitesReferenceSidebar";
-import { AjoutSiteTabs } from "../components/AjoutSiteTabs";
+import { SitesReferencePanel } from "../components/SitesReferencePanel";
+import { CollageIdentifiantsPanel } from "../components/CollageIdentifiantsPanel";
+import { CartofrichesSelectionPanel } from "../components/CartofrichesSelectionPanel";
 
 /**
  * Page de test : comparer les données sources Mutafriches et Cartofriches (Cerema) sur une
  * liste de sites, pour instruire les écarts.
  *
- * Organisation : bandeau latéral des sites de référence à gauche, ajout (carte / collage) et
- * résultats à droite.
+ * Organisation : un bloc à 4 onglets pour ajouter des sites (Cartofriches, sites de référence,
+ * collage d'identifiants, carte Mutafriches), puis les résultats.
  */
 export function ComparaisonCartofrichesPage() {
   const {
@@ -79,44 +82,73 @@ export function ComparaisonCartofrichesPage() {
           par l'API (rarement, version beta).
         </p>
 
-        <div className="fr-grid-row fr-grid-row--gutters">
-          <div className="fr-col-12 fr-col-md-4">
-            <SitesReferenceSidebar
-              onComparerSite={(parcelles) => void ajouterSite(parcelles)}
-              onComparerTout={comparerTout}
-              estCompare={estCompare}
-              desactive={chargement}
-            />
+        <DsfrTabs
+          ariaLabel="Ajouter des sites à comparer"
+          tabs={[
+            {
+              id: "cartofriches",
+              label: "Depuis Cartofriches",
+              panel: (
+                <CartofrichesSelectionPanel
+                  onComparer={(refcad) => void ajouterSite(refcad)}
+                  desactive={chargement}
+                />
+              ),
+            },
+            {
+              id: "reference",
+              label: "Sites de référence",
+              panel: (
+                <SitesReferencePanel
+                  onComparerSite={(parcelles) => void ajouterSite(parcelles)}
+                  onComparerTout={comparerTout}
+                  estCompare={estCompare}
+                  desactive={chargement}
+                />
+              ),
+            },
+            {
+              id: "coller",
+              label: "Coller des identifiants",
+              panel: (
+                <CollageIdentifiantsPanel
+                  onCharger={(listes) => void chargerSites(listes)}
+                  desactive={chargement}
+                />
+              ),
+            },
+            {
+              id: "mutafriches",
+              label: "Depuis Mutafriches",
+              panel: (
+                <ParcelleSelectionMap
+                  height="480px"
+                  onAnalyze={(identifiants) => void ajouterSite(identifiants)}
+                />
+              ),
+            },
+          ]}
+        />
+
+        {chargement ? (
+          <LoadingCallout
+            title="Comparaison en cours…"
+            message={
+              progression
+                ? `Site ${progression.enCours} sur ${progression.total}`
+                : "Enrichissement Mutafriches et interrogation de Cartofriches"
+            }
+          />
+        ) : null}
+
+        {erreur ? (
+          <div className="fr-alert fr-alert--error fr-mt-2w">
+            <p>{erreur}</p>
           </div>
+        ) : null}
 
-          <div className="fr-col-12 fr-col-md-8">
-            <AjoutSiteTabs
-              onAjouterSite={(identifiants) => void ajouterSite(identifiants)}
-              onChargerListe={(listes) => void chargerSites(listes)}
-              desactive={chargement}
-            />
-
-            {chargement ? (
-              <LoadingCallout
-                title="Comparaison en cours…"
-                message={
-                  progression
-                    ? `Site ${progression.enCours} sur ${progression.total}`
-                    : "Enrichissement Mutafriches et interrogation de Cartofriches"
-                }
-              />
-            ) : null}
-
-            {erreur ? (
-              <div className="fr-alert fr-alert--error fr-mt-2w">
-                <p>{erreur}</p>
-              </div>
-            ) : null}
-
-            <div ref={resultatsRef}>
-              <SitesComparaisonTable sites={sites} onRetirer={retirerSite} onVider={vider} />
-            </div>
-          </div>
+        <div ref={resultatsRef}>
+          <SitesComparaisonTable sites={sites} onRetirer={retirerSite} onVider={vider} />
         </div>
       </div>
     </Layout>
