@@ -1,17 +1,34 @@
 import { Link } from "react-router-dom";
 import { Layout } from "@shared/components/layout/Layout";
-import { ParcelleSelectionMap } from "../../../analyser/components/parcelle-map/ParcelleSelectionMap";
+import { SITES_REFERENCE } from "../config/sites-reference";
 import { useComparaisonCartofriches } from "../hooks/useComparaisonCartofriches";
 import { SitesComparaisonTable } from "../components/SitesComparaisonTable";
-import { PrechargementPanel } from "../components/PrechargementPanel";
+import { SitesReferenceSidebar } from "../components/SitesReferenceSidebar";
+import { AjoutSiteTabs } from "../components/AjoutSiteTabs";
 
 /**
  * Page de test : comparer les données sources Mutafriches et Cartofriches (Cerema) sur une
- * liste de sites, pour instruire les écarts. Sélection des parcelles via la carte existante.
+ * liste de sites, pour instruire les écarts.
+ *
+ * Organisation : bandeau latéral des sites de référence à gauche, ajout (carte / collage) et
+ * résultats à droite.
  */
 export function ComparaisonCartofrichesPage() {
-  const { sites, chargement, erreur, progression, ajouterSite, chargerSites, retirerSite, vider } =
-    useComparaisonCartofriches();
+  const {
+    sites,
+    chargement,
+    erreur,
+    progression,
+    ajouterSite,
+    chargerSites,
+    retirerSite,
+    vider,
+    estCompare,
+  } = useComparaisonCartofriches();
+
+  const comparerTout = (): void => {
+    void chargerSites(SITES_REFERENCE.map((site) => site.parcelles));
+  };
 
   return (
     <Layout>
@@ -40,8 +57,8 @@ export function ComparaisonCartofrichesPage() {
 
         <h1 id="comparaison-cartofriches">Comparaison Mutafriches / Cartofriches</h1>
         <p className="fr-text--lead fr-mb-1w">
-          Sélectionnez une parcelle sur la carte et lancez l'analyse : le site est enrichi par
-          Mutafriches, confronté aux données sources Cartofriches (Cerema) et ajouté au comparatif.
+          Comparez les données sources Mutafriches et Cartofriches (Cerema) sur une liste de sites,
+          pour instruire les écarts.
         </p>
         <p className="fr-mb-4w fr-text--sm">
           La comparaison porte sur les données sources (surface, commune, pollution, ZAER, distance
@@ -49,29 +66,41 @@ export function ComparaisonCartofrichesPage() {
           par l'API (rarement, version beta).
         </p>
 
-        <PrechargementPanel
-          onCharger={(listes) => void chargerSites(listes)}
-          desactive={chargement}
-        />
-
-        <ParcelleSelectionMap onAnalyze={(identifiants) => void ajouterSite(identifiants)} />
-
-        {chargement ? (
-          <p className="fr-mt-2w">
-            <span className="fr-icon-refresh-line" aria-hidden="true" />{" "}
-            {progression
-              ? `Comparaison en cours… ${progression.enCours}/${progression.total}`
-              : "Comparaison en cours…"}
-          </p>
-        ) : null}
-
-        {erreur ? (
-          <div className="fr-alert fr-alert--error fr-mt-2w">
-            <p>{erreur}</p>
+        <div className="fr-grid-row fr-grid-row--gutters">
+          <div className="fr-col-12 fr-col-md-4">
+            <SitesReferenceSidebar
+              onComparerSite={(parcelles) => void ajouterSite(parcelles)}
+              onComparerTout={comparerTout}
+              estCompare={estCompare}
+              desactive={chargement}
+            />
           </div>
-        ) : null}
 
-        <SitesComparaisonTable sites={sites} onRetirer={retirerSite} onVider={vider} />
+          <div className="fr-col-12 fr-col-md-8">
+            <AjoutSiteTabs
+              onAjouterSite={(identifiants) => void ajouterSite(identifiants)}
+              onChargerListe={(listes) => void chargerSites(listes)}
+              desactive={chargement}
+            />
+
+            {chargement ? (
+              <p className="fr-mt-2w">
+                <span className="fr-icon-refresh-line" aria-hidden="true" />{" "}
+                {progression
+                  ? `Comparaison en cours… ${progression.enCours}/${progression.total}`
+                  : "Comparaison en cours…"}
+              </p>
+            ) : null}
+
+            {erreur ? (
+              <div className="fr-alert fr-alert--error fr-mt-2w">
+                <p>{erreur}</p>
+              </div>
+            ) : null}
+
+            <SitesComparaisonTable sites={sites} onRetirer={retirerSite} onVider={vider} />
+          </div>
+        </div>
       </div>
     </Layout>
   );

@@ -1,22 +1,18 @@
 import { useState } from "react";
-import { SITES_REFERENCE } from "../config/sites-reference";
 import { parseIdentifiantsColles } from "../utils/parse-identifiants";
 
-interface PrechargementPanelProps {
+interface CollageIdentifiantsPanelProps {
   onCharger: (listes: string[][]) => void;
   desactive: boolean;
 }
 
 /**
- * Panneau de préchargement d'une liste de sites : liste de référence (éditée dans le code)
- * et collage libre d'identifiants cadastraux.
+ * Saisie libre d'identifiants cadastraux à comparer (un identifiant = un site mono-parcelle).
+ * Utilisé comme contenu de l'onglet « Coller des identifiants ».
  */
-export function PrechargementPanel({ onCharger, desactive }: PrechargementPanelProps) {
+export function CollageIdentifiantsPanel({ onCharger, desactive }: CollageIdentifiantsPanelProps) {
   const [texte, setTexte] = useState("");
-
-  const chargerReference = (): void => {
-    onCharger(SITES_REFERENCE.map((site) => site.parcelles));
-  };
+  const nbColles = parseIdentifiantsColles(texte).length;
 
   const chargerColles = (): void => {
     const listes = parseIdentifiantsColles(texte);
@@ -25,27 +21,11 @@ export function PrechargementPanel({ onCharger, desactive }: PrechargementPanelP
     }
   };
 
-  const nbColles = parseIdentifiantsColles(texte).length;
-
   return (
-    <div className="fr-callout fr-mb-4w">
-      <h2 className="fr-callout__title fr-h5">Précharger une liste de sites</h2>
-
-      <div className="fr-mb-3w">
-        <button
-          type="button"
-          className="fr-btn fr-btn--secondary"
-          onClick={chargerReference}
-          disabled={desactive || SITES_REFERENCE.length === 0}
-        >
-          Charger les {SITES_REFERENCE.length} site{SITES_REFERENCE.length > 1 ? "s" : ""} de
-          référence
-        </button>
-      </div>
-
+    <div className="fr-p-2w">
       <div className="fr-input-group fr-mb-2w">
         <label className="fr-label" htmlFor="cartofriches-coller">
-          Ou coller des identifiants cadastraux
+          Identifiants cadastraux
           <span className="fr-hint-text">
             Séparés par un retour ligne, une virgule ou un espace. Un identifiant par site.
           </span>
@@ -53,7 +33,7 @@ export function PrechargementPanel({ onCharger, desactive }: PrechargementPanelP
         <textarea
           id="cartofriches-coller"
           className="fr-input"
-          rows={4}
+          rows={5}
           value={texte}
           onChange={(e) => setTexte(e.target.value)}
           placeholder={"49353000AC0628\n49353000AV1255"}
@@ -63,7 +43,7 @@ export function PrechargementPanel({ onCharger, desactive }: PrechargementPanelP
 
       <button
         type="button"
-        className="fr-btn"
+        className="fr-btn fr-icon-search-line fr-btn--icon-left"
         onClick={chargerColles}
         disabled={desactive || nbColles === 0}
       >

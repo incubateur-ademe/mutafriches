@@ -1,0 +1,49 @@
+/*
+ * Bandeau latéral des sites de référence.
+ * CSS custom justifié : liste de boutons pleine largeur avec état actif/coché et défilement,
+ * non couvert par les classes DSFR seules (fr-sidemenu cible la navigation par liens).
+ * Valeurs alignées sur le bandeau partenaire (partenaires.css) pour la cohérence visuelle.
+ */
+
+.mf-cf-sidebar__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.mf-cf-site-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.5rem 1rem;
+  border: none;
+  background: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  font-size: 0.8125rem;
+  border-bottom: 1px solid var(--border-default-grey, #e5e5e5);
+  transition: background 0.15s ease;
+}
+
+.mf-cf-site-btn:hover:not(:disabled) {
+  background: var(--background-alt-grey, #f6f6f6);
+}
+
+.mf-cf-site-btn:disabled {
+  cursor: default;
+  opacity: 0.7;
+}
+
+.mf-cf-site-btn--compare {
+  background: var(--background-action-low-blue-france, #e3e3fd);
+}
+
+.mf-cf-site-btn__check {
+  color: var(--text-default-success, #18753c);
+  flex-shrink: 0;
+}

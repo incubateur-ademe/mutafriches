@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { enrichissementService } from "@shared/services/api/api.enrichissement.service";
 import { cartofrichesService } from "@shared/services/api/api.cartofriches.service";
 import { comparerSites, scoreCartofriches } from "../utils/comparaison";
@@ -125,6 +125,23 @@ export function useComparaisonCartofriches() {
     setEtat({ sites: [], chargement: false, erreur: null, progression: null });
   }, []);
 
+  // Ensemble des identifiants de parcelles déjà comparés (pour la coche du bandeau)
+  const identifiantsCompares = useMemo(() => {
+    const set = new Set<string>();
+    for (const site of etat.sites) {
+      for (const id of site.identifiant.split(",")) {
+        set.add(id.trim().toUpperCase());
+      }
+    }
+    return set;
+  }, [etat.sites]);
+
+  const estCompare = useCallback(
+    (parcelles: string[]): boolean =>
+      parcelles.some((p) => identifiantsCompares.has(p.trim().toUpperCase())),
+    [identifiantsCompares],
+  );
+
   return {
     sites: etat.sites,
     chargement: etat.chargement,
@@ -134,5 +151,6 @@ export function useComparaisonCartofriches() {
     chargerSites,
     retirerSite,
     vider,
+    estCompare,
   };
 }
