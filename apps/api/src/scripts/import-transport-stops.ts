@@ -44,7 +44,7 @@ import * as path from "path";
 import { tmpdir } from "os";
 import { drizzle } from "drizzle-orm/postgres-js";
 import { sql } from "drizzle-orm";
-import * as postgres from "postgres";
+import postgres from "postgres";
 import { isProduction } from "../shared/utils";
 
 // Configuration
