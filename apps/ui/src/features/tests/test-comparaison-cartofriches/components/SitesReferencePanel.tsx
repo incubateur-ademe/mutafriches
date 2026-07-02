@@ -9,7 +9,7 @@ interface SitesReferencePanelProps {
 }
 
 /**
- * Onglet « Sites de référence » : liste des sites prédéfinis. Un clic compare le site.
+ * Onglet « Sites de référence » : cartes fines empilées. Un clic compare le site.
  */
 export function SitesReferencePanel({ onComparerSite, desactive }: SitesReferencePanelProps) {
   if (SITES_REFERENCE.length === 0) {
@@ -25,25 +25,34 @@ export function SitesReferencePanel({ onComparerSite, desactive }: SitesReferenc
 
   return (
     <div className="fr-p-2w">
-      <ul className="mf-cf-sidebar__list">
+      <ul className="mf-cf-site-cards">
         {SITES_REFERENCE.map((site) => {
-          const libelle = site.label ?? site.parcelles.join(", ");
+          const titre = site.label ?? site.parcelles.join(", ");
+          const nbParcelles = site.parcelles.length;
+          const meta = [
+            site.commune,
+            `${nbParcelles} parcelle${nbParcelles > 1 ? "s" : ""}`,
+            site.parcelles[0],
+          ]
+            .filter(Boolean)
+            .join(" · ");
           return (
             <li key={site.parcelles.join(",")}>
               <button
                 type="button"
-                className="mf-cf-site-btn"
+                className="mf-cf-site-card"
                 onClick={() => onComparerSite(site.parcelles)}
                 disabled={desactive}
                 title={site.parcelles.join(", ")}
               >
                 <span>
-                  {libelle}
-                  <span className="fr-badge fr-badge--sm fr-badge--info fr-ml-1w">
-                    {site.parcelles.length} parcelle{site.parcelles.length > 1 ? "s" : ""}
-                  </span>
+                  <span className="mf-cf-site-card__title">{titre}</span>
+                  <span className="mf-cf-site-card__meta">{meta}</span>
                 </span>
-                <span className="fr-icon-search-line fr-icon--sm" aria-hidden="true" />
+                <span
+                  className="fr-icon-search-line fr-icon--sm mf-cf-site-card__action"
+                  aria-hidden="true"
+                />
               </button>
             </li>
           );

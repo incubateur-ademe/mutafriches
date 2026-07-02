@@ -62,3 +62,62 @@
   border-radius: 50%;
   flex-shrink: 0;
 }
+
+/*
+ * Cartes fines de sites de référence (empilées, cliquables).
+ * CSS custom justifié : les composants DSFR (tile/card) sont plus épais et pensés pour la
+ * navigation par lien ; on veut ici une carte fine déclenchant une action (onClick).
+ */
+.mf-cf-site-cards {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.mf-cf-site-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+  padding: 0.6rem 1rem;
+  border: 1px solid var(--border-default-grey, #dddddd);
+  border-radius: 0.375rem;
+  background: var(--background-default-grey, #ffffff);
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.mf-cf-site-card:hover:not(:disabled) {
+  border-color: var(--border-active-blue-france, #6a6af4);
+  box-shadow: 0 2px 6px rgba(0, 0, 18, 0.12);
+}
+
+.mf-cf-site-card:disabled {
+  cursor: default;
+  opacity: 0.7;
+}
+
+.mf-cf-site-card__title {
+  display: block;
+  font-weight: 600;
+  font-size: 0.9375rem;
+}
+
+.mf-cf-site-card__meta {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-mention-grey, #666666);
+}
+
+.mf-cf-site-card__action {
+  color: var(--text-action-high-blue-france, #000091);
+  flex-shrink: 0;
+}
