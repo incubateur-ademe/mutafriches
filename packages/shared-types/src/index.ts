@@ -17,6 +17,3 @@ export * from "./donnees-externes";
 
 // Shared
 export * from "./shared";
-
-// Test cases
-export * from "./test-cases";
