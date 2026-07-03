@@ -15,6 +15,12 @@ import { AjouterSiteDto } from "./dto/input/ajouter-site.dto";
 export class PartenairesController {
   constructor(private readonly partenairesService: PartenairesService) {}
 
+  @Get()
+  @ApiOperation({ summary: "Liste tous les partenaires et leurs sites" })
+  async listPartenaires(): Promise<PartenaireOutputDto[]> {
+    return this.partenairesService.listPartenaires();
+  }
+
   @Get(":slug")
   @ApiOperation({ summary: "Récupère un partenaire et ses sites" })
   @ApiParam({ name: "slug", example: "aura" })

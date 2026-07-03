@@ -8,7 +8,8 @@
  *   API_URL=https://mutafriches.beta.gouv.fr pnpm partenaires:prefetch
  *
  * Comportement :
- *   - Lit les sites depuis la base (table partenaire_sites) — nécessite db:partenaires:seed au préalable
+ *   - Récupère les sites via GET /api/partenaires (source : base partenaire_sites côté serveur)
+ *     — le script n'accède donc jamais directement à la base (il tourne aussi depuis GitHub Actions)
  *   - Appelle POST /enrichissement pour chaque site (mono ou multi-parcelles)
  *   - Le serveur cache les résultats en PostgreSQL (TTL 24h, voir ENRICHISSEMENT_CACHE_TTL_HOURS)
  *   - Les visiteurs suivants de /partenaires/<slug> bénéficient du cache hit
@@ -25,11 +26,8 @@
  *   - PARTENAIRES_PREFETCH_DELAY_MS : pause entre chaque appel (défaut 1000)
  */
 
-import { drizzle } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
-import { eq } from "drizzle-orm";
+import type { PartenaireOutputDto } from "@mutafriches/shared-types";
 import { getAppConfig } from "../config";
-import { partenaireSites } from "../shared/database/schemas/partenaire-sites.schema";
 import { SitePrefetch } from "./partenaires/types";
 
 const {
@@ -105,35 +103,40 @@ async function prefetchSite(partenaire: string, site: SitePrefetch): Promise<Pre
   }
 }
 
-// Construit la liste plate (partenaire, site) à traiter depuis la base, selon le filtre éventuel.
-async function resoudreSites(
-  db: ReturnType<typeof drizzle>,
-): Promise<{ partenaire: string; site: SitePrefetch }[]> {
-  const rows = PARTENAIRE_FILTRE
-    ? await db
-        .select()
-        .from(partenaireSites)
-        .where(eq(partenaireSites.partenaireSlug, PARTENAIRE_FILTRE))
-    : await db.select().from(partenaireSites);
+// Construit la liste plate (partenaire, site) à traiter via GET /api/partenaires, selon
+// le filtre éventuel. Aucune connexion base : le script tourne aussi depuis GitHub Actions.
+async function resoudreSites(): Promise<{ partenaire: string; site: SitePrefetch }[]> {
+  const response = await fetch(`${API_URL}/api/partenaires`, {
+    headers: { Origin: "https://mutafriches.beta.gouv.fr" },
+  });
 
-  if (PARTENAIRE_FILTRE && rows.length === 0) {
+  if (!response.ok) {
+    console.error(`Impossible de lister les partenaires : HTTP ${response.status} sur ${API_URL}`);
+    process.exit(1);
+  }
+
+  const partenaires = (await response.json()) as PartenaireOutputDto[];
+  const retenus = PARTENAIRE_FILTRE
+    ? partenaires.filter((p) => p.slug === PARTENAIRE_FILTRE)
+    : partenaires;
+
+  if (PARTENAIRE_FILTRE && retenus.length === 0) {
     console.error(
-      `Aucun site en base pour le partenaire "${PARTENAIRE_FILTRE}" (seed manquant ? db:partenaires:seed)`,
+      `Aucun partenaire "${PARTENAIRE_FILTRE}" côté API (seed manquant ? db:partenaires:seed)`,
     );
     process.exit(1);
   }
 
-  return rows.map((r) => ({
-    partenaire: r.partenaireSlug,
-    site: { idtup: r.idtup, commune: r.commune, parcelles: r.parcelles as string[] },
-  }));
+  return retenus.flatMap((p) =>
+    p.sites.map((s) => ({
+      partenaire: p.slug,
+      site: { idtup: s.idtup, commune: s.commune, parcelles: s.parcelles },
+    })),
+  );
 }
 
 async function main(): Promise<void> {
-  const client = postgres(getAppConfig().database);
-  const db = drizzle(client);
-
-  const aTraiter = await resoudreSites(db);
+  const aTraiter = await resoudreSites();
   const partenaires = Array.from(new Set(aTraiter.map((s) => s.partenaire)));
 
   console.log(`Pré-chauffe du cache d'enrichissement partenaires`);
@@ -186,8 +189,6 @@ async function main(): Promise<void> {
       .filter((r) => !r.success)
       .forEach((r) => console.log(`  - [${r.partenaire}] ${r.idtup} (${r.commune}) : ${r.error}`));
   }
-
-  await client.end();
 
   // Sortie en erreur uniquement si TOUS les sites ont échoué (= API HS)
   // Échecs partiels (parcelles individuelles invalides) → exit 0 pour ne pas
