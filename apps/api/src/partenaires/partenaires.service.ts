@@ -21,6 +21,30 @@ export class PartenairesService {
     private readonly enrichissementService: EnrichissementService,
   ) {}
 
+  // Tous les partenaires avec leurs sites. Sert notamment au pré-chauffe du cache
+  // (script prefetch), qui consomme cet endpoint en HTTP plutôt que la base.
+  async listPartenaires(): Promise<PartenaireOutputDto[]> {
+    const [tous, sites] = await Promise.all([
+      this.partenaireRepository.findAll(),
+      this.partenaireRepository.findAllSites(),
+    ]);
+
+    const sitesParSlug = new Map<string, PartenaireSiteOutputDto[]>();
+    for (const site of sites) {
+      const liste = sitesParSlug.get(site.partenaireSlug) ?? [];
+      liste.push(this.toSiteDto(site));
+      sitesParSlug.set(site.partenaireSlug, liste);
+    }
+
+    return tous.map((p) => ({
+      slug: p.slug,
+      nom: p.nom,
+      description: p.description,
+      departement: p.departement,
+      sites: sitesParSlug.get(p.slug) ?? [],
+    }));
+  }
+
   async getPartenaire(slug: string): Promise<PartenaireOutputDto> {
     const partenaire = await this.partenaireRepository.findBySlug(slug);
     if (!partenaire) {

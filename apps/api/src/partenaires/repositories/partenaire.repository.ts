@@ -12,6 +12,10 @@ import {
 export class PartenaireRepository {
   constructor(private readonly database: DatabaseService) {}
 
+  async findAll(): Promise<Partenaire[]> {
+    return this.database.db.select().from(partenaires).orderBy(asc(partenaires.slug));
+  }
+
   async findBySlug(slug: string): Promise<Partenaire | null> {
     const rows = await this.database.db
       .select()
@@ -19,6 +23,17 @@ export class PartenaireRepository {
       .where(eq(partenaires.slug, slug))
       .limit(1);
     return rows[0] ?? null;
+  }
+
+  async findAllSites(): Promise<PartenaireSite[]> {
+    return this.database.db
+      .select()
+      .from(partenaireSites)
+      .orderBy(
+        asc(partenaireSites.partenaireSlug),
+        asc(partenaireSites.commune),
+        asc(partenaireSites.idtup),
+      );
   }
 
   async findSites(slug: string): Promise<PartenaireSite[]> {
