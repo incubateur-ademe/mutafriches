@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
   DistanceIte,
+  RisqueInondation,
+  RisqueRetraitGonflementArgile,
   ZoneAccelerationEnr,
   type EnrichissementOutputDto,
   type FrichesCerema,
@@ -176,6 +178,69 @@ describe("comparerSites", () => {
       friche({ unite_fonciere_surface: 4091, distance_ite_bon: 0.4 }),
     );
     expect(compterEcarts(lignes)).toBeGreaterThanOrEqual(2);
+  });
+
+  it("affiche les risques naturels Mutafriches (non exposés par Cartofriches)", () => {
+    const lignes = comparerSites(
+      enrich({
+        risqueRetraitGonflementArgile: RisqueRetraitGonflementArgile.FORT,
+        risqueInondation: RisqueInondation.OUI,
+      }),
+      friche(),
+    );
+    const risques = lignes.find((l) => l.cle === "risquesNaturels");
+    expect(risques?.comparable).toBe(false);
+    expect(risques?.mutafriches).toContain("Argile : fort");
+    expect(risques?.mutafriches).toContain("Inondation : Oui");
+    expect(risques?.cartofriches).toBe("non exposé");
+  });
+
+  it("affiche la distance de raccordement électrique (non exposée par Cartofriches)", () => {
+    const lignes = comparerSites(enrich({ distanceRaccordementElectrique: 120 }), friche());
+    const racc = lignes.find((l) => l.cle === "distanceRaccordementElectrique");
+    expect(racc?.comparable).toBe(false);
+    expect(racc?.mutafriches).toBe("120 m");
+    expect(racc?.cartofriches).toBe("non exposé");
+  });
+
+  it("affiche la proximité commerces et services (non exposée par Cartofriches)", () => {
+    const lignes = comparerSites(enrich({ proximiteCommercesServices: true }), friche());
+    const commerces = lignes.find((l) => l.cle === "proximiteCommercesServices");
+    expect(commerces?.comparable).toBe(false);
+    expect(commerces?.mutafriches).toBe("Oui");
+    expect(commerces?.cartofriches).toBe("non exposé");
+  });
+
+  it("compare la voie de grande circulation (Mutafriches en m, Cartofriches en km)", () => {
+    const lignes = comparerSites(
+      enrich({ distanceAutoroute: 4000 }),
+      friche({ desserte_distance_route: 4 }),
+    );
+    const voie = lignes.find((l) => l.cle === "distanceAutoroute");
+    expect(voie?.comparable).toBe(true);
+    expect(voie?.ecart).toBe(false);
+    expect(voie?.mutafriches).toBe("4000 m");
+    expect(voie?.cartofriches).toBe("4 km");
+  });
+
+  it("signale un écart de voie de grande circulation quand les distances divergent nettement", () => {
+    const lignes = comparerSites(
+      enrich({ distanceAutoroute: 4000 }),
+      friche({ desserte_distance_route: 21 }),
+    );
+    const voie = lignes.find((l) => l.cle === "distanceAutoroute");
+    expect(voie?.ecart).toBe(true);
+  });
+
+  it("ne compare pas la voie de grande circulation si Mutafriches est hors rayon (absente)", () => {
+    const lignes = comparerSites(
+      enrich({ distanceAutoroute: undefined }),
+      friche({ desserte_distance_route: 21 }),
+    );
+    const voie = lignes.find((l) => l.cle === "distanceAutoroute");
+    expect(voie?.comparable).toBe(false);
+    expect(voie?.ecart).toBe(false);
+    expect(voie?.cartofriches).toBe("21 km");
   });
 });
 

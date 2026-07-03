@@ -61,6 +61,8 @@ export interface FrichesCerema {
   distance_ite_bon: number | null;
   distance_ite_mauvais: number | null;
   desserte_distance_ferroviaire: number | null;
+  /** Distance à la voie routière structurante (grande circulation), en km */
+  desserte_distance_route: number | null;
 
   // Usage / contexte
   site_vocadomi: string | null;

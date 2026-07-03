@@ -1,5 +1,6 @@
 import {
   DistanceIte,
+  RisqueRetraitGonflementArgile,
   ZoneAccelerationEnr,
   type EnrichissementOutputDto,
   type FrichesCerema,
@@ -234,6 +235,132 @@ function comparerIte(enrich: EnrichissementOutputDto, friche: FrichesCerema): Li
   };
 }
 
+/** Cartofriches n'expose pas ce critère : affiché pour visibilité, non comparé */
+const NON_EXPOSE = "non exposé";
+
+const LABEL_RGA: Record<RisqueRetraitGonflementArgile, string> = {
+  [RisqueRetraitGonflementArgile.AUCUN]: "aucun",
+  [RisqueRetraitGonflementArgile.FAIBLE_OU_MOYEN]: "faible/moyen",
+  [RisqueRetraitGonflementArgile.FORT]: "fort",
+};
+
+/** Formate une valeur enum "oui/non" en libellé lisible, ou tiret si absente */
+function fmtOuiNon(valeur: string | null | undefined): string {
+  if (valeur === undefined || valeur === null) return ABSENT;
+  return valeur === "oui" ? "Oui" : valeur === "non" ? "Non" : valeur;
+}
+
+/**
+ * Risques naturels enrichis par Mutafriches (RGA, cavités, inondation).
+ * Cartofriches n'expose aucun de ces risques : ligne de visibilité, non comparée.
+ */
+function comparerRisquesNaturels(enrich: EnrichissementOutputDto): LigneEcart {
+  const parts: string[] = [];
+  if (enrich.risqueRetraitGonflementArgile) {
+    parts.push(`Argile : ${LABEL_RGA[enrich.risqueRetraitGonflementArgile]}`);
+  }
+  if (enrich.risqueCavitesSouterraines) {
+    parts.push(`Cavités : ${fmtOuiNon(enrich.risqueCavitesSouterraines)}`);
+  }
+  if (enrich.risqueInondation) {
+    parts.push(`Inondation : ${fmtOuiNon(enrich.risqueInondation)}`);
+  }
+  return {
+    cle: "risquesNaturels",
+    label: "Risques naturels",
+    mutafriches: parts.length > 0 ? parts.join(" · ") : ABSENT,
+    cartofriches: NON_EXPOSE,
+    ecart: false,
+    comparable: false,
+    note: "Cartofriches n'expose pas les risques naturels (argile, cavités, inondation)",
+  };
+}
+
+/**
+ * Distance de raccordement électrique (mètres) enrichie par Mutafriches (Enedis).
+ * Cartofriches ne l'expose pas : ligne de visibilité, non comparée.
+ */
+function comparerRaccordementElectrique(enrich: EnrichissementOutputDto): LigneEcart {
+  return {
+    cle: "distanceRaccordementElectrique",
+    label: "Distance raccordement électrique",
+    mutafriches: fmtNombre(enrich.distanceRaccordementElectrique, " m"),
+    cartofriches: NON_EXPOSE,
+    ecart: false,
+    comparable: false,
+    note: "Cartofriches n'expose pas la distance de raccordement électrique",
+  };
+}
+
+/**
+ * Proximité des commerces et services (booléen) enrichie par Mutafriches (BPE INSEE).
+ * Cartofriches ne l'expose pas : ligne de visibilité, non comparée.
+ */
+function comparerCommercesServices(enrich: EnrichissementOutputDto): LigneEcart {
+  return {
+    cle: "proximiteCommercesServices",
+    label: "Proximité commerces et services",
+    mutafriches: enrich.proximiteCommercesServices ? "Oui" : "Non",
+    cartofriches: NON_EXPOSE,
+    ecart: false,
+    comparable: false,
+    note: "Cartofriches n'expose pas la proximité aux commerces et services",
+  };
+}
+
+/** Écart absolu (m) au-delà duquel la distance à la voie structurante est signalée */
+const SEUIL_ECART_VOIE_M = 1000;
+/** Écart relatif (%) requis en plus du seuil absolu pour signaler un écart */
+const SEUIL_ECART_VOIE_PCT = 30;
+
+/**
+ * Distance à la voie de grande circulation.
+ * Mutafriches (`distanceAutoroute`, IGN WFS) est en mètres, plafonné au rayon de recherche
+ * (15 km) — au-delà la valeur est absente. Cartofriches (`desserte_distance_route`) est en km.
+ * Définitions proches mais distinctes : tolérance large avant de signaler un écart.
+ */
+function comparerVoieGrandeCirculation(
+  enrich: EnrichissementOutputDto,
+  friche: FrichesCerema,
+): LigneEcart {
+  const mutaM = enrich.distanceAutoroute as number | null | undefined;
+  const cfKm = friche.desserte_distance_route;
+  const cfM = cfKm !== null && cfKm !== undefined ? cfKm * 1000 : null;
+  const comparable = mutaM !== null && mutaM !== undefined && cfM !== null;
+
+  let ecart = false;
+  let magnitude: string | undefined;
+  let note: string;
+
+  if (comparable) {
+    const diffM = mutaM - cfM;
+    const ref = Math.max(cfM, 100);
+    const diffPct = (diffM / ref) * 100;
+    const signe = diffPct >= 0 ? "+" : "";
+    magnitude = `${signe}${Math.round(diffPct)}%`;
+    ecart = Math.abs(diffM) > SEUIL_ECART_VOIE_M && Math.abs(diffPct) > SEUIL_ECART_VOIE_PCT;
+    note =
+      "Mutafriches : voie grande circulation (IGN WFS). Cartofriches : desserte routière. " +
+      "Définitions proches mais distinctes.";
+  } else if (cfM !== null) {
+    note =
+      "Hors rayon de recherche Mutafriches (15 km) ou non trouvée ; Cartofriches renseigne une desserte routière.";
+  } else {
+    note = "Distance à la voie structurante absente d'un des deux côtés.";
+  }
+
+  return {
+    cle: "distanceAutoroute",
+    label: "Distance voie grande circulation",
+    mutafriches: fmtNombre(mutaM, " m"),
+    cartofriches: fmtNombre(cfKm, " km"),
+    ecart,
+    comparable,
+    magnitude,
+    note,
+  };
+}
+
 /**
  * Compare un enrichissement Mutafriches aux données sources Cartofriches.
  * Retourne une ligne par champ comparé (vide si la friche n'a pas été trouvée).
@@ -257,6 +384,10 @@ export function comparerSites(
     comparerPollution(enrich, friche),
     comparerZaer(enrich, friche),
     comparerIte(enrich, friche),
+    comparerVoieGrandeCirculation(enrich, friche),
+    comparerRaccordementElectrique(enrich),
+    comparerCommercesServices(enrich),
+    comparerRisquesNaturels(enrich),
   ];
 }
 
