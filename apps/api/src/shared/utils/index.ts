@@ -9,3 +9,4 @@ export {
 } from "./environment.utils";
 export type { Environment } from "./environment.utils";
 export { APP_VERSION } from "./version.utils";
+export { safeError } from "./safe-error";

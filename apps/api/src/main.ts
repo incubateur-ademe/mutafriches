@@ -9,6 +9,7 @@ import { ValidationPipe, Logger } from "@nestjs/common";
 import { isProduction } from "./shared/utils";
 import { buildSwaggerConfig, getSwaggerSetupOptions } from "./shared/swagger";
 import { getAppConfig } from "./config";
+import { SafeConsoleLogger } from "./shared/logger/safe-console-logger";
 
 async function bootstrap() {
   const logger = new Logger("Bootstrap");
@@ -17,7 +18,10 @@ async function bootstrap() {
     // Fail-fast : valide les variables d'environnement avant tout démarrage
     const config = getAppConfig();
 
-    const app = await NestFactory.create<NestExpressApplication>(AppModule);
+    const app = await NestFactory.create<NestExpressApplication>(AppModule, { bufferLogs: true });
+
+    // Logger assainissant : évite de dérouler les objets erreur Axios (flood de logs)
+    app.useLogger(new SafeConsoleLogger());
 
     // TODO : Revoir la configuration CORS
     app.enableCors();
