@@ -31,7 +31,7 @@ export const SITE_FIELDS: Record<string, FormFieldConfig<string>> = {
   etatBatiInfrastructure: {
     id: "etat-bati",
     name: "etatBatiInfrastructure",
-    label: "État des constructions",
+    label: "État du bâti",
     required: true,
     section: "site",
     options: [
@@ -68,7 +68,7 @@ export const SITE_FIELDS: Record<string, FormFieldConfig<string>> = {
   valeurArchitecturaleHistorique: {
     id: "valeur-architecturale",
     name: "valeurArchitecturaleHistorique",
-    label: "Intérêt architectural et historique des constructions",
+    label: "Valeur patrimoniale des constructions",
     required: true,
     section: "site",
     options: [

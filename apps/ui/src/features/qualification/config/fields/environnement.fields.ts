@@ -17,7 +17,7 @@ export const ENVIRONNEMENT_FIELDS: Record<string, FormFieldConfig<string>> = {
   qualiteVoieDesserte: {
     id: "qualite-desserte",
     name: "qualiteVoieDesserte",
-    label: "Accessibilité par les voies de circulation",
+    label: "Qualité de la voie de desserte",
     required: true,
     section: "environnement",
     options: [

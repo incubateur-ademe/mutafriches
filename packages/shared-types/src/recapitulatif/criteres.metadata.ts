@@ -53,14 +53,14 @@ export const CRITERES_METADATA: Record<string, CritereMetadata> = {
   },
   valeurArchitecturaleHistorique: {
     key: "valeurArchitecturaleHistorique",
-    label: "Intérêt architectural et historique",
+    label: "Valeur patrimoniale des constructions",
     section: "site-bati",
     saisie: "MANUELLE",
     ordre: 6,
   },
   etatBatiInfrastructure: {
     key: "etatBatiInfrastructure",
-    label: "État des constructions",
+    label: "État du bâti",
     section: "site-bati",
     saisie: "MANUELLE",
     ordre: 7,
@@ -116,7 +116,7 @@ export const CRITERES_METADATA: Record<string, CritereMetadata> = {
   },
   qualiteVoieDesserte: {
     key: "qualiteVoieDesserte",
-    label: "Accessibilité par les voies de circulation",
+    label: "Qualité de la voie de desserte",
     section: "environnement",
     saisie: "MANUELLE",
     ordre: 14,
