@@ -2,9 +2,9 @@ import { Injectable, Logger } from "@nestjs/common";
 import { SourceEnrichissement } from "@mutafriches/shared-types";
 import { Site } from "../../../evaluation/entities/site.entity";
 import { EnrichmentResult } from "../shared/enrichissement.types";
-import { DatagouvLovacService } from "../../adapters/datagouv-lovac/datagouv-lovac.service";
 import { DatagouvZonageAbcService } from "../../adapters/datagouv-zonage-abc/datagouv-zonage-abc.service";
 import { BpeRepository } from "../../repositories/bpe.repository";
+import { LovacRepository } from "../../repositories/lovac.repository";
 import { LovacCalculator } from "./lovac.calculator";
 
 /**
@@ -28,7 +28,7 @@ export class UrbanismeEnrichissementService {
   private readonly logger = new Logger(UrbanismeEnrichissementService.name);
 
   constructor(
-    private readonly lovacService: DatagouvLovacService,
+    private readonly lovacRepository: LovacRepository,
     private readonly zonageAbcService: DatagouvZonageAbcService,
     private readonly bpeRepository: BpeRepository,
   ) {}
@@ -162,7 +162,7 @@ export class UrbanismeEnrichissementService {
   }
 
   /**
-   * Enrichit le taux de logements vacants via l'API LOVAC (data.gouv.fr)
+   * Enrichit le taux de logements vacants via le référentiel local LOVAC (raw_lovac)
    */
   private async enrichTauxLogementsVacants(
     site: Site,
@@ -181,8 +181,8 @@ export class UrbanismeEnrichissementService {
     }
 
     try {
-      // Appel a l'API LOVAC via data.gouv.fr
-      const lovacData = await this.lovacService.getLovacByCommune({
+      // Lecture depuis le référentiel local raw_lovac
+      const lovacData = await this.lovacRepository.findByCommune({
         codeInsee: site.codeInsee,
         nomCommune: !site.codeInsee ? site.commune : undefined,
       });

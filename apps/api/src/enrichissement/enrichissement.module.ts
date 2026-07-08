@@ -65,9 +65,9 @@ import { ApiCartoNatureService } from "./adapters/api-carto/nature/api-carto-nat
 import { ApiCartoGpuService } from "./adapters/api-carto/gpu/api-carto-gpu.service";
 
 // Adapters data.gouv.fr
-import { DatagouvLovacService } from "./adapters/datagouv-lovac/datagouv-lovac.service";
 import { DatagouvZonageAbcService } from "./adapters/datagouv-zonage-abc/datagouv-zonage-abc.service";
 import { BpeRepository } from "./repositories/bpe.repository";
+import { LovacRepository } from "./repositories/lovac.repository";
 import { TransportStopsRepository } from "./repositories/transport-stops.repository";
 import { AdemeSitesPolluesRepository } from "./repositories/ademe-sites-pollues.repository";
 import { IteFretRepository } from "./repositories/ite-fret.repository";
@@ -82,6 +82,7 @@ import { IteFretRepository } from "./repositories/ite-fret.repository";
     SiteRepository,
     SiteGeometryService,
     BpeRepository,
+    LovacRepository,
     TransportStopsRepository,
     AdemeSitesPolluesRepository,
     IteFretRepository,
@@ -145,7 +146,6 @@ import { IteFretRepository } from "./repositories/ite-fret.repository";
     ApiCartoGpuService,
 
     // Adapters data.gouv.fr
-    DatagouvLovacService,
     DatagouvZonageAbcService,
   ],
   exports: [EnrichissementService],

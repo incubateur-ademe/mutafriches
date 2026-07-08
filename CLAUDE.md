@@ -153,6 +153,8 @@ Pour **chaque feature identifiée** (un groupe cohérent de modifications, typiq
 - **Découper en commits** atomiques et cohérents (un commit = une étape qui laisse `pnpm validate` vert).
 - **Réutiliser / mutualiser** le code existant dès que possible plutôt que de dupliquer (composants, services, types partagés).
 - **Justifier les choix** : dans la description des commits (le pourquoi), et via un ADR (`/adr`) si le choix est architecturalement significatif.
+- **Auditer les vulnérabilités** (voir section dédiée) : lancer `pnpm audit` sur toute feature qui touche aux dépendances.
+- **Vérifier le `README.md`** : à chaque feature, contrôler si le README doit être mis à jour (nouvelle commande, nouvelle source de données, changement d'installation/déploiement, nouvelle route). Ne le modifier que si un élément documenté a réellement changé — pas de doc superflue.
 - **Proposer à l'utilisateur des tests manuels E2E côté UI** à réaliser lui-même, en fin de feature : un parcours pas à pas couvrant le comportement attendu.
 
 ### Vérification post-implémentation
@@ -164,6 +166,19 @@ pnpm format && pnpm lint && pnpm typecheck && pnpm test
 ```
 
 Si des erreurs apparaissent, les corriger immédiatement et relancer jusqu'à ce que tout passe. Ne JAMAIS considérer une tâche comme terminée sans cette vérification.
+
+### Audit de sécurité des dépendances
+
+À **chaque feature** (groupe de commits) qui ajoute, met à jour ou remplace une dépendance, vérifier les vulnérabilités :
+
+```bash
+pnpm audit              # Toutes les dépendances
+pnpm audit --prod       # Isole le périmètre runtime (hors devDependencies)
+```
+
+- Toute vulnérabilité **nouvelle ou acceptée** doit être tracée dans `docs/security/vulnerabilites-acceptees.md` avec : sévérité, paquet et chemin transitif, et **justification d'acceptation** (faux positif, non exploitable dans notre contexte) **ou plan de correction** (version cible, échéance).
+- Ne PAS accepter silencieusement une vulnérabilité : soit elle est corrigée (bump), soit elle est tracée avec justification.
+- Créer le fichier de suivi s'il n'existe pas encore, en suivant ce format.
 
 ### Version de l'application
 
@@ -274,6 +289,7 @@ pnpm db:studio              # Interface Drizzle Studio
 pnpm db:bpe:import          # Importer les données BPE (commerces INSEE)
 pnpm db:transport-stops:import  # Importer les arrêts de transport
 pnpm db:ademe-sites:import  # Importer les sites pollués ADEME
+pnpm db:lovac:import        # Importer le référentiel LOVAC (logements vacants par commune)
 ```
 
 ## Architecture
@@ -342,8 +358,8 @@ Un test dédié (`versions.spec.ts`) doit garantir l'ordre antéchronologique st
 - **IGN WFS** (`data.geopf.fr`) : voies de grande circulation (autoroutes)
 - **ZAER WFS** (`data.geopf.fr`) : zones d'accélération des énergies renouvelables
 - **API Service Public** (`service-public.fr`) : coordonnées mairies (centre-ville)
-- **LOVAC** (`data.gouv.fr`) : taux de logements vacants
 - **Bases locales PostGIS** : arrêts de transport (data.gouv), BPE INSEE (commerces), sites pollués ADEME
+- **Référentiel local LOVAC** (`raw_lovac`) : taux de logements vacants par commune, importé annuellement (`pnpm db:lovac:import`) — remplace l'appel live data.gouv.fr, rate-limité sous charge (cf ADR)
 
 ## Tests
 
@@ -406,6 +422,12 @@ La modale « Analyser plusieurs sites » (page résultats) embarque un **calendr
 ## Gotchas
 
 Pièges rencontrés en session. Chaque entrée documente un piège pour éviter d'y retomber.
+
+### `dist` de shared-types périmé → tests API en échec fantôme
+
+- Les tests de l'API résolvent `@mutafriches/shared-types` depuis son **`dist` compilé** (le `vitest.config.ts` de l'API n'aliase que `@` → `/src`, pas le package). Un `dist` obsolète fait donc échouer des tests API sur des symptômes trompeurs (ex. `criteres-metadata.guard.spec.ts` : `CRITERES_METADATA` vs `POIDS_CRITERES` désalignés alors que les **sources** sont cohérentes).
+- Le build **incrémental** (`pnpm --filter shared-types build`) ne régénère pas toujours les fichiers modifiés. En cas de doute, forcer un build propre : `rm -rf packages/shared-types/dist && pnpm --filter shared-types build`.
+- Avant de conclure à un bug de source suite à un échec de test API portant sur un type/constante partagé, **rebuild proprement shared-types** et relancer. `pnpm validate` ne rebuild pas shared-types : le faire en amont si les types partagés ont changé.
 
 ### Identifiants cadastraux
 

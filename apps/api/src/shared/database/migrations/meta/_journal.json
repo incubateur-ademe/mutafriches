@@ -204,6 +204,13 @@
       "when": 1782822261560,
       "tag": "0028_partenaires_et_sites",
       "breakpoints": true
+    },
+    {
+      "idx": 29,
+      "version": "7",
+      "when": 1783513492538,
+      "tag": "0029_famous_blur",
+      "breakpoints": true
     }
   ]
 }

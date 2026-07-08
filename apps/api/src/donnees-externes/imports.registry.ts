@@ -49,6 +49,14 @@ export const IMPORT_DATASETS: readonly ImportDatasetDefinition[] = [
       "https://www.data.gouv.fr/datasets/base-de-donnees-des-installations-terminales-embranchees-fret-en-france-ite-3000",
   },
   {
+    key: "lovac",
+    label: "Logements vacants (LOVAC)",
+    datasetNamePattern: "lovac-communes-%",
+    countTable: "raw_lovac",
+    docUrl:
+      "https://www.data.gouv.fr/datasets/logements-vacants-du-parc-prive-en-france-et-par-commune-departement-region/",
+  },
+  {
     key: "decoupage-administratif",
     label: "Découpage administratif (communes / EPCI)",
     datasetNamePattern: "decoupage-administratif-etalab-%",
