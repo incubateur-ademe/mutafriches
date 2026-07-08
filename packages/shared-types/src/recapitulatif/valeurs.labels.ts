@@ -84,10 +84,11 @@ export const RACCORDEMENT_EAU_LABELS: Record<RaccordementEau, string> = {
 };
 
 export const ETAT_BATI_LABELS: Record<EtatBatiInfrastructure, string> = {
-  [EtatBatiInfrastructure.DEGRADATION_INEXISTANTE]: "Dégradation inexistante ou faible",
-  [EtatBatiInfrastructure.DEGRADATION_MOYENNE]: "Dégradation moyenne",
-  [EtatBatiInfrastructure.DEGRADATION_HETEROGENE]: "Dégradation hétérogène",
-  [EtatBatiInfrastructure.DEGRADATION_TRES_IMPORTANTE]: "Dégradation très importante",
+  [EtatBatiInfrastructure.DEGRADATION_INEXISTANTE]: "Bâti intact",
+  [EtatBatiInfrastructure.DEGRADATION_FAIBLE]: "Bâti faiblement dégradé",
+  [EtatBatiInfrastructure.DEGRADATION_MOYENNE]: "Bâti moyennement dégradé",
+  [EtatBatiInfrastructure.DEGRADATION_HETEROGENE]: "Bâti dégradé de manière hétérogène",
+  [EtatBatiInfrastructure.DEGRADATION_TRES_IMPORTANTE]: "Bâti très dégradé",
   [EtatBatiInfrastructure.PAS_DE_BATI]: "Pas de bâti",
   [EtatBatiInfrastructure.NE_SAIT_PAS]: "Ne sait pas",
 };

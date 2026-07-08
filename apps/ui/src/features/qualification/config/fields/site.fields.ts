@@ -36,17 +36,15 @@ export const SITE_FIELDS: Record<string, FormFieldConfig<string>> = {
     section: "site",
     options: [
       SELECT_OPTION_PLACEHOLDER,
-      {
-        value: EtatBatiInfrastructure.DEGRADATION_INEXISTANTE,
-        label: "Dégradation inexistante ou faible",
-      },
-      { value: EtatBatiInfrastructure.DEGRADATION_MOYENNE, label: "Dégradation moyenne" },
-      { value: EtatBatiInfrastructure.DEGRADATION_HETEROGENE, label: "Dégradation hétérogène" },
-      {
-        value: EtatBatiInfrastructure.DEGRADATION_TRES_IMPORTANTE,
-        label: "Dégradation très importante",
-      },
       { value: EtatBatiInfrastructure.PAS_DE_BATI, label: "Pas de bâti" },
+      { value: EtatBatiInfrastructure.DEGRADATION_INEXISTANTE, label: "Bâti intact" },
+      { value: EtatBatiInfrastructure.DEGRADATION_FAIBLE, label: "Bâti faiblement dégradé" },
+      { value: EtatBatiInfrastructure.DEGRADATION_MOYENNE, label: "Bâti moyennement dégradé" },
+      { value: EtatBatiInfrastructure.DEGRADATION_TRES_IMPORTANTE, label: "Bâti très dégradé" },
+      {
+        value: EtatBatiInfrastructure.DEGRADATION_HETEROGENE,
+        label: "Bâti dégradé de manière hétérogène",
+      },
       { value: EtatBatiInfrastructure.NE_SAIT_PAS, label: "Ne sait pas" },
     ] as SelectOption<EtatBatiInfrastructure>[],
   },

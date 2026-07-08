@@ -55,7 +55,7 @@ describe("buildRecapitulatifSite", () => {
       "Mixte public et privé",
     );
     expect(criteres.find((c) => c.key === "etatBatiInfrastructure")?.valeurAffichee).toBe(
-      "Dégradation moyenne",
+      "Bâti moyennement dégradé",
     );
     expect(criteres.find((c) => c.key === "zonageReglementaire")?.valeurAffichee).toBe(
       "Zone naturelle (N)",
