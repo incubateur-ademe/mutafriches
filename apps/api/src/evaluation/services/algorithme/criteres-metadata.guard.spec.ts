@@ -12,4 +12,10 @@ describe("Alignement CRITERES_METADATA <-> POIDS_CRITERES", () => {
     const clesMetadata = Object.keys(CRITERES_METADATA).sort();
     expect(clesMetadata).toEqual(clesPoids);
   });
+
+  it("expose le même poids que POIDS_CRITERES pour chaque critère", () => {
+    for (const [key, poids] of Object.entries(POIDS_CRITERES)) {
+      expect(CRITERES_METADATA[key].poids).toBe(poids);
+    }
+  });
 });

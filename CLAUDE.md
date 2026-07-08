@@ -155,6 +155,7 @@ Pour **chaque feature identifiée** (un groupe cohérent de modifications, typiq
 - **Justifier les choix** : dans la description des commits (le pourquoi), et via un ADR (`/adr`) si le choix est architecturalement significatif.
 - **Auditer les vulnérabilités** (voir section dédiée) : lancer `pnpm audit` sur toute feature qui touche aux dépendances.
 - **Vérifier le `README.md`** : à chaque feature, contrôler si le README doit être mis à jour (nouvelle commande, nouvelle source de données, changement d'installation/déploiement, nouvelle route). Ne le modifier que si un élément documenté a réellement changé — pas de doc superflue.
+- **Vérifier la doc des sources de données** : si la feature ajoute, retire ou modifie une source d'enrichissement (nouvelle API/base, changement des champs récupérés ou de leur traitement), mettre à jour `SOURCES_DONNEES` (`packages/shared-types/src/documentation/sources-donnees.data.ts`) **dans le même commit**, puis régénérer le Markdown avec `pnpm docs:sources:gen` (rebuild `shared-types` au préalable). La page UI `/documentation-donnees` et l'export PDF en découlent automatiquement (source de vérité unique, cf. ADR-0026) — ne jamais éditer le `.md` à la main.
 - **Proposer à l'utilisateur des tests manuels E2E côté UI** à réaliser lui-même, en fin de feature : un parcours pas à pas couvrant le comportement attendu.
 
 ### Vérification post-implémentation
@@ -327,8 +328,9 @@ L'algorithme de scoring est versionné pour préserver la reproductibilité des 
 - **Documentation OBLIGATOIRE** : toute modification de l'algorithme — ajout ou retrait d'un critère, changement de poids, de seuil, de la matrice de scoring, ou de la formule de fiabilité — DOIT être répercutée **dans le même commit** sur :
   - `docs/evaluation-mutabilite.md` (doc métier : liste des critères, poids, poids total, formules, exemples)
   - `.claude/context/evaluation-patterns.md` (doc technique : nombre de critères, répartition enrichis/complémentaires, poids total, sémantique)
+  - `packages/shared-types/src/recapitulatif/criteres.metadata.ts` (`CRITERES_METADATA` : le `poids` de chaque critère mirroir `POIDS_CRITERES` — un garde-fou casse en cas de divergence), puis régénérer `docs/sources-donnees-externes.md` via `pnpm docs:sources:gen` (la page `/documentation-donnees` et le PDF en découlent, cf. ADR-0026)
 
-  La **source de vérité** est `POIDS_CRITERES` dans `algorithme.config.ts`. Une doc dont le nombre de critères, les poids ou le poids total divergent de `POIDS_CRITERES` est considérée comme un **bug**. Ne JAMAIS livrer un changement d'algo sans avoir mis à jour ces deux fichiers.
+  La **source de vérité** est `POIDS_CRITERES` dans `algorithme.config.ts`. Une doc dont le nombre de critères, les poids ou le poids total divergent de `POIDS_CRITERES` est considérée comme un **bug**. Ne JAMAIS livrer un changement d'algo sans avoir mis à jour ces fichiers.
 
 ### Procédure pour publier une nouvelle version
 

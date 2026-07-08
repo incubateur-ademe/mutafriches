@@ -1,6 +1,6 @@
 {
   "name": "mutafriches",
-  "version": "1.22.0",
+  "version": "1.23.0",
   "private": true,
   "description": "Monorepo pour l'analyse de mutabilité des friches urbaines",
   "packageManager": "pnpm@11.5.3",
@@ -40,6 +40,7 @@
     "db:lovac:import": "pnpm --filter api run db:lovac:import",
     "db:partenaires:seed": "pnpm --filter api run db:partenaires:seed",
     "partenaires:prefetch": "pnpm --filter api run partenaires:prefetch",
+    "docs:sources:gen": "node scripts/generate-sources-doc.cjs",
     "validate": "pnpm format && pnpm lint:fix && pnpm typecheck && pnpm test",
     "setup": "bash scripts/setup.sh",
     "clean": "pnpm -r clean && rm -rf node_modules",
