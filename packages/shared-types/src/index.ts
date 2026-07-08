@@ -15,5 +15,8 @@ export * from "./partenaires";
 // Données externes (statut des imports + monitoring APIs externes)
 export * from "./donnees-externes";
 
+// Documentation partenaires des sources de données externes
+export * from "./documentation";
+
 // Shared
 export * from "./shared";

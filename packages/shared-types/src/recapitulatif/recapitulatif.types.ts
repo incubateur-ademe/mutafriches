@@ -13,6 +13,8 @@ export interface CritereMetadata {
   label: string;
   section: SectionRecapitulatifId;
   saisie: SaisieCritere;
+  /** Poids du critère dans l'algorithme (mirroir de POIDS_CRITERES, gardé par un test côté API) */
+  poids: number;
   /** Source d'enrichissement — uniquement pour les critères AUTOMATIQUE */
   source?: SourceEnrichissement;
   /** Ordre d'affichage global */
