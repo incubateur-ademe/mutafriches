@@ -1,8 +1,9 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { HttpService } from "@nestjs/axios";
 import { firstValueFrom } from "rxjs";
-import { GeometrieParcelle } from "@mutafriches/shared-types";
-import { ZaerWfsResult, ZaerWfsFeatureCollection } from "./zaer-wfs.types";
+import { GeometrieParcelle, SourceEnrichissement } from "@mutafriches/shared-types";
+import { ApiResponse } from "../shared/api-response.types";
+import { ZaerWfsResult, ZaerWfsFeatureCollection, ZaerWfsProperties } from "./zaer-wfs.types";
 
 /**
  * Adapter WFS pour les Zones d'Accélération des Énergies Renouvelables (ZAER)
@@ -26,7 +27,9 @@ export class ZaerWfsService {
   /**
    * Recherche les zones ZAER qui intersectent une géométrie (polygone/multipolygone)
    */
-  async findZaerIntersectingSite(geometrie: GeometrieParcelle): Promise<ZaerWfsResult[]> {
+  async findZaerIntersectingSite(
+    geometrie: GeometrieParcelle,
+  ): Promise<ApiResponse<ZaerWfsResult[]>> {
     const wkt = this.geometrieToWkt(geometrie);
     const cqlFilter = `INTERSECTS(geom,${wkt})`;
     return this.queryWfs(cqlFilter);
@@ -35,7 +38,10 @@ export class ZaerWfsService {
   /**
    * Recherche les zones ZAER qui contiennent un point donné (fallback coordonnées)
    */
-  async findZaerAtPoint(latitude: number, longitude: number): Promise<ZaerWfsResult[]> {
+  async findZaerAtPoint(
+    latitude: number,
+    longitude: number,
+  ): Promise<ApiResponse<ZaerWfsResult[]>> {
     // WFS EPSG:4326 attend (lat, lon) dans le WKT
     const cqlFilter = `INTERSECTS(geom,POINT(${latitude} ${longitude}))`;
     return this.queryWfs(cqlFilter);
@@ -44,7 +50,7 @@ export class ZaerWfsService {
   /**
    * Exécute une requête WFS avec un filtre CQL et retourne les résultats normalisés
    */
-  private async queryWfs(cqlFilter: string): Promise<ZaerWfsResult[]> {
+  private async queryWfs(cqlFilter: string): Promise<ApiResponse<ZaerWfsResult[]>> {
     const startTime = Date.now();
 
     try {
@@ -54,7 +60,8 @@ export class ZaerWfsService {
         request: "GetFeature",
         typename: "zaer:zaer",
         outputFormat: "application/json",
-        propertyName: "nom,filiere,detail_filiere",
+        // detail_filiere a été scindé en 3 niveaux hiérarchiques côté WFS
+        propertyName: "nom,filiere,detail_filiere1,detail_filiere2,detail_filiere3",
         CQL_FILTER: cqlFilter,
         count: "100",
       };
@@ -79,27 +86,49 @@ export class ZaerWfsService {
 
       for (const feature of features) {
         const props = feature.properties;
-        const key = `${props.filiere}|${props.detail_filiere ?? ""}|${props.nom ?? ""}`;
+        const detailFiliere = this.coalesceDetailFiliere(props);
+        const key = `${props.filiere}|${detailFiliere ?? ""}|${props.nom ?? ""}`;
 
         if (!seen.has(key)) {
           seen.add(key);
           results.push({
             nom: props.nom ?? null,
             filiere: props.filiere,
-            detailFiliere: props.detail_filiere ?? null,
+            detailFiliere,
           });
         }
       }
 
-      return results;
+      return {
+        success: true,
+        data: results,
+        source: SourceEnrichissement.ZAER,
+        responseTimeMs,
+      };
     } catch (error) {
       const responseTimeMs = Date.now() - startTime;
-      this.logger.error(
-        `Erreur WFS ZAER (${responseTimeMs}ms) :`,
-        error instanceof Error ? error.message : String(error),
-      );
-      throw error;
+      const message = error instanceof Error ? error.message : String(error);
+      this.logger.error(`Erreur WFS ZAER (${responseTimeMs}ms) : ${message}`);
+      return {
+        success: false,
+        error: message,
+        source: SourceEnrichissement.ZAER,
+        responseTimeMs,
+      };
     }
+  }
+
+  /**
+   * Coalesce les 3 niveaux de detail_filiere en une seule valeur.
+   * Joint les niveaux non vides (du plus général au plus précis) afin de
+   * préserver la détection d'un mot-clé (ex. "OMBRIERE") à n'importe quel niveau.
+   */
+  private coalesceDetailFiliere(props: ZaerWfsProperties): string | null {
+    const niveaux = [props.detail_filiere1, props.detail_filiere2, props.detail_filiere3]
+      .map((n) => n?.trim())
+      .filter((n): n is string => !!n);
+
+    return niveaux.length > 0 ? niveaux.join(" / ") : null;
   }
 
   /**

@@ -1,6 +1,7 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { SourceEnrichissement, ZaerEnrichissement } from "@mutafriches/shared-types";
 import { Site } from "../../../evaluation/entities/site.entity";
+import { ApiResponse } from "../../adapters/shared/api-response.types";
 import { ZaerWfsService } from "../../adapters/zaer-wfs/zaer-wfs.service";
 import { ZaerWfsResult } from "../../adapters/zaer-wfs/zaer-wfs.types";
 import { EnrichmentResult } from "../shared/enrichissement.types";
@@ -34,12 +35,12 @@ export class EnrEnrichissementService {
    */
   async enrichir(site: Site): Promise<{ result: EnrichmentResult; data?: ZaerEnrichissement }> {
     try {
-      let zones: ZaerWfsResult[];
+      let response: ApiResponse<ZaerWfsResult[]>;
 
       if (site.geometrie) {
-        zones = await this.zaerWfsService.findZaerIntersectingSite(site.geometrie);
+        response = await this.zaerWfsService.findZaerIntersectingSite(site.geometrie);
       } else if (site.coordonnees) {
-        zones = await this.zaerWfsService.findZaerAtPoint(
+        response = await this.zaerWfsService.findZaerAtPoint(
           site.coordonnees.latitude,
           site.coordonnees.longitude,
         );
@@ -57,6 +58,19 @@ export class EnrEnrichissementService {
         };
       }
 
+      if (!response.success || !response.data) {
+        this.logger.error(`Erreur lors de l'enrichissement ENR : ${response.error ?? "inconnue"}`);
+        return {
+          result: {
+            success: false,
+            sourcesUtilisees: [],
+            sourcesEchouees: [SourceEnrichissement.ZAER],
+            champsManquants: ["zaer"],
+          },
+        };
+      }
+
+      const zones = response.data;
       const enZoneZaer = zones.length > 0;
       const filieres = [...new Set(zones.map((z) => z.filiere))];
 
@@ -84,7 +98,9 @@ export class EnrEnrichissementService {
         data: zaer,
       };
     } catch (error) {
-      this.logger.error("Erreur lors de l'enrichissement ENR:", error);
+      this.logger.error(
+        `Erreur lors de l'enrichissement ENR : ${error instanceof Error ? error.message : String(error)}`,
+      );
       return {
         result: {
           success: false,
