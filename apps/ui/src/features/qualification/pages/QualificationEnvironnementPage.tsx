@@ -251,7 +251,7 @@ export const QualificationEnvironnementPage: React.FC = () => {
             value={values.qualiteVoieDesserte}
             onChange={(v) => handleChange("qualiteVoieDesserte", v)}
             error={touched.qualiteVoieDesserte ? errors.qualiteVoieDesserte : undefined}
-            tooltip="Indiquez la qualité de la desserte du site par les voies de circulation."
+            tooltip="Indiquez la qualité de la desserte du site par les voies de circulation. Accessibilité dégradée : voie d'accès en mauvais état, gabarit de la voie restreint. Accessibilité limitée : connexion au réseau viaire limitée, gabarit non adapté à tous les types de véhicules. Accessible : bonne connexion au réseau viaire, voie de bonne qualité et suffisamment dimensionnée."
           />
 
           {/* Distance ITE fret — désactivé, en attente validation Cerema */}
@@ -266,7 +266,7 @@ export const QualificationEnvironnementPage: React.FC = () => {
             value={values.qualitePaysage}
             onChange={(v) => handleChange("qualitePaysage", v)}
             error={touched.qualitePaysage ? errors.qualitePaysage : undefined}
-            tooltip="Donnez nous votre avis sur l'intérêt paysager de l'environnement du site."
+            tooltip="Donnez-nous votre avis sur l'intérêt paysager de l'environnement du site. Paysage dégradé ou sans qualité notable : zone d'activités, parkings, friches ou ensembles urbains dégradés, entrée de ville peu qualifiée. Paysage courant : tissu périurbain banal, champs ouverts, lotissements. Paysage remarquable : centre historique, littoral et cours d'eau, berges, vallée, coteau, panorama, chaîne de montagne, forêt ancienne, bocage structurant."
           />
 
           <FormSelectField

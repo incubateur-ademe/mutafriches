@@ -73,10 +73,16 @@ export const SITE_FIELDS: Record<string, FormFieldConfig<string>> = {
     section: "site",
     options: [
       SELECT_OPTION_PLACEHOLDER,
-      { value: ValeurArchitecturale.SANS_INTERET, label: "Sans intérêt" },
-      { value: ValeurArchitecturale.ORDINAIRE, label: "Ordinaire" },
-      { value: ValeurArchitecturale.INTERET_REMARQUABLE, label: "Intérêt remarquable" },
       { value: ValeurArchitecturale.PAS_DE_BATI, label: "Pas de bâti" },
+      {
+        value: ValeurArchitecturale.SANS_INTERET,
+        label: "Bâti sans qualité patrimoniale particulière",
+      },
+      { value: ValeurArchitecturale.ORDINAIRE, label: "Bâti courant, mais cohérent avec le site" },
+      {
+        value: ValeurArchitecturale.INTERET_REMARQUABLE,
+        label: "Bâti à valeur patrimoniale remarquable",
+      },
       { value: ValeurArchitecturale.NE_SAIT_PAS, label: "Ne sait pas" },
     ] as SelectOption<ValeurArchitecturale>[],
   },

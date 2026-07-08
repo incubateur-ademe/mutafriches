@@ -22,8 +22,8 @@ export const ENVIRONNEMENT_FIELDS: Record<string, FormFieldConfig<string>> = {
     section: "environnement",
     options: [
       SELECT_OPTION_PLACEHOLDER,
-      { value: QualiteVoieDesserte.DEGRADEE, label: "Dégradée" },
-      { value: QualiteVoieDesserte.PEU_ACCESSIBLE, label: "Peu accessible" },
+      { value: QualiteVoieDesserte.DEGRADEE, label: "Accessibilité dégradée" },
+      { value: QualiteVoieDesserte.PEU_ACCESSIBLE, label: "Accessibilité limitée" },
       { value: QualiteVoieDesserte.ACCESSIBLE, label: "Accessible" },
       { value: QualiteVoieDesserte.NE_SAIT_PAS, label: "Ne sait pas" },
     ] as SelectOption<QualiteVoieDesserte>[],
@@ -37,9 +37,9 @@ export const ENVIRONNEMENT_FIELDS: Record<string, FormFieldConfig<string>> = {
     section: "environnement",
     options: [
       SELECT_OPTION_PLACEHOLDER,
-      { value: QualitePaysage.SANS_INTERET, label: "Sans intérêt" },
-      { value: QualitePaysage.ORDINAIRE, label: "Ordinaire" },
-      { value: QualitePaysage.INTERET_REMARQUABLE, label: "Intérêt remarquable" },
+      { value: QualitePaysage.SANS_INTERET, label: "Paysage dégradé ou sans qualité notable" },
+      { value: QualitePaysage.ORDINAIRE, label: "Paysage courant" },
+      { value: QualitePaysage.INTERET_REMARQUABLE, label: "Paysage remarquable" },
       { value: QualitePaysage.NE_SAIT_PAS, label: "Ne sait pas" },
     ] as SelectOption<QualitePaysage>[],
   },
