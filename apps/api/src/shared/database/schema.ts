@@ -9,6 +9,7 @@ import { rawAdemeSitesPollues } from "./schemas/raw-ademe-sites-pollues.schema";
 import { epci } from "./schemas/epci.schema";
 import { communes } from "./schemas/communes.schema";
 import { rawIteFret } from "./schemas/raw-ite-fret.schema";
+import { rawLovac } from "./schemas/raw-lovac.schema";
 import { apiHealthSnapshots } from "./schemas/api-health-snapshots.schema";
 import { partenaires } from "./schemas/partenaires.schema";
 import { partenaireSites } from "./schemas/partenaire-sites.schema";
@@ -27,6 +28,7 @@ export {
   epci,
   communes,
   rawIteFret,
+  rawLovac,
   apiHealthSnapshots,
   partenaires,
   partenaireSites,
@@ -45,6 +47,7 @@ export const schema = {
   epci,
   communes,
   rawIteFret,
+  rawLovac,
   apiHealthSnapshots,
   partenaires,
   partenaireSites,
