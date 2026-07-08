@@ -122,6 +122,16 @@ export const MATRICE_SCORING = {
       [UsageType.RENATURATION]: ScoreImpact.TRES_NEGATIF,
       [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.TRES_NEGATIF,
     },
+    // "Bâti faiblement dégradé" : scores identiques à DEGRADATION_INEXISTANTE (cf. ADR-0025)
+    [EtatBatiInfrastructure.DEGRADATION_FAIBLE]: {
+      [UsageType.RESIDENTIEL]: ScoreImpact.TRES_POSITIF,
+      [UsageType.EQUIPEMENTS]: ScoreImpact.TRES_POSITIF,
+      [UsageType.CULTURE]: ScoreImpact.TRES_POSITIF,
+      [UsageType.TERTIAIRE]: ScoreImpact.TRES_POSITIF,
+      [UsageType.INDUSTRIE]: ScoreImpact.TRES_POSITIF,
+      [UsageType.RENATURATION]: ScoreImpact.TRES_NEGATIF,
+      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.TRES_NEGATIF,
+    },
     [EtatBatiInfrastructure.DEGRADATION_TRES_IMPORTANTE]: {
       [UsageType.RESIDENTIEL]: ScoreImpact.NEGATIF,
       [UsageType.EQUIPEMENTS]: ScoreImpact.NEGATIF,

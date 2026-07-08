@@ -269,7 +269,7 @@ La fiabilité **ne modifie pas** le classement. C'est un indicateur séparé qui
 | # | Critère | Poids | Valeurs | Champ DTO |
 |---|---------|-------|---------|-----------|
 | 19 | **Type de propriétaire** | 1 | Public / Privé / Copropriété-indivision / Mixte / Ne sait pas | `typeProprietaire` |
-| 21 | **État du bâti et infrastructure** | 2 | Dégradation inexistante / Très importante / Moyenne / Hétérogène / Pas de bâti / Ne sait pas | `etatBatiInfrastructure` |
+| 21 | **État du bâti et infrastructure** | 2 | Bâti intact / Bâti faiblement dégradé (scores identiques à intact, cf. ADR-0025) / Bâti moyennement dégradé / Bâti très dégradé / Bâti dégradé de manière hétérogène / Pas de bâti / Ne sait pas | `etatBatiInfrastructure` |
 | 22 | **Présence de pollution** | 2 | Non / Déjà gérée / Oui-composés volatils / Oui-autres composés / Oui-amiante / Ne sait pas | `presencePollution` |
 | 23 | **Valeur architecturale et historique** | 1 | Sans intérêt / Ordinaire / Intérêt remarquable / Pas de bâti / Ne sait pas | `valeurArchitecturaleHistorique` |
 | 24 | **Qualité du paysage** | 1 | Sans intérêt / Ordinaire / Intérêt remarquable / Ne sait pas | `qualitePaysage` |

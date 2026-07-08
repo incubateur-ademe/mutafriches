@@ -67,7 +67,7 @@ describe("buildDetailUsage", () => {
       "Mixte public et privé",
     );
     expect(criteres.find((c) => c.key === "etatBatiInfrastructure")?.valeurAffichee).toBe(
-      "Dégradation moyenne",
+      "Bâti moyennement dégradé",
     );
   });
 

@@ -84,10 +84,11 @@ export const RACCORDEMENT_EAU_LABELS: Record<RaccordementEau, string> = {
 };
 
 export const ETAT_BATI_LABELS: Record<EtatBatiInfrastructure, string> = {
-  [EtatBatiInfrastructure.DEGRADATION_INEXISTANTE]: "Dégradation inexistante ou faible",
-  [EtatBatiInfrastructure.DEGRADATION_MOYENNE]: "Dégradation moyenne",
-  [EtatBatiInfrastructure.DEGRADATION_HETEROGENE]: "Dégradation hétérogène",
-  [EtatBatiInfrastructure.DEGRADATION_TRES_IMPORTANTE]: "Dégradation très importante",
+  [EtatBatiInfrastructure.DEGRADATION_INEXISTANTE]: "Bâti intact",
+  [EtatBatiInfrastructure.DEGRADATION_FAIBLE]: "Bâti faiblement dégradé",
+  [EtatBatiInfrastructure.DEGRADATION_MOYENNE]: "Bâti moyennement dégradé",
+  [EtatBatiInfrastructure.DEGRADATION_HETEROGENE]: "Bâti dégradé de manière hétérogène",
+  [EtatBatiInfrastructure.DEGRADATION_TRES_IMPORTANTE]: "Bâti très dégradé",
   [EtatBatiInfrastructure.PAS_DE_BATI]: "Pas de bâti",
   [EtatBatiInfrastructure.NE_SAIT_PAS]: "Ne sait pas",
 };
@@ -102,24 +103,24 @@ export const PRESENCE_POLLUTION_LABELS: Record<PresencePollution, string> = {
 };
 
 export const VALEUR_ARCHITECTURALE_LABELS: Record<ValeurArchitecturale, string> = {
-  [ValeurArchitecturale.SANS_INTERET]: "Sans intérêt",
-  [ValeurArchitecturale.ORDINAIRE]: "Ordinaire",
-  [ValeurArchitecturale.INTERET_REMARQUABLE]: "Intérêt remarquable",
+  [ValeurArchitecturale.SANS_INTERET]: "Bâti sans qualité patrimoniale particulière",
+  [ValeurArchitecturale.ORDINAIRE]: "Bâti courant, mais cohérent avec le site",
+  [ValeurArchitecturale.INTERET_REMARQUABLE]: "Bâti à valeur patrimoniale remarquable",
   [ValeurArchitecturale.PAS_DE_BATI]: "Pas de bâti",
   [ValeurArchitecturale.NE_SAIT_PAS]: "Ne sait pas",
 };
 
 export const QUALITE_PAYSAGE_LABELS: Record<QualitePaysage, string> = {
-  [QualitePaysage.SANS_INTERET]: "Sans intérêt",
-  [QualitePaysage.ORDINAIRE]: "Ordinaire",
-  [QualitePaysage.INTERET_REMARQUABLE]: "Intérêt remarquable",
+  [QualitePaysage.SANS_INTERET]: "Paysage dégradé ou sans qualité notable",
+  [QualitePaysage.ORDINAIRE]: "Paysage courant",
+  [QualitePaysage.INTERET_REMARQUABLE]: "Paysage remarquable",
   [QualitePaysage.NE_SAIT_PAS]: "Ne sait pas",
 };
 
 export const QUALITE_VOIE_LABELS: Record<QualiteVoieDesserte, string> = {
   [QualiteVoieDesserte.ACCESSIBLE]: "Accessible",
-  [QualiteVoieDesserte.PEU_ACCESSIBLE]: "Peu accessible",
-  [QualiteVoieDesserte.DEGRADEE]: "Dégradée",
+  [QualiteVoieDesserte.PEU_ACCESSIBLE]: "Accessibilité limitée",
+  [QualiteVoieDesserte.DEGRADEE]: "Accessibilité dégradée",
   [QualiteVoieDesserte.NE_SAIT_PAS]: "Ne sait pas",
 };
 

@@ -31,22 +31,20 @@ export const SITE_FIELDS: Record<string, FormFieldConfig<string>> = {
   etatBatiInfrastructure: {
     id: "etat-bati",
     name: "etatBatiInfrastructure",
-    label: "État des constructions",
+    label: "État du bâti",
     required: true,
     section: "site",
     options: [
       SELECT_OPTION_PLACEHOLDER,
-      {
-        value: EtatBatiInfrastructure.DEGRADATION_INEXISTANTE,
-        label: "Dégradation inexistante ou faible",
-      },
-      { value: EtatBatiInfrastructure.DEGRADATION_MOYENNE, label: "Dégradation moyenne" },
-      { value: EtatBatiInfrastructure.DEGRADATION_HETEROGENE, label: "Dégradation hétérogène" },
-      {
-        value: EtatBatiInfrastructure.DEGRADATION_TRES_IMPORTANTE,
-        label: "Dégradation très importante",
-      },
       { value: EtatBatiInfrastructure.PAS_DE_BATI, label: "Pas de bâti" },
+      { value: EtatBatiInfrastructure.DEGRADATION_INEXISTANTE, label: "Bâti intact" },
+      { value: EtatBatiInfrastructure.DEGRADATION_FAIBLE, label: "Bâti faiblement dégradé" },
+      { value: EtatBatiInfrastructure.DEGRADATION_MOYENNE, label: "Bâti moyennement dégradé" },
+      { value: EtatBatiInfrastructure.DEGRADATION_TRES_IMPORTANTE, label: "Bâti très dégradé" },
+      {
+        value: EtatBatiInfrastructure.DEGRADATION_HETEROGENE,
+        label: "Bâti dégradé de manière hétérogène",
+      },
       { value: EtatBatiInfrastructure.NE_SAIT_PAS, label: "Ne sait pas" },
     ] as SelectOption<EtatBatiInfrastructure>[],
   },
@@ -70,15 +68,21 @@ export const SITE_FIELDS: Record<string, FormFieldConfig<string>> = {
   valeurArchitecturaleHistorique: {
     id: "valeur-architecturale",
     name: "valeurArchitecturaleHistorique",
-    label: "Intérêt architectural et historique des constructions",
+    label: "Valeur patrimoniale des constructions",
     required: true,
     section: "site",
     options: [
       SELECT_OPTION_PLACEHOLDER,
-      { value: ValeurArchitecturale.SANS_INTERET, label: "Sans intérêt" },
-      { value: ValeurArchitecturale.ORDINAIRE, label: "Ordinaire" },
-      { value: ValeurArchitecturale.INTERET_REMARQUABLE, label: "Intérêt remarquable" },
       { value: ValeurArchitecturale.PAS_DE_BATI, label: "Pas de bâti" },
+      {
+        value: ValeurArchitecturale.SANS_INTERET,
+        label: "Bâti sans qualité patrimoniale particulière",
+      },
+      { value: ValeurArchitecturale.ORDINAIRE, label: "Bâti courant, mais cohérent avec le site" },
+      {
+        value: ValeurArchitecturale.INTERET_REMARQUABLE,
+        label: "Bâti à valeur patrimoniale remarquable",
+      },
       { value: ValeurArchitecturale.NE_SAIT_PAS, label: "Ne sait pas" },
     ] as SelectOption<ValeurArchitecturale>[],
   },

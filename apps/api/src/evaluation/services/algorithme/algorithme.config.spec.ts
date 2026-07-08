@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { POIDS_CRITERES } from "./algorithme.config";
+import { EtatBatiInfrastructure } from "@mutafriches/shared-types";
+import { MATRICE_SCORING, POIDS_CRITERES } from "./algorithme.config";
 import { NOMBRE_CRITERES_UTILISES } from "./algorithme.constants";
 
 /**
@@ -23,5 +24,15 @@ describe("POIDS_CRITERES — cohérence avec la doc de l'algorithme", () => {
   it(`a un poids total de ${POIDS_TOTAL_ATTENDU}`, () => {
     const total = Object.values(POIDS_CRITERES).reduce((sum, poids) => sum + poids, 0);
     expect(total).toBe(POIDS_TOTAL_ATTENDU);
+  });
+});
+
+describe("MATRICE_SCORING — État du bâti", () => {
+  // "Bâti faiblement dégradé" doit rester scoring-neutre vis-à-vis de "Bâti intact" (cf. ADR-0025)
+  it("DEGRADATION_FAIBLE a des scores identiques à DEGRADATION_INEXISTANTE", () => {
+    const etatBati = MATRICE_SCORING.etatBatiInfrastructure;
+    expect(etatBati[EtatBatiInfrastructure.DEGRADATION_FAIBLE]).toEqual(
+      etatBati[EtatBatiInfrastructure.DEGRADATION_INEXISTANTE],
+    );
   });
 });

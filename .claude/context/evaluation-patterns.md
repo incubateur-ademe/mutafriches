@@ -142,7 +142,7 @@ TRES_POSITIF = 2
 | Critère | Poids | Type |
 |---------|-------|------|
 | `typeProprietaire` | 1 | Enum (5 valeurs dont NE_SAIT_PAS) |
-| `etatBatiInfrastructure` | 2 | Enum (6 valeurs) |
+| `etatBatiInfrastructure` | 2 | Enum (7 valeurs) |
 | `presencePollution` | 2 | Enum (6 valeurs) |
 | `valeurArchitecturaleHistorique` | 1 | Enum (6 valeurs) |
 | `qualitePaysage` | 1 | Enum (4 valeurs) |
