@@ -7,6 +7,7 @@
 ### Pour les développeurs
 
 - **[Module Enrichissement](./enrichissement.md)** - Collecte automatique des données via APIs externes
+- **[Sources de données externes](./sources-donnees-externes.md)** - Doc partenaires (champs récupérés, traitement, critères alimentés) — générée via `pnpm docs:sources:gen`
 - **[Algorithme d'Évaluation](./evaluation-mutabilite.md)** - Calcul des indices de mutabilité
 - **[Tracking & Analytics](./analytics-tracking.md)** - Événements, session vs utilisateur, requêtes Metabase
 - **[Ajouter un partenaire](./ajout-partenaire.md)** - Todolist pour publier une nouvelle page partenaire multisite
@@ -26,13 +27,13 @@
            │
            ↓
 ┌──────────────────────┐
-│  ENRICHISSEMENT      │ ←── 24 sources externes + 3 bases locales
+│  ENRICHISSEMENT      │ ←── ~10 APIs externes + 4 bases locales
 │  10 domaines         │     (IGN, Enedis, GeoRisques, ZAER...)
 └──────────┬───────────┘
            │
            ↓
 ┌──────────────────────┐
-│  ÉVALUATION          │ ←── Matrice 24 critères × 7 usages
+│  ÉVALUATION          │ ←── Matrice 27 critères × 7 usages
 │  Mutabilité          │
 └──────────┬───────────┘
            │
@@ -101,11 +102,11 @@ mutafriches/
 
 ### Enrichissement
 
-Le module d'enrichissement interroge **24 sources de données externes** et **3 bases locales PostGIS** pour pré-remplir automatiquement les critères d'un site (mono ou multi-parcelle) :
+Le module d'enrichissement interroge une dizaine d'**APIs de données externes** et **4 bases locales PostGIS** pour pré-remplir automatiquement les critères d'un site (mono ou multi-parcelle) :
 
 - **10 domaines** : Cadastre, Énergie, Transport, Urbanisme, Risques Naturels, Risques Technologiques, Pollution, Zonages, ENR/ZAER, GeoRisques brut
-- **24 sources externes** : IGN, BDNB, Enedis, GeoRisques (×13), API Carto, ZAER WFS, data.gouv.fr...
-- **3 bases locales** : Transport, BPE (commerces), Sites pollués ADEME
+- **APIs externes** : IGN, BDNB, Enedis, GeoRisques (×13 endpoints), API Carto, ZAER WFS, data.gouv.fr...
+- **4 bases locales** : Transport, BPE (commerces), Sites pollués ADEME, LOVAC (logements vacants)
 - **Multi-parcelle** : Support de 1 à 20 parcelles par site
 - **Cache 24h** : Optimisation des performances
 
@@ -121,7 +122,7 @@ L'algorithme calcule un **indice de mutabilité 0-100%** pour **7 usages** possi
 6. Renaturation
 7. Photovoltaïque au sol
 
-**Matrice** : 24 critères × 7 usages
+**Matrice** : 27 critères × 7 usages
 **Fiabilité** : Indice 0-10 selon la complétude des données d'entrée (pondéré par poids des critères)
 
 ### Intégration
