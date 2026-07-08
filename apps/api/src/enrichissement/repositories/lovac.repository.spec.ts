@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { Test, TestingModule } from "@nestjs/testing";
 import { LovacRepository } from "./lovac.repository";
 import { DatabaseService } from "../../shared/database/database.service";
