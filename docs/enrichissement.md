@@ -2,7 +2,7 @@
 
 ## Vue d'ensemble
 
-Le module d'enrichissement est le cœur de Mutafriches. Il enrichit automatiquement les données d'une parcelle cadastrale en interrogeant une dizaine d'**APIs publiques externes** (dont GéoRisques, qui expose 13 endpoints) et **3 bases locales PostGIS**.
+Le module d'enrichissement est le cœur de Mutafriches. Il enrichit automatiquement les données d'une parcelle cadastrale en interrogeant une dizaine d'**APIs publiques externes** (dont GéoRisques, qui expose 13 endpoints) et **4 bases locales** (3 PostGIS spatiales + le référentiel communal LOVAC).
 
 **Endpoint** : `POST /enrichissement`
 **Entrée** : Identifiant(s) cadastral(s) — mono-parcelle ou multi-parcelle (1 à 20 parcelles)
@@ -250,7 +250,7 @@ correspondant est ignoré par l'algorithme de mutabilité.
 
 | API | Source | Données récupérées |
 |-----|--------|-------------------|
-| **LOVAC** | `data.gouv.fr` | Taux de logements vacants par commune |
+| **LOVAC** | Base locale (table `raw_lovac`) | Taux de logements vacants par commune (import annuel `pnpm db:lovac:import`) |
 | **Zonage ABC logement** | `data.gouv.fr` | Zonage A/Abis/B1/B2/C (tension du marché du logement) par commune |
 | **BPE** | Base locale PostGIS | Commerces et services de proximité (Base Permanente des Équipements INSEE) |
 
@@ -258,8 +258,12 @@ correspondant est ignoré par l'algorithme de mutabilité.
 
 #### 4.1 Taux logements vacants (LOVAC)
 
+Depuis la v1.21, LOVAC est lue depuis le référentiel local `raw_lovac` (import annuel via
+`pnpm db:lovac:import`) et non plus via l'API tabulaire data.gouv.fr, rate-limitée sous charge
+réelle (cf `docs/adr/`).
+
 **Algorithme** :
-1. Recherche données LOVAC par code INSEE ou nom commune
+1. Recherche données LOVAC par code INSEE (prioritaire) ou nom commune dans `raw_lovac`
 2. Vérification données exploitables (non secrétisées)
    - Données secrétisées si valeurs `-1` ou `0` pour logements vacants/total
 3. Calcul : `tauxVacance = (nombreLogementsVacants / nombreLogementsTotal) * 100`
@@ -747,20 +751,21 @@ expose 13 endpoints, appelés séparément).
 | Cadastre | IGN Cadastre, BDNB |
 | Énergie | Enedis |
 | Transport | API Service Public, IGN WFS |
-| Urbanisme | data.gouv LOVAC, data.gouv Zonage ABC logement |
+| Urbanisme | data.gouv Zonage ABC logement |
 | Zonages | API Carto Nature, API Carto GPU |
 | ENR | ZAER WFS Géoplateforme |
 | Risques | GéoRisques (1 API, 13 endpoints) |
 | Transport (désactivé) | ITE Fret / Cerema — non appelé actuellement |
 
-### Bases Locales PostGIS (3)
+### Bases Locales (4)
 
-| Domaine | Source | Données |
-|---------|--------|---------|
-| Transport | transport_stops | Arrêts de transport (data.gouv) |
-| Urbanisme | bpe | Base Permanente Équipements INSEE |
-| Pollution | ademe_sites_pollues | Sites pollués ADEME (BASOL) |
-| **TOTAL** | | **3** |
+| Domaine | Table | Données | Type |
+|---------|-------|---------|------|
+| Transport | raw_transport_stops | Arrêts de transport (data.gouv) | PostGIS (spatial) |
+| Urbanisme | raw_bpe | Base Permanente Équipements INSEE | PostGIS (spatial) |
+| Pollution | raw_ademe_sites_pollues | Sites pollués ADEME (BASOL) | PostGIS (spatial) |
+| Urbanisme | raw_lovac | Logements vacants LOVAC par commune | Table de correspondance (code INSEE) |
+| **TOTAL** | | | **4** |
 
 ---
 
@@ -898,7 +903,7 @@ expose 13 endpoints, appelés séparément).
 | Distance transport commun | Transport | `distanceTransportCommun` | data.gouv transport |
 | Distance raccordement élec | Énergie | `distanceRaccordementElectrique` | Enedis |
 | Commerces/services proximité | Urbanisme | `proximiteCommercesServices` | BPE (local) |
-| Taux logements vacants | Urbanisme | `tauxLogementsVacants` | LOVAC data.gouv |
+| Taux logements vacants | Urbanisme | `tauxLogementsVacants` | LOVAC (local) |
 | Zonage ABC logement | Urbanisme | `zonageAbcLogement` | Zonage ABC data.gouv |
 | Risque RGA | Risques Naturels | `risqueRetraitGonflementArgile` | GeoRisques RGA |
 | Risque cavités | Risques Naturels | `risqueCavitesSouterraines` | GeoRisques Cavités |
@@ -948,14 +953,14 @@ expose 13 endpoints, appelés séparément).
   - `apps/api/src/enrichissement/adapters/api-carto/nature/`
   - `apps/api/src/enrichissement/adapters/api-carto/gpu/`
 
-### data.gouv.fr (LOVAC, Zonage ABC, Transport)
+### data.gouv.fr (Zonage ABC, Transport, LOVAC)
 - **URL** : `https://www.data.gouv.fr/api`
-- **Utilisation** : Logements vacants (LOVAC), zonage ABC logement, arrêts de transport
+- **Utilisation** : zonage ABC logement (live), arrêts de transport (local), logements vacants LOVAC (local)
 - **Documentation** : https://www.data.gouv.fr/fr/doc/api
-- **Adapters** :
-  - `apps/api/src/enrichissement/adapters/datagouv-lovac/`
-  - `apps/api/src/enrichissement/adapters/datagouv-zonage-abc/`
+- **Adapters / repositories** :
+  - `apps/api/src/enrichissement/adapters/datagouv-zonage-abc/` (appel live)
   - `apps/api/src/enrichissement/repositories/transport-stops.repository.ts` (données locales)
+  - `apps/api/src/enrichissement/repositories/lovac.repository.ts` (référentiel local `raw_lovac`, import `pnpm db:lovac:import`)
 
 ### API Service Public
 - **URL** : `https://api-lannuaire.service-public.fr/api`
