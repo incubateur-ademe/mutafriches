@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   SOURCES_DONNEES,
@@ -8,6 +9,7 @@ import {
 } from "@mutafriches/shared-types";
 import { Layout } from "../../../shared/components/layout/Layout";
 import { ROUTES } from "../../../shared/config/routes.config";
+import { generateSourcesPdf } from "../export/generateSourcesPdf";
 
 const TYPE_LABELS: Record<SourceDonnees["type"], string> = {
   "api-externe": "API externe",
@@ -91,6 +93,16 @@ function SourceAccordion({ source }: { source: SourceDonnees }) {
 
 export function DocumentationSourcesPage() {
   const criteresManuels = getCriteresManuels();
+  const [pdfEnCours, setPdfEnCours] = useState(false);
+
+  const telechargerPdf = async () => {
+    setPdfEnCours(true);
+    try {
+      await generateSourcesPdf();
+    } finally {
+      setPdfEnCours(false);
+    }
+  };
 
   return (
     <Layout>
@@ -141,6 +153,17 @@ export function DocumentationSourcesPage() {
             critère porte un poids ; le poids total est de 29,5. La part des critères effectivement
             renseignés détermine l'indice de fiabilité de l'analyse.
           </p>
+        </div>
+
+        <div className="fr-mb-6w">
+          <button
+            type="button"
+            className="fr-btn fr-btn--secondary fr-icon-download-line fr-btn--icon-left"
+            onClick={telechargerPdf}
+            disabled={pdfEnCours}
+          >
+            {pdfEnCours ? "Génération du PDF…" : "Télécharger en PDF"}
+          </button>
         </div>
 
         <h2 className="fr-h3">Sources enrichies automatiquement</h2>
