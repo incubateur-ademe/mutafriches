@@ -658,8 +658,8 @@ Détecter si le site se trouve dans une Zone d'Accélération des Énergies Reno
 **Requête WFS** :
 - Service WFS 2.0.0, typename `zaer:zaer`
 - Filtre CQL : `INTERSECTS(geom, <géométrie_site>)` (polygone ou point)
-- Propriétés récupérées : `nom`, `filiere`, `detail_filiere`
-- Déduplication par clé composite `filiere|detail_filiere|nom`
+- Propriétés récupérées : `nom`, `filiere`, `detail_filiere1`, `detail_filiere2`, `detail_filiere3` (les 3 niveaux hiérarchiques sont coalescés en un seul `detailFiliere`, niveaux non vides joints par ` / `)
+- Déduplication par clé composite `filiere|detailFiliere|nom`
 
 **Stratégie de géolocalisation** :
 1. Si géométrie disponible → intersection par polygone (plus précis)

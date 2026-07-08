@@ -33,7 +33,10 @@ export interface ZaerWfsFeature {
 export interface ZaerWfsProperties {
   nom: string | null;
   filiere: string;
-  detail_filiere: string | null;
+  // Le WFS a scindé detail_filiere en 3 niveaux hiérarchiques (du plus général au plus précis)
+  detail_filiere1: string | null;
+  detail_filiere2: string | null;
+  detail_filiere3: string | null;
   cp: string | null;
   cog: string | null;
   dep: string | null;
