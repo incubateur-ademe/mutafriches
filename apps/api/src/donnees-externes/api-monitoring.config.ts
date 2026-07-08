@@ -271,18 +271,6 @@ export const API_MONITORING_ENTRIES: readonly ApiMonitoringEntry[] = [
       "https://api-lannuaire.service-public.gouv.fr/api/explore/v2.1/catalog/datasets/api-lannuaire-administration/records?limit=1",
   },
   {
-    key: "lovac",
-    name: "LOVAC",
-    category: "Logement",
-    description: "Taux de logements vacants par commune (parc privé)",
-    docUrl:
-      "https://www.data.gouv.fr/datasets/logements-vacants-du-parc-prive-en-france-et-par-commune-departement-region/",
-    adapterFile: "apps/api/src/enrichissement/adapters/datagouv-lovac/datagouv-lovac.service.ts",
-    baseUrl: DATAGOUV_TABULAR,
-    healthCheckMethod: "GET",
-    healthCheckUrl: `${DATAGOUV_TABULAR}/resources/2e0417b4-902d-4c60-90e7-bf5df148cb87/data/?CODGEO_25__exact=${TEST_INSEE}&page=1&page_size=1`,
-  },
-  {
     key: "zonage-abc",
     name: "Zonage ABC",
     category: "Logement",

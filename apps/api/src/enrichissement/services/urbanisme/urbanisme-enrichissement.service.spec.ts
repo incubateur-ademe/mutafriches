@@ -1,21 +1,20 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { SourceEnrichissement } from "@mutafriches/shared-types";
 import { UrbanismeEnrichissementService } from "./urbanisme-enrichissement.service";
-import { DatagouvLovacService } from "../../adapters/datagouv-lovac/datagouv-lovac.service";
 import { DatagouvZonageAbcService } from "../../adapters/datagouv-zonage-abc/datagouv-zonage-abc.service";
 import { BpeRepository } from "../../repositories/bpe.repository";
+import { LovacRepository, LovacCommuneData } from "../../repositories/lovac.repository";
 import { Site } from "../../../evaluation/entities/site.entity";
-import { LovacData } from "../../adapters/datagouv-lovac/datagouv-lovac.types";
 import { Test, TestingModule } from "@nestjs/testing";
 
 describe("UrbanismeEnrichissementService", () => {
   let service: UrbanismeEnrichissementService;
-  let lovacService: ReturnType<typeof createMockLovacService>;
+  let lovacRepository: ReturnType<typeof createMockLovacRepository>;
   let zonageAbcService: ReturnType<typeof createMockZonageAbcService>;
   let bpeRepository: ReturnType<typeof createMockBpeRepository>;
 
-  const createMockLovacService = () => ({
-    getLovacByCommune: vi.fn(),
+  const createMockLovacRepository = () => ({
+    findByCommune: vi.fn(),
   });
 
   const createMockZonageAbcService = () => ({
@@ -27,21 +26,21 @@ describe("UrbanismeEnrichissementService", () => {
   });
 
   beforeEach(async () => {
-    const mockLovac = createMockLovacService();
+    const mockLovac = createMockLovacRepository();
     const mockZonageAbc = createMockZonageAbcService();
     const mockBpe = createMockBpeRepository();
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         UrbanismeEnrichissementService,
-        { provide: DatagouvLovacService, useValue: mockLovac },
+        { provide: LovacRepository, useValue: mockLovac },
         { provide: DatagouvZonageAbcService, useValue: mockZonageAbc },
         { provide: BpeRepository, useValue: mockBpe },
       ],
     }).compile();
 
     service = module.get<UrbanismeEnrichissementService>(UrbanismeEnrichissementService);
-    lovacService = mockLovac;
+    lovacRepository = mockLovac;
     zonageAbcService = mockZonageAbc;
     bpeRepository = mockBpe;
   });
@@ -55,19 +54,16 @@ describe("UrbanismeEnrichissementService", () => {
       site.commune = "Angers";
       site.coordonnees = { latitude: 47.4784, longitude: -0.5632 };
 
-      const mockLovacData: LovacData = {
+      const mockLovacData: LovacCommuneData = {
         codeInsee: "49007",
         commune: "Angers",
-        departement: "Maine-et-Loire",
-        region: "Pays de la Loire",
         nombreLogementsTotal: 86234,
         nombreLogementsVacants: 6789,
-        tauxLogementsVacants: null,
         nombreLogementsVacantsPlus2ans: 4123,
-        millesime: 2025,
+        millesime: 2026,
       };
 
-      lovacService.getLovacByCommune.mockResolvedValue(mockLovacData);
+      lovacRepository.findByCommune.mockResolvedValue(mockLovacData);
 
       bpeRepository.findCommercesServicesProximite.mockResolvedValue({
         presenceCommercesServices: true,
@@ -83,7 +79,7 @@ describe("UrbanismeEnrichissementService", () => {
       expect(result.success).toBe(true);
       expect(result.sourcesUtilisees).toContain(SourceEnrichissement.LOVAC);
       expect(site.tauxLogementsVacants).toBeCloseTo(7.9, 1);
-      expect(lovacService.getLovacByCommune).toHaveBeenCalledWith({
+      expect(lovacRepository.findByCommune).toHaveBeenCalledWith({
         codeInsee: "49007",
         nomCommune: undefined,
       });
@@ -97,19 +93,16 @@ describe("UrbanismeEnrichissementService", () => {
       site.commune = "Nantes";
       site.coordonnees = { latitude: 47.2184, longitude: -1.5536 };
 
-      const mockLovacData: LovacData = {
+      const mockLovacData: LovacCommuneData = {
         codeInsee: "44109",
         commune: "Nantes",
-        departement: "Loire-Atlantique",
-        region: "Pays de la Loire",
         nombreLogementsTotal: 171234,
         nombreLogementsVacants: 8456,
-        tauxLogementsVacants: null,
         nombreLogementsVacantsPlus2ans: 5234,
-        millesime: 2025,
+        millesime: 2026,
       };
 
-      lovacService.getLovacByCommune.mockResolvedValue(mockLovacData);
+      lovacRepository.findByCommune.mockResolvedValue(mockLovacData);
 
       bpeRepository.findCommercesServicesProximite.mockResolvedValue({
         presenceCommercesServices: true,
@@ -125,7 +118,7 @@ describe("UrbanismeEnrichissementService", () => {
       expect(result.success).toBe(true);
       expect(result.sourcesUtilisees).toContain(SourceEnrichissement.LOVAC);
       expect(site.tauxLogementsVacants).toBeCloseTo(4.9, 1);
-      expect(lovacService.getLovacByCommune).toHaveBeenCalledWith({
+      expect(lovacRepository.findByCommune).toHaveBeenCalledWith({
         codeInsee: undefined,
         nomCommune: "Nantes",
       });
@@ -139,7 +132,7 @@ describe("UrbanismeEnrichissementService", () => {
       site.commune = "Commune Inconnue";
       site.coordonnees = { latitude: 47.0, longitude: -1.0 };
 
-      lovacService.getLovacByCommune.mockResolvedValue(null);
+      lovacRepository.findByCommune.mockResolvedValue(null);
 
       bpeRepository.findCommercesServicesProximite.mockResolvedValue({
         presenceCommercesServices: false,
@@ -165,19 +158,16 @@ describe("UrbanismeEnrichissementService", () => {
       site.commune = "Petite Commune";
       site.coordonnees = { latitude: 47.0, longitude: -1.0 };
 
-      const mockLovacData: LovacData = {
+      const mockLovacData: LovacCommuneData = {
         codeInsee: "12345",
         commune: "Petite Commune",
-        departement: "Test",
-        region: "Test Region",
         nombreLogementsTotal: null,
         nombreLogementsVacants: null,
-        tauxLogementsVacants: null,
         nombreLogementsVacantsPlus2ans: null,
-        millesime: 2025,
+        millesime: 2026,
       };
 
-      lovacService.getLovacByCommune.mockResolvedValue(mockLovacData);
+      lovacRepository.findByCommune.mockResolvedValue(mockLovacData);
 
       bpeRepository.findCommercesServicesProximite.mockResolvedValue({
         presenceCommercesServices: true,
@@ -195,7 +185,7 @@ describe("UrbanismeEnrichissementService", () => {
       expect(site.tauxLogementsVacants).toBeUndefined();
     });
 
-    it("devrait gerer les erreurs de l'API LOVAC", async () => {
+    it("devrait gerer les erreurs de lecture LOVAC", async () => {
       // Arrange
       const site = new Site();
       site.identifiantParcelle = "49007000AB0123";
@@ -203,7 +193,7 @@ describe("UrbanismeEnrichissementService", () => {
       site.commune = "Angers";
       site.coordonnees = { latitude: 47.4784, longitude: -0.5632 };
 
-      lovacService.getLovacByCommune.mockRejectedValue(new Error("API Error"));
+      lovacRepository.findByCommune.mockRejectedValue(new Error("DB Error"));
 
       bpeRepository.findCommercesServicesProximite.mockResolvedValue({
         presenceCommercesServices: true,
@@ -244,7 +234,7 @@ describe("UrbanismeEnrichissementService", () => {
       // Assert
       expect(result.sourcesEchouees).toContain(SourceEnrichissement.LOVAC);
       expect(result.champsManquants).toContain("tauxLogementsVacants");
-      expect(lovacService.getLovacByCommune).not.toHaveBeenCalled();
+      expect(lovacRepository.findByCommune).not.toHaveBeenCalled();
     });
 
     it("devrait prioritiser le code INSEE sur le nom de commune", async () => {
@@ -255,19 +245,16 @@ describe("UrbanismeEnrichissementService", () => {
       site.commune = "Angers";
       site.coordonnees = { latitude: 47.4784, longitude: -0.5632 };
 
-      const mockLovacData: LovacData = {
+      const mockLovacData: LovacCommuneData = {
         codeInsee: "49007",
         commune: "Angers",
-        departement: "Maine-et-Loire",
-        region: "Pays de la Loire",
         nombreLogementsTotal: 86234,
         nombreLogementsVacants: 6789,
-        tauxLogementsVacants: null,
         nombreLogementsVacantsPlus2ans: 4123,
-        millesime: 2025,
+        millesime: 2026,
       };
 
-      lovacService.getLovacByCommune.mockResolvedValue(mockLovacData);
+      lovacRepository.findByCommune.mockResolvedValue(mockLovacData);
 
       bpeRepository.findCommercesServicesProximite.mockResolvedValue({
         presenceCommercesServices: true,
@@ -280,7 +267,7 @@ describe("UrbanismeEnrichissementService", () => {
       await service.enrichir(site);
 
       // Assert
-      expect(lovacService.getLovacByCommune).toHaveBeenCalledWith({
+      expect(lovacRepository.findByCommune).toHaveBeenCalledWith({
         codeInsee: "49007",
         nomCommune: undefined,
       });
@@ -296,19 +283,16 @@ describe("UrbanismeEnrichissementService", () => {
       site.commune = "Angers";
       site.coordonnees = { latitude: 47.4784, longitude: -0.5632 };
 
-      const mockLovacData: LovacData = {
+      const mockLovacData: LovacCommuneData = {
         codeInsee: "49007",
         commune: "Angers",
-        departement: "Maine-et-Loire",
-        region: "Pays de la Loire",
         nombreLogementsTotal: 86234,
         nombreLogementsVacants: 6789,
-        tauxLogementsVacants: null,
         nombreLogementsVacantsPlus2ans: 4123,
-        millesime: 2025,
+        millesime: 2026,
       };
 
-      lovacService.getLovacByCommune.mockResolvedValue(mockLovacData);
+      lovacRepository.findByCommune.mockResolvedValue(mockLovacData);
 
       bpeRepository.findCommercesServicesProximite.mockResolvedValue({
         presenceCommercesServices: true,
@@ -339,19 +323,16 @@ describe("UrbanismeEnrichissementService", () => {
       site.commune = "Village Isole";
       site.coordonnees = { latitude: 45.0, longitude: 2.0 };
 
-      const mockLovacData: LovacData = {
+      const mockLovacData: LovacCommuneData = {
         codeInsee: "12345",
         commune: "Village Isole",
-        departement: "Test",
-        region: "Test Region",
         nombreLogementsTotal: 500,
         nombreLogementsVacants: 25,
-        tauxLogementsVacants: null,
         nombreLogementsVacantsPlus2ans: 10,
-        millesime: 2025,
+        millesime: 2026,
       };
 
-      lovacService.getLovacByCommune.mockResolvedValue(mockLovacData);
+      lovacRepository.findByCommune.mockResolvedValue(mockLovacData);
 
       bpeRepository.findCommercesServicesProximite.mockResolvedValue({
         presenceCommercesServices: false,
@@ -377,19 +358,16 @@ describe("UrbanismeEnrichissementService", () => {
       site.commune = "Angers";
       site.coordonnees = undefined;
 
-      const mockLovacData: LovacData = {
+      const mockLovacData: LovacCommuneData = {
         codeInsee: "49007",
         commune: "Angers",
-        departement: "Maine-et-Loire",
-        region: "Pays de la Loire",
         nombreLogementsTotal: 86234,
         nombreLogementsVacants: 6789,
-        tauxLogementsVacants: null,
         nombreLogementsVacantsPlus2ans: 4123,
-        millesime: 2025,
+        millesime: 2026,
       };
 
-      lovacService.getLovacByCommune.mockResolvedValue(mockLovacData);
+      lovacRepository.findByCommune.mockResolvedValue(mockLovacData);
 
       // Act
       const result = await service.enrichir(site);
@@ -409,19 +387,16 @@ describe("UrbanismeEnrichissementService", () => {
       site.commune = "Angers";
       site.coordonnees = { latitude: 47.4784, longitude: -0.5632 };
 
-      const mockLovacData: LovacData = {
+      const mockLovacData: LovacCommuneData = {
         codeInsee: "49007",
         commune: "Angers",
-        departement: "Maine-et-Loire",
-        region: "Pays de la Loire",
         nombreLogementsTotal: 86234,
         nombreLogementsVacants: 6789,
-        tauxLogementsVacants: null,
         nombreLogementsVacantsPlus2ans: 4123,
-        millesime: 2025,
+        millesime: 2026,
       };
 
-      lovacService.getLovacByCommune.mockResolvedValue(mockLovacData);
+      lovacRepository.findByCommune.mockResolvedValue(mockLovacData);
       bpeRepository.findCommercesServicesProximite.mockRejectedValue(new Error("Database error"));
 
       // Act
@@ -445,19 +420,16 @@ describe("UrbanismeEnrichissementService", () => {
       site.commune = "Angers";
       site.coordonnees = { latitude: 47.4784, longitude: -0.5632 };
 
-      const mockLovacData: LovacData = {
+      const mockLovacData: LovacCommuneData = {
         codeInsee: "49007",
         commune: "Angers",
-        departement: "Maine-et-Loire",
-        region: "Pays de la Loire",
         nombreLogementsTotal: 86234,
         nombreLogementsVacants: 6789,
-        tauxLogementsVacants: null,
         nombreLogementsVacantsPlus2ans: 4123,
-        millesime: 2025,
+        millesime: 2026,
       };
 
-      lovacService.getLovacByCommune.mockResolvedValue(mockLovacData);
+      lovacRepository.findByCommune.mockResolvedValue(mockLovacData);
 
       zonageAbcService.getZonageByCommune.mockResolvedValue({
         codeInsee: "49007",
@@ -496,7 +468,7 @@ describe("UrbanismeEnrichissementService", () => {
       site.commune = "Angers";
       site.coordonnees = { latitude: 47.4784, longitude: -0.5632 };
 
-      lovacService.getLovacByCommune.mockResolvedValue(null);
+      lovacRepository.findByCommune.mockResolvedValue(null);
 
       bpeRepository.findCommercesServicesProximite.mockResolvedValue({
         presenceCommercesServices: true,
@@ -524,19 +496,16 @@ describe("UrbanismeEnrichissementService", () => {
       site.commune = "Angers";
       site.coordonnees = { latitude: 47.4784, longitude: -0.5632 };
 
-      const mockLovacData: LovacData = {
+      const mockLovacData: LovacCommuneData = {
         codeInsee: "49007",
         commune: "Angers",
-        departement: "Maine-et-Loire",
-        region: "Pays de la Loire",
         nombreLogementsTotal: 86234,
         nombreLogementsVacants: 6789,
-        tauxLogementsVacants: null,
         nombreLogementsVacantsPlus2ans: 4123,
-        millesime: 2025,
+        millesime: 2026,
       };
 
-      lovacService.getLovacByCommune.mockResolvedValue(mockLovacData);
+      lovacRepository.findByCommune.mockResolvedValue(mockLovacData);
       bpeRepository.findCommercesServicesProximite.mockRejectedValue(new Error("Database error"));
 
       // Act
