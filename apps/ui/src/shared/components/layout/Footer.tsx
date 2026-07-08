@@ -58,6 +58,11 @@ export function Footer() {
                 </a>
               </li>
               <li className="fr-footer__bottom-item">
+                <a className="fr-footer__bottom-link" href={ROUTES.DOCUMENTATION_SOURCES}>
+                  Documentation des sources de données
+                </a>
+              </li>
+              <li className="fr-footer__bottom-item">
                 <a className="fr-footer__bottom-link" href={ROUTES.TESTS}>
                   Pages de tests
                 </a>

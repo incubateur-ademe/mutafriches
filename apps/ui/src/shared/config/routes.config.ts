@@ -25,6 +25,9 @@ export const ROUTES = {
   // Statut technique
   DONNEES_UTILISEES: "/donnees-utilisees",
 
+  // Documentation des sources de données (partenaires)
+  DOCUMENTATION_SOURCES: "/documentation-donnees",
+
   // Pages légales
   MENTIONS_LEGALES: "/mentions-legales",
   POLITIQUE_CONFIDENTIALITE: "/politique-de-confidentialite",

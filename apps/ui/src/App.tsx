@@ -25,6 +25,7 @@ import { StatistiquesPage } from "./features/statistiques/pages/StatistiquesPage
 import { MultisitePage } from "./features/partenaires/core/pages/MultisitePage";
 import { PartenairesPage } from "./features/partenaires/core/pages/PartenairesPage";
 import { DonneesUtiliseesPage } from "./features/donnees-utilisees/pages/DonneesUtiliseesPage";
+import { DocumentationSourcesPage } from "./features/documentation-sources/pages/DocumentationSourcesPage";
 import { MentionsLegalesPage } from "./features/legal/pages/MentionsLegalesPage";
 import { PolitiqueConfidentialitePage } from "./features/legal/pages/PolitiqueConfidentialitePage";
 import { AccessibilitePage } from "./features/legal/pages/AccessibilitePage";
@@ -69,6 +70,7 @@ function AppContent() {
 
         {/* Statut technique */}
         <Route path={ROUTES.DONNEES_UTILISEES} element={<DonneesUtiliseesPage />} />
+        <Route path={ROUTES.DOCUMENTATION_SOURCES} element={<DocumentationSourcesPage />} />
 
         {/* Pages légales */}
         <Route path={ROUTES.MENTIONS_LEGALES} element={<MentionsLegalesPage />} />
