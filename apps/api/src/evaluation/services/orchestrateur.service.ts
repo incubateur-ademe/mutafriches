@@ -57,8 +57,9 @@ export class OrchestrateurService {
     const siteId = input.donneesEnrichies.identifiantParcelle;
     const nombreParcelles = input.donneesEnrichies.nombreParcelles;
 
-    // Bypass du cache si version non courante (comparaison = transient)
-    const utiliserCache = !options?.versionAlgorithme;
+    // Bypass du cache si version non courante (comparaison = transient) ou si le détail est
+    // demandé : le cache ne stocke pas detailsCalcul, un hit renverrait un résultat sans détail.
+    const utiliserCache = !options?.versionAlgorithme && !options?.modeDetaille;
 
     // 0. VERIFIER LE CACHE
     const cached = utiliserCache

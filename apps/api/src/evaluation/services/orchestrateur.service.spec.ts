@@ -300,6 +300,48 @@ describe("OrchestrateurService", () => {
       expect(result.evaluationId).toBe("new-eval-456");
     });
 
+    it("ne devrait PAS utiliser le cache en mode détaillé (le détail n'est pas mis en cache)", async () => {
+      // Même avec un cache valide, une demande détaillée doit recalculer pour renvoyer detailsCalcul.
+      evaluationRepository.findValidCache.mockResolvedValue({
+        id: "cached-eval-123",
+        resultats: { fiabilite: { note: 8, text: "Tres bonne" }, resultats: [] },
+        donneesEnrichissement: mockEnrichissement,
+        donneesComplementaires: mockDonneesComplementaires,
+      } as any);
+
+      const mockResultatDetaille = {
+        fiabilite: { note: 7.5, text: "Bonne" },
+        resultats: [
+          {
+            usage: "RESIDENTIEL",
+            rang: 1,
+            indiceMutabilite: 75,
+            detailsCalcul: { totalAvantages: 5, totalContraintes: 3 },
+          },
+        ],
+      } as any;
+
+      const mockSite = new Site();
+      mockSite.identifiantParcelle = "490055000AI0001";
+      vi.spyOn(Site, "fromEnrichissement").mockReturnValue(mockSite);
+      vi.spyOn(mockSite, "estComplete").mockReturnValue(true);
+      calculService.calculer.mockResolvedValue(mockResultatDetaille);
+      evaluationRepository.save.mockResolvedValue("eval-detaille");
+
+      const result = await service.calculerMutabilite(
+        {
+          donneesEnrichies: mockEnrichissement,
+          donneesComplementaires: mockDonneesComplementaires,
+        },
+        { modeDetaille: true },
+      );
+
+      // Cache court-circuité (non consulté) et calcul détaillé effectué
+      expect(evaluationRepository.findValidCache).not.toHaveBeenCalled();
+      expect(calculService.calculer).toHaveBeenCalledWith(mockSite, { modeDetaille: true });
+      expect(result.resultats).toEqual(mockResultatDetaille.resultats);
+    });
+
     it("devrait effectuer le calcul complet si pas de cache", async () => {
       evaluationRepository.findValidCache.mockResolvedValue(null);
 
