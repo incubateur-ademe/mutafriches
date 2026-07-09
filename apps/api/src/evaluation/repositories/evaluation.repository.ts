@@ -12,6 +12,7 @@ import {
 import { evaluations } from "../../shared/database/schemas/evaluations.schema";
 import { Evaluation } from "../entities/evaluation.entity";
 import { hasJeNeSaisPas } from "../utils/cache-validator";
+import { VERSION_COURANTE } from "../services/algorithme/versions";
 
 /** Duree de validite du cache des evaluations en heures */
 export const EVALUATION_CACHE_TTL_HOURS = 24;
@@ -150,7 +151,9 @@ export class EvaluationRepository {
     const ttlDate = new Date();
     ttlDate.setHours(ttlDate.getHours() - EVALUATION_CACHE_TTL_HOURS);
 
-    // Rechercher les evaluations recentes pour ce site
+    // Rechercher les evaluations recentes pour ce site.
+    // Le cache ne sert que la version courante : une evaluation produite via ?versionAlgorithme=
+    // (surcharge, bypass en lecture) ne doit pas etre resservie a un appel par defaut.
     const results = await this.database.db
       .select({
         id: evaluations.id,
@@ -160,7 +163,13 @@ export class EvaluationRepository {
         versionAlgorithme: evaluations.versionAlgorithme,
       })
       .from(evaluations)
-      .where(and(eq(evaluations.siteId, siteId), gte(evaluations.dateCalcul, ttlDate)))
+      .where(
+        and(
+          eq(evaluations.siteId, siteId),
+          eq(evaluations.versionAlgorithme, VERSION_COURANTE),
+          gte(evaluations.dateCalcul, ttlDate),
+        ),
+      )
       .orderBy(sql`${evaluations.dateCalcul} DESC`)
       .limit(10); // Limiter pour performance
 
