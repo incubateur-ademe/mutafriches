@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+import { VERSION_ALGO } from "@mutafriches/shared-types";
 import { ALGORITHME_VERSIONS, VERSION_COURANTE, getAlgorithmeConfig } from "./index";
 
 /**
@@ -35,6 +36,12 @@ describe("Registre des versions d'algorithme", () => {
     const derniere = ALGORITHME_VERSIONS[ALGORITHME_VERSIONS.length - 1];
     expect(VERSION_COURANTE).toBe(derniere.version);
     expect(getAlgorithmeConfig(VERSION_COURANTE)).toBeDefined();
+  });
+
+  it("le miroir shared-types VERSION_ALGO est aligné sur VERSION_COURANTE", () => {
+    // VERSION_ALGO (shared-types) est utilisé par l'UI qui ne peut pas importer ce registre :
+    // il doit rester égal à la version courante, format `vX.Y` inclus.
+    expect(VERSION_ALGO).toBe(VERSION_COURANTE);
   });
 
   it("chaque version expose poids et matrice de scoring", () => {
