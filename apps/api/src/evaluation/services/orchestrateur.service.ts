@@ -13,6 +13,7 @@ import { CalculService, CalculOptions } from "./calcul.service";
 import { Site } from "../entities/site.entity";
 import { Evaluation } from "../entities/evaluation.entity";
 import { EvaluationRepository } from "../repositories/evaluation.repository";
+import { VERSION_COURANTE } from "./algorithme/versions";
 
 /**
  * Service orchestrateur principal
@@ -73,6 +74,7 @@ export class OrchestrateurService {
       const origine = options?.origine || { source: SourceUtilisation.API_DIRECTE };
 
       // Enregistrer l'utilisation du cache pour analytics
+      // On re-tague avec la version qui a produit les resultats reutilises (cache = pas de surcharge)
       const evaluation = new Evaluation(
         siteId,
         input.donneesEnrichies.codeInsee,
@@ -82,6 +84,7 @@ export class OrchestrateurService {
         origine,
         nombreParcelles,
         input.visitorId,
+        cached.versionAlgorithme ?? VERSION_COURANTE,
       );
 
       const evaluationId = await this.evaluationRepository.save(evaluation, cached.id);
@@ -117,6 +120,9 @@ export class OrchestrateurService {
     // Origine par défaut si non fournie
     const origine = options?.origine || { source: SourceUtilisation.API_DIRECTE };
 
+    // Version réellement utilisée : surcharge éventuelle, sinon version courante du registre
+    const versionAlgorithmeUtilisee = options?.versionAlgorithme ?? VERSION_COURANTE;
+
     // Création d'une évaluation de mutabilité
     const evaluation = new Evaluation(
       siteId,
@@ -127,6 +133,7 @@ export class OrchestrateurService {
       origine,
       nombreParcelles,
       input.visitorId,
+      versionAlgorithmeUtilisee,
     );
 
     // Sauvegarde l'évaluation et retourne l'id

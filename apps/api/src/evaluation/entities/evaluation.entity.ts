@@ -4,7 +4,7 @@ import {
   MutabiliteOutputDto,
   OrigineUtilisation,
 } from "@mutafriches/shared-types";
-import { VERSION_ALGO } from "@mutafriches/shared-types";
+import { VERSION_COURANTE } from "../services/algorithme/versions";
 
 /**
  * Entité métier Evaluation
@@ -40,6 +40,8 @@ export class Evaluation {
     origine: OrigineUtilisation,
     nombreParcelles?: number,
     visitorId?: string,
+    // Version réellement utilisée pour le calcul ; défaut = version courante du registre
+    versionAlgorithme: string = VERSION_COURANTE,
   ) {
     this.siteId = siteId;
     this.nombreParcelles = nombreParcelles;
@@ -49,7 +51,7 @@ export class Evaluation {
     this.donneesComplementaires = donneesComplementaires;
     this.resultats = resultats;
     this.origine = origine;
-    this.versionAlgorithme = VERSION_ALGO;
+    this.versionAlgorithme = versionAlgorithme;
     this.visitorId = visitorId;
   }
 

@@ -1,4 +1,5 @@
 import { Evaluation } from "../entities/evaluation.entity";
+import { VERSION_COURANTE } from "../services/algorithme/versions";
 import {
   EnrichissementOutputDto,
   DonneesComplementairesInputDto,
@@ -36,7 +37,7 @@ export class EvaluationBuilder {
   private siteId = "29232000AB0123";
   private codeInsee = "29232";
   private nombreParcelles?: number;
-  private versionAlgorithme = "1.1.0";
+  private versionAlgorithme = VERSION_COURANTE;
 
   private enrichissement: EnrichissementOutputDto = {
     identifiantParcelle: "29232000AB0123",

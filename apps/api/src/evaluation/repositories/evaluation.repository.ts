@@ -22,6 +22,8 @@ export interface CachedEvaluation {
   resultats: MutabiliteOutputDto;
   donneesEnrichissement: EnrichissementOutputDto;
   donneesComplementaires: DonneesComplementairesInputDto;
+  // Version qui a produit `resultats` : re-taguee sur la ligne re-persistee lors d'un cache hit
+  versionAlgorithme: string;
 }
 
 @Injectable()
@@ -155,6 +157,7 @@ export class EvaluationRepository {
         resultats: evaluations.resultats,
         donneesEnrichissement: evaluations.donneesEnrichissement,
         donneesComplementaires: evaluations.donneesComplementaires,
+        versionAlgorithme: evaluations.versionAlgorithme,
       })
       .from(evaluations)
       .where(and(eq(evaluations.siteId, siteId), gte(evaluations.dateCalcul, ttlDate)))
@@ -182,6 +185,7 @@ export class EvaluationRepository {
         resultats: row.resultats as MutabiliteOutputDto,
         donneesEnrichissement: row.donneesEnrichissement as EnrichissementOutputDto,
         donneesComplementaires: cachedDonnees,
+        versionAlgorithme: row.versionAlgorithme,
       };
     }
 
