@@ -12,6 +12,7 @@ import {
 import { RisqueNaturel } from "@mutafriches/shared-types";
 import { Site } from "../entities/site.entity";
 import { MATRICE_SCORING, POIDS_CRITERES } from "./algorithme/algorithme.config";
+import { metresVersKm } from "./algorithme/distance.utils";
 import { ScoreParUsage } from "./algorithme/algorithme.types";
 import { FiabiliteCalculator } from "./algorithme/fiabilite.calculator";
 import { getAlgorithmeConfig } from "./algorithme/versions";
@@ -299,10 +300,12 @@ export class CalculService {
       qualitePaysage: site.qualitePaysage,
       qualiteVoieDesserte: site.qualiteVoieDesserte,
       siteEnCentreVille: site.siteEnCentreVille,
-      distanceAutoroute: site.distanceAutoroute,
+      // Frontière d'unité : le DTO/Site stocke ces distances en mètres, la matrice les score
+      // en km. distanceTransportCommun reste en mètres des deux côtés (pas de conversion).
+      distanceAutoroute: metresVersKm(site.distanceAutoroute),
       distanceTransportCommun: site.distanceTransportCommun,
       proximiteCommercesServices: site.proximiteCommercesServices,
-      distanceRaccordementElectrique: site.distanceRaccordementElectrique,
+      distanceRaccordementElectrique: metresVersKm(site.distanceRaccordementElectrique),
       tauxLogementsVacants: site.tauxLogementsVacants,
       presenceRisquesTechnologiques: site.presenceRisquesTechnologiques,
       zonageEnvironnemental: site.zonageEnvironnemental,
