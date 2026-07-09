@@ -41,10 +41,10 @@ const createBaseEnrichmentData = (): EnrichissementOutputDto => ({
   surfaceSite: 5000,
   surfaceBati: 200,
   siteEnCentreVille: false,
-  distanceAutoroute: 5,
+  distanceAutoroute: 500,
   distanceTransportCommun: 1000,
   proximiteCommercesServices: false,
-  distanceRaccordementElectrique: 1,
+  distanceRaccordementElectrique: 300,
   tauxLogementsVacants: 5,
   presenceRisquesTechnologiques: false,
   siteReferencePollue: false,
@@ -332,15 +332,15 @@ describe("Usage TERTIAIRE - Bureaux", () => {
     });
 
     it("devrait afficher 'desserte réseaux' si distance raccordement élec < 500m", () => {
-      // 0.4 km = 400m < 500m
-      const data = createTagInputData({ distanceRaccordementElectrique: 0.4 });
+      // 400 m < 500 m
+      const data = createTagInputData({ distanceRaccordementElectrique: 400 });
       const result = generateTagsForUsage(UsageType.TERTIAIRE, data);
       expect(result.tags).toContain("desserte réseaux");
     });
 
     it("devrait afficher 'absence réseaux' si eau = non et élec > 500m", () => {
       const data = createTagInputData(
-        { distanceRaccordementElectrique: 1 }, // 1km = 1000m > 500m
+        { distanceRaccordementElectrique: 1000 }, // 1000 m > 500 m
         { raccordementEau: RaccordementEau.NON },
       );
       const result = generateTagsForUsage(UsageType.TERTIAIRE, data);

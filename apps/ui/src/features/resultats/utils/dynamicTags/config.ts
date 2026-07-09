@@ -104,10 +104,8 @@ const resolveZonageReglementaire = (data: TagInputData): string | null => {
 // --- Desserte par les réseaux (eau et élec) ---
 const resolveDesserteReseaux = (data: TagInputData): string | null => {
   const raccordementEau = data.manualData.raccordementEau;
-  const distanceElec = data.enrichmentData.distanceRaccordementElectrique;
-
-  // Convertir distanceElec de km en mètres (l'algo utilise km)
-  const distanceElecMetres = distanceElec !== undefined ? distanceElec * 1000 : undefined;
+  // distanceRaccordementElectrique est en mètres (comme SEUIL_DISTANCE_RACCORDEMENT_ELEC)
+  const distanceElecMetres = data.enrichmentData.distanceRaccordementElectrique;
 
   const eauOk = raccordementEau === RaccordementEau.OUI;
   const elecOk =

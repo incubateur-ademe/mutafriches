@@ -49,7 +49,8 @@ export function getCritereTagLabel(
       return valeur === true || valeur === "true" ? "centre-ville" : "excentré";
 
     case "distanceAutoroute":
-      return Number(valeur) <= 5 ? "prox. autoroute" : "éloigné autoroute";
+      // Distance en mètres (5 km = 5000 m)
+      return Number(valeur) <= 5000 ? "prox. autoroute" : "éloigné autoroute";
 
     case "distanceTransportCommun":
       return Number(valeur) <= SEUIL_DISTANCE_TC_PROCHE ? "TC prox." : "TC éloigné";
@@ -58,7 +59,8 @@ export function getCritereTagLabel(
       return valeur === true || valeur === "true" ? "services proches" : "services éloignés";
 
     case "distanceRaccordementElectrique":
-      return Number(valeur) * 1000 <= SEUIL_DISTANCE_RACCORDEMENT_ELEC
+      // Distance en mètres (comme SEUIL_DISTANCE_RACCORDEMENT_ELEC)
+      return Number(valeur) <= SEUIL_DISTANCE_RACCORDEMENT_ELEC
         ? "raccordement élec."
         : "élec. éloigné";
 

@@ -988,7 +988,7 @@ export const MATRICE_SCORING = {
     };
   },
 
-  // Distances en km et m
+  // Distance en km (convertie depuis les mètres du DTO par metresVersKm dans extraireCriteres)
   distanceAutoroute: (value: number): ScoreParUsage => {
     if (value < 1)
       return {
