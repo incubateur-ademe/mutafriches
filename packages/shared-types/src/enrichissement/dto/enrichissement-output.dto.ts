@@ -41,6 +41,7 @@ export interface EnrichissementOutputDto {
 
   // Données de localisation et accessibilité
   siteEnCentreVille: boolean;
+  /** Distance en mètres (convertie en km à la frontière de l'algorithme) */
   distanceAutoroute: number;
   /** Distance en mètres. null = aucun arrêt trouvé dans le rayon de recherche (2km) */
   distanceTransportCommun: number | null;
@@ -49,6 +50,7 @@ export interface EnrichissementOutputDto {
   distanceIte?: DistanceIte;
 
   // Infrastructure
+  /** Distance en mètres (convertie en km à la frontière de l'algorithme) */
   distanceRaccordementElectrique: number;
 
   // Contexte urbain

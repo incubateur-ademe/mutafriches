@@ -121,8 +121,8 @@ export class EnrichissementSwaggerDto implements IEnrichissementOutput {
   siteEnCentreVille: boolean;
 
   @ApiProperty({
-    description: "Distance à l'entrée d'autoroute la plus proche en kilomètres",
-    example: 1.5,
+    description: "Distance à l'entrée d'autoroute la plus proche en mètres",
+    example: 1500,
     minimum: 0,
   })
   distanceAutoroute: number;
@@ -143,8 +143,8 @@ export class EnrichissementSwaggerDto implements IEnrichissementOutput {
   proximiteCommercesServices: boolean;
 
   @ApiProperty({
-    description: "Distance au point de raccordement électrique le plus proche en kilomètres",
-    example: 0.3,
+    description: "Distance au point de raccordement électrique le plus proche en mètres",
+    example: 300,
     minimum: 0,
   })
   distanceRaccordementElectrique: number;
