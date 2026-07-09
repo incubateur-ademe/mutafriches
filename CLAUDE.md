@@ -322,7 +322,7 @@ apps/api/src/
 
 L'algorithme de scoring est versionné pour préserver la reproductibilité des évaluations passées et permettre la comparaison entre versions.
 
-- **Source de vérité** : `apps/api/src/evaluation/services/algorithme/versions/` — un fichier par version (`v1.1.ts`, `v1.2.ts`, …), agrégés par `index.ts` (tableau antéchronologique, `[0]` = version courante)
+- **Source de vérité** : `apps/api/src/evaluation/services/algorithme/versions/` — un fichier par version (`v1.1.ts`, `v1.2.ts`, …), agrégés par `index.ts` (tableau chronologique ascendant, **dernière entrée = version courante**, pointée par `VERSION_COURANTE`). C'est aussi l'ordre renvoyé par `GET /evaluation/algorithme/versions`.
 - **Référence métier** : chaque version doit pointer vers le fichier Excel de référence correspondant (matrice 27×7), conservé dans `docs/sources/` (ou équivalent)
 - **Exposition** : la version courante et la liste complète sont exposées via `GET /evaluation/metadata` et `GET /evaluation/algorithme/versions`. Toute modification doit **immédiatement** se refléter dans ces endpoints (et dans les exemples Swagger associés).
 - **Documentation OBLIGATOIRE** : toute modification de l'algorithme — ajout ou retrait d'un critère, changement de poids, de seuil, de la matrice de scoring, ou de la formule de fiabilité — DOIT être répercutée **dans le même commit** sur :
@@ -339,13 +339,13 @@ Quand une nouvelle version d'algorithme entre en vigueur :
 1. Copier les sources datées (Excel, notes de calcul) dans `docs/sources/`
 2. Créer un fichier `vX.Y.ts` dans `versions/` avec `dateEffet` (ISO), `description`, `changements`, `pullRequest`, lien vers la source
 3. Adapter les règles (`algorithme.config.ts`, calculateurs) jusqu'à `pnpm test` vert
-4. **Ajouter l'entrée en tête de l'export agrégé** dans `versions/index.ts` (ordre antéchronologique strict)
+4. **Ajouter l'entrée en fin de l'export agrégé** dans `versions/index.ts` (ordre chronologique ascendant strict) et mettre à jour `VERSION_COURANTE`
 5. Mettre à jour les exemples Swagger qui exposent la version (`metadata.dto.ts`, `evaluation.dto.ts`)
 6. **Mettre à jour la doc de l'algorithme** (`docs/evaluation-mutabilite.md` + `.claude/context/evaluation-patterns.md`) : critères, poids, poids total, fiabilité — en cohérence stricte avec `POIDS_CRITERES`
 7. `pnpm validate`
 8. Commit : `feat(algo): publication vX.Y avec <résumé>`
 
-Un test dédié (`versions.spec.ts`) doit garantir l'ordre antéchronologique strict et le format ISO des dates — si absent, le créer à la prochaine publication.
+Le test dédié (`versions.spec.ts`) garantit l'ordre chronologique ascendant strict, le format ISO des dates, l'unicité des versions et que `VERSION_COURANTE` correspond à la dernière entrée du registre.
 
 **Règle d'or** : ne JAMAIS hardcoder la version d'algorithme dans la doc ou les exemples Swagger — toujours la lire dynamiquement depuis `versions/index.ts`. Une version désynchronisée entre code et doc casse la confiance des intégrateurs.
 
