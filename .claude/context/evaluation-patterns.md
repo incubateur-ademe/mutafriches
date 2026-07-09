@@ -120,10 +120,10 @@ TRES_POSITIF = 2
 | `surfaceSite` | 2 | Numérique (4 seuils) |
 | `surfaceBati` | 2 | Numérique (3 seuils) |
 | `siteEnCentreVille` | 1 | Booléen |
-| `distanceAutoroute` | 0.5 | Numérique (4 seuils) |
+| `distanceAutoroute` | 0.5 | Numérique (4 seuils en km ; DTO en m) |
 | `distanceTransportCommun` | 1 | Numérique (2 seuils : <500m / >=500m) |
 | `proximiteCommercesServices` | 1 | Booléen |
-| `distanceRaccordementElectrique` | 1 | Numérique (3 seuils) |
+| `distanceRaccordementElectrique` | 1 | Numérique (3 seuils en km ; DTO en m) |
 | `tauxLogementsVacants` | 1 | Numérique (4 seuils) |
 | `risqueRetraitGonflementArgile` | 0.5 | Enum (3 valeurs) |
 | `risqueCavitesSouterraines` | 0.5 | Enum (2 valeurs) |
@@ -136,6 +136,8 @@ TRES_POSITIF = 2
 | `zonageAbcLogement` | 0.5 | Enum (A / Abis / B1 / B2 / C) |
 | `raccordementEau` | 1 | Dérivé de `surfaceBati` : >20m² => OUI, ≤20 => NON, indisponible => NE_SAIT_PAS |
 | ~~`distanceIte`~~ | ~~0.5~~ | ~~Enum (<1km bon état / <1km mauvais état / >1km)~~ — **désactivé temporairement** |
+
+> **Unité des distances** (v1.10) : `distanceAutoroute` et `distanceRaccordementElectrique` sont enrichis en **mètres** (IGN WFS, Enedis) et stockés ainsi dans le DTO/Site ; `extraireCriteres` les convertit en **km** via `metresVersKm` avant scoring (la matrice reste en km, source de vérité Excel). `distanceTransportCommun` est en mètres des deux côtés (pas de conversion). Cf. ADR-0027.
 
 **Complémentaires manuels** (poids total : 10.5) :
 

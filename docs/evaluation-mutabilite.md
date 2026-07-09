@@ -2,7 +2,7 @@
 
 > **Version doc** : 2.1
 > **Date** : Mai 2026
-> **Algorithme** : v1.9
+> **Algorithme** : v1.10
 > **Objectif** : Évaluer la mutabilité des friches urbaines pour 7 usages potentiels
 
 ---
@@ -247,10 +247,10 @@ La fiabilité **ne modifie pas** le classement. C'est un indicateur séparé qui
 | 1 | **Surface du site (m²)** | 2 | < 10 000 / 10-15 000 / 15-50 000 / > 50 000 | `surfaceSite` |
 | 2 | **Surface bâtie (m²)** | 2 | < 5 000 / 5-10 000 / > 10 000 | `surfaceBati` |
 | 3 | **En centre-ville** | 1 | Oui / Non | `siteEnCentreVille` |
-| 4 | **Distance autoroute (km)** | 0.5 | < 1 / 1-2 / 2-5 / > 5 | `distanceAutoroute` |
+| 4 | **Distance autoroute (km ; DTO en m)** | 0.5 | < 1 / 1-2 / 2-5 / > 5 | `distanceAutoroute` |
 | 5 | **Distance transport en commun (m)** | 1 | < 500 / >= 500 | `distanceTransportCommun` |
 | 6 | **Commerces/services à proximité** | 1 | Oui / Non | `proximiteCommercesServices` |
-| 7 | **Distance raccordement électrique (km)** | 1 | < 1 / 1-5 / > 5 | `distanceRaccordementElectrique` |
+| 7 | **Distance raccordement électrique (km ; DTO en m)** | 1 | < 1 / 1-5 / > 5 | `distanceRaccordementElectrique` |
 | 8 | **Taux logements vacants (%)** | 1 | <= 7 / 7-8 / 8-10 / > 10 | `tauxLogementsVacants` |
 | 9 | **Risque RGA** | 0.5 | Aucun / Faible ou moyen / Fort | `risqueRetraitGonflementArgile` |
 | 10 | **Risque cavités souterraines** | 0.5 | Non / Oui | `risqueCavitesSouterraines` |
@@ -263,6 +263,8 @@ La fiabilité **ne modifie pas** le classement. C'est un indicateur séparé qui
 | 17 | **Zonage ABC (logement)** | 0.5 | A / Abis / B1 / B2 / C | `zonageAbcLogement` |
 | 18 | **Raccordement eau** (dérivé de la surface bâtie) | 1 | Oui (bâti > 20 m²) / Non / Non déterminé (surface bâtie indisponible) | `raccordementEau` |
 | ~~19~~ | ~~**Distance ITE fret**~~ | ~~0.5~~ | ~~< 1 km (bon état) / < 1 km (mauvais état) / > 1 km~~ | ~~`distanceIte`~~ — **désactivé temporairement, en attente validation Cerema** |
+
+> **Unité des distances** : `distanceAutoroute` et `distanceRaccordementElectrique` sont fournies en **mètres** par l'enrichissement (et stockées ainsi dans le DTO) puis converties en **km** à la frontière de l'algorithme (`metresVersKm` dans `extraireCriteres`, v1.10 / ADR-0027). Les seuils ci-dessus sont en km. `distanceTransportCommun` reste en mètres des deux côtés.
 
 ### Critères complémentaires saisis (9)
 
@@ -280,6 +282,6 @@ La fiabilité **ne modifie pas** le classement. C'est un indicateur séparé qui
 
 ---
 
-> **Dernière mise à jour** : Mai 2026 (algorithme v1.9)
+> **Dernière mise à jour** : Juillet 2026 (algorithme v1.10)
 > **Contact** : <samir.benfares@beta.gouv.fr>
 > **Repository** : [https://github.com/incubateur-ademe/mutafriches](https://github.com/incubateur-ademe/mutafriches)
