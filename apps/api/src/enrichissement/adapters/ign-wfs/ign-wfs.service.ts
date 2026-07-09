@@ -43,17 +43,12 @@ export class IgnWfsService {
     const startTime = Date.now();
 
     try {
-      // Calculer une BBOX approximative
-      const kmParDegre = 111;
-      const deltaLat = rayonMetres / 1000 / kmParDegre;
-      const deltaLon = rayonMetres / 1000 / (kmParDegre * Math.cos((latitude * Math.PI) / 180));
-
-      const bbox = [
-        latitude - deltaLat, // minLat
-        longitude - deltaLon, // minLon
-        latitude + deltaLat, // maxLat
-        longitude + deltaLon, // maxLon
-      ].join(",");
+      // Filtrage côté serveur (DWITHIN + nature/importance) pour éviter le plafond de 5000
+      // tronçons de geopf : sur une BBOX large sans filtre, le résultat était tronqué et pouvait
+      // exclure l'autoroute la plus proche (distance surestimée). POINT en axes lat lon. Cf. ADR-0028.
+      const cqlFilter =
+        `DWITHIN(geometrie,POINT(${latitude} ${longitude}),${rayonMetres},meters)` +
+        ` AND (nature IN ('Type autoroutier','Route à 2 chaussées','Bretelle') OR importance IN ('1','2'))`;
 
       this.logger.debug(
         `Recherche voies circulation: lat=${latitude.toFixed(5)}, lon=${longitude.toFixed(5)}, rayon=${rayonMetres}m`,
@@ -67,12 +62,10 @@ export class IgnWfsService {
         TYPENAMES: "BDTOPO_V3:troncon_de_route",
         SRSNAME: "EPSG:4326",
         OUTPUTFORMAT: "application/json",
-        BBOX: bbox,
+        CQL_FILTER: cqlFilter,
       };
 
-      this.logger.debug(`Requête WFS BBOX: ${bbox}`);
-
-      this.logger.debug(`URL complète: ${url}?${new URLSearchParams(params as any).toString()}`);
+      this.logger.debug(`Requête WFS CQL: ${cqlFilter}`);
 
       const response = await firstValueFrom(
         this.httpService.get<IgnWfsFeatureCollection>(url, { params }),
@@ -81,7 +74,7 @@ export class IgnWfsService {
       const data = response.data;
 
       if (!data.features || data.features.length === 0) {
-        this.logger.warn(`Aucun tronçon dans la BBOX (rayon ${rayonMetres}m)`);
+        this.logger.warn(`Aucun tronçon de grande circulation dans un rayon de ${rayonMetres}m`);
         return {
           success: false,
           error: `Aucune voie dans un rayon de ${rayonMetres}m`,
@@ -90,7 +83,9 @@ export class IgnWfsService {
         };
       }
 
-      this.logger.debug(`API WFS retourne ${data.features.length} tronçon(s) dans la BBOX`);
+      this.logger.debug(
+        `API WFS retourne ${data.features.length} tronçon(s) de grande circulation dans le rayon`,
+      );
 
       // Filtrer par NATURE/IMPORTANCE + calculer distance
       const { distanceMinimale, tronconsInRadius } = this.calculerDistanceMinimaleAvecFiltre(

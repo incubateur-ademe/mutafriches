@@ -194,8 +194,8 @@ SEUIL_CENTRE_VILLE_M = 1000  // 1 km
 #### 3.2 Distance autoroute
 
 **Algorithme** :
-1. Recherche voies de grande circulation dans un rayon de 15 km via IGN WFS
-2. Calcul distance à la voie la plus proche
+1. Recherche des voies de grande circulation dans un rayon de 15 km via IGN WFS — filtrage **côté serveur** (`DWITHIN` + nature/importance) pour éviter la troncature du WFS geopf à 5000 tronçons, qui pouvait exclure l'autoroute la plus proche (cf. ADR-0028)
+2. Calcul de la distance à la voie la plus proche
 3. Retour : distance brute en mètres
 
 **Constantes** :
