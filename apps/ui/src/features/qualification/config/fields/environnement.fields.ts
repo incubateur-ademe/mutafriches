@@ -22,9 +22,21 @@ export const ENVIRONNEMENT_FIELDS: Record<string, FormFieldConfig<string>> = {
     section: "environnement",
     options: [
       SELECT_OPTION_PLACEHOLDER,
-      { value: QualiteVoieDesserte.DEGRADEE, label: "Accessibilité dégradée" },
-      { value: QualiteVoieDesserte.PEU_ACCESSIBLE, label: "Accessibilité limitée" },
-      { value: QualiteVoieDesserte.ACCESSIBLE, label: "Accessible" },
+      {
+        value: QualiteVoieDesserte.DEGRADEE,
+        label:
+          "Accessibilité dégradée (voie d'accès en mauvais état, gabarit de la voie restreint, etc.)",
+      },
+      {
+        value: QualiteVoieDesserte.PEU_ACCESSIBLE,
+        label:
+          "Accessibilité limitée (connexion au réseau viaire limitée, gabarit non adapté à tous les types de véhicules, etc.)",
+      },
+      {
+        value: QualiteVoieDesserte.ACCESSIBLE,
+        label:
+          "Accessible (bonne connexion au réseau viaire, voie de bonne qualité et suffisamment dimensionnée)",
+      },
       { value: QualiteVoieDesserte.NE_SAIT_PAS, label: "Ne sait pas" },
     ] as SelectOption<QualiteVoieDesserte>[],
   },
@@ -37,9 +49,20 @@ export const ENVIRONNEMENT_FIELDS: Record<string, FormFieldConfig<string>> = {
     section: "environnement",
     options: [
       SELECT_OPTION_PLACEHOLDER,
-      { value: QualitePaysage.SANS_INTERET, label: "Paysage dégradé ou sans qualité notable" },
-      { value: QualitePaysage.ORDINAIRE, label: "Paysage courant" },
-      { value: QualitePaysage.INTERET_REMARQUABLE, label: "Paysage remarquable" },
+      {
+        value: QualitePaysage.SANS_INTERET,
+        label:
+          "Paysage dégradé ou sans qualité notable (zone d'activités, parkings, friches ou ensembles urbains dégradés, entrée de ville peu qualifiée, etc.)",
+      },
+      {
+        value: QualitePaysage.ORDINAIRE,
+        label: "Paysage courant (tissu périurbain banal, champs ouverts, lotissements, etc.)",
+      },
+      {
+        value: QualitePaysage.INTERET_REMARQUABLE,
+        label:
+          "Paysage remarquable (centre historique, littoral et cours d'eau, berges, vallée, coteau, panorama, chaîne de montagne, forêt ancienne, bocage structurant, etc.)",
+      },
       { value: QualitePaysage.NE_SAIT_PAS, label: "Ne sait pas" },
     ] as SelectOption<QualitePaysage>[],
   },
