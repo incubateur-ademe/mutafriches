@@ -22,10 +22,8 @@ const TOOLTIPS: Record<string, string> = {
     "Entrez l'information dont vous disposez sur la présence de pollution sur votre site (sol et bâti).",
   valeurArchitecturaleHistorique:
     "Donnez-nous votre avis sur l'intérêt architectural et/ou patrimonial du bâti présent sur le site. Ce critère est subjectif et relatif à votre appréciation.",
-  qualiteVoieDesserte:
-    "Indiquez la qualité de la desserte du site par les voies de circulation. Accessibilité dégradée : voie d'accès en mauvais état, gabarit de la voie restreint. Accessibilité limitée : connexion au réseau viaire limitée, gabarit non adapté à tous les types de véhicules. Accessible : bonne connexion au réseau viaire, voie de bonne qualité et suffisamment dimensionnée.",
-  qualitePaysage:
-    "Donnez-nous votre avis sur l'intérêt paysager de l'environnement du site. Paysage dégradé ou sans qualité notable : zone d'activités, parkings, friches ou ensembles urbains dégradés, entrée de ville peu qualifiée. Paysage courant : tissu périurbain banal, champs ouverts, lotissements. Paysage remarquable : centre historique, littoral et cours d'eau, berges, vallée, coteau, panorama, chaîne de montagne, forêt ancienne, bocage structurant.",
+  qualiteVoieDesserte: "Indiquez la qualité de la desserte du site par les voies de circulation.",
+  qualitePaysage: "Donnez-nous votre avis sur l'intérêt paysager de l'environnement du site.",
   trameVerteEtBleue:
     "Indiquez si le site est situé dans un corridor écologique ou un réservoir de biodiversité.",
   presenceEspecesProtegees:
