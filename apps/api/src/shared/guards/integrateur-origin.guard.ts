@@ -82,6 +82,9 @@ export class IntegrateurOriginGuard implements CanActivate {
   }
 
   private isAllowedOrigin(origin: string): boolean {
-    return this.allowedOrigins.some((allowed) => origin === allowed || origin.startsWith(allowed));
+    // Égalité stricte sur l'origine complète (scheme + host + port).
+    // Un startsWith laisserait passer les sous-domaines suffixes usurpés
+    // (ex. benefriches.ademe.fr.attacker.com).
+    return this.allowedOrigins.includes(origin);
   }
 }

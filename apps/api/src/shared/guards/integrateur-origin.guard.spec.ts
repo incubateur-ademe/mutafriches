@@ -131,6 +131,37 @@ describe("IntegrateurOriginGuard", () => {
       expect(() => guard.canActivate(context)).toThrow(ForbiddenException);
       expect(() => guard.canActivate(context)).toThrow("Origin not allowed");
     });
+
+    // Regression : un startsWith laissait passer les sous-domaines suffixes usurpes
+    it("devrait bloquer un sous-domaine suffixe usurpe de benefriches.ademe.fr", () => {
+      const guard = new IntegrateurOriginGuard();
+      const context = createMockExecutionContext({
+        origin: "https://benefriches.ademe.fr.attacker.com",
+      });
+
+      expect(() => guard.canActivate(context)).toThrow(ForbiddenException);
+      expect(() => guard.canActivate(context)).toThrow("Origin not allowed");
+    });
+
+    it("devrait bloquer un autre suffixe usurpe de benefriches.ademe.fr", () => {
+      const guard = new IntegrateurOriginGuard();
+      const context = createMockExecutionContext({
+        origin: "https://benefriches.ademe.fr.evil.fr",
+      });
+
+      expect(() => guard.canActivate(context)).toThrow(ForbiddenException);
+      expect(() => guard.canActivate(context)).toThrow("Origin not allowed");
+    });
+
+    it("devrait bloquer un sous-domaine suffixe usurpe de mutafriches.beta.gouv.fr", () => {
+      const guard = new IntegrateurOriginGuard();
+      const context = createMockExecutionContext({
+        origin: "https://mutafriches.beta.gouv.fr.attacker.com",
+      });
+
+      expect(() => guard.canActivate(context)).toThrow(ForbiddenException);
+      expect(() => guard.canActivate(context)).toThrow("Origin not allowed");
+    });
   });
 
   describe("Extraction de l'origine", () => {
