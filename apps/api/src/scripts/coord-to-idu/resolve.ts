@@ -1,22 +1,17 @@
-import { isValidParcelId, normalizeParcelId, parseNumParcelle } from "@mutafriches/shared-types";
+import {
+  parseNumParcelle,
+  sanitizeCommuneName,
+  sanitizeParcelIdForApi,
+} from "@mutafriches/shared-types";
 import { lambert93ToWgs84 } from "./lambert";
 import { parcelleByAttributes, parcelleByPoint } from "./apicarto.client";
 
-// Les valeurs renvoyées par l'API cadastre sont écrites dans des fichiers TS/JSON générés :
-// on les valide strictement avant tout usage (garde-fou injection, cf. CodeQL js/http-to-file-access).
-const IDU_AUTORISE = /^[0-9A-Z]{13,15}$/; // IDU normalisé : uniquement chiffres + lettres majuscules
-const COMMUNE_AUTORISEE = /^[A-Za-zÀ-ÿ0-9 '’()\-.]{1,80}$/;
-
-// Normalise et valide un IDU réseau ; retourne null si le format n'est pas celui attendu.
-export function iduSur(idu: string | undefined): string | null {
-  if (!idu || !isValidParcelId(idu)) return null;
-  const normalise = normalizeParcelId(idu);
-  return IDU_AUTORISE.test(normalise) ? normalise : null;
-}
-
-// Ne conserve un nom de commune réseau que s'il ne contient que des caractères attendus.
-export function communeSure(commune: string | undefined): string | undefined {
-  return commune && COMMUNE_AUTORISEE.test(commune) ? commune : undefined;
+// Les valeurs renvoyées par l'API cadastre sont écrites dans des fichiers TS/JSON générés : on les
+// valide via les utilitaires partagés avant tout usage (garde-fou injection, cf. CodeQL
+// js/http-to-file-access). sanitizeParcelIdForApi valide + normalise l'IDU ; sanitizeCommuneName
+// restreint le nom de commune à un jeu de caractères sûr.
+function iduSur(idu: string | undefined): string | null {
+  return idu ? sanitizeParcelIdForApi(idu) : null;
 }
 
 export interface SiteInput {
@@ -66,7 +61,7 @@ export async function resolveSite(site: SiteInput): Promise<SiteResolution> {
     parcelles.push({
       ref: `${ref.section}${ref.numero}`,
       idu,
-      commune: communeSure(found?.commune),
+      commune: sanitizeCommuneName(found?.commune) ?? undefined,
     });
     if (!idu) {
       messages.push(
