@@ -1,0 +1,332 @@
+[
+  {
+    "id": "28",
+    "nom": "Centrale EDF",
+    "commune": "La Grande Paroisse",
+    "insee": "77210",
+    "numParcelle": "AH13",
+    "x": 689633.315441144,
+    "y": 6808577.105197838,
+    "surface": "227340"
+  },
+  {
+    "id": "20",
+    "nom": "Ex-Schulmann",
+    "commune": "Montereau Fault Yonne",
+    "insee": "77305",
+    "numParcelle": "AB160/161/163/173/174",
+    "x": 695480.2476293229,
+    "y": 6809874.18120933,
+    "surface": "15614"
+  },
+  {
+    "id": "8",
+    "nom": "Vilmorin - Jardinerie",
+    "commune": "Montereau Fault Yonne",
+    "insee": "77305",
+    "numParcelle": "AV323",
+    "x": 696352.0764149257,
+    "y": 6809517.584402619,
+    "surface": "2562"
+  },
+  {
+    "id": "9",
+    "nom": "Polyclinique Seine et Yonne",
+    "commune": "Montereau Fault Yonne",
+    "insee": "77305",
+    "numParcelle": "AV94/100/374/375",
+    "x": 696448.7632277865,
+    "y": 6809623.683630563,
+    "surface": "2840"
+  },
+  {
+    "id": "17",
+    "nom": "Proche SMAB/Véolia",
+    "commune": "Cannes Ecluse",
+    "insee": "77061",
+    "numParcelle": "A3/4/5/749/811",
+    "x": 697391.452656511,
+    "y": 6809248.367981022,
+    "surface": "13386"
+  },
+  {
+    "id": "18",
+    "nom": "Boisement PA Confluent",
+    "commune": "Montereau Fault Yonne",
+    "insee": "77305",
+    "numParcelle": "AN526",
+    "x": 697347.1011476364,
+    "y": 6809449.854331766,
+    "surface": "2471"
+  },
+  {
+    "id": "2",
+    "nom": "Ex-Miroiterie",
+    "commune": "Montereau Fault Yonne",
+    "insee": "77305",
+    "numParcelle": "AN68",
+    "x": 697679.8152672526,
+    "y": 6809457.612062164,
+    "surface": "14829"
+  },
+  {
+    "id": "4",
+    "nom": "XELLA",
+    "commune": "Montereau Fault Yonne",
+    "insee": "77305",
+    "numParcelle": "AN228",
+    "x": 698133.7492335148,
+    "y": 6809493.332756163,
+    "surface": "64551"
+  },
+  {
+    "id": "5",
+    "nom": "Eurobéton",
+    "commune": "Montereau Fault Yonne",
+    "insee": "77305",
+    "numParcelle": "AN114/446/447/498/500",
+    "x": 697960.4206302047,
+    "y": 6809197.96744678,
+    "surface": "32015"
+  },
+  {
+    "id": "1",
+    "nom": "Film Argent",
+    "commune": "Montereau Fault Yonne",
+    "insee": "77305",
+    "numParcelle": "AN548/549/550/551",
+    "x": 698282.4959819317,
+    "y": 6809241.171920656,
+    "surface": "2454"
+  },
+  {
+    "id": "16",
+    "nom": "Etincel / Transdev",
+    "commune": "Montereau Fault Yonne",
+    "insee": "77305",
+    "numParcelle": "AN87",
+    "x": 697479.257990718,
+    "y": 6809815.942954703,
+    "surface": "5200"
+  },
+  {
+    "id": "22",
+    "nom": "Terrain APRR - Confluent",
+    "commune": "Montereau Fault Yonne",
+    "insee": "77305",
+    "numParcelle": "AM393/394",
+    "x": 698314.4077537054,
+    "y": 6810516.027428458,
+    "surface": "28913"
+  },
+  {
+    "id": "29",
+    "nom": "APRR",
+    "commune": "Forges",
+    "insee": "77194",
+    "numParcelle": "ZI10",
+    "x": 695221.0234016503,
+    "y": 6811374.936113775,
+    "surface": "3257"
+  },
+  {
+    "id": "11",
+    "nom": "Ex- garage auto",
+    "commune": "Montereau Fault Yonne",
+    "insee": "77305",
+    "numParcelle": "AD3",
+    "x": 695821.2096963737,
+    "y": 6810783.777129658,
+    "surface": "2758"
+  },
+  {
+    "id": "15",
+    "nom": "Restaurant Ormeaux",
+    "commune": "Montereau Fault Yonne",
+    "insee": "77305",
+    "numParcelle": "AD4/5/212",
+    "x": 695840.2468361184,
+    "y": 6810752.630460389,
+    "surface": "1588"
+  },
+  {
+    "id": "13",
+    "nom": "Technogravura",
+    "commune": "Montereau Fault Yonne",
+    "insee": "77305",
+    "numParcelle": "AD267",
+    "x": 695898.0055703799,
+    "y": 6810767.293911432,
+    "surface": "4933"
+  },
+  {
+    "id": "10",
+    "nom": "Musardière",
+    "commune": "Montereau Fault Yonne",
+    "insee": "77305",
+    "numParcelle": "AD818/825/826/827",
+    "x": 696023.7580050193,
+    "y": 6810880.3608029,
+    "surface": "4773"
+  },
+  {
+    "id": "3",
+    "nom": "Loiret Negoce",
+    "commune": "Montereau Fault Yonne",
+    "insee": "77305",
+    "numParcelle": "AD292",
+    "x": 695994.5536013074,
+    "y": 6810922.263487812,
+    "surface": "2943"
+  },
+  {
+    "id": "6",
+    "nom": "Marais du Saule",
+    "commune": "Varennes sur Seine",
+    "insee": "77482",
+    "numParcelle": "C1299/1314",
+    "x": 695741.8069145108,
+    "y": 6807799.309498301,
+    "surface": "2287"
+  },
+  {
+    "id": "26",
+    "nom": "Fossard",
+    "commune": "Esmans",
+    "insee": "77172",
+    "numParcelle": "YC77/114/116/118/119/120/173/174/175/176",
+    "x": 696913.4842313639,
+    "y": 6807147.124682812,
+    "surface": "16767"
+  },
+  {
+    "id": "27",
+    "nom": "Restaurant Fossard",
+    "commune": "Varennes sur Seine",
+    "insee": "77482",
+    "numParcelle": "C723",
+    "x": 696784.5385095315,
+    "y": 6806744.871568676,
+    "surface": "371"
+  },
+  {
+    "id": "7",
+    "nom": "Lidl",
+    "commune": "Cannes Ecluse",
+    "insee": "77061",
+    "numParcelle": "AC578/ZB580",
+    "x": 698846.1019558639,
+    "y": 6806607.401437928,
+    "surface": "7830"
+  },
+  {
+    "id": "21",
+    "nom": "Bert & You",
+    "commune": "Marolles sur Seine",
+    "insee": "77279",
+    "numParcelle": "ZN228/329/339/342/344",
+    "x": 701913.840757352,
+    "y": 6808874.568671292,
+    "surface": "75561"
+  },
+  {
+    "id": "14",
+    "nom": "FM Logistics",
+    "commune": "Marolles sur Seine",
+    "insee": "77279",
+    "numParcelle": "ZN375/376",
+    "x": 701955.9040818701,
+    "y": 6808596.884529253,
+    "surface": "210063"
+  },
+  {
+    "id": "19",
+    "nom": "Ex Magasins meubles",
+    "commune": "Esmans",
+    "insee": "77172",
+    "numParcelle": "A306/307/308/309/310/311/1116/1118/1120/1122/1124/1126/1128/1132/1133/1136/1137",
+    "x": 696822.9843069031,
+    "y": 6805005.331470045,
+    "surface": "7874"
+  },
+  {
+    "id": "23",
+    "nom": "Ex-STLG",
+    "commune": "Varennes sur Seine",
+    "insee": "77482",
+    "numParcelle": "C950",
+    "x": 697345.4471894349,
+    "y": 6807870.533899311,
+    "surface": "7685"
+  },
+  {
+    "id": "24",
+    "nom": "Route de Cannes",
+    "commune": "Varennes sur Seine",
+    "insee": "77482",
+    "numParcelle": "C961",
+    "x": 697272.0582557045,
+    "y": 6807925.122643152,
+    "surface": "6120"
+  },
+  {
+    "id": "25",
+    "nom": "Route de Cannes 2",
+    "commune": "Varennes sur Seine",
+    "insee": "77482",
+    "numParcelle": "C960",
+    "x": 697175.1899846317,
+    "y": 6808008.725839524,
+    "surface": "11557"
+  },
+  {
+    "id": "12",
+    "nom": "Ex-Millet",
+    "commune": "Laval en Brie",
+    "insee": "77245",
+    "numParcelle": "B547/548/549/901/903/904",
+    "x": 700357.1233440927,
+    "y": 6813719.719644605,
+    "surface": "13480"
+  },
+  {
+    "id": "30",
+    "nom": "Ex-bâtiment ORANGE",
+    "commune": "Montereau Fault Yonne",
+    "insee": "77305",
+    "numParcelle": "AV499/500",
+    "x": 696307.7251475693,
+    "y": 6809573.039266413,
+    "surface": "3398"
+  },
+  {
+    "id": "31",
+    "nom": "Ex Poste Montereau",
+    "commune": "Montereau Fault Yonne",
+    "insee": "77305",
+    "numParcelle": "AP452/453/454",
+    "x": 696817.6403723264,
+    "y": 6809674.230896938,
+    "surface": "2767"
+  },
+  {
+    "id": "32",
+    "nom": "SNCF - Délaissés ferrés",
+    "commune": "Montereau Fault Yonne",
+    "insee": "77305",
+    "numParcelle": "AX257",
+    "x": 695701.6455214514,
+    "y": 6808748.535362323,
+    "surface": "33708"
+  },
+  {
+    "id": "33",
+    "nom": "Bâtiment SNCF",
+    "commune": "Montereau Fault Yonne",
+    "insee": "77305",
+    "numParcelle": "AX257",
+    "x": 695537.8802316018,
+    "y": 6808911.116875569,
+    "surface": "8053"
+  }
+]

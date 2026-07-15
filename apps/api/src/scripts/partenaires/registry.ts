@@ -2,6 +2,7 @@ import { SitePrefetch } from "./types";
 import { CCI92_SITES } from "./cci92";
 import { AURA_SITES } from "./aura";
 import { DDT_VOSGES_SITES } from "./ddt-vosges";
+import { SCET_SITES } from "./scet";
 
 /**
  * Registre des partenaires à pré-chauffer, keyé par slug (identique au slug UI dans
@@ -16,6 +17,7 @@ export const PARTENAIRES_PREFETCH: Record<string, SitePrefetch[]> = {
   "cci-92": CCI92_SITES,
   aura: AURA_SITES,
   "ddt-vosges": DDT_VOSGES_SITES,
+  scet: SCET_SITES,
 };
 
 /** Métadonnées d'un partenaire pour le seed en base (db:partenaires:seed). */
@@ -48,5 +50,11 @@ export const PARTENAIRES_META: Record<string, PartenaireMeta> = {
     description:
       "Qualification et mutabilité des friches du département des Vosges, base de la DDT 88.",
     departement: "88",
+  },
+  scet: {
+    nom: "SCET – Banque des Territoires",
+    description:
+      "Qualification et mutabilité des friches de la CC du Pays de Montereau (77), inventaire du SCET (groupe Caisse des Dépôts).",
+    departement: "77",
   },
 };

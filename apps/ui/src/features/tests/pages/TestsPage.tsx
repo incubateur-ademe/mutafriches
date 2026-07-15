@@ -12,6 +12,14 @@ export function Tests() {
       image: "/illustrations/undraw_file-search_cbur.svg",
     },
     {
+      id: "test-coord-idu",
+      title: "Coordonnées → IDU",
+      description:
+        "Retrouver l'IDU d'une parcelle à partir d'un numéro de parcelle (INSEE + section/numéro) ou de coordonnées, via l'API Carto Cadastre",
+      href: "/test/coord-idu",
+      image: "/illustrations/undraw_file-search_cbur.svg",
+    },
+    {
       id: "test-iframe",
       title: "Test IFrame",
       description: "Tester l'intégration en IFrame et la communication entre l'iframe et le parent",

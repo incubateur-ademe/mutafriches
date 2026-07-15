@@ -12,6 +12,16 @@ Procédure pas à pas pour publier une nouvelle page partenaire multisite
 ## Pré-requis : récupérer la data du partenaire
 
 - [ ] Obtenir la **liste des parcelles** (IDU cadastraux, 14 caractères) du partenaire.
+  - **Partenaire sans IDU** (fichier avec seulement des coordonnées et/ou des numéros de
+    parcelle, ex. inventaire SCET/CCPM) : résoudre les IDU réels via l'API Carto Cadastre.
+    - Outil de mise au point ponctuel : page de test `/test/coord-idu` (numéro de parcelle
+      + INSEE, ou point WGS84).
+    - Traitement par lot : script `apps/api/src/scripts/resolve-idu-scet.ts` (générique,
+      moteur dans `apps/api/src/scripts/coord-to-idu/`). Il reprojette les coordonnées
+      Lambert-93 → WGS84, résout chaque IDU par attributs (`code_insee`/section/numéro) et
+      contre-vérifie par les coordonnées ; il génère directement `parcelles.ts` (UI) et
+      `<slug>.ts` (backend), et un rapport d'audit `data/<slug>.resolved.json`. Adapter le
+      chemin d'entrée/sortie pour un nouveau partenaire.
 - [ ] Choisir un **`slug`** (minuscules, sans espace ; segment d'URL, ex. `aura`, `cci-92`).
 - [ ] Définir le **regroupement en sites** : des parcelles partageant le même `idtup` forment
       un seul site (mono ou multi-parcelle).
