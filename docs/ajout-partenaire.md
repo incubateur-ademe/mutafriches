@@ -14,7 +14,7 @@ Procédure pas à pas pour publier une nouvelle page partenaire multisite
 - [ ] Obtenir la **liste des parcelles** (IDU cadastraux, 14 caractères) du partenaire.
   - **Partenaire sans IDU** (fichier avec seulement des coordonnées et/ou des numéros de
     parcelle, ex. inventaire SCET/CCPM) : résoudre les IDU réels via l'API Carto Cadastre.
-    - Outil de mise au point ponctuel : page de test `/test/coord-idu` (numéro de parcelle
+    - Outil de mise au point ponctuel : page de test `/test/resolution-idu` (numéro de parcelle
       + INSEE, ou point WGS84).
     - Traitement par lot : script `apps/api/src/scripts/resolve-idu-scet.ts` (générique,
       moteur dans `apps/api/src/scripts/coord-to-idu/`). Il reprojette les coordonnées

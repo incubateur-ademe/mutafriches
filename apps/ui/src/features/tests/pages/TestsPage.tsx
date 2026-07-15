@@ -12,11 +12,11 @@ export function Tests() {
       image: "/illustrations/undraw_file-search_cbur.svg",
     },
     {
-      id: "test-coord-idu",
-      title: "Coordonnées → IDU",
+      id: "test-resolution-idu",
+      title: "Résolution d'IDU",
       description:
         "Retrouver l'IDU d'une parcelle à partir d'un numéro de parcelle (INSEE + section/numéro) ou de coordonnées, via l'API Carto Cadastre",
-      href: "/test/coord-idu",
+      href: "/test/resolution-idu",
       image: "/illustrations/undraw_file-search_cbur.svg",
     },
     {
@@ -64,7 +64,7 @@ export function Tests() {
 
         <div className="fr-grid-row fr-grid-row--gutters fr-mb-12v">
           {testPages.map((test) => (
-            <div key={test.id} className="fr-col-12 fr-col-sm-6 fr-col-lg-6">
+            <div key={test.id} className="fr-col-12 fr-col-sm-4 fr-col-lg-4">
               <div className="fr-card fr-enlarge-link">
                 <div className="fr-card__body">
                   <div className="fr-card__content">

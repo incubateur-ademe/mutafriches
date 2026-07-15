@@ -31,7 +31,7 @@ anonymisé, résout tous les IDU, produit un rapport d'audit (`data/<slug>.resol
 **génère directement** les fichiers de données UI et backend. La logique pure (décomposition du
 champ numéro, construction d'un IDU candidat) vit dans `packages/shared-types`
 (`parseNumParcelle`, `buildIduCandidate`) et est partagée avec une page de test UI
-(`/test/coord-idu`). La reprojection Lambert-93 s'appuie sur **`proj4`** ajouté en
+(`/test/resolution-idu`). La reprojection Lambert-93 s'appuie sur **`proj4`** ajouté en
 **devDependency** de l'API (usage script/data-prep uniquement, hors runtime de production).
 
 ## Options envisagées
