@@ -1,19 +1,22 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { buildIduCandidate, parseNumParcelle } from "@mutafriches/shared-types";
+import {
+  ApicartoCadastreResponse,
+  apicartoCadastreUrl,
+  apicartoParamsParAttributs,
+  apicartoParamsParPoint,
+  buildIduCandidate,
+  ParcelleCadastre,
+  parseNumParcelle,
+  premiereParcelle,
+} from "@mutafriches/shared-types";
 import { Layout } from "../../../../shared/components/layout/Layout";
 
-const APICARTO_URL = "https://apicarto.ign.fr/api/cadastre/parcelle";
-
-interface ApicartoFeature {
-  properties: { idu: string; nom_com?: string; contenance?: number };
-}
-
-async function fetchApicarto(params: Record<string, string>): Promise<ApicartoFeature[]> {
-  const res = await fetch(`${APICARTO_URL}?${new URLSearchParams(params).toString()}`);
-  if (!res.ok) return [];
-  const data = (await res.json()) as { features?: ApicartoFeature[] };
-  return data.features ?? [];
+// Frontière I/O navigateur (les conventions apicarto vivent dans shared-types).
+async function fetchCadastre(params: Record<string, string>): Promise<ParcelleCadastre | null> {
+  const res = await fetch(apicartoCadastreUrl(params));
+  if (!res.ok) return null;
+  return premiereParcelle((await res.json()) as ApicartoCadastreResponse);
 }
 
 interface LigneResolution {
@@ -40,18 +43,14 @@ export function CoordIduPage() {
     const refs = parseNumParcelle(numParcelle);
     const resultats: LigneResolution[] = [];
     for (const ref of refs) {
-      const features = await fetchApicarto({
-        code_insee: insee,
-        section: ref.section.padStart(2, "0"),
-        numero: ref.numero.padStart(4, "0"),
-        source_ign: "PCI",
-      });
-      const f = features[0];
+      const parcelle = await fetchCadastre(
+        apicartoParamsParAttributs(insee, ref.section, ref.numero),
+      );
       resultats.push({
         ref: `${ref.section}${ref.numero}`,
         candidat: buildIduCandidate(insee, ref.section, ref.numero),
-        idu: f?.properties.idu ?? null,
-        commune: f?.properties.nom_com ?? null,
+        idu: parcelle?.idu ?? null,
+        commune: parcelle?.commune ?? null,
       });
     }
     setLignes(resultats);
@@ -61,14 +60,9 @@ export function CoordIduPage() {
   const resoudreParPoint = async (): Promise<void> => {
     setLoadingPoint(true);
     setPointResult(null);
-    const geom = JSON.stringify({
-      type: "Point",
-      coordinates: [Number(lon), Number(lat)],
-    });
-    const features = await fetchApicarto({ geom, source_ign: "PCI" });
-    const f = features[0];
+    const parcelle = await fetchCadastre(apicartoParamsParPoint(Number(lon), Number(lat)));
     setPointResult(
-      f ? `${f.properties.idu} — ${f.properties.nom_com ?? "?"}` : "Aucune parcelle à ce point",
+      parcelle ? `${parcelle.idu} — ${parcelle.commune ?? "?"}` : "Aucune parcelle à ce point",
     );
     setLoadingPoint(false);
   };
