@@ -26,7 +26,7 @@ export function Footer() {
             </div>
           </div>
           <div className="fr-footer__bottom">
-            <ul className="fr-footer__bottom-list">
+            <ul className="fr-footer__bottom-list [&_li]:whitespace-nowrap">
               <li className="fr-footer__bottom-item" key="mentions-legales">
                 <a className="fr-footer__bottom-link" href={ROUTES.MENTIONS_LEGALES}>
                   Mentions légales
