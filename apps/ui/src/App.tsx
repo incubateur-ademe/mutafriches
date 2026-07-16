@@ -6,6 +6,7 @@ import { FormProvider } from "./shared/form/FormProvider";
 import { TestIframe } from "./features/tests/test-iframe/pages/TestIframe";
 import { TestCallback } from "./features/tests/test-iframe/pages/TestCallback";
 import { DiagnosticParcellePage } from "./features/tests/test-idu-diagnostic/pages/DiagnosticParcellePage";
+import { ResolutionIduPage } from "./features/tests/test-resolution-idu/pages/ResolutionIduPage";
 import { useEventTracking } from "./shared/hooks/useEventTracking";
 import { useEffect, useRef } from "react";
 import { TypeEvenement } from "@mutafriches/shared-types";
@@ -86,6 +87,7 @@ function AppContent() {
         <Route path={ROUTES.TEST_IFRAME} element={<TestIframe />} />
         <Route path={ROUTES.TEST_CALLBACK} element={<TestCallback />} />
         <Route path={ROUTES.TEST_DIAGNOSTIC_PARCELLE} element={<DiagnosticParcellePage />} />
+        <Route path={ROUTES.TEST_RESOLUTION_IDU} element={<ResolutionIduPage />} />
       </Routes>
     </>
   );

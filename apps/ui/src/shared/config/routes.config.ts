@@ -38,6 +38,7 @@ export const ROUTES = {
   TEST_IFRAME: "/test/iframe",
   TEST_CALLBACK: "/test/callback",
   TEST_DIAGNOSTIC_PARCELLE: "/test/diagnostic-parcelle",
+  TEST_RESOLUTION_IDU: "/test/resolution-idu",
 
   // Partenaires
   PARTENAIRES: "/partenaires",

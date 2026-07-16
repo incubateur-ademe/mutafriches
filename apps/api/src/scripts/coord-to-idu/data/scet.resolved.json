@@ -1,0 +1,976 @@
+[
+  {
+    "id": "28",
+    "nom": "Centrale EDF",
+    "commune": "La Grande Paroisse",
+    "insee": "77210",
+    "parcelles": [
+      {
+        "ref": "AH13",
+        "idu": "77210000AH0013",
+        "commune": "La Grande-Paroisse"
+      }
+    ],
+    "idusValides": ["77210000AH0013"],
+    "pointIdu": "77210000AH0013",
+    "pointDansSite": true,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "20",
+    "nom": "Ex-Schulmann",
+    "commune": "Montereau Fault Yonne",
+    "insee": "77305",
+    "parcelles": [
+      {
+        "ref": "AB160",
+        "idu": "77305000AB0160",
+        "commune": "Montereau-Fault-Yonne"
+      },
+      {
+        "ref": "AB161",
+        "idu": "77305000AB0161",
+        "commune": "Montereau-Fault-Yonne"
+      },
+      {
+        "ref": "AB163",
+        "idu": "77305000AB0163",
+        "commune": "Montereau-Fault-Yonne"
+      },
+      {
+        "ref": "AB173",
+        "idu": "77305000AB0173",
+        "commune": "Montereau-Fault-Yonne"
+      },
+      {
+        "ref": "AB174",
+        "idu": "77305000AB0174",
+        "commune": "Montereau-Fault-Yonne"
+      }
+    ],
+    "idusValides": [
+      "77305000AB0160",
+      "77305000AB0161",
+      "77305000AB0163",
+      "77305000AB0173",
+      "77305000AB0174"
+    ],
+    "pointIdu": "77305000AB0163",
+    "pointDansSite": true,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "8",
+    "nom": "Vilmorin - Jardinerie",
+    "commune": "Montereau Fault Yonne",
+    "insee": "77305",
+    "parcelles": [
+      {
+        "ref": "AV323",
+        "idu": "77305000AV0323",
+        "commune": "Montereau-Fault-Yonne"
+      }
+    ],
+    "idusValides": ["77305000AV0323"],
+    "pointIdu": "77305000AV0323",
+    "pointDansSite": true,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "9",
+    "nom": "Polyclinique Seine et Yonne",
+    "commune": "Montereau Fault Yonne",
+    "insee": "77305",
+    "parcelles": [
+      {
+        "ref": "AV94",
+        "idu": "77305000AV0094",
+        "commune": "Montereau-Fault-Yonne"
+      },
+      {
+        "ref": "AV100",
+        "idu": "77305000AV0100",
+        "commune": "Montereau-Fault-Yonne"
+      },
+      {
+        "ref": "AV374",
+        "idu": "77305000AV0374",
+        "commune": "Montereau-Fault-Yonne"
+      },
+      {
+        "ref": "AV375",
+        "idu": "77305000AV0375",
+        "commune": "Montereau-Fault-Yonne"
+      }
+    ],
+    "idusValides": ["77305000AV0094", "77305000AV0100", "77305000AV0374", "77305000AV0375"],
+    "pointIdu": "77305000AV0374",
+    "pointDansSite": true,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "17",
+    "nom": "Proche SMAB/Véolia",
+    "commune": "Cannes Ecluse",
+    "insee": "77061",
+    "parcelles": [
+      {
+        "ref": "A3",
+        "idu": "77061000A0003",
+        "commune": "Cannes-Écluse"
+      },
+      {
+        "ref": "A4",
+        "idu": "77061000A0004",
+        "commune": "Cannes-Écluse"
+      },
+      {
+        "ref": "A5",
+        "idu": "77061000A0005",
+        "commune": "Cannes-Écluse"
+      },
+      {
+        "ref": "A749",
+        "idu": "77061000A0749",
+        "commune": "Cannes-Écluse"
+      },
+      {
+        "ref": "A811",
+        "idu": "77061000A0811",
+        "commune": "Cannes-Écluse"
+      }
+    ],
+    "idusValides": [
+      "77061000A0003",
+      "77061000A0004",
+      "77061000A0005",
+      "77061000A0749",
+      "77061000A0811"
+    ],
+    "pointIdu": "77061000A0811",
+    "pointDansSite": true,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "18",
+    "nom": "Boisement PA Confluent",
+    "commune": "Montereau Fault Yonne",
+    "insee": "77305",
+    "parcelles": [
+      {
+        "ref": "AN526",
+        "idu": "77305000AN0526",
+        "commune": "Montereau-Fault-Yonne"
+      }
+    ],
+    "idusValides": ["77305000AN0526"],
+    "pointIdu": "77305000AN0526",
+    "pointDansSite": true,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "2",
+    "nom": "Ex-Miroiterie",
+    "commune": "Montereau Fault Yonne",
+    "insee": "77305",
+    "parcelles": [
+      {
+        "ref": "AN68",
+        "idu": "77305000AN0068",
+        "commune": "Montereau-Fault-Yonne"
+      }
+    ],
+    "idusValides": ["77305000AN0068"],
+    "pointIdu": "77305000AN0068",
+    "pointDansSite": true,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "4",
+    "nom": "XELLA",
+    "commune": "Montereau Fault Yonne",
+    "insee": "77305",
+    "parcelles": [
+      {
+        "ref": "AN228",
+        "idu": "77305000AN0228",
+        "commune": "Montereau-Fault-Yonne"
+      }
+    ],
+    "idusValides": ["77305000AN0228"],
+    "pointIdu": "77305000AN0228",
+    "pointDansSite": true,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "5",
+    "nom": "Eurobéton",
+    "commune": "Montereau Fault Yonne",
+    "insee": "77305",
+    "parcelles": [
+      {
+        "ref": "AN114",
+        "idu": "77305000AN0114",
+        "commune": "Montereau-Fault-Yonne"
+      },
+      {
+        "ref": "AN446",
+        "idu": "77305000AN0446",
+        "commune": "Montereau-Fault-Yonne"
+      },
+      {
+        "ref": "AN447",
+        "idu": "77305000AN0447",
+        "commune": "Montereau-Fault-Yonne"
+      },
+      {
+        "ref": "AN498",
+        "idu": "77305000AN0498",
+        "commune": "Montereau-Fault-Yonne"
+      },
+      {
+        "ref": "AN500",
+        "idu": "77305000AN0500",
+        "commune": "Montereau-Fault-Yonne"
+      }
+    ],
+    "idusValides": [
+      "77305000AN0114",
+      "77305000AN0446",
+      "77305000AN0447",
+      "77305000AN0498",
+      "77305000AN0500"
+    ],
+    "pointIdu": "77305000AN0114",
+    "pointDansSite": true,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "1",
+    "nom": "Film Argent",
+    "commune": "Montereau Fault Yonne",
+    "insee": "77305",
+    "parcelles": [
+      {
+        "ref": "AN548",
+        "idu": "77305000AN0548",
+        "commune": "Montereau-Fault-Yonne"
+      },
+      {
+        "ref": "AN549",
+        "idu": "77305000AN0549",
+        "commune": "Montereau-Fault-Yonne"
+      },
+      {
+        "ref": "AN550",
+        "idu": "77305000AN0550",
+        "commune": "Montereau-Fault-Yonne"
+      },
+      {
+        "ref": "AN551",
+        "idu": "77305000AN0551",
+        "commune": "Montereau-Fault-Yonne"
+      }
+    ],
+    "idusValides": ["77305000AN0548", "77305000AN0549", "77305000AN0550", "77305000AN0551"],
+    "pointIdu": "77305000AN0549",
+    "pointDansSite": true,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "16",
+    "nom": "Etincel / Transdev",
+    "commune": "Montereau Fault Yonne",
+    "insee": "77305",
+    "parcelles": [
+      {
+        "ref": "AN87",
+        "idu": "77305000AN0087",
+        "commune": "Montereau-Fault-Yonne"
+      }
+    ],
+    "idusValides": ["77305000AN0087"],
+    "pointIdu": "77305000AN0087",
+    "pointDansSite": true,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "22",
+    "nom": "Terrain APRR - Confluent",
+    "commune": "Montereau Fault Yonne",
+    "insee": "77305",
+    "parcelles": [
+      {
+        "ref": "AM393",
+        "idu": "77305000AM0393",
+        "commune": "Montereau-Fault-Yonne"
+      },
+      {
+        "ref": "AM394",
+        "idu": "77305000AM0394",
+        "commune": "Montereau-Fault-Yonne"
+      }
+    ],
+    "idusValides": ["77305000AM0393", "77305000AM0394"],
+    "pointIdu": "77305000AM0394",
+    "pointDansSite": true,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "29",
+    "nom": "APRR",
+    "commune": "Forges",
+    "insee": "77194",
+    "parcelles": [
+      {
+        "ref": "ZI10",
+        "idu": "77194000ZI0010",
+        "commune": "Forges"
+      }
+    ],
+    "idusValides": ["77194000ZI0010"],
+    "pointIdu": "77194000ZI0010",
+    "pointDansSite": true,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "11",
+    "nom": "Ex- garage auto",
+    "commune": "Montereau Fault Yonne",
+    "insee": "77305",
+    "parcelles": [
+      {
+        "ref": "AD3",
+        "idu": "77305000AD0003",
+        "commune": "Montereau-Fault-Yonne"
+      }
+    ],
+    "idusValides": ["77305000AD0003"],
+    "pointIdu": "77305000AD0003",
+    "pointDansSite": true,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "15",
+    "nom": "Restaurant Ormeaux",
+    "commune": "Montereau Fault Yonne",
+    "insee": "77305",
+    "parcelles": [
+      {
+        "ref": "AD4",
+        "idu": "77305000AD0004",
+        "commune": "Montereau-Fault-Yonne"
+      },
+      {
+        "ref": "AD5",
+        "idu": "77305000AD0005",
+        "commune": "Montereau-Fault-Yonne"
+      },
+      {
+        "ref": "AD212",
+        "idu": "77305000AD0212",
+        "commune": "Montereau-Fault-Yonne"
+      }
+    ],
+    "idusValides": ["77305000AD0004", "77305000AD0005", "77305000AD0212"],
+    "pointIdu": "77305000AD0004",
+    "pointDansSite": true,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "13",
+    "nom": "Technogravura",
+    "commune": "Montereau Fault Yonne",
+    "insee": "77305",
+    "parcelles": [
+      {
+        "ref": "AD267",
+        "idu": "77305000AD0267",
+        "commune": "Montereau-Fault-Yonne"
+      }
+    ],
+    "idusValides": ["77305000AD0267"],
+    "pointIdu": "77305000AD0267",
+    "pointDansSite": true,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "10",
+    "nom": "Musardière",
+    "commune": "Montereau Fault Yonne",
+    "insee": "77305",
+    "parcelles": [
+      {
+        "ref": "AD818",
+        "idu": "77305000AD0818",
+        "commune": "Montereau-Fault-Yonne"
+      },
+      {
+        "ref": "AD825",
+        "idu": "77305000AD0825",
+        "commune": "Montereau-Fault-Yonne"
+      },
+      {
+        "ref": "AD826",
+        "idu": "77305000AD0826",
+        "commune": "Montereau-Fault-Yonne"
+      },
+      {
+        "ref": "AD827",
+        "idu": "77305000AD0827",
+        "commune": "Montereau-Fault-Yonne"
+      }
+    ],
+    "idusValides": ["77305000AD0818", "77305000AD0825", "77305000AD0826", "77305000AD0827"],
+    "pointIdu": "77305000AD0825",
+    "pointDansSite": true,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "3",
+    "nom": "Loiret Negoce",
+    "commune": "Montereau Fault Yonne",
+    "insee": "77305",
+    "parcelles": [
+      {
+        "ref": "AD292",
+        "idu": "77305000AD0292",
+        "commune": "Montereau-Fault-Yonne"
+      }
+    ],
+    "idusValides": ["77305000AD0292"],
+    "pointIdu": "77305000AD0292",
+    "pointDansSite": true,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "6",
+    "nom": "Marais du Saule",
+    "commune": "Varennes sur Seine",
+    "insee": "77482",
+    "parcelles": [
+      {
+        "ref": "C1299",
+        "idu": "77482000C1299",
+        "commune": "Varennes-sur-Seine"
+      },
+      {
+        "ref": "C1314",
+        "idu": "77482000C1314",
+        "commune": "Varennes-sur-Seine"
+      }
+    ],
+    "idusValides": ["77482000C1299", "77482000C1314"],
+    "pointIdu": "77482000C1299",
+    "pointDansSite": true,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "26",
+    "nom": "Fossard",
+    "commune": "Esmans",
+    "insee": "77172",
+    "parcelles": [
+      {
+        "ref": "YC77",
+        "idu": "77172000YC0077",
+        "commune": "Esmans"
+      },
+      {
+        "ref": "YC114",
+        "idu": "77172000YC0114",
+        "commune": "Esmans"
+      },
+      {
+        "ref": "YC116",
+        "idu": "77172000YC0116",
+        "commune": "Esmans"
+      },
+      {
+        "ref": "YC118",
+        "idu": "77172000YC0118",
+        "commune": "Esmans"
+      },
+      {
+        "ref": "YC119",
+        "idu": "77172000YC0119",
+        "commune": "Esmans"
+      },
+      {
+        "ref": "YC120",
+        "idu": "77172000YC0120",
+        "commune": "Esmans"
+      },
+      {
+        "ref": "YC173",
+        "idu": "77172000YC0173",
+        "commune": "Esmans"
+      },
+      {
+        "ref": "YC174",
+        "idu": "77172000YC0174",
+        "commune": "Esmans"
+      },
+      {
+        "ref": "YC175",
+        "idu": "77172000YC0175",
+        "commune": "Esmans"
+      },
+      {
+        "ref": "YC176",
+        "idu": "77172000YC0176",
+        "commune": "Esmans"
+      }
+    ],
+    "idusValides": [
+      "77172000YC0077",
+      "77172000YC0114",
+      "77172000YC0116",
+      "77172000YC0118",
+      "77172000YC0119",
+      "77172000YC0120",
+      "77172000YC0173",
+      "77172000YC0174",
+      "77172000YC0175",
+      "77172000YC0176"
+    ],
+    "pointIdu": "77172000YC0176",
+    "pointDansSite": true,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "27",
+    "nom": "Restaurant Fossard",
+    "commune": "Varennes sur Seine",
+    "insee": "77482",
+    "parcelles": [
+      {
+        "ref": "C723",
+        "idu": "77482000C0723",
+        "commune": "Varennes-sur-Seine"
+      }
+    ],
+    "idusValides": ["77482000C0723"],
+    "pointIdu": "77482000C0723",
+    "pointDansSite": true,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "7",
+    "nom": "Lidl",
+    "commune": "Cannes Ecluse",
+    "insee": "77061",
+    "parcelles": [
+      {
+        "ref": "AC578",
+        "idu": "77061000AC0578",
+        "commune": "Cannes-Écluse"
+      },
+      {
+        "ref": "ZB580",
+        "idu": "77061000ZB0580",
+        "commune": "Cannes-Écluse"
+      }
+    ],
+    "idusValides": ["77061000AC0578", "77061000ZB0580"],
+    "pointIdu": "77061000ZB0580",
+    "pointDansSite": true,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "21",
+    "nom": "Bert & You",
+    "commune": "Marolles sur Seine",
+    "insee": "77279",
+    "parcelles": [
+      {
+        "ref": "ZN228",
+        "idu": "77279000ZN0228",
+        "commune": "Marolles-sur-Seine"
+      },
+      {
+        "ref": "ZN329",
+        "idu": "77279000ZN0329",
+        "commune": "Marolles-sur-Seine"
+      },
+      {
+        "ref": "ZN339",
+        "idu": "77279000ZN0339",
+        "commune": "Marolles-sur-Seine"
+      },
+      {
+        "ref": "ZN342",
+        "idu": "77279000ZN0342",
+        "commune": "Marolles-sur-Seine"
+      },
+      {
+        "ref": "ZN344",
+        "idu": "77279000ZN0344",
+        "commune": "Marolles-sur-Seine"
+      }
+    ],
+    "idusValides": [
+      "77279000ZN0228",
+      "77279000ZN0329",
+      "77279000ZN0339",
+      "77279000ZN0342",
+      "77279000ZN0344"
+    ],
+    "pointIdu": "77279000ZN0344",
+    "pointDansSite": true,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "14",
+    "nom": "FM Logistics",
+    "commune": "Marolles sur Seine",
+    "insee": "77279",
+    "parcelles": [
+      {
+        "ref": "ZN375",
+        "idu": "77279000ZN0375",
+        "commune": "Marolles-sur-Seine"
+      },
+      {
+        "ref": "ZN376",
+        "idu": "77279000ZN0376",
+        "commune": "Marolles-sur-Seine"
+      }
+    ],
+    "idusValides": ["77279000ZN0375", "77279000ZN0376"],
+    "pointIdu": "77279000ZN0375",
+    "pointDansSite": true,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "19",
+    "nom": "Ex Magasins meubles",
+    "commune": "Esmans",
+    "insee": "77172",
+    "parcelles": [
+      {
+        "ref": "A306",
+        "idu": "77172000A0306",
+        "commune": "Esmans"
+      },
+      {
+        "ref": "A307",
+        "idu": "77172000A0307",
+        "commune": "Esmans"
+      },
+      {
+        "ref": "A308",
+        "idu": "77172000A0308",
+        "commune": "Esmans"
+      },
+      {
+        "ref": "A309",
+        "idu": "77172000A0309",
+        "commune": "Esmans"
+      },
+      {
+        "ref": "A310",
+        "idu": "77172000A0310",
+        "commune": "Esmans"
+      },
+      {
+        "ref": "A311",
+        "idu": "77172000A0311",
+        "commune": "Esmans"
+      },
+      {
+        "ref": "A1116",
+        "idu": "77172000A1116",
+        "commune": "Esmans"
+      },
+      {
+        "ref": "A1118",
+        "idu": "77172000A1118",
+        "commune": "Esmans"
+      },
+      {
+        "ref": "A1120",
+        "idu": "77172000A1120",
+        "commune": "Esmans"
+      },
+      {
+        "ref": "A1122",
+        "idu": "77172000A1122",
+        "commune": "Esmans"
+      },
+      {
+        "ref": "A1124",
+        "idu": "77172000A1124",
+        "commune": "Esmans"
+      },
+      {
+        "ref": "A1126",
+        "idu": "77172000A1126",
+        "commune": "Esmans"
+      },
+      {
+        "ref": "A1128",
+        "idu": "77172000A1128",
+        "commune": "Esmans"
+      },
+      {
+        "ref": "A1132",
+        "idu": "77172000A1132",
+        "commune": "Esmans"
+      },
+      {
+        "ref": "A1133",
+        "idu": "77172000A1133",
+        "commune": "Esmans"
+      },
+      {
+        "ref": "A1136",
+        "idu": "77172000A1136",
+        "commune": "Esmans"
+      },
+      {
+        "ref": "A1137",
+        "idu": "77172000A1137",
+        "commune": "Esmans"
+      }
+    ],
+    "idusValides": [
+      "77172000A0306",
+      "77172000A0307",
+      "77172000A0308",
+      "77172000A0309",
+      "77172000A0310",
+      "77172000A0311",
+      "77172000A1116",
+      "77172000A1118",
+      "77172000A1120",
+      "77172000A1122",
+      "77172000A1124",
+      "77172000A1126",
+      "77172000A1128",
+      "77172000A1132",
+      "77172000A1133",
+      "77172000A1136",
+      "77172000A1137"
+    ],
+    "pointIdu": "77172000A1137",
+    "pointDansSite": true,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "23",
+    "nom": "Ex-STLG",
+    "commune": "Varennes sur Seine",
+    "insee": "77482",
+    "parcelles": [
+      {
+        "ref": "C950",
+        "idu": "77482000C0950",
+        "commune": "Varennes-sur-Seine"
+      }
+    ],
+    "idusValides": ["77482000C0950"],
+    "pointIdu": "77482000C0950",
+    "pointDansSite": true,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "24",
+    "nom": "Route de Cannes",
+    "commune": "Varennes sur Seine",
+    "insee": "77482",
+    "parcelles": [
+      {
+        "ref": "C961",
+        "idu": "77482000C0961",
+        "commune": "Varennes-sur-Seine"
+      }
+    ],
+    "idusValides": ["77482000C0961"],
+    "pointIdu": "77482000C0961",
+    "pointDansSite": true,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "25",
+    "nom": "Route de Cannes 2",
+    "commune": "Varennes sur Seine",
+    "insee": "77482",
+    "parcelles": [
+      {
+        "ref": "C960",
+        "idu": "77482000C0960",
+        "commune": "Varennes-sur-Seine"
+      }
+    ],
+    "idusValides": ["77482000C0960"],
+    "pointIdu": "77482000C0960",
+    "pointDansSite": true,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "12",
+    "nom": "Ex-Millet",
+    "commune": "Laval en Brie",
+    "insee": "77245",
+    "parcelles": [
+      {
+        "ref": "B547",
+        "idu": "77245000B0547",
+        "commune": "Laval-en-Brie"
+      },
+      {
+        "ref": "B548",
+        "idu": "77245000B0548",
+        "commune": "Laval-en-Brie"
+      },
+      {
+        "ref": "B549",
+        "idu": "77245000B0549",
+        "commune": "Laval-en-Brie"
+      },
+      {
+        "ref": "B901",
+        "idu": "77245000B0901",
+        "commune": "Laval-en-Brie"
+      },
+      {
+        "ref": "B903",
+        "idu": "77245000B0903",
+        "commune": "Laval-en-Brie"
+      },
+      {
+        "ref": "B904",
+        "idu": "77245000B0904",
+        "commune": "Laval-en-Brie"
+      }
+    ],
+    "idusValides": [
+      "77245000B0547",
+      "77245000B0548",
+      "77245000B0549",
+      "77245000B0901",
+      "77245000B0903",
+      "77245000B0904"
+    ],
+    "pointIdu": "77245000B0547",
+    "pointDansSite": true,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "30",
+    "nom": "Ex-bâtiment ORANGE",
+    "commune": "Montereau Fault Yonne",
+    "insee": "77305",
+    "parcelles": [
+      {
+        "ref": "AV499",
+        "idu": "77305000AV0499",
+        "commune": "Montereau-Fault-Yonne"
+      },
+      {
+        "ref": "AV500",
+        "idu": "77305000AV0500",
+        "commune": "Montereau-Fault-Yonne"
+      }
+    ],
+    "idusValides": ["77305000AV0499", "77305000AV0500"],
+    "pointIdu": "77305000AV0500",
+    "pointDansSite": true,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "31",
+    "nom": "Ex Poste Montereau",
+    "commune": "Montereau Fault Yonne",
+    "insee": "77305",
+    "parcelles": [
+      {
+        "ref": "AP452",
+        "idu": "77305000AP0452",
+        "commune": "Montereau-Fault-Yonne"
+      },
+      {
+        "ref": "AP453",
+        "idu": "77305000AP0453",
+        "commune": "Montereau-Fault-Yonne"
+      },
+      {
+        "ref": "AP454",
+        "idu": "77305000AP0454",
+        "commune": "Montereau-Fault-Yonne"
+      }
+    ],
+    "idusValides": ["77305000AP0452", "77305000AP0453", "77305000AP0454"],
+    "pointIdu": "77305000AP0452",
+    "pointDansSite": true,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "32",
+    "nom": "SNCF - Délaissés ferrés",
+    "commune": "Montereau Fault Yonne",
+    "insee": "77305",
+    "parcelles": [
+      {
+        "ref": "AX257",
+        "idu": "77305000AX0257",
+        "commune": "Montereau-Fault-Yonne"
+      }
+    ],
+    "idusValides": ["77305000AX0257"],
+    "pointIdu": "77305000AX0257",
+    "pointDansSite": true,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "33",
+    "nom": "Bâtiment SNCF",
+    "commune": "Montereau Fault Yonne",
+    "insee": "77305",
+    "parcelles": [
+      {
+        "ref": "AX257",
+        "idu": "77305000AX0257",
+        "commune": "Montereau-Fault-Yonne"
+      }
+    ],
+    "idusValides": ["77305000AX0257"],
+    "pointIdu": "77305000AX0257",
+    "pointDansSite": true,
+    "statut": "OK",
+    "messages": []
+  }
+]
