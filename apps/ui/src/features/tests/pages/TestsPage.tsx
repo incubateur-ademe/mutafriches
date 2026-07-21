@@ -1,16 +1,21 @@
 import { Link } from "react-router-dom";
 import { Layout } from "../../../shared/components/layout/Layout";
+import { isComparaisonCartofrichesEnabled } from "../../../shared/config/feature-flags.config";
 
 export function Tests() {
   const testPages = [
-    {
-      id: "test-comparaison-cartofriches",
-      title: "Comparaison Cartofriches",
-      description:
-        "Comparer les données sources Mutafriches et Cartofriches (Cerema) sur une liste de sites et exporter les écarts",
-      href: "/test/comparaison-cartofriches",
-      image: "/illustrations/undraw_file-search_cbur.svg",
-    },
+    ...(isComparaisonCartofrichesEnabled()
+      ? [
+          {
+            id: "test-comparaison-cartofriches",
+            title: "Comparaison Cartofriches",
+            description:
+              "Comparer les données sources Mutafriches et Cartofriches (Cerema) sur une liste de sites et exporter les écarts",
+            href: "/test/comparaison-cartofriches",
+            image: "/illustrations/undraw_file-search_cbur.svg",
+          },
+        ]
+      : []),
     {
       id: "test-diagnostic-parcelle",
       title: "Diagnostic parcelle",
