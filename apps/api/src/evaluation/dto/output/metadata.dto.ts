@@ -63,7 +63,7 @@ export class MetadataSwaggerDto {
   @ApiProperty({
     description:
       "Versions actuellement servies par l'API. `api` suit le `package.json` du backend. `algorithme` correspond à la version courante (la liste complète est disponible via `GET /evaluation/algorithme/versions`).",
-    example: { api: "2.0.0", algorithme: "v1.10" },
+    example: { api: "2.0.0", algorithme: "v1.11" },
   })
   version: {
     api: string;

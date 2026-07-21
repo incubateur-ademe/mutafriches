@@ -7,6 +7,8 @@ import { TestIframe } from "./features/tests/test-iframe/pages/TestIframe";
 import { TestCallback } from "./features/tests/test-iframe/pages/TestCallback";
 import { DiagnosticParcellePage } from "./features/tests/test-idu-diagnostic/pages/DiagnosticParcellePage";
 import { ResolutionIduPage } from "./features/tests/test-resolution-idu/pages/ResolutionIduPage";
+import { ComparaisonCartofrichesPage } from "./features/tests/test-comparaison-cartofriches/pages/ComparaisonCartofrichesPage";
+import { isComparaisonCartofrichesEnabled } from "./shared/config/feature-flags.config";
 import { useEventTracking } from "./shared/hooks/useEventTracking";
 import { useEffect, useRef } from "react";
 import { TypeEvenement } from "@mutafriches/shared-types";
@@ -88,6 +90,12 @@ function AppContent() {
         <Route path={ROUTES.TEST_CALLBACK} element={<TestCallback />} />
         <Route path={ROUTES.TEST_DIAGNOSTIC_PARCELLE} element={<DiagnosticParcellePage />} />
         <Route path={ROUTES.TEST_RESOLUTION_IDU} element={<ResolutionIduPage />} />
+        {isComparaisonCartofrichesEnabled() && (
+          <Route
+            path={ROUTES.TEST_COMPARAISON_CARTOFRICHES}
+            element={<ComparaisonCartofrichesPage />}
+          />
+        )}
       </Routes>
     </>
   );

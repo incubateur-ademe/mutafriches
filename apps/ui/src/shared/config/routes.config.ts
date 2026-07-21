@@ -39,6 +39,7 @@ export const ROUTES = {
   TEST_CALLBACK: "/test/callback",
   TEST_DIAGNOSTIC_PARCELLE: "/test/diagnostic-parcelle",
   TEST_RESOLUTION_IDU: "/test/resolution-idu",
+  TEST_COMPARAISON_CARTOFRICHES: "/test/comparaison-cartofriches",
 
   // Partenaires
   PARTENAIRES: "/partenaires",

@@ -63,6 +63,8 @@ export class Site {
   zonageAbcLogement?: ZonageAbcLogement;
   /** Catégorie de distance à une Installation Terminale Embranchée (ITE) fret */
   distanceIte?: DistanceIte;
+  /** Distance réelle en mètres à l'ITE la plus proche (si trouvée dans le rayon de recherche) */
+  distanceIteMetres?: number;
   /** Site référencé comme pollué (détection auto via ADEME/SIS/ICPE) */
   siteReferencePollue?: boolean;
 
@@ -197,6 +199,7 @@ export class Site {
     site.distanceIte = donneesEnrichies.distanceIte
       ? (donneesEnrichies.distanceIte as DistanceIte)
       : undefined;
+    site.distanceIteMetres = donneesEnrichies.distanceIteMetres;
 
     // Multi-parcelle
     site.nombreParcelles = donneesEnrichies.nombreParcelles;

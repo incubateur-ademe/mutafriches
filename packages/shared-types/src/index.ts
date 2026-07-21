@@ -18,5 +18,8 @@ export * from "./donnees-externes";
 // Documentation partenaires des sources de données externes
 export * from "./documentation";
 
+// Cartofriches (comparaison avec l'API Cerema)
+export * from "./cartofriches";
+
 // Shared
 export * from "./shared";

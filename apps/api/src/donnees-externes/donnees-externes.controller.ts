@@ -12,7 +12,8 @@ const CORS_ALLOWED_ORIGINS = [
   "https://stats.incubateur.ademe.dev",
 ];
 
-const CACHE_TTL_SECONDS = 300;
+// Cache court : page de monitoring, la fraîcheur prime sur la mise en cache
+const CACHE_TTL_SECONDS = 30;
 
 function applyCors(req: Request, res: Response): void {
   const origin = req.headers.origin;

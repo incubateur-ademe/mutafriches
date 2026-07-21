@@ -43,6 +43,7 @@ export class IteFretEnrichissementService {
       );
 
       site.distanceIte = this.categoriserDistance(iteProche?.distance, iteProche?.etat);
+      site.distanceIteMetres = iteProche ? Math.round(iteProche.distance) : undefined;
       sourcesUtilisees.push(SourceEnrichissement.ITE_FRET);
 
       if (iteProche === null) {
@@ -61,6 +62,7 @@ export class IteFretEnrichissementService {
       sourcesEchouees.push(SourceEnrichissement.ITE_FRET);
       champsManquants.push("distanceIte");
       site.distanceIte = undefined;
+      site.distanceIteMetres = undefined;
     }
 
     return {
