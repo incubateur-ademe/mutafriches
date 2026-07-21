@@ -1,8 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import { sql } from "drizzle-orm";
-import type { Periodicity, Stat, StatOutput } from "@mutafriches/shared-types";
+import type { Periodicity, StatOutput } from "@mutafriches/shared-types";
 import { DatabaseService } from "../shared/database/database.service";
-import { fillGaps } from "./utils/gap-fill.utils";
+import { fillGaps, type StatPoint } from "./utils/gap-fill.utils";
 
 @Injectable()
 export class StatsService {
@@ -226,7 +226,7 @@ export class StatsService {
     whereCondition: string,
     since: Date | null,
     periodicity: Periodicity,
-  ): Promise<Stat[]> {
+  ): Promise<StatPoint[]> {
     const sinceCondition = since ? `AND ${dateColumn} >= '${since.toISOString()}'` : "";
 
     // periodicity est validé dans le controller contre isValidPeriodicity

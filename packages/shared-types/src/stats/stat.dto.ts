@@ -17,8 +17,13 @@ export interface StatInput {
 export interface Stat {
   /** Valeur numerique de la stat pour cette periode */
   value: number;
-  /** Timestamp UTC en millisecondes, debut de periode */
-  date: number;
+  /**
+   * Debut de periode en chaine ISO 8601 UTC (ex. "2025-09-01T00:00:00.000Z").
+   * Format string volontaire : le dashboard incubateur parse les dates via
+   * Date.parse pour les chaines, mais interprete un nombre comme un timestamp
+   * en SECONDES (x1000) — un nombre en millisecondes produirait des dates hors bornes.
+   */
+  date: string;
 }
 
 export interface StatOutput {

@@ -66,7 +66,7 @@ describe("StatsController", () => {
     it("retourne un objet StatOutput unique avec status 200 (contrat incubateur)", async () => {
       const mockStat: StatOutput = {
         description: "Analyses de mutabilité abouties",
-        stats: [{ value: 10, date: 1704067200000 }],
+        stats: [{ value: 10, date: "2024-01-01T00:00:00.000Z" }],
       };
       statsService.getStatPrincipale.mockResolvedValue(mockStat);
 
@@ -287,8 +287,14 @@ describe("StatsController", () => {
   describe("GET /api/stats/all", () => {
     it("retourne le tableau de tous les indicateurs avec status 200", async () => {
       const mockStats: StatOutput[] = [
-        { description: "Analyses abouties", stats: [{ value: 10, date: 1704067200000 }] },
-        { description: "Surface analysée", stats: [{ value: 5, date: 1704067200000 }] },
+        {
+          description: "Analyses abouties",
+          stats: [{ value: 10, date: "2024-01-01T00:00:00.000Z" }],
+        },
+        {
+          description: "Surface analysée",
+          stats: [{ value: 5, date: "2024-01-01T00:00:00.000Z" }],
+        },
       ];
       statsService.getAllStats.mockResolvedValue(mockStats);
 

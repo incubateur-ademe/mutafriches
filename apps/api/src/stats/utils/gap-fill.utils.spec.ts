@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
-import { fillGaps } from "./gap-fill.utils";
-import type { Stat } from "@mutafriches/shared-types";
+import { fillGaps, type StatPoint } from "./gap-fill.utils";
 
 describe("fillGaps", () => {
   afterEach(() => {
@@ -16,7 +15,7 @@ describe("fillGaps", () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2025-06-15T12:00:00Z"));
 
-    const stats: Stat[] = [
+    const stats: StatPoint[] = [
       { value: 5, date: new Date("2025-01-01T00:00:00Z").getTime() },
       { value: 3, date: new Date("2025-03-01T00:00:00Z").getTime() },
       { value: 8, date: new Date("2025-06-01T00:00:00Z").getTime() },
@@ -27,27 +26,27 @@ describe("fillGaps", () => {
     expect(result).toHaveLength(6); // jan, fév, mar, avr, mai, jun
     expect(result[0]).toEqual({
       value: 5,
-      date: new Date("2025-01-01T00:00:00Z").getTime(),
+      date: new Date("2025-01-01T00:00:00Z").toISOString(),
     });
     expect(result[1]).toEqual({
       value: 0,
-      date: new Date("2025-02-01T00:00:00Z").getTime(),
+      date: new Date("2025-02-01T00:00:00Z").toISOString(),
     });
     expect(result[2]).toEqual({
       value: 3,
-      date: new Date("2025-03-01T00:00:00Z").getTime(),
+      date: new Date("2025-03-01T00:00:00Z").toISOString(),
     });
     expect(result[3]).toEqual({
       value: 0,
-      date: new Date("2025-04-01T00:00:00Z").getTime(),
+      date: new Date("2025-04-01T00:00:00Z").toISOString(),
     });
     expect(result[4]).toEqual({
       value: 0,
-      date: new Date("2025-05-01T00:00:00Z").getTime(),
+      date: new Date("2025-05-01T00:00:00Z").toISOString(),
     });
     expect(result[5]).toEqual({
       value: 8,
-      date: new Date("2025-06-01T00:00:00Z").getTime(),
+      date: new Date("2025-06-01T00:00:00Z").toISOString(),
     });
   });
 
@@ -60,7 +59,7 @@ describe("fillGaps", () => {
 
     expect(result).toHaveLength(3); // jan, fév, mar
     expect(result.every((s) => s.value === 0)).toBe(true);
-    expect(result[0].date).toBe(new Date("2025-01-01T00:00:00Z").getTime());
+    expect(result[0].date).toBe(new Date("2025-01-01T00:00:00Z").toISOString());
   });
 
   it("comble les jours manquants", () => {
@@ -68,7 +67,7 @@ describe("fillGaps", () => {
     vi.setSystemTime(new Date("2025-06-05T12:00:00Z"));
 
     const since = new Date("2025-06-01T00:00:00Z");
-    const stats: Stat[] = [
+    const stats: StatPoint[] = [
       { value: 2, date: new Date("2025-06-01T00:00:00Z").getTime() },
       { value: 4, date: new Date("2025-06-03T00:00:00Z").getTime() },
     ];
@@ -88,7 +87,7 @@ describe("fillGaps", () => {
     vi.setSystemTime(new Date("2025-06-25T12:00:00Z"));
 
     const since = new Date("2025-06-02T00:00:00Z"); // lundi
-    const stats: Stat[] = [
+    const stats: StatPoint[] = [
       { value: 10, date: new Date("2025-06-02T00:00:00Z").getTime() },
       { value: 7, date: new Date("2025-06-16T00:00:00Z").getTime() },
     ];
@@ -107,7 +106,7 @@ describe("fillGaps", () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2025-06-15T12:00:00Z"));
 
-    const stats: Stat[] = [
+    const stats: StatPoint[] = [
       { value: 100, date: new Date("2023-01-01T00:00:00Z").getTime() },
       { value: 200, date: new Date("2025-01-01T00:00:00Z").getTime() },
     ];
