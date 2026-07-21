@@ -32,6 +32,9 @@ exports[`Swagger OpenAPI document > garantit la stabilité du snapshot des chemi
   "/api/stats": [
     "get",
   ],
+  "/api/stats/all": [
+    "get",
+  ],
   "/enrichissement": [
     "post",
   ],

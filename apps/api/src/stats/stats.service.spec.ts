@@ -69,6 +69,28 @@ describe("StatsService", () => {
     vi.useRealTimers();
   });
 
+  describe("getStatPrincipale", () => {
+    it("retourne un objet StatOutput unique (pas un tableau)", async () => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date("2025-06-15T12:00:00Z"));
+
+      const result = await service.getStatPrincipale(null, "month");
+
+      expect(Array.isArray(result)).toBe(false);
+      expect(result).toHaveProperty("stats");
+      expect(Array.isArray(result.stats)).toBe(true);
+    });
+
+    it("expose l'indicateur d'analyses abouties comme KPI principal", async () => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date("2025-06-15T12:00:00Z"));
+
+      const result = await service.getStatPrincipale(null, "month");
+
+      expect(result.description).toBe("Analyses de mutabilité abouties");
+    });
+  });
+
   describe("getAllStats", () => {
     it("retourne 7 statistiques", async () => {
       vi.useFakeTimers();

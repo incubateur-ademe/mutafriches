@@ -8,6 +8,14 @@ import { fillGaps } from "./utils/gap-fill.utils";
 export class StatsService {
   constructor(private readonly database: DatabaseService) {}
 
+  /**
+   * Indicateur d'impact principal (contrat incubateur : un StatOutput unique).
+   * Analyses de mutabilité abouties, le KPI cœur d'usage du produit.
+   */
+  async getStatPrincipale(since: Date | null, periodicity: Periodicity): Promise<StatOutput> {
+    return this.getAnalysesAbouties(since, periodicity);
+  }
+
   async getAllStats(since: Date | null, periodicity: Periodicity): Promise<StatOutput[]> {
     const results = await Promise.all([
       this.getAnalysesAbouties(since, periodicity),
