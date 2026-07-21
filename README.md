@@ -161,7 +161,8 @@ pnpm validate               # Tout vérifier (format + lint + typecheck + test)
 | `/evaluation/:id` | GET | Récupérer une évaluation |
 | `/evaluation/metadata` | GET | Métadonnées (enums) |
 | `/evenements` | POST | Tracker un événement |
-| `/api/stats` | GET | Statistiques KPIs publics |
+| `/api/stats` | GET | KPI public principal, format incubateur (objet `StatOutput` unique) |
+| `/api/stats/all` | GET | Tous les KPI publics (tableau de `StatOutput`, dashboard interne) |
 | `/api/metabase/embed-url` | GET | URL d'embedding dashboard Metabase |
 | `/friches/*` | * | **DEPRECATED** - Routes historiques |
 

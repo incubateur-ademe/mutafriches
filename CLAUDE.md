@@ -150,6 +150,7 @@ Règles :
 
 Pour **chaque feature identifiée** (un groupe cohérent de modifications, typiquement une nouvelle conversation) :
 
+- **Créer une branche dédiée** avant tout commit, systématiquement (`feat/<slug>`, `fix/<slug>`, `chore/<slug>`…). **JAMAIS de commit directement sur `main`** : si la branche courante est `main`, créer et basculer sur une branche dédiée (`git checkout -b <type>/<slug>`) avant le premier commit. `main` ne reçoit des changements que par merge de PR.
 - **Découper en commits** atomiques et cohérents (un commit = une étape qui laisse `pnpm validate` vert).
 - **Réutiliser / mutualiser** le code existant dès que possible plutôt que de dupliquer (composants, services, types partagés).
 - **Justifier les choix** : dans la description des commits (le pourquoi), et via un ADR (`/adr`) si le choix est architecturalement significatif.

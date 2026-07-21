@@ -8,6 +8,7 @@ import { createTestingModuleWithService } from "../shared/__test-helpers__/test-
 
 function createMockStatsService() {
   return {
+    getStatPrincipale: vi.fn().mockResolvedValue({ description: "Test", stats: [] }),
     getAllStats: vi.fn().mockResolvedValue([]),
   };
 }
@@ -62,11 +63,12 @@ describe("StatsController", () => {
   });
 
   describe("GET /api/stats", () => {
-    it("retourne les stats avec status 200", async () => {
-      const mockStats: StatOutput[] = [
-        { description: "Test stat", stats: [{ value: 10, date: 1704067200000 }] },
-      ];
-      statsService.getAllStats.mockResolvedValue(mockStats);
+    it("retourne un objet StatOutput unique avec status 200 (contrat incubateur)", async () => {
+      const mockStat: StatOutput = {
+        description: "Analyses de mutabilité abouties",
+        stats: [{ value: 10, date: 1704067200000 }],
+      };
+      statsService.getStatPrincipale.mockResolvedValue(mockStat);
 
       const req = createMockRequest();
       const res = createMockResponse();
@@ -74,7 +76,9 @@ describe("StatsController", () => {
       await controller.getStats(undefined, undefined, req, res);
 
       expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
-      expect(res.json).toHaveBeenCalledWith(mockStats);
+      // Objet unique, pas un tableau : le dashboard incubateur lit `.stats` à la racine
+      expect(res.json).toHaveBeenCalledWith(mockStat);
+      expect(Array.isArray((res as unknown as { _body: unknown })._body)).toBe(false);
     });
 
     describe("validation de la periodicite", () => {
@@ -84,7 +88,7 @@ describe("StatsController", () => {
 
         await controller.getStats(undefined, undefined, req, res);
 
-        expect(statsService.getAllStats).toHaveBeenCalledWith(null, "month");
+        expect(statsService.getStatPrincipale).toHaveBeenCalledWith(null, "month");
       });
 
       it("utilise month par defaut si periodicite invalide", async () => {
@@ -93,7 +97,7 @@ describe("StatsController", () => {
 
         await controller.getStats("invalid", undefined, req, res);
 
-        expect(statsService.getAllStats).toHaveBeenCalledWith(null, "month");
+        expect(statsService.getStatPrincipale).toHaveBeenCalledWith(null, "month");
       });
 
       it.each(["day", "week", "month", "year"] as const)(
@@ -104,7 +108,7 @@ describe("StatsController", () => {
 
           await controller.getStats(periodicity, undefined, req, res);
 
-          expect(statsService.getAllStats).toHaveBeenCalledWith(null, periodicity);
+          expect(statsService.getStatPrincipale).toHaveBeenCalledWith(null, periodicity);
         },
       );
 
@@ -114,7 +118,7 @@ describe("StatsController", () => {
 
         await controller.getStats("hour", undefined, req, res);
 
-        expect(statsService.getAllStats).toHaveBeenCalledWith(null, "month");
+        expect(statsService.getStatPrincipale).toHaveBeenCalledWith(null, "month");
       });
     });
 
@@ -125,7 +129,7 @@ describe("StatsController", () => {
 
         await controller.getStats("month", undefined, req, res);
 
-        expect(statsService.getAllStats).toHaveBeenCalledWith(null, "month");
+        expect(statsService.getStatPrincipale).toHaveBeenCalledWith(null, "month");
       });
 
       it("passe une Date si since est un nombre valide", async () => {
@@ -134,7 +138,7 @@ describe("StatsController", () => {
 
         await controller.getStats("month", "12", req, res);
 
-        const [since] = statsService.getAllStats.mock.calls[0] as [Date | null, string];
+        const [since] = statsService.getStatPrincipale.mock.calls[0] as [Date | null, string];
         expect(since).toBeInstanceOf(Date);
         expect(since).not.toBeNull();
       });
@@ -145,7 +149,7 @@ describe("StatsController", () => {
 
         await controller.getStats("month", "0", req, res);
 
-        expect(statsService.getAllStats).toHaveBeenCalledWith(null, "month");
+        expect(statsService.getStatPrincipale).toHaveBeenCalledWith(null, "month");
       });
 
       it("passe null si since est negatif", async () => {
@@ -154,7 +158,7 @@ describe("StatsController", () => {
 
         await controller.getStats("month", "-5", req, res);
 
-        expect(statsService.getAllStats).toHaveBeenCalledWith(null, "month");
+        expect(statsService.getStatPrincipale).toHaveBeenCalledWith(null, "month");
       });
 
       it("passe null si since n'est pas un nombre", async () => {
@@ -163,7 +167,7 @@ describe("StatsController", () => {
 
         await controller.getStats("month", "abc", req, res);
 
-        expect(statsService.getAllStats).toHaveBeenCalledWith(null, "month");
+        expect(statsService.getStatPrincipale).toHaveBeenCalledWith(null, "month");
       });
 
       it("calcule une date correcte pour since=24 et periodicite month", async () => {
@@ -172,7 +176,7 @@ describe("StatsController", () => {
 
         await controller.getStats("month", "24", req, res);
 
-        const [since] = statsService.getAllStats.mock.calls[0] as [Date | null, string];
+        const [since] = statsService.getStatPrincipale.mock.calls[0] as [Date | null, string];
         expect(since).toBeInstanceOf(Date);
         // Doit etre environ 24 mois en arriere, tronque au 1er du mois
         expect((since as Date).getUTCDate()).toBe(1);
@@ -268,7 +272,7 @@ describe("StatsController", () => {
 
     describe("propagation des erreurs", () => {
       it("propage les erreurs du service", async () => {
-        statsService.getAllStats.mockRejectedValue(new Error("Database error"));
+        statsService.getStatPrincipale.mockRejectedValue(new Error("Database error"));
 
         const req = createMockRequest();
         const res = createMockResponse();
@@ -277,6 +281,46 @@ describe("StatsController", () => {
           "Database error",
         );
       });
+    });
+  });
+
+  describe("GET /api/stats/all", () => {
+    it("retourne le tableau de tous les indicateurs avec status 200", async () => {
+      const mockStats: StatOutput[] = [
+        { description: "Analyses abouties", stats: [{ value: 10, date: 1704067200000 }] },
+        { description: "Surface analysée", stats: [{ value: 5, date: 1704067200000 }] },
+      ];
+      statsService.getAllStats.mockResolvedValue(mockStats);
+
+      const req = createMockRequest();
+      const res = createMockResponse();
+
+      await controller.getAllStats(undefined, undefined, req, res);
+
+      expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
+      expect(res.json).toHaveBeenCalledWith(mockStats);
+      expect(Array.isArray((res as unknown as { _body: unknown })._body)).toBe(true);
+    });
+
+    it("applique le header Cache-Control", async () => {
+      const req = createMockRequest();
+      const res = createMockResponse();
+
+      await controller.getAllStats(undefined, undefined, req, res);
+
+      expect(res.setHeader).toHaveBeenCalledWith(
+        "Cache-Control",
+        expect.stringMatching(/^public, max-age=\d+$/),
+      );
+    });
+
+    it("valide la periodicite comme /api/stats", async () => {
+      const req = createMockRequest();
+      const res = createMockResponse();
+
+      await controller.getAllStats("invalid", undefined, req, res);
+
+      expect(statsService.getAllStats).toHaveBeenCalledWith(null, "month");
     });
   });
 
