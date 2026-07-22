@@ -10,9 +10,14 @@ import { useIframe, useIsIframeMode } from "../iframe/useIframe";
 import { evenementsService } from "../services/api/api.evenements.service";
 import { STORAGE_KEYS } from "../config/storage-keys.config";
 
-export function useEventTracking() {
+/**
+ * @param options.integrateurOverride force la valeur `integrateur` des événements (ex :
+ *   `partenaire:<slug>` sur les pages partenaires, où le contexte iframe est absent).
+ */
+export function useEventTracking(options?: { integrateurOverride?: string }) {
   const isIframeMode = useIsIframeMode();
   const { integrator } = useIframe();
+  const integrateurEffectif = options?.integrateurOverride || integrator || undefined;
 
   // Capture source et ref depuis l'URL ou le sessionStorage
   const captureSourceRef = useCallback(() => {
@@ -53,11 +58,11 @@ export function useEventTracking() {
         },
         {
           isIframe: isIframeMode,
-          integrator: integrator || undefined,
+          integrator: integrateurEffectif,
         },
       );
     },
-    [isIframeMode, integrator, captureSourceRef],
+    [isIframeMode, integrateurEffectif, captureSourceRef],
   );
 
   const trackFeedback = useCallback(

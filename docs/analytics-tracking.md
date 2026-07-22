@@ -161,3 +161,50 @@ ORDER BY 1, 2;
 ### Rétroactivité
 
 Le tag `partenaire:<slug>` n'existe que pour les données postérieures au déploiement d'[ADR-0030](adr/0030-canal-page-partenaire-integrateur-tague.md). L'historique se rattrape avec le script temporaire `db:partenaires:backfill-canal` (jointure sur les parcelles de `partenaire_sites`). Attention : sur `enrichissements`/`sites`, ce backfill inclut le trafic de réchauffe du cache (prefetch) ; les `evaluations` restent un signal propre.
+
+### Mesure d'usage prefetch-free (recommandée) — via `evenements_utilisateur`
+
+Les tables `enrichissements`/`sites` sont **à la fois cache et journal** : le prefetch quotidien y écrit des lignes indistinguables d'une qualif utilisateur, et la clause `*_source_id IS NULL` compte les calculs machine tout en excluant les cache hits humains. Pour un décompte **d'usage réel**, préférer la table d'événements `evenements_utilisateur` : elle n'est alimentée que par le front (jamais par le prefetch/seed serveur-à-serveur) et les pages partenaires y émettent désormais `enrichissement_termine` / `evaluation_terminee` tagués `integrateur = partenaire:<slug>` (cf. ADR-0030).
+
+Bloc `CASE` (côté événements, `mode_utilisation` au lieu de `source_utilisation` ; pas d'`API_DIRECTE`, l'API n'émet pas d'événements) :
+
+```sql
+CASE
+  WHEN integrateur = 'partenaire:ddt-vosges'  THEN 'DDT Vosges'
+  WHEN integrateur = 'partenaire:scet'        THEN 'SCET'
+  WHEN integrateur LIKE 'partenaire:%'        THEN 'Partenaire : ' || split_part(integrateur, ':', 2)
+  WHEN integrateur ILIKE '%aurangevine%'      THEN 'AURA'
+  WHEN integrateur ILIKE '%benefriches%'      THEN 'Bénéfriches'
+  WHEN integrateur ILIKE '%indre.gouv%'       THEN 'DDT Indre'
+  WHEN mode_utilisation = 'iframe'            THEN 'Iframe'
+  ELSE 'Bac à sable (site web)'
+END
+```
+
+Qualifications abouties par canal / mois :
+
+```sql
+SELECT
+  DATE_TRUNC('month', date_creation) AS mois,
+  CASE /* bloc CASE événements ci-dessus */ END AS canal,
+  COUNT(*) AS nb_qualifications
+FROM evenements_utilisateur
+WHERE type_evenement = 'enrichissement_termine'
+GROUP BY 1, 2
+ORDER BY 1, 2;
+```
+
+Évaluations par canal / mois (dédoublonnées par `evaluation_id`) :
+
+```sql
+SELECT
+  DATE_TRUNC('month', date_creation) AS mois,
+  CASE /* bloc CASE événements ci-dessus */ END AS canal,
+  COUNT(DISTINCT evaluation_id) AS nb_evaluations
+FROM evenements_utilisateur
+WHERE type_evenement = 'evaluation_terminee'
+GROUP BY 1, 2
+ORDER BY 1, 2;
+```
+
+Ces deux requêtes remplacent avantageusement celles basées sur `enrichissements`/`sites`/`evaluations` pour le pilotage par canal : elles comptent des **actions utilisateur** (cache inclus) et ignorent le prefetch par construction.

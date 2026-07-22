@@ -24,6 +24,8 @@ Mécanisme retenu : un **query param dédié `?partenaire=<slug>`**, propagé de
 
 Le tag atterrit dans `enrichissements` (mono-parcelle), `sites` (multi-parcelle) et `evaluations`, rendant la convention Metabase `integrateur LIKE 'partenaire:%'` opérante.
 
+La même convention est portée par les **événements** : `MultisitePage` émet `enrichissement_termine` / `evaluation_terminee` avec `integrateur = partenaire:<slug>` (via un override de `useEventTracking`). La table `evenements_utilisateur` étant alimentée uniquement par le front, c'est la source de mesure d'usage **prefetch-free** recommandée pour le pilotage par canal (le prefetch/seed serveur-à-serveur n'émet aucun événement).
+
 ## Alternatives écartées
 
 - **Surcharger le param `?integrateur=` existant** avec la valeur `partenaire:<slug>` : rejeté car `integrateur` n'est aujourd'hui honoré qu'en mode iframe (forcerait `IFRAME_INTEGREE`), et élargir sa sémantique risquerait de reclasser du trafic API. Le param dédié garde `source_utilisation` exact et n'a aucun effet de bord.

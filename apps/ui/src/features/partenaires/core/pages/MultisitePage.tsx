@@ -1,8 +1,13 @@
 import React, { useState, useCallback, useRef } from "react";
 import { Link, useParams } from "react-router-dom";
-import { EnrichissementOutputDto, MutabiliteOutputDto } from "@mutafriches/shared-types";
+import {
+  EnrichissementOutputDto,
+  MutabiliteOutputDto,
+  TypeEvenement,
+} from "@mutafriches/shared-types";
 import { Layout } from "@shared/components/layout/Layout";
 import { ROUTES } from "@shared/config/routes.config";
+import { useEventTracking } from "@shared/hooks/useEventTracking";
 import { enrichissementService } from "@shared/services/api/api.enrichissement.service";
 import { evaluationService } from "@shared/services/api/api.evaluation.service";
 import { buildMutabilityInput } from "@features/resultats/utils/mutability.mapper";
@@ -44,6 +49,11 @@ const MultisiteView: React.FC<{ config: PartnerConfig }> = ({ config }) => {
   // Sites lus en base (repli sur la config statique). Cf. ADR-0021, phases 1 et 3.
   const { sitesByCommune, renommerSite, ajouterSite } = usePartenaireSites(config);
 
+  // Événements tagués `partenaire:<slug>` : mesure d'usage propre (hors prefetch), cf. ADR-0030.
+  const { track, trackEvaluationTerminee } = useEventTracking({
+    integrateurOverride: `partenaire:${config.slug}`,
+  });
+
   const handleRenameSite = useCallback(
     async (id: string, nom: string) => {
       const updated = await renommerSite(id, nom);
@@ -79,6 +89,12 @@ const MultisiteView: React.FC<{ config: PartnerConfig }> = ({ config }) => {
         setEnrichmentData(result);
         // Qualification (enrichissement) terminée : persiste le statut (simple check).
         userData.markQualified(site.idtup);
+        // idtup : stable et <= 20 car. (mono = id cadastral, multi = clé dérivée), contrairement
+        // à identifiantParcelle qui, en multi, dépasse le varchar(20) de la colonne événement.
+        await track(TypeEvenement.ENRICHISSEMENT_TERMINE, {
+          identifiantCadastral: site.idtup,
+          donnees: { nombreParcelles: site.parcelles.length },
+        });
       } catch (err: unknown) {
         const message = err instanceof Error ? err.message : "Erreur lors de l'enrichissement";
         setError(message);
@@ -86,7 +102,7 @@ const MultisiteView: React.FC<{ config: PartnerConfig }> = ({ config }) => {
         setLoadingState("idle");
       }
     },
-    [userData, config.slug],
+    [userData, config.slug, track],
   );
 
   const handleManualDataChange = useCallback(
@@ -115,13 +131,29 @@ const MultisiteView: React.FC<{ config: PartnerConfig }> = ({ config }) => {
       });
       userData.setMutability(selectedSite.idtup, result);
       setMutabilityData(result);
+      track(TypeEvenement.RESULTATS_MUTABILITE, {
+        evaluationId: result.evaluationId || undefined,
+        identifiantCadastral: selectedSite.idtup,
+      });
+      if (result.evaluationId) {
+        await trackEvaluationTerminee(result.evaluationId, selectedSite.idtup);
+      }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Erreur lors du calcul de mutabilité";
       setError(message);
     } finally {
       setLoadingState("idle");
     }
-  }, [selectedSite, enrichmentData, manualData, selectedVersion, userData, config.slug]);
+  }, [
+    selectedSite,
+    enrichmentData,
+    manualData,
+    selectedVersion,
+    userData,
+    config.slug,
+    track,
+    trackEvaluationTerminee,
+  ]);
 
   const handleAddSiteSubmit = useCallback(
     async (idpars: string[]) => {
