@@ -163,6 +163,7 @@ describe("EvaluationController", () => {
         undefined,
         true,
         "cartofriches",
+        undefined,
       );
       expect(orchestrateurService.calculerMutabilite).toHaveBeenCalledWith(mockInput, {
         modeDetaille: false,
@@ -186,6 +187,7 @@ describe("EvaluationController", () => {
       expect(origineDetectionService.detecterOrigine).toHaveBeenCalledWith(
         undefined,
         true,
+        undefined,
         undefined,
       );
       expect(orchestrateurService.calculerMutabilite).toHaveBeenCalledWith(mockInput, {
@@ -211,6 +213,7 @@ describe("EvaluationController", () => {
         undefined,
         "true",
         "partner",
+        undefined,
       );
     });
 
@@ -273,7 +276,42 @@ describe("EvaluationController", () => {
       await controller.calculerMutabilite(mockInput, false, false, true, "partner", req);
 
       // Assert
-      expect(origineDetectionService.detecterOrigine).toHaveBeenCalledWith(req, true, "partner");
+      expect(origineDetectionService.detecterOrigine).toHaveBeenCalledWith(
+        req,
+        true,
+        "partner",
+        undefined,
+      );
+    });
+
+    it("devrait transmettre le slug partenaire au service de detection", async () => {
+      // Arrange
+      orchestrateurService.calculerMutabilite.mockResolvedValue(mockOutput);
+      origineDetectionService.detecterOrigine.mockReturnValue({
+        source: SourceUtilisation.SITE_STANDALONE,
+        integrateur: "partenaire:scet",
+      });
+      const req = { headers: {} } as any;
+
+      // Act
+      await controller.calculerMutabilite(
+        mockInput,
+        false,
+        false,
+        false,
+        undefined,
+        req,
+        undefined,
+        "scet",
+      );
+
+      // Assert
+      expect(origineDetectionService.detecterOrigine).toHaveBeenCalledWith(
+        req,
+        false,
+        undefined,
+        "scet",
+      );
     });
 
     it("devrait passer l'origine detectee au service orchestrateur", async () => {

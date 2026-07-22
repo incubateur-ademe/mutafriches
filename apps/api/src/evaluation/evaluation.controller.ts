@@ -97,6 +97,13 @@ export class EvaluationController {
     description:
       "Version de l'algorithme à utiliser (ex : `v1.9`). Si omis, la version courante est appliquée. Voir `GET /evaluation/algorithme/versions` pour la liste.",
   })
+  @ApiQuery({
+    name: "partenaire",
+    required: false,
+    type: String,
+    description:
+      "Slug de la page partenaire d'origine (ex : `scet`). Enregistre `integrateur = partenaire:<slug>` pour le suivi par canal.",
+  })
   @ApiResponse({ status: 201, description: "Calcul réussi", type: MutabiliteSwaggerDto })
   @ApiOriginAuth("integrateur")
   @ApiStandardErrors()
@@ -108,6 +115,7 @@ export class EvaluationController {
     @Query("integrateur") integrateur?: string,
     @Req() req?: Request,
     @Query("versionAlgorithme") versionAlgorithme?: string,
+    @Query("partenaire") partenaire?: string,
   ): Promise<MutabiliteOutputDto> {
     try {
       this.logger.log("Calcul de mutabilite demande");
@@ -119,7 +127,12 @@ export class EvaluationController {
         );
       }
 
-      const origine = this.origineDetectionService.detecterOrigine(req, isIframe, integrateur);
+      const origine = this.origineDetectionService.detecterOrigine(
+        req,
+        isIframe,
+        integrateur,
+        partenaire,
+      );
 
       return await this.orchestrateurService.calculerMutabilite(input, {
         modeDetaille: modeDetaille || false,

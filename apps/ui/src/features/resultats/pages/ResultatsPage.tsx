@@ -139,15 +139,19 @@ export const ResultatsPage: React.FC = () => {
       setMutabilityData(result);
       sendIframeMessages(result);
 
+      // Identifiant cadastral valide (<= 20 car.) : parcelle prédominante ou 1re parcelle.
+      // state.identifiantSite est la liste jointe, invalide en multi (colonne DTO varchar(20)).
+      const identifiantEvenement =
+        state.enrichmentData.parcellePredominante ?? state.identifiantSite?.split(",")[0];
       // Tracker l'affichage des résultats avec l'evaluationId (dédoublonnage analytics)
       track(TypeEvenement.RESULTATS_MUTABILITE, {
         evaluationId: result.evaluationId || undefined,
-        identifiantCadastral: state.identifiantSite || undefined,
+        identifiantCadastral: identifiantEvenement,
       });
 
       // Tracker l'événement d'évaluation terminée (seulement si evaluationId valide)
       if (result.evaluationId) {
-        await trackEvaluationTerminee(result.evaluationId, state.identifiantSite || undefined);
+        await trackEvaluationTerminee(result.evaluationId, identifiantEvenement);
       }
     } catch (err) {
       const errorMessage =
@@ -190,7 +194,8 @@ export const ResultatsPage: React.FC = () => {
       // Résultat déjà disponible : tracker l'affichage des résultats avec l'evaluationId connu
       track(TypeEvenement.RESULTATS_MUTABILITE, {
         evaluationId: state.mutabilityResult.evaluationId || undefined,
-        identifiantCadastral: state.identifiantSite || undefined,
+        identifiantCadastral:
+          state.enrichmentData?.parcellePredominante ?? state.identifiantSite?.split(",")[0],
       });
       // Initialisation unique au montage (garde hasInitializedRef) : setState intentionnel
       // eslint-disable-next-line react-hooks/set-state-in-effect

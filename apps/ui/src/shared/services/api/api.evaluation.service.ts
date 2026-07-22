@@ -51,6 +51,10 @@ class EvaluationService {
       }
     }
 
+    if (options?.partenaire) {
+      params.partenaire = options.partenaire;
+    }
+
     return apiClient.post<MutabiliteOutputDto>(
       API_CONFIG.endpoints.evaluation.calculer,
       { ...input, visitorId: getOrCreateVisitorId() },

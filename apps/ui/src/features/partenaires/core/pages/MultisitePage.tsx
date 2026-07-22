@@ -1,8 +1,13 @@
 import React, { useState, useCallback, useRef } from "react";
 import { Link, useParams } from "react-router-dom";
-import { EnrichissementOutputDto, MutabiliteOutputDto } from "@mutafriches/shared-types";
+import {
+  EnrichissementOutputDto,
+  MutabiliteOutputDto,
+  TypeEvenement,
+} from "@mutafriches/shared-types";
 import { Layout } from "@shared/components/layout/Layout";
 import { ROUTES } from "@shared/config/routes.config";
+import { useEventTracking } from "@shared/hooks/useEventTracking";
 import { enrichissementService } from "@shared/services/api/api.enrichissement.service";
 import { evaluationService } from "@shared/services/api/api.evaluation.service";
 import { buildMutabilityInput } from "@features/resultats/utils/mutability.mapper";
@@ -37,12 +42,18 @@ const MultisiteView: React.FC<{ config: PartnerConfig }> = ({ config }) => {
   const [manualData, setManualData] = useState<Record<string, string>>({});
 
   const { versions } = useAlgorithmeVersions();
-  const selectedVersion = versions[0]?.version ?? "";
+  // Ordre chronologique ascendant : la dernière entrée est la version courante (contrat API)
+  const selectedVersion = versions[versions.length - 1]?.version ?? "";
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   // Sites lus en base (repli sur la config statique). Cf. ADR-0021, phases 1 et 3.
   const { sitesByCommune, renommerSite, ajouterSite } = usePartenaireSites(config);
+
+  // Événements tagués `partenaire:<slug>` : mesure d'usage propre (hors prefetch), cf. ADR-0030.
+  const { track, trackEvaluationTerminee } = useEventTracking({
+    integrateurOverride: `partenaire:${config.slug}`,
+  });
 
   const handleRenameSite = useCallback(
     async (id: string, nom: string) => {
@@ -73,11 +84,19 @@ const MultisiteView: React.FC<{ config: PartnerConfig }> = ({ config }) => {
       try {
         const result = await enrichissementService.enrichirSite(site.parcelles, {
           acceptDegradedCache: true,
+          partenaire: config.slug,
         });
         enrichmentCacheRef.current.set(site.idtup, result);
         setEnrichmentData(result);
         // Qualification (enrichissement) terminée : persiste le statut (simple check).
         userData.markQualified(site.idtup);
+        // Identifiant cadastral réel (<= 20 car.), valide pour le DTO événement : parcelle
+        // prédominante (multi) ou 1re parcelle (le flux mono ne peuple pas parcellePredominante).
+        // L'idtup partenaire est un slug (ex. "scet-13"), rejeté par la validation.
+        await track(TypeEvenement.ENRICHISSEMENT_TERMINE, {
+          identifiantCadastral: result.parcellePredominante ?? site.parcelles[0],
+          donnees: { nombreParcelles: site.parcelles.length },
+        });
       } catch (err: unknown) {
         const message = err instanceof Error ? err.message : "Erreur lors de l'enrichissement";
         setError(message);
@@ -85,7 +104,7 @@ const MultisiteView: React.FC<{ config: PartnerConfig }> = ({ config }) => {
         setLoadingState("idle");
       }
     },
-    [userData],
+    [userData, config.slug, track],
   );
 
   const handleManualDataChange = useCallback(
@@ -110,16 +129,34 @@ const MultisiteView: React.FC<{ config: PartnerConfig }> = ({ config }) => {
       const result = await evaluationService.calculerMutabilite(input, {
         modeDetaille: true,
         versionAlgorithme: selectedVersion || undefined,
+        partenaire: config.slug,
       });
       userData.setMutability(selectedSite.idtup, result);
       setMutabilityData(result);
+      const identifiantEvenement = enrichmentData.parcellePredominante ?? selectedSite.parcelles[0];
+      track(TypeEvenement.RESULTATS_MUTABILITE, {
+        evaluationId: result.evaluationId || undefined,
+        identifiantCadastral: identifiantEvenement,
+      });
+      if (result.evaluationId) {
+        await trackEvaluationTerminee(result.evaluationId, identifiantEvenement);
+      }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Erreur lors du calcul de mutabilité";
       setError(message);
     } finally {
       setLoadingState("idle");
     }
-  }, [selectedSite, enrichmentData, manualData, selectedVersion, userData]);
+  }, [
+    selectedSite,
+    enrichmentData,
+    manualData,
+    selectedVersion,
+    userData,
+    config.slug,
+    track,
+    trackEvaluationTerminee,
+  ]);
 
   const handleAddSiteSubmit = useCallback(
     async (idpars: string[]) => {

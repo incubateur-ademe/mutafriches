@@ -13,9 +13,11 @@ Les événements utilisateur sont stockés dans la table `evenements_utilisateur
 | `visitor_id` | Identifiant d'un **utilisateur** anonyme persistant (voir ci-dessous) |
 | `evaluation_id` | Lien vers l'évaluation calculée (permet de dédoublonner les simulations) |
 | `mode_utilisation` | `standalone` ou `iframe` |
-| `integrateur` | Provenance (`benefriches`, hostname, ...) |
+| `integrateur` | Provenance (`benefriches`, hostname, `partenaire:<slug>`, ...) |
 
 Les évaluations persistées (`evaluations`) portent aussi `source_utilisation`, `integrateur`, `utilisateur_id` (réutilisé pour le `visitor_id`) et `fiabilite`.
+
+La colonne `integrateur` porte la convention **`partenaire:<slug>`** pour le trafic issu des pages partenaires (`/partenaires/<slug>`), tout en gardant `source_utilisation = SITE_STANDALONE` (cf. [ADR-0030](adr/0030-canal-page-partenaire-integrateur-tague.md)). Les qualifications s'écrivent dans deux tables : `enrichissements` (mono-parcelle) et `sites` (multi-parcelle).
 
 ## Session vs utilisateur : la distinction clé
 
@@ -97,3 +99,112 @@ ORDER BY nb_utilisateurs_recurrents DESC;
 Remplacer `session_id` par `visitor_id` et `COUNT(*)` par `COUNT(DISTINCT evaluation_id)`.
 
 > Note Metabase/PostgreSQL : ne pas nommer un CTE `analyse` (`ANALYSE` est un mot réservé). Préférer `jsonb_exists(...)` à l'opérateur `?` (interprété comme un placeholder JDBC).
+
+## Pilotage par canal (qualifications & évaluations par mois)
+
+Le canal se lit d'abord sur `integrateur` (dont la convention `partenaire:<slug>`), puis sur `source_utilisation` en repli. Bloc `CASE` commun aux requêtes ci-dessous :
+
+```sql
+CASE
+  WHEN integrateur = 'partenaire:ddt-vosges'          THEN 'DDT Vosges'
+  WHEN integrateur = 'partenaire:scet'                THEN 'SCET'
+  WHEN integrateur LIKE 'partenaire:%'                THEN 'Partenaire : ' || split_part(integrateur, ':', 2)
+  WHEN integrateur ILIKE '%aurangevine%'              THEN 'AURA'
+  WHEN integrateur ILIKE '%benefriches%'              THEN 'Bénéfriches'
+  WHEN integrateur ILIKE '%indre.gouv%'               THEN 'DDT Indre'
+  WHEN source_utilisation = 'IFRAME_INTEGREE'         THEN 'Iframe'
+  WHEN source_utilisation = 'API_DIRECTE'             THEN 'API directe'
+  WHEN source_utilisation = 'SITE_STANDALONE' AND integrateur IS NULL THEN 'Bac à sable (site web)'
+  ELSE 'Non catégorisé (pré-tracking)'
+END
+```
+
+### Qualifications par canal / mois (mono + multi-parcelle)
+
+Les qualifications mono-parcelle vivent dans `enrichissements`, les multi-parcelles dans `sites`. Le décompte complet les combine (les cache hits sont exclus via `*_source_id IS NULL`) :
+
+```sql
+WITH qualifs AS (
+  SELECT date_enrichissement, statut, source_utilisation, integrateur
+  FROM enrichissements WHERE enrichissement_source_id IS NULL
+  UNION ALL
+  SELECT date_enrichissement, statut, source_utilisation, integrateur
+  FROM sites WHERE site_source_id IS NULL
+)
+SELECT
+  DATE_TRUNC('month', date_enrichissement) AS mois,
+  CASE /* bloc CASE ci-dessus */ END AS canal,
+  COUNT(*) AS nb_qualifications
+FROM qualifs
+WHERE statut IN ('succes','partiel')
+GROUP BY 1, 2
+ORDER BY 1, 2;
+```
+
+Pour la version mono seule, requêter `enrichissements` directement ; multi seule, `sites`.
+
+### Évaluations par canal / mois
+
+`evaluations` couvre mono et multi dans une seule table :
+
+```sql
+SELECT
+  DATE_TRUNC('month', date_calcul) AS mois,
+  CASE /* bloc CASE ci-dessus */ END AS canal,
+  COUNT(*) AS nb_evaluations
+FROM evaluations
+WHERE evaluation_source_id IS NULL
+GROUP BY 1, 2
+ORDER BY 1, 2;
+```
+
+### Rétroactivité
+
+Le tag `partenaire:<slug>` n'existe que pour les données postérieures au déploiement d'[ADR-0030](adr/0030-canal-page-partenaire-integrateur-tague.md). L'historique se rattrape avec le script temporaire `db:partenaires:backfill-canal` (jointure sur les parcelles de `partenaire_sites`). Attention : sur `enrichissements`/`sites`, ce backfill inclut le trafic de réchauffe du cache (prefetch) ; les `evaluations` restent un signal propre.
+
+### Mesure d'usage prefetch-free (recommandée) — via `evenements_utilisateur`
+
+Les tables `enrichissements`/`sites` sont **à la fois cache et journal** : le prefetch quotidien y écrit des lignes indistinguables d'une qualif utilisateur, et la clause `*_source_id IS NULL` compte les calculs machine tout en excluant les cache hits humains. Pour un décompte **d'usage réel**, préférer la table d'événements `evenements_utilisateur` : elle n'est alimentée que par le front (jamais par le prefetch/seed serveur-à-serveur) et les pages partenaires y émettent désormais `enrichissement_termine` / `evaluation_terminee` tagués `integrateur = partenaire:<slug>` (cf. ADR-0030).
+
+Bloc `CASE` (côté événements, `mode_utilisation` au lieu de `source_utilisation` ; pas d'`API_DIRECTE`, l'API n'émet pas d'événements) :
+
+```sql
+CASE
+  WHEN integrateur = 'partenaire:ddt-vosges'  THEN 'DDT Vosges'
+  WHEN integrateur = 'partenaire:scet'        THEN 'SCET'
+  WHEN integrateur LIKE 'partenaire:%'        THEN 'Partenaire : ' || split_part(integrateur, ':', 2)
+  WHEN integrateur ILIKE '%aurangevine%'      THEN 'AURA'
+  WHEN integrateur ILIKE '%benefriches%'      THEN 'Bénéfriches'
+  WHEN integrateur ILIKE '%indre.gouv%'       THEN 'DDT Indre'
+  WHEN mode_utilisation = 'iframe'            THEN 'Iframe'
+  ELSE 'Bac à sable (site web)'
+END
+```
+
+Qualifications abouties par canal / mois :
+
+```sql
+SELECT
+  DATE_TRUNC('month', date_creation) AS mois,
+  CASE /* bloc CASE événements ci-dessus */ END AS canal,
+  COUNT(*) AS nb_qualifications
+FROM evenements_utilisateur
+WHERE type_evenement = 'enrichissement_termine'
+GROUP BY 1, 2
+ORDER BY 1, 2;
+```
+
+Évaluations par canal / mois (dédoublonnées par `evaluation_id`) :
+
+```sql
+SELECT
+  DATE_TRUNC('month', date_creation) AS mois,
+  CASE /* bloc CASE événements ci-dessus */ END AS canal,
+  COUNT(DISTINCT evaluation_id) AS nb_evaluations
+FROM evenements_utilisateur
+WHERE type_evenement = 'evaluation_terminee'
+GROUP BY 1, 2
+ORDER BY 1, 2;
+```
+
+Ces deux requêtes remplacent avantageusement celles basées sur `enrichissements`/`sites`/`evaluations` pour le pilotage par canal : elles comptent des **actions utilisateur** (cache inclus) et ignorent le prefetch par construction.

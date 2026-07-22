@@ -65,6 +65,13 @@ export class EnrichissementController {
     description:
       "Si `true`, accepte un résultat depuis le cache même si certaines sources ont échoué lors du précédent enrichissement (résultat partiel). Par défaut `false`.",
   })
+  @ApiQuery({
+    name: "partenaire",
+    required: false,
+    type: String,
+    description:
+      "Slug de la page partenaire d'origine (ex : `scet`). Enregistre `integrateur = partenaire:<slug>` pour le suivi par canal.",
+  })
   @ApiResponse({
     status: 201,
     description: "Enrichissement réussi",
@@ -78,6 +85,7 @@ export class EnrichissementController {
     @Query("integrateur") integrateur?: string,
     @Query("acceptDegradedCache") acceptDegradedCacheRaw?: string,
     @Req() req?: Request,
+    @Query("partenaire") partenaire?: string,
   ): Promise<EnrichissementOutputDto> {
     const acceptDegradedCache = acceptDegradedCacheRaw === "true";
     try {
@@ -114,7 +122,12 @@ export class EnrichissementController {
       // correspond jamais aux requêtes de l'UI (cache miss systématique).
       const identifiantsNormalises = identifiants.map((id) => normalizeParcelId(id));
 
-      const origine = this.origineDetectionService.detecterOrigine(req, isIframe, integrateur);
+      const origine = this.origineDetectionService.detecterOrigine(
+        req,
+        isIframe,
+        integrateur,
+        partenaire,
+      );
 
       this.logger.log(
         `Enrichissement ${identifiantsNormalises.length > 1 ? "site" : "parcelle"} : ${identifiantsNormalises.join(", ")}`,

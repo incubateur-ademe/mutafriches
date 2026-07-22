@@ -16,7 +16,7 @@ class EnrichissementService {
    */
   async enrichirSite(
     identifiants: string[],
-    options?: { acceptDegradedCache?: boolean },
+    options?: { acceptDegradedCache?: boolean; partenaire?: string },
   ): Promise<EnrichissementOutputDto> {
     if (identifiants.length === 0) {
       throw new ApiError("Au moins un identifiant de parcelle est requis", 400, "Bad Request");
@@ -40,6 +40,9 @@ class EnrichissementService {
     const queryParams: Record<string, string> = {};
     if (options?.acceptDegradedCache) {
       queryParams.acceptDegradedCache = "true";
+    }
+    if (options?.partenaire) {
+      queryParams.partenaire = options.partenaire;
     }
 
     // Mono-parcelle : format rétro-compatible

@@ -458,6 +458,24 @@ describe("EnrichissementController", () => {
         req,
         true,
         "cartofriches",
+        undefined,
+      );
+    });
+
+    it("devrait transmettre le slug partenaire au service de detection", async () => {
+      // Arrange
+      enrichissementService.enrichir.mockResolvedValue(mockOutput);
+      const req = { headers: {} } as any;
+
+      // Act
+      await controller.enrichirParcelle(mockInput, undefined, undefined, undefined, req, "scet");
+
+      // Assert
+      expect(origineDetectionService.detecterOrigine).toHaveBeenCalledWith(
+        req,
+        undefined,
+        undefined,
+        "scet",
       );
     });
 
