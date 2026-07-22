@@ -257,17 +257,33 @@ describe("OrigineDetectionService", () => {
         });
       });
 
-      it("devrait taguer meme sans requete (source API_DIRECTE conservee)", () => {
+      it("ne devrait PAS taguer si la source n'est pas SITE_STANDALONE (anti-usurpation)", () => {
+        // Sans requête -> API_DIRECTE : un ?partenaire= ne doit pas usurper le canal.
         const result = service.detecterOrigine(undefined, false, undefined, "ddt-vosges");
 
         expect(result).toEqual({
           source: SourceUtilisation.API_DIRECTE,
-          integrateur: "partenaire:ddt-vosges",
+        });
+      });
+
+      it("ne devrait PAS taguer un appel API direct (referer /api)", () => {
+        const req = {
+          headers: { referer: "https://mutafriches.beta.gouv.fr/api/docs" },
+        } as any;
+
+        const result = service.detecterOrigine(req, false, undefined, "scet");
+
+        expect(result).toEqual({
+          source: SourceUtilisation.API_DIRECTE,
         });
       });
 
       it("devrait normaliser la casse du slug", () => {
-        const result = service.detecterOrigine(undefined, false, undefined, "SCET");
+        const req = {
+          headers: { referer: "https://mutafriches.beta.gouv.fr/partenaires/scet" },
+        } as any;
+
+        const result = service.detecterOrigine(req, false, undefined, "SCET");
 
         expect(result.integrateur).toBe("partenaire:scet");
       });

@@ -20,13 +20,13 @@ export class OrigineDetectionService {
   ];
 
   /**
-   * Detecte l'origine de l'appel API
+   * Détecte l'origine de l'appel API
    *
-   * Logique de detection :
+   * Logique de détection :
    * 1. Si query param iframe=true -> IFRAME_INTEGREE (prioritaire)
-   * 2. Sinon, detection auto depuis referer/origin (API_DIRECTE / SITE_STANDALONE / IFRAME)
-   * 3. Contexte page partenaire (query param partenaire=<slug>) : conserve la source
-   *    detectee (SITE_STANDALONE) et tague integrateur = 'partenaire:<slug>'.
+   * 2. Sinon, détection auto depuis referer/origin (API_DIRECTE / SITE_STANDALONE / IFRAME)
+   * 3. Contexte page partenaire (query param partenaire=<slug>) : uniquement si la source
+   *    détectée est SITE_STANDALONE, tague integrateur = 'partenaire:<slug>'.
    *
    * @param req - Request Express (optionnel)
    * @param isIframe - Query param iframe (optionnel)
@@ -48,13 +48,14 @@ export class OrigineDetectionService {
       };
     }
 
-    // 2. Detection automatique depuis la requete
+    // 2. Détection automatique depuis la requête
     const origine = this.detecterOrigineAuto(req);
 
-    // 3. Contexte page partenaire : la source reste celle detectee (le trafic vient
-    // bien du site standalone), seul l'integrateur est tague pour le suivi par canal.
+    // 3. Contexte page partenaire : uniquement si l'origine détectée est le site standalone
+    // (les pages partenaires y vivent). On évite ainsi qu'un appel API_DIRECTE ou iframe
+    // usurpe le canal via un simple query param. Seul l'intégrateur est tagué, source conservée.
     const slug = this.normaliserSlugPartenaire(partenaire);
-    if (slug) {
+    if (slug && origine.source === SourceUtilisation.SITE_STANDALONE) {
       return { ...origine, integrateur: `partenaire:${slug}` };
     }
 
@@ -62,7 +63,7 @@ export class OrigineDetectionService {
   }
 
   /**
-   * Detection automatique de la source depuis le referer/origin de la requete.
+   * Détection automatique de la source depuis le referer/origin de la requête.
    */
   private detecterOrigineAuto(req?: Request): OrigineUtilisation {
     // Sans request, on considere que c'est un appel API direct
