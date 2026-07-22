@@ -23,19 +23,23 @@ export class OrigineDetectionService {
    * Detecte l'origine de l'appel API
    *
    * Logique de detection :
-   * 1. Si query param iframe=true -> IFRAME_INTEGREE
-   * 2. Si pas de request -> API_DIRECTE
-   * 3. Si referer contient /api -> API_DIRECTE
-   * 4. Si referer/origin depuis domaine standalone -> SITE_STANDALONE
-   * 5. Si referer/origin depuis autre domaine -> IFRAME_INTEGREE
-   * 6. Sinon -> API_DIRECTE
+   * 1. Si query param iframe=true -> IFRAME_INTEGREE (prioritaire)
+   * 2. Sinon, detection auto depuis referer/origin (API_DIRECTE / SITE_STANDALONE / IFRAME)
+   * 3. Contexte page partenaire (query param partenaire=<slug>) : conserve la source
+   *    detectee (SITE_STANDALONE) et tague integrateur = 'partenaire:<slug>'.
    *
    * @param req - Request Express (optionnel)
    * @param isIframe - Query param iframe (optionnel)
-   * @param integrateur - Query param integrateur (optionnel)
+   * @param integrateur - Query param integrateur (optionnel, mode iframe)
+   * @param partenaire - Query param partenaire : slug d'une page partenaire (optionnel)
    */
-  detecterOrigine(req?: Request, isIframe?: boolean, integrateur?: string): OrigineUtilisation {
-    // 1. Si iframe=true en query param, forcer le mode iframe
+  detecterOrigine(
+    req?: Request,
+    isIframe?: boolean,
+    integrateur?: string,
+    partenaire?: string,
+  ): OrigineUtilisation {
+    // 1. Si iframe=true en query param, forcer le mode iframe (prioritaire)
     const iframeMode = String(isIframe) === "true";
     if (iframeMode) {
       return {
@@ -44,26 +48,43 @@ export class OrigineDetectionService {
       };
     }
 
-    // 2. Sans request, on considere que c'est un appel API direct
+    // 2. Detection automatique depuis la requete
+    const origine = this.detecterOrigineAuto(req);
+
+    // 3. Contexte page partenaire : la source reste celle detectee (le trafic vient
+    // bien du site standalone), seul l'integrateur est tague pour le suivi par canal.
+    const slug = this.normaliserSlugPartenaire(partenaire);
+    if (slug) {
+      return { ...origine, integrateur: `partenaire:${slug}` };
+    }
+
+    return origine;
+  }
+
+  /**
+   * Detection automatique de la source depuis le referer/origin de la requete.
+   */
+  private detecterOrigineAuto(req?: Request): OrigineUtilisation {
+    // Sans request, on considere que c'est un appel API direct
     if (!req) {
       return { source: SourceUtilisation.API_DIRECTE };
     }
 
-    // 3. Extraire le referrer ou origin
+    // Extraire le referrer ou origin
     const referrer = this.extractReferrer(req);
 
-    // 4. Si pas de referrer mais origin present
+    // Si pas de referrer mais origin present
     if (!referrer && req.headers["origin"]) {
       const origin = req.headers["origin"] as string;
       return this.detectFromUrl(origin);
     }
 
-    // 5. Si le referrer contient /api -> appel API direct
+    // Si le referrer contient /api -> appel API direct
     if (referrer && (referrer.includes("/api") || referrer.endsWith("/api"))) {
       return { source: SourceUtilisation.API_DIRECTE };
     }
 
-    // 6. Detecter depuis le referrer
+    // Detecter depuis le referrer
     if (referrer) {
       const origine = this.detectFromUrl(referrer);
       // Ne pas retourner IFRAME si c'est un domaine standalone avec /api
@@ -73,8 +94,18 @@ export class OrigineDetectionService {
       return origine;
     }
 
-    // 7. Par defaut -> API directe
+    // Par defaut -> API directe
     return { source: SourceUtilisation.API_DIRECTE };
+  }
+
+  /**
+   * Valide et normalise un slug de partenaire (defense contre l'injection dans la
+   * colonne integrateur). Retourne null si absent ou format invalide.
+   */
+  private normaliserSlugPartenaire(partenaire?: string): string | null {
+    if (!partenaire) return null;
+    const slug = partenaire.trim().toLowerCase();
+    return /^[a-z0-9-]{1,40}$/.test(slug) ? slug : null;
   }
 
   /**

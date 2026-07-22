@@ -242,5 +242,56 @@ describe("OrigineDetectionService", () => {
         });
       });
     });
+
+    describe("Contexte page partenaire (query param partenaire)", () => {
+      it("devrait conserver SITE_STANDALONE et taguer integrateur = partenaire:<slug>", () => {
+        const req = {
+          headers: { referer: "https://mutafriches.beta.gouv.fr/partenaires/scet" },
+        } as any;
+
+        const result = service.detecterOrigine(req, false, undefined, "scet");
+
+        expect(result).toEqual({
+          source: SourceUtilisation.SITE_STANDALONE,
+          integrateur: "partenaire:scet",
+        });
+      });
+
+      it("devrait taguer meme sans requete (source API_DIRECTE conservee)", () => {
+        const result = service.detecterOrigine(undefined, false, undefined, "ddt-vosges");
+
+        expect(result).toEqual({
+          source: SourceUtilisation.API_DIRECTE,
+          integrateur: "partenaire:ddt-vosges",
+        });
+      });
+
+      it("devrait normaliser la casse du slug", () => {
+        const result = service.detecterOrigine(undefined, false, undefined, "SCET");
+
+        expect(result.integrateur).toBe("partenaire:scet");
+      });
+
+      it("devrait ignorer un slug au format invalide (anti-injection)", () => {
+        const req = {
+          headers: { referer: "https://mutafriches.beta.gouv.fr/parcelle" },
+        } as any;
+
+        const result = service.detecterOrigine(req, false, undefined, "scet'; DROP TABLE");
+
+        expect(result).toEqual({
+          source: SourceUtilisation.SITE_STANDALONE,
+        });
+      });
+
+      it("devrait laisser iframe prioritaire sur le contexte partenaire", () => {
+        const result = service.detecterOrigine(undefined, true, "cartofriches", "scet");
+
+        expect(result).toEqual({
+          source: SourceUtilisation.IFRAME_INTEGREE,
+          integrateur: "cartofriches",
+        });
+      });
+    });
   });
 });
