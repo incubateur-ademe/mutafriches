@@ -75,9 +75,10 @@ export const EnrichissementPage: React.FC = () => {
 
         setEnrichmentData(enrichmentResult, uiData, identifiantsKey);
 
-        // Tracker l'événement d'enrichissement terminé
+        // Identifiant cadastral valide (<= 20 car.) : parcelle prédominante ou 1re parcelle.
+        // identifiantsKey est la liste jointe, invalide en multi (colonne DTO varchar(20)).
         await track(TypeEvenement.ENRICHISSEMENT_TERMINE, {
-          identifiantCadastral: identifiantsKey,
+          identifiantCadastral: enrichmentResult.parcellePredominante ?? identifiants[0],
           donnees: {
             nombreParcelles: identifiants.length,
           },
