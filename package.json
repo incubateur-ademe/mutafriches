@@ -39,6 +39,7 @@
     "db:ite-fret:import": "pnpm --filter api run db:ite-fret:import",
     "db:lovac:import": "pnpm --filter api run db:lovac:import",
     "db:partenaires:seed": "pnpm --filter api run db:partenaires:seed",
+    "db:partenaires:backfill-canal": "pnpm --filter api run db:partenaires:backfill-canal",
     "partenaires:prefetch": "pnpm --filter api run partenaires:prefetch",
     "docs:sources:gen": "node scripts/generate-sources-doc.cjs",
     "validate": "pnpm format && pnpm lint:fix && pnpm typecheck && pnpm test",

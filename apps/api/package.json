@@ -37,6 +37,7 @@
     "db:ite-fret:import": "node dist/src/scripts/import-ite-fret.js",
     "db:lovac:import": "node dist/src/scripts/import-lovac.js",
     "db:partenaires:seed": "node dist/src/scripts/seed-partenaires.js",
+    "db:partenaires:backfill-canal": "node dist/src/scripts/backfill-canal-partenaire.js",
     "partenaires:prefetch": "node dist/src/scripts/prefetch-partenaires.js"
   },
   "dependencies": {
