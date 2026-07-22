@@ -42,7 +42,8 @@ const MultisiteView: React.FC<{ config: PartnerConfig }> = ({ config }) => {
   const [manualData, setManualData] = useState<Record<string, string>>({});
 
   const { versions } = useAlgorithmeVersions();
-  const selectedVersion = versions[0]?.version ?? "";
+  // Ordre chronologique ascendant : la dernière entrée est la version courante (contrat API)
+  const selectedVersion = versions[versions.length - 1]?.version ?? "";
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
@@ -89,10 +90,11 @@ const MultisiteView: React.FC<{ config: PartnerConfig }> = ({ config }) => {
         setEnrichmentData(result);
         // Qualification (enrichissement) terminée : persiste le statut (simple check).
         userData.markQualified(site.idtup);
-        // idtup : stable et <= 20 car. (mono = id cadastral, multi = clé dérivée), contrairement
-        // à identifiantParcelle qui, en multi, dépasse le varchar(20) de la colonne événement.
+        // Identifiant cadastral réel (<= 20 car.), valide pour le DTO événement : parcelle
+        // prédominante (multi) ou 1re parcelle (le flux mono ne peuple pas parcellePredominante).
+        // L'idtup partenaire est un slug (ex. "scet-13"), rejeté par la validation.
         await track(TypeEvenement.ENRICHISSEMENT_TERMINE, {
-          identifiantCadastral: site.idtup,
+          identifiantCadastral: result.parcellePredominante ?? site.parcelles[0],
           donnees: { nombreParcelles: site.parcelles.length },
         });
       } catch (err: unknown) {
@@ -131,12 +133,13 @@ const MultisiteView: React.FC<{ config: PartnerConfig }> = ({ config }) => {
       });
       userData.setMutability(selectedSite.idtup, result);
       setMutabilityData(result);
+      const identifiantEvenement = enrichmentData.parcellePredominante ?? selectedSite.parcelles[0];
       track(TypeEvenement.RESULTATS_MUTABILITE, {
         evaluationId: result.evaluationId || undefined,
-        identifiantCadastral: selectedSite.idtup,
+        identifiantCadastral: identifiantEvenement,
       });
       if (result.evaluationId) {
-        await trackEvaluationTerminee(result.evaluationId, selectedSite.idtup);
+        await trackEvaluationTerminee(result.evaluationId, identifiantEvenement);
       }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Erreur lors du calcul de mutabilité";
