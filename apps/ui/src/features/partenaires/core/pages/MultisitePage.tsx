@@ -73,6 +73,7 @@ const MultisiteView: React.FC<{ config: PartnerConfig }> = ({ config }) => {
       try {
         const result = await enrichissementService.enrichirSite(site.parcelles, {
           acceptDegradedCache: true,
+          partenaire: config.slug,
         });
         enrichmentCacheRef.current.set(site.idtup, result);
         setEnrichmentData(result);
@@ -85,7 +86,7 @@ const MultisiteView: React.FC<{ config: PartnerConfig }> = ({ config }) => {
         setLoadingState("idle");
       }
     },
-    [userData],
+    [userData, config.slug],
   );
 
   const handleManualDataChange = useCallback(
@@ -110,6 +111,7 @@ const MultisiteView: React.FC<{ config: PartnerConfig }> = ({ config }) => {
       const result = await evaluationService.calculerMutabilite(input, {
         modeDetaille: true,
         versionAlgorithme: selectedVersion || undefined,
+        partenaire: config.slug,
       });
       userData.setMutability(selectedSite.idtup, result);
       setMutabilityData(result);
@@ -119,7 +121,7 @@ const MultisiteView: React.FC<{ config: PartnerConfig }> = ({ config }) => {
     } finally {
       setLoadingState("idle");
     }
-  }, [selectedSite, enrichmentData, manualData, selectedVersion, userData]);
+  }, [selectedSite, enrichmentData, manualData, selectedVersion, userData, config.slug]);
 
   const handleAddSiteSubmit = useCallback(
     async (idpars: string[]) => {

@@ -21,6 +21,8 @@ export class ApiError extends Error {
 export interface ApiCallOptions {
   isIframe?: boolean;
   integrator?: string;
+  // Slug de la page partenaire d'origine : enregistre integrateur = partenaire:<slug>.
+  partenaire?: string;
 }
 
 // Options spécifiques pour calculer mutabilité
