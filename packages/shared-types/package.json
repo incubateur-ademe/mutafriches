@@ -14,8 +14,8 @@
   },
   "devDependencies": {
     "@types/node": "^25.9.2",
-    "@vitest/ui": "^4.1.9",
+    "@vitest/ui": "^4.1.10",
     "typescript": "^6.0.3",
-    "vitest": "^4.1.9"
+    "vitest": "^4.1.10"
   }
 }
