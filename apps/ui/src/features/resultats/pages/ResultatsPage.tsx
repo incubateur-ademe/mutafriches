@@ -464,11 +464,11 @@ export const ResultatsPage: React.FC = () => {
           // Fond vert clair (#B8FEC9, badge EXCELLENT), non couvert par une classe DSFR
           style={{ padding: "2.5rem", backgroundColor: "#B8FEC9", borderRadius: "24px" }}
         >
-          <h4 className="fr-mb-2w">Analysez plusieurs sites en parallèle</h4>
+          <h4 className="fr-mb-2w">Vous voulez comparer plusieurs sites en friche ?</h4>
           <p className="fr-mb-3w">
-            Accélérez vos analyses en qualifiant plusieurs sites simultanément. Comparez les
-            résultats à l'échelle d'un territoire et identifiez plus facilement les opportunités
-            pour construire votre stratégie territoriale.
+            Comparez les résultats sur plusieurs sites en friche sur votre territoire et identifiez
+            plus facilement les opportunités pour construire votre stratégie territoriale. Nous
+            avons des solutions à vous proposer.
           </p>
           <ul className="fr-btns-group fr-btns-group--center fr-btns-group--inline">
             <li>
