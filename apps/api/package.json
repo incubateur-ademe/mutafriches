@@ -19,6 +19,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:verbose": "cross-env VERBOSE=true vitest run",
+    "test:contrat": "cross-env TEST_CONTRAT_RESEAU=1 vitest run contrat.spec",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "test:mutability": "vitest run mutability-calculation",

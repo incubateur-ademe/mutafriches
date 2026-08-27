@@ -285,6 +285,7 @@ réelle (cf `docs/adr/`).
 
 **Attention** : le nom de la colonne portant la valeur contient le millésime du zonage et change
 à chaque publication du dataset. Elle est résolue par motif (`/zonage.*en vigueur/i`), jamais en dur.
+Le test de contrat `pnpm --filter api test:contrat` vérifie que le motif matche toujours.
 
 **Valeurs** (`ZonageAbcLogement`) : `abis` | `a` | `b1` | `b2` | `c`
 
