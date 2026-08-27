@@ -432,6 +432,13 @@ Pièges rencontrés en session. Chaque entrée documente un piège pour éviter 
 - Le build **incrémental** (`pnpm --filter shared-types build`) ne régénère pas toujours les fichiers modifiés. En cas de doute, forcer un build propre : `rm -rf packages/shared-types/dist && pnpm --filter shared-types build`.
 - Avant de conclure à un bug de source suite à un échec de test API portant sur un type/constante partagé, **rebuild proprement shared-types** et relancer. `pnpm validate` ne rebuild pas shared-types : le faire en amont si les types partagés ont changé.
 
+### Embeds tiers en modale : `loading="lazy"` invisible sous Firefox
+
+- Une iframe `loading="lazy"` placée dans le conteneur scrollable d'une modale DSFR (`.fr-modal__body`, `overflow-y: auto`) n'est **jamais chargée par Firefox** : elle reste à la hauteur de son placeholder, sans erreur ni requête réseau. Chromium a un correctif pour le lazy loading dans les scrollers imbriqués, pas Gecko.
+- Symptôme trompeur : « ça marche sur Chrome, pas sur Firefox » alors que rien n'est bloqué (ni CSP, ni ETP, ni liste de traqueurs).
+- Correctif : repasser l'iframe en `loading = "eager"` dès son insertion (cf. `ZcalEmbed.tsx`, ADR-0031). Vérifier en Firefox headless : `firefox --headless --profile <dir> --screenshot out.png <url>`.
+- Le script d'embed ZCal est gardé par `window.zcal` : il ne scanne le DOM qu'une fois par page, réinjecter la balise `<script>` est un no-op.
+
 ### Identifiants cadastraux
 
 - Les identifiants Corse utilisent `2A` / `2B` au lieu de `20` dans le code département
