@@ -283,6 +283,9 @@ réelle (cf `docs/adr/`).
 2. Retour de la zone : `Abis`, `A`, `B1`, `B2` ou `C` (tension décroissante du marché)
 3. Si commune absente du référentiel → champ manquant
 
+**Attention** : le nom de la colonne portant la valeur contient le millésime du zonage et change
+à chaque publication du dataset. Elle est résolue par motif (`/zonage.*en vigueur/i`), jamais en dur.
+
 **Valeurs** (`ZonageAbcLogement`) : `abis` | `a` | `b1` | `b2` | `c`
 
 #### 4.3 Proximité commerces/services (BPE)
