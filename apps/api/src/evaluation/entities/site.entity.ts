@@ -60,7 +60,8 @@ export class Site {
   zonagePatrimonial?: ZonagePatrimonial;
   trameVerteEtBleue?: TrameVerteEtBleue;
   zoneAccelerationEnr?: ZoneAccelerationEnr;
-  zonageAbcLogement?: ZonageAbcLogement;
+  /** null = commune absente du référentiel ABC (recherche effectuée, aucun résultat) */
+  zonageAbcLogement?: ZonageAbcLogement | null;
   /** Catégorie de distance à une Installation Terminale Embranchée (ITE) fret */
   distanceIte?: DistanceIte;
   /** Distance réelle en mètres à l'ITE la plus proche (si trouvée dans le rayon de recherche) */
@@ -121,9 +122,13 @@ export class Site {
       zoneAccelerationEnr: enrichissement.zoneAccelerationEnr
         ? (enrichissement.zoneAccelerationEnr as ZoneAccelerationEnr)
         : undefined,
-      zonageAbcLogement: enrichissement.zonageAbcLogement
-        ? (enrichissement.zonageAbcLogement as ZonageAbcLogement)
-        : undefined,
+      // null préservé : commune hors référentiel ABC, à distinguer de la donnée indisponible
+      zonageAbcLogement:
+        enrichissement.zonageAbcLogement === null
+          ? null
+          : enrichissement.zonageAbcLogement
+            ? (enrichissement.zonageAbcLogement as ZonageAbcLogement)
+            : undefined,
       distanceIte: enrichissement.distanceIte
         ? (enrichissement.distanceIte as DistanceIte)
         : undefined,
@@ -193,9 +198,13 @@ export class Site {
     site.zoneAccelerationEnr = donneesEnrichies.zoneAccelerationEnr
       ? (donneesEnrichies.zoneAccelerationEnr as ZoneAccelerationEnr)
       : undefined;
-    site.zonageAbcLogement = donneesEnrichies.zonageAbcLogement
-      ? (donneesEnrichies.zonageAbcLogement as ZonageAbcLogement)
-      : undefined;
+    // null préservé : commune hors référentiel ABC, à distinguer de la donnée indisponible
+    site.zonageAbcLogement =
+      donneesEnrichies.zonageAbcLogement === null
+        ? null
+        : donneesEnrichies.zonageAbcLogement
+          ? (donneesEnrichies.zonageAbcLogement as ZonageAbcLogement)
+          : undefined;
     site.distanceIte = donneesEnrichies.distanceIte
       ? (donneesEnrichies.distanceIte as DistanceIte)
       : undefined;

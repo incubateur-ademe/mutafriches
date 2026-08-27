@@ -8,7 +8,13 @@ import {
   ZonageAbcData,
 } from "./datagouv-zonage-abc.types";
 
-const ZONAGE_COLUMN = "Zonage en vigueur depuis le 5 septembre 2025";
+// Le nom de la colonne porte le millésime du zonage et change à chaque publication
+// ("Zonage en vigueur depuis le 5 septembre 2025", puis "Zonage ABC en vigueur depuis
+// le 26 juin 2026") : on la résout par motif pour survivre au remillésimage annuel.
+export const MOTIF_COLONNE_ZONAGE = /zonage.*en\s+vigueur/i;
+
+// Colonnes de contexte, jamais porteuses de la valeur de zonage
+const COLONNES_IGNOREES = ["CODGEO", "DEP", "LIBGEO", "__id"];
 
 @Injectable()
 export class DatagouvZonageAbcService {
@@ -18,7 +24,14 @@ export class DatagouvZonageAbcService {
 
   constructor(private readonly httpService: HttpService) {}
 
-  async getZonageByCommune(codeInsee: string): Promise<ZonageAbcData | null> {
+  /**
+   * Récupère le zonage ABC d'une commune.
+   *
+   * - `ZonageAbcData` : zonage trouvé
+   * - `null` : commune absente du référentiel (recherche effectuée, aucun résultat)
+   * - `undefined` : donnée indisponible (erreur technique ou schéma inattendu)
+   */
+  async getZonageByCommune(codeInsee: string): Promise<ZonageAbcData | null | undefined> {
     try {
       const url = this.buildUrl(codeInsee);
 
@@ -31,15 +44,15 @@ export class DatagouvZonageAbcService {
       const apiResponse = response.data as DatagouvZonageAbcResponse;
 
       if (!apiResponse.data || apiResponse.data.length === 0) {
-        this.logger.warn(`Aucune donnée Zonage ABC trouvée pour: ${codeInsee}`);
+        this.logger.debug(`Commune absente du référentiel Zonage ABC: ${codeInsee}`);
         return null;
       }
 
-      const row = apiResponse.data[0] as ZonageAbcCommuneRow;
+      const row = apiResponse.data[0];
       return this.transformRow(row);
     } catch (error) {
       this.logger.error(`Erreur lors de la récupération du Zonage ABC pour ${codeInsee}:`, error);
-      return null;
+      return undefined;
     }
   }
 
@@ -51,13 +64,26 @@ export class DatagouvZonageAbcService {
     return url.toString();
   }
 
-  private transformRow(row: ZonageAbcCommuneRow): ZonageAbcData | null {
-    const rawZonage = row[ZONAGE_COLUMN];
+  private transformRow(row: ZonageAbcCommuneRow): ZonageAbcData | undefined {
+    const colonne = this.resoudreColonneZonage(row);
+
+    if (!colonne) {
+      this.logger.error(
+        `Schéma inattendu du dataset Zonage ABC : aucune colonne ne correspond à ` +
+          `${MOTIF_COLONNE_ZONAGE.source} (colonnes reçues : ${Object.keys(row).join(", ")})`,
+      );
+      return undefined;
+    }
+
+    const rawZonage = row[colonne];
     const zonage = this.normaliserZonage(rawZonage);
 
     if (!zonage) {
-      this.logger.warn(`Valeur de zonage ABC inconnue: "${rawZonage}" pour ${row.CODGEO}`);
-      return null;
+      this.logger.warn(
+        `Valeur de zonage ABC inconnue: "${String(rawZonage)}" (colonne "${colonne}") ` +
+          `pour ${row.CODGEO}`,
+      );
+      return undefined;
     }
 
     return {
@@ -67,8 +93,14 @@ export class DatagouvZonageAbcService {
     };
   }
 
-  private normaliserZonage(valeur: string | undefined): ZonageAbcLogement | null {
-    if (!valeur) return null;
+  private resoudreColonneZonage(row: ZonageAbcCommuneRow): string | undefined {
+    return Object.keys(row).find(
+      (cle) => !COLONNES_IGNOREES.includes(cle) && MOTIF_COLONNE_ZONAGE.test(cle),
+    );
+  }
+
+  private normaliserZonage(valeur: unknown): ZonageAbcLogement | null {
+    if (typeof valeur !== "string" || !valeur) return null;
 
     // Le dataset utilise "Abis" (sans espace), mais on tolère les variantes
     // "A bis", "a-bis", etc. en supprimant espaces et tirets internes.

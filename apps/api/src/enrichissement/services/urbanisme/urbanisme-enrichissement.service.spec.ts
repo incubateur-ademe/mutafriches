@@ -411,6 +411,67 @@ describe("UrbanismeEnrichissementService", () => {
     });
   });
 
+  describe("enrichir - Zonage ABC logement", () => {
+    const siteAvecInsee = (): Site => {
+      const site = new Site();
+      site.identifiantParcelle = "49007000AB0123";
+      site.codeInsee = "49007";
+      site.commune = "Angers";
+      site.coordonnees = { latitude: 47.4784, longitude: -0.5632 };
+      return site;
+    };
+
+    it("devrait renseigner le zonage retourne par l'adapter", async () => {
+      const site = siteAvecInsee();
+      zonageAbcService.getZonageByCommune.mockResolvedValue({
+        codeInsee: "49007",
+        commune: "Angers",
+        zonage: "b1",
+      });
+
+      const result = await service.enrichir(site);
+
+      expect(site.zonageAbcLogement).toBe("b1");
+      expect(result.sourcesUtilisees).toContain(SourceEnrichissement.ZONAGE_ABC_LOGEMENT);
+      expect(result.champsManquants).not.toContain("zonageAbcLogement");
+    });
+
+    it("devrait poser null si la commune est absente du referentiel", async () => {
+      // null = recherche effectuee sans resultat : le critere compte pour la fiabilite
+      const site = siteAvecInsee();
+      zonageAbcService.getZonageByCommune.mockResolvedValue(null);
+
+      const result = await service.enrichir(site);
+
+      expect(site.zonageAbcLogement).toBeNull();
+      expect(result.sourcesUtilisees).toContain(SourceEnrichissement.ZONAGE_ABC_LOGEMENT);
+      expect(result.sourcesEchouees).not.toContain(SourceEnrichissement.ZONAGE_ABC_LOGEMENT);
+      expect(result.champsManquants).not.toContain("zonageAbcLogement");
+    });
+
+    it("devrait signaler un champ manquant si la donnee est indisponible", async () => {
+      const site = siteAvecInsee();
+      zonageAbcService.getZonageByCommune.mockResolvedValue(undefined);
+
+      const result = await service.enrichir(site);
+
+      expect(site.zonageAbcLogement).toBeUndefined();
+      expect(result.sourcesEchouees).toContain(SourceEnrichissement.ZONAGE_ABC_LOGEMENT);
+      expect(result.champsManquants).toContain("zonageAbcLogement");
+    });
+
+    it("devrait echouer sans appeler l'adapter si le code INSEE manque", async () => {
+      const site = siteAvecInsee();
+      site.codeInsee = undefined;
+
+      const result = await service.enrichir(site);
+
+      expect(zonageAbcService.getZonageByCommune).not.toHaveBeenCalled();
+      expect(result.sourcesEchouees).toContain(SourceEnrichissement.ZONAGE_ABC_LOGEMENT);
+      expect(result.champsManquants).toContain("zonageAbcLogement");
+    });
+  });
+
   describe("enrichir - Enrichissement complet", () => {
     it("devrait enrichir completement un site valide", async () => {
       // Arrange

@@ -74,7 +74,8 @@ export interface EnrichissementOutputDto {
   trameVerteEtBleue?: TrameVerteEtBleue;
 
   // Zonage ABC logement (tension du marché)
-  zonageAbcLogement?: ZonageAbcLogement;
+  /** null = commune absente du référentiel ABC (recherche effectuée, aucun résultat) */
+  zonageAbcLogement?: ZonageAbcLogement | null;
 
   // Métadonnées
   sourcesUtilisees: string[];

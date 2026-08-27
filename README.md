@@ -147,6 +147,7 @@ pnpm format                 # Formatter Prettier
 pnpm typecheck              # Vérification TypeScript
 pnpm test                   # Tests unitaires (Vitest)
 pnpm test:watch             # Tests en mode watch
+pnpm --filter api test:contrat  # Tests de contrat des sources externes (appels réseau réels)
 pnpm validate               # Tout vérifier (format + lint + typecheck + test)
 ```
 

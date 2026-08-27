@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
-import type { ZaerEnrichissement } from "@mutafriches/shared-types";
-import { buildZaerBadges } from "./enrichissment.mapper";
+import type { EnrichissementOutputDto, ZaerEnrichissement } from "@mutafriches/shared-types";
+import { ZonageAbcLogement } from "@mutafriches/shared-types";
+import { buildZaerBadges, transformEnrichmentToUiData } from "./enrichissment.mapper";
 
 const makeZaer = (overrides: Partial<ZaerEnrichissement> = {}): ZaerEnrichissement => ({
   enZoneZaer: true,
@@ -8,6 +9,47 @@ const makeZaer = (overrides: Partial<ZaerEnrichissement> = {}): ZaerEnrichisseme
   filieres: [],
   zones: [],
   ...overrides,
+});
+
+const makeEnrichissement = (
+  overrides: Partial<EnrichissementOutputDto> = {},
+): EnrichissementOutputDto => ({
+  identifiantParcelle: "25056000HZ0346",
+  codeInsee: "25056",
+  commune: "Besançon",
+  surfaceSite: 335,
+  siteEnCentreVille: false,
+  distanceAutoroute: 583,
+  distanceTransportCommun: 207,
+  proximiteCommercesServices: true,
+  distanceRaccordementElectrique: 63,
+  tauxLogementsVacants: 11.1,
+  presenceRisquesTechnologiques: false,
+  siteReferencePollue: false,
+  sourcesUtilisees: [],
+  champsManquants: [],
+  sourcesEchouees: [],
+  ...overrides,
+});
+
+describe("transformEnrichmentToUiData - zonage ABC logement", () => {
+  it("affiche la zone quand elle est renseignée", () => {
+    const ui = transformEnrichmentToUiData(
+      makeEnrichissement({ zonageAbcLogement: ZonageAbcLogement.B1 }),
+    );
+    expect(ui.zonageAbcLogement).toBe("B1");
+  });
+
+  it("affiche 'Commune hors référentiel' quand la recherche n'a rien donné (null)", () => {
+    const ui = transformEnrichmentToUiData(makeEnrichissement({ zonageAbcLogement: null }));
+    expect(ui.zonageAbcLogement).toBe("Commune hors référentiel");
+  });
+
+  it("laisse le champ vide quand la donnée est indisponible (undefined)", () => {
+    // Chaîne vide = badge "Donnée non accessible" côté EnrichedInfoField
+    const ui = transformEnrichmentToUiData(makeEnrichissement({ zonageAbcLogement: undefined }));
+    expect(ui.zonageAbcLogement).toBe("");
+  });
 });
 
 describe("buildZaerBadges", () => {
