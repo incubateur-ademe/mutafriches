@@ -138,15 +138,25 @@ export class UrbanismeEnrichissementService {
     try {
       const zonageData = await this.zonageAbcService.getZonageByCommune(site.codeInsee);
 
-      if (!zonageData) {
-        this.logger.warn(`Aucune donnée Zonage ABC trouvée pour ${site.codeInsee}`);
+      // undefined = donnée indisponible (erreur technique ou schéma inattendu)
+      if (zonageData === undefined) {
+        this.logger.warn(`Zonage ABC indisponible pour ${site.codeInsee}`);
         sourcesEchouees.push(SourceEnrichissement.ZONAGE_ABC_LOGEMENT);
         champsManquants.push("zonageAbcLogement");
         return;
       }
 
-      site.zonageAbcLogement = zonageData.zonage;
+      // Source utilisée même si la commune est absente du référentiel (la recherche a fonctionné)
       sourcesUtilisees.push(SourceEnrichissement.ZONAGE_ABC_LOGEMENT);
+
+      // null = recherche effectuée, commune hors référentiel : compte pour la fiabilité
+      if (zonageData === null) {
+        this.logger.log(`Commune absente du référentiel Zonage ABC: ${site.codeInsee}`);
+        site.zonageAbcLogement = null;
+        return;
+      }
+
+      site.zonageAbcLogement = zonageData.zonage;
 
       this.logger.log(
         `Zonage ABC: ${zonageData.zonage.toUpperCase()} pour ${zonageData.commune} (${site.codeInsee})`,

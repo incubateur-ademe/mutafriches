@@ -159,7 +159,9 @@ const formatDistanceIte = (value?: DistanceIte): string => {
 /**
  * Formate le zonage ABC logement en label lisible
  */
-const formatZonageAbcLogement = (value?: string): string => {
+const formatZonageAbcLogement = (value?: string | null): string => {
+  // null = recherche OK, commune absente du référentiel ABC (vs undefined = donnée indisponible)
+  if (value === null) return "Commune hors référentiel";
   if (!value) return "";
   switch (value) {
     case "abis":

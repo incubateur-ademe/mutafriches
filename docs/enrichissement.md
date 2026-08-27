@@ -281,7 +281,8 @@ réelle (cf `docs/adr/`).
 **Algorithme** :
 1. Recherche du zonage de la commune via son code INSEE
 2. Retour de la zone : `Abis`, `A`, `B1`, `B2` ou `C` (tension décroissante du marché)
-3. Si commune absente du référentiel → champ manquant
+3. Si commune absente du référentiel → `null` (recherche effectuée, compte pour la fiabilité)
+4. Si erreur technique ou schéma inattendu → `undefined` (champ manquant)
 
 **Attention** : le nom de la colonne portant la valeur contient le millésime du zonage et change
 à chaque publication du dataset. Elle est résolue par motif (`/zonage.*en vigueur/i`), jamais en dur.
