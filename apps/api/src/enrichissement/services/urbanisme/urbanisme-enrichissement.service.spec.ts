@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { SourceEnrichissement } from "@mutafriches/shared-types";
 import { UrbanismeEnrichissementService } from "./urbanisme-enrichissement.service";
-import { DatagouvZonageAbcService } from "../../adapters/datagouv-zonage-abc/datagouv-zonage-abc.service";
+import { ZonageAbcRepository } from "../../repositories/zonage-abc.repository";
 import { BpeRepository } from "../../repositories/bpe.repository";
 import { LovacRepository, LovacCommuneData } from "../../repositories/lovac.repository";
 import { Site } from "../../../evaluation/entities/site.entity";
@@ -10,15 +10,15 @@ import { Test, TestingModule } from "@nestjs/testing";
 describe("UrbanismeEnrichissementService", () => {
   let service: UrbanismeEnrichissementService;
   let lovacRepository: ReturnType<typeof createMockLovacRepository>;
-  let zonageAbcService: ReturnType<typeof createMockZonageAbcService>;
+  let zonageAbcRepository: ReturnType<typeof createMockZonageAbcRepository>;
   let bpeRepository: ReturnType<typeof createMockBpeRepository>;
 
   const createMockLovacRepository = () => ({
     findByCommune: vi.fn(),
   });
 
-  const createMockZonageAbcService = () => ({
-    getZonageByCommune: vi.fn(),
+  const createMockZonageAbcRepository = () => ({
+    findByCodeInsee: vi.fn(),
   });
 
   const createMockBpeRepository = () => ({
@@ -27,21 +27,21 @@ describe("UrbanismeEnrichissementService", () => {
 
   beforeEach(async () => {
     const mockLovac = createMockLovacRepository();
-    const mockZonageAbc = createMockZonageAbcService();
+    const mockZonageAbc = createMockZonageAbcRepository();
     const mockBpe = createMockBpeRepository();
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         UrbanismeEnrichissementService,
         { provide: LovacRepository, useValue: mockLovac },
-        { provide: DatagouvZonageAbcService, useValue: mockZonageAbc },
+        { provide: ZonageAbcRepository, useValue: mockZonageAbc },
         { provide: BpeRepository, useValue: mockBpe },
       ],
     }).compile();
 
     service = module.get<UrbanismeEnrichissementService>(UrbanismeEnrichissementService);
     lovacRepository = mockLovac;
-    zonageAbcService = mockZonageAbc;
+    zonageAbcRepository = mockZonageAbc;
     bpeRepository = mockBpe;
   });
 
@@ -423,7 +423,7 @@ describe("UrbanismeEnrichissementService", () => {
 
     it("devrait renseigner le zonage retourne par l'adapter", async () => {
       const site = siteAvecInsee();
-      zonageAbcService.getZonageByCommune.mockResolvedValue({
+      zonageAbcRepository.findByCodeInsee.mockResolvedValue({
         codeInsee: "49007",
         commune: "Angers",
         zonage: "b1",
@@ -439,7 +439,7 @@ describe("UrbanismeEnrichissementService", () => {
     it("devrait poser null si la commune est absente du referentiel", async () => {
       // null = recherche effectuee sans resultat : le critere compte pour la fiabilite
       const site = siteAvecInsee();
-      zonageAbcService.getZonageByCommune.mockResolvedValue(null);
+      zonageAbcRepository.findByCodeInsee.mockResolvedValue(null);
 
       const result = await service.enrichir(site);
 
@@ -451,7 +451,7 @@ describe("UrbanismeEnrichissementService", () => {
 
     it("devrait signaler un champ manquant si la donnee est indisponible", async () => {
       const site = siteAvecInsee();
-      zonageAbcService.getZonageByCommune.mockResolvedValue(undefined);
+      zonageAbcRepository.findByCodeInsee.mockResolvedValue(undefined);
 
       const result = await service.enrichir(site);
 
@@ -466,7 +466,7 @@ describe("UrbanismeEnrichissementService", () => {
 
       const result = await service.enrichir(site);
 
-      expect(zonageAbcService.getZonageByCommune).not.toHaveBeenCalled();
+      expect(zonageAbcRepository.findByCodeInsee).not.toHaveBeenCalled();
       expect(result.sourcesEchouees).toContain(SourceEnrichissement.ZONAGE_ABC_LOGEMENT);
       expect(result.champsManquants).toContain("zonageAbcLogement");
     });
@@ -492,7 +492,7 @@ describe("UrbanismeEnrichissementService", () => {
 
       lovacRepository.findByCommune.mockResolvedValue(mockLovacData);
 
-      zonageAbcService.getZonageByCommune.mockResolvedValue({
+      zonageAbcRepository.findByCodeInsee.mockResolvedValue({
         codeInsee: "49007",
         commune: "Angers",
         zonage: "b1",

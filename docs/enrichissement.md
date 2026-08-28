@@ -2,7 +2,7 @@
 
 ## Vue d'ensemble
 
-Le module d'enrichissement est le cœur de Mutafriches. Il enrichit automatiquement les données d'une parcelle cadastrale en interrogeant une dizaine d'**APIs publiques externes** (dont GéoRisques, qui expose 13 endpoints) et **4 bases locales** (3 PostGIS spatiales + le référentiel communal LOVAC).
+Le module d'enrichissement est le cœur de Mutafriches. Il enrichit automatiquement les données d'une parcelle cadastrale en interrogeant une dizaine d'**APIs publiques externes** (dont GéoRisques, qui expose 13 endpoints) et **5 bases locales** (3 PostGIS spatiales + les référentiels communaux LOVAC et zonage ABC).
 
 **Endpoint** : `POST /enrichissement`
 **Entrée** : Identifiant(s) cadastral(s) — mono-parcelle ou multi-parcelle (1 à 20 parcelles)
@@ -251,7 +251,7 @@ correspondant est ignoré par l'algorithme de mutabilité.
 | API | Source | Données récupérées |
 |-----|--------|-------------------|
 | **LOVAC** | Base locale (table `raw_lovac`) | Taux de logements vacants par commune (import annuel `pnpm db:lovac:import`) |
-| **Zonage ABC logement** | `data.gouv.fr` | Zonage A/Abis/B1/B2/C (tension du marché du logement) par commune |
+| **Zonage ABC logement** | Base locale (table `raw_zonage_abc`) | Zonage A/Abis/B1/B2/C (tension du marché du logement) par commune (import `pnpm db:zonage-abc:import`) |
 | **BPE** | Base locale PostGIS | Commerces et services de proximité (Base Permanente des Équipements INSEE) |
 
 ### Règles de gestion
@@ -276,17 +276,20 @@ réelle (cf `docs/adr/`).
 
 #### 4.2 Zonage ABC logement
 
-**API** : Zonage ABC logement (`data.gouv.fr`), recherche par code INSEE.
+**Source** : référentiel local `raw_zonage_abc`, importé depuis le CSV data.gouv.fr
+(« Liste des communes selon le zonage ABC », DGALN) via `pnpm db:zonage-abc:import`.
+L'appel live à l'API tabulaire a été supprimé : il timeoutait sous charge (ADR-0032).
 
 **Algorithme** :
 1. Recherche du zonage de la commune via son code INSEE
 2. Retour de la zone : `Abis`, `A`, `B1`, `B2` ou `C` (tension décroissante du marché)
 3. Si commune absente du référentiel → `null` (recherche effectuée, compte pour la fiabilité)
-4. Si erreur technique ou schéma inattendu → `undefined` (champ manquant)
+4. Si erreur de lecture en base → `undefined` (champ manquant)
 
-**Attention** : le nom de la colonne portant la valeur contient le millésime du zonage et change
-à chaque publication du dataset. Elle est résolue par motif (`/zonage.*en vigueur/i`), jamais en dur.
-Le test de contrat `pnpm --filter api test:contrat` vérifie que le motif matche toujours.
+**Attention** : dans le CSV source, le nom de la colonne portant la valeur contient le millésime
+du zonage et change à chaque arrêté. Le script d'import la résout par motif (`/zonage.*en vigueur/i`),
+jamais en dur, et refuse d'écraser la table si le fichier fait moins de 30 000 communes.
+Le millésime retenu est stocké en base (colonne `millesime`) pour tracer la version en vigueur.
 
 **Valeurs** (`ZonageAbcLogement`) : `abis` | `a` | `b1` | `b2` | `c`
 
@@ -756,7 +759,7 @@ expose 13 endpoints, appelés séparément).
 | Cadastre | IGN Cadastre, BDNB |
 | Énergie | Enedis |
 | Transport | API Service Public, IGN WFS |
-| Urbanisme | data.gouv Zonage ABC logement |
+| Urbanisme | *(aucune : LOVAC, zonage ABC et BPE sont des référentiels locaux)* |
 | Zonages | API Carto Nature, API Carto GPU |
 | ENR | ZAER WFS Géoplateforme |
 | Risques | GéoRisques (1 API, 13 endpoints) |
@@ -909,7 +912,7 @@ expose 13 endpoints, appelés séparément).
 | Distance raccordement élec | Énergie | `distanceRaccordementElectrique` | Enedis |
 | Commerces/services proximité | Urbanisme | `proximiteCommercesServices` | BPE (local) |
 | Taux logements vacants | Urbanisme | `tauxLogementsVacants` | LOVAC (local) |
-| Zonage ABC logement | Urbanisme | `zonageAbcLogement` | Zonage ABC data.gouv |
+| Zonage ABC logement | Urbanisme | `zonageAbcLogement` | Zonage ABC (local) |
 | Risque RGA | Risques Naturels | `risqueRetraitGonflementArgile` | GeoRisques RGA |
 | Risque cavités | Risques Naturels | `risqueCavitesSouterraines` | GeoRisques Cavités |
 | Risque inondation | Risques Naturels | `risqueInondation` | GeoRisques TRI + AZI + PAPI + PPR |
@@ -959,13 +962,13 @@ expose 13 endpoints, appelés séparément).
   - `apps/api/src/enrichissement/adapters/api-carto/gpu/`
 
 ### data.gouv.fr (Zonage ABC, Transport, LOVAC)
-- **URL** : `https://www.data.gouv.fr/api`
-- **Utilisation** : zonage ABC logement (live), arrêts de transport (local), logements vacants LOVAC (local)
+- **URL** : `https://www.data.gouv.fr` (téléchargement de fichiers uniquement, à l'import)
+- **Utilisation** : zonage ABC logement, arrêts de transport, logements vacants LOVAC — **tous en référentiel local**, plus aucun appel à l'exécution
 - **Documentation** : https://www.data.gouv.fr/fr/doc/api
-- **Adapters / repositories** :
-  - `apps/api/src/enrichissement/adapters/datagouv-zonage-abc/` (appel live)
+- **Repositories** :
   - `apps/api/src/enrichissement/repositories/transport-stops.repository.ts` (données locales)
   - `apps/api/src/enrichissement/repositories/lovac.repository.ts` (référentiel local `raw_lovac`, import `pnpm db:lovac:import`)
+  - `apps/api/src/enrichissement/repositories/zonage-abc.repository.ts` (référentiel local `raw_zonage_abc`, import `pnpm db:zonage-abc:import`)
 
 ### API Service Public
 - **URL** : `https://api-lannuaire.service-public.fr/api`

@@ -19,7 +19,6 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:verbose": "cross-env VERBOSE=true vitest run",
-    "test:contrat": "cross-env TEST_CONTRAT_RESEAU=1 vitest run contrat.spec",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "test:mutability": "vitest run mutability-calculation",
@@ -37,6 +36,7 @@
     "db:epci:import": "node dist/src/scripts/import-epci-communes.js",
     "db:ite-fret:import": "node dist/src/scripts/import-ite-fret.js",
     "db:lovac:import": "node dist/src/scripts/import-lovac.js",
+    "db:zonage-abc:import": "node dist/src/scripts/import-zonage-abc.js",
     "db:partenaires:seed": "node dist/src/scripts/seed-partenaires.js",
     "db:partenaires:backfill-canal": "node dist/src/scripts/backfill-canal-partenaire.js",
     "partenaires:prefetch": "node dist/src/scripts/prefetch-partenaires.js"

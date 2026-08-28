@@ -292,6 +292,7 @@ pnpm db:bpe:import          # Importer les données BPE (commerces INSEE)
 pnpm db:transport-stops:import  # Importer les arrêts de transport
 pnpm db:ademe-sites:import  # Importer les sites pollués ADEME
 pnpm db:lovac:import        # Importer le référentiel LOVAC (logements vacants par commune)
+pnpm db:zonage-abc:import   # Importer le référentiel zonage ABC (tension du marché du logement)
 ```
 
 ## Architecture
@@ -363,6 +364,7 @@ Le test dédié (`versions.spec.ts`) garantit l'ordre chronologique ascendant st
 - **API Service Public** (`service-public.fr`) : coordonnées mairies (centre-ville)
 - **Bases locales PostGIS** : arrêts de transport (data.gouv), BPE INSEE (commerces), sites pollués ADEME
 - **Référentiel local LOVAC** (`raw_lovac`) : taux de logements vacants par commune, importé annuellement (`pnpm db:lovac:import`) — remplace l'appel live data.gouv.fr, rate-limité sous charge (cf ADR)
+- **Référentiel local Zonage ABC** (`raw_zonage_abc`) : zone A/Abis/B1/B2/C par commune, importé à chaque arrêté (`pnpm db:zonage-abc:import`) — remplace l'appel live data.gouv.fr pour la même raison (ADR-0032)
 
 ## Tests
 

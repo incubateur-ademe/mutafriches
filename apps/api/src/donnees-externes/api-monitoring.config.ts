@@ -31,7 +31,6 @@ export interface ApiMonitoringEntry {
 
 const GEORISQUES_BASE = "https://www.georisques.gouv.fr/api/v1";
 const APICARTO_BASE = "https://apicarto.ign.fr/api";
-const DATAGOUV_TABULAR = "https://tabular-api.data.gouv.fr/api";
 const GEORISQUES_DOC = "https://www.georisques.gouv.fr/doc-api";
 
 // Point de référence pour les checks géographiques : centroïde de Paris (75056)
@@ -269,17 +268,5 @@ export const API_MONITORING_ENTRIES: readonly ApiMonitoringEntry[] = [
     healthCheckMethod: "GET",
     healthCheckUrl:
       "https://api-lannuaire.service-public.gouv.fr/api/explore/v2.1/catalog/datasets/api-lannuaire-administration/records?limit=1",
-  },
-  {
-    key: "zonage-abc",
-    name: "Zonage ABC",
-    category: "Logement",
-    description: "Classification des communes en zones A, Abis, B1, B2, C",
-    docUrl: "https://www.data.gouv.fr/datasets/liste-des-communes-selon-le-zonage-abc",
-    adapterFile:
-      "apps/api/src/enrichissement/adapters/datagouv-zonage-abc/datagouv-zonage-abc.service.ts",
-    baseUrl: DATAGOUV_TABULAR,
-    healthCheckMethod: "GET",
-    healthCheckUrl: `${DATAGOUV_TABULAR}/resources/13f7282b-8a25-43ab-9713-8bb4e476df55/data/?CODGEO__exact=${TEST_INSEE}&page=1&page_size=1`,
   },
 ] as const;

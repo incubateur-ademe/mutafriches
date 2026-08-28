@@ -128,6 +128,8 @@ pnpm db:stop                # Arrêter PostgreSQL
 pnpm db:reset               # Reset complet (supprime les données)
 pnpm db:push                # Synchroniser le schéma
 pnpm db:studio              # Interface graphique Drizzle Studio
+pnpm db:lovac:import        # Référentiel LOVAC (logements vacants, annuel)
+pnpm db:zonage-abc:import   # Référentiel zonage ABC (tension du logement, à chaque arrêté)
 ```
 
 ### Contact multisites (calendrier ZCal)
@@ -147,7 +149,6 @@ pnpm format                 # Formatter Prettier
 pnpm typecheck              # Vérification TypeScript
 pnpm test                   # Tests unitaires (Vitest)
 pnpm test:watch             # Tests en mode watch
-pnpm --filter api test:contrat  # Tests de contrat des sources externes (appels réseau réels)
 pnpm validate               # Tout vérifier (format + lint + typecheck + test)
 ```
 

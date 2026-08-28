@@ -146,10 +146,12 @@ export const SOURCES_DONNEES: SourceDonnees[] = [
     id: "zonage-abc",
     nom: "Zonage ABC (tension du marché du logement)",
     organisme: "DGALN — data.gouv.fr",
-    type: "api-externe",
+    type: "referentiel-local",
     urlDoc: "https://www.data.gouv.fr/fr/datasets/zonage-abc/",
     sourcesEnrichissement: [SourceEnrichissement.ZONAGE_ABC_LOGEMENT],
-    champsRecuperes: ["Zone ABC en vigueur de la commune (Abis, A, B1, B2, C)"],
+    champsRecuperes: [
+      "Zone ABC en vigueur de la commune, Abis à C (référentiel local `raw_zonage_abc`)",
+    ],
     traitementAlgo:
       "La zone ABC de la commune qualifie la tension du marché du logement et pondère la pertinence " +
       "de l'usage résidentiel.",
