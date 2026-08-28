@@ -24,6 +24,7 @@ import {
   CalculerMutabiliteInputDto,
   RaccordementEau,
   deriverRaccordementEau,
+  listerChampsComplementairesManquants,
 } from "@mutafriches/shared-types";
 
 /**
@@ -92,59 +93,13 @@ export class Site {
     enrichissement: EnrichissementOutputDto,
     donneesComplementaires?: DonneesComplementairesInputDto,
   ): Site {
-    const site = new Site();
-
     if (!enrichissement) {
       throw new Error("Données d'enrichissement manquantes");
     }
 
-    Object.assign(site, {
-      ...enrichissement,
-      // Cast sécurisé des enums
-      risqueRetraitGonflementArgile: enrichissement.risqueRetraitGonflementArgile
-        ? (enrichissement.risqueRetraitGonflementArgile as RisqueRetraitGonflementArgile)
-        : undefined,
-      risqueCavitesSouterraines: enrichissement.risqueCavitesSouterraines
-        ? (enrichissement.risqueCavitesSouterraines as RisqueCavitesSouterraines)
-        : undefined,
-      risqueInondation: enrichissement.risqueInondation
-        ? (enrichissement.risqueInondation as RisqueInondation)
-        : undefined,
-      zonageEnvironnemental: enrichissement.zonageEnvironnemental
-        ? (enrichissement.zonageEnvironnemental as ZonageEnvironnemental)
-        : undefined,
-      zonagePatrimonial: enrichissement.zonagePatrimonial
-        ? (enrichissement.zonagePatrimonial as ZonagePatrimonial)
-        : undefined,
-      zonageReglementaire: enrichissement.zonageReglementaire
-        ? (enrichissement.zonageReglementaire as ZonageReglementaire)
-        : undefined,
-      zoneAccelerationEnr: enrichissement.zoneAccelerationEnr
-        ? (enrichissement.zoneAccelerationEnr as ZoneAccelerationEnr)
-        : undefined,
-      // null préservé : commune hors référentiel ABC, à distinguer de la donnée indisponible
-      zonageAbcLogement:
-        enrichissement.zonageAbcLogement === null
-          ? null
-          : enrichissement.zonageAbcLogement
-            ? (enrichissement.zonageAbcLogement as ZonageAbcLogement)
-            : undefined,
-      distanceIte: enrichissement.distanceIte
-        ? (enrichissement.distanceIte as DistanceIte)
-        : undefined,
-      // Copie des données géographiques
-      coordonnees: enrichissement.coordonnees,
-      geometrie: enrichissement.geometrie,
-      // Multi-parcelle
-      nombreParcelles: enrichissement.nombreParcelles,
-    });
-
-    if (donneesComplementaires) {
-      Object.assign(site, donneesComplementaires);
-    }
-
-    // Raccordement eau dérivé automatiquement de la surface bâtie (fait autorité sur la saisie)
-    site.raccordementEau = deriverRaccordementEau(site.surfaceBati);
+    const site = new Site();
+    Site.copierDonneesEnrichies(site, enrichissement);
+    Site.copierDonneesComplementaires(site, donneesComplementaires);
 
     return site;
   }
@@ -153,88 +108,104 @@ export class Site {
    * Constructeur direct à partir de l'input complet (sans enrichissement)
    */
   static fromInput(input: CalculerMutabiliteInputDto): Site {
-    const site = new Site();
-
     if (!input.donneesEnrichies) {
       throw new Error("Données enrichies manquantes dans l'input");
     }
 
-    const { donneesEnrichies, donneesComplementaires } = input;
+    const site = new Site();
+    Site.copierDonneesEnrichies(site, input.donneesEnrichies);
+    Site.copierDonneesComplementaires(site, input.donneesComplementaires);
 
-    // Copier les données enrichies
-    site.identifiantParcelle = donneesEnrichies.identifiantParcelle;
-    site.commune = donneesEnrichies.commune;
-    site.coordonnees = donneesEnrichies.coordonnees;
-    site.geometrie = donneesEnrichies.geometrie;
-    site.surfaceSite = donneesEnrichies.surfaceSite;
-    site.surfaceBati = donneesEnrichies.surfaceBati;
-    site.siteEnCentreVille = donneesEnrichies.siteEnCentreVille;
-    site.distanceAutoroute = donneesEnrichies.distanceAutoroute;
-    site.distanceTransportCommun = donneesEnrichies.distanceTransportCommun;
-    site.proximiteCommercesServices = donneesEnrichies.proximiteCommercesServices;
-    site.distanceRaccordementElectrique = donneesEnrichies.distanceRaccordementElectrique;
-    site.tauxLogementsVacants = donneesEnrichies.tauxLogementsVacants;
-    site.presenceRisquesTechnologiques = donneesEnrichies.presenceRisquesTechnologiques;
+    return site;
+  }
 
-    // Cast sécurisé des enums
-    site.risqueRetraitGonflementArgile = donneesEnrichies.risqueRetraitGonflementArgile
-      ? (donneesEnrichies.risqueRetraitGonflementArgile as RisqueRetraitGonflementArgile)
+  /**
+   * Copie champ par champ plutôt qu'Object.assign : un JSON entrant ne doit pas pouvoir
+   * introduire de propriété inattendue sur l'entité, ni masquer une de ses méthodes.
+   */
+  private static copierDonneesEnrichies(site: Site, donnees: EnrichissementOutputDto): void {
+    // Identification
+    site.identifiantParcelle = donnees.identifiantParcelle;
+    site.codeInsee = donnees.codeInsee;
+    site.commune = donnees.commune;
+    site.coordonnees = donnees.coordonnees;
+    site.geometrie = donnees.geometrie;
+    site.nombreParcelles = donnees.nombreParcelles;
+
+    // Données physiques et localisation
+    site.surfaceSite = donnees.surfaceSite;
+    site.surfaceBati = donnees.surfaceBati;
+    site.siteEnCentreVille = donnees.siteEnCentreVille;
+    site.distanceAutoroute = donnees.distanceAutoroute;
+    site.distanceTransportCommun = donnees.distanceTransportCommun;
+    site.proximiteCommercesServices = donnees.proximiteCommercesServices;
+    site.distanceRaccordementElectrique = donnees.distanceRaccordementElectrique;
+    site.tauxLogementsVacants = donnees.tauxLogementsVacants;
+
+    // Risques et pollution
+    site.presenceRisquesTechnologiques = donnees.presenceRisquesTechnologiques;
+    site.siteReferencePollue = donnees.siteReferencePollue;
+    site.risqueRetraitGonflementArgile = donnees.risqueRetraitGonflementArgile
+      ? (donnees.risqueRetraitGonflementArgile as RisqueRetraitGonflementArgile)
       : undefined;
-    site.risqueCavitesSouterraines = donneesEnrichies.risqueCavitesSouterraines
-      ? (donneesEnrichies.risqueCavitesSouterraines as RisqueCavitesSouterraines)
+    site.risqueCavitesSouterraines = donnees.risqueCavitesSouterraines
+      ? (donnees.risqueCavitesSouterraines as RisqueCavitesSouterraines)
       : undefined;
-    site.risqueInondation = donneesEnrichies.risqueInondation
-      ? (donneesEnrichies.risqueInondation as RisqueInondation)
+    site.risqueInondation = donnees.risqueInondation
+      ? (donnees.risqueInondation as RisqueInondation)
       : undefined;
-    site.zonageEnvironnemental = donneesEnrichies.zonageEnvironnemental
-      ? (donneesEnrichies.zonageEnvironnemental as ZonageEnvironnemental)
+
+    // Zonages
+    site.zonageEnvironnemental = donnees.zonageEnvironnemental
+      ? (donnees.zonageEnvironnemental as ZonageEnvironnemental)
       : undefined;
-    site.zonagePatrimonial = donneesEnrichies.zonagePatrimonial
-      ? (donneesEnrichies.zonagePatrimonial as ZonagePatrimonial)
+    site.zonagePatrimonial = donnees.zonagePatrimonial
+      ? (donnees.zonagePatrimonial as ZonagePatrimonial)
       : undefined;
-    site.zonageReglementaire = donneesEnrichies.zonageReglementaire
-      ? (donneesEnrichies.zonageReglementaire as ZonageReglementaire)
+    site.zonageReglementaire = donnees.zonageReglementaire
+      ? (donnees.zonageReglementaire as ZonageReglementaire)
       : undefined;
-    site.zoneAccelerationEnr = donneesEnrichies.zoneAccelerationEnr
-      ? (donneesEnrichies.zoneAccelerationEnr as ZoneAccelerationEnr)
+    site.trameVerteEtBleue = donnees.trameVerteEtBleue
+      ? (donnees.trameVerteEtBleue as TrameVerteEtBleue)
+      : undefined;
+    site.zoneAccelerationEnr = donnees.zoneAccelerationEnr
+      ? (donnees.zoneAccelerationEnr as ZoneAccelerationEnr)
       : undefined;
     // null préservé : commune hors référentiel ABC, à distinguer de la donnée indisponible
     site.zonageAbcLogement =
-      donneesEnrichies.zonageAbcLogement === null
+      donnees.zonageAbcLogement === null
         ? null
-        : donneesEnrichies.zonageAbcLogement
-          ? (donneesEnrichies.zonageAbcLogement as ZonageAbcLogement)
+        : donnees.zonageAbcLogement
+          ? (donnees.zonageAbcLogement as ZonageAbcLogement)
           : undefined;
-    site.distanceIte = donneesEnrichies.distanceIte
-      ? (donneesEnrichies.distanceIte as DistanceIte)
-      : undefined;
-    site.distanceIteMetres = donneesEnrichies.distanceIteMetres;
 
-    // Multi-parcelle
-    site.nombreParcelles = donneesEnrichies.nombreParcelles;
+    // Fret
+    site.distanceIte = donnees.distanceIte ? (donnees.distanceIte as DistanceIte) : undefined;
+    site.distanceIteMetres = donnees.distanceIteMetres;
 
     // Métadonnées
-    site.sourcesUtilisees = donneesEnrichies.sourcesUtilisees || [];
-    site.champsManquants = donneesEnrichies.champsManquants || [];
+    site.sourcesUtilisees = donnees.sourcesUtilisees || [];
+    site.champsManquants = donnees.champsManquants || [];
+  }
 
-    // Copier les données complémentaires si présentes
-    if (donneesComplementaires) {
-      site.typeProprietaire = donneesComplementaires.typeProprietaire;
-      site.raccordementEau = donneesComplementaires.raccordementEau;
-      site.etatBatiInfrastructure = donneesComplementaires.etatBatiInfrastructure;
-      site.presencePollution = donneesComplementaires.presencePollution;
-      site.valeurArchitecturaleHistorique = donneesComplementaires.valeurArchitecturaleHistorique;
-      site.qualitePaysage = donneesComplementaires.qualitePaysage;
-      site.qualiteVoieDesserte = donneesComplementaires.qualiteVoieDesserte;
-      site.trameVerteEtBleue = donneesComplementaires.trameVerteEtBleue;
-      site.presenceEspecesProtegees = donneesComplementaires.presenceEspecesProtegees;
-      site.presenceZoneHumide = donneesComplementaires.presenceZoneHumide;
+  private static copierDonneesComplementaires(
+    site: Site,
+    donnees?: DonneesComplementairesInputDto,
+  ): void {
+    if (donnees) {
+      site.typeProprietaire = donnees.typeProprietaire;
+      site.etatBatiInfrastructure = donnees.etatBatiInfrastructure;
+      site.presencePollution = donnees.presencePollution;
+      site.valeurArchitecturaleHistorique = donnees.valeurArchitecturaleHistorique;
+      site.qualitePaysage = donnees.qualitePaysage;
+      site.qualiteVoieDesserte = donnees.qualiteVoieDesserte;
+      site.trameVerteEtBleue = donnees.trameVerteEtBleue;
+      site.presenceEspecesProtegees = donnees.presenceEspecesProtegees;
+      site.presenceZoneHumide = donnees.presenceZoneHumide;
     }
 
     // Raccordement eau dérivé automatiquement de la surface bâtie (fait autorité sur la saisie)
     site.raccordementEau = deriverRaccordementEau(site.surfaceBati);
-
-    return site;
   }
 
   /**
@@ -262,23 +233,29 @@ export class Site {
   }
 
   /**
+   * Champs d'identification indispensables au calcul et à la persistance.
+   * Test sur null/undefined et non sur la véracité : une surface de 0 est une valeur, pas une absence.
+   */
+  champsEssentielsManquants(): string[] {
+    const essentiels: Record<string, unknown> = {
+      identifiantParcelle: this.identifiantParcelle,
+      codeInsee: this.codeInsee,
+      commune: this.commune,
+      surfaceSite: this.surfaceSite,
+    };
+
+    return Object.entries(essentiels)
+      .filter(([, valeur]) => valeur === undefined || valeur === null || valeur === "")
+      .map(([champ]) => champ);
+  }
+
+  /**
    * Vérifie si toutes les données obligatoires sont présentes
    */
   estComplete(): boolean {
-    return !!(
-      this.identifiantParcelle &&
-      this.commune &&
-      this.surfaceSite &&
-      this.typeProprietaire &&
-      this.raccordementEau &&
-      this.etatBatiInfrastructure &&
-      this.presencePollution &&
-      this.valeurArchitecturaleHistorique &&
-      this.qualitePaysage &&
-      this.qualiteVoieDesserte &&
-      this.trameVerteEtBleue &&
-      this.presenceEspecesProtegees &&
-      this.presenceZoneHumide
+    return (
+      this.champsEssentielsManquants().length === 0 &&
+      listerChampsComplementairesManquants(this).length === 0
     );
   }
 }

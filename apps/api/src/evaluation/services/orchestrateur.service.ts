@@ -59,10 +59,14 @@ export class OrchestrateurService {
    * Vérifie les invariants du Site construit (identification et surface).
    */
   private validerSite(site: Site): void {
-    if (!site.estComplete()) {
+    const champsManquants = site.champsEssentielsManquants();
+
+    if (champsManquants.length > 0) {
+      this.logger.warn(`Données d'identification incomplètes : ${champsManquants.join(", ")}`);
       throw new BadRequestException({
-        code: "SITE_INCOMPLET",
-        message: "Données insuffisantes pour le calcul de mutabilité",
+        code: "DONNEES_ENRICHIES_INCOMPLETES",
+        message: "Données d'identification du site incomplètes",
+        champsManquants,
       });
     }
   }

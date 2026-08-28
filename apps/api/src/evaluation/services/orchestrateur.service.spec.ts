@@ -98,7 +98,7 @@ describe("OrchestrateurService", () => {
       const mockSite = new Site();
       mockSite.identifiantParcelle = "490055000AI0001";
       vi.spyOn(Site, "fromEnrichissement").mockReturnValue(mockSite);
-      vi.spyOn(mockSite, "estComplete").mockReturnValue(true);
+      vi.spyOn(mockSite, "champsEssentielsManquants").mockReturnValue([]);
 
       calculService.calculer.mockResolvedValue(mockResultatCalcul);
       evaluationRepository.save.mockResolvedValue("eval-123");
@@ -132,7 +132,7 @@ describe("OrchestrateurService", () => {
 
       const mockSite = new Site();
       vi.spyOn(Site, "fromEnrichissement").mockReturnValue(mockSite);
-      vi.spyOn(mockSite, "estComplete").mockReturnValue(false);
+      vi.spyOn(mockSite, "champsEssentielsManquants").mockReturnValue(["commune"]);
 
       await expect(service.calculerMutabilite(input)).rejects.toThrow(BadRequestException);
     });
@@ -181,7 +181,7 @@ describe("OrchestrateurService", () => {
       it("devrait accepter le payload complété par des ne-sait-pas", async () => {
         const mockSite = new Site();
         vi.spyOn(Site, "fromEnrichissement").mockReturnValue(mockSite);
-        vi.spyOn(mockSite, "estComplete").mockReturnValue(true);
+        vi.spyOn(mockSite, "champsEssentielsManquants").mockReturnValue([]);
         calculService.calculer.mockResolvedValue({
           fiabilite: { note: 5 },
           resultats: [],
@@ -228,7 +228,7 @@ describe("OrchestrateurService", () => {
 
       const mockSite = new Site();
       vi.spyOn(Site, "fromEnrichissement").mockReturnValue(mockSite);
-      vi.spyOn(mockSite, "estComplete").mockReturnValue(true);
+      vi.spyOn(mockSite, "champsEssentielsManquants").mockReturnValue([]);
 
       const mockResultat = {
         fiabilite: { note: 5 },
@@ -386,7 +386,7 @@ describe("OrchestrateurService", () => {
       const mockSite = new Site();
       mockSite.identifiantParcelle = "490055000AI0001";
       vi.spyOn(Site, "fromEnrichissement").mockReturnValue(mockSite);
-      vi.spyOn(mockSite, "estComplete").mockReturnValue(true);
+      vi.spyOn(mockSite, "champsEssentielsManquants").mockReturnValue([]);
       calculService.calculer.mockResolvedValue(mockResultatDetaille);
       evaluationRepository.save.mockResolvedValue("eval-detaille");
 
@@ -415,7 +415,7 @@ describe("OrchestrateurService", () => {
       const mockSite = new Site();
       mockSite.identifiantParcelle = "490055000AI0001";
       vi.spyOn(Site, "fromEnrichissement").mockReturnValue(mockSite);
-      vi.spyOn(mockSite, "estComplete").mockReturnValue(true);
+      vi.spyOn(mockSite, "champsEssentielsManquants").mockReturnValue([]);
 
       calculService.calculer.mockResolvedValue(mockResultatCalcul);
       evaluationRepository.save.mockResolvedValue("eval-new");
@@ -447,7 +447,7 @@ describe("OrchestrateurService", () => {
       const mockSite = new Site();
       mockSite.identifiantParcelle = "490055000AI0001";
       vi.spyOn(Site, "fromEnrichissement").mockReturnValue(mockSite);
-      vi.spyOn(mockSite, "estComplete").mockReturnValue(true);
+      vi.spyOn(mockSite, "champsEssentielsManquants").mockReturnValue([]);
 
       calculService.calculer.mockResolvedValue({
         fiabilite: { note: 7.5, text: "Bonne" },
@@ -512,7 +512,7 @@ describe("OrchestrateurService", () => {
 
       const mockSite = new Site();
       vi.spyOn(Site, "fromEnrichissement").mockReturnValue(mockSite);
-      vi.spyOn(mockSite, "estComplete").mockReturnValue(true);
+      vi.spyOn(mockSite, "champsEssentielsManquants").mockReturnValue([]);
 
       calculService.calculer.mockResolvedValue(mockResultatCalcul);
       evaluationRepository.save.mockResolvedValue("eval-new");
