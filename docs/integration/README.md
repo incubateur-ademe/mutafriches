@@ -225,7 +225,13 @@ Trois règles à respecter :
 - **`raccordementEau` n'est plus à transmettre** : il est déduit de la surface bâtie côté serveur, et ignoré s'il est fourni.
 - **Renvoyer intégralement l'objet reçu de `POST /enrichissement`** dans `donneesEnrichies`, sans en reconstruire un sous-ensemble : `codeInsee`, `commune` et `surfaceSite` sont indispensables au calcul et à l'enregistrement.
 
-La liste des valeurs autorisées est également servie par `GET /evaluation/metadata`.
+`GET /evaluation/metadata` sert ces informations de façon exploitable par machine :
+
+- `champsComplementairesRequis` : les 9 champs à transmettre ;
+- `champsDerives` : les champs calculés par l'API, ignorés s'ils sont envoyés ;
+- `enums.saisie` : les valeurs autorisées pour chaque champ.
+
+Se fier à `champsComplementairesRequis` plutôt qu'aux clés de `enums.saisie` pour savoir quoi envoyer : ces dernières conservent, le temps d'une dépréciation annoncée, des champs qui ne sont plus obligatoires.
 
 3. **Récupérer une évaluation** ultérieurement
 
