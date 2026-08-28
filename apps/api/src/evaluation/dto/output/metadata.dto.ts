@@ -51,7 +51,7 @@ const ENUMS_EXAMPLE = {
 export class MetadataSwaggerDto {
   @ApiProperty({
     description:
-      "Enums groupés par catégorie. `enrichissement` = valeurs renvoyées par l'API d'enrichissement. `saisie` = valeurs attendues dans les données complémentaires (les 8 champs saisis manuellement). `usages` = les 7 usages évalués par l'algorithme. La valeur `ne-sait-pas` indique que l'utilisateur n'a pas pu répondre (ne contribue pas à la fiabilité).",
+      "Enums groupés par catégorie. `enrichissement` = valeurs renvoyées par l'API d'enrichissement. `saisie` = valeurs attendues dans les données complémentaires (9 champs obligatoires ; `raccordementEau` y figure encore mais est dérivé côté serveur et ignoré s'il est transmis). `usages` = les 7 usages évalués par l'algorithme. La valeur `ne-sait-pas` indique que l'utilisateur n'a pas pu répondre (ne contribue pas à la fiabilité).",
     example: ENUMS_EXAMPLE,
   })
   enums: {

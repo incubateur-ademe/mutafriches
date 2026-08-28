@@ -108,7 +108,7 @@ describe("Evaluation E2E", () => {
 
       expect(mockOrchestrateurService.calculerMutabilite).toHaveBeenCalledWith(
         expect.any(Object),
-        expect.objectContaining({ modeDetaille: "true" }),
+        expect.objectContaining({ modeDetaille: true }),
       );
     });
 
@@ -202,6 +202,51 @@ describe("Evaluation E2E", () => {
     route: "/evaluation/calculer",
     body: { donneesEnrichies: { identifiantCadastral: "49007000AB0123" } },
     headers: { Origin: VALID_ORIGIN },
+  });
+});
+
+// App dediee : le throttler de test plafonne a 5 requetes par instance
+describe("Evaluation E2E - Query params booleens", () => {
+  let app: INestApplication;
+  let mockOrchestrateurService: ReturnType<typeof createMocks>["mockOrchestrateurService"];
+
+  beforeEach(async () => {
+    const mocks = createMocks();
+    mockOrchestrateurService = mocks.mockOrchestrateurService;
+
+    app = await createThrottledTestApp({
+      controller: EvaluationController,
+      providers: [
+        { provide: OrchestrateurService, useValue: mocks.mockOrchestrateurService },
+        { provide: OrigineDetectionService, useValue: mocks.mockOrigineDetectionService },
+        IntegrateurOriginGuard,
+      ],
+    });
+  });
+
+  afterEach(async () => {
+    if (app) await app.close();
+  });
+
+  it("devrait interpreter false comme false et non comme une chaine truthy", async () => {
+    await request(app.getHttpServer() as App)
+      .post("/evaluation/calculer?modeDetaille=false&sansEnrichissement=false")
+      .set("Origin", VALID_ORIGIN)
+      .send({ donneesEnrichies: { identifiantCadastral: "49007000AB0123" } })
+      .expect(201);
+
+    expect(mockOrchestrateurService.calculerMutabilite).toHaveBeenCalledWith(
+      expect.any(Object),
+      expect.objectContaining({ modeDetaille: false, sansEnrichissement: false }),
+    );
+  });
+
+  it("devrait refuser un query param booleen non interpretable", async () => {
+    await request(app.getHttpServer() as App)
+      .post("/evaluation/calculer?modeDetaille=peut-etre")
+      .set("Origin", VALID_ORIGIN)
+      .send({ donneesEnrichies: { identifiantCadastral: "49007000AB0123" } })
+      .expect(400);
   });
 });
 

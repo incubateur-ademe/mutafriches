@@ -11,6 +11,10 @@ interface StandardErrorsOptions {
   notFound?: boolean;
   /** Inclure 429 Too Many Requests (endpoints sous Throttle) */
   rateLimited?: boolean;
+  /** Remplace l'exemple de 400 par un cas propre à l'endpoint */
+  badRequestExample?: Record<string, unknown>;
+  /** Remplace la description du 400 */
+  badRequestDescription?: string;
 }
 
 /**
@@ -25,9 +29,11 @@ interface StandardErrorsOptions {
 export function ApiStandardErrors(options: StandardErrorsOptions = {}) {
   const decorators = [
     ApiBadRequestResponse({
-      description: "Requête invalide (validation DTO, format d'identifiant cadastral, etc.).",
+      description:
+        options.badRequestDescription ??
+        "Requête invalide (validation DTO, format d'identifiant cadastral, etc.).",
       schema: {
-        example: {
+        example: options.badRequestExample ?? {
           statusCode: 400,
           message: ["identifiant cadastral invalide : doit faire 14 caractères"],
           error: "Bad Request",

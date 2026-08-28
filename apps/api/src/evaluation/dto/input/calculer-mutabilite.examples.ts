@@ -3,7 +3,8 @@
  * Référencés depuis l'`@ApiBody` du controller pour le bouton "Try it out" de Swagger UI.
  *
  * Les `donneesEnrichies` sont le résultat typique d'un appel préalable à `POST /enrichissement`.
- * Les `donneesComplementaires` sont les 8 champs saisis manuellement par l'utilisateur.
+ * Les `donneesComplementaires` sont les 9 champs saisis manuellement par l'utilisateur.
+ * `raccordementEau` n'y figure pas : il est dérivé de la surface bâtie côté serveur.
  */
 
 const DONNEES_ENRICHIES_BESANCON = {
@@ -43,7 +44,6 @@ export const CALCULER_MUTABILITE_BODY_EXAMPLES = {
       donneesEnrichies: DONNEES_ENRICHIES_BESANCON,
       donneesComplementaires: {
         typeProprietaire: "prive",
-        raccordementEau: "oui",
         etatBatiInfrastructure: "degradation-heterogene",
         presencePollution: "non",
         valeurArchitecturaleHistorique: "interet-remarquable",
@@ -63,7 +63,6 @@ export const CALCULER_MUTABILITE_BODY_EXAMPLES = {
       donneesEnrichies: DONNEES_ENRICHIES_BESANCON,
       donneesComplementaires: {
         typeProprietaire: "prive",
-        raccordementEau: "ne-sait-pas",
         etatBatiInfrastructure: "degradation-heterogene",
         presencePollution: "ne-sait-pas",
         valeurArchitecturaleHistorique: "ne-sait-pas",
@@ -83,13 +82,12 @@ export const CALCULER_MUTABILITE_BODY_EXAMPLES = {
       donneesEnrichies: DONNEES_ENRICHIES_BESANCON,
       donneesComplementaires: {
         typeProprietaire: "public",
-        raccordementEau: "oui",
         etatBatiInfrastructure: "degradation-faible",
-        presencePollution: "demontree-traitee",
+        presencePollution: "deja-geree",
         valeurArchitecturaleHistorique: "sans-interet",
         qualitePaysage: "ordinaire",
         qualiteVoieDesserte: "peu-accessible",
-        trameVerteEtBleue: "corridor-ecologique",
+        trameVerteEtBleue: "corridor-a-preserver",
         presenceEspecesProtegees: "non",
         presenceZoneHumide: "non",
       },

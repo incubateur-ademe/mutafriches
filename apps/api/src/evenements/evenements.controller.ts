@@ -2,6 +2,7 @@ import { Controller, Post, Body, Query, Req, UseGuards } from "@nestjs/common";
 import { ApiExcludeController } from "@nestjs/swagger";
 import { Throttle } from "@nestjs/throttler";
 import { Request } from "express";
+import { ParseOptionalBooleanPipe } from "../shared/pipes";
 import { EvenementOutputDto, ModeUtilisation } from "@mutafriches/shared-types";
 import { EvenementService } from "./services/evenement.service";
 import { OriginGuard } from "./guards/origin.guard";
@@ -17,7 +18,7 @@ export class EvenementsController {
   @Post()
   async enregistrerEvenement(
     @Body() input: EvenementInputDto,
-    @Query("iframe") isIframe?: boolean,
+    @Query("iframe", ParseOptionalBooleanPipe) isIframe?: boolean,
     @Query("integrateur") integrateur?: string,
     @Req() req?: Request,
   ): Promise<EvenementOutputDto> {

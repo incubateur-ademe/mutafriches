@@ -34,6 +34,7 @@ import {
   DistanceIte,
 } from "@mutafriches/shared-types";
 import { Request } from "express";
+import { ParseOptionalBooleanPipe } from "../shared/pipes";
 import { OrchestrateurService } from "./services/orchestrateur.service";
 import { ALGORITHME_VERSIONS, VERSION_COURANTE } from "./services/algorithme/versions";
 import { OrigineDetectionService } from "../shared/services/origine-detection.service";
@@ -106,12 +107,23 @@ export class EvaluationController {
   })
   @ApiResponse({ status: 201, description: "Calcul réussi", type: MutabiliteSwaggerDto })
   @ApiOriginAuth("integrateur")
-  @ApiStandardErrors()
+  @ApiStandardErrors({
+    badRequestDescription:
+      "Requête invalide. `DONNEES_COMPLEMENTAIRES_INCOMPLETES` liste les champs absents : les 9 champs de `donneesComplementaires` sont tous obligatoires, avec la valeur `ne-sait-pas` pour une information non connue (jamais `null`, chaîne vide ou clé absente).",
+    badRequestExample: {
+      statusCode: 400,
+      code: "DONNEES_COMPLEMENTAIRES_INCOMPLETES",
+      message:
+        'Données complémentaires incomplètes. Utiliser la valeur "ne-sait-pas" pour une information non connue.',
+      champsManquants: ["trameVerteEtBleue", "presenceEspecesProtegees", "presenceZoneHumide"],
+      error: "Bad Request",
+    },
+  })
   async calculerMutabilite(
     @Body() input: CalculerMutabiliteInputDto,
-    @Query("modeDetaille") modeDetaille?: boolean,
-    @Query("sansEnrichissement") sansEnrichissement?: boolean,
-    @Query("iframe") isIframe?: boolean,
+    @Query("modeDetaille", ParseOptionalBooleanPipe) modeDetaille?: boolean,
+    @Query("sansEnrichissement", ParseOptionalBooleanPipe) sansEnrichissement?: boolean,
+    @Query("iframe", ParseOptionalBooleanPipe) isIframe?: boolean,
     @Query("integrateur") integrateur?: string,
     @Req() req?: Request,
     @Query("versionAlgorithme") versionAlgorithme?: string,
@@ -141,9 +153,17 @@ export class EvaluationController {
         versionAlgorithme,
       });
     } catch (error) {
-      this.logger.error("Erreur calcul mutabilité:", error);
-      if (error instanceof HttpException) throw error;
+      // Une erreur d'appelant (4xx) n'est pas un incident serveur : warn, pas error
+      if (error instanceof HttpException) {
+        if (error.getStatus() < HttpStatus.INTERNAL_SERVER_ERROR) {
+          this.logger.warn(`Requête de calcul refusée : ${error.message}`);
+        } else {
+          this.logger.error("Erreur calcul mutabilité:", error);
+        }
+        throw error;
+      }
 
+      this.logger.error("Erreur calcul mutabilité:", error);
       throw new HttpException(
         { statusCode: HttpStatus.INTERNAL_SERVER_ERROR, message: "Erreur lors du calcul" },
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -253,9 +273,16 @@ export class EvaluationController {
 
       return await this.orchestrateurService.comparerMutabilite(input, versions);
     } catch (error) {
-      this.logger.error("Erreur comparaison mutabilité:", error);
-      if (error instanceof HttpException) throw error;
+      if (error instanceof HttpException) {
+        if (error.getStatus() < HttpStatus.INTERNAL_SERVER_ERROR) {
+          this.logger.warn(`Requête de comparaison refusée : ${error.message}`);
+        } else {
+          this.logger.error("Erreur comparaison mutabilité:", error);
+        }
+        throw error;
+      }
 
+      this.logger.error("Erreur comparaison mutabilité:", error);
       throw new HttpException(
         { statusCode: HttpStatus.INTERNAL_SERVER_ERROR, message: "Erreur lors de la comparaison" },
         HttpStatus.INTERNAL_SERVER_ERROR,

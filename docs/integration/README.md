@@ -200,10 +200,32 @@ POST https://mutafriches.beta.gouv.fr/evaluation/calculer?integrateur=votre-id
 Content-Type: application/json
 
 {
-  "donneesEnrichies": { ... },        // Réponse de l'étape 1
-  "donneesComplementaires": { ... }   // Données saisies par l'utilisateur
+  "donneesEnrichies": { ... },        // Réponse de l'étape 1, renvoyée intégralement
+  "donneesComplementaires": { ... }   // Les 9 champs ci-dessous, tous obligatoires
 }
 ```
+
+#### Données complémentaires : les 9 champs obligatoires
+
+| Champ | Valeurs |
+|-------|---------|
+| `typeProprietaire` | `public`, `prive`, `mixte`, `copro-indivision`, `ne-sait-pas` |
+| `etatBatiInfrastructure` | `degradation-inexistante`, `degradation-faible`, `degradation-heterogene`, `degradation-moyenne`, `degradation-tres-importante`, `pas-de-bati`, `ne-sait-pas` |
+| `presencePollution` | `non`, `deja-geree`, `oui-composes-volatils`, `oui-amiante`, `oui-autres-composes`, `ne-sait-pas` |
+| `valeurArchitecturaleHistorique` | `sans-interet`, `ordinaire`, `interet-remarquable`, `pas-de-bati`, `ne-sait-pas` |
+| `qualitePaysage` | `sans-interet`, `ordinaire`, `interet-remarquable`, `ne-sait-pas` |
+| `qualiteVoieDesserte` | `accessible`, `peu-accessible`, `degradee`, `ne-sait-pas` |
+| `trameVerteEtBleue` | `hors-trame`, `reservoir-biodiversite`, `corridor-a-preserver`, `corridor-a-restaurer`, `ne-sait-pas` |
+| `presenceEspecesProtegees` | `oui`, `non`, `ne-sait-pas` |
+| `presenceZoneHumide` | `oui`, `non`, `ne-sait-pas` |
+
+Trois règles à respecter :
+
+- **Les 9 champs doivent être présents.** Pour une information non connue, envoyer `"ne-sait-pas"` — jamais `null`, une chaîne vide ou une clé absente. Un champ manquant produit une réponse `400` listant les champs concernés dans `champsManquants`.
+- **`raccordementEau` n'est plus à transmettre** : il est déduit de la surface bâtie côté serveur, et ignoré s'il est fourni.
+- **Renvoyer intégralement l'objet reçu de `POST /enrichissement`** dans `donneesEnrichies`, sans en reconstruire un sous-ensemble : `codeInsee`, `commune` et `surfaceSite` sont indispensables au calcul et à l'enregistrement.
+
+La liste des valeurs autorisées est également servie par `GET /evaluation/metadata`.
 
 3. **Récupérer une évaluation** ultérieurement
 
