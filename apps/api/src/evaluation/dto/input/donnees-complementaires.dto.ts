@@ -14,7 +14,10 @@ import {
 import { ApiProperty } from "@nestjs/swagger";
 
 /**
- * Données complémentaires saisies manuellement par l'utilisateur (8 champs initialement, 10 avec les ajouts récents).
+ * Données complémentaires saisies manuellement par l'utilisateur : 9 champs obligatoires,
+ * plus `raccordementEau` dérivé de la surface bâtie côté serveur (ignoré s'il est transmis).
+ *
+ * Un champ absent, `null` ou vide fait échouer la requête en 400 avec la liste des champs manquants.
  *
  * Pour chaque champ, la valeur `ne-sait-pas` est acceptée et signifie que l'utilisateur
  * n'a pas pu répondre. Ces réponses ne contribuent ni aux avantages ni aux contraintes
