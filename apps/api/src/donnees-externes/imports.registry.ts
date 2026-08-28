@@ -57,6 +57,13 @@ export const IMPORT_DATASETS: readonly ImportDatasetDefinition[] = [
       "https://www.data.gouv.fr/datasets/logements-vacants-du-parc-prive-en-france-et-par-commune-departement-region/",
   },
   {
+    key: "zonage-abc",
+    label: "Zonage ABC (tension du marché du logement)",
+    datasetNamePattern: "zonage-abc-communes-%",
+    countTable: "raw_zonage_abc",
+    docUrl: "https://www.data.gouv.fr/datasets/liste-des-communes-selon-le-zonage-abc",
+  },
+  {
     key: "decoupage-administratif",
     label: "Découpage administratif (communes / EPCI)",
     datasetNamePattern: "decoupage-administratif-etalab-%",
