@@ -27,6 +27,11 @@ import { createMockOrchestrateurService } from "./__test-helpers__/evaluation.mo
 import { createMockOrigineDetectionService } from "../shared/__test-helpers__/origine-detection.mocks";
 import { EvaluationBuilder } from "./__test-helpers__/evaluation.builder";
 import { APP_VERSION } from "../shared/utils/version.utils";
+import {
+  METADATA_CHAMPS_DERIVES,
+  METADATA_CHAMPS_REQUIS,
+  METADATA_ENUMS,
+} from "./dto/output/metadata.enums";
 import { VERSION_COURANTE } from "./services/algorithme/versions";
 
 describe("EvaluationController", () => {
@@ -442,30 +447,22 @@ describe("EvaluationController", () => {
 
       // Assert
       expect(result).toEqual({
-        enums: {
-          enrichissement: {
-            risqueRetraitGonflementArgile: Object.values(RisqueRetraitGonflementArgile),
-            risqueCavitesSouterraines: Object.values(RisqueCavitesSouterraines),
-            risqueInondation: Object.values(RisqueInondation),
-            zonageEnvironnemental: Object.values(ZonageEnvironnemental),
-            zonageReglementaire: Object.values(ZonageReglementaire),
-            zonagePatrimonial: Object.values(ZonagePatrimonial),
-            trameVerteEtBleue: Object.values(TrameVerteEtBleue),
-            distanceIte: Object.values(DistanceIte),
-          },
-          saisie: {
-            typeProprietaire: Object.values(TypeProprietaire),
-            raccordementEau: Object.values(RaccordementEau),
-            etatBatiInfrastructure: Object.values(EtatBatiInfrastructure),
-            presencePollution: Object.values(PresencePollution),
-            valeurArchitecturaleHistorique: Object.values(ValeurArchitecturale),
-            qualitePaysage: Object.values(QualitePaysage),
-            qualiteVoieDesserte: Object.values(QualiteVoieDesserte),
-          },
-          usages: Object.values(UsageType),
-        },
+        enums: METADATA_ENUMS,
+        champsComplementairesRequis: METADATA_CHAMPS_REQUIS,
+        champsDerives: METADATA_CHAMPS_DERIVES,
         version: { api: APP_VERSION, algorithme: VERSION_COURANTE },
       });
+    });
+
+    it("devrait annoncer les 9 champs complementaires requis", () => {
+      const result = controller.getMetadata();
+
+      expect(result.champsComplementairesRequis).toHaveLength(9);
+      expect(result.champsComplementairesRequis).toContain("trameVerteEtBleue");
+      expect(result.champsComplementairesRequis).toContain("presenceEspecesProtegees");
+      expect(result.champsComplementairesRequis).toContain("presenceZoneHumide");
+      expect(result.champsComplementairesRequis).not.toContain("raccordementEau");
+      expect(result.champsDerives).toEqual(["raccordementEau"]);
     });
 
     it("devrait retourner les versions correctes", () => {
