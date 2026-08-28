@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { Test, TestingModule } from "@nestjs/testing";
+import { BadRequestException } from "@nestjs/common";
 import { OrchestrateurService } from "./orchestrateur.service";
 import { CalculService } from "./calcul.service";
 import { EnrichissementService } from "../../enrichissement/services/enrichissement.service";
@@ -11,18 +12,18 @@ import {
   createMockEvaluationRepository,
 } from "../__test-helpers__/evaluation.mocks";
 import {
-  TypeProprietaire,
-  RaccordementEau,
-  EtatBatiInfrastructure,
+  DonneesComplementairesInputDto,
   PresenceEspecesProtegees,
   PresencePollution,
   PresenceZoneHumide,
-  ValeurArchitecturale,
-  QualitePaysage,
-  QualiteVoieDesserte,
   TrameVerteEtBleue,
-  DonneesComplementairesInputDto,
 } from "@mutafriches/shared-types";
+import {
+  CHAMPS_MANQUANTS_PAYLOAD_PARTENAIRE,
+  DONNEES_COMPLEMENTAIRES_COMPLETES,
+  DONNEES_COMPLEMENTAIRES_PARTENAIRE_INCOMPLETES,
+  DONNEES_ENRICHIES_PARTENAIRE,
+} from "../__test-helpers__/calculer-mutabilite.fixtures";
 
 describe("OrchestrateurService", () => {
   let service: OrchestrateurService;
@@ -81,10 +82,7 @@ describe("OrchestrateurService", () => {
         surfaceBati: 2000,
       } as any;
 
-      const mockDonneesComplementaires = {
-        siteEnCentreVille: true,
-        raccordementEau: true,
-      } as any;
+      const mockDonneesComplementaires = DONNEES_COMPLEMENTAIRES_COMPLETES;
 
       const input = {
         donneesEnrichies: mockEnrichissement,
@@ -120,33 +118,110 @@ describe("OrchestrateurService", () => {
 
     it("devrait lancer une erreur si les données enrichies manquent", async () => {
       const input = {
-        donneesComplementaires: { siteEnCentreVille: true },
+        donneesComplementaires: DONNEES_COMPLEMENTAIRES_COMPLETES,
       } as any;
 
-      await expect(service.calculerMutabilite(input)).rejects.toThrow(
-        "Données enrichies manquantes dans la requête",
-      );
+      await expect(service.calculerMutabilite(input)).rejects.toThrow(BadRequestException);
     });
 
-    it("devrait lancer une erreur si le site n'est pas complet", async () => {
+    it("devrait refuser un site incomplet avec un 400", async () => {
       const input = {
         donneesEnrichies: { identifiantParcelle: "123" },
-        donneesComplementaires: {},
+        donneesComplementaires: DONNEES_COMPLEMENTAIRES_COMPLETES,
       } as any;
 
       const mockSite = new Site();
       vi.spyOn(Site, "fromEnrichissement").mockReturnValue(mockSite);
       vi.spyOn(mockSite, "estComplete").mockReturnValue(false);
 
-      await expect(service.calculerMutabilite(input)).rejects.toThrow(
-        "Site incomplet pour le calcul",
-      );
+      await expect(service.calculerMutabilite(input)).rejects.toThrow(BadRequestException);
+    });
+
+    describe("données complémentaires incomplètes", () => {
+      const input = {
+        donneesEnrichies: DONNEES_ENRICHIES_PARTENAIRE,
+        donneesComplementaires: DONNEES_COMPLEMENTAIRES_PARTENAIRE_INCOMPLETES,
+      };
+
+      it("devrait rejeter en 400 le payload partenaire du 28/07/2026", async () => {
+        await expect(service.calculerMutabilite(input)).rejects.toThrow(BadRequestException);
+      });
+
+      it("devrait nommer exactement les champs manquants", async () => {
+        const erreur = await service.calculerMutabilite(input).catch((e: unknown) => e);
+
+        expect(erreur).toBeInstanceOf(BadRequestException);
+        expect((erreur as BadRequestException).getResponse()).toMatchObject({
+          code: "DONNEES_COMPLEMENTAIRES_INCOMPLETES",
+          champsManquants: CHAMPS_MANQUANTS_PAYLOAD_PARTENAIRE,
+        });
+      });
+
+      it("ne devrait toucher ni au cache, ni au calcul, ni à la persistance", async () => {
+        await expect(service.calculerMutabilite(input)).rejects.toThrow(BadRequestException);
+
+        expect(evaluationRepository.findValidCache).not.toHaveBeenCalled();
+        expect(calculService.calculer).not.toHaveBeenCalled();
+        expect(evaluationRepository.save).not.toHaveBeenCalled();
+      });
+
+      it("devrait rejeter sans TypeError quand le bloc complémentaire est absent", async () => {
+        const erreur = await service
+          .calculerMutabilite({ donneesEnrichies: DONNEES_ENRICHIES_PARTENAIRE } as never)
+          .catch((e: unknown) => e);
+
+        expect(erreur).toBeInstanceOf(BadRequestException);
+        expect(
+          ((erreur as BadRequestException).getResponse() as { champsManquants: string[] })
+            .champsManquants,
+        ).toHaveLength(9);
+        expect(evaluationRepository.findValidCache).not.toHaveBeenCalled();
+      });
+
+      it("devrait accepter le payload complété par des ne-sait-pas", async () => {
+        const mockSite = new Site();
+        vi.spyOn(Site, "fromEnrichissement").mockReturnValue(mockSite);
+        vi.spyOn(mockSite, "estComplete").mockReturnValue(true);
+        calculService.calculer.mockResolvedValue({
+          fiabilite: { note: 5 },
+          resultats: [],
+        } as never);
+        evaluationRepository.save.mockResolvedValue("eval-ok");
+
+        const result = await service.calculerMutabilite({
+          donneesEnrichies: DONNEES_ENRICHIES_PARTENAIRE,
+          donneesComplementaires: {
+            ...DONNEES_COMPLEMENTAIRES_PARTENAIRE_INCOMPLETES,
+            trameVerteEtBleue: TrameVerteEtBleue.NE_SAIT_PAS,
+            presenceEspecesProtegees: PresenceEspecesProtegees.NE_SAIT_PAS,
+            presenceZoneHumide: PresenceZoneHumide.NE_SAIT_PAS,
+          },
+        });
+
+        expect(result.evaluationId).toBe("eval-ok");
+      });
+    });
+
+    describe("comparerMutabilite", () => {
+      it("devrait rejeter en 400 des données complémentaires incomplètes", async () => {
+        await expect(
+          service.comparerMutabilite(
+            {
+              donneesEnrichies: DONNEES_ENRICHIES_PARTENAIRE,
+              donneesComplementaires: DONNEES_COMPLEMENTAIRES_PARTENAIRE_INCOMPLETES,
+            },
+            ["v1.10", "v1.11"],
+          ),
+        ).rejects.toThrow(BadRequestException);
+
+        expect(calculService.calculer).not.toHaveBeenCalled();
+      });
     });
 
     it("devrait supporter le mode détaillé", async () => {
       const input = {
         donneesEnrichies: { identifiantParcelle: "123", surfaceSite: 10000 } as any,
-        donneesComplementaires: {} as any,
+        donneesComplementaires: DONNEES_COMPLEMENTAIRES_COMPLETES,
       };
 
       const options = { modeDetaille: true };
@@ -172,9 +247,7 @@ describe("OrchestrateurService", () => {
   describe("evaluerSite", () => {
     it("devrait orchestrer enrichissement + calcul + sauvegarde", async () => {
       const identifiant = "490055000AI0001";
-      const donneesComplementaires = {
-        siteEnCentreVille: true,
-      } as any;
+      const donneesComplementaires = DONNEES_COMPLEMENTAIRES_COMPLETES;
 
       const mockEnrichissement = {
         identifiantParcelle: identifiant,
@@ -243,19 +316,8 @@ describe("OrchestrateurService", () => {
       surfaceBati: 2000,
     } as any;
 
-    const mockDonneesComplementaires: DonneesComplementairesInputDto = {
-      siteEnCentreVille: true,
-      typeProprietaire: TypeProprietaire.PUBLIC,
-      raccordementEau: RaccordementEau.OUI,
-      etatBatiInfrastructure: EtatBatiInfrastructure.EN_FRICHE,
-      presencePollution: PresencePollution.NON,
-      valeurArchitecturaleHistorique: ValeurArchitecturale.AUCUNE,
-      qualitePaysage: QualitePaysage.BONNE,
-      qualiteVoieDesserte: QualiteVoieDesserte.BONNE,
-      trameVerteEtBleue: TrameVerteEtBleue.NON,
-      presenceEspecesProtegees: PresenceEspecesProtegees.NON,
-      presenceZoneHumide: PresenceZoneHumide.NON,
-    };
+    const mockDonneesComplementaires: DonneesComplementairesInputDto =
+      DONNEES_COMPLEMENTAIRES_COMPLETES;
 
     it("devrait utiliser le cache si une evaluation valide existe", async () => {
       const cachedResultats = {

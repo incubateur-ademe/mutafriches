@@ -1,4 +1,4 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { BadRequestException, Injectable, Logger } from "@nestjs/common";
 import {
   EnrichirParcelleInputDto,
   EnrichissementOutputDto,
@@ -7,6 +7,7 @@ import {
   DonneesComplementairesInputDto,
   OrigineUtilisation,
   SourceUtilisation,
+  listerChampsComplementairesManquants,
 } from "@mutafriches/shared-types";
 import { EnrichissementService } from "../../enrichissement/services/enrichissement.service";
 import { CalculService, CalculOptions } from "./calcul.service";
@@ -30,6 +31,43 @@ export class OrchestrateurService {
   ) {}
 
   /**
+   * Valide le corps de la requête avant tout accès au cache ou à la base.
+   * Une entrée incomplète est une erreur d'appelant : 400 nommant les champs, jamais 500.
+   */
+  private validerEntree(input: CalculerMutabiliteInputDto): void {
+    if (!input?.donneesEnrichies) {
+      throw new BadRequestException({
+        code: "DONNEES_ENRICHIES_MANQUANTES",
+        message: "Données enrichies manquantes dans la requête",
+      });
+    }
+
+    const champsManquants = listerChampsComplementairesManquants(input.donneesComplementaires);
+
+    if (champsManquants.length > 0) {
+      this.logger.warn(`Données complémentaires incomplètes : ${champsManquants.join(", ")}`);
+      throw new BadRequestException({
+        code: "DONNEES_COMPLEMENTAIRES_INCOMPLETES",
+        message:
+          'Données complémentaires incomplètes. Utiliser la valeur "ne-sait-pas" pour une information non connue.',
+        champsManquants,
+      });
+    }
+  }
+
+  /**
+   * Vérifie les invariants du Site construit (identification et surface).
+   */
+  private validerSite(site: Site): void {
+    if (!site.estComplete()) {
+      throw new BadRequestException({
+        code: "SITE_INCOMPLET",
+        message: "Données insuffisantes pour le calcul de mutabilité",
+      });
+    }
+  }
+
+  /**
    * Enrichit un site (1 ou plusieurs parcelles) avec les données externes
    */
   async enrichirSite(input: EnrichirParcelleInputDto): Promise<EnrichissementOutputDto> {
@@ -49,10 +87,9 @@ export class OrchestrateurService {
       versionAlgorithme?: string;
     },
   ): Promise<MutabiliteOutputDto> {
-    // Vérification des données
-    if (!input.donneesEnrichies) {
-      throw new Error("Données enrichies manquantes dans la requête");
-    }
+    // Validation avant toute autre opération : le cache déréférence les données
+    // complémentaires, un bloc incomplet y produirait un 500 au lieu d'un 400 explicite.
+    this.validerEntree(input);
 
     // identifiantParcelle du DTO contient l'identifiant du site (contrat API public inchangé)
     const siteId = input.donneesEnrichies.identifiantParcelle;
@@ -109,10 +146,7 @@ export class OrchestrateurService {
       site = Site.fromEnrichissement(input.donneesEnrichies, input.donneesComplementaires);
     }
 
-    // Vérifie que le site est complet
-    if (!site.estComplete()) {
-      throw new Error("Site incomplet pour le calcul");
-    }
+    this.validerSite(site);
 
     // Lance le calcul
     const resultats = await this.calculService.calculer(site, options);
@@ -205,9 +239,7 @@ export class OrchestrateurService {
     versions: string[],
     options?: { sansEnrichissement?: boolean },
   ): Promise<Record<string, MutabiliteOutputDto>> {
-    if (!input.donneesEnrichies) {
-      throw new Error("Données enrichies manquantes dans la requête");
-    }
+    this.validerEntree(input);
 
     // Crée le site une seule fois
     let site: Site;
@@ -217,9 +249,7 @@ export class OrchestrateurService {
       site = Site.fromEnrichissement(input.donneesEnrichies, input.donneesComplementaires);
     }
 
-    if (!site.estComplete()) {
-      throw new Error("Site incomplet pour le calcul");
-    }
+    this.validerSite(site);
 
     // Calculer en parallèle pour chaque version
     const resultats = await Promise.all(
