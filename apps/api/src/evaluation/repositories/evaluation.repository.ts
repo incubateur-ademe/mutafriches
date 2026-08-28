@@ -11,7 +11,7 @@ import {
 } from "@mutafriches/shared-types";
 import { evaluations } from "../../shared/database/schemas/evaluations.schema";
 import { Evaluation } from "../entities/evaluation.entity";
-import { hasJeNeSaisPas } from "../utils/cache-validator";
+import { donneesComplementairesEquivalentes, hasJeNeSaisPas } from "../utils/cache-validator";
 import { VERSION_COURANTE } from "../services/algorithme/versions";
 
 /** Duree de validite du cache des evaluations en heures */
@@ -178,7 +178,7 @@ export class EvaluationRepository {
       const cachedDonnees = row.donneesComplementaires as DonneesComplementairesInputDto;
 
       // Verifier que les donnees complementaires sont identiques
-      if (!this.areDonneesComplementairesEqual(donneesComplementaires, cachedDonnees)) {
+      if (!donneesComplementairesEquivalentes(donneesComplementaires, cachedDonnees)) {
         continue;
       }
 
@@ -199,24 +199,5 @@ export class EvaluationRepository {
     }
 
     return null;
-  }
-
-  /**
-   * Compare deux objets de donnees complementaires
-   */
-  private areDonneesComplementairesEqual(
-    a: DonneesComplementairesInputDto,
-    b: DonneesComplementairesInputDto,
-  ): boolean {
-    return (
-      a.typeProprietaire === b.typeProprietaire &&
-      a.raccordementEau === b.raccordementEau &&
-      a.etatBatiInfrastructure === b.etatBatiInfrastructure &&
-      a.presencePollution === b.presencePollution &&
-      a.valeurArchitecturaleHistorique === b.valeurArchitecturaleHistorique &&
-      a.qualitePaysage === b.qualitePaysage &&
-      a.qualiteVoieDesserte === b.qualiteVoieDesserte &&
-      a.trameVerteEtBleue === b.trameVerteEtBleue
-    );
   }
 }

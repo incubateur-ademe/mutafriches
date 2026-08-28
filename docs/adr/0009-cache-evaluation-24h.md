@@ -41,6 +41,12 @@ Nous cachons les évaluations **24 heures** avec invalidation par comparaison ch
 - Si les données d'une API externe changent dans les 24h, le cache retourne l'ancien résultat
 - La comparaison de 8 champs est fragile si on ajoute un nouveau champ complémentaire (il faut penser à l'ajouter à la comparaison)
 
+## Suivi
+
+**2026-08-28** — Le risque anticipé ci-dessus s'est réalisé : la comparaison énumérait toujours 8 champs alors que `presenceEspecesProtegees` et `presenceZoneHumide` avaient été ajoutés depuis (v1.5 et v1.6 de l'algorithme). Deux demandes aux scores différents pouvaient donc partager un même résultat en cache pendant 24h.
+
+La décision (comparaison champ par champ, sans hash) est maintenue, mais l'implémentation itère désormais sur `CHAMPS_COMPLEMENTAIRES_REQUIS` (`packages/shared-types`) au lieu d'une liste écrite à la main : ajouter un critère complémentaire met à jour la clé de cache sans intervention. `raccordementEau` est sorti de la comparaison et de la règle `"ne-sait-pas"`, étant dérivé de la surface bâtie et ignoré au scoring.
+
 ## Liens
 
 - Repository cache : `apps/api/src/evaluation/repositories/evaluation.repository.ts`

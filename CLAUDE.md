@@ -470,7 +470,8 @@ Pièges rencontrés en session. Chaque entrée documente un piège pour éviter 
 ### Cache d'évaluation
 
 - Si les données complémentaires contiennent `"ne-sait-pas"` → **pas de mise en cache** (résultat partiel)
-- Le cache compare les 10 champs complémentaires un par un (pas de hash)
+- Le cache compare les 9 champs complémentaires requis en itérant sur `CHAMPS_COMPLEMENTAIRES_REQUIS` (pas de hash, pas de liste en dur)
+- `raccordementEau` est exclu de la comparaison et de la règle `ne-sait-pas` : dérivé de `surfaceBati`, il est ignoré au scoring
 - TTL de 24 heures, basé sur le `siteId` (identifiant cadastral)
 
 ### PostGIS et coordonnées
