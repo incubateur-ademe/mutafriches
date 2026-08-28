@@ -11,6 +11,7 @@ import {
 } from "@nestjs/common";
 import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiQuery } from "@nestjs/swagger";
 import { Request } from "express";
+import { ParseOptionalBooleanPipe } from "../shared/pipes";
 import {
   EnrichissementOutputDto,
   isValidParcelId,
@@ -81,7 +82,7 @@ export class EnrichissementController {
   @ApiStandardErrors({ notFound: true })
   async enrichirParcelle(
     @Body() input: EnrichirSiteSwaggerDto,
-    @Query("iframe") isIframe?: boolean,
+    @Query("iframe", ParseOptionalBooleanPipe) isIframe?: boolean,
     @Query("integrateur") integrateur?: string,
     @Query("acceptDegradedCache") acceptDegradedCacheRaw?: string,
     @Req() req?: Request,

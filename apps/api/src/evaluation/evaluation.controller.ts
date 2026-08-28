@@ -34,6 +34,7 @@ import {
   DistanceIte,
 } from "@mutafriches/shared-types";
 import { Request } from "express";
+import { ParseOptionalBooleanPipe } from "../shared/pipes";
 import { OrchestrateurService } from "./services/orchestrateur.service";
 import { ALGORITHME_VERSIONS, VERSION_COURANTE } from "./services/algorithme/versions";
 import { OrigineDetectionService } from "../shared/services/origine-detection.service";
@@ -120,9 +121,9 @@ export class EvaluationController {
   })
   async calculerMutabilite(
     @Body() input: CalculerMutabiliteInputDto,
-    @Query("modeDetaille") modeDetaille?: boolean,
-    @Query("sansEnrichissement") sansEnrichissement?: boolean,
-    @Query("iframe") isIframe?: boolean,
+    @Query("modeDetaille", ParseOptionalBooleanPipe) modeDetaille?: boolean,
+    @Query("sansEnrichissement", ParseOptionalBooleanPipe) sansEnrichissement?: boolean,
+    @Query("iframe", ParseOptionalBooleanPipe) isIframe?: boolean,
     @Query("integrateur") integrateur?: string,
     @Req() req?: Request,
     @Query("versionAlgorithme") versionAlgorithme?: string,
