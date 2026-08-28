@@ -330,21 +330,34 @@ Content-Type: application/json
       </div>
 
       <h4 className="fr-h6 fr-mt-4w">2. Calcul de la mutabilité</h4>
+
+      <div className="fr-alert fr-alert--info fr-alert--sm fr-mb-2w">
+        <p>
+          Les <strong>9 champs</strong> de <code>donneesComplementaires</code> ci-dessous sont tous
+          obligatoires. Pour une information non connue, envoyer la valeur{" "}
+          <code>&quot;ne-sait-pas&quot;</code> — jamais <code>null</code>, une chaîne vide ou une
+          clé absente. Le raccordement à l&apos;eau n&apos;est plus à transmettre : il est déduit de
+          la surface bâtie côté serveur.
+        </p>
+      </div>
+
       <div className="fr-highlight">
         <pre>
           <code>{`POST https://mutafriches.beta.gouv.fr/evaluation/calculer
 Content-Type: application/json
 
 {
-  "donneesEnrichies": { /* données d'enrichissement */ },
+  "donneesEnrichies": { /* réponse complète de l'étape 1, renvoyée telle quelle */ },
   "donneesComplementaires": {
     "typeProprietaire": "prive",
-    "raccordementEau": "oui",
     "etatBatiInfrastructure": "degradation-heterogene",
     "presencePollution": "ne-sait-pas",
     "valeurArchitecturaleHistorique": "interet-remarquable",
     "qualitePaysage": "ordinaire",
-    "qualiteVoieDesserte": "accessible"
+    "qualiteVoieDesserte": "accessible",
+    "trameVerteEtBleue": "hors-trame",
+    "presenceEspecesProtegees": "non",
+    "presenceZoneHumide": "non"
   }
 }
 
