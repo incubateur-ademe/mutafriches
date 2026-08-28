@@ -74,10 +74,10 @@ export const ComparaisonAlgoPanel: React.FC<ComparaisonAlgoPanelProps> = ({
   const handleComparer = useCallback(async () => {
     if (!enrichmentData || selectedVersions.length < 2) return;
 
+    // Passe par le mapper : l'API exige les 9 champs, un Record brut peut en omettre
     const input: CalculerMutabiliteInputDto = {
       donneesEnrichies: enrichmentData,
-      donneesComplementaires:
-        donneesComplementaires as unknown as CalculerMutabiliteInputDto["donneesComplementaires"],
+      donneesComplementaires: buildDonneesComplementaires(donneesComplementaires ?? {}),
     };
 
     await comparer(input, selectedVersions);
