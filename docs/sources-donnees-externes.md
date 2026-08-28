@@ -195,13 +195,13 @@ L'intersection ou la proximité avec un zonage de protection est normalisée en 
 
 ### Zonage ABC (tension du marché du logement)
 
-- **Type** : API externe
+- **Type** : Référentiel local
 - **Opérateur** : DGALN — data.gouv.fr
 - **Documentation** : https://www.data.gouv.fr/fr/datasets/zonage-abc/
 
 **Champs récupérés**
 
-- Zone ABC en vigueur de la commune (Abis, A, B1, B2, C)
+- Zone ABC en vigueur de la commune, Abis à C (référentiel local `raw_zonage_abc`)
 
 **Traitement dans l'algorithme**
 
@@ -278,6 +278,26 @@ L'appartenance à une zone d'accélération des EnR est ramenée à un niveau gr
 | Critère d'évaluation alimenté | Poids |
 | --- | --- |
 | Zone d'accélération des EnR | 1 |
+
+### Installations terminales embranchées fret (ITE 3000)
+
+- **Type** : Référentiel local
+- **Opérateur** : Cerema — Base ITE 3000
+- **Documentation** : https://www.data.gouv.fr/datasets/base-de-donnees-des-installations-terminales-embranchees-fret-en-france-ite-3000
+
+**Champs récupérés**
+
+- Installations terminales embranchées géolocalisées autour du site : nom, état et distance (base PostGIS `raw_ite_fret`)
+
+**Traitement dans l'algorithme**
+
+La distance à l'ITE la plus proche est classée selon le seuil de 1 km, croisé avec l'état de l'embranchement (< 1 km bon état, < 1 km mauvais état, > 1 km). Le raccordement fret valorise l'usage industriel.
+
+**Critères d'évaluation alimentés**
+
+| Critère d'évaluation alimenté | Poids |
+| --- | --- |
+| Distance à une installation terminale embranchée fret | 0.5 |
 
 ## Critères saisis manuellement
 
