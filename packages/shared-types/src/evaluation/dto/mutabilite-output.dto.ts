@@ -5,9 +5,11 @@ import { UsageType } from "../enums";
  */
 export interface DetailCritere {
   critere: string; // Nom du critère
-  valeur: string | number | boolean; // Valeur du critère
+  /** Valeur du critère. `null` pour un critère non renseigné (cf. detailsCriteresVides) */
+  valeur: string | number | boolean | null;
   scoreBrut: number; // Score avant pondération
-  poids: number; // Coefficient de pondération
+  /** Poids nominal du critère, y compris s'il n'est pas renseigné (il n'est alors pas compté) */
+  poids: number;
   scorePondere: number; // Score final (scoreBrut * poids)
 }
 

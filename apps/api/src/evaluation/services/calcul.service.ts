@@ -214,13 +214,14 @@ export class CalculService {
     const criteres = this.extraireCriteres(site, poidsCriteres);
 
     Object.entries(criteres).forEach(([champDTO, valeur]) => {
-      // Ignorer si non renseigné
+      // Ignorer si non renseigné. Le poids nominal est conservé, comme dans
+      // fiabilite.detailCriteres : un critère vide ne pèse pas 0, il n'est pas compté.
       if (valeur === null || valeur === undefined || valeur === "ne-sait-pas") {
         detailsCriteresVides.push({
           critere: champDTO,
-          valeur: null,
+          valeur: (valeur ?? null) as string | null,
           scoreBrut: 0,
-          poids: 0,
+          poids: (poidsCriteres[champDTO] as number) ?? 1,
           scorePondere: 0,
         });
         return;

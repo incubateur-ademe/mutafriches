@@ -33,8 +33,11 @@ import {
  */
 export function getCritereTagLabel(
   critere: string,
-  valeur: string | number | boolean,
+  valeur: string | number | boolean | null,
 ): string | null {
+  // Un critère non renseigné n'a pas de libellé à afficher
+  if (valeur === null) return null;
+
   switch (critere) {
     case "surfaceSite":
       return Number(valeur) >= SEUIL_GRANDE_PARCELLE ? "grande parcelle" : "petite parcelle";
