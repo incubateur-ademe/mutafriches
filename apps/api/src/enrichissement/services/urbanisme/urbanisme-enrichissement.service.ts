@@ -2,9 +2,9 @@ import { Injectable, Logger } from "@nestjs/common";
 import { SourceEnrichissement } from "@mutafriches/shared-types";
 import { Site } from "../../../evaluation/entities/site.entity";
 import { EnrichmentResult } from "../shared/enrichissement.types";
-import { DatagouvZonageAbcService } from "../../adapters/datagouv-zonage-abc/datagouv-zonage-abc.service";
 import { BpeRepository } from "../../repositories/bpe.repository";
 import { LovacRepository } from "../../repositories/lovac.repository";
+import { ZonageAbcRepository } from "../../repositories/zonage-abc.repository";
 import { LovacCalculator } from "./lovac.calculator";
 
 /**
@@ -29,7 +29,7 @@ export class UrbanismeEnrichissementService {
 
   constructor(
     private readonly lovacRepository: LovacRepository,
-    private readonly zonageAbcService: DatagouvZonageAbcService,
+    private readonly zonageAbcRepository: ZonageAbcRepository,
     private readonly bpeRepository: BpeRepository,
   ) {}
 
@@ -47,7 +47,7 @@ export class UrbanismeEnrichissementService {
     // Taux de logements vacants (LOVAC via data.gouv.fr)
     await this.enrichTauxLogementsVacants(site, sourcesUtilisees, sourcesEchouees, champsManquants);
 
-    // Zonage ABC logement (data.gouv.fr)
+    // Zonage ABC logement (referentiel local raw_zonage_abc)
     await this.enrichZonageAbcLogement(site, sourcesUtilisees, sourcesEchouees, champsManquants);
 
     // Proximite commerces/services (BPE)
@@ -120,7 +120,7 @@ export class UrbanismeEnrichissementService {
   }
 
   /**
-   * Enrichit le zonage ABC logement via l'API data.gouv.fr
+   * Enrichit le zonage ABC logement via le référentiel local raw_zonage_abc
    */
   private async enrichZonageAbcLogement(
     site: Site,
@@ -136,7 +136,7 @@ export class UrbanismeEnrichissementService {
     }
 
     try {
-      const zonageData = await this.zonageAbcService.getZonageByCommune(site.codeInsee);
+      const zonageData = await this.zonageAbcRepository.findByCodeInsee(site.codeInsee);
 
       // undefined = donnée indisponible (erreur technique ou schéma inattendu)
       if (zonageData === undefined) {
