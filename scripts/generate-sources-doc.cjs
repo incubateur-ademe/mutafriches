@@ -14,6 +14,7 @@ const {
   SOURCES_DONNEES,
   getCriteresManuels,
   getCriteresPourSource,
+  MENTION_SOURCE_SANS_CRITERE,
 } = require("../packages/shared-types/dist/index.js");
 
 const TYPE_LABELS = {
@@ -22,6 +23,7 @@ const TYPE_LABELS = {
 };
 
 function tableauCriteres(criteres) {
+  if (criteres.length === 0) return MENTION_SOURCE_SANS_CRITERE;
   const lignes = criteres.map((c) => `| ${c.label} | ${c.poids} |`);
   return ["| Critère d'évaluation alimenté | Poids |", "| --- | --- |", ...lignes].join("\n");
 }

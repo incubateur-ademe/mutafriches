@@ -4,6 +4,14 @@ import { CritereMetadata } from "../recapitulatif/recapitulatif.types";
 import { SourceDonnees } from "./sources-donnees.types";
 
 /**
+ * Affiché à la place du tableau des critères pour une source qui n'en alimente aucun,
+ * parce qu'elle ne sert qu'à restituer une donnée informative.
+ */
+export const MENTION_SOURCE_SANS_CRITERE =
+  "Aucun : cette source alimente une donnée informative, restituée à l'utilisateur sans effet " +
+  "sur l'indice de mutabilité ni sur la fiabilité.";
+
+/**
  * Documentation partenaires des sources de données externes.
  *
  * Source de vérité unique consommée par la page UI, l'export PDF et la doc Markdown.
@@ -224,6 +232,24 @@ export const SOURCES_DONNEES: SourceDonnees[] = [
       "La distance à l'ITE la plus proche est classée selon le seuil de 1 km, croisé avec l'état de " +
       "l'embranchement (< 1 km bon état, < 1 km mauvais état, > 1 km). Le raccordement fret valorise " +
       "l'usage industriel.",
+  },
+  {
+    id: "icu",
+    nom: "Îlots de chaleur urbain (ICU)",
+    organisme: "CSTB — projet SCO Sat4BDNB",
+    type: "referentiel-local",
+    urlDoc:
+      "https://www.data.gouv.fr/datasets/cartographie-nationale-des-indicateurs-lies-a-lilot-de-chaleur-urbain",
+    sourcesEnrichissement: [SourceEnrichissement.ICU],
+    champsRecuperes: [
+      "Intensité maximale absolue de l'îlot de chaleur urbain (°C) de la zone contenant le site " +
+        "(base PostGIS `raw_icu`, 1 955 zones sur environ 600 communes)",
+    ],
+    traitementAlgo:
+      "Aucun : la donnée est restituée à titre informatif et n'entre pas dans le calcul de " +
+      "mutabilité ni dans la fiabilité (ADR-0034). Elle est ramenée à trois états via le seuil " +
+      "de 5,5 °C — concerné, non concerné, ou hors périmètre d'étude lorsque le site n'est " +
+      "couvert par aucune zone cartographiée.",
   },
 ];
 

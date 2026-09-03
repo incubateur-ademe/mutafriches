@@ -299,6 +299,24 @@ La distance à l'ITE la plus proche est classée selon le seuil de 1 km, croisé
 | --- | --- |
 | Distance à une installation terminale embranchée fret | 0.5 |
 
+### Îlots de chaleur urbain (ICU)
+
+- **Type** : Référentiel local
+- **Opérateur** : CSTB — projet SCO Sat4BDNB
+- **Documentation** : https://www.data.gouv.fr/datasets/cartographie-nationale-des-indicateurs-lies-a-lilot-de-chaleur-urbain
+
+**Champs récupérés**
+
+- Intensité maximale absolue de l'îlot de chaleur urbain (°C) de la zone contenant le site (base PostGIS `raw_icu`, 1 955 zones sur environ 600 communes)
+
+**Traitement dans l'algorithme**
+
+Aucun : la donnée est restituée à titre informatif et n'entre pas dans le calcul de mutabilité ni dans la fiabilité (ADR-0034). Elle est ramenée à trois états via le seuil de 5,5 °C — concerné, non concerné, ou hors périmètre d'étude lorsque le site n'est couvert par aucune zone cartographiée.
+
+**Critères d'évaluation alimentés**
+
+Aucun : cette source alimente une donnée informative, restituée à l'utilisateur sans effet sur l'indice de mutabilité ni sur la fiabilité.
+
 ## Critères saisis manuellement
 
 Ces critères ne proviennent pas d'une source externe : ils sont renseignés par l'utilisateur
