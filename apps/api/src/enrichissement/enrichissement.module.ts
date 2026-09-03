@@ -11,6 +11,7 @@ import { CadastreEnrichissementService } from "./services/cadastre/cadastre-enri
 import { EnergieEnrichissementService } from "./services/energie/energie-enrichissement.service";
 import { TransportEnrichissementService } from "./services/transport/transport-enrichissement.service";
 import { IteFretEnrichissementService } from "./services/transport/ite-fret-enrichissement.service";
+import { IcuEnrichissementService } from "./services/climat/icu-enrichissement.service";
 import { UrbanismeEnrichissementService } from "./services/urbanisme/urbanisme-enrichissement.service";
 import { RisquesNaturelsEnrichissementService } from "./services/risques-naturels/risques-naturels-enrichissement.service";
 import { RisquesTechnologiquesEnrichissementService } from "./services/risques-technologiques/risques-technologiques-enrichissement.service";
@@ -71,6 +72,7 @@ import { ZonageAbcRepository } from "./repositories/zonage-abc.repository";
 import { TransportStopsRepository } from "./repositories/transport-stops.repository";
 import { AdemeSitesPolluesRepository } from "./repositories/ademe-sites-pollues.repository";
 import { IteFretRepository } from "./repositories/ite-fret.repository";
+import { IcuRepository } from "./repositories/icu.repository";
 
 @Module({
   imports: [HttpModule],
@@ -87,12 +89,14 @@ import { IteFretRepository } from "./repositories/ite-fret.repository";
     TransportStopsRepository,
     AdemeSitesPolluesRepository,
     IteFretRepository,
+    IcuRepository,
 
     // Services de domaine
     CadastreEnrichissementService,
     EnergieEnrichissementService,
     TransportEnrichissementService,
     IteFretEnrichissementService,
+    IcuEnrichissementService,
     UrbanismeEnrichissementService,
     RisquesNaturelsEnrichissementService,
     RisquesTechnologiquesEnrichissementService,
