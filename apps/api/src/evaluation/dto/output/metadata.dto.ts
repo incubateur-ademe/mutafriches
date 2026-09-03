@@ -1,64 +1,35 @@
 import { ApiProperty } from "@nestjs/swagger";
-import {
-  RisqueRetraitGonflementArgile,
-  RisqueCavitesSouterraines,
-  RisqueInondation,
-  ZonageEnvironnemental,
-  ZonageReglementaire,
-  ZonagePatrimonial,
-  TrameVerteEtBleue,
-  DistanceIte,
-  TypeProprietaire,
-  RaccordementEau,
-  EtatBatiInfrastructure,
-  PresencePollution,
-  ValeurArchitecturale,
-  QualitePaysage,
-  QualiteVoieDesserte,
-  UsageType,
-} from "@mutafriches/shared-types";
-
-/**
- * Exemple dérivé dynamiquement des enums réels — garantit la cohérence
- * entre la doc Swagger et les valeurs effectivement servies par le controller.
- */
-const ENUMS_EXAMPLE = {
-  enrichissement: {
-    risqueRetraitGonflementArgile: Object.values(RisqueRetraitGonflementArgile),
-    risqueCavitesSouterraines: Object.values(RisqueCavitesSouterraines),
-    risqueInondation: Object.values(RisqueInondation),
-    zonageEnvironnemental: Object.values(ZonageEnvironnemental),
-    zonageReglementaire: Object.values(ZonageReglementaire),
-    zonagePatrimonial: Object.values(ZonagePatrimonial),
-    trameVerteEtBleue: Object.values(TrameVerteEtBleue),
-    distanceIte: Object.values(DistanceIte),
-  },
-  saisie: {
-    typeProprietaire: Object.values(TypeProprietaire),
-    raccordementEau: Object.values(RaccordementEau),
-    etatBatiInfrastructure: Object.values(EtatBatiInfrastructure),
-    presencePollution: Object.values(PresencePollution),
-    valeurArchitecturaleHistorique: Object.values(ValeurArchitecturale),
-    qualitePaysage: Object.values(QualitePaysage),
-    qualiteVoieDesserte: Object.values(QualiteVoieDesserte),
-  },
-  usages: Object.values(UsageType),
-};
+import { METADATA_CHAMPS_DERIVES, METADATA_CHAMPS_REQUIS, METADATA_ENUMS } from "./metadata.enums";
 
 /**
  * DTO Swagger représentant les métadonnées de l'évaluation.
+ * Les exemples proviennent de la même source que la réponse servie par le controller.
  */
 export class MetadataSwaggerDto {
   @ApiProperty({
     description:
-      "Enums groupés par catégorie. `enrichissement` = valeurs renvoyées par l'API d'enrichissement. `saisie` = valeurs attendues dans les données complémentaires (9 champs obligatoires ; `raccordementEau` y figure encore mais est dérivé côté serveur et ignoré s'il est transmis). `usages` = les 7 usages évalués par l'algorithme. La valeur `ne-sait-pas` indique que l'utilisateur n'a pas pu répondre (ne contribue pas à la fiabilité).",
-    example: ENUMS_EXAMPLE,
+      "Enums groupés par catégorie. `enrichissement` = valeurs renvoyées par l'API d'enrichissement. `saisie` = valeurs autorisées pour chaque champ de `donneesComplementaires`. `usages` = les 7 usages évalués par l'algorithme. La valeur `ne-sait-pas` est acceptée partout, mais ne contribue pas à la fiabilité. Pour savoir quels champs sont **obligatoires**, se référer à `champsComplementairesRequis` plutôt qu'aux clés de `saisie`.",
+    example: METADATA_ENUMS,
   })
   enums: {
     enrichissement: Record<string, string[]>;
     saisie: Record<string, string[]>;
     usages: string[];
   };
+
+  @ApiProperty({
+    description:
+      "Champs de `donneesComplementaires` obligatoires dans `POST /evaluation/calculer`. Un champ absent, `null` ou vide produit un 400 listant les champs concernés. Envoyer `ne-sait-pas` pour une information non connue.",
+    example: METADATA_CHAMPS_REQUIS,
+  })
+  champsComplementairesRequis: string[];
+
+  @ApiProperty({
+    description:
+      "Champs calculés par l'API à partir des données enrichies. Ils figurent encore dans `enums.saisie` pour compatibilité, mais sont ignorés s'ils sont transmis : `raccordementEau` est déduit de la surface bâtie (BDNB).",
+    example: METADATA_CHAMPS_DERIVES,
+  })
+  champsDerives: string[];
 
   @ApiProperty({
     description:

@@ -13,26 +13,7 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiQuery, ApiParam } from "@nestjs/swagger";
-import {
-  CalculerMutabiliteInputDto,
-  MutabiliteOutputDto,
-  TypeProprietaire,
-  RaccordementEau,
-  EtatBatiInfrastructure,
-  PresencePollution,
-  ValeurArchitecturale,
-  QualitePaysage,
-  QualiteVoieDesserte,
-  RisqueRetraitGonflementArgile,
-  RisqueCavitesSouterraines,
-  RisqueInondation,
-  ZonageEnvironnemental,
-  ZonagePatrimonial,
-  TrameVerteEtBleue,
-  UsageType,
-  ZonageReglementaire,
-  DistanceIte,
-} from "@mutafriches/shared-types";
+import { CalculerMutabiliteInputDto, MutabiliteOutputDto } from "@mutafriches/shared-types";
 import { Request } from "express";
 import { ParseOptionalBooleanPipe } from "../shared/pipes";
 import { OrchestrateurService } from "./services/orchestrateur.service";
@@ -45,6 +26,11 @@ import { CalculerMutabiliteSwaggerDto } from "./dto/input/calculer-mutabilite.dt
 import { CALCULER_MUTABILITE_BODY_EXAMPLES } from "./dto/input/calculer-mutabilite.examples";
 import { MutabiliteSwaggerDto } from "./dto/output/mutabilite.dto";
 import { MetadataSwaggerDto } from "./dto/output/metadata.dto";
+import {
+  METADATA_CHAMPS_DERIVES,
+  METADATA_CHAMPS_REQUIS,
+  METADATA_ENUMS,
+} from "./dto/output/metadata.enums";
 import { EvaluationSwaggerDto } from "./dto/output/evaluation.dto";
 import { Evaluation } from "./entities/evaluation.entity";
 
@@ -175,34 +161,15 @@ export class EvaluationController {
   @ApiOperation({
     summary: "Récupérer les métadonnées",
     description:
-      "Retourne les enums utilisés par l'API (valeurs autorisées pour chaque critère), la liste des 7 usages et la version courante de l'algorithme. Source de vérité pour construire les formulaires côté intégrateur.",
+      "Retourne les valeurs autorisées pour chaque critère, la liste des champs complémentaires obligatoires, les 7 usages et la version courante de l'algorithme. Source de vérité pour construire un formulaire côté intégrateur : `champsComplementairesRequis` dit quoi envoyer, `enums.saisie` dit avec quelles valeurs.",
   })
   @ApiResponse({ status: 200, description: "Métadonnées récupérées", type: MetadataSwaggerDto })
   @ApiStandardErrors()
   getMetadata(): MetadataSwaggerDto {
     return {
-      enums: {
-        enrichissement: {
-          risqueRetraitGonflementArgile: Object.values(RisqueRetraitGonflementArgile),
-          risqueCavitesSouterraines: Object.values(RisqueCavitesSouterraines),
-          risqueInondation: Object.values(RisqueInondation),
-          zonageEnvironnemental: Object.values(ZonageEnvironnemental),
-          zonageReglementaire: Object.values(ZonageReglementaire),
-          zonagePatrimonial: Object.values(ZonagePatrimonial),
-          trameVerteEtBleue: Object.values(TrameVerteEtBleue),
-          distanceIte: Object.values(DistanceIte),
-        },
-        saisie: {
-          typeProprietaire: Object.values(TypeProprietaire),
-          raccordementEau: Object.values(RaccordementEau),
-          etatBatiInfrastructure: Object.values(EtatBatiInfrastructure),
-          presencePollution: Object.values(PresencePollution),
-          valeurArchitecturaleHistorique: Object.values(ValeurArchitecturale),
-          qualitePaysage: Object.values(QualitePaysage),
-          qualiteVoieDesserte: Object.values(QualiteVoieDesserte),
-        },
-        usages: Object.values(UsageType),
-      },
+      enums: METADATA_ENUMS,
+      champsComplementairesRequis: METADATA_CHAMPS_REQUIS,
+      champsDerives: METADATA_CHAMPS_DERIVES,
       version: { api: APP_VERSION, algorithme: VERSION_COURANTE },
     };
   }

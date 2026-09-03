@@ -1,6 +1,8 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import {
+  PresencePollution,
   RaccordementEau,
+  UsageResultatDetaille,
   UsageType,
   RisqueRetraitGonflementArgile,
   RisqueCavitesSouterraines,
@@ -9,6 +11,7 @@ import {
 import { CalculService } from "./calcul.service";
 import { FiabiliteCalculator } from "./algorithme/fiabilite.calculator";
 import { Site } from "../entities/site.entity";
+import { POIDS_CRITERES } from "./algorithme/algorithme.config";
 
 describe("CalculService", () => {
   let service: CalculService;
@@ -93,6 +96,45 @@ describe("CalculService", () => {
           expect(res.detailsCalcul.totalContraintes).toBe(res.contraintes);
         }
       });
+    });
+
+    it("devrait conserver le poids nominal des criteres non renseignes", async () => {
+      const site = new Site();
+      site.surfaceSite = 15000;
+      site.surfaceBati = 3000;
+      // typeProprietaire, presencePollution, etc. volontairement non renseignes
+
+      const result = await service.calculer(site, { modeDetaille: true });
+      const detail = (result.resultats[0] as UsageResultatDetaille).detailsCalcul!;
+      const vides = detail.detailsCriteresVides;
+
+      expect(vides.length).toBeGreaterThan(0);
+      vides.forEach((critere) => {
+        // Le poids nominal est expose comme dans fiabilite.detailCriteres,
+        // meme si le critere ne contribue ni aux avantages ni aux contraintes
+        expect(critere.poids).toBe(POIDS_CRITERES[critere.critere as keyof typeof POIDS_CRITERES]);
+        expect(critere.poids).toBeGreaterThan(0);
+        expect(critere.scorePondere).toBe(0);
+        expect(critere.scoreBrut).toBe(0);
+      });
+
+      // Un critere vide ne pese pas dans le calcul
+      const totalVides = vides.reduce((acc, c) => acc + c.scorePondere, 0);
+      expect(totalVides).toBe(0);
+    });
+
+    it("devrait exposer ne-sait-pas comme valeur du critere vide", async () => {
+      const site = new Site();
+      site.surfaceSite = 15000;
+      site.presencePollution = PresencePollution.NE_SAIT_PAS;
+
+      const result = await service.calculer(site, { modeDetaille: true });
+      const detail = (result.resultats[0] as UsageResultatDetaille).detailsCalcul!;
+      const pollution = detail.detailsCriteresVides.find((c) => c.critere === "presencePollution");
+
+      expect(pollution).toBeDefined();
+      expect(pollution!.valeur).toBe(PresencePollution.NE_SAIT_PAS);
+      expect(pollution!.poids).toBe(POIDS_CRITERES.presencePollution);
     });
 
     it("devrait gerer les sites avec donnees manquantes", async () => {

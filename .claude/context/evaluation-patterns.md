@@ -245,15 +245,20 @@ noteArrondie = Math.round(note × 2) / 2          // Arrondi au 0.5
 - **TTL** : 24 heures
 - **Clé** : `siteId` (identifiant cadastral)
 - **Invalidation** : si les données complémentaires contiennent `"ne-sait-pas"` → pas de cache
-- **Comparaison** : les 10 champs complémentaires sont comparés un par un
+- **Comparaison** : itération sur `CHAMPS_COMPLEMENTAIRES_REQUIS` (shared-types), pas d'énumération en dur
 
 ```typescript
-// Les 10 champs comparés pour la validité du cache
-typeProprietaire, raccordementEau, etatBatiInfrastructure,
-presencePollution, valeurArchitecturaleHistorique,
-qualitePaysage, qualiteVoieDesserte, trameVerteEtBleue,
-presenceEspecesProtegees, presenceZoneHumide
+// Les 9 champs comparés pour la validité du cache (cache-validator.ts)
+typeProprietaire, etatBatiInfrastructure, presencePollution,
+valeurArchitecturaleHistorique, qualitePaysage, qualiteVoieDesserte,
+trameVerteEtBleue, presenceEspecesProtegees, presenceZoneHumide
+
+// raccordementEau exclu : dérivé de surfaceBati, ignoré au scoring
 ```
+
+Une comparaison écrite à la main avait fini par omettre `presenceEspecesProtegees` et
+`presenceZoneHumide` : deux demandes aux scores différents partageaient alors un même
+résultat en cache. L'itération sur la constante partagée ferme ce mode de panne.
 
 ### Logique
 
@@ -279,7 +284,7 @@ Enrichissement → Site → Évaluation
 ### Vérification de complétude
 
 ```typescript
-// Vérifie que les 10 champs complémentaires obligatoires sont renseignés
+// Vérifie l'identification du site et les 9 champs complémentaires requis
 site.estComplete(): boolean
 
 // Calcule le taux de complétude (0 à 1)
@@ -351,7 +356,7 @@ Les poids sont dans `POIDS_CRITERES` (`algorithme.config.ts`). Le poids total (2
 ### Cache
 
 - [ ] Invalidation si `"ne-sait-pas"` présent dans les complémentaires
-- [ ] Comparaison des 10 champs complémentaires pour la clé de cache
+- [ ] Comparaison des 9 champs complémentaires requis pour la clé de cache
 - [ ] TTL de 24 heures respecté
 
 ### Tests
