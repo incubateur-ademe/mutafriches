@@ -27,4 +27,5 @@ export enum SourceEnrichissement {
   ZAER = "ZAER-ENR",
   ZONAGE_ABC_LOGEMENT = "ZonageABC-Logement",
   ITE_FRET = "ITE-Fret",
+  ICU = "ICU-CSTB",
 }

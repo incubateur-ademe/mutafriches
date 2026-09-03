@@ -2,7 +2,12 @@ import { describe, expect, it } from "vitest";
 import { EnrichissementOutputDto } from "../enrichissement";
 import { DonneesComplementairesInputDto } from "../evaluation";
 import { EtatBatiInfrastructure, PresencePollution, TypeProprietaire } from "../evaluation/enums";
-import { RisqueRetraitGonflementArgile, ZonageReglementaire } from "../enrichissement";
+import {
+  IlotChaleurUrbain,
+  RisqueRetraitGonflementArgile,
+  ZonageReglementaire,
+} from "../enrichissement";
+import { CRITERES_METADATA_LIST } from "./criteres.metadata";
 import { buildRecapitulatifSite } from "./recapitulatif.builder";
 
 const enrichissement = {
@@ -33,8 +38,8 @@ describe("buildRecapitulatifSite", () => {
 
   it("répartit les 28 critères sur les sections", () => {
     const sections = buildRecapitulatifSite(enrichissement, complementaires);
-    const total = sections.reduce((n, s) => n + s.criteres.length, 0);
-    expect(total).toBe(28);
+    const criteres = sections.flatMap((s) => s.criteres).filter((c) => !c.informatif);
+    expect(criteres).toHaveLength(28);
   });
 
   it("formate les valeurs enrichies (surface en m², distance, %)", () => {
@@ -88,7 +93,47 @@ describe("buildRecapitulatifSite", () => {
   it("affiche 'Non disponible' pour les valeurs manquantes", () => {
     const sections = buildRecapitulatifSite(undefined, undefined);
     const criteres = sections.flatMap((s) => s.criteres);
-    expect(criteres).toHaveLength(28);
+    expect(criteres).toHaveLength(29);
     expect(criteres.every((c) => c.valeurAffichee === "Non disponible")).toBe(true);
+  });
+
+  it("ajoute l'îlot de chaleur urbain comme donnée informative de la section site et bâti", () => {
+    const sections = buildRecapitulatifSite(
+      { ...enrichissement, ilotChaleurUrbain: IlotChaleurUrbain.OUI },
+      complementaires,
+    );
+    const siteBati = sections.find((s) => s.id === "site-bati");
+    const icu = siteBati?.criteres[siteBati.criteres.length - 1];
+
+    expect(icu?.key).toBe("ilotChaleurUrbain");
+    expect(icu?.label).toBe("Site concerné par un îlot de chaleur");
+    expect(icu?.valeurAffichee).toBe("Oui (+ de 5,5 °C)");
+    expect(icu?.informatif).toBe(true);
+    expect(icu?.sourceLabel).toBe("ICU (CSTB)");
+  });
+
+  it("distingue un site sous le seuil d'un site hors périmètre d'étude", () => {
+    const sousSeuil = buildRecapitulatifSite(
+      { ...enrichissement, ilotChaleurUrbain: IlotChaleurUrbain.NON },
+      complementaires,
+    );
+    const horsPerimetre = buildRecapitulatifSite(
+      { ...enrichissement, ilotChaleurUrbain: IlotChaleurUrbain.NON_COUVERT },
+      complementaires,
+    );
+    const valeur = (sections: ReturnType<typeof buildRecapitulatifSite>) =>
+      sections.flatMap((s) => s.criteres).find((c) => c.key === "ilotChaleurUrbain")
+        ?.valeurAffichee;
+
+    expect(valeur(sousSeuil)).toBe("Non (- de 5,5 °C)");
+    expect(valeur(horsPerimetre)).toBe("Non couvert par la cartographie");
+  });
+
+  it("n'ajoute aucune donnée informative aux critères de l'algorithme", () => {
+    const sections = buildRecapitulatifSite(enrichissement, complementaires);
+    const informatifs = sections.flatMap((s) => s.criteres).filter((c) => c.informatif);
+
+    expect(informatifs.map((c) => c.key)).toEqual(["ilotChaleurUrbain"]);
+    expect(CRITERES_METADATA_LIST.map((c) => c.key)).not.toContain("ilotChaleurUrbain");
   });
 });
