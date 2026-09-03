@@ -1,5 +1,5 @@
 import React from "react";
-import { RecapitulatifSection } from "@mutafriches/shared-types";
+import { MENTION_INFORMATIVE, RecapitulatifSection } from "@mutafriches/shared-types";
 import { SaisieBadge, SourceBadge } from "@shared/components/recap";
 import "@shared/components/recap/RecapTable.css";
 
@@ -41,7 +41,14 @@ export const RecapTable: React.FC<RecapTableProps> = ({ sections }) => {
                     </tr>
                     {section.criteres.map((critere) => (
                       <tr key={critere.key}>
-                        <td>{critere.label}</td>
+                        <td>
+                          {critere.label}
+                          {critere.informatif && (
+                            <span className="fr-text--xs fr-text-mention--grey block">
+                              {MENTION_INFORMATIVE}
+                            </span>
+                          )}
+                        </td>
                         <td>
                           <strong>{critere.valeurAffichee}</strong>
                         </td>

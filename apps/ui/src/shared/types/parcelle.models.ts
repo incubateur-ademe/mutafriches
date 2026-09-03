@@ -1,3 +1,5 @@
+import { IlotChaleurUrbain } from "@mutafriches/shared-types";
+
 /**
  * Modèle UI pour l'affichage d'une parcelle enrichie
  * Convertit les données enrichies en strings formatées pour l'affichage
@@ -35,6 +37,9 @@ export interface ParcelleUiModel {
 
   // Zonage ABC logement
   zonageAbcLogement: string;
+
+  /** Exposition à un îlot de chaleur urbain — informatif, hors algorithme */
+  ilotChaleurUrbain?: IlotChaleurUrbain;
 
   // Énergies renouvelables
   zoneAccelerationEnr: string;

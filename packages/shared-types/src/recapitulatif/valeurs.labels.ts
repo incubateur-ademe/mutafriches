@@ -26,6 +26,9 @@ import {
 /** Valeur affichée lorsqu'un critère n'est pas renseigné */
 export const VALEUR_NON_DISPONIBLE = "Non disponible";
 
+/** Mention accolée aux lignes informatives du récapitulatif, pour les distinguer des critères */
+export const MENTION_INFORMATIVE = "Donnée informative, hors calcul";
+
 // ------------------------------------------------------------------
 // Formatters de valeurs numériques (purs, locale fr-FR)
 // ------------------------------------------------------------------
