@@ -5,9 +5,14 @@
 
 ## Contexte
 
-La loi APER permet aux communes de définir, en plus des zones d'accélération des EnR, des **zones d'exclusion** où l'implantation de nouvelles installations est interdite, à l'exception du photovoltaïque en toiture. La couche `zaer:zaer` du WFS Géoplateforme porte cette information dans le champ `zonage`, dont la valeur discriminante est « Interdiction ZAER (loi APER) toutes ENR sauf toiture ».
+La loi APER permet de définir, en plus des zones d'accélération des EnR, des **zones d'exclusion** où l'implantation de nouvelles installations est interdite, à l'exception du photovoltaïque en toiture. Mutafriches n'exploitait que les zones d'accélération, via la couche `zaer:zaer` du WFS Géoplateforme : un site interdit d'EnR n'était pas distingué d'un site simplement hors zone d'accélération.
 
-Ce champ n'était pas demandé par [zaer-wfs.service.ts](../../apps/api/src/enrichissement/adapters/zaer-wfs/zaer-wfs.service.ts) : les zones d'interdiction, renvoyées par le même `INTERSECTS`, étaient donc comptées comme des zones d'accélération. Un site interdit d'EnR recevait ainsi le score `OUI` et le bonus `POSITIF` sur l'usage photovoltaïque — l'inverse du signal métier.
+Contrairement à l'hypothèse de départ, la couche `zaer:zaer` ne porte **pas** cette information : son schéma compte 18 propriétés et aucune ne décrit un régime d'interdiction (`DescribeFeatureType` vérifié le 2026-09-04). Les interdictions vivent dans une couche OFB distincte du même WFS, `OFB_INTERDICTION-ZAER-SAUF-TOITURE:zones_exclues_aires_acceleration_sauf_toiture`, issue des travaux de l'Office français de la biodiversité. Cette couche mélange deux régimes, portés par son champ `zonage` :
+
+- « Interdiction ZAER (loi APER) toutes ENR sauf toiture » (373 entités) — le photovoltaïque au sol est interdit ;
+- « Interdiction ZAER (loi APER) éolien uniquement » (1258 entités) — sans effet sur nos 7 usages, aucun ne portant l'éolien.
+
+Une troisième couche, `OFB.ZONES.EXCLUES:zones_exclues_aires_acceleration_eolien_terrestre`, ne concerne que l'éolien terrestre : elle n'est pas interrogée.
 
 La règle métier fournie par l'équipe distingue trois cas exclusifs : site en zone d'accélération (algorithme inchangé), site hors zone d'accélération et hors zone d'exclusion (algorithme inchangé), site en zone d'exclusion (neutre sur les six usages non énergétiques, très négatif sur le photovoltaïque).
 
@@ -19,7 +24,8 @@ Concrètement :
 
 - [zone-acceleration-enr.enum.ts](../../packages/shared-types/src/enrichissement/enums/zone-acceleration-enr.enum.ts) expose `EXCLUSION`, scorée `TRES_NEGATIF` pour l'usage photovoltaïque et `NEUTRE` pour les six autres dans [algorithme.config.ts](../../apps/api/src/evaluation/services/algorithme/algorithme.config.ts) (algorithme v1.12).
 - L'exclusion est **prioritaire** dans [enr.calculator.ts](../../apps/api/src/enrichissement/services/enr/enr.calculator.ts) : un site couvert à la fois par une zone d'accélération et par une interdiction vaut `EXCLUSION`, et ses badges de filières laissent place au badge d'exclusion.
-- La détection porte sur le **mot-clé** `INTERDICTION` du champ `zonage`, normalisé en majuscules, et non sur l'égalité au libellé complet.
+- Les deux couches sont interrogées **en parallèle** avec le même filtre `INTERSECTS`. La détection porte sur le **mot-clé** `SAUF TOITURE` du champ `zonage`, normalisé en majuscules : c'est lui qui sépare les deux régimes de la couche OFB, `INTERDICTION` étant présent dans les deux.
+- Un échec de la couche d'interdiction fait échouer tout l'enrichissement ENR (`sourcesEchouees`, champ manquant `zaer`), plutôt que de renvoyer un `enZoneExclusion: false` faussement rassurant. Le critère vaut alors `undefined` : il est ignoré au scoring et ne compte pas dans la fiabilité.
 - Le nombre de critères (28), le poids du critère (1) et le poids total (30) sont inchangés : la fiabilité n'est pas affectée.
 
 Cette décision complète l'[ADR-0013](0013-zaenr-affichage-granulaire-scoring-grossier.md), qui séparait l'affichage granulaire des filières du scoring grossier : le scoring reste grossier, mais gagne une classe qui n'est pas une filière — c'est un régime réglementaire.
@@ -65,14 +71,17 @@ Cette décision complète l'[ADR-0013](0013-zaenr-affichage-granulaire-scoring-g
 
 ### Négatives / Risques
 
-- La détection dépend du libellé du champ `zonage` : un changement de vocabulaire de la source (par exemple « Zone d'exclusion » sans le mot « interdiction ») ferait silencieusement retomber les sites en régime « accélération ». À surveiller à chaque millésime.
-- Le champ `zonage` n'a pas pu être vérifié contre le WFS au moment de l'implémentation (accès réseau indisponible). L'adapter rejoue la requête sans la propriété si le serveur la rejette (HTTP 400) : en cas de nom de champ différent, l'enrichissement ZAER continue de fonctionner mais les exclusions ne sont pas détectées, ce qui reste le comportement d'avant.
+- La détection dépend du libellé du champ `zonage` : un changement de vocabulaire de la source (par exemple « hors toiture » à la place de « sauf toiture ») ferait silencieusement retomber les sites en régime « accélération ». À surveiller à chaque millésime, avec les tests de [enr.calculator.spec.ts](../../apps/api/src/enrichissement/services/enr/enr.calculator.spec.ts) comme garde-fou de vocabulaire.
+- Le domaine ENR passe de une à **deux requêtes WFS par site**, lancées en parallèle : la latence du domaine reste celle de la plus lente, mais sa probabilité d'échec double, et un échec de la couche d'interdiction prive désormais le calcul du critère entier.
+- L'alias `OFB_ZONES.EXCLUES.SAUF.TOITURE:zones_exclues_aires_acceleration_sauf_toiture` pointe la même donnée mais son `DescribeFeatureType` renvoie une page de métriques Tomcat : le typename retenu est `OFB_INTERDICTION-ZAER-SAUF-TOITURE:...`, à ne pas « simplifier ».
+- La couche OFB est un travail d'expertise environnementale, pas un recueil des délibérations communales : elle recense les zonages de protection excluant les EnR, non les exclusions décidées localement hors de ces zonages.
 - L'enum mélange deux sémantiques (présence d'une zone d'accélération et régime d'interdiction), au prix d'une lecture moins évidente pour un nouvel arrivant.
 
 ### Migration
 
 - Les évaluations déjà en base conservent leur version d'algorithme : aucune reprise de données. v1.11 a été figée en copie statique dans le même mouvement, car elle ré-exportait la configuration courante.
-- Le champ `zonage` étant demandé au WFS à chaque appel, aucune tâche d'import ni migration de schéma n'est nécessaire.
+- Les deux couches étant interrogées à la volée, aucune tâche d'import ni migration de schéma n'est nécessaire.
+- `ZaerDetail.zonage` a été retiré du DTO d'enrichissement : le champ décrivait un régime que la couche `zaer:zaer` ne porte pas. Le régime d'interdiction est exposé par le seul booléen `enZoneExclusion`.
 
 ## Liens
 
