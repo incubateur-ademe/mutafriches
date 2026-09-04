@@ -653,29 +653,36 @@ Fournir les données brutes GeoRisques pour intégrateurs avancés (ex: Benefric
 ## 10. Domaine ENR / ZAER
 
 ### Responsabilité
-Détecter si le site se trouve dans une Zone d'Accélération des Énergies Renouvelables (ZAER) et calculer le critère algorithmique correspondant.
+Détecter si le site se trouve dans une Zone d'Accélération des Énergies Renouvelables (ZAER) ou dans une zone d'interdiction au titre de la loi APER, et calculer le critère algorithmique correspondant.
 
-### API utilisée
+### APIs utilisées
+
+Deux couches distinctes du même WFS Géoplateforme, interrogées en parallèle avec le même filtre.
 
 | API | Source | Données récupérées |
 |-----|--------|-------------------|
-| **ZAER WFS** | `data.geopf.fr/wfs` (Géoplateforme) | Zones ZAER intersectant le site (filière, détail filière, nom, zonage APER) |
+| **ZAER WFS** | `data.geopf.fr/wfs`, typename `zaer:zaer` | Zones d'accélération intersectant le site (filière, détail filière, nom) |
+| **Interdictions APER (OFB)** | `data.geopf.fr/wfs`, typename `OFB_INTERDICTION-ZAER-SAUF-TOITURE:zones_exclues_aires_acceleration_sauf_toiture` | Zones d'interdiction intersectant le site (code, nom, type de zonage support, régime) |
 
 ### Règles de gestion
 
 **Requête WFS** :
-- Service WFS 2.0.0, typename `zaer:zaer`
-- Filtre CQL : `INTERSECTS(geom, <géométrie_site>)` (polygone ou point)
-- Propriétés récupérées : `nom`, `filiere`, `detail_filiere1`, `detail_filiere2`, `detail_filiere3` (les 3 niveaux hiérarchiques sont coalescés en un seul `detailFiliere`, niveaux non vides joints par ` / `), `zonage`
-- Déduplication par clé composite `filiere|detailFiliere|zonage|nom`
-- Si le WFS rejette la propriété `zonage` (HTTP 400), la requête est rejouée sans elle : l'enrichissement conserve les filières, les zones d'exclusion ne sont alors pas détectées
+- Service WFS 2.0.0, filtre CQL `INTERSECTS(geom, <géométrie_site>)` (polygone ou point) sur les deux couches
+- Zones d'accélération : `nom`, `filiere`, `detail_filiere1`, `detail_filiere2`, `detail_filiere3` (les 3 niveaux hiérarchiques sont coalescés en un seul `detailFiliere`, niveaux non vides joints par ` / `), dédupliqué par `filiere|detailFiliere|nom`
+- Interdictions : `code`, `nom_zone`, `type_zone`, `zonage`, dédupliqué par `code|nomZone|zonage`
+- La couche `zaer:zaer` ne porte **pas** de champ `zonage` : les deux régimes vivent dans des couches séparées
+- Un échec de l'une des deux couches fait échouer tout l'enrichissement ENR (source échouée, champ manquant `zaer`) : sans la couche d'interdiction, un site interdit d'EnR serait annoncé « non exclu » et regagnerait le bonus photovoltaïque
+
+**Régimes d'interdiction** : la couche OFB en mélange deux, discriminés par le champ `zonage` :
+- « Interdiction ZAER (loi APER) toutes ENR sauf toiture » → le photovoltaïque au sol est interdit, seul régime retenu
+- « Interdiction ZAER (loi APER) éolien uniquement » → aucun usage de la matrice 28×7 ne porte l'éolien, régime ignoré
 
 **Stratégie de géolocalisation** :
 1. Si géométrie disponible → intersection par polygone (plus précis)
 2. Sinon → intersection par point (coordonnées centroïde)
 
 **Calcul du critère algorithmique** (`ZoneAccelerationEnr`) :
-1. Si une zone porte un `zonage` d'interdiction APER (libellé contenant "INTERDICTION") → `EXCLUSION`, prioritaire sur toute zone d'accélération recouvrant le site
+1. Si une interdiction « toutes ENR sauf toiture » intersecte le site → `EXCLUSION`, prioritaire sur toute zone d'accélération recouvrant le site
 2. Si aucune zone ZAER → `NON`
 3. Si zone ZAER avec `detailFiliere` contenant "OMBRIERE" (insensible à la casse) → `OUI_SOLAIRE_PV_OMBRIERE`
 4. Sinon → `OUI`
@@ -685,15 +692,14 @@ Détecter si le site se trouve dans une Zone d'Accélération des Énergies Reno
 ```typescript
 {
   zaer?: {
-    enZoneZaer: boolean        // true si au moins une zone ZAER intersecte le site
-    enZoneExclusion: boolean   // true si une zone porte une interdiction APER
-    nombreZones: number        // Nombre de zones ZAER intersectées
+    enZoneZaer: boolean        // true si au moins une zone d'accélération intersecte le site
+    enZoneExclusion: boolean   // true si une interdiction "toutes ENR sauf toiture" intersecte le site
+    nombreZones: number        // Nombre de zones d'accélération intersectées
     filieres: string[]         // Filières ENR uniques (ex: ["SOLAIRE_PV", "EOLIEN"])
     zones: Array<{
       nom: string | null       // Nom de la zone
       filiere: string          // Filière ENR
       detailFiliere: string | null  // Détail (ex: "SOLAIRE_PV_OMBRIERE")
-      zonage: string | null    // Zonage APER (ex: "Interdiction ZAER (loi APER) toutes ENR sauf toiture")
     }>
   }
 }

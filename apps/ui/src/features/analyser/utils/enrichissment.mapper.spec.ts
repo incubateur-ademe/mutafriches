@@ -12,8 +12,6 @@ const makeZaer = (overrides: Partial<ZaerEnrichissement> = {}): ZaerEnrichisseme
   ...overrides,
 });
 
-const ZONAGE_INTERDICTION = "Interdiction ZAER (loi APER) toutes ENR sauf toiture";
-
 const makeEnrichissement = (
   overrides: Partial<EnrichissementOutputDto> = {},
 ): EnrichissementOutputDto => ({
@@ -200,9 +198,7 @@ describe("buildZaerBadges", () => {
     const zaer = makeZaer({
       enZoneExclusion: true,
       filieres: ["EOLIEN"],
-      zones: [
-        { nom: "Zone éolien", filiere: "EOLIEN", detailFiliere: null, zonage: ZONAGE_INTERDICTION },
-      ],
+      zones: [{ nom: "Zone éolien", filiere: "EOLIEN", detailFiliere: null }],
     });
     expect(buildZaerBadges(zaer)).toEqual(["Zone d'exclusion (loi APER)"]);
   });

@@ -30,7 +30,7 @@ describe("EnrCalculator", () => {
         enZoneExclusion: false,
         nombreZones: 1,
         filieres: ["EOLIEN"],
-        zones: [{ nom: "Zone éolien", filiere: "EOLIEN", detailFiliere: null, zonage: null }],
+        zones: [{ nom: "Zone éolien", filiere: "EOLIEN", detailFiliere: null }],
       };
       expect(calculator.evaluer(zaer)).toBe(ZoneAccelerationEnr.OUI);
     });
@@ -46,7 +46,6 @@ describe("EnrCalculator", () => {
             nom: "Zone solaire",
             filiere: "SOLAIRE_PV",
             detailFiliere: "SOLAIRE_PV_NV_TOIT",
-            zonage: null,
           },
         ],
       };
@@ -64,7 +63,6 @@ describe("EnrCalculator", () => {
             nom: "Zone solaire ombrière",
             filiere: "SOLAIRE_PV",
             detailFiliere: "SOLAIRE_PV_NV_OMBRIERE",
-            zonage: null,
           },
         ],
       };
@@ -82,7 +80,6 @@ describe("EnrCalculator", () => {
             nom: "Zone solaire",
             filiere: "SOLAIRE_PV",
             detailFiliere: "solaire_pv_nv_ombriere",
-            zonage: null,
           },
         ],
       };
@@ -96,18 +93,16 @@ describe("EnrCalculator", () => {
         nombreZones: 3,
         filieres: ["EOLIEN", "SOLAIRE_PV"],
         zones: [
-          { nom: "Zone éolien", filiere: "EOLIEN", detailFiliere: null, zonage: null },
+          { nom: "Zone éolien", filiere: "EOLIEN", detailFiliere: null },
           {
             nom: "Zone PV toit",
             filiere: "SOLAIRE_PV",
             detailFiliere: "SOLAIRE_PV_NV_TOIT",
-            zonage: null,
           },
           {
             nom: "Zone PV ombrière",
             filiere: "SOLAIRE_PV",
             detailFiliere: "SOLAIRE_PV_NV_OMBRIERE",
-            zonage: null,
           },
         ],
       };
@@ -121,12 +116,11 @@ describe("EnrCalculator", () => {
         nombreZones: 2,
         filieres: ["EOLIEN", "SOLAIRE_PV"],
         zones: [
-          { nom: "Zone éolien", filiere: "EOLIEN", detailFiliere: null, zonage: null },
+          { nom: "Zone éolien", filiere: "EOLIEN", detailFiliere: null },
           {
             nom: "Zone PV toit",
             filiere: "SOLAIRE_PV",
             detailFiliere: "SOLAIRE_PV_NV_TOIT",
-            zonage: null,
           },
         ],
       };
@@ -144,7 +138,6 @@ describe("EnrCalculator", () => {
             nom: "Zone interdite",
             filiere: "SOLAIRE_PV",
             detailFiliere: null,
-            zonage: "Interdiction ZAER (loi APER) toutes ENR sauf toiture",
           },
         ],
       };
@@ -162,13 +155,11 @@ describe("EnrCalculator", () => {
             nom: "Zone PV ombrière",
             filiere: "SOLAIRE_PV",
             detailFiliere: "SOLAIRE_PV_NV_OMBRIERE",
-            zonage: "Zone d'accélération",
           },
           {
             nom: "Zone interdite",
             filiere: "SOLAIRE_PV",
             detailFiliere: null,
-            zonage: "Interdiction ZAER (loi APER) toutes ENR sauf toiture",
           },
         ],
       };
@@ -177,12 +168,16 @@ describe("EnrCalculator", () => {
   });
 
   describe("estZonageExclusion", () => {
-    it("reconnaît le libellé d'interdiction APER", () => {
+    it("reconnaît le libellé d'interdiction APER visant toutes les EnR", () => {
       expect(estZonageExclusion("Interdiction ZAER (loi APER) toutes ENR sauf toiture")).toBe(true);
     });
 
     it("est insensible à la casse", () => {
-      expect(estZonageExclusion("INTERDICTION ZAER")).toBe(true);
+      expect(estZonageExclusion("INTERDICTION ZAER (LOI APER) TOUTES ENR SAUF TOITURE")).toBe(true);
+    });
+
+    it("ne reconnaît pas une interdiction limitée à l'éolien", () => {
+      expect(estZonageExclusion("Interdiction ZAER (loi APER) éolien uniquement")).toBe(false);
     });
 
     it("ne reconnaît pas une zone d'accélération", () => {

@@ -1,11 +1,13 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { ZaerEnrichissement, ZoneAccelerationEnr } from "@mutafriches/shared-types";
 
-// Mot discriminant du libellé APER "Interdiction ZAER (loi APER) toutes ENR sauf toiture"
-const MOT_CLE_EXCLUSION = "INTERDICTION";
+// Discriminant du libellé "Interdiction ZAER (loi APER) toutes ENR sauf toiture".
+// La couche OFB porte aussi "Interdiction ZAER (loi APER) éolien uniquement", hors périmètre
+// de nos 7 usages : le mot "interdiction" ne suffit donc pas à discriminer.
+const MOT_CLE_EXCLUSION = "SAUF TOITURE";
 
 /**
- * Détermine si un zonage WFS correspond à une zone d'interdiction (loi APER).
+ * Détermine si un zonage OFB interdit le photovoltaïque au sol (loi APER).
  * Test sur le mot-clé et non sur le libellé complet, qui peut varier d'un millésime à l'autre.
  */
 export function estZonageExclusion(zonage: string | null): boolean {

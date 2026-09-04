@@ -1,42 +1,65 @@
 /**
  * Types pour l'adapter WFS ZAER (Zones d'Accélération des Énergies Renouvelables)
  *
- * Source : Géoplateforme WFS — typename zaer:zaer
- * https://data.geopf.fr/wfs?service=WFS&request=GetFeature&typename=zaer:zaer
+ * Deux couches distinctes du même WFS Géoplateforme :
+ * - `zaer:zaer` — zones d'accélération arrêtées par les référents préfectoraux
+ * - `OFB_INTERDICTION-ZAER-SAUF-TOITURE:...` — zones d'interdiction issues des travaux OFB
+ *
+ * https://data.geopf.fr/wfs
  */
 
 /**
- * Résultat normalisé d'une requête ZAER
+ * Résultat normalisé d'une requête sur la couche des zones d'accélération
  */
 export interface ZaerWfsResult {
   nom: string | null;
   filiere: string;
   detailFiliere: string | null;
-  /** Type de zonage APER brut (ex. "Interdiction ZAER (loi APER) toutes ENR sauf toiture") */
+}
+
+/**
+ * Résultat normalisé d'une requête sur la couche des zones d'interdiction
+ */
+export interface ZaerExclusionResult {
+  /** Code du zonage environnemental support (ex. "FR3600077") */
+  code: string | null;
+  nomZone: string | null;
+  /** Type de zonage support (ex. "Réserve naturelle nationale") */
+  typeZone: string | null;
+  /** Régime d'interdiction brut : la couche mélange « toutes ENR sauf toiture » et « éolien uniquement » */
   zonage: string | null;
 }
 
 /**
- * Feature GeoJSON brute retournée par le WFS ZAER
+ * Feature GeoJSON brute retournée par le WFS
  */
-export interface ZaerWfsFeature {
+export interface WfsFeature<P> {
   type: "Feature";
   id: string;
   geometry: {
     type: "MultiPolygon";
     coordinates: number[][][][];
   } | null;
-  properties: ZaerWfsProperties;
+  properties: P;
 }
 
 /**
- * Propriétés brutes d'une feature ZAER
+ * Réponse brute FeatureCollection du WFS
+ */
+export interface WfsFeatureCollection<P> {
+  type: "FeatureCollection";
+  features: WfsFeature<P>[];
+  totalFeatures?: number;
+  numberMatched?: number;
+  numberReturned?: number;
+}
+
+/**
+ * Propriétés brutes d'une feature de la couche `zaer:zaer`
  */
 export interface ZaerWfsProperties {
   nom: string | null;
   filiere: string;
-  // Distingue une zone d'accélération d'une zone d'interdiction au sens de la loi APER
-  zonage: string | null;
   // Le WFS a scindé detail_filiere en 3 niveaux hiérarchiques (du plus général au plus précis)
   detail_filiere1: string | null;
   detail_filiere2: string | null;
@@ -51,12 +74,17 @@ export interface ZaerWfsProperties {
 }
 
 /**
- * Réponse brute FeatureCollection du WFS
+ * Propriétés brutes d'une feature de la couche des zones d'interdiction OFB
  */
-export interface ZaerWfsFeatureCollection {
-  type: "FeatureCollection";
-  features: ZaerWfsFeature[];
-  totalFeatures?: number;
-  numberMatched?: number;
-  numberReturned?: number;
+export interface ZaerExclusionWfsProperties {
+  code: string | null;
+  nom_zone: string | null;
+  type_zone: string | null;
+  zonage: string | null;
+  jeu_donnee: string | null;
+  gest_site: string | null;
+  url_fiche: string | null;
 }
+
+export type ZaerWfsFeature = WfsFeature<ZaerWfsProperties>;
+export type ZaerWfsFeatureCollection = WfsFeatureCollection<ZaerWfsProperties>;

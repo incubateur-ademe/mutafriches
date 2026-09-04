@@ -738,7 +738,6 @@ describe("Usage PHOTOVOLTAIQUE - Centrale photovoltaïque au sol", () => {
               nom: "Zone ombrière",
               filiere: "SOLAIRE_PV",
               detailFiliere: "SOLAIRE_PV_NV_OMBRIERE",
-              zonage: "Interdiction ZAER (loi APER) toutes ENR sauf toiture",
             },
           ],
         },

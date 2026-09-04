@@ -5,26 +5,35 @@ import { GeometrieParcelle, SourceEnrichissement } from "@mutafriches/shared-typ
 import { ApiResponse } from "../shared/api-response.types";
 import {
   ZaerWfsResult,
-  ZaerWfsFeature,
-  ZaerWfsFeatureCollection,
+  ZaerExclusionResult,
   ZaerWfsProperties,
+  ZaerExclusionWfsProperties,
+  WfsFeature,
+  WfsFeatureCollection,
 } from "./zaer-wfs.types";
 
+const TYPENAME_ACCELERATION = "zaer:zaer";
 // detail_filiere a été scindé en 3 niveaux hiérarchiques côté WFS
-const PROPRIETES_HISTORIQUES = "nom,filiere,detail_filiere1,detail_filiere2,detail_filiere3";
-const PROPRIETES = `${PROPRIETES_HISTORIQUES},zonage`;
+const PROPRIETES_ACCELERATION = "nom,filiere,detail_filiere1,detail_filiere2,detail_filiere3";
+
+// Couche OFB des interdictions APER : elle mélange deux régimes, discriminés par `zonage`
+// (« toutes ENR sauf toiture » et « éolien uniquement »). L'alias
+// OFB_ZONES.EXCLUES.SAUF.TOITURE pointe la même donnée mais son DescribeFeatureType est cassé.
+const TYPENAME_EXCLUSION =
+  "OFB_INTERDICTION-ZAER-SAUF-TOITURE:zones_exclues_aires_acceleration_sauf_toiture";
+const PROPRIETES_EXCLUSION = "code,nom_zone,type_zone,zonage";
 
 /**
- * Adapter WFS pour les Zones d'Accélération des Énergies Renouvelables (ZAER)
+ * Adapter WFS pour les zonages liés à la loi APER
  *
- * Interroge le WFS Géoplateforme à la volée via CQL_FILTER=INTERSECTS
- * pour déterminer si un site est situé dans une ou plusieurs zones ZAER.
+ * Interroge le WFS Géoplateforme à la volée via CQL_FILTER=INTERSECTS, sur deux
+ * couches distinctes : les zones d'accélération et les zones d'interdiction.
  *
  * Note importante : le WFS 2.0.0 en EPSG:4326 attend les coordonnées
  * en ordre (latitude, longitude) dans les filtres CQL, alors que le GeoJSON
- * utilise (longitude, latitude).
+ * utilise (longitude, latitude). Vérifié sur les deux couches.
  *
- * Source : https://data.geopf.fr/wfs — typename zaer:zaer
+ * Source : https://data.geopf.fr/wfs
  */
 @Injectable()
 export class ZaerWfsService {
@@ -34,75 +43,128 @@ export class ZaerWfsService {
   constructor(private readonly httpService: HttpService) {}
 
   /**
-   * Recherche les zones ZAER qui intersectent une géométrie (polygone/multipolygone)
+   * Recherche les zones d'accélération qui intersectent une géométrie
    */
   async findZaerIntersectingSite(
     geometrie: GeometrieParcelle,
   ): Promise<ApiResponse<ZaerWfsResult[]>> {
-    const wkt = this.geometrieToWkt(geometrie);
-    const cqlFilter = `INTERSECTS(geom,${wkt})`;
-    return this.queryWfs(cqlFilter);
+    return this.queryAcceleration(this.filtreGeometrie(geometrie));
   }
 
   /**
-   * Recherche les zones ZAER qui contiennent un point donné (fallback coordonnées)
+   * Recherche les zones d'accélération qui contiennent un point donné (fallback coordonnées)
    */
   async findZaerAtPoint(
     latitude: number,
     longitude: number,
   ): Promise<ApiResponse<ZaerWfsResult[]>> {
-    // WFS EPSG:4326 attend (lat, lon) dans le WKT
-    const cqlFilter = `INTERSECTS(geom,POINT(${latitude} ${longitude}))`;
-    return this.queryWfs(cqlFilter);
+    return this.queryAcceleration(this.filtrePoint(latitude, longitude));
   }
 
   /**
-   * Exécute une requête WFS avec un filtre CQL et retourne les résultats normalisés
+   * Recherche les zones d'interdiction APER qui intersectent une géométrie
    */
-  private async queryWfs(cqlFilter: string): Promise<ApiResponse<ZaerWfsResult[]>> {
+  async findExclusionIntersectingSite(
+    geometrie: GeometrieParcelle,
+  ): Promise<ApiResponse<ZaerExclusionResult[]>> {
+    return this.queryExclusion(this.filtreGeometrie(geometrie));
+  }
+
+  /**
+   * Recherche les zones d'interdiction APER qui contiennent un point donné
+   */
+  async findExclusionAtPoint(
+    latitude: number,
+    longitude: number,
+  ): Promise<ApiResponse<ZaerExclusionResult[]>> {
+    return this.queryExclusion(this.filtrePoint(latitude, longitude));
+  }
+
+  private async queryAcceleration(cqlFilter: string): Promise<ApiResponse<ZaerWfsResult[]>> {
     const startTime = Date.now();
 
     try {
-      const features = await this.getFeatures(cqlFilter, PROPRIETES);
-      return this.normaliser(features, startTime);
-    } catch (error) {
-      // Le WFS répond 400 sur une propriété inconnue : plutôt que de perdre tout
-      // l'enrichissement ZAER, on rejoue sans `zonage` (zones d'exclusion non détectées).
-      if (this.estProprieteRejetee(error)) {
-        this.logger.warn(
-          "Propriété `zonage` rejetée par le WFS ZAER : repli sur les propriétés historiques",
-        );
-        try {
-          const features = await this.getFeatures(cqlFilter, PROPRIETES_HISTORIQUES);
-          return this.normaliser(features, startTime);
-        } catch (erreurRepli) {
-          return this.enErreur(erreurRepli, startTime);
+      const features = await this.getFeatures<ZaerWfsProperties>(
+        TYPENAME_ACCELERATION,
+        PROPRIETES_ACCELERATION,
+        cqlFilter,
+      );
+
+      const seen = new Set<string>();
+      const results: ZaerWfsResult[] = [];
+
+      for (const { properties: props } of features) {
+        const detailFiliere = this.coalesceDetailFiliere(props);
+        const key = `${props.filiere}|${detailFiliere ?? ""}|${props.nom ?? ""}`;
+
+        if (!seen.has(key)) {
+          seen.add(key);
+          results.push({ nom: props.nom ?? null, filiere: props.filiere, detailFiliere });
         }
       }
 
-      return this.enErreur(error, startTime);
+      return this.succes(results, features.length, "accélération", startTime);
+    } catch (error) {
+      return this.enErreur(error, "accélération", startTime);
+    }
+  }
+
+  private async queryExclusion(cqlFilter: string): Promise<ApiResponse<ZaerExclusionResult[]>> {
+    const startTime = Date.now();
+
+    try {
+      const features = await this.getFeatures<ZaerExclusionWfsProperties>(
+        TYPENAME_EXCLUSION,
+        PROPRIETES_EXCLUSION,
+        cqlFilter,
+      );
+
+      const seen = new Set<string>();
+      const results: ZaerExclusionResult[] = [];
+
+      for (const { properties: props } of features) {
+        const key = `${props.code ?? ""}|${props.nom_zone ?? ""}|${props.zonage ?? ""}`;
+
+        if (!seen.has(key)) {
+          seen.add(key);
+          results.push({
+            code: props.code ?? null,
+            nomZone: props.nom_zone ?? null,
+            typeZone: props.type_zone ?? null,
+            zonage: props.zonage?.trim() || null,
+          });
+        }
+      }
+
+      return this.succes(results, features.length, "interdiction", startTime);
+    } catch (error) {
+      return this.enErreur(error, "interdiction", startTime);
     }
   }
 
   /**
    * Interroge le WFS et retourne les features brutes
    */
-  private async getFeatures(cqlFilter: string, propertyName: string): Promise<ZaerWfsFeature[]> {
+  private async getFeatures<P>(
+    typename: string,
+    propertyName: string,
+    cqlFilter: string,
+  ): Promise<WfsFeature<P>[]> {
     const params = {
       service: "WFS",
       version: "2.0.0",
       request: "GetFeature",
-      typename: "zaer:zaer",
+      typename,
       outputFormat: "application/json",
       propertyName,
       CQL_FILTER: cqlFilter,
       count: "100",
     };
 
-    this.logger.debug(`Requête WFS ZAER : CQL_FILTER=${cqlFilter}`);
+    this.logger.debug(`Requête WFS ${typename} : CQL_FILTER=${cqlFilter}`);
 
     const response = await firstValueFrom(
-      this.httpService.get<ZaerWfsFeatureCollection>(this.baseUrl, {
+      this.httpService.get<WfsFeatureCollection<P>>(this.baseUrl, {
         params,
         timeout: 15_000,
       }),
@@ -111,56 +173,33 @@ export class ZaerWfsService {
     return response.data.features ?? [];
   }
 
-  /**
-   * Déduplique les features par (filière, détail, zonage, nom)
-   */
-  private normaliser(features: ZaerWfsFeature[], startTime: number): ApiResponse<ZaerWfsResult[]> {
+  private succes<T>(
+    data: T[],
+    nombreFeatures: number,
+    couche: string,
+    startTime: number,
+  ): ApiResponse<T[]> {
     const responseTimeMs = Date.now() - startTime;
-    this.logger.debug(`WFS ZAER : ${features.length} zone(s) en ${responseTimeMs}ms`);
-
-    const seen = new Set<string>();
-    const results: ZaerWfsResult[] = [];
-
-    for (const feature of features) {
-      const props = feature.properties;
-      const detailFiliere = this.coalesceDetailFiliere(props);
-      const zonage = props.zonage?.trim() || null;
-      const key = `${props.filiere}|${detailFiliere ?? ""}|${zonage ?? ""}|${props.nom ?? ""}`;
-
-      if (!seen.has(key)) {
-        seen.add(key);
-        results.push({
-          nom: props.nom ?? null,
-          filiere: props.filiere,
-          detailFiliere,
-          zonage,
-        });
-      }
-    }
+    this.logger.debug(`WFS ZAER (${couche}) : ${nombreFeatures} zone(s) en ${responseTimeMs}ms`);
 
     return {
       success: true,
-      data: results,
+      data,
       source: SourceEnrichissement.ZAER,
       responseTimeMs,
     };
   }
 
-  private enErreur(error: unknown, startTime: number): ApiResponse<ZaerWfsResult[]> {
+  private enErreur<T>(error: unknown, couche: string, startTime: number): ApiResponse<T[]> {
     const responseTimeMs = Date.now() - startTime;
     const message = error instanceof Error ? error.message : String(error);
-    this.logger.error(`Erreur WFS ZAER (${responseTimeMs}ms) : ${message}`);
+    this.logger.error(`Erreur WFS ZAER (${couche}, ${responseTimeMs}ms) : ${message}`);
     return {
       success: false,
       error: message,
       source: SourceEnrichissement.ZAER,
       responseTimeMs,
     };
-  }
-
-  private estProprieteRejetee(error: unknown): boolean {
-    const status = (error as { response?: { status?: number } })?.response?.status;
-    return status === 400;
   }
 
   /**
@@ -174,6 +213,15 @@ export class ZaerWfsService {
       .filter((n): n is string => !!n);
 
     return niveaux.length > 0 ? niveaux.join(" / ") : null;
+  }
+
+  private filtreGeometrie(geometrie: GeometrieParcelle): string {
+    return `INTERSECTS(geom,${this.geometrieToWkt(geometrie)})`;
+  }
+
+  private filtrePoint(latitude: number, longitude: number): string {
+    // WFS EPSG:4326 attend (lat, lon) dans le WKT
+    return `INTERSECTS(geom,POINT(${latitude} ${longitude}))`;
   }
 
   /**

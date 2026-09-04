@@ -21,96 +21,135 @@ describe("ZaerWfsService", () => {
 
   const collection = (features: unknown[]) => of({ data: { type: "FeatureCollection", features } });
 
-  const erreurHttp = (status: number) =>
-    throwError(() =>
-      Object.assign(new Error(`Request failed with status code ${status}`), {
-        response: { status },
-      }),
-    );
+  const paramsDuDernierAppel = () =>
+    (httpGet.mock.calls.at(-1)?.[1] as { params: Record<string, string> }).params;
 
-  it("demande le champ zonage au WFS", async () => {
-    httpGet.mockReturnValue(collection([]));
+  describe("zones d'accélération", () => {
+    it("interroge la couche zaer:zaer sans demander le champ zonage", async () => {
+      httpGet.mockReturnValue(collection([]));
 
-    await service.findZaerAtPoint(47.25, 6.03);
+      await service.findZaerAtPoint(47.25, 6.03);
 
-    const config = httpGet.mock.calls[0][1] as { params: Record<string, string> };
-    expect(config.params.propertyName).toContain("zonage");
+      const params = paramsDuDernierAppel();
+      expect(params.typename).toBe("zaer:zaer");
+      expect(params.propertyName).not.toContain("zonage");
+      expect(params.CQL_FILTER).toBe("INTERSECTS(geom,POINT(47.25 6.03))");
+    });
+
+    it("coalesce les niveaux de detail_filiere et déduplique", async () => {
+      httpGet.mockReturnValue(
+        collection([
+          feature({
+            nom: "Zone communale",
+            filiere: "SOLAIRE_PV",
+            detail_filiere1: "SOLAIRE_PV_NV_SOL",
+            detail_filiere2: "OMBRIERE",
+            detail_filiere3: null,
+          }),
+          feature({
+            nom: "Zone communale",
+            filiere: "SOLAIRE_PV",
+            detail_filiere1: "SOLAIRE_PV_NV_SOL",
+            detail_filiere2: "OMBRIERE",
+            detail_filiere3: null,
+          }),
+        ]),
+      );
+
+      const res = await service.findZaerAtPoint(47.25, 6.03);
+
+      expect(res.success).toBe(true);
+      expect(res.data).toHaveLength(1);
+      expect(res.data?.[0].detailFiliere).toBe("SOLAIRE_PV_NV_SOL / OMBRIERE");
+    });
+
+    it("retourne une erreur sans throw quand le WFS échoue", async () => {
+      httpGet.mockReturnValue(throwError(() => new Error("503")));
+
+      const res = await service.findZaerAtPoint(47.25, 6.03);
+
+      expect(res.success).toBe(false);
+      expect(httpGet).toHaveBeenCalledTimes(1);
+    });
   });
 
-  it("remonte le zonage APER de chaque zone", async () => {
-    httpGet.mockReturnValue(
-      collection([
-        feature({
-          nom: "Zone d'interdiction",
-          filiere: "SOLAIRE_PV",
-          detail_filiere1: "SOLAIRE_PV_NV_SOL",
-          detail_filiere2: null,
-          detail_filiere3: null,
-          zonage: "Interdiction ZAER (loi APER) toutes ENR sauf toiture",
-        }),
-      ]),
-    );
+  describe("zones d'interdiction", () => {
+    it("interroge la couche OFB des interdictions avec le même filtre", async () => {
+      httpGet.mockReturnValue(collection([]));
 
-    const res = await service.findZaerAtPoint(47.25, 6.03);
+      await service.findExclusionAtPoint(45.88, -1.07);
 
-    expect(res.success).toBe(true);
-    expect(res.data?.[0].zonage).toBe("Interdiction ZAER (loi APER) toutes ENR sauf toiture");
-  });
+      const params = paramsDuDernierAppel();
+      expect(params.typename).toBe(
+        "OFB_INTERDICTION-ZAER-SAUF-TOITURE:zones_exclues_aires_acceleration_sauf_toiture",
+      );
+      expect(params.propertyName).toContain("zonage");
+      expect(params.CQL_FILTER).toBe("INTERSECTS(geom,POINT(45.88 -1.07))");
+    });
 
-  it("distingue deux zones de même filière mais de zonage différent", async () => {
-    httpGet.mockReturnValue(
-      collection([
-        feature({
-          nom: "Zone communale",
-          filiere: "SOLAIRE_PV",
-          detail_filiere1: null,
-          detail_filiere2: null,
-          detail_filiere3: null,
-          zonage: "Zone d'accélération",
-        }),
-        feature({
-          nom: "Zone communale",
-          filiere: "SOLAIRE_PV",
-          detail_filiere1: null,
-          detail_filiere2: null,
-          detail_filiere3: null,
-          zonage: "Interdiction ZAER (loi APER) toutes ENR sauf toiture",
-        }),
-      ]),
-    );
+    it("remonte le régime brut de chaque zone d'interdiction", async () => {
+      httpGet.mockReturnValue(
+        collection([
+          feature({
+            code: "FR3600077",
+            nom_zone: "Moëze-Oléron",
+            type_zone: "Réserve naturelle nationale",
+            zonage: "Interdiction ZAER (loi APER) toutes ENR sauf toiture",
+          }),
+          feature({
+            code: "FR5410028",
+            nom_zone: "Marais de Brouage",
+            type_zone: "Zone de protection spéciale (ZPS)",
+            zonage: "Interdiction ZAER (loi APER) éolien uniquement",
+          }),
+        ]),
+      );
 
-    const res = await service.findZaerAtPoint(47.25, 6.03);
+      const res = await service.findExclusionAtPoint(45.88, -1.07);
 
-    expect(res.data).toHaveLength(2);
-  });
+      expect(res.success).toBe(true);
+      expect(res.data).toHaveLength(2);
+      expect(res.data?.[0]).toEqual({
+        code: "FR3600077",
+        nomZone: "Moëze-Oléron",
+        typeZone: "Réserve naturelle nationale",
+        zonage: "Interdiction ZAER (loi APER) toutes ENR sauf toiture",
+      });
+    });
 
-  it("rejoue sans le champ zonage si le WFS le rejette", async () => {
-    httpGet.mockReturnValueOnce(erreurHttp(400)).mockReturnValueOnce(
-      collection([
-        feature({
-          nom: "Zone éolien",
-          filiere: "EOLIEN",
-          detail_filiere1: null,
-          detail_filiere2: null,
-          detail_filiere3: null,
-        }),
-      ]),
-    );
+    it("déduplique les zones identiques", async () => {
+      const props = {
+        code: "FR3600077",
+        nom_zone: "Moëze-Oléron",
+        type_zone: "Réserve naturelle nationale",
+        zonage: "Interdiction ZAER (loi APER) toutes ENR sauf toiture",
+      };
+      httpGet.mockReturnValue(collection([feature(props), feature(props)]));
 
-    const res = await service.findZaerAtPoint(47.25, 6.03);
+      const res = await service.findExclusionAtPoint(45.88, -1.07);
 
-    expect(res.success).toBe(true);
-    expect(res.data?.[0].zonage).toBeNull();
-    const repli = httpGet.mock.calls[1][1] as { params: Record<string, string> };
-    expect(repli.params.propertyName).not.toContain("zonage");
-  });
+      expect(res.data).toHaveLength(1);
+    });
 
-  it("ne rejoue pas sur une erreur qui n'est pas un rejet de propriété", async () => {
-    httpGet.mockReturnValue(erreurHttp(503));
+    it("utilise INTERSECTS sur la géométrie quand elle est disponible", async () => {
+      httpGet.mockReturnValue(collection([]));
 
-    const res = await service.findZaerAtPoint(47.25, 6.03);
+      await service.findExclusionIntersectingSite({
+        type: "Polygon",
+        coordinates: [
+          [
+            [6.03, 47.25],
+            [6.04, 47.25],
+            [6.04, 47.26],
+            [6.03, 47.25],
+          ],
+        ],
+      });
 
-    expect(res.success).toBe(false);
-    expect(httpGet).toHaveBeenCalledTimes(1);
+      // Le WFS EPSG:4326 attend (lat, lon), l'inverse du GeoJSON
+      expect(paramsDuDernierAppel().CQL_FILTER).toBe(
+        "INTERSECTS(geom,POLYGON((47.25 6.03,47.25 6.04,47.26 6.04,47.25 6.03)))",
+      );
+    });
   });
 });
