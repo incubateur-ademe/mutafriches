@@ -15,6 +15,7 @@ import { EnergieEnrichissementService } from "./energie/energie-enrichissement.s
 import { TransportEnrichissementService } from "./transport/transport-enrichissement.service";
 import { IteFretEnrichissementService } from "./transport/ite-fret-enrichissement.service";
 import { UrbanismeEnrichissementService } from "./urbanisme/urbanisme-enrichissement.service";
+import { IcuEnrichissementService } from "./climat/icu-enrichissement.service";
 import { RisquesNaturelsEnrichissementService } from "./risques-naturels/risques-naturels-enrichissement.service";
 import { RisquesTechnologiquesEnrichissementService } from "./risques-technologiques/risques-technologiques-enrichissement.service";
 import { GeoRisquesEnrichissementService } from "./georisques/georisques-enrichissement.service";
@@ -45,6 +46,7 @@ export class EnrichissementService {
     private readonly transportEnrichissement: TransportEnrichissementService,
     private readonly iteFretEnrichissement: IteFretEnrichissementService,
     private readonly urbanismeEnrichissement: UrbanismeEnrichissementService,
+    private readonly icuEnrichissement: IcuEnrichissementService,
     private readonly risquesNaturelsEnrichissement: RisquesNaturelsEnrichissementService,
     private readonly risquesTechnologiquesEnrichissement: RisquesTechnologiquesEnrichissementService,
     private readonly georisquesEnrichissement: GeoRisquesEnrichissementService,
@@ -210,6 +212,10 @@ export class EnrichissementService {
       );
       const zaer = enrResult.data;
 
+      // 10.b CLIMAT / ICU (îlot de chaleur urbain, informatif)
+      const icuResult = await this.icuEnrichissement.enrichir(siteEval);
+      this.mergeEnrichmentResult(icuResult, sourcesUtilisees, champsManquants, sourcesEchouees);
+
       // 11. CALCULER LA FIABILITE
       const sourcesUniques = [...new Set(sourcesUtilisees)];
       const champsManquantsUniques = [...new Set(champsManquants)];
@@ -258,6 +264,10 @@ export class EnrichissementService {
         zonagePatrimonial: siteEval.zonagePatrimonial,
         trameVerteEtBleue: siteEval.trameVerteEtBleue,
         zonageAbcLogement: siteEval.zonageAbcLogement,
+
+        // Îlot de chaleur urbain (informatif, hors algorithme)
+        ilotChaleurUrbain: siteEval.ilotChaleurUrbain,
+        intensiteIlotChaleurC: siteEval.intensiteIlotChaleurC,
 
         // Risques GeoRisques Bruts
         risquesGeorisques,
@@ -485,6 +495,10 @@ export class EnrichissementService {
       );
       const zaer = enrResult.data;
 
+      // 11.b CLIMAT / ICU (îlot de chaleur urbain, informatif)
+      const icuResult = await this.icuEnrichissement.enrichir(siteEval);
+      this.mergeEnrichmentResult(icuResult, sourcesUtilisees, champsManquants, sourcesEchouees);
+
       // 12. DETERMINER LE STATUT
       const sourcesUniques = [...new Set(sourcesUtilisees)];
       const champsManquantsUniques = [...new Set(champsManquants)];
@@ -536,6 +550,10 @@ export class EnrichissementService {
         zonagePatrimonial: siteEval.zonagePatrimonial,
         trameVerteEtBleue: siteEval.trameVerteEtBleue,
         zonageAbcLogement: siteEval.zonageAbcLogement,
+
+        // Îlot de chaleur urbain (informatif, hors algorithme)
+        ilotChaleurUrbain: siteEval.ilotChaleurUrbain,
+        intensiteIlotChaleurC: siteEval.intensiteIlotChaleurC,
 
         risquesGeorisques,
 

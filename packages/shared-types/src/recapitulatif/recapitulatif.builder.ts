@@ -1,6 +1,7 @@
 import { EnrichissementOutputDto } from "../enrichissement";
 import { DonneesComplementairesInputDto } from "../evaluation";
 import { CRITERES_METADATA_LIST } from "./criteres.metadata";
+import { INFORMATIONS_METADATA_LIST } from "./informations.metadata";
 import {
   RecapitulatifSection,
   SectionRecapitulatifId,
@@ -32,6 +33,7 @@ import {
   ZONAGE_PATRIMONIAL_LABELS,
   ZONAGE_ABC_LOGEMENT_LABELS,
   ZONE_ACCELERATION_ENR_LABELS,
+  ILOT_CHALEUR_URBAIN_LABELS,
 } from "./valeurs.labels";
 
 type Enrichissement = EnrichissementOutputDto | undefined;
@@ -79,9 +81,14 @@ const RESOLVEURS: Record<string, (e: Enrichissement, c: Complementaires) => stri
   zonageAbcLogement: (e) => libelleEnum(ZONAGE_ABC_LOGEMENT_LABELS, e?.zonageAbcLogement),
 };
 
+/** Résolveurs des données informatives (hors algorithme) */
+const RESOLVEURS_INFORMATIONS: Record<string, (e: Enrichissement) => string> = {
+  ilotChaleurUrbain: (e) => libelleEnum(ILOT_CHALEUR_URBAIN_LABELS, e?.ilotChaleurUrbain),
+};
+
 /**
- * Construit le récapitulatif du site : les 27 critères groupés par section,
- * chacun résolu en { label, valeurAffichee, saisie, source }.
+ * Construit le récapitulatif du site : les critères de l'algorithme puis les données
+ * informatives, groupés par section et résolus en { label, valeurAffichee, saisie, source }.
  *
  * Fonction pure : aucune I/O. Réutilisable côté UI comme côté API.
  */
@@ -120,6 +127,21 @@ export function buildRecapitulatifSite(
       saisie: meta.saisie,
       source: meta.source,
       sourceLabel: meta.source ? (SOURCE_LABELS[meta.source] ?? meta.source) : undefined,
+    });
+  }
+
+  // Les données informatives ferment leur section : enrichies et restituées, mais sans
+  // effet sur l'indice ni sur la fiabilité.
+  for (const meta of INFORMATIONS_METADATA_LIST) {
+    const resolveur = RESOLVEURS_INFORMATIONS[meta.key];
+    sections[meta.section].criteres.push({
+      key: meta.key,
+      label: meta.label,
+      valeurAffichee: resolveur ? resolveur(enrichissement) : VALEUR_NON_DISPONIBLE,
+      saisie: "AUTOMATIQUE",
+      source: meta.source,
+      sourceLabel: SOURCE_LABELS[meta.source] ?? meta.source,
+      informatif: true,
     });
   }
 

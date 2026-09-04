@@ -21,7 +21,23 @@ export interface CritereMetadata {
   ordre: number;
 }
 
-/** Critère résolu, prêt pour l'affichage */
+/**
+ * Métadonnée d'une donnée informative : enrichie et affichée dans le récapitulatif,
+ * mais absente de l'algorithme (ni poids, ni ligne de matrice, ni effet sur la fiabilité).
+ *
+ * Registre volontairement distinct de CRITERES_METADATA, qui est verrouillé sur
+ * POIDS_CRITERES par un garde-fou côté API : une donnée sans poids n'y a pas sa place.
+ */
+export interface InformationMetadata {
+  key: string;
+  label: string;
+  section: SectionRecapitulatifId;
+  source: SourceEnrichissement;
+  /** Ordre d'affichage, appliqué après les critères de la même section */
+  ordre: number;
+}
+
+/** Critère ou donnée informative résolu, prêt pour l'affichage */
 export interface RecapitulatifCritere {
   key: string;
   label: string;
@@ -30,6 +46,8 @@ export interface RecapitulatifCritere {
   source?: SourceEnrichissement;
   /** Libellé court de la source pour le badge (ex : "Cadastre") */
   sourceLabel?: string;
+  /** Donnée informative : affichée mais non prise en compte dans le calcul */
+  informatif?: boolean;
 }
 
 /** Section regroupant des critères résolus */

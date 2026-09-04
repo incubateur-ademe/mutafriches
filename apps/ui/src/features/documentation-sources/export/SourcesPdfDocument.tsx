@@ -4,6 +4,7 @@ import {
   SOURCES_DONNEES,
   getCriteresManuels,
   getCriteresPourSource,
+  MENTION_SOURCE_SANS_CRITERE,
   type CritereMetadata,
   type SourceDonnees,
 } from "@mutafriches/shared-types";
@@ -184,7 +185,11 @@ export const SourcesPdfDocument: React.FC = () => {
               <Text>{source.traitementAlgo}</Text>
 
               <Text style={s.subtitle}>Critères d'évaluation alimentés</Text>
-              <CriteresTable criteres={criteres} />
+              {criteres.length > 0 ? (
+                <CriteresTable criteres={criteres} />
+              ) : (
+                <Text>{MENTION_SOURCE_SANS_CRITERE}</Text>
+              )}
             </View>
           );
         })}

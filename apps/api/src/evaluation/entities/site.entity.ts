@@ -19,6 +19,7 @@ import {
   ZoneAccelerationEnr,
   ZonageAbcLogement,
   DistanceIte,
+  IlotChaleurUrbain,
   Coordonnees,
   GeometrieParcelle,
   CalculerMutabiliteInputDto,
@@ -69,6 +70,10 @@ export class Site {
   distanceIteMetres?: number;
   /** Site référencé comme pollué (détection auto via ADEME/SIS/ICPE) */
   siteReferencePollue?: boolean;
+  /** Exposition à un îlot de chaleur urbain — informatif, hors scoring (ADR-0034) */
+  ilotChaleurUrbain?: IlotChaleurUrbain;
+  /** Intensité ICU en °C. null = site hors périmètre d'étude */
+  intensiteIlotChaleurC?: number | null;
 
   // Données saisies manuellement
   typeProprietaire?: TypeProprietaire;
@@ -182,6 +187,12 @@ export class Site {
     // Fret
     site.distanceIte = donnees.distanceIte ? (donnees.distanceIte as DistanceIte) : undefined;
     site.distanceIteMetres = donnees.distanceIteMetres;
+
+    // Îlot de chaleur urbain (informatif)
+    site.ilotChaleurUrbain = donnees.ilotChaleurUrbain
+      ? (donnees.ilotChaleurUrbain as IlotChaleurUrbain)
+      : undefined;
+    site.intensiteIlotChaleurC = donnees.intensiteIlotChaleurC;
 
     // Métadonnées
     site.sourcesUtilisees = donnees.sourcesUtilisees || [];

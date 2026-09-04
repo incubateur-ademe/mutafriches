@@ -10,6 +10,7 @@ import { ZoneAccelerationEnr } from "../enums/zone-acceleration-enr.enum";
 import { TrameVerteEtBleue } from "../enums/trame-verte-bleue.enum";
 import { ZonageAbcLogement } from "../enums/zonage-abc-logement.enum";
 import { DistanceIte } from "../enums/distance-ite.enum";
+import { IlotChaleurUrbain } from "../enums/ilot-chaleur-urbain.enum";
 
 /**
  * Résultat de l'enrichissement automatique des données de parcelle ou site
@@ -76,6 +77,12 @@ export interface EnrichissementOutputDto {
   // Zonage ABC logement (tension du marché)
   /** null = commune absente du référentiel ABC (recherche effectuée, aucun résultat) */
   zonageAbcLogement?: ZonageAbcLogement | null;
+
+  // Îlot de chaleur urbain — donnée informative, hors algorithme (ADR-0034)
+  /** undefined = enrichissement en échec ; NON_COUVERT = site hors périmètre d'étude */
+  ilotChaleurUrbain?: IlotChaleurUrbain;
+  /** Intensité maximale absolue de l'ICU en °C. null = site hors périmètre d'étude */
+  intensiteIlotChaleurC?: number | null;
 
   // Métadonnées
   sourcesUtilisees: string[];

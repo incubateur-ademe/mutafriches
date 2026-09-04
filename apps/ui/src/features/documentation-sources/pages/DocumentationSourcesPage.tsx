@@ -4,6 +4,7 @@ import {
   SOURCES_DONNEES,
   getCriteresManuels,
   getCriteresPourSource,
+  MENTION_SOURCE_SANS_CRITERE,
   type CritereMetadata,
   type SourceDonnees,
 } from "@mutafriches/shared-types";
@@ -79,7 +80,11 @@ function SourceAccordion({ source }: { source: SourceDonnees }) {
         <p className="fr-mb-3w">{source.traitementAlgo}</p>
 
         <h4 className="fr-text--md fr-mb-1w">Critères d'évaluation alimentés</h4>
-        <CriteresTable criteres={criteres} />
+        {criteres.length > 0 ? (
+          <CriteresTable criteres={criteres} />
+        ) : (
+          <p className="fr-mb-0">{MENTION_SOURCE_SANS_CRITERE}</p>
+        )}
 
         <p className="fr-mt-2w fr-mb-0">
           <a href={source.urlDoc} target="_blank" rel="noopener noreferrer">

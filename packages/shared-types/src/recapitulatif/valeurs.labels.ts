@@ -8,6 +8,7 @@ import {
   ZonageAbcLogement,
   ZoneAccelerationEnr,
   TrameVerteEtBleue,
+  IlotChaleurUrbain,
   SourceEnrichissement,
 } from "../enrichissement";
 import {
@@ -24,6 +25,9 @@ import {
 
 /** Valeur affichée lorsqu'un critère n'est pas renseigné */
 export const VALEUR_NON_DISPONIBLE = "Non disponible";
+
+/** Mention accolée aux lignes informatives du récapitulatif, pour les distinguer des critères */
+export const MENTION_INFORMATIVE = "Donnée informative, hors calcul";
 
 // ------------------------------------------------------------------
 // Formatters de valeurs numériques (purs, locale fr-FR)
@@ -208,6 +212,12 @@ export const ZONAGE_ABC_LOGEMENT_LABELS: Record<ZonageAbcLogement, string> = {
   [ZonageAbcLogement.C]: "Zone C",
 };
 
+export const ILOT_CHALEUR_URBAIN_LABELS: Record<IlotChaleurUrbain, string> = {
+  [IlotChaleurUrbain.OUI]: "Oui (+ de 5,5 °C)",
+  [IlotChaleurUrbain.NON]: "Non (- de 5,5 °C)",
+  [IlotChaleurUrbain.NON_COUVERT]: "Non couvert par la cartographie",
+};
+
 export const ZONE_ACCELERATION_ENR_LABELS: Record<ZoneAccelerationEnr, string> = {
   [ZoneAccelerationEnr.NON]: "Non",
   [ZoneAccelerationEnr.OUI]: "Oui",
@@ -235,4 +245,5 @@ export const SOURCE_LABELS: Partial<Record<SourceEnrichissement, string>> = {
   [SourceEnrichissement.API_CARTO_GPU]: "API Carto GPU",
   [SourceEnrichissement.ZAER]: "ZAER-ENR",
   [SourceEnrichissement.ZONAGE_ABC_LOGEMENT]: "Zonage ABC",
+  [SourceEnrichissement.ICU]: "ICU (CSTB)",
 };

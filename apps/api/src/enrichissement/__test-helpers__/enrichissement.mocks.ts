@@ -52,6 +52,14 @@ interface MockZonageAbcRepository {
   findByCodeInsee: Mock;
 }
 
+interface MockIcuRepository {
+  findZoneContenant: Mock;
+}
+
+interface MockIcuEnrichissementService {
+  enrichir: Mock;
+}
+
 interface MockRisquesNaturelsEnrichissementService {
   enrichir: Mock;
 }
@@ -464,5 +472,23 @@ export function createMockSiteGeometryService(): MockSiteGeometryService {
 export function createMockZonageAbcRepository(): MockZonageAbcRepository {
   return {
     findByCodeInsee: vi.fn(),
+  };
+}
+
+/**
+ * Mock du IcuRepository
+ */
+export function createMockIcuRepository(): MockIcuRepository {
+  return {
+    findZoneContenant: vi.fn(),
+  };
+}
+
+/**
+ * Mock du IcuEnrichissementService
+ */
+export function createMockIcuEnrichissementService(): MockIcuEnrichissementService {
+  return {
+    enrichir: vi.fn(),
   };
 }

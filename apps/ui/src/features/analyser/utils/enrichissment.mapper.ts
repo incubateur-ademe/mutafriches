@@ -96,6 +96,9 @@ export const transformEnrichmentToUiData = (
     // Zonage ABC logement
     zonageAbcLogement: formatZonageAbcLogement(enrichmentData.zonageAbcLogement),
 
+    // Îlot de chaleur urbain (informatif)
+    ilotChaleurUrbain: enrichmentData.ilotChaleurUrbain,
+
     // Énergies renouvelables
     zoneAccelerationEnr: formatZoneAccelerationEnr(enrichmentData.zoneAccelerationEnr),
     zaerBadges: buildZaerBadges(enrichmentData.zaer),

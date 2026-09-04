@@ -11,6 +11,7 @@ import { communes } from "./schemas/communes.schema";
 import { rawIteFret } from "./schemas/raw-ite-fret.schema";
 import { rawLovac } from "./schemas/raw-lovac.schema";
 import { rawZonageAbc } from "./schemas/raw-zonage-abc.schema";
+import { rawIcu } from "./schemas/raw-icu.schema";
 import { apiHealthSnapshots } from "./schemas/api-health-snapshots.schema";
 import { partenaires } from "./schemas/partenaires.schema";
 import { partenaireSites } from "./schemas/partenaire-sites.schema";
@@ -31,6 +32,7 @@ export {
   rawIteFret,
   rawLovac,
   rawZonageAbc,
+  rawIcu,
   apiHealthSnapshots,
   partenaires,
   partenaireSites,
@@ -51,6 +53,7 @@ export const schema = {
   rawIteFret,
   rawLovac,
   rawZonageAbc,
+  rawIcu,
   apiHealthSnapshots,
   partenaires,
   partenaireSites,

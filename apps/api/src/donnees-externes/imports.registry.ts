@@ -64,6 +64,14 @@ export const IMPORT_DATASETS: readonly ImportDatasetDefinition[] = [
     docUrl: "https://www.data.gouv.fr/datasets/liste-des-communes-selon-le-zonage-abc",
   },
   {
+    key: "icu",
+    label: "Îlots de chaleur urbain (ICU)",
+    datasetNamePattern: "icu",
+    countTable: "raw_icu",
+    docUrl:
+      "https://www.data.gouv.fr/datasets/cartographie-nationale-des-indicateurs-lies-a-lilot-de-chaleur-urbain",
+  },
+  {
     key: "decoupage-administratif",
     label: "Découpage administratif (communes / EPCI)",
     datasetNamePattern: "decoupage-administratif-etalab-%",

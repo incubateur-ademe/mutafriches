@@ -36,3 +36,6 @@ Thumbs.db
 
 # RAW data files
 apps/api/data/raw/
+
+# Référentiels géographiques importés (générés hors ligne, reformater les gonfle inutilement)
+apps/api/src/scripts/data/*.geojson

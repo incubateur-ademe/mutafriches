@@ -15,6 +15,7 @@ import {
   FormSelectField,
   PollutionField,
   RaccordementEauField,
+  IlotChaleurField,
 } from "../components";
 import { PresencePollution, deriverRaccordementEau } from "@mutafriches/shared-types";
 import { DebugPanelGate } from "../../debug/components/DebugPanelGate";
@@ -281,6 +282,26 @@ export const QualificationSitePage: React.FC = () => {
             siteReferencePollue={uiData?.siteReferencePollue}
             error={touched.presencePollution ? errors.presencePollution : undefined}
             tooltip="Entrez l'information dont vous disposez sur la présence de pollution sur votre site (sol et bâti). Si la case 'Oui' est présélectionnée, c’est que nous avons retrouvé un risque de pollution à moins de 500 m dans une base de données nationales des sites et sols pollués."
+          />
+
+          <IlotChaleurField
+            value={uiData?.ilotChaleurUrbain}
+            tooltip={
+              <>
+                Donnée informative : elle n'entre pas dans le calcul de mutabilité. Issue de la
+                cartographie nationale des indicateurs liés à l'îlot de chaleur urbain (CSTB), qui
+                ne couvre qu'environ 600 communes — un site hors de ce périmètre n'a pas été mesuré.
+                <br />
+                <a
+                  href="https://www.data.gouv.fr/datasets/cartographie-nationale-des-indicateurs-lies-a-lilot-de-chaleur-urbain"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="fr-link fr-text--xs"
+                >
+                  data.gouv.fr/datasets/cartographie-nationale-des-indicateurs-lies-a-lilot-de-chaleur-urbain
+                </a>
+              </>
+            }
           />
         </div>
       </form>

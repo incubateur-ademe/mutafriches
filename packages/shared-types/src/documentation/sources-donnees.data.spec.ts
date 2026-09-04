@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { SourceEnrichissement } from "../enrichissement";
 import { CRITERES_METADATA_LIST } from "../recapitulatif/criteres.metadata";
 import { SOURCES_DONNEES, getCriteresManuels, getCriteresPourSource } from "./sources-donnees.data";
 
@@ -33,6 +34,15 @@ describe("SOURCES_DONNEES", () => {
     const manuels = getCriteresManuels();
     expect(manuels).toHaveLength(10);
     expect(manuels.every((c) => c.saisie === "MANUELLE")).toBe(true);
+  });
+
+  it("documente la source ICU sans lui rattacher de critère pondéré", () => {
+    const icu = SOURCES_DONNEES.find((s) => s.id === "icu");
+
+    expect(icu).toBeDefined();
+    expect(icu?.sourcesEnrichissement).toEqual([SourceEnrichissement.ICU]);
+    // Donnée informative : aucun critère de l'algorithme n'est alimenté par cette source
+    expect(getCriteresPourSource(icu!)).toHaveLength(0);
   });
 
   it("représente le poids total de l'algorithme (30)", () => {

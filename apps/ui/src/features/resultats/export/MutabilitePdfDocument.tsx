@@ -3,6 +3,7 @@ import { Document, Image, Page, StyleSheet, Text, View } from "@react-pdf/render
 import {
   buildDetailUsage,
   buildRecapitulatifSite,
+  MENTION_INFORMATIVE,
   type ImpactNiveau,
   type UsageResultatDetaille,
 } from "@mutafriches/shared-types";
@@ -272,7 +273,10 @@ export const MutabilitePdfDocument: React.FC<{ data: ResultatsExportData }> = ({
               const auto = c.saisie === "AUTOMATIQUE";
               return (
                 <View key={c.key} style={s.row}>
-                  <Text style={[s.cell, { flexGrow: 2 }]}>{c.label}</Text>
+                  <View style={[s.cell, { flexGrow: 2 }]}>
+                    <Text>{c.label}</Text>
+                    {c.informatif && <Text style={s.muted}>{MENTION_INFORMATIVE}</Text>}
+                  </View>
                   <Text style={[s.cell, s.bold]}>{c.valeurAffichee}</Text>
                   <View style={s.cellCenter}>
                     <Badge
