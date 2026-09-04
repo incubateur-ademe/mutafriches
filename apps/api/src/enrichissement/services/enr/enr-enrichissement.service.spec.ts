@@ -47,6 +47,24 @@ describe("EnrEnrichissementService", () => {
     expect(data?.zones[0].zonage).toBe("Interdiction ZAER (loi APER) toutes ENR sauf toiture");
   });
 
+  it("ne compte pas une zone d'interdiction comme zone d'accélération", async () => {
+    findZaerAtPoint.mockResolvedValue(
+      reponse([
+        {
+          nom: "Zone communale",
+          filiere: "SOLAIRE_PV",
+          detailFiliere: null,
+          zonage: "Interdiction ZAER (loi APER) toutes ENR sauf toiture",
+        },
+      ]),
+    );
+
+    const { data } = await service.enrichir(siteAvecCoordonnees());
+
+    expect(data?.enZoneZaer).toBe(false);
+    expect(data?.nombreZones).toBe(1);
+  });
+
   it("ne signale pas d'exclusion sur une zone d'accélération", async () => {
     findZaerAtPoint.mockResolvedValue(
       reponse([

@@ -72,8 +72,11 @@ export class EnrEnrichissementService {
       }
 
       const zones = response.data;
-      const enZoneZaer = zones.length > 0;
-      const enZoneExclusion = zones.some((z) => estZonageExclusion(z.zonage));
+      // Une zone d'interdiction est portée par la même couche WFS : elle ne vaut pas
+      // appartenance à une zone d'accélération.
+      const zonesAcceleration = zones.filter((z) => !estZonageExclusion(z.zonage));
+      const enZoneZaer = zonesAcceleration.length > 0;
+      const enZoneExclusion = zonesAcceleration.length < zones.length;
       const filieres = [...new Set(zones.map((z) => z.filiere))];
 
       const zaer: ZaerEnrichissement = {

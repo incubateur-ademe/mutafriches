@@ -107,11 +107,11 @@ export interface EnrichissementOutputDto {
  * Resultat de l'enrichissement ZAER pour un site
  */
 export interface ZaerEnrichissement {
-  /** Le site intersecte au moins une zone ZAER */
+  /** Le site intersecte au moins une zone d'accélération (hors zones d'interdiction) */
   enZoneZaer: boolean;
   /** Le site intersecte une zone d'interdiction APER (toutes EnR sauf toiture) */
   enZoneExclusion: boolean;
-  /** Nombre de zones ZAER intersectees */
+  /** Nombre de zones intersectees, interdictions comprises */
   nombreZones: number;
   /** Filieres ENR uniques presentes (ex: ["SOLAIRE_PV", "EOLIEN"]) */
   filieres: string[];
