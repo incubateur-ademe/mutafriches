@@ -130,6 +130,7 @@ export function getCritereTagLabel(
 
     case "zoneAccelerationEnr": {
       const zaer = String(valeur) as ZoneAccelerationEnr;
+      if (zaer === ZoneAccelerationEnr.EXCLUSION) return "zone exclusion EnR";
       if (zaer === ZoneAccelerationEnr.OUI || zaer === ZoneAccelerationEnr.OUI_SOLAIRE_PV_OMBRIERE)
         return "zone accélération EnR";
       return "hors zone EnR";

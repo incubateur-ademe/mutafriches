@@ -45,4 +45,6 @@ export interface ParcelleUiModel {
   zoneAccelerationEnr: string;
   /** Badges cumulatifs par filière ZAENR présente (ex: ["Oui", "Oui Eolien"]) */
   zaerBadges?: string[];
+  /** Site en zone d'interdiction APER : toutes EnR interdites hors toiture */
+  zaerExclusion?: boolean;
 }

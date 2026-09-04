@@ -48,6 +48,11 @@ export const RecapTable: React.FC<RecapTableProps> = ({ sections }) => {
                               {MENTION_INFORMATIVE}
                             </span>
                           )}
+                          {critere.mention && (
+                            <span className="fr-text--xs fr-text-mention--grey block">
+                              {critere.mention}
+                            </span>
+                          )}
                         </td>
                         <td>
                           <strong>{critere.valeurAffichee}</strong>

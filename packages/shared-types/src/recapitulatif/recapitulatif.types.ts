@@ -48,6 +48,8 @@ export interface RecapitulatifCritere {
   sourceLabel?: string;
   /** Donnée informative : affichée mais non prise en compte dans le calcul */
   informatif?: boolean;
+  /** Précision affichée sous le libellé (ex : interdiction APER sur le critère ZAER) */
+  mention?: string;
 }
 
 /** Section regroupant des critères résolus */

@@ -5,11 +5,14 @@ import { buildZaerBadges, transformEnrichmentToUiData } from "./enrichissment.ma
 
 const makeZaer = (overrides: Partial<ZaerEnrichissement> = {}): ZaerEnrichissement => ({
   enZoneZaer: true,
+  enZoneExclusion: false,
   nombreZones: 1,
   filieres: [],
   zones: [],
   ...overrides,
 });
+
+const ZONAGE_INTERDICTION = "Interdiction ZAER (loi APER) toutes ENR sauf toiture";
 
 const makeEnrichissement = (
   overrides: Partial<EnrichissementOutputDto> = {},
@@ -191,5 +194,23 @@ describe("buildZaerBadges", () => {
       zones: [{ nom: null, filiere: "eolien", detailFiliere: null }],
     });
     expect(buildZaerBadges(zaer)).toEqual(["Oui Eolien"]);
+  });
+
+  it("remplace les badges de filières par l'exclusion en zone d'interdiction APER", () => {
+    const zaer = makeZaer({
+      enZoneExclusion: true,
+      filieres: ["EOLIEN"],
+      zones: [
+        { nom: "Zone éolien", filiere: "EOLIEN", detailFiliere: null, zonage: ZONAGE_INTERDICTION },
+      ],
+    });
+    expect(buildZaerBadges(zaer)).toEqual(["Zone d'exclusion (loi APER)"]);
+  });
+
+  it("expose l'exclusion dans le modèle UI", () => {
+    const ui = transformEnrichmentToUiData(
+      makeEnrichissement({ zaer: makeZaer({ enZoneExclusion: true }) }),
+    );
+    expect(ui.zaerExclusion).toBe(true);
   });
 });

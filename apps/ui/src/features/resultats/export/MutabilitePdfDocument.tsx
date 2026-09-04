@@ -276,6 +276,7 @@ export const MutabilitePdfDocument: React.FC<{ data: ResultatsExportData }> = ({
                   <View style={[s.cell, { flexGrow: 2 }]}>
                     <Text>{c.label}</Text>
                     {c.informatif && <Text style={s.muted}>{MENTION_INFORMATIVE}</Text>}
+                    {c.mention && <Text style={s.muted}>{c.mention}</Text>}
                   </View>
                   <Text style={[s.cell, s.bold]}>{c.valeurAffichee}</Text>
                   <View style={s.cellCenter}>

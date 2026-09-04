@@ -3,6 +3,8 @@ import {
   EnrichissementOutputDto,
   SourceEnrichissement,
   ZaerEnrichissement,
+  ZoneAccelerationEnr,
+  ZONE_ACCELERATION_ENR_LABELS,
 } from "@mutafriches/shared-types";
 import { ParcelleUiModel } from "../../../shared/types/parcelle.models";
 import { formatDistance, formatSurface } from "../../../shared/utils/distance.formatter";
@@ -102,6 +104,7 @@ export const transformEnrichmentToUiData = (
     // Énergies renouvelables
     zoneAccelerationEnr: formatZoneAccelerationEnr(enrichmentData.zoneAccelerationEnr),
     zaerBadges: buildZaerBadges(enrichmentData.zaer),
+    zaerExclusion: enrichmentData.zaer?.enZoneExclusion ?? false,
   };
 };
 
@@ -195,6 +198,8 @@ const formatZoneAccelerationEnr = (value?: string): string => {
       return "Oui";
     case "oui-solaire-pv-ombriere":
       return "Oui Solaire photovoltaïque";
+    case "exclusion":
+      return ZONE_ACCELERATION_ENR_LABELS[ZoneAccelerationEnr.EXCLUSION];
     default:
       return value;
   }
@@ -211,8 +216,14 @@ const formatZoneAccelerationEnr = (value?: string): string => {
  * - Filières non-PV : libellé dédié "Oui <Nom de la filière>"
  * - Filière inconnue → fallback "Oui"
  * - Aucune zone ZAENR → ["Non"]
+ * - Zone d'interdiction APER → badge unique d'exclusion (les filières d'accélération
+ *   éventuellement présentes ne sont plus actionnables)
  */
 export const buildZaerBadges = (zaer?: ZaerEnrichissement): string[] => {
+  if (zaer?.enZoneExclusion) {
+    return [ZONE_ACCELERATION_ENR_LABELS[ZoneAccelerationEnr.EXCLUSION]];
+  }
+
   if (!zaer || !zaer.enZoneZaer || zaer.zones.length === 0) {
     return ["Non"];
   }

@@ -225,6 +225,10 @@ export const ZONE_ACCELERATION_ENR_LABELS: Record<ZoneAccelerationEnr, string> =
   [ZoneAccelerationEnr.EXCLUSION]: "Zone d'exclusion (loi APER)",
 };
 
+/** Message affiché quand le site est en zone d'interdiction APER (qualification, récap, détail) */
+export const MESSAGE_ZONE_EXCLUSION_ENR =
+  "Exclu des zones d'accélération EnR : pas de projet EnR possible hors photovoltaïque en toiture.";
+
 // ------------------------------------------------------------------
 // Libellés courts des sources (badge "Source")
 // ------------------------------------------------------------------
