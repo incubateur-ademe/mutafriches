@@ -10,6 +10,7 @@ import * as v18 from "./v1.8";
 import * as v19 from "./v1.9";
 import * as v110 from "./v1.10";
 import * as v111 from "./v1.11";
+import * as v112 from "./v1.12";
 
 export const ALGORITHME_VERSIONS: AlgorithmeConfig[] = [
   {
@@ -89,9 +90,16 @@ export const ALGORITHME_VERSIONS: AlgorithmeConfig[] = [
     poidsCriteres: v111.POIDS_CRITERES as unknown as Record<string, number>,
     matriceScoring: v111.MATRICE_SCORING as unknown as Record<string, unknown>,
   },
+  {
+    version: "v1.12",
+    label: "v1.11 + zone d'exclusion EnR",
+    date: "2026-09-04",
+    poidsCriteres: v112.POIDS_CRITERES as unknown as Record<string, number>,
+    matriceScoring: v112.MATRICE_SCORING as unknown as Record<string, unknown>,
+  },
 ];
 
-export const VERSION_COURANTE = "v1.11";
+export const VERSION_COURANTE = "v1.12";
 
 export function getAlgorithmeConfig(version: string): AlgorithmeConfig | undefined {
   return ALGORITHME_VERSIONS.find((v) => v.version === version);
