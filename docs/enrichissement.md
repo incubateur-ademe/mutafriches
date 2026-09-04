@@ -659,24 +659,26 @@ Détecter si le site se trouve dans une Zone d'Accélération des Énergies Reno
 
 | API | Source | Données récupérées |
 |-----|--------|-------------------|
-| **ZAER WFS** | `data.geopf.fr/wfs` (Géoplateforme) | Zones ZAER intersectant le site (filière, détail filière, nom) |
+| **ZAER WFS** | `data.geopf.fr/wfs` (Géoplateforme) | Zones ZAER intersectant le site (filière, détail filière, nom, zonage APER) |
 
 ### Règles de gestion
 
 **Requête WFS** :
 - Service WFS 2.0.0, typename `zaer:zaer`
 - Filtre CQL : `INTERSECTS(geom, <géométrie_site>)` (polygone ou point)
-- Propriétés récupérées : `nom`, `filiere`, `detail_filiere1`, `detail_filiere2`, `detail_filiere3` (les 3 niveaux hiérarchiques sont coalescés en un seul `detailFiliere`, niveaux non vides joints par ` / `)
-- Déduplication par clé composite `filiere|detailFiliere|nom`
+- Propriétés récupérées : `nom`, `filiere`, `detail_filiere1`, `detail_filiere2`, `detail_filiere3` (les 3 niveaux hiérarchiques sont coalescés en un seul `detailFiliere`, niveaux non vides joints par ` / `), `zonage`
+- Déduplication par clé composite `filiere|detailFiliere|zonage|nom`
+- Si le WFS rejette la propriété `zonage` (HTTP 400), la requête est rejouée sans elle : l'enrichissement conserve les filières, les zones d'exclusion ne sont alors pas détectées
 
 **Stratégie de géolocalisation** :
 1. Si géométrie disponible → intersection par polygone (plus précis)
 2. Sinon → intersection par point (coordonnées centroïde)
 
 **Calcul du critère algorithmique** (`ZoneAccelerationEnr`) :
-1. Si aucune zone ZAER → `NON`
-2. Si zone ZAER avec `detailFiliere` contenant "OMBRIERE" (insensible à la casse) → `OUI_SOLAIRE_PV_OMBRIERE`
-3. Sinon → `OUI`
+1. Si une zone porte un `zonage` d'interdiction APER (libellé contenant "INTERDICTION") → `EXCLUSION`, prioritaire sur toute zone d'accélération recouvrant le site
+2. Si aucune zone ZAER → `NON`
+3. Si zone ZAER avec `detailFiliere` contenant "OMBRIERE" (insensible à la casse) → `OUI_SOLAIRE_PV_OMBRIERE`
+4. Sinon → `OUI`
 
 ### Champs enrichis
 
@@ -684,18 +686,20 @@ Détecter si le site se trouve dans une Zone d'Accélération des Énergies Reno
 {
   zaer?: {
     enZoneZaer: boolean        // true si au moins une zone ZAER intersecte le site
+    enZoneExclusion: boolean   // true si une zone porte une interdiction APER
     nombreZones: number        // Nombre de zones ZAER intersectées
     filieres: string[]         // Filières ENR uniques (ex: ["SOLAIRE_PV", "EOLIEN"])
     zones: Array<{
       nom: string | null       // Nom de la zone
       filiere: string          // Filière ENR
       detailFiliere: string | null  // Détail (ex: "SOLAIRE_PV_OMBRIERE")
+      zonage: string | null    // Zonage APER (ex: "Interdiction ZAER (loi APER) toutes ENR sauf toiture")
     }>
   }
 }
 ```
 
-Le critère `zoneAccelerationEnr` (`"non"` | `"oui"` | `"oui-solaire-pv-ombriere"`) est calculé à partir de ces données lors de l'évaluation de mutabilité.
+Le critère `zoneAccelerationEnr` (`"non"` | `"oui"` | `"oui-solaire-pv-ombriere"` | `"exclusion"`) est calculé à partir de ces données lors de l'évaluation de mutabilité.
 
 ---
 

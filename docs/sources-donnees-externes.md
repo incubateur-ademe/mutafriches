@@ -268,10 +268,11 @@ La présence d'une ICPE ou d'un secteur SIS à proximité produit le booléen «
 **Champs récupérés**
 
 - Appartenance à une zone d'accélération des EnR (nom, filière, détail de filière)
+- Appartenance à une zone d'exclusion au sens de la loi APER (champ « zonage »)
 
 **Traitement dans l'algorithme**
 
-L'appartenance à une zone d'accélération des EnR est ramenée à un niveau grossier (non, oui, ombrière) qui valorise l'usage photovoltaïque (cf. ADR-0013).
+L'appartenance à une zone d'accélération des EnR est ramenée à un niveau grossier (non, oui, ombrière) qui valorise l'usage photovoltaïque (cf. ADR-0013). Une zone d'exclusion (loi APER : toutes EnR interdites hors photovoltaïque en toiture) prime sur une zone d'accélération et rend l'usage photovoltaïque très défavorable, sans effet sur les six autres usages.
 
 **Critères d'évaluation alimentés**
 

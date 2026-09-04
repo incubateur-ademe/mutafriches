@@ -131,7 +131,7 @@ TRES_POSITIF = 2
 | `zonageReglementaire` | 2 | Enum (11 sous-zones) |
 | `zonageEnvironnemental` | 1 | Enum (5 valeurs) |
 | `zonagePatrimonial` | 1 | Enum (3 valeurs) |
-| `zoneAccelerationEnr` | 1 | Enum (3 valeurs) |
+| `zoneAccelerationEnr` | 1 | Enum (4 valeurs, dont zone d'exclusion APER) |
 | `zonageAbcLogement` | 0.5 | Enum (A / Abis / B1 / B2 / C) |
 | `distanceIte` | 0.5 | Enum (<1km bon état / <1km mauvais état / >1km) |
 

@@ -259,7 +259,7 @@ La fiabilité **ne modifie pas** le classement. C'est un indicateur séparé qui
 | 13 | **Zonage environnemental** | 1 | Hors zone / Réserve naturelle / Natura 2000 / ZNIEFF / Proximité zone | `zonageEnvironnemental` |
 | 14 | **Zonage réglementaire (PLU)** | 2 | Zone U (habitat/équipement/activité) / AU / Activités / CC constructible / CC non-constructible / Agricole / Naturelle / Ne sait pas | `zonageReglementaire` |
 | 15 | **Zonage patrimonial** | 1 | Non concerné / Site inscrit-classé / Périmètre ABF | `zonagePatrimonial` |
-| 16 | **Zone ZAER (ENR)** | 1 | Non / Oui / Oui avec PV ombrière | `zoneAccelerationEnr` |
+| 16 | **Zone ZAER (ENR)** | 1 | Non / Oui / Oui avec PV ombrière / Zone d'exclusion (loi APER) | `zoneAccelerationEnr` |
 | 17 | **Zonage ABC (logement)** | 0.5 | A / Abis / B1 / B2 / C | `zonageAbcLogement` |
 | 18 | **Distance ITE fret** | 0.5 | < 1 km (bon état) / < 1 km (mauvais état) / > 1 km | `distanceIte` |
 
