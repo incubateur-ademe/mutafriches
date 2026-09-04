@@ -222,6 +222,7 @@ export const ZONE_ACCELERATION_ENR_LABELS: Record<ZoneAccelerationEnr, string> =
   [ZoneAccelerationEnr.NON]: "Non",
   [ZoneAccelerationEnr.OUI]: "Oui",
   [ZoneAccelerationEnr.OUI_SOLAIRE_PV_OMBRIERE]: "Oui - PV ombrière",
+  [ZoneAccelerationEnr.EXCLUSION]: "Zone d'exclusion (loi APER)",
 };
 
 // ------------------------------------------------------------------

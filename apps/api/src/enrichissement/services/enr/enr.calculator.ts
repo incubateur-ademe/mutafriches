@@ -20,15 +20,22 @@ export function estZonageExclusion(zonage: string | null): boolean {
  * Dérive la valeur du critère `zoneAccelerationEnr` à partir des données ZAER brutes.
  *
  * Règles de classification :
- * 1. Pas de données ZAER ou enZoneZaer === false → NON
- * 2. Si un detailFiliere contient "OMBRIERE" → OUI_SOLAIRE_PV_OMBRIERE
- * 3. Sinon → OUI
+ * 1. Zone d'interdiction APER → EXCLUSION (prioritaire : l'interdiction prime sur
+ *    une éventuelle zone d'accélération recouvrant le site)
+ * 2. Pas de données ZAER ou enZoneZaer === false → NON
+ * 3. Si un detailFiliere contient "OMBRIERE" → OUI_SOLAIRE_PV_OMBRIERE
+ * 4. Sinon → OUI
  */
 @Injectable()
 export class EnrCalculator {
   private readonly logger = new Logger(EnrCalculator.name);
 
   evaluer(zaer: ZaerEnrichissement | undefined): ZoneAccelerationEnr {
+    if (zaer?.enZoneExclusion) {
+      this.logger.debug("Zone accélération ENR: EXCLUSION (zone d'interdiction APER)");
+      return ZoneAccelerationEnr.EXCLUSION;
+    }
+
     if (!zaer || !zaer.enZoneZaer) {
       this.logger.debug("Zone accélération ENR: NON (pas en zone ZAER)");
       return ZoneAccelerationEnr.NON;
