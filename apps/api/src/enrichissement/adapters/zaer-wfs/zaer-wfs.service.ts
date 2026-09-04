@@ -3,7 +3,16 @@ import { HttpService } from "@nestjs/axios";
 import { firstValueFrom } from "rxjs";
 import { GeometrieParcelle, SourceEnrichissement } from "@mutafriches/shared-types";
 import { ApiResponse } from "../shared/api-response.types";
-import { ZaerWfsResult, ZaerWfsFeatureCollection, ZaerWfsProperties } from "./zaer-wfs.types";
+import {
+  ZaerWfsResult,
+  ZaerWfsFeature,
+  ZaerWfsFeatureCollection,
+  ZaerWfsProperties,
+} from "./zaer-wfs.types";
+
+// detail_filiere a été scindé en 3 niveaux hiérarchiques côté WFS
+const PROPRIETES_HISTORIQUES = "nom,filiere,detail_filiere1,detail_filiere2,detail_filiere3";
+const PROPRIETES = `${PROPRIETES_HISTORIQUES},zonage`;
 
 /**
  * Adapter WFS pour les Zones d'Accélération des Énergies Renouvelables (ZAER)
@@ -54,68 +63,104 @@ export class ZaerWfsService {
     const startTime = Date.now();
 
     try {
-      const params = {
-        service: "WFS",
-        version: "2.0.0",
-        request: "GetFeature",
-        typename: "zaer:zaer",
-        outputFormat: "application/json",
-        // detail_filiere a été scindé en 3 niveaux hiérarchiques côté WFS
-        propertyName: "nom,filiere,detail_filiere1,detail_filiere2,detail_filiere3",
-        CQL_FILTER: cqlFilter,
-        count: "100",
-      };
-
-      this.logger.debug(`Requête WFS ZAER : CQL_FILTER=${cqlFilter}`);
-
-      const response = await firstValueFrom(
-        this.httpService.get<ZaerWfsFeatureCollection>(this.baseUrl, {
-          params,
-          timeout: 15_000,
-        }),
-      );
-
-      const features = response.data.features ?? [];
-      const responseTimeMs = Date.now() - startTime;
-
-      this.logger.debug(`WFS ZAER : ${features.length} zone(s) en ${responseTimeMs}ms`);
-
-      // Dédupliquer par (filière, détail, nom)
-      const seen = new Set<string>();
-      const results: ZaerWfsResult[] = [];
-
-      for (const feature of features) {
-        const props = feature.properties;
-        const detailFiliere = this.coalesceDetailFiliere(props);
-        const key = `${props.filiere}|${detailFiliere ?? ""}|${props.nom ?? ""}`;
-
-        if (!seen.has(key)) {
-          seen.add(key);
-          results.push({
-            nom: props.nom ?? null,
-            filiere: props.filiere,
-            detailFiliere,
-          });
+      const features = await this.getFeatures(cqlFilter, PROPRIETES);
+      return this.normaliser(features, startTime);
+    } catch (error) {
+      // Le WFS répond 400 sur une propriété inconnue : plutôt que de perdre tout
+      // l'enrichissement ZAER, on rejoue sans `zonage` (zones d'exclusion non détectées).
+      if (this.estProprieteRejetee(error)) {
+        this.logger.warn(
+          "Propriété `zonage` rejetée par le WFS ZAER : repli sur les propriétés historiques",
+        );
+        try {
+          const features = await this.getFeatures(cqlFilter, PROPRIETES_HISTORIQUES);
+          return this.normaliser(features, startTime);
+        } catch (erreurRepli) {
+          return this.enErreur(erreurRepli, startTime);
         }
       }
 
-      return {
-        success: true,
-        data: results,
-        source: SourceEnrichissement.ZAER,
-        responseTimeMs,
-      };
-    } catch (error) {
-      const responseTimeMs = Date.now() - startTime;
-      const message = error instanceof Error ? error.message : String(error);
-      this.logger.error(`Erreur WFS ZAER (${responseTimeMs}ms) : ${message}`);
-      return {
-        success: false,
-        error: message,
-        source: SourceEnrichissement.ZAER,
-        responseTimeMs,
-      };
+      return this.enErreur(error, startTime);
     }
+  }
+
+  /**
+   * Interroge le WFS et retourne les features brutes
+   */
+  private async getFeatures(cqlFilter: string, propertyName: string): Promise<ZaerWfsFeature[]> {
+    const params = {
+      service: "WFS",
+      version: "2.0.0",
+      request: "GetFeature",
+      typename: "zaer:zaer",
+      outputFormat: "application/json",
+      propertyName,
+      CQL_FILTER: cqlFilter,
+      count: "100",
+    };
+
+    this.logger.debug(`Requête WFS ZAER : CQL_FILTER=${cqlFilter}`);
+
+    const response = await firstValueFrom(
+      this.httpService.get<ZaerWfsFeatureCollection>(this.baseUrl, {
+        params,
+        timeout: 15_000,
+      }),
+    );
+
+    return response.data.features ?? [];
+  }
+
+  /**
+   * Déduplique les features par (filière, détail, zonage, nom)
+   */
+  private normaliser(features: ZaerWfsFeature[], startTime: number): ApiResponse<ZaerWfsResult[]> {
+    const responseTimeMs = Date.now() - startTime;
+    this.logger.debug(`WFS ZAER : ${features.length} zone(s) en ${responseTimeMs}ms`);
+
+    const seen = new Set<string>();
+    const results: ZaerWfsResult[] = [];
+
+    for (const feature of features) {
+      const props = feature.properties;
+      const detailFiliere = this.coalesceDetailFiliere(props);
+      const zonage = props.zonage?.trim() || null;
+      const key = `${props.filiere}|${detailFiliere ?? ""}|${zonage ?? ""}|${props.nom ?? ""}`;
+
+      if (!seen.has(key)) {
+        seen.add(key);
+        results.push({
+          nom: props.nom ?? null,
+          filiere: props.filiere,
+          detailFiliere,
+          zonage,
+        });
+      }
+    }
+
+    return {
+      success: true,
+      data: results,
+      source: SourceEnrichissement.ZAER,
+      responseTimeMs,
+    };
+  }
+
+  private enErreur(error: unknown, startTime: number): ApiResponse<ZaerWfsResult[]> {
+    const responseTimeMs = Date.now() - startTime;
+    const message = error instanceof Error ? error.message : String(error);
+    this.logger.error(`Erreur WFS ZAER (${responseTimeMs}ms) : ${message}`);
+    return {
+      success: false,
+      error: message,
+      source: SourceEnrichissement.ZAER,
+      responseTimeMs,
+    };
+  }
+
+  private estProprieteRejetee(error: unknown): boolean {
+    const status = (error as { response?: { status?: number } })?.response?.status;
+    return status === 400;
   }
 
   /**

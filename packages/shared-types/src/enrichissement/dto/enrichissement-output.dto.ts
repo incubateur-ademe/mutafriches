@@ -109,6 +109,8 @@ export interface EnrichissementOutputDto {
 export interface ZaerEnrichissement {
   /** Le site intersecte au moins une zone ZAER */
   enZoneZaer: boolean;
+  /** Le site intersecte une zone d'interdiction APER (toutes EnR sauf toiture) */
+  enZoneExclusion: boolean;
   /** Nombre de zones ZAER intersectees */
   nombreZones: number;
   /** Filieres ENR uniques presentes (ex: ["SOLAIRE_PV", "EOLIEN"]) */
@@ -124,4 +126,6 @@ export interface ZaerDetail {
   nom: string | null;
   filiere: string;
   detailFiliere: string | null;
+  /** Type de zonage APER brut renvoyé par le WFS (accélération ou interdiction) */
+  zonage: string | null;
 }

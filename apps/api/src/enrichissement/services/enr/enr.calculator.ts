@@ -1,6 +1,19 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { ZaerEnrichissement, ZoneAccelerationEnr } from "@mutafriches/shared-types";
 
+// Mot discriminant du libellé APER "Interdiction ZAER (loi APER) toutes ENR sauf toiture"
+const MOT_CLE_EXCLUSION = "INTERDICTION";
+
+/**
+ * Détermine si un zonage WFS correspond à une zone d'interdiction (loi APER).
+ * Test sur le mot-clé et non sur le libellé complet, qui peut varier d'un millésime à l'autre.
+ */
+export function estZonageExclusion(zonage: string | null): boolean {
+  if (!zonage) return false;
+
+  return zonage.toUpperCase().includes(MOT_CLE_EXCLUSION);
+}
+
 /**
  * Calculateur du critère algorithmique ENR
  *

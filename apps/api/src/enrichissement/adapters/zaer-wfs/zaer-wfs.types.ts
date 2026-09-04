@@ -12,6 +12,8 @@ export interface ZaerWfsResult {
   nom: string | null;
   filiere: string;
   detailFiliere: string | null;
+  /** Type de zonage APER brut (ex. "Interdiction ZAER (loi APER) toutes ENR sauf toiture") */
+  zonage: string | null;
 }
 
 /**
@@ -33,6 +35,8 @@ export interface ZaerWfsFeature {
 export interface ZaerWfsProperties {
   nom: string | null;
   filiere: string;
+  // Distingue une zone d'accélération d'une zone d'interdiction au sens de la loi APER
+  zonage: string | null;
   // Le WFS a scindé detail_filiere en 3 niveaux hiérarchiques (du plus général au plus précis)
   detail_filiere1: string | null;
   detail_filiere2: string | null;

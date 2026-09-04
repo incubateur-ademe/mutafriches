@@ -5,6 +5,7 @@ import { ApiResponse } from "../../adapters/shared/api-response.types";
 import { ZaerWfsService } from "../../adapters/zaer-wfs/zaer-wfs.service";
 import { ZaerWfsResult } from "../../adapters/zaer-wfs/zaer-wfs.types";
 import { EnrichmentResult } from "../shared/enrichissement.types";
+import { estZonageExclusion } from "./enr.calculator";
 
 /**
  * Service d'enrichissement ENR (Énergies Renouvelables)
@@ -72,21 +73,24 @@ export class EnrEnrichissementService {
 
       const zones = response.data;
       const enZoneZaer = zones.length > 0;
+      const enZoneExclusion = zones.some((z) => estZonageExclusion(z.zonage));
       const filieres = [...new Set(zones.map((z) => z.filiere))];
 
       const zaer: ZaerEnrichissement = {
         enZoneZaer,
+        enZoneExclusion,
         nombreZones: zones.length,
         filieres,
         zones: zones.map((z) => ({
           nom: z.nom,
           filiere: z.filiere,
           detailFiliere: z.detailFiliere,
+          zonage: z.zonage,
         })),
       };
 
       this.logger.debug(
-        `ENR: enZoneZaer=${enZoneZaer}, ${zones.length} zone(s), filières=[${filieres.join(", ")}]`,
+        `ENR: enZoneZaer=${enZoneZaer}, exclusion=${enZoneExclusion}, ${zones.length} zone(s), filières=[${filieres.join(", ")}]`,
       );
 
       return {
