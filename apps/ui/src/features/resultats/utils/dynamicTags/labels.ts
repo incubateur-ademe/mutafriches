@@ -24,6 +24,7 @@ import {
   SEUIL_EMPRISE_BATI_FAIBLE,
   SEUIL_DISTANCE_TC_PROCHE,
   SEUIL_DISTANCE_RACCORDEMENT_ELEC,
+  SEUIL_DISTANCE_RESEAU_CHALEUR,
 } from "./constants";
 
 /**
@@ -66,6 +67,10 @@ export function getCritereTagLabel(
       return Number(valeur) <= SEUIL_DISTANCE_RACCORDEMENT_ELEC
         ? "raccordement élec."
         : "élec. éloigné";
+
+    case "distanceReseauChaleur":
+      // Distance en mètres des deux côtés (pas de conversion en km, cf. v1.13)
+      return Number(valeur) < SEUIL_DISTANCE_RESEAU_CHALEUR ? "réseau de chaleur" : null;
 
     case "tauxLogementsVacants":
       return Number(valeur) >= 15 ? "logements vacants" : "peu de vacance";

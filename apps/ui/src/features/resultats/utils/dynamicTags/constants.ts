@@ -14,6 +14,13 @@ export const SEUIL_DISTANCE_TC_PROCHE = 500;
 /** Distance maximale pour considérer le raccordement électrique accessible en mètres */
 export const SEUIL_DISTANCE_RACCORDEMENT_ELEC = 500;
 
+/**
+ * Distance maximale pour considérer un réseau de chaleur "à proximité" en mètres.
+ * Seuil strict côté algorithme (`< 500`), à ne pas relâcher en `<=` ici sous peine de
+ * faire diverger le tag et le score à 500 m pile.
+ */
+export const SEUIL_DISTANCE_RESEAU_CHALEUR = 500;
+
 // ============================================================================
 // CONSTANTES D'AFFICHAGE DES TAGS
 // ============================================================================
