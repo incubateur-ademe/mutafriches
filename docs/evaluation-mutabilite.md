@@ -2,7 +2,7 @@
 
 > **Version doc** : 2.1
 > **Date** : Mai 2026
-> **Algorithme** : v1.11
+> **Algorithme** : v1.12
 > **Objectif** : Évaluer la mutabilité des friches urbaines pour 7 usages potentiels
 
 ---
@@ -71,7 +71,7 @@ Il analyse **28 critères** pour déterminer le meilleur usage futur parmi **7 p
            │  CLASSEMENT │           │  FIABILITÉ  │
            │  1er → 7ème │           │    0-10     │
            └─────────────┘           └─────────────┘
-             Tri par %                 Poids/29.5
+             Tri par %                 Poids/30
 ```
 
 ### Étape 1 : Collecte des données
@@ -265,11 +265,12 @@ La fiabilité **ne modifie pas** le classement. C'est un indicateur séparé qui
 
 > **Unité des distances** : `distanceAutoroute` et `distanceRaccordementElectrique` sont fournies en **mètres** par l'enrichissement (et stockées ainsi dans le DTO) puis converties en **km** à la frontière de l'algorithme (`metresVersKm` dans `extraireCriteres`, v1.10 / ADR-0027). Les seuils ci-dessus sont en km. `distanceTransportCommun` reste en mètres des deux côtés.
 
-### Critères complémentaires saisis (9)
+### Critères complémentaires saisis (10)
 
 | # | Critère | Poids | Valeurs | Champ DTO |
 |---|---------|-------|---------|-----------|
 | 19 | **Type de propriétaire** | 1 | Public / Privé / Copropriété-indivision / Mixte / Ne sait pas | `typeProprietaire` |
+| 20 | **Raccordement aux réseaux d'eau** | 1 | Oui / Non — dérivé automatiquement de `surfaceBati` (ADR-0019), plus saisi | `raccordementEau` |
 | 21 | **État du bâti et infrastructure** | 2 | Bâti intact / Bâti faiblement dégradé (scores identiques à intact, cf. ADR-0025) / Bâti moyennement dégradé / Bâti très dégradé / Bâti dégradé de manière hétérogène / Pas de bâti / Ne sait pas | `etatBatiInfrastructure` |
 | 22 | **Présence de pollution** | 2 | Non / Déjà gérée / Oui-composés volatils / Oui-autres composés / Oui-amiante / Ne sait pas | `presencePollution` |
 | 23 | **Valeur architecturale et historique** | 1 | Sans intérêt / Ordinaire / Intérêt remarquable / Pas de bâti / Ne sait pas | `valeurArchitecturaleHistorique` |
@@ -281,6 +282,6 @@ La fiabilité **ne modifie pas** le classement. C'est un indicateur séparé qui
 
 ---
 
-> **Dernière mise à jour** : Juillet 2026 (algorithme v1.11)
+> **Dernière mise à jour** : Septembre 2026 (algorithme v1.12)
 > **Contact** : <samir.benfares@beta.gouv.fr>
 > **Repository** : [https://github.com/incubateur-ademe/mutafriches](https://github.com/incubateur-ademe/mutafriches)

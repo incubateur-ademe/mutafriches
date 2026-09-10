@@ -35,7 +35,7 @@ mutafriches/
 ├── apps/
 │   ├── api/                    # API NestJS
 │   │   ├── src/
-│   │   │   ├── enrichissement/ # Enrichissement parcelles (24 APIs)
+│   │   │   ├── enrichissement/ # Enrichissement parcelles (APIs externes + bases locales)
 │   │   │   ├── evaluation/     # Calcul mutabilité
 │   │   │   ├── evenements/     # Tracking événements
 │   │   │   ├── friches/        # DEPRECATED (routes historiques)
@@ -159,7 +159,7 @@ pnpm validate               # Tout vérifier (format + lint + typecheck + test)
 |-------|---------|-------------|
 | `/api` | GET | Documentation Swagger |
 | `/health` | GET | Healthcheck de l'API |
-| `/enrichissement` | POST | Enrichir une parcelle (24 APIs externes) |
+| `/enrichissement` | POST | Enrichir une parcelle (APIs externes + bases locales) |
 | `/evaluation/calculer` | POST | Calculer la mutabilité |
 | `/evaluation/:id` | GET | Récupérer une évaluation |
 | `/evaluation/metadata` | GET | Métadonnées (enums) |
@@ -266,7 +266,7 @@ Système de tracking léger pour mesurer l'engagement utilisateur :
 Documentation complète dans le dossier [`docs/`](./docs/) :
 
 - **[Index Général](./docs/README.md)** - Vue d'ensemble et navigation
-- **[Module Enrichissement](./docs/enrichissement.md)** - 9 domaines, 24 APIs, règles de gestion
+- **[Module Enrichissement](./docs/enrichissement.md)** - 10 domaines, APIs externes et bases locales, règles de gestion
 - **[Algorithme d'Évaluation](./docs/evaluation-mutabilite.md)** - Matrice 24×7, calcul mutabilité
 - **[Guide d'Intégration](./docs/integration/README.md)** - Iframe + PostMessage
 

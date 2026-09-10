@@ -23,7 +23,7 @@ export function CommentCaMarcheSection() {
               <h4>Une qualification semi-automatisée de votre site</h4>
               <p className="fr-mb-2w">
                 Une fois la ou les parcelles de votre site sélectionnées, Mutafriches source plus de{" "}
-                <strong>16 critères déterminants</strong> issus des bases de données ouvertes
+                <strong>18 critères déterminants</strong> issus des bases de données ouvertes
                 nationales.
               </p>
               <p>

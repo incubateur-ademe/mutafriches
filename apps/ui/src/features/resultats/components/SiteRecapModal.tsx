@@ -15,7 +15,7 @@ interface SiteRecapModalProps {
 }
 
 /**
- * Modale de récapitulatif détaillé du site : table des 27 critères
+ * Modale de récapitulatif détaillé du site : table des critères
  * (valeur, mode de saisie, source) construite par le builder partagé.
  */
 export const SiteRecapModal: React.FC<SiteRecapModalProps> = ({

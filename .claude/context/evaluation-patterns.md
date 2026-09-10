@@ -15,13 +15,13 @@ apps/api/src/evaluation/
 │       ├── metadata.dto.ts                  # Enums et versions (GET /evaluation/metadata)
 │       └── mutabilite.dto.ts                # Résultats de calcul (POST /evaluation/calculer)
 ├── entities/
-│   ├── site.entity.ts                       # Objet métier central (27 critères)
+│   ├── site.entity.ts                       # Objet métier central (28 critères)
 │   └── evaluation.entity.ts                 # Évaluation persistée (snapshots + résultats)
 ├── repositories/
 │   └── evaluation.repository.ts             # Persistance + cache (Drizzle ORM)
 ├── services/
 │   ├── algorithme/
-│   │   ├── algorithme.config.ts             # Matrice 27×7 (critères × usages)
+│   │   ├── algorithme.config.ts             # Matrice 28×7 (critères × usages)
 │   │   ├── algorithme.constants.ts          # Seuils, poids, niveaux
 │   │   ├── algorithme.types.ts              # Types internes algorithme
 │   │   ├── fiabilite.calculator.ts          # Calcul fiabilité (0-10)
@@ -137,11 +137,12 @@ TRES_POSITIF = 2
 
 > **Unité des distances** (v1.10) : `distanceAutoroute` et `distanceRaccordementElectrique` sont enrichis en **mètres** (IGN WFS, Enedis) et stockés ainsi dans le DTO/Site ; `extraireCriteres` les convertit en **km** via `metresVersKm` avant scoring (la matrice reste en km, source de vérité Excel). `distanceTransportCommun` est en mètres des deux côtés (pas de conversion). Cf. ADR-0027.
 
-**Complémentaires manuels** (poids total : 10.5) :
+**Complémentaires manuels** (poids total : 11.5) :
 
 | Critère | Poids | Type |
 |---------|-------|------|
 | `typeProprietaire` | 1 | Enum (5 valeurs dont NE_SAIT_PAS) |
+| `raccordementEau` | 1 | Enum (Oui / Non) — dérivé de `surfaceBati`, plus saisi (ADR-0019) |
 | `etatBatiInfrastructure` | 2 | Enum (7 valeurs) |
 | `presencePollution` | 2 | Enum (6 valeurs) |
 | `valeurArchitecturaleHistorique` | 1 | Enum (6 valeurs) |
@@ -333,7 +334,7 @@ Modifier uniquement les seuils dans la fonction. Ne pas changer la structure.
 
 ### Modifier les poids
 
-Les poids sont dans `POIDS_CRITERES` (`algorithme.config.ts`). Le poids total (29.5) est recalculé automatiquement par le `FiabiliteCalculator`.
+Les poids sont dans `POIDS_CRITERES` (`algorithme.config.ts`). Le poids total (30) est recalculé automatiquement par le `FiabiliteCalculator`.
 
 ---
 
@@ -341,7 +342,7 @@ Les poids sont dans `POIDS_CRITERES` (`algorithme.config.ts`). Le poids total (2
 
 ### Algorithme
 
-- [ ] Matrice 27×7 cohérente (chaque critère a un score pour chaque usage)
+- [ ] Matrice 28×7 cohérente (chaque critère a un score pour chaque usage)
 - [ ] Poids déclarés dans `POIDS_CRITERES` pour chaque critère
 - [ ] Score NEUTRE (0.5) géré dans les deux sens (avantages + contraintes)
 - [ ] Critères ignorés si `undefined`, `null`, ou `"ne-sait-pas"`

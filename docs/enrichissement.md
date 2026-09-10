@@ -2,7 +2,7 @@
 
 ## Vue d'ensemble
 
-Le module d'enrichissement est le cœur de Mutafriches. Il enrichit automatiquement les données d'une parcelle cadastrale en interrogeant une dizaine d'**APIs publiques externes** (dont GéoRisques, qui expose 13 endpoints) et **5 bases locales** (3 PostGIS spatiales + les référentiels communaux LOVAC et zonage ABC).
+Le module d'enrichissement est le cœur de Mutafriches. Il enrichit automatiquement les données d'une parcelle cadastrale en interrogeant une dizaine d'**APIs publiques externes** (dont GéoRisques, qui expose 13 endpoints) et **7 bases locales** (4 PostGIS spatiales + les référentiels communaux LOVAC, zonage ABC et ICU).
 
 **Endpoint** : `POST /enrichissement`
 **Entrée** : Identifiant(s) cadastral(s) — mono-parcelle ou multi-parcelle (1 à 20 parcelles)
@@ -25,7 +25,7 @@ Le module d'enrichissement est le cœur de Mutafriches. Il enrichit automatiquem
 3. Enrichissement SÉQUENTIEL des domaines (dans l'ordre du code) :
    ├─ ÉNERGIE (Enedis)
    ├─ TRANSPORT (Service Public + IGN + data.gouv)
-   │    └─ ITE FRET (Cerema) — DÉSACTIVÉ (en attente validation)
+   │    └─ ITE FRET (référentiel local raw_ite_fret, Cerema)
    ├─ URBANISME (LOVAC + Zonage ABC logement + BPE)
    ├─ RISQUES NATURELS (RGA + Cavités + Inondation)
    ├─ RISQUES TECHNOLOGIQUES (SIS + ICPE)
@@ -221,12 +221,13 @@ RAYON_RECHERCHE_TRANSPORT_M = 2000  // 2 km
 - `500m - 1km` : correctement desservi
 - `> 1km` : mal desservi
 
-#### 3.4 Distance ITE fret — DÉSACTIVÉ
+#### 3.4 Distance ITE fret
 
-Le service `IteFretEnrichissementService` (source `ITE_FRET`, champ `distanceIte`) est
-implémenté mais **son appel est désactivé** dans l'orchestrateur (en attente de validation
-Cerema). Tant qu'il est désactivé, `distanceIte` reste `undefined` et le critère
-correspondant est ignoré par l'algorithme de mutabilité.
+Le service `IteFretEnrichissementService` (source `ITE_FRET`, champ `distanceIte`) interroge
+le référentiel local `raw_ite_fret` (base Cerema ITE 3000) et croise la distance à
+l'installation terminale embranchée avec son état. Réactivé dans l'algorithme en v1.11.
+
+- `< 1 km` en bon état / `< 1 km` en mauvais état / `> 1 km`
 
 ### Champs enrichis
 
@@ -235,7 +236,7 @@ correspondant est ignoré par l'algorithme de mutabilité.
   siteEnCentreVille: boolean              // true si distance mairie <= 1000m
   distanceAutoroute: number               // Distance en mètres
   distanceTransportCommun: number | null  // Distance en mètres ou null si aucun
-  // distanceIte?: "moins-1km-bon-etat" | "moins-1km-mauvais-etat" | "plus-1km"  // DÉSACTIVÉ
+  distanceIte?: "moins-1km-bon-etat" | "moins-1km-mauvais-etat" | "plus-1km"
 }
 ```
 
@@ -777,17 +778,19 @@ expose 13 endpoints, appelés séparément).
 | Zonages | API Carto Nature, API Carto GPU |
 | ENR | ZAER WFS Géoplateforme |
 | Risques | GéoRisques (1 API, 13 endpoints) |
-| Transport (désactivé) | ITE Fret / Cerema — non appelé actuellement |
 
-### Bases Locales (4)
+### Bases Locales (7)
 
 | Domaine | Table | Données | Type |
 |---------|-------|---------|------|
 | Transport | raw_transport_stops | Arrêts de transport (data.gouv) | PostGIS (spatial) |
+| Transport | raw_ite_fret | Installations terminales embranchées fret (Cerema) | PostGIS (spatial) |
 | Urbanisme | raw_bpe | Base Permanente Équipements INSEE | PostGIS (spatial) |
 | Pollution | raw_ademe_sites_pollues | Sites pollués ADEME (BASOL) | PostGIS (spatial) |
 | Urbanisme | raw_lovac | Logements vacants LOVAC par commune | Table de correspondance (code INSEE) |
-| **TOTAL** | | | **4** |
+| Urbanisme | raw_zonage_abc | Zonage ABC du logement par commune | Table de correspondance (code INSEE) |
+| Climat | raw_icu | Îlots de chaleur urbain (CSTB) | PostGIS (spatial) |
+| **TOTAL** | | | **7** |
 
 ---
 
@@ -839,7 +842,7 @@ expose 13 endpoints, appelés séparément).
   distanceTransportCommun: number | null
 
   // === TRANSPORT (suite) ===
-  distanceIte?: DistanceIte             // DÉSACTIVÉ (en attente Cerema) — reste undefined
+  distanceIte?: DistanceIte             // "moins-1km-bon-etat" | "moins-1km-mauvais-etat" | "plus-1km"
 
   // === URBANISME ===
   tauxLogementsVacants: number
