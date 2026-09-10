@@ -57,6 +57,23 @@ describe("transformEnrichmentToUiData - zonage ABC logement", () => {
   });
 });
 
+describe("transformEnrichmentToUiData - distance au réseau de chaleur", () => {
+  it("affiche la distance quand elle est renseignée", () => {
+    const ui = transformEnrichmentToUiData(makeEnrichissement({ distanceReseauChaleur: 320 }));
+    expect(ui.distanceReseauChaleur).toBe("320 m");
+  });
+
+  it("affiche l'absence de réseau quand la recherche n'a rien donné (null)", () => {
+    const ui = transformEnrichmentToUiData(makeEnrichissement({ distanceReseauChaleur: null }));
+    expect(ui.distanceReseauChaleur).toBe("Aucun réseau de chaleur à proximité");
+  });
+
+  it("laisse le champ vide quand la donnée est indisponible (undefined)", () => {
+    const ui = transformEnrichmentToUiData(makeEnrichissement());
+    expect(ui.distanceReseauChaleur).toBe("");
+  });
+});
+
 describe("buildZaerBadges", () => {
   it("retourne ['Non'] si zaer absent", () => {
     expect(buildZaerBadges(undefined)).toEqual(["Non"]);

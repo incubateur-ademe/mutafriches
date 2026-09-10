@@ -75,6 +75,13 @@ export const EnrichissementSection: React.FC<EnrichissementSectionProps> = ({
         <dt>Distance raccordement &eacute;lectrique</dt>
         <dd>{formatDistance(enrichmentData.distanceRaccordementElectrique)}</dd>
 
+        <dt>Distance r&eacute;seau de chaleur</dt>
+        <dd>
+          {enrichmentData.distanceReseauChaleur === null
+            ? "Aucun réseau à proximité"
+            : formatDistance(enrichmentData.distanceReseauChaleur)}
+        </dd>
+
         <dt>Site connect&eacute; aux r&eacute;seaux d&apos;eau</dt>
         <dd>
           {(() => {

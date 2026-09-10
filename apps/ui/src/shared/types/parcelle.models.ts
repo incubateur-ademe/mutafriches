@@ -23,6 +23,8 @@ export interface ParcelleUiModel {
   distanceIte: string;
   proximiteCommerces: string;
   distanceRaccordement: string;
+  /** Distance au réseau de chaleur urbain, ou message d'absence de réseau */
+  distanceReseauChaleur: string;
   tauxLV: string;
 
   // Risques et zonage
