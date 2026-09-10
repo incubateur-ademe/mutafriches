@@ -673,6 +673,10 @@ Deux couches distinctes du même WFS Géoplateforme, interrogées en parallèle 
 - La couche `zaer:zaer` ne porte **pas** de champ `zonage` : les deux régimes vivent dans des couches séparées
 - Un échec de l'une des deux couches fait échouer tout l'enrichissement ENR (source échouée, champ manquant `zaer`) : sans la couche d'interdiction, un site interdit d'EnR serait annoncé « non exclu » et regagnerait le bonus photovoltaïque
 
+**Canal d'acquisition** : la donnée OFB existe aussi en téléchargement (GeoPackage IGN `ENR_1-0_OFB-INTERDICTION-ZAER-SAUF-TOITURE_GPKG_WGS84G_FRA_<millésime>`, ~200 Mo). Contenu vérifié identique au WFS — nous interrogeons le **WFS à la volée**, le fichier n'est ni commité ni importé en base. Motifs et conditions de bascule vers un import local : [ADR-0035](adr/0035-zone-exclusion-enr-quatrieme-valeur-zaer.md).
+
+**Couverture** : la couche agrège des zonages de protection issus de l'INPN (réalisation 05/2023), pas les délibérations communales, et plusieurs zonages prévus par la loi n'ont pas pu y être intégrés (sites classés, bande littorale, forêts de protection…). `enZoneExclusion: false` signifie « aucune interdiction connue de cette couche », pas « implantation autorisée ».
+
 **Régimes d'interdiction** : la couche OFB en mélange deux, discriminés par le champ `zonage` :
 - « Interdiction ZAER (loi APER) toutes ENR sauf toiture » → le photovoltaïque au sol est interdit, seul régime retenu
 - « Interdiction ZAER (loi APER) éolien uniquement » → aucun usage de la matrice 28×7 ne porte l'éolien, régime ignoré
