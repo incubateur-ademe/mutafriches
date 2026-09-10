@@ -13,9 +13,3 @@ export const FCU_API_BASE_URL = "https://france-chaleur-urbaine.beta.gouv.fr/api
  * pas d'ajouter les 10 s du timeout par défaut au parcours utilisateur.
  */
 export const FCU_TIMEOUT_MS = 3000;
-
-/**
- * Seuil métier de proximité d'un réseau de chaleur (en mètres).
- * Sous ce seuil, le raccordement est considéré comme un atout pour les usages bâtis.
- */
-export const SEUIL_PROXIMITE_RESEAU_CHALEUR_M = 500;

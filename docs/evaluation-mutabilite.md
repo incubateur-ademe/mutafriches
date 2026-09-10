@@ -2,7 +2,7 @@
 
 > **Version doc** : 2.1
 > **Date** : Mai 2026
-> **Algorithme** : v1.12
+> **Algorithme** : v1.13
 > **Objectif** : Évaluer la mutabilité des friches urbaines pour 7 usages potentiels
 
 ---
@@ -13,7 +13,7 @@
 
 Mutafriches est un algorithme d'aide à la décision qui évalue le potentiel de reconversion d'une friche urbaine.
 
-Il analyse **28 critères** pour déterminer le meilleur usage futur parmi **7 possibilités**, en produisant :
+Il analyse **29 critères** pour déterminer le meilleur usage futur parmi **7 possibilités**, en produisant :
 
 - Un **indice de mutabilité** (0-100%) pour chaque usage
 - Un **classement** des usages par ordre de pertinence
@@ -48,7 +48,7 @@ Il analyse **28 critères** pour déterminer le meilleur usage futur parmi **7 p
  │     DES     │  ────→  │   MATRICE   │  ────→   │     DES     │
  │  27 CRITÈRES│         │  DE SCORING │          │   POINTS    │
  └─────────────┘         └─────────────┘          └─────────────┘
-  État friche             28 critères ×            Score × Poids
+  État friche             29 critères ×            Score × Poids
   Situation               7 usages =               Pour chaque
   Réglementation          189 valeurs              usage
   Patrimoine              
@@ -71,29 +71,29 @@ Il analyse **28 critères** pour déterminer le meilleur usage futur parmi **7 p
            │  CLASSEMENT │           │  FIABILITÉ  │
            │  1er → 7ème │           │    0-10     │
            └─────────────┘           └─────────────┘
-             Tri par %                 Poids/30
+             Tri par %                 Poids/31
 ```
 
 ### Étape 1 : Collecte des données
 
-L'algorithme collecte **28 critères** répartis en **2 sources** :
+L'algorithme collecte **29 critères** répartis en **2 sources** :
 
-- **18 critères enrichis automatiquement** via le module d'enrichissement (APIs externes)
+- **19 critères enrichis automatiquement** via le module d'enrichissement (APIs externes)
 - **10 critères complémentaires** saisis manuellement par l'utilisateur (dont `raccordementEau`, désormais dérivé automatiquement de `surfaceBati`)
 
 #### Synthèse des critères et leurs poids
 
 | Source | Nb critères | Poids total |
 |--------|------------|-------------|
-| Enrichissement automatique | 18 | 18.5 |
+| Enrichissement automatique | 19 | 19.5 |
 | Données complémentaires (saisie) | 10 | 11.5 |
-| **TOTAL** | **28** | **30** |
+| **TOTAL** | **29** | **31** |
 
 ### Étape 2 : Matrice de scoring
 
 L'algorithme utilise une **matrice de scoring unique** qui définit comment chaque valeur de critère impacte chaque usage.
 
-Cette matrice contient 28 critères × 7 usages = 196 correspondances de base (davantage avec les valeurs multiples par critère).
+Cette matrice contient 29 critères × 7 usages = 203 correspondances de base (davantage avec les valeurs multiples par critère).
 
 #### Structure de la matrice
 
@@ -221,7 +221,7 @@ Indicateur de confiance basé sur la somme des poids des critères renseignés :
 Fiabilité = (Poids_critères_renseignés / Poids_total) × 10
 ```
 
-Le poids total est de **30** (somme de tous les poids des 28 critères). Chaque critère contribue proportionnellement à son poids.
+Le poids total est de **31** (somme de tous les poids des 29 critères). Chaque critère contribue proportionnellement à son poids.
 
 #### Grille d'interprétation
 
@@ -238,9 +238,9 @@ La fiabilité **ne modifie pas** le classement. C'est un indicateur séparé qui
 
 ---
 
-## Liste des 28 critères actifs
+## Liste des 29 critères actifs
 
-### Critères enrichis automatiquement (18)
+### Critères enrichis automatiquement (19)
 
 | # | Critère | Poids | Valeurs | Champ DTO |
 |---|---------|-------|---------|-----------|
@@ -262,26 +262,27 @@ La fiabilité **ne modifie pas** le classement. C'est un indicateur séparé qui
 | 16 | **Zone ZAER (ENR)** | 1 | Non / Oui / Oui avec PV ombrière / Exclu des zones d'accélération ENR | `zoneAccelerationEnr` |
 | 17 | **Zonage ABC (logement)** | 0.5 | A / Abis / B1 / B2 / C | `zonageAbcLogement` |
 | 18 | **Distance ITE fret** | 0.5 | < 1 km (bon état) / < 1 km (mauvais état) / > 1 km | `distanceIte` |
+| 19 | **Distance réseau de chaleur (m)** | 1 | < 500 / >= 500 | `distanceReseauChaleur` |
 
-> **Unité des distances** : `distanceAutoroute` et `distanceRaccordementElectrique` sont fournies en **mètres** par l'enrichissement (et stockées ainsi dans le DTO) puis converties en **km** à la frontière de l'algorithme (`metresVersKm` dans `extraireCriteres`, v1.10 / ADR-0027). Les seuils ci-dessus sont en km. `distanceTransportCommun` reste en mètres des deux côtés.
+> **Unité des distances** : `distanceAutoroute` et `distanceRaccordementElectrique` sont fournies en **mètres** par l'enrichissement (et stockées ainsi dans le DTO) puis converties en **km** à la frontière de l'algorithme (`metresVersKm` dans `extraireCriteres`, v1.10 / ADR-0027). Les seuils ci-dessus sont en km. `distanceTransportCommun` et `distanceReseauChaleur` restent en mètres des deux côtés.
 
 ### Critères complémentaires saisis (10)
 
 | # | Critère | Poids | Valeurs | Champ DTO |
 |---|---------|-------|---------|-----------|
-| 19 | **Type de propriétaire** | 1 | Public / Privé / Copropriété-indivision / Mixte / Ne sait pas | `typeProprietaire` |
-| 20 | **Raccordement aux réseaux d'eau** | 1 | Oui / Non — dérivé automatiquement de `surfaceBati` (ADR-0019), plus saisi | `raccordementEau` |
-| 21 | **État du bâti et infrastructure** | 2 | Bâti intact / Bâti faiblement dégradé (scores identiques à intact, cf. ADR-0025) / Bâti moyennement dégradé / Bâti très dégradé / Bâti dégradé de manière hétérogène / Pas de bâti / Ne sait pas | `etatBatiInfrastructure` |
-| 22 | **Présence de pollution** | 2 | Non / Déjà gérée / Oui-composés volatils / Oui-autres composés / Oui-amiante / Ne sait pas | `presencePollution` |
-| 23 | **Valeur architecturale et historique** | 1 | Sans intérêt / Ordinaire / Intérêt remarquable / Pas de bâti / Ne sait pas | `valeurArchitecturaleHistorique` |
-| 24 | **Qualité du paysage** | 1 | Sans intérêt / Ordinaire / Intérêt remarquable / Ne sait pas | `qualitePaysage` |
-| 25 | **Qualité voie de desserte** | 0.5 | Accessible / Dégradée / Peu accessible / Ne sait pas | `qualiteVoieDesserte` |
-| 26 | **Trame verte et bleue** | 1 | Hors trame / Réservoir biodiversité / Corridor à préserver / Corridor à restaurer / Ne sait pas | `trameVerteEtBleue` |
-| 27 | **Présence d'espèces protégées** | 1 | Oui / Non / Ne sait pas | `presenceEspecesProtegees` |
-| 28 | **Présence de zone humide** | 1 | Oui / Non / Ne sait pas | `presenceZoneHumide` |
+| 20 | **Type de propriétaire** | 1 | Public / Privé / Copropriété-indivision / Mixte / Ne sait pas | `typeProprietaire` |
+| 21 | **Raccordement aux réseaux d'eau** | 1 | Oui / Non — dérivé automatiquement de `surfaceBati` (ADR-0019), plus saisi | `raccordementEau` |
+| 22 | **État du bâti et infrastructure** | 2 | Bâti intact / Bâti faiblement dégradé (scores identiques à intact, cf. ADR-0025) / Bâti moyennement dégradé / Bâti très dégradé / Bâti dégradé de manière hétérogène / Pas de bâti / Ne sait pas | `etatBatiInfrastructure` |
+| 23 | **Présence de pollution** | 2 | Non / Déjà gérée / Oui-composés volatils / Oui-autres composés / Oui-amiante / Ne sait pas | `presencePollution` |
+| 24 | **Valeur architecturale et historique** | 1 | Sans intérêt / Ordinaire / Intérêt remarquable / Pas de bâti / Ne sait pas | `valeurArchitecturaleHistorique` |
+| 25 | **Qualité du paysage** | 1 | Sans intérêt / Ordinaire / Intérêt remarquable / Ne sait pas | `qualitePaysage` |
+| 26 | **Qualité voie de desserte** | 0.5 | Accessible / Dégradée / Peu accessible / Ne sait pas | `qualiteVoieDesserte` |
+| 27 | **Trame verte et bleue** | 1 | Hors trame / Réservoir biodiversité / Corridor à préserver / Corridor à restaurer / Ne sait pas | `trameVerteEtBleue` |
+| 28 | **Présence d'espèces protégées** | 1 | Oui / Non / Ne sait pas | `presenceEspecesProtegees` |
+| 29 | **Présence de zone humide** | 1 | Oui / Non / Ne sait pas | `presenceZoneHumide` |
 
 ---
 
-> **Dernière mise à jour** : Septembre 2026 (algorithme v1.12)
+> **Dernière mise à jour** : Septembre 2026 (algorithme v1.13)
 > **Contact** : <samir.benfares@beta.gouv.fr>
 > **Repository** : [https://github.com/incubateur-ademe/mutafriches](https://github.com/incubateur-ademe/mutafriches)

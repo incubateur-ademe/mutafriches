@@ -33,7 +33,7 @@
            │
            ↓
 ┌──────────────────────┐
-│  ÉVALUATION          │ ←── Matrice 28 critères × 7 usages
+│  ÉVALUATION          │ ←── Matrice 29 critères × 7 usages
 │  Mutabilité          │
 └──────────┬───────────┘
            │
@@ -122,7 +122,7 @@ L'algorithme calcule un **indice de mutabilité 0-100%** pour **7 usages** possi
 6. Renaturation
 7. Photovoltaïque au sol
 
-**Matrice** : 28 critères × 7 usages
+**Matrice** : 29 critères × 7 usages
 **Fiabilité** : Indice 0-10 selon la complétude des données d'entrée (pondéré par poids des critères)
 
 ### Intégration

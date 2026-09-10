@@ -93,7 +93,7 @@ Les commentaires doivent être **courts** et n'expliquer que le **pourquoi** (ja
 // INTERDIT - verbeux, paraphrase le code, multi-lignes inutiles
 /**
  * Cette fonction prend en entrée un Site déjà enrichi et applique
- * successivement toutes les règles de scoring de la matrice 28×7
+ * successivement toutes les règles de scoring de la matrice 29×7
  * pour produire en sortie un objet contenant les indices de mutabilité
  * pour chacun des 7 usages possibles.
  */
@@ -308,7 +308,7 @@ apps/api/src/
 │   ├── dtos/               # Objets de transfert
 │   ├── entities/           # Entités domaine
 │   └── repositories/       # Accès base de données
-├── evaluation/             # Calcul mutabilité (matrice 28 critères × 7 usages)
+├── evaluation/             # Calcul mutabilité (matrice 29 critères × 7 usages)
 │   ├── algorithme/         # Logique de calcul pure
 │   ├── dtos/               # Objets de transfert
 │   └── entities/           # Entités domaine
@@ -326,7 +326,7 @@ apps/api/src/
 L'algorithme de scoring est versionné pour préserver la reproductibilité des évaluations passées et permettre la comparaison entre versions.
 
 - **Source de vérité** : `apps/api/src/evaluation/services/algorithme/versions/` — un fichier par version (`v1.1.ts`, `v1.2.ts`, …), agrégés par `index.ts` (tableau chronologique ascendant, **dernière entrée = version courante**, pointée par `VERSION_COURANTE`). C'est aussi l'ordre renvoyé par `GET /evaluation/algorithme/versions`.
-- **Référence métier** : chaque version doit pointer vers le fichier Excel de référence correspondant (matrice 28×7), conservé dans `docs/sources/` (ou équivalent)
+- **Référence métier** : chaque version doit pointer vers le fichier Excel de référence correspondant (matrice 29×7), conservé dans `docs/sources/` (ou équivalent)
 - **Exposition** : la version courante et la liste complète sont exposées via `GET /evaluation/metadata` et `GET /evaluation/algorithme/versions`. Toute modification doit **immédiatement** se refléter dans ces endpoints (et dans les exemples Swagger associés).
 - **Documentation OBLIGATOIRE** : toute modification de l'algorithme — ajout ou retrait d'un critère, changement de poids, de seuil, de la matrice de scoring, ou de la formule de fiabilité — DOIT être répercutée **dans le même commit** sur :
   - `docs/evaluation-mutabilite.md` (doc métier : liste des critères, poids, poids total, formules, exemples)
@@ -357,6 +357,7 @@ Le test dédié (`versions.spec.ts`) garantit l'ordre chronologique ascendant st
 - **IGN Cadastre** (`cadastre.data.gouv.fr`) : données parcellaires, géométrie, surface
 - **BDNB** (`api.bdnb.io`) : surface bâtie
 - **Enedis** (`data.enedis.fr`) : distance raccordement électrique
+- **France Chaleur Urbaine** (`france-chaleur-urbaine.beta.gouv.fr`) : distance au réseau de chaleur urbain
 - **GéoRisques** (`georisques.gouv.fr`) : 13 APIs risques (RGA, SIS, ICPE, cavités, inondation, CATNAT, etc.)
 - **API Carto Nature** (`apicarto.ign.fr`) : zonages environnementaux (Natura 2000, ZNIEFF, Parcs)
 - **API Carto GPU** (`apicarto.ign.fr`) : zonages patrimoniaux et réglementaires (PLU, Monuments)
@@ -424,7 +425,7 @@ La modale « Analyser plusieurs sites » (page résultats) embarque un **calendr
 - @.claude/context/enrichissement-patterns.md — Comment ajouter un nouveau domaine ou une nouvelle API externe
 - @.claude/context/security-rules.md — Checklist sécurité (secrets, validation, injection SQL, guards)
 - @.claude/context/feature-example.md — Parcours complet d'ajout d'une source d'enrichissement
-- @.claude/context/evaluation-patterns.md — Algorithme de scoring (matrice 28×7), fiabilité, cache, sémantique `null` vs `undefined`
+- @.claude/context/evaluation-patterns.md — Algorithme de scoring (matrice 29×7), fiabilité, cache, sémantique `null` vs `undefined`
 
 ## Gotchas
 

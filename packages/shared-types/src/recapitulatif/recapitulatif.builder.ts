@@ -52,6 +52,7 @@ const RESOLVEURS: Record<string, (e: Enrichissement, c: Complementaires) => stri
   typeProprietaire: (_e, c) => libelleEnum(TYPE_PROPRIETAIRE_LABELS, c?.typeProprietaire),
   distanceRaccordementElectrique: (e) => formatDistance(e?.distanceRaccordementElectrique),
   raccordementEau: (_e, c) => libelleEnum(RACCORDEMENT_EAU_LABELS, c?.raccordementEau),
+  distanceReseauChaleur: (e) => formatDistance(e?.distanceReseauChaleur),
   valeurArchitecturaleHistorique: (_e, c) =>
     libelleEnum(VALEUR_ARCHITECTURALE_LABELS, c?.valeurArchitecturaleHistorique),
   etatBatiInfrastructure: (_e, c) => libelleEnum(ETAT_BATI_LABELS, c?.etatBatiInfrastructure),

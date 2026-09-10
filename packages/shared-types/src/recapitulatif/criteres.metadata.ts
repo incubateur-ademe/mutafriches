@@ -2,7 +2,7 @@ import { SourceEnrichissement } from "../enrichissement";
 import { CritereMetadata } from "./recapitulatif.types";
 
 /**
- * Registre autoritaire des 28 critères du récapitulatif du site.
+ * Registre autoritaire des 29 critères du récapitulatif du site.
  *
  * Source de vérité partagée : libellé, section, type de saisie, poids et source
  * d'enrichissement de chaque critère. L'ensemble des clés et des poids doit rester
@@ -56,13 +56,22 @@ export const CRITERES_METADATA: Record<string, CritereMetadata> = {
     poids: 1,
     ordre: 5,
   },
+  distanceReseauChaleur: {
+    key: "distanceReseauChaleur",
+    label: "Distance au réseau de chaleur",
+    section: "site-bati",
+    saisie: "AUTOMATIQUE",
+    poids: 1,
+    source: SourceEnrichissement.FRANCE_CHALEUR_URBAINE,
+    ordre: 6,
+  },
   valeurArchitecturaleHistorique: {
     key: "valeurArchitecturaleHistorique",
     label: "Valeur patrimoniale des constructions",
     section: "site-bati",
     saisie: "MANUELLE",
     poids: 1,
-    ordre: 6,
+    ordre: 7,
   },
   etatBatiInfrastructure: {
     key: "etatBatiInfrastructure",
@@ -70,7 +79,7 @@ export const CRITERES_METADATA: Record<string, CritereMetadata> = {
     section: "site-bati",
     saisie: "MANUELLE",
     poids: 2,
-    ordre: 7,
+    ordre: 8,
   },
   presencePollution: {
     key: "presencePollution",
@@ -78,7 +87,7 @@ export const CRITERES_METADATA: Record<string, CritereMetadata> = {
     section: "site-bati",
     saisie: "MANUELLE",
     poids: 2,
-    ordre: 8,
+    ordre: 9,
   },
 
   // --- L'environnement du site ---
@@ -89,7 +98,7 @@ export const CRITERES_METADATA: Record<string, CritereMetadata> = {
     saisie: "AUTOMATIQUE",
     poids: 1,
     source: SourceEnrichissement.SERVICE_PUBLIC,
-    ordre: 9,
+    ordre: 10,
   },
   proximiteCommercesServices: {
     key: "proximiteCommercesServices",
@@ -98,7 +107,7 @@ export const CRITERES_METADATA: Record<string, CritereMetadata> = {
     saisie: "AUTOMATIQUE",
     poids: 1,
     source: SourceEnrichissement.BPE,
-    ordre: 10,
+    ordre: 11,
   },
   tauxLogementsVacants: {
     key: "tauxLogementsVacants",
@@ -107,7 +116,7 @@ export const CRITERES_METADATA: Record<string, CritereMetadata> = {
     saisie: "AUTOMATIQUE",
     poids: 1,
     source: SourceEnrichissement.LOVAC,
-    ordre: 11,
+    ordre: 12,
   },
   distanceTransportCommun: {
     key: "distanceTransportCommun",
@@ -116,7 +125,7 @@ export const CRITERES_METADATA: Record<string, CritereMetadata> = {
     saisie: "AUTOMATIQUE",
     poids: 1,
     source: SourceEnrichissement.TRANSPORT_DATA_GOUV,
-    ordre: 12,
+    ordre: 13,
   },
   distanceAutoroute: {
     key: "distanceAutoroute",
@@ -125,7 +134,7 @@ export const CRITERES_METADATA: Record<string, CritereMetadata> = {
     saisie: "AUTOMATIQUE",
     poids: 0.5,
     source: SourceEnrichissement.IGN_WFS,
-    ordre: 13,
+    ordre: 14,
   },
   distanceIte: {
     key: "distanceIte",
@@ -134,7 +143,7 @@ export const CRITERES_METADATA: Record<string, CritereMetadata> = {
     saisie: "AUTOMATIQUE",
     poids: 0.5,
     source: SourceEnrichissement.ITE_FRET,
-    ordre: 14,
+    ordre: 15,
   },
   qualiteVoieDesserte: {
     key: "qualiteVoieDesserte",
@@ -142,7 +151,7 @@ export const CRITERES_METADATA: Record<string, CritereMetadata> = {
     section: "environnement",
     saisie: "MANUELLE",
     poids: 0.5,
-    ordre: 15,
+    ordre: 16,
   },
   qualitePaysage: {
     key: "qualitePaysage",
@@ -150,7 +159,7 @@ export const CRITERES_METADATA: Record<string, CritereMetadata> = {
     section: "environnement",
     saisie: "MANUELLE",
     poids: 1,
-    ordre: 16,
+    ordre: 17,
   },
   trameVerteEtBleue: {
     key: "trameVerteEtBleue",
@@ -158,7 +167,7 @@ export const CRITERES_METADATA: Record<string, CritereMetadata> = {
     section: "environnement",
     saisie: "MANUELLE",
     poids: 1,
-    ordre: 17,
+    ordre: 18,
   },
   presenceEspecesProtegees: {
     key: "presenceEspecesProtegees",
@@ -166,7 +175,7 @@ export const CRITERES_METADATA: Record<string, CritereMetadata> = {
     section: "environnement",
     saisie: "MANUELLE",
     poids: 1,
-    ordre: 18,
+    ordre: 19,
   },
   presenceZoneHumide: {
     key: "presenceZoneHumide",
@@ -174,7 +183,7 @@ export const CRITERES_METADATA: Record<string, CritereMetadata> = {
     section: "environnement",
     saisie: "MANUELLE",
     poids: 1,
-    ordre: 19,
+    ordre: 20,
   },
 
   // --- Les risques et zonages du site ---
@@ -185,7 +194,7 @@ export const CRITERES_METADATA: Record<string, CritereMetadata> = {
     saisie: "AUTOMATIQUE",
     poids: 1,
     source: SourceEnrichissement.GEORISQUES_ICPE,
-    ordre: 20,
+    ordre: 21,
   },
   risqueRetraitGonflementArgile: {
     key: "risqueRetraitGonflementArgile",
@@ -194,7 +203,7 @@ export const CRITERES_METADATA: Record<string, CritereMetadata> = {
     saisie: "AUTOMATIQUE",
     poids: 0.5,
     source: SourceEnrichissement.GEORISQUES_RGA,
-    ordre: 21,
+    ordre: 22,
   },
   risqueCavitesSouterraines: {
     key: "risqueCavitesSouterraines",
@@ -203,7 +212,7 @@ export const CRITERES_METADATA: Record<string, CritereMetadata> = {
     saisie: "AUTOMATIQUE",
     poids: 0.5,
     source: SourceEnrichissement.GEORISQUES_CAVITES,
-    ordre: 22,
+    ordre: 23,
   },
   risqueInondation: {
     key: "risqueInondation",
@@ -212,7 +221,7 @@ export const CRITERES_METADATA: Record<string, CritereMetadata> = {
     saisie: "AUTOMATIQUE",
     poids: 1,
     source: SourceEnrichissement.GEORISQUES_TRI,
-    ordre: 23,
+    ordre: 24,
   },
   zonageEnvironnemental: {
     key: "zonageEnvironnemental",
@@ -221,7 +230,7 @@ export const CRITERES_METADATA: Record<string, CritereMetadata> = {
     saisie: "AUTOMATIQUE",
     poids: 1,
     source: SourceEnrichissement.API_CARTO_NATURE,
-    ordre: 24,
+    ordre: 25,
   },
   zonageReglementaire: {
     key: "zonageReglementaire",
@@ -230,7 +239,7 @@ export const CRITERES_METADATA: Record<string, CritereMetadata> = {
     saisie: "AUTOMATIQUE",
     poids: 2,
     source: SourceEnrichissement.API_CARTO_GPU,
-    ordre: 25,
+    ordre: 26,
   },
   zonagePatrimonial: {
     key: "zonagePatrimonial",
@@ -239,7 +248,7 @@ export const CRITERES_METADATA: Record<string, CritereMetadata> = {
     saisie: "AUTOMATIQUE",
     poids: 1,
     source: SourceEnrichissement.API_CARTO_GPU,
-    ordre: 26,
+    ordre: 27,
   },
   zoneAccelerationEnr: {
     key: "zoneAccelerationEnr",
@@ -248,7 +257,7 @@ export const CRITERES_METADATA: Record<string, CritereMetadata> = {
     saisie: "AUTOMATIQUE",
     poids: 1,
     source: SourceEnrichissement.ZAER,
-    ordre: 27,
+    ordre: 28,
   },
   zonageAbcLogement: {
     key: "zonageAbcLogement",
@@ -257,7 +266,7 @@ export const CRITERES_METADATA: Record<string, CritereMetadata> = {
     saisie: "AUTOMATIQUE",
     poids: 0.5,
     source: SourceEnrichissement.ZONAGE_ABC_LOGEMENT,
-    ordre: 28,
+    ordre: 29,
   },
 };
 

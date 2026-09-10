@@ -12,6 +12,7 @@ import {
 import { RisqueNaturel } from "@mutafriches/shared-types";
 import { Site } from "../entities/site.entity";
 import { MATRICE_SCORING, POIDS_CRITERES } from "./algorithme/algorithme.config";
+import { SEUIL_PROXIMITE_RESEAU_CHALEUR_M } from "./algorithme/algorithme.constants";
 import { metresVersKm } from "./algorithme/distance.utils";
 import { ScoreParUsage } from "./algorithme/algorithme.types";
 import { FiabiliteCalculator } from "./algorithme/fiabilite.calculator";
@@ -350,6 +351,17 @@ export class CalculService {
 
     if (!poidsCriteres || "distanceIte" in poidsCriteres) {
       criteres.distanceIte = site.distanceIte;
+    }
+
+    // Distance au réseau de chaleur urbain (v1.13+), en mètres des deux côtés.
+    // `null` (aucune distance exploitable) est ramené à la tranche « >= 500 m » : sans ce
+    // mapping le critère serait ignoré, et un site sans réseau connu n'obtiendrait pas le
+    // même indice qu'un site simplement éloigné, à discontinuité près du rayon de FCU.
+    if (!poidsCriteres || "distanceReseauChaleur" in poidsCriteres) {
+      criteres.distanceReseauChaleur =
+        site.distanceReseauChaleur === null
+          ? SEUIL_PROXIMITE_RESEAU_CHALEUR_M
+          : site.distanceReseauChaleur;
     }
 
     return criteres;

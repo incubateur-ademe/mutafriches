@@ -258,4 +258,5 @@ export const SOURCE_LABELS: Partial<Record<SourceEnrichissement, string>> = {
   [SourceEnrichissement.ZONAGE_ABC_LOGEMENT]: "Zonage ABC",
   [SourceEnrichissement.ICU]: "ICU (CSTB)",
   [SourceEnrichissement.ITE_FRET]: "ITE fret (Cerema)",
+  [SourceEnrichissement.FRANCE_CHALEUR_URBAINE]: "France Chaleur Urbaine",
 };

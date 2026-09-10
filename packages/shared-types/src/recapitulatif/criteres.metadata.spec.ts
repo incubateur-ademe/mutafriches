@@ -7,8 +7,8 @@ import {
 } from "./criteres.metadata";
 
 describe("CRITERES_METADATA", () => {
-  it("décrit les 28 critères de l'algorithme", () => {
-    expect(Object.keys(CRITERES_METADATA)).toHaveLength(28);
+  it("décrit les 29 critères de l'algorithme", () => {
+    expect(Object.keys(CRITERES_METADATA)).toHaveLength(29);
   });
 
   it("a une clé cohérente avec l'identifiant de l'entrée", () => {
@@ -27,18 +27,18 @@ describe("CRITERES_METADATA", () => {
     }
   });
 
-  it("compte 18 critères automatiques et 10 manuels", () => {
+  it("compte 19 critères automatiques et 10 manuels", () => {
     const autos = CRITERES_METADATA_LIST.filter((c) => c.saisie === "AUTOMATIQUE");
     const manuels = CRITERES_METADATA_LIST.filter((c) => c.saisie === "MANUELLE");
-    expect(autos).toHaveLength(18);
+    expect(autos).toHaveLength(19);
     expect(manuels).toHaveLength(10);
   });
 
-  it("a des ordres uniques et contigus de 1 à 28", () => {
+  it("a des ordres uniques et contigus de 1 à 29", () => {
     const ordres = CRITERES_METADATA_LIST.map((c) => c.ordre);
-    expect(new Set(ordres).size).toBe(28);
+    expect(new Set(ordres).size).toBe(29);
     expect(Math.min(...ordres)).toBe(1);
-    expect(Math.max(...ordres)).toBe(28);
+    expect(Math.max(...ordres)).toBe(29);
   });
 
   it("dérive des compteurs de documentation alignés sur le registre", () => {
