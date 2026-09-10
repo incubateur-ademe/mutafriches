@@ -9,6 +9,7 @@ import {
   ZoneAccelerationEnr,
   TrameVerteEtBleue,
   IlotChaleurUrbain,
+  DistanceIte,
   SourceEnrichissement,
 } from "../enrichissement";
 import {
@@ -218,6 +219,12 @@ export const ILOT_CHALEUR_URBAIN_LABELS: Record<IlotChaleurUrbain, string> = {
   [IlotChaleurUrbain.NON_COUVERT]: "Non couvert par la cartographie",
 };
 
+export const DISTANCE_ITE_LABELS: Record<DistanceIte, string> = {
+  [DistanceIte.MOINS_1KM_BON_ETAT]: "Moins d'1 km, en bon état",
+  [DistanceIte.MOINS_1KM_MAUVAIS_ETAT]: "Moins d'1 km, en mauvais état",
+  [DistanceIte.PLUS_1KM]: "Plus d'1 km",
+};
+
 export const ZONE_ACCELERATION_ENR_LABELS: Record<ZoneAccelerationEnr, string> = {
   [ZoneAccelerationEnr.NON]: "Non",
   [ZoneAccelerationEnr.OUI]: "Oui",
@@ -250,4 +257,5 @@ export const SOURCE_LABELS: Partial<Record<SourceEnrichissement, string>> = {
   [SourceEnrichissement.ZAER]: "ZAER-ENR",
   [SourceEnrichissement.ZONAGE_ABC_LOGEMENT]: "Zonage ABC",
   [SourceEnrichissement.ICU]: "ICU (CSTB)",
+  [SourceEnrichissement.ITE_FRET]: "ITE fret (Cerema)",
 };

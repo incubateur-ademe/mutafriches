@@ -33,6 +33,7 @@ import {
   ZONAGE_PATRIMONIAL_LABELS,
   ZONAGE_ABC_LOGEMENT_LABELS,
   ZONE_ACCELERATION_ENR_LABELS,
+  DISTANCE_ITE_LABELS,
   ILOT_CHALEUR_URBAIN_LABELS,
   MESSAGE_ZONE_EXCLUSION_ENR,
 } from "./valeurs.labels";
@@ -62,6 +63,7 @@ const RESOLVEURS: Record<string, (e: Enrichissement, c: Complementaires) => stri
   tauxLogementsVacants: (e) => formatPourcentage(e?.tauxLogementsVacants),
   distanceTransportCommun: (e) => formatDistance(e?.distanceTransportCommun),
   distanceAutoroute: (e) => formatDistance(e?.distanceAutoroute),
+  distanceIte: (e) => libelleEnum(DISTANCE_ITE_LABELS, e?.distanceIte),
   qualiteVoieDesserte: (_e, c) => libelleEnum(QUALITE_VOIE_LABELS, c?.qualiteVoieDesserte),
   qualitePaysage: (_e, c) => libelleEnum(QUALITE_PAYSAGE_LABELS, c?.qualitePaysage),
   trameVerteEtBleue: (_e, c) => libelleEnum(TRAME_VERTE_BLEUE_LABELS, c?.trameVerteEtBleue),
@@ -81,6 +83,9 @@ const RESOLVEURS: Record<string, (e: Enrichissement, c: Complementaires) => stri
   zoneAccelerationEnr: (e) => libelleEnum(ZONE_ACCELERATION_ENR_LABELS, e?.zoneAccelerationEnr),
   zonageAbcLogement: (e) => libelleEnum(ZONAGE_ABC_LOGEMENT_LABELS, e?.zonageAbcLogement),
 };
+
+/** Clés couvertes par un résolveur. Exposé pour le garde-fou de couverture (cf. spec). */
+export const CRITERES_AVEC_RESOLVEUR = Object.keys(RESOLVEURS);
 
 /** Précisions affichées sous le libellé d'un critère, quand la donnée le justifie */
 const MENTIONS: Record<string, (e: Enrichissement) => string | undefined> = {
