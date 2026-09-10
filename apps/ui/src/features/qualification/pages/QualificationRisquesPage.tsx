@@ -5,7 +5,7 @@ import { Stepper } from "../../../shared/components/layout";
 import { Layout } from "../../../shared/components/layout/Layout";
 import { useFormContext } from "../../../shared/form/useFormContext";
 import { useEventTracking } from "../../../shared/hooks/useEventTracking";
-import { TypeEvenement } from "@mutafriches/shared-types";
+import { MESSAGE_ZONE_EXCLUSION_ENR, TypeEvenement } from "@mutafriches/shared-types";
 import { EnrichedInfoField, StepNavigation } from "../components";
 import { DebugPanelGate } from "../../debug/components/DebugPanelGate";
 
@@ -172,6 +172,8 @@ export const QualificationRisquesPage: React.FC = () => {
               ? uiData.zaerBadges
               : uiData?.zoneAccelerationEnr
           }
+          enAlerte={uiData?.zaerExclusion}
+          message={uiData?.zaerExclusion ? MESSAGE_ZONE_EXCLUSION_ENR : undefined}
           tooltip={
             <>
               Données enrichies via le WFS Géoplateforme (ZAER) :<br />

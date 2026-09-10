@@ -222,7 +222,11 @@ export const ZONE_ACCELERATION_ENR_LABELS: Record<ZoneAccelerationEnr, string> =
   [ZoneAccelerationEnr.NON]: "Non",
   [ZoneAccelerationEnr.OUI]: "Oui",
   [ZoneAccelerationEnr.OUI_SOLAIRE_PV_OMBRIERE]: "Oui - PV ombrière",
+  [ZoneAccelerationEnr.EXCLUSION]: "Exclu des zones d'accélération ENR",
 };
+
+/** Message affiché quand le site est en zone d'interdiction APER (qualification, récap, détail) */
+export const MESSAGE_ZONE_EXCLUSION_ENR = "Pas de projet possible hors photovoltaïque en toiture.";
 
 // ------------------------------------------------------------------
 // Libellés courts des sources (badge "Source")

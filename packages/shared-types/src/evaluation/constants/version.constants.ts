@@ -6,4 +6,4 @@
  * peut pas importer le registre `apps/api`. Un garde-fou côté API (`versions.spec.ts`)
  * casse si cette valeur diverge de `VERSION_COURANTE`.
  */
-export const VERSION_ALGO = "v1.11";
+export const VERSION_ALGO = "v1.12";

@@ -1,10 +1,15 @@
 import { describe, it, expect } from "vitest";
 import type { EnrichissementOutputDto, ZaerEnrichissement } from "@mutafriches/shared-types";
-import { ZonageAbcLogement } from "@mutafriches/shared-types";
+import {
+  ZonageAbcLogement,
+  ZoneAccelerationEnr,
+  ZONE_ACCELERATION_ENR_LABELS,
+} from "@mutafriches/shared-types";
 import { buildZaerBadges, transformEnrichmentToUiData } from "./enrichissment.mapper";
 
 const makeZaer = (overrides: Partial<ZaerEnrichissement> = {}): ZaerEnrichissement => ({
   enZoneZaer: true,
+  enZoneExclusion: false,
   nombreZones: 1,
   filieres: [],
   zones: [],
@@ -191,5 +196,25 @@ describe("buildZaerBadges", () => {
       zones: [{ nom: null, filiere: "eolien", detailFiliere: null }],
     });
     expect(buildZaerBadges(zaer)).toEqual(["Oui Eolien"]);
+  });
+
+  it("remplace les badges de filières par l'exclusion en zone d'interdiction APER", () => {
+    const zaer = makeZaer({
+      enZoneExclusion: true,
+      filieres: ["EOLIEN"],
+      zones: [{ nom: "Zone éolien", filiere: "EOLIEN", detailFiliere: null }],
+    });
+    // Libellé lu depuis la constante partagée : le test porte sur le remplacement
+    // des badges de filières, pas sur le vocabulaire retenu.
+    expect(buildZaerBadges(zaer)).toEqual([
+      ZONE_ACCELERATION_ENR_LABELS[ZoneAccelerationEnr.EXCLUSION],
+    ]);
+  });
+
+  it("expose l'exclusion dans le modèle UI", () => {
+    const ui = transformEnrichmentToUiData(
+      makeEnrichissement({ zaer: makeZaer({ enZoneExclusion: true }) }),
+    );
+    expect(ui.zaerExclusion).toBe(true);
   });
 });

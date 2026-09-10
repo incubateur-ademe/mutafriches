@@ -3,6 +3,7 @@ import {
   buildDetailUsage,
   DonneesComplementairesInputDto,
   EnrichissementOutputDto,
+  MESSAGE_ZONE_EXCLUSION_ENR,
   UsageResultatDetaille,
 } from "@mutafriches/shared-types";
 import { ModalInfo } from "../../../shared/components/common/ModalInfo";
@@ -74,6 +75,11 @@ export const UsageDetailModal: React.FC<UsageDetailModalProps> = ({
     >
       {usage && badge && (
         <>
+          {enrichissement?.zaer?.enZoneExclusion && (
+            <div className="fr-alert fr-alert--warning fr-alert--sm fr-mb-2w">
+              <p>{MESSAGE_ZONE_EXCLUSION_ENR}</p>
+            </div>
+          )}
           <UsageRatioBar avantages={avantages} contraintes={contraintes} />
           <UsageDetailTable sections={sections} />
         </>

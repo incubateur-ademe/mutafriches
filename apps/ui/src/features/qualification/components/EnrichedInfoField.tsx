@@ -11,6 +11,10 @@ interface EnrichedInfoFieldProps {
   source?: string;
   /** Contenu du tooltip */
   tooltip?: React.ReactNode;
+  /** Rend les badges en alerte plutôt qu'en succès (donnée bloquante pour certains usages) */
+  enAlerte?: boolean;
+  /** Message explicatif affiché sous les badges */
+  message?: string;
 }
 
 const NON_ACCESSIBLE_LABEL = "Donnée non accessible";
@@ -25,6 +29,8 @@ export const EnrichedInfoField: React.FC<EnrichedInfoFieldProps> = ({
   label,
   value,
   tooltip,
+  enAlerte = false,
+  message,
 }) => {
   const values = Array.isArray(value) ? value : [value];
   const isNonAccessible =
@@ -57,13 +63,18 @@ export const EnrichedInfoField: React.FC<EnrichedInfoFieldProps> = ({
             {values.map((v, index) => (
               <p
                 key={index}
-                className="fr-badge fr-badge--green-emeraude fr-icon-checkbox-line fr-badge--icon-left"
+                className={
+                  enAlerte
+                    ? "fr-badge fr-badge--error fr-icon-close-circle-line fr-badge--icon-left"
+                    : "fr-badge fr-badge--green-emeraude fr-icon-checkbox-line fr-badge--icon-left"
+                }
               >
                 {v}
               </p>
             ))}
           </div>
         )}
+        {message && <p className="fr-hint-text fr-mt-1v">{message}</p>}
       </div>
     </div>
   );

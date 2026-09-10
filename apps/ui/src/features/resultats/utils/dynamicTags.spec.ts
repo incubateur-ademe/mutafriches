@@ -726,6 +726,26 @@ describe("Usage PHOTOVOLTAIQUE - Centrale photovoltaïque au sol", () => {
       expect(result.tags).toContain("ZA Photovoltaïque");
     });
 
+    it("ne devrait PAS afficher 'ZA Photovoltaïque' si le site est en zone d'exclusion APER", () => {
+      const data = createTagInputData({
+        zaer: {
+          enZoneZaer: true,
+          enZoneExclusion: true,
+          nombreZones: 1,
+          filieres: ["SOLAIRE_PV"],
+          zones: [
+            {
+              nom: "Zone ombrière",
+              filiere: "SOLAIRE_PV",
+              detailFiliere: "SOLAIRE_PV_NV_OMBRIERE",
+            },
+          ],
+        },
+      });
+      const result = generateTagsForUsage(UsageType.PHOTOVOLTAIQUE, data);
+      expect(result.tags).not.toContain("ZA Photovoltaïque");
+    });
+
     it("ne devrait PAS afficher 'ZA Photovoltaïque' pour une zone SOLAIRE_PV toit", () => {
       const data = createTagInputData({
         zaer: {

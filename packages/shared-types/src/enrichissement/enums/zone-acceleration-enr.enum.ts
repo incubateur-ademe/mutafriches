@@ -9,4 +9,6 @@ export enum ZoneAccelerationEnr {
   OUI = "oui",
   /** Le site est dans une zone ZAER avec PV ombrière (détail filière contenant "OMBRIERE") */
   OUI_SOLAIRE_PV_OMBRIERE = "oui-solaire-pv-ombriere",
+  /** Le site est dans une zone d'interdiction APER : toutes EnR interdites hors toiture */
+  EXCLUSION = "exclusion",
 }

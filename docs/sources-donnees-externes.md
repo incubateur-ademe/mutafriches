@@ -259,19 +259,20 @@ La présence d'une ICPE ou d'un secteur SIS à proximité produit le booléen «
 | --- | --- |
 | Présence de risques technologiques | 1 |
 
-### Zones d'accélération des énergies renouvelables (ZAER)
+### Zones d'accélération et d'exclusion des énergies renouvelables (loi APER)
 
 - **Type** : API externe
-- **Opérateur** : IGN Géoplateforme
+- **Opérateur** : IGN Géoplateforme, OFB
 - **Documentation** : https://data.geopf.fr/
 
 **Champs récupérés**
 
 - Appartenance à une zone d'accélération des EnR (nom, filière, détail de filière)
+- Appartenance à une zone d'interdiction des EnR au titre de la loi APER (couche OFB distincte, régime « toutes ENR sauf toiture » ou « éolien uniquement »)
 
 **Traitement dans l'algorithme**
 
-L'appartenance à une zone d'accélération des EnR est ramenée à un niveau grossier (non, oui, ombrière) qui valorise l'usage photovoltaïque (cf. ADR-0013).
+L'appartenance à une zone d'accélération des EnR est ramenée à un niveau grossier (non, oui, ombrière) qui valorise l'usage photovoltaïque (cf. ADR-0013). Une zone d'interdiction visant toutes les EnR hors toiture prime sur une zone d'accélération et rend l'usage photovoltaïque très défavorable, sans effet sur les six autres usages ; une interdiction limitée à l'éolien est sans effet, aucun usage de la matrice ne portant cette filière.
 
 **Critères d'évaluation alimentés**
 

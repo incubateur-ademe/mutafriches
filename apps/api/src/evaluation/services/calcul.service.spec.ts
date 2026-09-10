@@ -7,6 +7,7 @@ import {
   RisqueRetraitGonflementArgile,
   RisqueCavitesSouterraines,
   RisqueInondation,
+  ZoneAccelerationEnr,
 } from "@mutafriches/shared-types";
 import { CalculService } from "./calcul.service";
 import { FiabiliteCalculator } from "./algorithme/fiabilite.calculator";
@@ -257,6 +258,31 @@ describe("CalculService", () => {
           expect(Math.abs(res.indiceMutabilite - indiceCalcule)).toBeLessThan(1);
         }
       });
+    });
+
+    it("devrait penaliser le photovoltaique en zone d'exclusion EnR sans toucher aux autres usages", async () => {
+      const indicesPourZaer = async (valeur: ZoneAccelerationEnr) => {
+        const site = new Site();
+        site.surfaceSite = 20000;
+        site.surfaceBati = 2000;
+        site.zoneAccelerationEnr = valeur;
+
+        const result = await service.calculer(site);
+        return new Map(result.resultats.map((r) => [r.usage, r.indiceMutabilite]));
+      };
+
+      const acceleration = await indicesPourZaer(ZoneAccelerationEnr.OUI);
+      const exclusion = await indicesPourZaer(ZoneAccelerationEnr.EXCLUSION);
+
+      expect(exclusion.get(UsageType.PHOTOVOLTAIQUE)!).toBeLessThan(
+        acceleration.get(UsageType.PHOTOVOLTAIQUE)!,
+      );
+
+      Object.values(UsageType)
+        .filter((usage) => usage !== UsageType.PHOTOVOLTAIQUE)
+        .forEach((usage) => {
+          expect(exclusion.get(usage)).toBe(acceleration.get(usage));
+        });
     });
   });
 });

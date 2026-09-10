@@ -34,6 +34,7 @@ import {
   ZONAGE_ABC_LOGEMENT_LABELS,
   ZONE_ACCELERATION_ENR_LABELS,
   ILOT_CHALEUR_URBAIN_LABELS,
+  MESSAGE_ZONE_EXCLUSION_ENR,
 } from "./valeurs.labels";
 
 type Enrichissement = EnrichissementOutputDto | undefined;
@@ -79,6 +80,11 @@ const RESOLVEURS: Record<string, (e: Enrichissement, c: Complementaires) => stri
   zonagePatrimonial: (e) => libelleEnum(ZONAGE_PATRIMONIAL_LABELS, e?.zonagePatrimonial),
   zoneAccelerationEnr: (e) => libelleEnum(ZONE_ACCELERATION_ENR_LABELS, e?.zoneAccelerationEnr),
   zonageAbcLogement: (e) => libelleEnum(ZONAGE_ABC_LOGEMENT_LABELS, e?.zonageAbcLogement),
+};
+
+/** Précisions affichées sous le libellé d'un critère, quand la donnée le justifie */
+const MENTIONS: Record<string, (e: Enrichissement) => string | undefined> = {
+  zoneAccelerationEnr: (e) => (e?.zaer?.enZoneExclusion ? MESSAGE_ZONE_EXCLUSION_ENR : undefined),
 };
 
 /** Résolveurs des données informatives (hors algorithme) */
@@ -127,6 +133,7 @@ export function buildRecapitulatifSite(
       saisie: meta.saisie,
       source: meta.source,
       sourceLabel: meta.source ? (SOURCE_LABELS[meta.source] ?? meta.source) : undefined,
+      mention: MENTIONS[meta.key]?.(enrichissement),
     });
   }
 

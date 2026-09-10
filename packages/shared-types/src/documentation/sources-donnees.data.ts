@@ -204,17 +204,22 @@ export const SOURCES_DONNEES: SourceDonnees[] = [
   },
   {
     id: "zaer",
-    nom: "Zones d'accélération des énergies renouvelables (ZAER)",
-    organisme: "IGN Géoplateforme",
+    nom: "Zones d'accélération et d'exclusion des énergies renouvelables (loi APER)",
+    organisme: "IGN Géoplateforme, OFB",
     type: "api-externe",
     urlDoc: "https://data.geopf.fr/",
     sourcesEnrichissement: [SourceEnrichissement.ZAER],
     champsRecuperes: [
       "Appartenance à une zone d'accélération des EnR (nom, filière, détail de filière)",
+      "Appartenance à une zone d'interdiction des EnR au titre de la loi APER (couche OFB distincte, " +
+        "régime « toutes ENR sauf toiture » ou « éolien uniquement »)",
     ],
     traitementAlgo:
       "L'appartenance à une zone d'accélération des EnR est ramenée à un niveau grossier (non, oui, " +
-      "ombrière) qui valorise l'usage photovoltaïque (cf. ADR-0013).",
+      "ombrière) qui valorise l'usage photovoltaïque (cf. ADR-0013). Une zone d'interdiction visant " +
+      "toutes les EnR hors toiture prime sur une zone d'accélération et rend l'usage photovoltaïque " +
+      "très défavorable, sans effet sur les six autres usages ; une interdiction limitée à l'éolien " +
+      "est sans effet, aucun usage de la matrice ne portant cette filière.",
   },
   {
     id: "ite-fret",

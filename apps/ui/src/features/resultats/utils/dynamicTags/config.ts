@@ -334,6 +334,9 @@ const resolveValeurPatrimoniale = (data: TagInputData): string | null => {
 // une zone ZAENR spécifiquement fléchée « SOLAIRE_PV ombrière ». Les autres
 // sous-catégories de SOLAIRE_PV (toit, sol) n'affichent pas ce tag.
 const resolveZoneEnrPhotovoltaique = (data: TagInputData): string | null => {
+  // Une interdiction APER prime : la zone d'accélération n'est plus actionnable
+  if (data.enrichmentData.zaer?.enZoneExclusion) return null;
+
   const zones = data.enrichmentData.zaer?.zones;
   if (!zones || zones.length === 0) return null;
 
