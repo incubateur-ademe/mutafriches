@@ -5,6 +5,8 @@ import {
   getCriteresManuels,
   getCriteresPourSource,
   MENTION_SOURCE_SANS_CRITERE,
+  CRITERES_STATS,
+  POIDS_TOTAL_AFFICHE,
   type CritereMetadata,
   type SourceDonnees,
 } from "@mutafriches/shared-types";
@@ -154,9 +156,10 @@ export const SourcesPdfDocument: React.FC = () => {
         <View style={s.callout}>
           <Text style={s.bold}>Comment sont utilisées ces données</Text>
           <Text style={{ marginTop: 3 }}>
-            L'analyse repose sur 27 critères notés pour 7 usages possibles. 17 critères sont
-            enrichis automatiquement à partir des sources ci-dessous, 10 sont saisis manuellement.
-            Chaque critère porte un poids (poids total : 29,5). La part des critères renseignés
+            L'analyse repose sur {CRITERES_STATS.total} critères notés pour 7 usages possibles.{" "}
+            {CRITERES_STATS.automatiques} critères sont enrichis automatiquement à partir des
+            sources ci-dessous, {CRITERES_STATS.manuels} sont saisis manuellement. Chaque critère
+            porte un poids (poids total : {POIDS_TOTAL_AFFICHE}). La part des critères renseignés
             détermine l'indice de fiabilité de l'analyse.
           </Text>
         </View>

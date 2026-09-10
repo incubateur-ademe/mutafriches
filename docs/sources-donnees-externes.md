@@ -10,10 +10,10 @@ qu'ils alimentent.
 
 ## Comment sont utilisées ces données
 
-L'analyse de mutabilité repose sur 27 critères, notés pour 7 usages possibles d'une friche.
-17 critères sont **enrichis automatiquement** à partir des sources ci-dessous ; 10 sont
+L'analyse de mutabilité repose sur 28 critères, notés pour 7 usages possibles d'une friche.
+18 critères sont **enrichis automatiquement** à partir des sources ci-dessous ; 10 sont
 **saisis manuellement** par l'utilisateur. Chaque critère porte un poids ; le poids total
-est de 29,5. La part des critères effectivement renseignés détermine l'indice de fiabilité
+est de 30. La part des critères effectivement renseignés détermine l'indice de fiabilité
 de l'analyse.
 
 ## Sources enrichies automatiquement

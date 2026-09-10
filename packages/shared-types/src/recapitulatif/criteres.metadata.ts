@@ -265,3 +265,20 @@ export const CRITERES_METADATA: Record<string, CritereMetadata> = {
 export const CRITERES_METADATA_LIST: CritereMetadata[] = Object.values(CRITERES_METADATA).sort(
   (a, b) => a.ordre - b.ordre,
 );
+
+/**
+ * Compteurs de l'algorithme dérivés du registre, pour les textes de documentation.
+ *
+ * Le paragraphe "Comment sont utilisées ces données" était recopié en dur dans la page
+ * `/documentation-donnees`, l'export PDF et le générateur Markdown : les trois avaient
+ * divergé du code. Source de vérité unique, cf. ADR-0026.
+ */
+export const CRITERES_STATS = {
+  total: CRITERES_METADATA_LIST.length,
+  automatiques: CRITERES_METADATA_LIST.filter((c) => c.saisie === "AUTOMATIQUE").length,
+  manuels: CRITERES_METADATA_LIST.filter((c) => c.saisie === "MANUELLE").length,
+  poidsTotal: CRITERES_METADATA_LIST.reduce((somme, c) => somme + c.poids, 0),
+};
+
+/** Poids total formaté pour l'affichage (locale fr-FR : "31", "29,5") */
+export const POIDS_TOTAL_AFFICHE = CRITERES_STATS.poidsTotal.toLocaleString("fr-FR");

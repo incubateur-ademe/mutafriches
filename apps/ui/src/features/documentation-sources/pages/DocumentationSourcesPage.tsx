@@ -5,6 +5,8 @@ import {
   getCriteresManuels,
   getCriteresPourSource,
   MENTION_SOURCE_SANS_CRITERE,
+  CRITERES_STATS,
+  POIDS_TOTAL_AFFICHE,
   type CritereMetadata,
   type SourceDonnees,
 } from "@mutafriches/shared-types";
@@ -152,11 +154,12 @@ export function DocumentationSourcesPage() {
         <div className="fr-callout fr-mb-6w">
           <h2 className="fr-callout__title fr-h4">Comment sont utilisées ces données</h2>
           <p className="fr-callout__text fr-text--sm">
-            L'analyse de mutabilité repose sur 27 critères, notés pour 7 usages possibles d'une
-            friche. 17 critères sont <strong>enrichis automatiquement</strong> à partir des sources
-            ci-dessous ; 10 sont <strong>saisis manuellement</strong> par l'utilisateur. Chaque
-            critère porte un poids ; le poids total est de 29,5. La part des critères effectivement
-            renseignés détermine l'indice de fiabilité de l'analyse.
+            L'analyse de mutabilité repose sur {CRITERES_STATS.total} critères, notés pour 7 usages
+            possibles d'une friche. {CRITERES_STATS.automatiques} critères sont{" "}
+            <strong>enrichis automatiquement</strong> à partir des sources ci-dessous ;{" "}
+            {CRITERES_STATS.manuels} sont <strong>saisis manuellement</strong> par l'utilisateur.
+            Chaque critère porte un poids ; le poids total est de {POIDS_TOTAL_AFFICHE}. La part des
+            critères effectivement renseignés détermine l'indice de fiabilité de l'analyse.
           </p>
         </div>
 
