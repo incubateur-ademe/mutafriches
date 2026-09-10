@@ -9,6 +9,7 @@ import { SiteGeometryService } from "./services/site/site-geometry.service";
 // Services de domaine
 import { CadastreEnrichissementService } from "./services/cadastre/cadastre-enrichissement.service";
 import { EnergieEnrichissementService } from "./services/energie/energie-enrichissement.service";
+import { ReseauChaleurEnrichissementService } from "./services/energie/reseau-chaleur-enrichissement.service";
 import { TransportEnrichissementService } from "./services/transport/transport-enrichissement.service";
 import { IteFretEnrichissementService } from "./services/transport/ite-fret-enrichissement.service";
 import { IcuEnrichissementService } from "./services/climat/icu-enrichissement.service";
@@ -41,6 +42,7 @@ import { ZonageReglementaireCalculator } from "./services/zonage/zonage-reglemen
 import { CadastreService } from "./adapters/cadastre/cadastre.service";
 import { BdnbService } from "./adapters/bdnb/bdnb.service";
 import { EnedisService } from "./adapters/enedis/enedis.service";
+import { FranceChaleurUrbaineService } from "./adapters/france-chaleur-urbaine/france-chaleur-urbaine.service";
 import { ServicePublicService } from "./adapters/service-public/service-public.service";
 import { IgnWfsService } from "./adapters/ign-wfs/ign-wfs.service";
 
@@ -94,6 +96,7 @@ import { IcuRepository } from "./repositories/icu.repository";
     // Services de domaine
     CadastreEnrichissementService,
     EnergieEnrichissementService,
+    ReseauChaleurEnrichissementService,
     TransportEnrichissementService,
     IteFretEnrichissementService,
     IcuEnrichissementService,
@@ -128,6 +131,7 @@ import { IcuRepository } from "./repositories/icu.repository";
     CadastreService,
     BdnbService,
     EnedisService,
+    FranceChaleurUrbaineService,
 
     // Adapters GeoRisques
     GeoRisquesOrchestrator,

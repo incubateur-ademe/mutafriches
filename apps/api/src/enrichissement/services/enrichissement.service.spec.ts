@@ -12,6 +12,7 @@ import {
 import { EnrichissementService } from "./enrichissement.service";
 import { CadastreEnrichissementService } from "./cadastre/cadastre-enrichissement.service";
 import { EnergieEnrichissementService } from "./energie/energie-enrichissement.service";
+import { ReseauChaleurEnrichissementService } from "./energie/reseau-chaleur-enrichissement.service";
 import { TransportEnrichissementService } from "./transport/transport-enrichissement.service";
 import { IteFretEnrichissementService } from "./transport/ite-fret-enrichissement.service";
 import { UrbanismeEnrichissementService } from "./urbanisme/urbanisme-enrichissement.service";
@@ -27,6 +28,7 @@ import { Site } from "../../evaluation/entities/site.entity";
 import {
   createMockCadastreEnrichissementService,
   createMockEnergieEnrichissementService,
+  createMockReseauChaleurEnrichissementService,
   createMockTransportEnrichissementService,
   createMockIteFretEnrichissementService,
   createMockUrbanismeEnrichissementService,
@@ -48,6 +50,7 @@ describe("EnrichissementService", () => {
   let service: EnrichissementService;
   let cadastreEnrichissement: ReturnType<typeof createMockCadastreEnrichissementService>;
   let energieEnrichissement: ReturnType<typeof createMockEnergieEnrichissementService>;
+  let reseauChaleurEnrichissement: ReturnType<typeof createMockReseauChaleurEnrichissementService>;
   let transportEnrichissement: ReturnType<typeof createMockTransportEnrichissementService>;
   let urbanismeEnrichissement: ReturnType<typeof createMockUrbanismeEnrichissementService>;
   let risquesNaturelsEnrichissement: ReturnType<
@@ -64,6 +67,7 @@ describe("EnrichissementService", () => {
   beforeEach(async () => {
     const mockCadastre = createMockCadastreEnrichissementService();
     const mockEnergie = createMockEnergieEnrichissementService();
+    const mockReseauChaleur = createMockReseauChaleurEnrichissementService();
     const mockTransport = createMockTransportEnrichissementService();
     const mockIteFret = createMockIteFretEnrichissementService();
     const mockUrbanisme = createMockUrbanismeEnrichissementService();
@@ -113,6 +117,7 @@ describe("EnrichissementService", () => {
         EnrichissementService,
         { provide: CadastreEnrichissementService, useValue: mockCadastre },
         { provide: EnergieEnrichissementService, useValue: mockEnergie },
+        { provide: ReseauChaleurEnrichissementService, useValue: mockReseauChaleur },
         { provide: TransportEnrichissementService, useValue: mockTransport },
         { provide: IteFretEnrichissementService, useValue: mockIteFret },
         { provide: UrbanismeEnrichissementService, useValue: mockUrbanisme },
@@ -135,6 +140,7 @@ describe("EnrichissementService", () => {
     service = module.get<EnrichissementService>(EnrichissementService);
     cadastreEnrichissement = mockCadastre;
     energieEnrichissement = mockEnergie;
+    reseauChaleurEnrichissement = mockReseauChaleur;
     transportEnrichissement = mockTransport;
     urbanismeEnrichissement = mockUrbanisme;
     risquesNaturelsEnrichissement = mockRisquesNaturels;
@@ -158,6 +164,11 @@ describe("EnrichissementService", () => {
       energieEnrichissement.enrichir.mockResolvedValue({
         success: true,
         sourcesUtilisees: ["enedis"],
+        sourcesEchouees: [],
+      });
+      reseauChaleurEnrichissement.enrichir.mockResolvedValue({
+        success: true,
+        sourcesUtilisees: ["France-Chaleur-Urbaine"],
         sourcesEchouees: [],
       });
       transportEnrichissement.enrichir.mockResolvedValue({
@@ -218,6 +229,11 @@ describe("EnrichissementService", () => {
         sourcesUtilisees: ["enedis"],
         sourcesEchouees: [],
       });
+      reseauChaleurEnrichissement.enrichir.mockResolvedValue({
+        success: true,
+        sourcesUtilisees: ["France-Chaleur-Urbaine"],
+        sourcesEchouees: [],
+      });
       transportEnrichissement.enrichir.mockResolvedValue({
         success: true,
         sourcesUtilisees: ["transport"],
@@ -259,7 +275,10 @@ describe("EnrichissementService", () => {
       expect(result.codeInsee).toBe("29232");
       expect(result.commune).toBe("Quimper");
       expect(result.surfaceSite).toBe(1000);
-      expect(result.sourcesUtilisees).toHaveLength(12);
+      expect(result.sourcesUtilisees).toHaveLength(13);
+      // Le cast `as EnrichissementOutputDto` du bloc de sortie masque un champ oublié :
+      // l'assertion est le seul filet sur la présence du critère dans le DTO.
+      expect(result).toHaveProperty("distanceReseauChaleur");
     });
 
     it("devrait persister l'enrichissement avec statut SUCCES", async () => {
@@ -274,6 +293,7 @@ describe("EnrichissementService", () => {
         risquesTechnologiquesEnrichissement,
         georisquesEnrichissement,
         zonageOrchestrator,
+        reseauChaleurEnrichissement,
       });
       enrichissementRepository.save.mockResolvedValue({});
 
@@ -302,6 +322,11 @@ describe("EnrichissementService", () => {
         success: false,
         sourcesUtilisees: [],
         sourcesEchouees: ["enedis"],
+      });
+      reseauChaleurEnrichissement.enrichir.mockResolvedValue({
+        success: true,
+        sourcesUtilisees: ["France-Chaleur-Urbaine"],
+        sourcesEchouees: [],
       });
       transportEnrichissement.enrichir.mockResolvedValue({
         success: true,
@@ -392,6 +417,7 @@ describe("EnrichissementService", () => {
         risquesTechnologiquesEnrichissement,
         georisquesEnrichissement,
         zonageOrchestrator,
+        reseauChaleurEnrichissement,
       });
       enrichissementRepository.save.mockRejectedValue(new Error("DB error"));
 
@@ -411,6 +437,7 @@ describe("EnrichissementService", () => {
         risquesTechnologiquesEnrichissement,
         georisquesEnrichissement,
         zonageOrchestrator,
+        reseauChaleurEnrichissement,
       });
       enrichissementRepository.save.mockResolvedValue({});
 
@@ -439,6 +466,11 @@ describe("EnrichissementService", () => {
         result: { success: true, sourcesUtilisees: ["cadastre"], sourcesEchouees: [] },
       });
       energieEnrichissement.enrichir.mockResolvedValue({
+        success: true,
+        sourcesUtilisees: [],
+        sourcesEchouees: [],
+      });
+      reseauChaleurEnrichissement.enrichir.mockResolvedValue({
         success: true,
         sourcesUtilisees: [],
         sourcesEchouees: [],
@@ -569,6 +601,7 @@ describe("EnrichissementService", () => {
         risquesTechnologiquesEnrichissement,
         georisquesEnrichissement,
         zonageOrchestrator,
+        reseauChaleurEnrichissement,
       });
       enrichissementRepository.save.mockResolvedValue({});
 
@@ -593,6 +626,7 @@ describe("EnrichissementService", () => {
         risquesTechnologiquesEnrichissement,
         georisquesEnrichissement,
         zonageOrchestrator,
+        reseauChaleurEnrichissement,
       });
       enrichissementRepository.save.mockResolvedValue({});
 
@@ -632,6 +666,7 @@ interface AllMocks {
   >;
   georisquesEnrichissement: ReturnType<typeof createMockGeoRisquesEnrichissementService>;
   zonageOrchestrator: ReturnType<typeof createMockZonageOrchestratorService>;
+  reseauChaleurEnrichissement: ReturnType<typeof createMockReseauChaleurEnrichissementService>;
 }
 
 function setupAllMocksSuccess(site: Site, mocks: AllMocks): void {
@@ -642,6 +677,11 @@ function setupAllMocksSuccess(site: Site, mocks: AllMocks): void {
   mocks.energieEnrichissement.enrichir.mockResolvedValue({
     success: true,
     sourcesUtilisees: ["enedis"],
+    sourcesEchouees: [],
+  });
+  mocks.reseauChaleurEnrichissement.enrichir.mockResolvedValue({
+    success: true,
+    sourcesUtilisees: ["France-Chaleur-Urbaine"],
     sourcesEchouees: [],
   });
   mocks.transportEnrichissement.enrichir.mockResolvedValue({

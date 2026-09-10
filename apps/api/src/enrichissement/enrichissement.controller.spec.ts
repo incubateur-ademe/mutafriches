@@ -92,6 +92,7 @@ describe("EnrichissementController", () => {
       const detailedOutput = {
         ...mockOutput,
         distanceRaccordementElectrique: 500,
+        distanceReseauChaleur: 320,
         distanceTransportCommun: 200,
         siteEnCentreVille: true,
         risqueRetraitGonflementArgile: RisqueRetraitGonflementArgile.FAIBLE_OU_MOYEN,
@@ -107,6 +108,7 @@ describe("EnrichissementController", () => {
       // Assert
       expect(result).toEqual(detailedOutput);
       expect(result.distanceRaccordementElectrique).toBe(500);
+      expect(result.distanceReseauChaleur).toBe(320);
       expect(result.siteEnCentreVille).toBe(true);
     });
 

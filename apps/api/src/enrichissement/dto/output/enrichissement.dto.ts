@@ -150,6 +150,16 @@ export class EnrichissementSwaggerDto implements IEnrichissementOutput {
   distanceRaccordementElectrique: number;
 
   @ApiProperty({
+    description:
+      "Distance au réseau de chaleur urbain le plus proche en mètres. null si aucune distance exploitable (aucun réseau à proximité, ou réseau connu dont le tracé est indisponible)",
+    required: false,
+    example: 320,
+    minimum: 0,
+    nullable: true,
+  })
+  distanceReseauChaleur?: number | null;
+
+  @ApiProperty({
     description: "Taux de logements vacants dans la commune en pourcentage",
     example: 4.9,
     minimum: 0,

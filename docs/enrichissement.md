@@ -23,7 +23,7 @@ Le module d'enrichissement est le cœur de Mutafriches. Il enrichit automatiquem
       calcul centroïde, géométrie union, parcelle prédominante
    ↓
 3. Enrichissement SÉQUENTIEL des domaines (dans l'ordre du code) :
-   ├─ ÉNERGIE (Enedis)
+   ├─ ÉNERGIE (Enedis + France Chaleur Urbaine)
    ├─ TRANSPORT (Service Public + IGN + data.gouv)
    │    └─ ITE FRET (référentiel local raw_ite_fret, Cerema)
    ├─ URBANISME (LOVAC + Zonage ABC logement + BPE)
@@ -136,15 +136,18 @@ Les enrichissements suivants utilisent des coordonnées différentes selon le do
 ## 2. Domaine ÉNERGIE
 
 ### Responsabilité
-Calculer la distance au point de raccordement électrique le plus proche.
+Calculer la distance au point de raccordement électrique et au réseau de chaleur urbain les plus proches.
 
 ### APIs utilisées
 
 | API | Source | Données récupérées |
 |-----|--------|-------------------|
 | **Enedis** | `data.enedis.fr` | Distance raccordement électrique (postes HTA + lignes BT) |
+| **France Chaleur Urbaine** | `france-chaleur-urbaine.beta.gouv.fr` | Distance au réseau de chaleur urbain le plus proche |
 
 ### Règles de gestion
+
+#### 2.1 Raccordement électrique
 
 1. **Prérequis** : Coordonnées parcelle disponibles
    - Si manquantes → échec, champ `distanceRaccordementElectrique` non renseigné
@@ -154,11 +157,31 @@ Calculer la distance au point de raccordement électrique le plus proche.
    - Calcul distance Haversine entre parcelle et infrastructure la plus proche
    - Retour : distance en mètres (arrondie)
 
+#### 2.2 Réseau de chaleur urbain
+
+1. **Prérequis** : Coordonnées parcelle disponibles
+   - Si manquantes → échec, champ `distanceReseauChaleur` non renseigné
+
+2. **Appel** : `GET /v1/eligibility?lat=&lon=` (endpoint public, sans authentification,
+   timeout court de 3 s puisque l'orchestration est séquentielle)
+
+3. **Sémantique de la réponse** — l'API distingue trois situations :
+   - `distance` numérique → distance en mètres au réseau le plus proche (arrondie)
+   - `distance: null` avec un réseau identifié → réseau connu dont FCU n'a pas le tracé
+   - `distance: null` sans réseau identifié → aucun réseau à proximité
+
+   Les deux derniers cas donnent `null` : **c'est un succès, pas une source échouée**. Les
+   marquer en échec invaliderait le cache strict de tous les sites hors réseau de chaleur.
+
+4. **Scoring** : seuil de 500 m, en mètres de bout en bout (aucune conversion en km).
+   `null` est ramené à la tranche « >= 500 m » à la frontière de l'algorithme.
+
 ### Champs enrichis
 
 ```typescript
 {
-  distanceRaccordementElectrique: number  // Distance en mètres
+  distanceRaccordementElectrique: number       // Distance en mètres
+  distanceReseauChaleur?: number | null        // Distance en mètres, null si non exploitable
 }
 ```
 
@@ -772,7 +795,7 @@ expose 13 endpoints, appelés séparément).
 | Domaine | API(s) externe(s) |
 |---------|-------------------|
 | Cadastre | IGN Cadastre, BDNB |
-| Énergie | Enedis |
+| Énergie | Enedis, France Chaleur Urbaine |
 | Transport | API Service Public, IGN WFS |
 | Urbanisme | *(aucune : LOVAC, zonage ABC et BPE sont des référentiels locaux)* |
 | Zonages | API Carto Nature, API Carto GPU |
@@ -840,6 +863,8 @@ expose 13 endpoints, appelés séparément).
   siteEnCentreVille: boolean
   distanceAutoroute: number
   distanceTransportCommun: number | null
+
+  distanceReseauChaleur?: number | null // Distance en mètres au réseau de chaleur, null si non exploitable
 
   // === TRANSPORT (suite) ===
   distanceIte?: DistanceIte             // "moins-1km-bon-etat" | "moins-1km-mauvais-etat" | "plus-1km"
