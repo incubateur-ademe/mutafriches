@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
-import type {
-  CalculerMutabiliteInputDto,
-  EnrichissementOutputDto,
+import {
+  VERSION_ALGO,
+  type CalculerMutabiliteInputDto,
+  type EnrichissementOutputDto,
 } from "@mutafriches/shared-types";
 import { DetailAlgorithmeSection } from "../../debug/components/sections/DetailAlgorithmeSection";
 import { buildDonneesComplementaires } from "../../resultats/utils/mutability.mapper";
@@ -17,8 +18,6 @@ export interface ComparaisonAlgoPanelProps {
   enrichmentData?: EnrichissementOutputDto;
   donneesComplementaires?: Record<string, string>;
 }
-
-const VERSION_COURANTE = "v1.4";
 
 export const ComparaisonAlgoPanel: React.FC<ComparaisonAlgoPanelProps> = ({
   enrichmentData,
@@ -164,7 +163,7 @@ export const ComparaisonAlgoPanel: React.FC<ComparaisonAlgoPanelProps> = ({
 
               {resultats && (
                 <div className="fr-mt-3w">
-                  <TableauComparaison resultats={resultats} versionCourante={VERSION_COURANTE} />
+                  <TableauComparaison resultats={resultats} versionCourante={VERSION_ALGO} />
 
                   {/* Diagnostic détaillé par version */}
                   {selectedVersions.map((version) => {
