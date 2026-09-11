@@ -11,6 +11,7 @@ import * as v19 from "./v1.9";
 import * as v110 from "./v1.10";
 import * as v111 from "./v1.11";
 import * as v112 from "./v1.12";
+import * as v113 from "./v1.13";
 
 export const ALGORITHME_VERSIONS: AlgorithmeConfig[] = [
   {
@@ -97,9 +98,16 @@ export const ALGORITHME_VERSIONS: AlgorithmeConfig[] = [
     poidsCriteres: v112.POIDS_CRITERES as unknown as Record<string, number>,
     matriceScoring: v112.MATRICE_SCORING as unknown as Record<string, unknown>,
   },
+  {
+    version: "v1.13",
+    label: "v1.12 + distance au réseau de chaleur",
+    date: "2026-09-10",
+    poidsCriteres: v113.POIDS_CRITERES as unknown as Record<string, number>,
+    matriceScoring: v113.MATRICE_SCORING as unknown as Record<string, unknown>,
+  },
 ];
 
-export const VERSION_COURANTE = "v1.12";
+export const VERSION_COURANTE = "v1.13";
 
 export function getAlgorithmeConfig(version: string): AlgorithmeConfig | undefined {
   return ALGORITHME_VERSIONS.find((v) => v.version === version);

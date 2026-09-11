@@ -3,12 +3,13 @@ import { EnrichissementOutputDto } from "../enrichissement";
 import { DonneesComplementairesInputDto } from "../evaluation";
 import { EtatBatiInfrastructure, PresencePollution, TypeProprietaire } from "../evaluation/enums";
 import {
+  DistanceIte,
   IlotChaleurUrbain,
   RisqueRetraitGonflementArgile,
   ZonageReglementaire,
 } from "../enrichissement";
 import { CRITERES_METADATA_LIST } from "./criteres.metadata";
-import { buildRecapitulatifSite } from "./recapitulatif.builder";
+import { buildRecapitulatifSite, CRITERES_AVEC_RESOLVEUR } from "./recapitulatif.builder";
 
 const enrichissement = {
   surfaceSite: 11338,
@@ -19,6 +20,7 @@ const enrichissement = {
   tauxLogementsVacants: 7.2,
   distanceTransportCommun: 355,
   distanceAutoroute: 355,
+  distanceIte: DistanceIte.MOINS_1KM_BON_ETAT,
   presenceRisquesTechnologiques: true,
   risqueRetraitGonflementArgile: RisqueRetraitGonflementArgile.FAIBLE_OU_MOYEN,
   zonageReglementaire: ZonageReglementaire.ZONE_NATURELLE_N,
@@ -36,10 +38,19 @@ describe("buildRecapitulatifSite", () => {
     expect(sections.map((s) => s.id)).toEqual(["site-bati", "environnement", "risques-zonages"]);
   });
 
-  it("répartit les 28 critères sur les sections", () => {
+  it("répartit les 29 critères sur les sections", () => {
     const sections = buildRecapitulatifSite(enrichissement, complementaires);
     const criteres = sections.flatMap((s) => s.criteres).filter((c) => !c.informatif);
-    expect(criteres).toHaveLength(28);
+    expect(criteres).toHaveLength(29);
+  });
+
+  // Sans ce garde-fou, un critère sans résolveur s'affiche "Non disponible" en silence,
+  // dans le récapitulatif comme dans le PDF (cas vécu avec distanceIte).
+  it("expose un résolveur pour chaque critère du registre", () => {
+    const manquants = CRITERES_METADATA_LIST.filter(
+      (meta) => !CRITERES_AVEC_RESOLVEUR.includes(meta.key),
+    );
+    expect(manquants.map((meta) => meta.key)).toEqual([]);
   });
 
   it("formate les valeurs enrichies (surface en m², distance, %)", () => {
@@ -51,6 +62,9 @@ describe("buildRecapitulatifSite", () => {
     expect(criteres.find((c) => c.key === "surfaceBati")?.valeurAffichee).toBe("300 m²");
     expect(criteres.find((c) => c.key === "distanceTransportCommun")?.valeurAffichee).toBe("355 m");
     expect(criteres.find((c) => c.key === "tauxLogementsVacants")?.valeurAffichee).toBe("7,2 %");
+    expect(criteres.find((c) => c.key === "distanceIte")?.valeurAffichee).toBe(
+      "Moins d'1 km, en bon état",
+    );
   });
 
   it("résout les libellés des valeurs enum (auto et manuel)", () => {
@@ -93,7 +107,7 @@ describe("buildRecapitulatifSite", () => {
   it("affiche 'Non disponible' pour les valeurs manquantes", () => {
     const sections = buildRecapitulatifSite(undefined, undefined);
     const criteres = sections.flatMap((s) => s.criteres);
-    expect(criteres).toHaveLength(29);
+    expect(criteres).toHaveLength(30);
     expect(criteres.every((c) => c.valeurAffichee === "Non disponible")).toBe(true);
   });
 

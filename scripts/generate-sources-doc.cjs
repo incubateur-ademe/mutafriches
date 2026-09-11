@@ -15,6 +15,8 @@ const {
   getCriteresManuels,
   getCriteresPourSource,
   MENTION_SOURCE_SANS_CRITERE,
+  CRITERES_STATS,
+  POIDS_TOTAL_AFFICHE,
 } = require("../packages/shared-types/dist/index.js");
 
 const TYPE_LABELS = {
@@ -66,10 +68,10 @@ function genererMarkdown() {
     "",
     "## Comment sont utilisées ces données",
     "",
-    "L'analyse de mutabilité repose sur 27 critères, notés pour 7 usages possibles d'une friche.",
-    "17 critères sont **enrichis automatiquement** à partir des sources ci-dessous ; 10 sont",
+    `L'analyse de mutabilité repose sur ${CRITERES_STATS.total} critères, notés pour 7 usages possibles d'une friche.`,
+    `${CRITERES_STATS.automatiques} critères sont **enrichis automatiquement** à partir des sources ci-dessous ; ${CRITERES_STATS.manuels} sont`,
     "**saisis manuellement** par l'utilisateur. Chaque critère porte un poids ; le poids total",
-    "est de 29,5. La part des critères effectivement renseignés détermine l'indice de fiabilité",
+    `est de ${POIDS_TOTAL_AFFICHE}. La part des critères effectivement renseignés détermine l'indice de fiabilité`,
     "de l'analyse.",
     "",
     "## Sources enrichies automatiquement",

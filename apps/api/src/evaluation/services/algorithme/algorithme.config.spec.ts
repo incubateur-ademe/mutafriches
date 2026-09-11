@@ -12,8 +12,8 @@ import { NOMBRE_CRITERES_UTILISES } from "./algorithme.constants";
  * l'algorithme »). Mettre à jour les valeurs attendues ci-dessous ET la doc.
  */
 describe("POIDS_CRITERES — cohérence avec la doc de l'algorithme", () => {
-  const NOMBRE_CRITERES_ATTENDU = 28;
-  const POIDS_TOTAL_ATTENDU = 30;
+  const NOMBRE_CRITERES_ATTENDU = 29;
+  const POIDS_TOTAL_ATTENDU = 31;
 
   it(`comporte exactement ${NOMBRE_CRITERES_ATTENDU} critères`, () => {
     expect(NOMBRE_CRITERES_UTILISES).toBe(NOMBRE_CRITERES_ATTENDU);

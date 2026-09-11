@@ -43,6 +43,25 @@ const getDistanceTransportMessage = (enrichmentData: EnrichissementOutputDto): s
 };
 
 /**
+ * Détermine le message à afficher pour la distance au réseau de chaleur.
+ *
+ * `null` couvre deux cas côté France Chaleur Urbaine — aucun réseau à proximité, ou réseau
+ * connu dont le tracé n'est pas disponible : aucune distance n'est affichable, mais la
+ * recherche a bien eu lieu, contrairement à `undefined` (source en échec).
+ */
+const getDistanceReseauChaleurMessage = (enrichmentData: EnrichissementOutputDto): string => {
+  if (enrichmentData.distanceReseauChaleur === null) {
+    return "Aucun réseau de chaleur à proximité";
+  }
+
+  if (enrichmentData.distanceReseauChaleur !== undefined) {
+    return formatDistance(enrichmentData.distanceReseauChaleur);
+  }
+
+  return "";
+};
+
+/**
  * Transforme les données d'enrichissement brutes en format UI
  * Les valeurs vides ("") indiquent une donnée non accessible
  */
@@ -61,6 +80,7 @@ export const transformEnrichmentToUiData = (
 
     // Données électriques formatées
     distanceRaccordement: formatDistance(enrichmentData.distanceRaccordementElectrique),
+    distanceReseauChaleur: getDistanceReseauChaleurMessage(enrichmentData),
 
     // Risques naturels (badges cumulatifs)
     risquesNaturels: buildRisquesNaturelsBadges(enrichmentData),

@@ -10,12 +10,14 @@ const STATUS_LABELS: Record<ApiHealthStatus, string> = {
   up: "OK",
   slow: "Lent",
   down: "Indisponible",
+  "non-teste": "Non encore vérifiée",
 };
 
 const STATUS_BADGE_CLASSES: Record<ApiHealthStatus, string> = {
   up: "fr-badge fr-badge--success fr-badge--sm",
   slow: "fr-badge fr-badge--warning fr-badge--sm",
   down: "fr-badge fr-badge--error fr-badge--sm",
+  "non-teste": "fr-badge fr-badge--info fr-badge--sm",
 };
 
 function formatDate(iso: string | null): string {
@@ -68,6 +70,7 @@ export function ApisExternesPanel() {
   const apisDown = snapshot?.apis.filter((a) => a.status === "down") ?? [];
   const grouped = useMemo(() => groupByCategory(snapshot?.apis ?? []), [snapshot]);
   const noSnapshotYet = snapshot !== null && snapshot.checkedAt === null;
+  const nonTestees = snapshot?.summary.nonTeste ?? 0;
 
   return (
     <>
@@ -95,6 +98,19 @@ export function ApisExternesPanel() {
         </div>
       )}
 
+      {snapshot && snapshot.checkedAt && nonTestees > 0 && (
+        <div className="fr-alert fr-alert--info fr-mb-4w">
+          <h3 className="fr-alert__title">
+            {nonTestees} API{nonTestees > 1 ? "s" : ""} non encore vérifiée
+            {nonTestees > 1 ? "s" : ""}
+          </h3>
+          <p>
+            Ces sources ont été ajoutées depuis le dernier cycle de health-check. Elles seront
+            mesurées au prochain passage quotidien.
+          </p>
+        </div>
+      )}
+
       {snapshot && snapshot.checkedAt && apisDown.length > 0 && (
         <div className="fr-alert fr-alert--warning fr-mb-4w">
           <h3 className="fr-alert__title">
@@ -116,10 +132,13 @@ export function ApisExternesPanel() {
           Dernier check : <strong>{formatDate(snapshot.checkedAt)}</strong> — UP :{" "}
           {snapshot.summary.up} · Lent : {snapshot.summary.slow} · Indisponible :{" "}
           {snapshot.summary.down}
+          {nonTestees > 0
+            ? ` · Non encore vérifiée${nonTestees > 1 ? "s" : ""} : ${nonTestees}`
+            : ""}
         </p>
       )}
 
-      {snapshot && snapshot.checkedAt && (
+      {snapshot && snapshot.apis.length > 0 && (
         <div className="fr-table fr-table--bordered">
           <div className="fr-table__wrapper">
             <div className="fr-table__container">

@@ -21,6 +21,7 @@ import {
   SEUIL_EMPRISE_BATI_FAIBLE,
   SEUIL_DISTANCE_TC_PROCHE,
   SEUIL_DISTANCE_RACCORDEMENT_ELEC,
+  SEUIL_DISTANCE_RESEAU_CHALEUR,
 } from "./constants";
 
 // ============================================================================
@@ -355,6 +356,15 @@ const resolveZonageAbcLogement = (data: TagInputData): string | null => {
   return zonage === "abis" || zonage === "a" ? "Zone A logement" : null;
 };
 
+// --- Proximité d'un réseau de chaleur urbain ---
+// Tag informationnel affiché quel que soit l'usage : l'algorithme ne le valorise que pour
+// les usages bâtis, mais la possibilité de raccordement reste une information utile.
+const resolveReseauChaleur = (data: TagInputData): string | null => {
+  const distance = data.enrichmentData.distanceReseauChaleur;
+  if (distance === undefined || distance === null) return null;
+  return distance < SEUIL_DISTANCE_RESEAU_CHALEUR ? "réseau de chaleur" : null;
+};
+
 // --- Accès au fret ferroviaire (ITE) ---
 // Tag informationnel affiché si une ITE en bon état est à moins d'1 km du site,
 // quel que soit l'usage. L'algorithme ne valorise ce critère que pour Industrie
@@ -378,6 +388,7 @@ export const USAGE_TAGS_CONFIG: UsageTagsConfig = {
     { critereId: "zonageReglementaire", resolver: resolveZonageReglementaire },
     { critereId: "zonageAbcLogement", resolver: resolveZonageAbcLogement },
     { critereId: "distanceIte", resolver: resolveAccesFret },
+    { critereId: "distanceReseauChaleur", resolver: resolveReseauChaleur },
   ],
 
   // 2 - Équipements publics
@@ -389,6 +400,7 @@ export const USAGE_TAGS_CONFIG: UsageTagsConfig = {
     { critereId: "risquesNaturels", resolver: resolveRisquesNaturels },
     { critereId: "risquesTechnologiques", resolver: resolveRisquesTechnologiques },
     { critereId: "distanceIte", resolver: resolveAccesFret },
+    { critereId: "distanceReseauChaleur", resolver: resolveReseauChaleur },
   ],
 
   // 3 - Bureaux (Tertiaire)
@@ -400,6 +412,7 @@ export const USAGE_TAGS_CONFIG: UsageTagsConfig = {
     { critereId: "proximiteCommercesServices", resolver: resolveProximiteCommercesServices },
     { critereId: "zonageReglementaire", resolver: resolveZonageReglementaire },
     { critereId: "distanceIte", resolver: resolveAccesFret },
+    { critereId: "distanceReseauChaleur", resolver: resolveReseauChaleur },
   ],
 
   // 4 - Équipements culturels et touristiques
@@ -411,6 +424,7 @@ export const USAGE_TAGS_CONFIG: UsageTagsConfig = {
     { critereId: "zonagePatrimonial", resolver: resolveZonagePatrimonialCulture },
     { critereId: "qualitePaysage", resolver: resolveQualitePaysage },
     { critereId: "distanceIte", resolver: resolveAccesFret },
+    { critereId: "distanceReseauChaleur", resolver: resolveReseauChaleur },
   ],
 
   // 5 - Bâtiments industriels
@@ -419,6 +433,7 @@ export const USAGE_TAGS_CONFIG: UsageTagsConfig = {
     { critereId: "desserteReseaux", resolver: resolveDesserteReseaux },
     { critereId: "qualiteVoieDesserte", resolver: resolveQualiteVoieDesserte },
     { critereId: "distanceIte", resolver: resolveAccesFret },
+    { critereId: "distanceReseauChaleur", resolver: resolveReseauChaleur },
     { critereId: "zonageReglementaire", resolver: resolveZonageReglementaire },
     { critereId: "zonageEnvironnemental", resolver: resolveZonageEnvironnementalIndustrie },
     { critereId: "zonagePatrimonial", resolver: resolveZonagePatrimonialIndustrie },
@@ -434,6 +449,7 @@ export const USAGE_TAGS_CONFIG: UsageTagsConfig = {
     { critereId: "continuite", resolver: resolveContinuiteEcologiquePhotovoltaique },
     { critereId: "zoneEnr", resolver: resolveZoneEnrPhotovoltaique },
     { critereId: "distanceIte", resolver: resolveAccesFret },
+    { critereId: "distanceReseauChaleur", resolver: resolveReseauChaleur },
   ],
 
   // 7 - Espace renaturé
@@ -447,5 +463,6 @@ export const USAGE_TAGS_CONFIG: UsageTagsConfig = {
     { critereId: "especesProtegees", resolver: resolveEspecesProtegeesRenaturation },
     { critereId: "zoneHumide", resolver: resolveZoneHumideRenaturation },
     { critereId: "distanceIte", resolver: resolveAccesFret },
+    { critereId: "distanceReseauChaleur", resolver: resolveReseauChaleur },
   ],
 };

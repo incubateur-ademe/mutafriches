@@ -52,6 +52,8 @@ export class Site {
   distanceTransportCommun: number | null;
   proximiteCommercesServices: boolean;
   distanceRaccordementElectrique: number;
+  /** Distance en mètres au réseau de chaleur. null = aucune distance exploitable */
+  distanceReseauChaleur?: number | null;
   tauxLogementsVacants: number;
   presenceRisquesTechnologiques: boolean;
   risqueRetraitGonflementArgile?: RisqueRetraitGonflementArgile;
@@ -145,6 +147,9 @@ export class Site {
     site.distanceTransportCommun = donnees.distanceTransportCommun;
     site.proximiteCommercesServices = donnees.proximiteCommercesServices;
     site.distanceRaccordementElectrique = donnees.distanceRaccordementElectrique;
+    // Affectation directe : un ternaire écraserait `null` (recherche sans résultat) et `0`
+    // en `undefined` (donnée indisponible), deux sémantiques distinctes pour la fiabilité.
+    site.distanceReseauChaleur = donnees.distanceReseauChaleur;
     site.tauxLogementsVacants = donnees.tauxLogementsVacants;
 
     // Risques et pollution

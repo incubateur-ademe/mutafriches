@@ -98,6 +98,21 @@ export const API_MONITORING_ENTRIES: readonly ApiMonitoringEntry[] = [
     healthCheckUrl:
       "https://opendata.enedis.fr/data-fair/api/v1/datasets/poste-electrique/lines?size=1",
   },
+  {
+    key: "france-chaleur-urbaine",
+    name: "France Chaleur Urbaine",
+    category: "Énergie",
+    description: "Distance au réseau de chaleur urbain le plus proche",
+    docUrl: "https://www.data.gouv.fr/dataservices/api-france-chaleur-urbaine",
+    adapterFile:
+      "apps/api/src/enrichissement/adapters/france-chaleur-urbaine/france-chaleur-urbaine.service.ts",
+    baseUrl: "https://france-chaleur-urbaine.beta.gouv.fr/api",
+    healthCheckMethod: "GET",
+    // Coordonnées réelles plutôt qu'un appel nu : l'API répond 400 sans paramètres, ce qui
+    // ne détecterait pas une régression de contenu.
+    healthCheckUrl:
+      "https://france-chaleur-urbaine.beta.gouv.fr/api/v1/eligibility?lat=48.8566&lon=2.3522",
+  },
   geoRisquesEntry({
     key: "georisques-rga",
     name: "GéoRisques — RGA",
@@ -247,7 +262,7 @@ export const API_MONITORING_ENTRIES: readonly ApiMonitoringEntry[] = [
   {
     key: "zaer-wfs",
     name: "IGN WFS — ZAER",
-    category: "Énergies",
+    category: "Énergie",
     description: "Zones d'accélération des énergies renouvelables",
     docUrl:
       "https://www.data.gouv.fr/datasets/zones-d-acceleration-pour-l-implantation-d-energies-renouvelables/",

@@ -66,6 +66,23 @@ export const SOURCES_DONNEES: SourceDonnees[] = [
       "intermédiaire, éloigné) pour évaluer la facilité de raccordement électrique.",
   },
   {
+    id: "france-chaleur-urbaine",
+    nom: "Réseaux de chaleur urbains (France Chaleur Urbaine)",
+    organisme: "France Chaleur Urbaine — ministère de la Transition écologique",
+    type: "api-externe",
+    urlDoc: "https://www.data.gouv.fr/dataservices/api-france-chaleur-urbaine",
+    sourcesEnrichissement: [SourceEnrichissement.FRANCE_CHALEUR_URBAINE],
+    champsRecuperes: [
+      "Distance à vol d'oiseau au réseau de chaleur urbain le plus proche (en mètres)",
+    ],
+    traitementAlgo:
+      "La distance est comparée à un seuil unique de 500 m : sous ce seuil, la possibilité de " +
+      "raccordement valorise fortement les usages résidentiel, équipements et culture, et " +
+      "positivement le tertiaire. Au-delà, l'effet est neutre pour les sept usages. Quand aucune " +
+      "distance n'est exploitable — aucun réseau à proximité, ou réseau connu dont le tracé n'est " +
+      "pas disponible — le site est traité comme situé au-delà du seuil.",
+  },
+  {
     id: "transport-accessibilite",
     nom: "Transport et accessibilité",
     organisme: "API Annuaire de l'administration, IGN Géoplateforme, data.gouv.fr",

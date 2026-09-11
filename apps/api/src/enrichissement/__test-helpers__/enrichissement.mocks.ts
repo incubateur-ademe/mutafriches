@@ -27,8 +27,16 @@ interface MockEnergieEnrichissementService {
   enrichir: Mock;
 }
 
+interface MockReseauChaleurEnrichissementService {
+  enrichir: Mock;
+}
+
 interface MockEnedisService {
   getDistanceRaccordement: Mock;
+}
+
+interface MockFranceChaleurUrbaineService {
+  getEligibilite: Mock;
 }
 
 interface MockTransportEnrichissementService {
@@ -207,11 +215,29 @@ export function createMockEnergieEnrichissementService(): MockEnergieEnrichissem
 }
 
 /**
+ * Mock du ReseauChaleurEnrichissementService
+ */
+export function createMockReseauChaleurEnrichissementService(): MockReseauChaleurEnrichissementService {
+  return {
+    enrichir: vi.fn(),
+  };
+}
+
+/**
  * Mock du EnedisService
  */
 export function createMockEnedisService(): MockEnedisService {
   return {
     getDistanceRaccordement: vi.fn(),
+  };
+}
+
+/**
+ * Mock du FranceChaleurUrbaineService
+ */
+export function createMockFranceChaleurUrbaineService(): MockFranceChaleurUrbaineService {
+  return {
+    getEligibilite: vi.fn(),
   };
 }
 

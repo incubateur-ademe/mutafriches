@@ -55,6 +55,13 @@ export interface EnrichissementOutputDto {
   // Infrastructure
   /** Distance en mètres (convertie en km à la frontière de l'algorithme) */
   distanceRaccordementElectrique: number;
+  /**
+   * Distance en mètres au réseau de chaleur urbain le plus proche (seuil métier en mètres,
+   * aucune conversion). `null` = recherche effectuée, aucune distance exploitable — soit
+   * aucun réseau à proximité, soit un réseau connu dont France Chaleur Urbaine n'a pas le
+   * tracé. Optionnel : les enrichissements antérieurs à v1.13 ne portent pas ce champ.
+   */
+  distanceReseauChaleur?: number | null;
 
   // Contexte urbain
   tauxLogementsVacants: number;

@@ -21,10 +21,10 @@ import {
 import { ScoreImpact, ScoreParUsage } from "./algorithme.types";
 
 // Configuration des poids
-// 28 critères au total, poids total = 30 (source de vérité de la doc de l'algo)
+// 29 critères au total, poids total = 31 (source de vérité de la doc de l'algo)
 export const POIDS_CRITERES = {
   // ------------------------------------------------
-  // 18 critères enrichis automatiquement (module enrichissement) — poids 18.5
+  // 19 critères enrichis automatiquement (module enrichissement) — poids 19.5
   // ------------------------------------------------
   surfaceSite: 2,
   surfaceBati: 2,
@@ -33,6 +33,7 @@ export const POIDS_CRITERES = {
   distanceTransportCommun: 1,
   proximiteCommercesServices: 1,
   distanceRaccordementElectrique: 1,
+  distanceReseauChaleur: 1,
   tauxLogementsVacants: 1,
   risqueRetraitGonflementArgile: 0.5,
   risqueCavitesSouterraines: 0.5,
@@ -1085,6 +1086,29 @@ export const MATRICE_SCORING = {
       [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
       [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.TRES_NEGATIF,
     };
+  },
+
+  // Distance au réseau de chaleur urbain en mètres (seuil métier en m, aucune conversion)
+  distanceReseauChaleur: (value: number): ScoreParUsage => {
+    return value < 500
+      ? {
+          [UsageType.RESIDENTIEL]: ScoreImpact.TRES_POSITIF,
+          [UsageType.EQUIPEMENTS]: ScoreImpact.TRES_POSITIF,
+          [UsageType.CULTURE]: ScoreImpact.TRES_POSITIF,
+          [UsageType.TERTIAIRE]: ScoreImpact.POSITIF,
+          [UsageType.INDUSTRIE]: ScoreImpact.NEUTRE,
+          [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
+          [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
+        }
+      : {
+          [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
+          [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
+          [UsageType.CULTURE]: ScoreImpact.NEUTRE,
+          [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
+          [UsageType.INDUSTRIE]: ScoreImpact.NEUTRE,
+          [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
+          [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
+        };
   },
 
   // Zone d'accélération des énergies renouvelables (ZAER)

@@ -245,6 +245,27 @@ export const QualificationSitePage: React.FC = () => {
             value={raccordementEauAuto}
             tooltip="Déduit automatiquement de la présence de bâti sur le site (surface bâtie BDNB). Un site nu est considéré non raccordé."
           />
+
+          <EnrichedInfoField
+            id="distance-reseau-chaleur"
+            label="Distance au réseau de chaleur"
+            value={uiData?.distanceReseauChaleur || "-"}
+            tooltip={
+              <>
+                Distance séparant le site du réseau de chaleur le plus proche.
+                <br />
+                Récupéré depuis l'API France Chaleur Urbaine :<br />
+                <a
+                  href="https://www.data.gouv.fr/dataservices/api-france-chaleur-urbaine"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="fr-link fr-text--xs"
+                >
+                  data.gouv.fr/dataservices/api-france-chaleur-urbaine
+                </a>
+              </>
+            }
+          />
         </div>
 
         <hr className="fr-my-4w" />

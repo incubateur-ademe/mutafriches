@@ -45,8 +45,8 @@ describe("SOURCES_DONNEES", () => {
     expect(getCriteresPourSource(icu!)).toHaveLength(0);
   });
 
-  it("représente le poids total de l'algorithme (30)", () => {
+  it("représente le poids total de l'algorithme (31)", () => {
     const poidsTotal = CRITERES_METADATA_LIST.reduce((somme, c) => somme + c.poids, 0);
-    expect(poidsTotal).toBe(30);
+    expect(poidsTotal).toBe(31);
   });
 });

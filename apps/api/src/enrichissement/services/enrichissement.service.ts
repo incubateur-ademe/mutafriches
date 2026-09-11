@@ -12,6 +12,7 @@ import { Site as SiteEvaluation } from "../../evaluation/entities/site.entity";
 import { Site } from "../entities/site.entity";
 import { CadastreEnrichissementService } from "./cadastre/cadastre-enrichissement.service";
 import { EnergieEnrichissementService } from "./energie/energie-enrichissement.service";
+import { ReseauChaleurEnrichissementService } from "./energie/reseau-chaleur-enrichissement.service";
 import { TransportEnrichissementService } from "./transport/transport-enrichissement.service";
 import { IteFretEnrichissementService } from "./transport/ite-fret-enrichissement.service";
 import { UrbanismeEnrichissementService } from "./urbanisme/urbanisme-enrichissement.service";
@@ -43,6 +44,7 @@ export class EnrichissementService {
     // Sous-domaines d'enrichissement
     private readonly cadastreEnrichissement: CadastreEnrichissementService,
     private readonly energieEnrichissement: EnergieEnrichissementService,
+    private readonly reseauChaleurEnrichissement: ReseauChaleurEnrichissementService,
     private readonly transportEnrichissement: TransportEnrichissementService,
     private readonly iteFretEnrichissement: IteFretEnrichissementService,
     private readonly urbanismeEnrichissement: UrbanismeEnrichissementService,
@@ -132,6 +134,15 @@ export class EnrichissementService {
       // 2. ENERGIE (distance raccordement électrique)
       const energieResult = await this.energieEnrichissement.enrichir(siteEval);
       this.mergeEnrichmentResult(energieResult, sourcesUtilisees, champsManquants, sourcesEchouees);
+
+      // 2.b RESEAU DE CHALEUR URBAIN (France Chaleur Urbaine)
+      const reseauChaleurResult = await this.reseauChaleurEnrichissement.enrichir(siteEval);
+      this.mergeEnrichmentResult(
+        reseauChaleurResult,
+        sourcesUtilisees,
+        champsManquants,
+        sourcesEchouees,
+      );
 
       // 3. TRANSPORT (distance transport en commun)
       const transportResult = await this.transportEnrichissement.enrichir(siteEval);
@@ -243,6 +254,7 @@ export class EnrichissementService {
         surfaceSite: siteEval.surfaceSite,
         surfaceBati: siteEval.surfaceBati,
         distanceRaccordementElectrique: siteEval.distanceRaccordementElectrique,
+        distanceReseauChaleur: siteEval.distanceReseauChaleur,
         risqueRetraitGonflementArgile: siteEval.risqueRetraitGonflementArgile,
         risqueCavitesSouterraines: siteEval.risqueCavitesSouterraines,
         risqueInondation: siteEval.risqueInondation,
@@ -407,6 +419,15 @@ export class EnrichissementService {
       const energieResult = await this.energieEnrichissement.enrichir(siteEval);
       this.mergeEnrichmentResult(energieResult, sourcesUtilisees, champsManquants, sourcesEchouees);
 
+      // 2.b RESEAU DE CHALEUR URBAIN (France Chaleur Urbaine)
+      const reseauChaleurResult = await this.reseauChaleurEnrichissement.enrichir(siteEval);
+      this.mergeEnrichmentResult(
+        reseauChaleurResult,
+        sourcesUtilisees,
+        champsManquants,
+        sourcesEchouees,
+      );
+
       // 4. TRANSPORT -> centroïde du site
       const transportResult = await this.transportEnrichissement.enrichir(siteEval);
       this.mergeEnrichmentResult(
@@ -533,6 +554,7 @@ export class EnrichissementService {
 
         // Données enrichies
         distanceRaccordementElectrique: siteEval.distanceRaccordementElectrique,
+        distanceReseauChaleur: siteEval.distanceReseauChaleur,
         risqueRetraitGonflementArgile: siteEval.risqueRetraitGonflementArgile,
         risqueCavitesSouterraines: siteEval.risqueCavitesSouterraines,
         risqueInondation: siteEval.risqueInondation,

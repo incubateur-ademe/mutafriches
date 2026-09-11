@@ -15,13 +15,13 @@ apps/api/src/evaluation/
 │       ├── metadata.dto.ts                  # Enums et versions (GET /evaluation/metadata)
 │       └── mutabilite.dto.ts                # Résultats de calcul (POST /evaluation/calculer)
 ├── entities/
-│   ├── site.entity.ts                       # Objet métier central (27 critères)
+│   ├── site.entity.ts                       # Objet métier central (29 critères)
 │   └── evaluation.entity.ts                 # Évaluation persistée (snapshots + résultats)
 ├── repositories/
 │   └── evaluation.repository.ts             # Persistance + cache (Drizzle ORM)
 ├── services/
 │   ├── algorithme/
-│   │   ├── algorithme.config.ts             # Matrice 27×7 (critères × usages)
+│   │   ├── algorithme.config.ts             # Matrice 29×7 (critères × usages)
 │   │   ├── algorithme.constants.ts          # Seuils, poids, niveaux
 │   │   ├── algorithme.types.ts              # Types internes algorithme
 │   │   ├── fiabilite.calculator.ts          # Calcul fiabilité (0-10)
@@ -81,9 +81,9 @@ OrchestrateurService.calculerMutabilite()
 
 ## Algorithme de scoring
 
-### Matrice 28 critères × 7 usages
+### Matrice 29 critères × 7 usages
 
-L'algorithme évalue 28 critères pour chacun des 7 usages possibles d'une friche.
+L'algorithme évalue 29 critères pour chacun des 7 usages possibles d'une friche.
 
 #### Les 7 usages
 
@@ -105,14 +105,14 @@ POSITIF      = 1
 TRES_POSITIF = 2
 ```
 
-#### Les 28 critères (18 enrichis + 10 complémentaires)
+#### Les 29 critères (19 enrichis + 10 complémentaires)
 
 > Source de vérité : `POIDS_CRITERES` dans `algorithme.config.ts` (les poids ne changent
 > pas avec la dérivation). `raccordementEau` reste structurellement dans
 > `DonneesComplementairesInputDto` (et donc dans le snapshot de cache) mais sa valeur est
 > désormais **dérivée automatiquement** de `surfaceBati`, plus saisie par l'utilisateur.
 
-**Enrichis automatiquement** (poids total : 18.5) :
+**Enrichis automatiquement** (poids total : 19.5) :
 
 | Critère | Poids | Type |
 |---------|-------|------|
@@ -123,6 +123,7 @@ TRES_POSITIF = 2
 | `distanceTransportCommun` | 1 | Numérique (2 seuils : <500m / >=500m) |
 | `proximiteCommercesServices` | 1 | Booléen |
 | `distanceRaccordementElectrique` | 1 | Numérique (3 seuils en km ; DTO en m) |
+| `distanceReseauChaleur` | 1 | Numérique (2 seuils en m : <500 / >=500) |
 | `tauxLogementsVacants` | 1 | Numérique (4 seuils) |
 | `risqueRetraitGonflementArgile` | 0.5 | Enum (3 valeurs) |
 | `risqueCavitesSouterraines` | 0.5 | Enum (2 valeurs) |
@@ -135,13 +136,16 @@ TRES_POSITIF = 2
 | `zonageAbcLogement` | 0.5 | Enum (A / Abis / B1 / B2 / C) |
 | `distanceIte` | 0.5 | Enum (<1km bon état / <1km mauvais état / >1km) |
 
-> **Unité des distances** (v1.10) : `distanceAutoroute` et `distanceRaccordementElectrique` sont enrichis en **mètres** (IGN WFS, Enedis) et stockés ainsi dans le DTO/Site ; `extraireCriteres` les convertit en **km** via `metresVersKm` avant scoring (la matrice reste en km, source de vérité Excel). `distanceTransportCommun` est en mètres des deux côtés (pas de conversion). Cf. ADR-0027.
+> **Unité des distances** (v1.10) : `distanceAutoroute` et `distanceRaccordementElectrique` sont enrichis en **mètres** (IGN WFS, Enedis) et stockés ainsi dans le DTO/Site ; `extraireCriteres` les convertit en **km** via `metresVersKm` avant scoring (la matrice reste en km, source de vérité Excel). `distanceTransportCommun` et `distanceReseauChaleur` sont en mètres des deux côtés (pas de conversion). Cf. ADR-0027.
 
-**Complémentaires manuels** (poids total : 10.5) :
+> **Distance nulle au réseau de chaleur** (v1.13) : `distanceReseauChaleur` vaut `null` quand aucune distance n'est exploitable (aucun réseau à proximité, ou réseau connu sans tracé). `extraireCriteres` la ramène au seuil de 500 m plutôt que de laisser le critère être ignoré — sinon un site sans réseau connu et un site simplement éloigné n'obtiennent pas le même indice. Cf. ADR-0036.
+
+**Complémentaires manuels** (poids total : 11.5) :
 
 | Critère | Poids | Type |
 |---------|-------|------|
 | `typeProprietaire` | 1 | Enum (5 valeurs dont NE_SAIT_PAS) |
+| `raccordementEau` | 1 | Enum (Oui / Non) — dérivé de `surfaceBati`, plus saisi (ADR-0019) |
 | `etatBatiInfrastructure` | 2 | Enum (7 valeurs) |
 | `presencePollution` | 2 | Enum (6 valeurs) |
 | `valeurArchitecturaleHistorique` | 1 | Enum (6 valeurs) |
@@ -151,7 +155,7 @@ TRES_POSITIF = 2
 | `presenceEspecesProtegees` | 1 | Enum (Oui / Non / Ne sait pas) |
 | `presenceZoneHumide` | 1 | Enum (Oui / Non / Ne sait pas) |
 
-**Poids total : 30**
+**Poids total : 31**
 
 ### Formule de calcul
 
@@ -333,7 +337,7 @@ Modifier uniquement les seuils dans la fonction. Ne pas changer la structure.
 
 ### Modifier les poids
 
-Les poids sont dans `POIDS_CRITERES` (`algorithme.config.ts`). Le poids total (29.5) est recalculé automatiquement par le `FiabiliteCalculator`.
+Les poids sont dans `POIDS_CRITERES` (`algorithme.config.ts`). Le poids total (31) est recalculé automatiquement par le `FiabiliteCalculator`.
 
 ---
 
@@ -341,7 +345,7 @@ Les poids sont dans `POIDS_CRITERES` (`algorithme.config.ts`). Le poids total (2
 
 ### Algorithme
 
-- [ ] Matrice 27×7 cohérente (chaque critère a un score pour chaque usage)
+- [ ] Matrice 29×7 cohérente (chaque critère a un score pour chaque usage)
 - [ ] Poids déclarés dans `POIDS_CRITERES` pour chaque critère
 - [ ] Score NEUTRE (0.5) géré dans les deux sens (avantages + contraintes)
 - [ ] Critères ignorés si `undefined`, `null`, ou `"ne-sait-pas"`

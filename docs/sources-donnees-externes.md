@@ -10,10 +10,10 @@ qu'ils alimentent.
 
 ## Comment sont utilisées ces données
 
-L'analyse de mutabilité repose sur 27 critères, notés pour 7 usages possibles d'une friche.
-17 critères sont **enrichis automatiquement** à partir des sources ci-dessous ; 10 sont
+L'analyse de mutabilité repose sur 29 critères, notés pour 7 usages possibles d'une friche.
+19 critères sont **enrichis automatiquement** à partir des sources ci-dessous ; 10 sont
 **saisis manuellement** par l'utilisateur. Chaque critère porte un poids ; le poids total
-est de 29,5. La part des critères effectivement renseignés détermine l'indice de fiabilité
+est de 31. La part des critères effectivement renseignés détermine l'indice de fiabilité
 de l'analyse.
 
 ## Sources enrichies automatiquement
@@ -82,6 +82,26 @@ La distance au point de raccordement le plus proche est classée par seuils (pro
 | Critère d'évaluation alimenté | Poids |
 | --- | --- |
 | Distance au raccordement électrique | 1 |
+
+### Réseaux de chaleur urbains (France Chaleur Urbaine)
+
+- **Type** : API externe
+- **Opérateur** : France Chaleur Urbaine — ministère de la Transition écologique
+- **Documentation** : https://www.data.gouv.fr/dataservices/api-france-chaleur-urbaine
+
+**Champs récupérés**
+
+- Distance à vol d'oiseau au réseau de chaleur urbain le plus proche (en mètres)
+
+**Traitement dans l'algorithme**
+
+La distance est comparée à un seuil unique de 500 m : sous ce seuil, la possibilité de raccordement valorise fortement les usages résidentiel, équipements et culture, et positivement le tertiaire. Au-delà, l'effet est neutre pour les sept usages. Quand aucune distance n'est exploitable — aucun réseau à proximité, ou réseau connu dont le tracé n'est pas disponible — le site est traité comme situé au-delà du seuil.
+
+**Critères d'évaluation alimentés**
+
+| Critère d'évaluation alimenté | Poids |
+| --- | --- |
+| Distance au réseau de chaleur | 1 |
 
 ### Transport et accessibilité
 

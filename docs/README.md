@@ -27,13 +27,13 @@
            │
            ↓
 ┌──────────────────────┐
-│  ENRICHISSEMENT      │ ←── ~10 APIs externes + 4 bases locales
+│  ENRICHISSEMENT      │ ←── APIs externes + 7 bases locales
 │  10 domaines         │     (IGN, Enedis, GeoRisques, ZAER...)
 └──────────┬───────────┘
            │
            ↓
 ┌──────────────────────┐
-│  ÉVALUATION          │ ←── Matrice 27 critères × 7 usages
+│  ÉVALUATION          │ ←── Matrice 29 critères × 7 usages
 │  Mutabilité          │
 └──────────┬───────────┘
            │
@@ -102,11 +102,11 @@ mutafriches/
 
 ### Enrichissement
 
-Le module d'enrichissement interroge une dizaine d'**APIs de données externes** et **4 bases locales PostGIS** pour pré-remplir automatiquement les critères d'un site (mono ou multi-parcelle) :
+Le module d'enrichissement interroge une dizaine d'**APIs de données externes** et **7 bases locales PostGIS** pour pré-remplir automatiquement les critères d'un site (mono ou multi-parcelle) :
 
 - **10 domaines** : Cadastre, Énergie, Transport, Urbanisme, Risques Naturels, Risques Technologiques, Pollution, Zonages, ENR/ZAER, GeoRisques brut
 - **APIs externes** : IGN, BDNB, Enedis, GeoRisques (×13 endpoints), API Carto, ZAER WFS, data.gouv.fr...
-- **4 bases locales** : Transport, BPE (commerces), Sites pollués ADEME, LOVAC (logements vacants)
+- **7 bases locales** : Transport, BPE (commerces), Sites pollués ADEME, ITE fret, LOVAC (logements vacants), Zonage ABC, ICU (îlots de chaleur)
 - **Multi-parcelle** : Support de 1 à 20 parcelles par site
 - **Cache 24h** : Optimisation des performances
 
@@ -122,7 +122,7 @@ L'algorithme calcule un **indice de mutabilité 0-100%** pour **7 usages** possi
 6. Renaturation
 7. Photovoltaïque au sol
 
-**Matrice** : 27 critères × 7 usages
+**Matrice** : 29 critères × 7 usages
 **Fiabilité** : Indice 0-10 selon la complétude des données d'entrée (pondéré par poids des critères)
 
 ### Intégration
