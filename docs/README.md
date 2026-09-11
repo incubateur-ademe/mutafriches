@@ -11,6 +11,7 @@
 - **[Algorithme d'Évaluation](./evaluation-mutabilite.md)** - Calcul des indices de mutabilité
 - **[Tracking & Analytics](./analytics-tracking.md)** - Événements, session vs utilisateur, requêtes Metabase
 - **[Ajouter un partenaire](./ajout-partenaire.md)** - Todolist pour publier une nouvelle page partenaire multisite
+- **[Vulnérabilités de dépendances](./security/vulnerabilites-acceptees.md)** - Suivi `pnpm audit` : corrections, acceptations justifiées, planchers d'override
 
 ### Pour les intégrateurs
 
