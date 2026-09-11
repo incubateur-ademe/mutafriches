@@ -153,9 +153,14 @@ Calculer la distance au point de raccordement électrique et au réseau de chale
    - Si manquantes → échec, champ `distanceRaccordementElectrique` non renseigné
 
 2. **Calcul distance**
-   - Recherche postes électriques (HTA) et lignes BT dans un rayon configuré
+   - Recherche postes électriques (HTA, rayon 5 km) et lignes BT (rayon 500 m)
    - Calcul distance Haversine entre parcelle et infrastructure la plus proche
    - Retour : distance en mètres (arrondie)
+
+3. **Aucune infrastructure dans les rayons** → `null`, jamais une distance sentinelle.
+   C'est un succès de recherche : le champ compte dans la fiabilité, et l'algorithme le
+   ramène à la tranche « au-delà de 5 km ». Une sentinelle (999 km, jusqu'en v1.33)
+   remontait telle quelle jusqu'à l'affichage utilisateur.
 
 #### 2.2 Réseau de chaleur urbain
 
@@ -180,7 +185,7 @@ Calculer la distance au point de raccordement électrique et au réseau de chale
 
 ```typescript
 {
-  distanceRaccordementElectrique: number       // Distance en mètres
+  distanceRaccordementElectrique: number | null // Distance en mètres, null si hors rayons
   distanceReseauChaleur?: number | null        // Distance en mètres, null si non exploitable
 }
 ```

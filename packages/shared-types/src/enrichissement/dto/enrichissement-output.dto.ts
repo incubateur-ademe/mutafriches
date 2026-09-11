@@ -53,8 +53,12 @@ export interface EnrichissementOutputDto {
   distanceIteMetres?: number;
 
   // Infrastructure
-  /** Distance en mètres (convertie en km à la frontière de l'algorithme) */
-  distanceRaccordementElectrique: number;
+  /**
+   * Distance en mètres (convertie en km à la frontière de l'algorithme).
+   * `null` = recherche effectuée, aucune infrastructure trouvée dans les rayons Enedis
+   * (5 km pour les postes, 500 m pour les lignes BT).
+   */
+  distanceRaccordementElectrique: number | null;
   /**
    * Distance en mètres au réseau de chaleur urbain le plus proche (seuil métier en mètres,
    * aucune conversion). `null` = recherche effectuée, aucune distance exploitable — soit

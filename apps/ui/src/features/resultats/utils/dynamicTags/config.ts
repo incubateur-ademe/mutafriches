@@ -110,8 +110,11 @@ const resolveDesserteReseaux = (data: TagInputData): string | null => {
   const distanceElecMetres = data.enrichmentData.distanceRaccordementElectrique;
 
   const eauOk = raccordementEau === RaccordementEau.OUI;
+  // null = aucune infrastructure dans les rayons de recherche, donc pas de desserte
   const elecOk =
-    distanceElecMetres !== undefined && distanceElecMetres <= SEUIL_DISTANCE_RACCORDEMENT_ELEC;
+    distanceElecMetres !== undefined &&
+    distanceElecMetres !== null &&
+    distanceElecMetres <= SEUIL_DISTANCE_RACCORDEMENT_ELEC;
 
   if (eauOk || elecOk) return "desserte réseaux";
 

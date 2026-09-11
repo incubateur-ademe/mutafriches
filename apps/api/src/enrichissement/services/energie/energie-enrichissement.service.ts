@@ -49,10 +49,13 @@ export class EnergieEnrichissementService {
       );
 
       if (distanceResult.success && distanceResult.data) {
-        site.distanceRaccordementElectrique = distanceResult.data.distance;
+        const distance = distanceResult.data.distance;
+        site.distanceRaccordementElectrique = distance;
         sourcesUtilisees.push(SourceEnrichissement.ENEDIS_RACCORDEMENT);
         this.logger.log(
-          `Distance raccordement électrique: ${Math.round(distanceResult.data.distance)}m pour ${site.identifiantParcelle}`,
+          distance === null
+            ? `Aucune infrastructure électrique dans les rayons de recherche pour ${site.identifiantParcelle}`
+            : `Distance raccordement électrique: ${Math.round(distance)}m pour ${site.identifiantParcelle}`,
         );
       } else {
         this.logger.warn(`Échec récupération Enedis: ${distanceResult.error || "Aucune donnée"}`);

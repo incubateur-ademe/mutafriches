@@ -43,6 +43,24 @@ const getDistanceTransportMessage = (enrichmentData: EnrichissementOutputDto): s
 };
 
 /**
+ * Détermine le message à afficher pour la distance au raccordement électrique.
+ *
+ * `null` = recherche effectuée, aucune infrastructure dans les rayons Enedis (5 km pour les
+ * postes, 500 m pour les lignes BT). Distinct de `undefined`, qui signale une source en échec.
+ */
+const getDistanceRaccordementMessage = (enrichmentData: EnrichissementOutputDto): string => {
+  if (enrichmentData.distanceRaccordementElectrique === null) {
+    return "Aucune infrastructure à moins de 5 km";
+  }
+
+  if (enrichmentData.distanceRaccordementElectrique !== undefined) {
+    return formatDistance(enrichmentData.distanceRaccordementElectrique);
+  }
+
+  return "";
+};
+
+/**
  * Détermine le message à afficher pour la distance au réseau de chaleur.
  *
  * `null` couvre deux cas côté France Chaleur Urbaine — aucun réseau à proximité, ou réseau
@@ -79,7 +97,7 @@ export const transformEnrichmentToUiData = (
     surfaceBatie: formatSurface(enrichmentData.surfaceBati),
 
     // Données électriques formatées
-    distanceRaccordement: formatDistance(enrichmentData.distanceRaccordementElectrique),
+    distanceRaccordement: getDistanceRaccordementMessage(enrichmentData),
     distanceReseauChaleur: getDistanceReseauChaleurMessage(enrichmentData),
 
     // Risques naturels (badges cumulatifs)
