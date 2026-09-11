@@ -176,42 +176,52 @@ couvrait déjà le correctif, seul le lockfile était en retard. Pas d'override 
 
 ## Audit du 2026-09-11 — outillage dev/build (hors `--prod`)
 
-`pnpm audit` (devDependencies incluses) remonte **23 vulnérabilités** : 1 critical, 18 high,
-4 moderate. Aucune n'est dans le périmètre runtime — elles sont **tracées ici avec un plan de
-correction**, pas acceptées définitivement.
+**État initial** : 23 vulnérabilités (1 critical, 18 high, 4 moderate), toutes hors périmètre
+runtime. **État final** : `pnpm audit` (devDependencies incluses) → `No known vulnerabilities found`.
 
-**Justification du différé, commune à toutes** : ces paquets appartiennent à la chaîne
-d'outillage (`@nestjs/cli`, `@swc/cli`, `eslint`, `@typescript-eslint`, `eslint-plugin-react-hooks`,
-`vitest`, `webpack`, `concurrently`). Scalingo les supprime au `Pruning devDependencies` : ils
-ne sont donc **pas présents dans le conteneur de production**. Leur surface d'attaque se limite
-aux postes de développement et aux runners CI, sur des entrées que nous contrôlons (nos propres
-sources). Ce raisonnement est celui déjà retenu dans les commentaires de `pnpm-workspace.yaml`.
+Les 23 ont été **corrigées**, aucune n'a été acceptée. Le détail est conservé comme trace
+d'analyse, notamment parce que le levier efficace n'était pas celui attendu.
 
-**Ce différé n'est pas un blanc-seing** : `@xhmikosr/decompress` est *critical* (extraction
-d'archive pouvant créer des fichiers et liens hors du répertoire cible) et la CI exécute bien
-`@swc/cli`. Le risque reste théorique tant qu'aucune archive non fiable n'est décompressée par
-le build, mais il doit être levé.
+| Paquet | Sévérité | Installé → résolu | Levier |
+|--------|----------|-------------------|--------|
+| `@xhmikosr/decompress` | **critical** | 11.1.1 → 11.1.4 | re-résolution (plage parent permissive) |
+| `brace-expansion` | 6 × high | 1.1.15 → 1.1.18 ; 5.0.6 → 5.0.9 | re-résolution |
+| `fast-uri` | 6 × high | 3.1.2 → 3.1.7 | plancher d'override relevé |
+| `browserslist` | 2 × high | 4.28.2 → 4.28.9 | override ajouté (webpack retenait 4.28.2) |
+| `nanoid` | 2 × high | 3.3.12 → 3.3.18 | suit `postcss` |
+| `postcss` | 1 high + 1 moderate | 8.5.15 → 8.5.28 | bump de `@tailwindcss/postcss` et `vite` |
+| `shell-quote` | 1 × high | 1.8.4 → 1.9.0 | bump de `concurrently` |
+| `vitest` / `@vitest/mocker` | 2 × moderate | 4.1.9 → 4.1.11 | bump direct |
+| `baseline-browser-mapping` | 1 × moderate | 2.10.33 → 2.11.21 | suit `browserslist` |
 
-| Paquet | Sévérité | Installé → cible | Chemin transitif (représentatif) |
-|--------|----------|------------------|----------------------------------|
-| `@xhmikosr/decompress` | **critical** | 11.1.1 → >=11.1.3 | `apps__api>@nestjs/cli>@swc/cli>@xhmikosr/bin-wrapper>@xhmikosr/downloader>@xhmikosr/decompress` |
-| `brace-expansion` | 6 × high | 1.1.15 → >=1.1.18 ; 5.0.6 → >=5.0.9 | `.>@typescript-eslint/eslint-plugin>@typescript-eslint/parser>eslint>@eslint/config-array>minimatch>brace-expansion` |
-| `fast-uri` | 6 × high | 3.1.2 → >=3.1.6 | `apps__api>@nestjs/cli>@angular-devkit/core>ajv>fast-uri` |
-| `browserslist` | 2 × high | 4.28.2 → >=4.28.7 | `.>eslint-plugin-react-hooks>@babel/core>@babel/helper-compilation-targets>browserslist` |
-| `nanoid` | 2 × high | 3.3.12 → >=3.3.18 | `apps__api>@nestjs/cli>fork-ts-checker-webpack-plugin>webpack>terser-webpack-plugin>postcss>nanoid` |
-| `postcss` | 1 high + 1 moderate | 8.5.15 → >=8.5.23 | `apps__api>@nestjs/cli>fork-ts-checker-webpack-plugin>webpack>terser-webpack-plugin>postcss` |
-| `shell-quote` | 1 × high | 1.8.4 → >=1.9.0 | `.>concurrently>shell-quote` |
-| `vitest` / `@vitest/mocker` | 2 × moderate | 4.1.9 → >=4.1.11 | `apps__api>@vitest/ui>vitest>@vitest/mocker` |
-| `baseline-browser-mapping` | 1 × moderate | 2.10.33 → >=2.11.0 | `.>eslint-plugin-react-hooks>@babel/core>@babel/helper-compilation-targets>browserslist>baseline-browser-mapping` |
+**Ce qui bloquait réellement.** Six de ces paquets ne bougeaient pas malgré un
+`pnpm update -r` direct, parce que le blocage venait d'un **parent** et non d'eux :
+`@tailwindcss/postcss@4.3.1` épingle `postcss` à `8.5.15` **exact** (ce qui verrouillait aussi
+`nanoid` en dessous), `concurrently@10.0.3` épingle `shell-quote` à `1.8.4`, et `webpack`
+retenait `browserslist@4.28.2` (donc `baseline-browser-mapping`). Le levier correct était de
+bumper ces parents, tous dans leur plage déclarée, plutôt que d'empiler des overrides sur les
+enfants. Seuls deux overrides ont été nécessaires au total.
 
-**Plan de correction (à confirmer par l'équipe)** : traiter ce lot dans une itération dédiée à
-l'outillage, séparée de toute feature métier, **au plus tard fin octobre 2026**. Deux planchers
-d'override existants sont déjà obsolètes et seront relevés à cette occasion :
-`fast-uri: ">=3.1.2"` → `>=3.1.6`, et les overrides `brace-expansion` scopés par version, qui
-ne couvrent ni la majeure 1.x ni la 5.x remontées ici. Le lot demande une vigilance particulière
-sur `eslint-plugin-react-hooks` et `browserslist` : un incident connu de ce dépôt a déjà vu un
-bump de `eslint-plugin-react-hooks` casser `pnpm lint`. Chaque bump doit être validé par
-`pnpm validate`.
+**Bornes hautes sur les overrides.** Un plancher nu (`>=x.y.z`) laisse pnpm franchir une
+majeure : en relevant `fast-uri` à `>=3.1.6`, la résolution est partie en **4.1.4**, sous un
+`ajv` qui déclare `^3.0.1`. Les deux entrées touchées sont donc bornées (`>=3.1.6 <4`,
+`>=4.28.7 <5`). Deux planchers **préexistants** ont le même défaut et sont aujourd'hui
+plusieurs majeures au-dessus de leur intention : `piscina: ">=4.9.3"` résout en **5.2.0** et
+`diff: ">=4.0.4"` en **9.0.0**. Ils ne sont pas corrigés ici : ils tournent ainsi depuis juin
+2026 sans incident, et les rétrograder serait plus risqué que les laisser. À borner lors d'une
+prochaine intervention sur ces paquets.
+
+**Pourquoi ces 23 n'étaient pas une urgence de production** (et le restent pour l'avenir) : ces
+paquets appartiennent à la chaîne d'outillage (`@nestjs/cli`, `@swc/cli`, `eslint`,
+`@typescript-eslint`, `eslint-plugin-react-hooks`, `vitest`, `webpack`, `concurrently`).
+Scalingo les supprime au `Pruning devDependencies` : ils ne sont **pas présents dans le
+conteneur de production**. Leur surface d'attaque se limite aux postes de développement et aux
+runners CI, sur des entrées que nous contrôlons. Cela justifiait la priorisation après le
+périmètre runtime, pas une acceptation.
+
+**Validation** : `pnpm validate` vert (807 tests API, 213 UI, 145 shared-types), `pnpm build`
+et `pnpm --filter ui build` verts. Cette dernière vérification n'est pas optionnelle ici :
+`vite` est passé de 8.0.16 à 8.3.0 et `pnpm validate` ne construit pas le bundle de production.
 
 ---
 
@@ -223,12 +233,21 @@ bump de `eslint-plugin-react-hooks` casser `pnpm lint`. Chaque bump doit être v
    version exacte (cas de `multer` dans `@nestjs/platform-express`) : un bump majeur n'y change
    rien, seul un override agit.
 4. Si la plage semver directe couvre déjà le correctif → `pnpm update -r <paquet>`, sans override.
-5. Sinon → relever le plancher dans `overrides` de `pnpm-workspace.yaml`, avec le GHSA et la
-   justification en commentaire.
-6. Si la correction est impossible ou différée → **créer une entrée ici** : sévérité, paquet,
+5. **Si le paquet refuse de bouger, remonter au parent avant d'ajouter un override.** Un
+   `pnpm update -r <enfant>` reste sans effet quand c'est un parent qui épingle (cas de
+   `@tailwindcss/postcss` sur `postcss`, de `concurrently` sur `shell-quote`) : identifier le
+   parent avec `pnpm why <paquet> -r`, vérifier sa propre plage déclarée, et le bumper lui.
+   C'est presque toujours préférable à un override sur l'enfant.
+6. Sinon → relever le plancher dans `overrides` de `pnpm-workspace.yaml`, avec le GHSA et la
+   justification en commentaire, et **borner la majeure** (`">=3.1.6 <4"`) : un plancher nu
+   laisse pnpm franchir une majeure que le parent ne déclare pas. Contrôler ensuite la version
+   réellement résolue, pas seulement le fait que l'audit passe.
+7. Si la correction est impossible ou différée → **créer une entrée ici** : sévérité, paquet,
    chemin transitif, et justification d'acceptation vérifiée dans le code **ou** version cible
    + échéance.
-7. `pnpm validate`, puis re-lancer l'audit pour confirmer.
+8. `pnpm validate`, puis re-lancer l'audit pour confirmer. Si le bump touche la chaîne de build
+   de l'UI (`vite`, `postcss`, `tailwindcss`), ajouter `pnpm --filter ui build` : `pnpm validate`
+   ne construit pas le bundle de production.
 
 Note : `minimumReleaseAge: 1440` dans `pnpm-workspace.yaml` impose un délai de 24 h après
 publication avant qu'une version soit installable. Une version patchée publiée le jour même
