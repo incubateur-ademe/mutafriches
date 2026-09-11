@@ -269,6 +269,7 @@ Documentation complète dans le dossier [`docs/`](./docs/) :
 - **[Module Enrichissement](./docs/enrichissement.md)** - 10 domaines, APIs externes et bases locales, règles de gestion
 - **[Algorithme d'Évaluation](./docs/evaluation-mutabilite.md)** - Matrice 24×7, calcul mutabilité
 - **[Guide d'Intégration](./docs/integration/README.md)** - Iframe + PostMessage
+- **[Vulnérabilités de dépendances](./docs/security/vulnerabilites-acceptees.md)** - Suivi `pnpm audit` et justifications d'acceptation
 
 ---
 
