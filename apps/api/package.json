@@ -82,7 +82,7 @@
     "@types/proj4": "^2.19.0",
     "@types/supertest": "^7.2.0",
     "@types/swagger-ui-express": "^4.1.8",
-    "@vitest/ui": "^4.1.9",
+    "@vitest/ui": "^4.1.11",
     "cross-env": "^10.0.0",
     "proj4": "^2.20.9",
     "source-map-support": "^0.5.21",
@@ -91,6 +91,6 @@
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
     "unplugin-swc": "^1.5.5",
-    "vitest": "^4.1.9"
+    "vitest": "^4.1.11"
   }
 }

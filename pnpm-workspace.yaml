@@ -31,7 +31,10 @@ overrides:
   form-data: ">=4.0.6" # GHSA-hmw2-7cc7-3qxx CRLF injection (via axios)
   multer: ">=2.3.0" # GHSA-wc9g/qfvm/535w/qvfw DoS multipart (bundlé NestJS, aucun endpoint upload)
   piscina: ">=4.9.3" # GHSA-x9g3-xrwr-cwfg prototype pollution (via @swc/cli)
-  fast-uri: ">=3.1.2" # GHSA-v39h/q3j6 host confusion + path traversal (via @nestjs/schematics)
+  # Bornes hautes volontaires : un plancher nu laisse pnpm sauter de majeure (fast-uri est
+  # ainsi passé en 4.x sous un ajv qui déclare ^3.0.1). Borner au major déclaré par le parent.
+  fast-uri: ">=3.1.6 <4" # GHSA-v2hh/7p8r/f65p/fph4/jqff/4c8g host confusion + SSRF (via ajv < @nestjs/cli)
+  browserslist: ">=4.28.7 <5" # GHSA-c83g/73wf croissance mémoire + crash sur config non fiable (via webpack)
   rollup: ">=4.59.0" # GHSA-mw96-cpmx-2vgc path traversal (via vite/unplugin-swc)
   js-yaml: ">=5.2.2" # GHSA-pm4m/724g DoS au parsing (via @nestjs/swagger, qui ne fait que dump)
   yauzl: ">=3.2.1" # GHSA-gmq8-994r-jv83 off-by-one (via @swc/cli)
