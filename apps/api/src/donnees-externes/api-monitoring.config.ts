@@ -262,7 +262,7 @@ export const API_MONITORING_ENTRIES: readonly ApiMonitoringEntry[] = [
   {
     key: "zaer-wfs",
     name: "IGN WFS — ZAER",
-    category: "Énergies",
+    category: "Énergie",
     description: "Zones d'accélération des énergies renouvelables",
     docUrl:
       "https://www.data.gouv.fr/datasets/zones-d-acceleration-pour-l-implantation-d-energies-renouvelables/",
