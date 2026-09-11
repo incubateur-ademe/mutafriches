@@ -21,7 +21,7 @@ allowBuilds:
 # Force des versions patchées pour des CVE de transitifs (DoS) qu'aucune dép directe ne couvre.
 # Runtime express : qs et path-to-regexp servent à parser query strings / matcher les routes.
 overrides:
-  qs: ">=6.15.2" # GHSA-... DoS arrayLimit / qs.stringify (via express)
+  qs: ">=6.16.0" # GHSA-x5fp/4mjr bypass array-limit + DoS isBuffer (via express)
   path-to-regexp: ">=8.4.0" # DoS + ReDoS sur le matching de routes (via express>router)
 
   # Vulnérabilités Dependabot (juin 2026) sur transitifs. Seul form-data touche le runtime réel
@@ -29,11 +29,11 @@ overrides:
   # exécuté sur le serveur déployé. Overrides scopés par version pour minimatch/brace-expansion
   # afin de ne pas casser les consommateurs des majeures plus anciennes.
   form-data: ">=4.0.6" # GHSA-hmw2-7cc7-3qxx CRLF injection (via axios)
-  multer: ">=2.2.0" # GHSA-72gw/3p4h DoS multipart (bundlé NestJS, aucun endpoint upload)
+  multer: ">=2.3.0" # GHSA-wc9g/qfvm/535w/qvfw DoS multipart (bundlé NestJS, aucun endpoint upload)
   piscina: ">=4.9.3" # GHSA-x9g3-xrwr-cwfg prototype pollution (via @swc/cli)
   fast-uri: ">=3.1.2" # GHSA-v39h/q3j6 host confusion + path traversal (via @nestjs/schematics)
   rollup: ">=4.59.0" # GHSA-mw96-cpmx-2vgc path traversal (via vite/unplugin-swc)
-  js-yaml: ">=4.2.0" # GHSA-h67p-54hq-rp68 DoS merge keys (via @nestjs/swagger)
+  js-yaml: ">=5.2.2" # GHSA-pm4m/724g DoS au parsing (via @nestjs/swagger, qui ne fait que dump)
   yauzl: ">=3.2.1" # GHSA-gmq8-994r-jv83 off-by-one (via @swc/cli)
   "@babel/core": ">=7.29.6" # GHSA-4x5r-pxfx-6jf8 arbitrary file read (dev/vite)
   diff: ">=4.0.4" # GHSA-73rr-hh4g-fpgx DoS parsePatch (outillage dev)
