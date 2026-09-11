@@ -122,7 +122,7 @@ TRES_POSITIF = 2
 | `distanceAutoroute` | 0.5 | Numérique (4 seuils en km ; DTO en m) |
 | `distanceTransportCommun` | 1 | Numérique (2 seuils : <500m / >=500m) |
 | `proximiteCommercesServices` | 1 | Booléen |
-| `distanceRaccordementElectrique` | 1 | Numérique (3 seuils en km ; DTO en m) |
+| `distanceRaccordementElectrique` | 1 | Numérique (3 seuils en km ; DTO en m, nullable) |
 | `distanceReseauChaleur` | 1 | Numérique (2 seuils en m : <500 / >=500) |
 | `tauxLogementsVacants` | 1 | Numérique (4 seuils) |
 | `risqueRetraitGonflementArgile` | 0.5 | Enum (3 valeurs) |
@@ -137,6 +137,13 @@ TRES_POSITIF = 2
 | `distanceIte` | 0.5 | Enum (<1km bon état / <1km mauvais état / >1km) |
 
 > **Unité des distances** (v1.10) : `distanceAutoroute` et `distanceRaccordementElectrique` sont enrichis en **mètres** (IGN WFS, Enedis) et stockés ainsi dans le DTO/Site ; `extraireCriteres` les convertit en **km** via `metresVersKm` avant scoring (la matrice reste en km, source de vérité Excel). `distanceTransportCommun` et `distanceReseauChaleur` sont en mètres des deux côtés (pas de conversion). Cf. ADR-0027.
+
+> **Distances nulles ramenées à une tranche** : deux critères de distance valent `null` quand
+> la recherche a abouti sans résultat, et `extraireCriteres` les ramène à une valeur de tranche
+> plutôt que de laisser le critère être ignoré. `distanceRaccordementElectrique` → 5 000 m
+> (tranche « au-delà de 5 km ») quand Enedis ne trouve aucune infrastructure dans ses rayons ;
+> `distanceReseauChaleur` → 500 m (cf. ci-dessous). Ne jamais faire remonter une distance
+> sentinelle depuis un adapter : elle s'affiche telle quelle à l'utilisateur.
 
 > **Distance nulle au réseau de chaleur** (v1.13) : `distanceReseauChaleur` vaut `null` quand aucune distance n'est exploitable (aucun réseau à proximité, ou réseau connu sans tracé). `extraireCriteres` la ramène au seuil de 500 m plutôt que de laisser le critère être ignoré — sinon un site sans réseau connu et un site simplement éloigné n'obtiennent pas le même indice. Cf. ADR-0036.
 

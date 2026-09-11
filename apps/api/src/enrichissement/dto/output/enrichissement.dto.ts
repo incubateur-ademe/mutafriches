@@ -143,11 +143,13 @@ export class EnrichissementSwaggerDto implements IEnrichissementOutput {
   proximiteCommercesServices: boolean;
 
   @ApiProperty({
-    description: "Distance au point de raccordement électrique le plus proche en mètres",
+    description:
+      "Distance au point de raccordement électrique le plus proche en mètres. null si aucune infrastructure trouvée dans les rayons de recherche (5 km postes, 500 m lignes BT)",
     example: 300,
     minimum: 0,
+    nullable: true,
   })
-  distanceRaccordementElectrique: number;
+  distanceRaccordementElectrique: number | null;
 
   @ApiProperty({
     description:

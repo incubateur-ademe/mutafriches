@@ -51,7 +51,8 @@ export class Site {
   /** Distance en mètres. null = aucun arrêt trouvé dans le rayon de recherche (2km) */
   distanceTransportCommun: number | null;
   proximiteCommercesServices: boolean;
-  distanceRaccordementElectrique: number;
+  /** Distance en mètres. null = aucune infrastructure dans les rayons de recherche */
+  distanceRaccordementElectrique: number | null;
   /** Distance en mètres au réseau de chaleur. null = aucune distance exploitable */
   distanceReseauChaleur?: number | null;
   tauxLogementsVacants: number;

@@ -13,3 +13,11 @@ export const NOMBRE_CRITERES_UTILISES = Object.keys(POIDS_CRITERES).length;
  * est `null` : « aucune distance exploitable » est scoré comme « >= 500 m ».
  */
 export const SEUIL_PROXIMITE_RESEAU_CHALEUR_M = 500;
+
+/**
+ * Distance de repli, en mètres, quand Enedis ne trouve aucune infrastructure dans ses rayons
+ * de recherche (5 km). Le site tombe alors dans la tranche « au-delà de 5 km » de la matrice,
+ * exactement comme le faisait l'ancienne distance sentinelle de 999 km — sans la faire
+ * remonter jusqu'à l'affichage.
+ */
+export const DISTANCE_RACCORDEMENT_HORS_RAYON_M = 5000;

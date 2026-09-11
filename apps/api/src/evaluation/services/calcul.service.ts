@@ -12,7 +12,10 @@ import {
 import { RisqueNaturel } from "@mutafriches/shared-types";
 import { Site } from "../entities/site.entity";
 import { MATRICE_SCORING, POIDS_CRITERES } from "./algorithme/algorithme.config";
-import { SEUIL_PROXIMITE_RESEAU_CHALEUR_M } from "./algorithme/algorithme.constants";
+import {
+  DISTANCE_RACCORDEMENT_HORS_RAYON_M,
+  SEUIL_PROXIMITE_RESEAU_CHALEUR_M,
+} from "./algorithme/algorithme.constants";
 import { metresVersKm } from "./algorithme/distance.utils";
 import { ScoreParUsage } from "./algorithme/algorithme.types";
 import { FiabiliteCalculator } from "./algorithme/fiabilite.calculator";
@@ -307,7 +310,11 @@ export class CalculService {
       distanceAutoroute: metresVersKm(site.distanceAutoroute),
       distanceTransportCommun: site.distanceTransportCommun,
       proximiteCommercesServices: site.proximiteCommercesServices,
-      distanceRaccordementElectrique: metresVersKm(site.distanceRaccordementElectrique),
+      distanceRaccordementElectrique: metresVersKm(
+        site.distanceRaccordementElectrique === null
+          ? DISTANCE_RACCORDEMENT_HORS_RAYON_M
+          : site.distanceRaccordementElectrique,
+      ),
       tauxLogementsVacants: site.tauxLogementsVacants,
       presenceRisquesTechnologiques: site.presenceRisquesTechnologiques,
       zonageEnvironnemental: site.zonageEnvironnemental,

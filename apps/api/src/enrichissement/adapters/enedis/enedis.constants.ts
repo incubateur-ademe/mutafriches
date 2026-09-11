@@ -22,7 +22,6 @@ export const ENEDIS_SEUILS = {
   RACCORDEMENT_BT: 100, // Distance max pour raccordement BT direct (en mètres)
   TYPE_BT_VS_HTA: 200, // Seuil pour déterminer BT vs HTA (en mètres)
   CAPACITE_DISPONIBLE: 1000, // Seuil pour estimer la capacité disponible (en mètres)
-  DISTANCE_DEFAUT: 999000, // Distance par défaut si aucune infrastructure trouvée (en mètres)
 } as const;
 
 /**

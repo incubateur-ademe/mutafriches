@@ -48,12 +48,14 @@ export class EnedisService {
         ENEDIS_RAYONS.LIGNES_BT,
       );
 
+      // Recherche effectuée, aucune infrastructure dans les rayons : null, et surtout pas
+      // une distance sentinelle qui remonterait telle quelle jusqu'à l'écran.
       if (postesProches.length === 0 && lignesBTProches.length === 0) {
         return {
           success: true,
           source: ENEDIS_SOURCE,
           data: {
-            distance: ENEDIS_SEUILS.DISTANCE_DEFAUT,
+            distance: null,
             type: "HTA",
             capaciteDisponible: false,
           },

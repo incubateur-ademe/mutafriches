@@ -73,7 +73,11 @@ export const EnrichissementSection: React.FC<EnrichissementSectionProps> = ({
       <h4 className="debug-panel__subtitle">Infrastructure</h4>
       <dl className="debug-panel__data-grid">
         <dt>Distance raccordement &eacute;lectrique</dt>
-        <dd>{formatDistance(enrichmentData.distanceRaccordementElectrique)}</dd>
+        <dd>
+          {enrichmentData.distanceRaccordementElectrique === null
+            ? "Aucune infrastructure à moins de 5 km"
+            : formatDistance(enrichmentData.distanceRaccordementElectrique)}
+        </dd>
 
         <dt>Distance r&eacute;seau de chaleur</dt>
         <dd>
