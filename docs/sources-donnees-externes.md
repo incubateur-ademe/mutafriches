@@ -10,10 +10,10 @@ qu'ils alimentent.
 
 ## Comment sont utilisées ces données
 
-L'analyse de mutabilité repose sur 29 critères, notés pour 7 usages possibles d'une friche.
-19 critères sont **enrichis automatiquement** à partir des sources ci-dessous ; 10 sont
+L'analyse de mutabilité repose sur 30 critères, notés pour 7 usages possibles d'une friche.
+20 critères sont **enrichis automatiquement** à partir des sources ci-dessous ; 10 sont
 **saisis manuellement** par l'utilisateur. Chaque critère porte un poids ; le poids total
-est de 31. La part des critères effectivement renseignés détermine l'indice de fiabilité
+est de 32. La part des critères effectivement renseignés détermine l'indice de fiabilité
 de l'analyse.
 
 ## Sources enrichies automatiquement
@@ -337,6 +337,26 @@ Aucun : la donnée est restituée à titre informatif et n'entre pas dans le cal
 **Critères d'évaluation alimentés**
 
 Aucun : cette source alimente une donnée informative, restituée à l'utilisateur sans effet sur l'indice de mutabilité ni sur la fiabilité.
+
+### Quartiers prioritaires de la politique de la ville (QPV)
+
+- **Type** : Référentiel local
+- **Opérateur** : ANCT — Agence nationale de la cohésion des territoires
+- **Documentation** : https://www.data.gouv.fr/datasets/quartiers-prioritaires-de-la-politique-de-la-ville-qpv
+
+**Champs récupérés**
+
+- Appartenance du site à un quartier prioritaire, par test spatial du centroïde contre les périmètres du millésime 2024 (base PostGIS `raw_qpv`, 1 584 quartiers sur 834 communes)
+
+**Traitement dans l'algorithme**
+
+Ramenée à un booléen. En quartier prioritaire, la reconversion sert directement les politiques de renouvellement urbain : très positif pour le résidentiel et les équipements publics, très négatif pour le tertiaire, négatif pour le photovoltaïque au sol, neutre pour la culture, l'industrie et la renaturation. Hors quartier prioritaire, le critère est neutre sur les sept usages.
+
+**Critères d'évaluation alimentés**
+
+| Critère d'évaluation alimenté | Poids |
+| --- | --- |
+| Quartier prioritaire de la politique de la ville | 1 |
 
 ## Critères saisis manuellement
 
