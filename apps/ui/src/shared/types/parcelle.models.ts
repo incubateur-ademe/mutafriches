@@ -40,6 +40,9 @@ export interface ParcelleUiModel {
   // Zonage ABC logement
   zonageAbcLogement: string;
 
+  /** Site en quartier prioritaire de la politique de la ville (chaîne vide = indisponible) */
+  siteEnQpv: string;
+
   /** Exposition à un îlot de chaleur urbain — informatif, hors algorithme */
   ilotChaleurUrbain?: IlotChaleurUrbain;
 

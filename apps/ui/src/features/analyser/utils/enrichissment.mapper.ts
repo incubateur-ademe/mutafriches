@@ -135,6 +135,7 @@ export const transformEnrichmentToUiData = (
 
     // Zonage ABC logement
     zonageAbcLogement: formatZonageAbcLogement(enrichmentData.zonageAbcLogement),
+    siteEnQpv: formatBoolean(enrichmentData.siteEnQpv),
 
     // Îlot de chaleur urbain (informatif)
     ilotChaleurUrbain: enrichmentData.ilotChaleurUrbain,

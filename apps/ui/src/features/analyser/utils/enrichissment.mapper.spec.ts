@@ -57,6 +57,25 @@ describe("transformEnrichmentToUiData - zonage ABC logement", () => {
   });
 });
 
+describe("transformEnrichmentToUiData - quartier prioritaire de la ville", () => {
+  it("affiche 'Oui' quand le site est en quartier prioritaire", () => {
+    const ui = transformEnrichmentToUiData(makeEnrichissement({ siteEnQpv: true }));
+    expect(ui.siteEnQpv).toBe("Oui");
+  });
+
+  it("affiche 'Non' quand la recherche spatiale a abouti hors QPV", () => {
+    // "Non" et non pas un champ vide : la recherche a bien eu lieu
+    const ui = transformEnrichmentToUiData(makeEnrichissement({ siteEnQpv: false }));
+    expect(ui.siteEnQpv).toBe("Non");
+  });
+
+  it("laisse le champ vide quand la donnée est indisponible (undefined)", () => {
+    // Chaîne vide = badge "Donnée non accessible" côté EnrichedInfoField
+    const ui = transformEnrichmentToUiData(makeEnrichissement({ siteEnQpv: undefined }));
+    expect(ui.siteEnQpv).toBe("");
+  });
+});
+
 describe("transformEnrichmentToUiData - distance au réseau de chaleur", () => {
   it("affiche la distance quand elle est renseignée", () => {
     const ui = transformEnrichmentToUiData(makeEnrichissement({ distanceReseauChaleur: 320 }));
