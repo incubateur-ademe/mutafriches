@@ -9,7 +9,7 @@ import { pgTable, serial, varchar, timestamp, index } from "drizzle-orm/pg-core"
  *
  * 1 584 quartiers sur 834 communes seulement, et les périmètres sont infra-communaux : ils ne
  * couvrent que 3,8 % de la surface des communes concernées. L'appartenance se teste donc
- * spatialement sur le centroïde du site, jamais par code INSEE (cf. ADR-0037).
+ * spatialement sur le centroïde du site, jamais par code INSEE (cf. ADR-0039).
  *
  * Note : la colonne geom (geometry(MultiPolygon, 4326)) et son index GIST sont ajoutés
  * via la migration SQL — Drizzle ne type pas les colonnes PostGIS (cf. raw_icu).

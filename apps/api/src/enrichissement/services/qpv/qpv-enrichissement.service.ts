@@ -9,7 +9,7 @@ import { EnrichmentResult } from "../shared/enrichissement.types";
  * ville (QPV).
  *
  * Critère scoré de poids 1 : un site en QPV valorise fortement le résidentiel et les
- * équipements publics, pénalise le tertiaire et le photovoltaïque (ADR-0037).
+ * équipements publics, pénalise le tertiaire et le photovoltaïque (ADR-0039).
  */
 @Injectable()
 export class QpvEnrichissementService {

@@ -12,7 +12,7 @@
  * L'ANCT publie le GeoJSON directement en WGS84 (hexagone + outre-mer dans un seul fichier) :
  * aucune conversion GDAL, contrairement à l'ICU et à la base ITE 3000. Le fichier est
  * néanmoins commité car la ressource data.gouv est un ZIP et le projet n'embarque aucune
- * dépendance d'archive (cf. ADR-0037). Régénération à chaque nouvel arrêté, en filtrant les
+ * dépendance d'archive (cf. ADR-0039). Régénération à chaque nouvel arrêté, en filtrant les
  * propriétés inutiles et en ramenant les coordonnées à 6 décimales — sans simplification
  * géométrique, le critère étant scoré :
  *

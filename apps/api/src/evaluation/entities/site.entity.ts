@@ -69,7 +69,7 @@ export class Site {
   zonageAbcLogement?: ZonageAbcLogement | null;
   /**
    * Site dans un quartier prioritaire de la politique de la ville. `false` = recherche
-   * spatiale effectuée hors de tout périmètre ; `undefined` = donnée indisponible (ADR-0037)
+   * spatiale effectuée hors de tout périmètre ; `undefined` = donnée indisponible (ADR-0039)
    */
   siteEnQpv?: boolean;
   /** Catégorie de distance à une Installation Terminale Embranchée (ITE) fret */

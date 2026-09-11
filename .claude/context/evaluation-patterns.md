@@ -134,7 +134,7 @@ TRES_POSITIF = 2
 | `zonagePatrimonial` | 1 | Enum (3 valeurs) |
 | `zoneAccelerationEnr` | 1 | Enum (4 valeurs, dont zone d'exclusion APER) |
 | `zonageAbcLogement` | 0.5 | Enum (A / Abis / B1 / B2 / C) |
-| `siteEnQpv` | 1 | Booléen (test spatial du centroïde, ADR-0037) |
+| `siteEnQpv` | 1 | Booléen (test spatial du centroïde, ADR-0039) |
 | `distanceIte` | 0.5 | Enum (<1km bon état / <1km mauvais état / >1km) |
 
 > **Unité des distances** (v1.10) : `distanceAutoroute` et `distanceRaccordementElectrique` sont enrichis en **mètres** (IGN WFS, Enedis) et stockés ainsi dans le DTO/Site ; `extraireCriteres` les convertit en **km** via `metresVersKm` avant scoring (la matrice reste en km, source de vérité Excel). `distanceTransportCommun` et `distanceReseauChaleur` sont en mètres des deux côtés (pas de conversion). Cf. ADR-0027.

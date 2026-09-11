@@ -18,7 +18,7 @@ export interface QpvData {
  *
  * Table alimentée par `pnpm db:qpv:import`. Les périmètres sont infra-communaux et ne couvrent
  * que 3,8 % de la surface des communes concernées : l'appartenance se teste spatialement sur
- * le centroïde du site, jamais par code INSEE (ADR-0037).
+ * le centroïde du site, jamais par code INSEE (ADR-0039).
  */
 @Injectable()
 export class QpvRepository {

@@ -89,7 +89,7 @@ export interface EnrichissementOutputDto {
   /** null = commune absente du référentiel ABC (recherche effectuée, aucun résultat) */
   zonageAbcLogement?: ZonageAbcLogement | null;
 
-  // Quartier prioritaire de la politique de la ville (ADR-0037)
+  // Quartier prioritaire de la politique de la ville (ADR-0039)
   /**
    * `true` si le centroïde du site tombe dans un périmètre QPV, `false` si la recherche
    * spatiale a abouti hors de tout périmètre. Jamais `null` : pour un booléen, `false` porte
