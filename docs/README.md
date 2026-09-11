@@ -29,7 +29,7 @@
            ↓
 ┌──────────────────────┐
 │  ENRICHISSEMENT      │ ←── APIs externes + 8 bases locales
-│  10 domaines         │     (IGN, Enedis, GeoRisques, ZAER...)
+│  13 domaines         │     (IGN, Enedis, GeoRisques, ZAER...)
 └──────────┬───────────┘
            │
            ↓
@@ -105,7 +105,7 @@ mutafriches/
 
 Le module d'enrichissement interroge une dizaine d'**APIs de données externes** et **8 bases locales PostGIS** pour pré-remplir automatiquement les critères d'un site (mono ou multi-parcelle) :
 
-- **10 domaines** : Cadastre, Énergie, Transport, Urbanisme, Risques Naturels, Risques Technologiques, Pollution, Zonages, ENR/ZAER, GeoRisques brut
+- **13 domaines** : Cadastre, Énergie, Réseau de chaleur, Transport, ITE fret, Urbanisme, Risques Naturels, Risques Technologiques, Pollution, Zonages, ENR/ZAER, Climat/ICU, GeoRisques brut
 - **APIs externes** : IGN, BDNB, Enedis, GeoRisques (×13 endpoints), API Carto, ZAER WFS, data.gouv.fr...
 - **8 bases locales** : Transport, BPE (commerces), Sites pollués ADEME, ITE fret, LOVAC (logements vacants), Zonage ABC, ICU (îlots de chaleur), Réseaux de chaleur
 - **Multi-parcelle** : Support de 1 à 20 parcelles par site
