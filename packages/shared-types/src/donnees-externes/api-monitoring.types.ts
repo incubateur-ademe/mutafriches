@@ -1,11 +1,13 @@
 /**
  * Statut d'une API externe à un instant donné, basé sur un simple ping HTTP.
  *
- * - "up"   : l'API a répondu rapidement (< 2 s)
- * - "slow" : l'API a répondu mais lentement (≥ 2 s)
- * - "down" : timeout, erreur réseau ou code HTTP d'erreur (4xx / 5xx)
+ * - "up"        : l'API a répondu rapidement (< 2 s)
+ * - "slow"      : l'API a répondu mais lentement (≥ 2 s)
+ * - "down"      : timeout, erreur réseau ou code HTTP d'erreur (4xx / 5xx)
+ * - "non-teste" : API déclarée au registre mais absente du dernier snapshot, donc jamais
+ *   mesurée — typiquement une source ajoutée depuis le dernier cycle de health-check
  */
-export type ApiHealthStatus = "up" | "slow" | "down";
+export type ApiHealthStatus = "up" | "slow" | "down" | "non-teste";
 
 /**
  * Résultat de monitoring pour une API externe (un adapter d'enrichissement).
@@ -51,5 +53,7 @@ export interface ApiMonitoringSnapshot {
     up: number;
     slow: number;
     down: number;
+    /** APIs du registre jamais mesurées (ajoutées depuis le dernier cycle) */
+    nonTeste: number;
   };
 }

@@ -2,7 +2,11 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { of, throwError } from "rxjs";
 import { HttpService } from "@nestjs/axios";
 import type { AxiosResponse } from "axios";
-import type { ApiMonitoringSnapshot } from "@mutafriches/shared-types";
+import type {
+  ApiHealthItem,
+  ApiHealthStatus,
+  ApiMonitoringSnapshot,
+} from "@mutafriches/shared-types";
 import { ApiMonitoringService } from "./api-monitoring.service";
 import { DatabaseService } from "../shared/database/database.service";
 import { API_MONITORING_ENTRIES } from "./api-monitoring.config";
@@ -62,36 +66,97 @@ describe("ApiMonitoringService", () => {
   });
 
   describe("getLatestSnapshot", () => {
-    it("retourne un snapshot vide si aucune ligne en base", async () => {
+    /** Mesure stockée pour une entrée réelle du registre */
+    const mesureStockee = (key: string, status: ApiHealthStatus = "up"): ApiHealthItem => ({
+      key,
+      name: "Libellé périmé",
+      category: "Catégorie périmée",
+      description: "Description périmée",
+      docUrl: "https://exemple.invalid",
+      adapterFile: "ancien/chemin.ts",
+      baseUrl: "https://exemple.invalid",
+      healthCheckUrl: "https://exemple.invalid/ping",
+      status,
+      httpStatus: 200,
+      responseTimeMs: 120,
+      error: null,
+    });
+
+    it("liste tout le registre en 'non-teste' si aucune ligne en base", async () => {
       dbExecute.mockResolvedValueOnce([]);
 
       const result = await service.getLatestSnapshot();
 
       expect(result.checkedAt).toBeNull();
-      expect(result.apis).toEqual([]);
-      expect(result.summary).toEqual({ up: 0, slow: 0, down: 0 });
+      expect(result.apis).toHaveLength(API_MONITORING_ENTRIES.length);
+      expect(result.apis.every((a) => a.status === "non-teste")).toBe(true);
+      expect(result.summary).toEqual({
+        up: 0,
+        slow: 0,
+        down: 0,
+        nonTeste: API_MONITORING_ENTRIES.length,
+      });
     });
 
-    it("retourne le snapshot stocké si une ligne existe", async () => {
+    it("reprend la mesure stockée pour les entrées déjà vérifiées", async () => {
+      const premiere = API_MONITORING_ENTRIES[0];
       const stored: ApiMonitoringSnapshot = {
         checkedAt: "2026-05-22T05:00:00.000Z",
-        apis: [],
-        summary: { up: 10, slow: 1, down: 2 },
+        apis: [mesureStockee(premiere.key, "slow")],
+        summary: { up: 0, slow: 1, down: 0, nonTeste: 0 },
+      };
+      dbExecute.mockResolvedValueOnce([{ data: stored, checked_at: new Date() }]);
+
+      const result = await service.getLatestSnapshot();
+      const mesuree = result.apis.find((a) => a.key === premiere.key);
+
+      expect(result.checkedAt).toBe("2026-05-22T05:00:00.000Z");
+      expect(mesuree?.status).toBe("slow");
+      expect(mesuree?.responseTimeMs).toBe(120);
+      expect(result.summary.slow).toBe(1);
+      expect(result.summary.nonTeste).toBe(API_MONITORING_ENTRIES.length - 1);
+    });
+
+    // Le registre fait foi : un libellé ou une catégorie corrigés ne doivent pas attendre
+    // le prochain cycle pour apparaître.
+    it("prend les métadonnées dans le registre, pas dans le snapshot", async () => {
+      const premiere = API_MONITORING_ENTRIES[0];
+      const stored: ApiMonitoringSnapshot = {
+        checkedAt: "2026-05-22T05:00:00.000Z",
+        apis: [mesureStockee(premiere.key)],
+        summary: { up: 1, slow: 0, down: 0, nonTeste: 0 },
+      };
+      dbExecute.mockResolvedValueOnce([{ data: stored, checked_at: new Date() }]);
+
+      const result = await service.getLatestSnapshot();
+      const mesuree = result.apis.find((a) => a.key === premiere.key);
+
+      expect(mesuree?.name).toBe(premiere.name);
+      expect(mesuree?.category).toBe(premiere.category);
+      expect(mesuree?.adapterFile).toBe(premiere.adapterFile);
+    });
+
+    it("écarte une entrée présente au snapshot mais retirée du registre", async () => {
+      const stored: ApiMonitoringSnapshot = {
+        checkedAt: "2026-05-22T05:00:00.000Z",
+        apis: [mesureStockee("source-retiree-du-registre")],
+        summary: { up: 1, slow: 0, down: 0, nonTeste: 0 },
       };
       dbExecute.mockResolvedValueOnce([{ data: stored, checked_at: new Date() }]);
 
       const result = await service.getLatestSnapshot();
 
-      expect(result).toEqual(stored);
+      expect(result.apis.map((a) => a.key)).not.toContain("source-retiree-du-registre");
+      expect(result.apis).toHaveLength(API_MONITORING_ENTRIES.length);
     });
 
-    it("retourne un snapshot vide en cas d'erreur DB", async () => {
+    it("liste le registre en 'non-teste' en cas d'erreur DB", async () => {
       dbExecute.mockRejectedValueOnce(new Error("Connection refused"));
 
       const result = await service.getLatestSnapshot();
 
       expect(result.checkedAt).toBeNull();
-      expect(result.apis).toEqual([]);
+      expect(result.apis.every((a) => a.status === "non-teste")).toBe(true);
     });
   });
 

@@ -39,8 +39,11 @@ export class ApiMonitoringService {
   ) {}
 
   /**
-   * Récupère le dernier snapshot stocké en base, ou un snapshot vide si
-   * aucun check n'a encore été exécuté.
+   * Récupère le dernier snapshot stocké en base, aligné sur le registre courant.
+   *
+   * Le snapshot est une photo datée : il ignore les sources ajoutées depuis, et conserve
+   * celles qui ont été retirées. Le registre fait donc foi pour la liste et les métadonnées,
+   * le snapshot ne fournit que la mesure.
    */
   async getLatestSnapshot(): Promise<ApiMonitoringSnapshot> {
     try {
@@ -52,14 +55,45 @@ export class ApiMonitoringService {
       `);
       const rows = result as unknown as SnapshotRow[];
       if (rows.length === 0) {
-        return this.emptySnapshot();
+        return this.alignerSurRegistre(this.emptySnapshot());
       }
-      return rows[0].data;
+      return this.alignerSurRegistre(rows[0].data);
     } catch (error: unknown) {
       const err = error as Error;
       this.logger.warn(`Lecture du dernier snapshot échouée : ${err.message}`);
-      return this.emptySnapshot();
+      return this.alignerSurRegistre(this.emptySnapshot());
     }
+  }
+
+  /**
+   * Reconstruit la liste à partir du registre : chaque entrée reprend la mesure du snapshot
+   * si elle y figure, sinon le statut "non-teste". Les entrées du snapshot absentes du
+   * registre (source retirée ou passée en référentiel local) sont écartées.
+   */
+  private alignerSurRegistre(snapshot: ApiMonitoringSnapshot): ApiMonitoringSnapshot {
+    const mesures = new Map(snapshot.apis.map((api) => [api.key, api]));
+
+    const apis: ApiHealthItem[] = API_MONITORING_ENTRIES.map((entry) => {
+      const mesure = mesures.get(entry.key);
+      return this.toHealthItem(
+        entry,
+        mesure?.status ?? "non-teste",
+        mesure?.httpStatus ?? null,
+        mesure?.responseTimeMs ?? null,
+        mesure?.error ?? null,
+      );
+    });
+
+    return { checkedAt: snapshot.checkedAt, apis, summary: this.resumer(apis) };
+  }
+
+  private resumer(apis: ApiHealthItem[]): ApiMonitoringSnapshot["summary"] {
+    return {
+      up: apis.filter((a) => a.status === "up").length,
+      slow: apis.filter((a) => a.status === "slow").length,
+      down: apis.filter((a) => a.status === "down").length,
+      nonTeste: apis.filter((a) => a.status === "non-teste").length,
+    };
   }
 
   /**
@@ -85,11 +119,7 @@ export class ApiMonitoringService {
       return this.toHealthItem(entry, "down", null, null, String(res.reason));
     });
 
-    const summary = {
-      up: apis.filter((a) => a.status === "up").length,
-      slow: apis.filter((a) => a.status === "slow").length,
-      down: apis.filter((a) => a.status === "down").length,
-    };
+    const summary = this.resumer(apis);
 
     const snapshot: ApiMonitoringSnapshot = {
       checkedAt: new Date().toISOString(),
@@ -227,7 +257,7 @@ export class ApiMonitoringService {
     return {
       checkedAt: null,
       apis: [],
-      summary: { up: 0, slow: 0, down: 0 },
+      summary: { up: 0, slow: 0, down: 0, nonTeste: 0 },
     };
   }
 }
