@@ -29,4 +29,5 @@ export enum SourceEnrichissement {
   ITE_FRET = "ITE-Fret",
   ICU = "ICU-CSTB",
   FRANCE_CHALEUR_URBAINE = "France-Chaleur-Urbaine",
+  QPV = "QPV-ANCT",
 }

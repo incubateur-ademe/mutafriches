@@ -67,6 +67,11 @@ export class Site {
   zoneAccelerationEnr?: ZoneAccelerationEnr;
   /** null = commune absente du référentiel ABC (recherche effectuée, aucun résultat) */
   zonageAbcLogement?: ZonageAbcLogement | null;
+  /**
+   * Site dans un quartier prioritaire de la politique de la ville. `false` = recherche
+   * spatiale effectuée hors de tout périmètre ; `undefined` = donnée indisponible (ADR-0037)
+   */
+  siteEnQpv?: boolean;
   /** Catégorie de distance à une Installation Terminale Embranchée (ITE) fret */
   distanceIte?: DistanceIte;
   /** Distance réelle en mètres à l'ITE la plus proche (si trouvée dans le rayon de recherche) */
@@ -189,6 +194,9 @@ export class Site {
         : donnees.zonageAbcLogement
           ? (donnees.zonageAbcLogement as ZonageAbcLogement)
           : undefined;
+    // Affectation directe : un ternaire transformerait `false` — la grande majorité des sites —
+    // en `undefined`, le critère serait alors ignoré au scoring ET décompté de la fiabilité.
+    site.siteEnQpv = donnees.siteEnQpv;
 
     // Fret
     site.distanceIte = donnees.distanceIte ? (donnees.distanceIte as DistanceIte) : undefined;

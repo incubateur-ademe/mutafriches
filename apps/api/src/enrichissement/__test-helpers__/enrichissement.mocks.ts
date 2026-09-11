@@ -65,6 +65,14 @@ interface MockIcuEnrichissementService {
   enrichir: Mock;
 }
 
+interface MockQpvRepository {
+  findQuartierContenant: Mock;
+}
+
+interface MockQpvEnrichissementService {
+  enrichir: Mock;
+}
+
 interface MockRisquesNaturelsEnrichissementService {
   enrichir: Mock;
 }
@@ -503,6 +511,24 @@ export function createMockIcuRepository(): MockIcuRepository {
  * Mock du IcuEnrichissementService
  */
 export function createMockIcuEnrichissementService(): MockIcuEnrichissementService {
+  return {
+    enrichir: vi.fn(),
+  };
+}
+
+/**
+ * Mock du QpvRepository
+ */
+export function createMockQpvRepository(): MockQpvRepository {
+  return {
+    findQuartierContenant: vi.fn(),
+  };
+}
+
+/**
+ * Mock du QpvEnrichissementService
+ */
+export function createMockQpvEnrichissementService(): MockQpvEnrichissementService {
   return {
     enrichir: vi.fn(),
   };

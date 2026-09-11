@@ -17,6 +17,7 @@ import { TransportEnrichissementService } from "./transport/transport-enrichisse
 import { IteFretEnrichissementService } from "./transport/ite-fret-enrichissement.service";
 import { UrbanismeEnrichissementService } from "./urbanisme/urbanisme-enrichissement.service";
 import { IcuEnrichissementService } from "./climat/icu-enrichissement.service";
+import { QpvEnrichissementService } from "./qpv/qpv-enrichissement.service";
 import { RisquesNaturelsEnrichissementService } from "./risques-naturels/risques-naturels-enrichissement.service";
 import { RisquesTechnologiquesEnrichissementService } from "./risques-technologiques/risques-technologiques-enrichissement.service";
 import { GeoRisquesEnrichissementService } from "./georisques/georisques-enrichissement.service";
@@ -49,6 +50,7 @@ export class EnrichissementService {
     private readonly iteFretEnrichissement: IteFretEnrichissementService,
     private readonly urbanismeEnrichissement: UrbanismeEnrichissementService,
     private readonly icuEnrichissement: IcuEnrichissementService,
+    private readonly qpvEnrichissement: QpvEnrichissementService,
     private readonly risquesNaturelsEnrichissement: RisquesNaturelsEnrichissementService,
     private readonly risquesTechnologiquesEnrichissement: RisquesTechnologiquesEnrichissementService,
     private readonly georisquesEnrichissement: GeoRisquesEnrichissementService,
@@ -227,6 +229,10 @@ export class EnrichissementService {
       const icuResult = await this.icuEnrichissement.enrichir(siteEval);
       this.mergeEnrichmentResult(icuResult, sourcesUtilisees, champsManquants, sourcesEchouees);
 
+      // 10.c QPV (quartier prioritaire de la politique de la ville)
+      const qpvResult = await this.qpvEnrichissement.enrichir(siteEval);
+      this.mergeEnrichmentResult(qpvResult, sourcesUtilisees, champsManquants, sourcesEchouees);
+
       // 11. CALCULER LA FIABILITE
       const sourcesUniques = [...new Set(sourcesUtilisees)];
       const champsManquantsUniques = [...new Set(champsManquants)];
@@ -276,6 +282,9 @@ export class EnrichissementService {
         zonagePatrimonial: siteEval.zonagePatrimonial,
         trameVerteEtBleue: siteEval.trameVerteEtBleue,
         zonageAbcLogement: siteEval.zonageAbcLogement,
+
+        // Quartier prioritaire de la politique de la ville
+        siteEnQpv: siteEval.siteEnQpv,
 
         // Îlot de chaleur urbain (informatif, hors algorithme)
         ilotChaleurUrbain: siteEval.ilotChaleurUrbain,
@@ -520,6 +529,10 @@ export class EnrichissementService {
       const icuResult = await this.icuEnrichissement.enrichir(siteEval);
       this.mergeEnrichmentResult(icuResult, sourcesUtilisees, champsManquants, sourcesEchouees);
 
+      // 11.c QPV (quartier prioritaire de la politique de la ville)
+      const qpvResult = await this.qpvEnrichissement.enrichir(siteEval);
+      this.mergeEnrichmentResult(qpvResult, sourcesUtilisees, champsManquants, sourcesEchouees);
+
       // 12. DETERMINER LE STATUT
       const sourcesUniques = [...new Set(sourcesUtilisees)];
       const champsManquantsUniques = [...new Set(champsManquants)];
@@ -572,6 +585,9 @@ export class EnrichissementService {
         zonagePatrimonial: siteEval.zonagePatrimonial,
         trameVerteEtBleue: siteEval.trameVerteEtBleue,
         zonageAbcLogement: siteEval.zonageAbcLogement,
+
+        // Quartier prioritaire de la politique de la ville
+        siteEnQpv: siteEval.siteEnQpv,
 
         // Îlot de chaleur urbain (informatif, hors algorithme)
         ilotChaleurUrbain: siteEval.ilotChaleurUrbain,

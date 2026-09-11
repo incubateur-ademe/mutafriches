@@ -89,6 +89,15 @@ export interface EnrichissementOutputDto {
   /** null = commune absente du référentiel ABC (recherche effectuée, aucun résultat) */
   zonageAbcLogement?: ZonageAbcLogement | null;
 
+  // Quartier prioritaire de la politique de la ville (ADR-0037)
+  /**
+   * `true` si le centroïde du site tombe dans un périmètre QPV, `false` si la recherche
+   * spatiale a abouti hors de tout périmètre. Jamais `null` : pour un booléen, `false` porte
+   * déjà la sémantique « recherche effectuée, site non concerné ». `undefined` = référentiel
+   * illisible ou enrichissement antérieur à v1.14.
+   */
+  siteEnQpv?: boolean;
+
   // Îlot de chaleur urbain — donnée informative, hors algorithme (ADR-0034)
   /** undefined = enrichissement en échec ; NON_COUVERT = site hors périmètre d'étude */
   ilotChaleurUrbain?: IlotChaleurUrbain;

@@ -17,6 +17,7 @@ import { TransportEnrichissementService } from "./transport/transport-enrichisse
 import { IteFretEnrichissementService } from "./transport/ite-fret-enrichissement.service";
 import { UrbanismeEnrichissementService } from "./urbanisme/urbanisme-enrichissement.service";
 import { IcuEnrichissementService } from "./climat/icu-enrichissement.service";
+import { QpvEnrichissementService } from "./qpv/qpv-enrichissement.service";
 import { RisquesNaturelsEnrichissementService } from "./risques-naturels/risques-naturels-enrichissement.service";
 import { RisquesTechnologiquesEnrichissementService } from "./risques-technologiques/risques-technologiques-enrichissement.service";
 import { GeoRisquesEnrichissementService } from "./georisques/georisques-enrichissement.service";
@@ -33,6 +34,7 @@ import {
   createMockIteFretEnrichissementService,
   createMockUrbanismeEnrichissementService,
   createMockIcuEnrichissementService,
+  createMockQpvEnrichissementService,
   createMockRisquesNaturelsEnrichissementService,
   createMockRisquesTechnologiquesEnrichissementService,
   createMockGeoRisquesEnrichissementService,
@@ -72,6 +74,7 @@ describe("EnrichissementService", () => {
     const mockIteFret = createMockIteFretEnrichissementService();
     const mockUrbanisme = createMockUrbanismeEnrichissementService();
     const mockIcu = createMockIcuEnrichissementService();
+    const mockQpv = createMockQpvEnrichissementService();
     const mockRisquesNaturels = createMockRisquesNaturelsEnrichissementService();
     const mockRisquesTechnologiques = createMockRisquesTechnologiquesEnrichissementService();
     const mockGeoRisques = createMockGeoRisquesEnrichissementService();
@@ -109,6 +112,13 @@ describe("EnrichissementService", () => {
       sourcesEchouees: [],
     });
 
+    // Configuration par défaut du mock QPV
+    mockQpv.enrichir.mockResolvedValue({
+      success: true,
+      sourcesUtilisees: ["QPV-ANCT"],
+      sourcesEchouees: [],
+    });
+
     // Configuration par defaut du mock cache (pas de cache)
     mockRepository.findValidCache.mockResolvedValue(null);
 
@@ -122,6 +132,7 @@ describe("EnrichissementService", () => {
         { provide: IteFretEnrichissementService, useValue: mockIteFret },
         { provide: UrbanismeEnrichissementService, useValue: mockUrbanisme },
         { provide: IcuEnrichissementService, useValue: mockIcu },
+        { provide: QpvEnrichissementService, useValue: mockQpv },
         { provide: RisquesNaturelsEnrichissementService, useValue: mockRisquesNaturels },
         {
           provide: RisquesTechnologiquesEnrichissementService,
@@ -275,10 +286,11 @@ describe("EnrichissementService", () => {
       expect(result.codeInsee).toBe("29232");
       expect(result.commune).toBe("Quimper");
       expect(result.surfaceSite).toBe(1000);
-      expect(result.sourcesUtilisees).toHaveLength(13);
+      expect(result.sourcesUtilisees).toHaveLength(14);
       // Le cast `as EnrichissementOutputDto` du bloc de sortie masque un champ oublié :
       // l'assertion est le seul filet sur la présence du critère dans le DTO.
       expect(result).toHaveProperty("distanceReseauChaleur");
+      expect(result).toHaveProperty("siteEnQpv");
     });
 
     it("devrait persister l'enrichissement avec statut SUCCES", async () => {
