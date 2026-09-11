@@ -250,7 +250,6 @@ export const QualificationSitePage: React.FC = () => {
             id="distance-reseau-chaleur"
             label="Distance au réseau de chaleur"
             value={uiData?.distanceReseauChaleur || "-"}
-            message="Un réseau à moins de 500 m facilite le raccordement des projets bâtis."
             tooltip={
               <>
                 Distance séparant le site du réseau de chaleur le plus proche.
