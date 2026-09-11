@@ -297,6 +297,7 @@ pnpm db:lovac:import        # Importer le référentiel LOVAC (logements vacants
 pnpm db:zonage-abc:import   # Importer le référentiel zonage ABC (tension du marché du logement)
 pnpm db:icu:import          # Importer le référentiel des îlots de chaleur urbain (ICU)
 pnpm db:reseaux-chaleur:import  # Importer les tracés des réseaux de chaleur urbains
+pnpm db:qpv:import          # Importer le référentiel des quartiers prioritaires (QPV)
 ```
 
 ## Architecture

@@ -79,6 +79,14 @@ export const IMPORT_DATASETS: readonly ImportDatasetDefinition[] = [
       "https://www.data.gouv.fr/datasets/cartographie-nationale-des-indicateurs-lies-a-lilot-de-chaleur-urbain",
   },
   {
+    key: "qpv",
+    label: "Quartiers prioritaires de la ville (QPV)",
+    datasetNamePattern: "qpv",
+    countTable: "raw_qpv",
+    docUrl:
+      "https://www.data.gouv.fr/datasets/quartiers-prioritaires-de-la-politique-de-la-ville-qpv",
+  },
+  {
     key: "decoupage-administratif",
     label: "Découpage administratif (communes / EPCI)",
     datasetNamePattern: "decoupage-administratif-etalab-%",
