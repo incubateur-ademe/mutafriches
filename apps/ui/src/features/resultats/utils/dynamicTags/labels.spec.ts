@@ -28,6 +28,19 @@ describe("getCritereTagLabel", () => {
     });
   });
 
+  describe("siteEnQpv", () => {
+    it("retourne le tag quand le site est en quartier prioritaire", () => {
+      expect(getCritereTagLabel("siteEnQpv", true)).toBe("QPV");
+    });
+
+    // Hors QPV le critère est neutre sur les sept usages : il n'entre jamais dans les
+    // avantages du podium, et un tag "QPV" y serait trompeur.
+    it("ne produit aucun tag hors quartier prioritaire ni sans donnée", () => {
+      expect(getCritereTagLabel("siteEnQpv", false)).toBeNull();
+      expect(getCritereTagLabel("siteEnQpv", undefined)).toBeNull();
+    });
+  });
+
   // Garde-fou générique : sans `case`, le podium afficherait la clé technique du critère.
   it("retourne la clé brute pour un critère sans libellé dédié", () => {
     expect(getCritereTagLabel("critereInconnu", 42)).toBe("critereInconnu");
