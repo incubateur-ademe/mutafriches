@@ -278,6 +278,25 @@ export const SOURCES_DONNEES: SourceDonnees[] = [
       "couvrant que l'enveloppe urbaine dense des communes étudiées, un site sans zone à " +
       "proximité dans une commune étudiée est déclaré non concerné (ADR-0037).",
   },
+  {
+    id: "qpv",
+    nom: "Quartiers prioritaires de la politique de la ville (QPV)",
+    organisme: "ANCT — Agence nationale de la cohésion des territoires",
+    type: "referentiel-local",
+    urlDoc:
+      "https://www.data.gouv.fr/datasets/quartiers-prioritaires-de-la-politique-de-la-ville-qpv",
+    sourcesEnrichissement: [SourceEnrichissement.QPV],
+    champsRecuperes: [
+      "Appartenance du site à un quartier prioritaire, par test spatial du centroïde contre les " +
+        "périmètres du millésime 2024 (base PostGIS `raw_qpv`, 1 584 quartiers sur 834 communes)",
+    ],
+    traitementAlgo:
+      "Ramenée à un booléen. En quartier prioritaire, la reconversion sert directement les " +
+      "politiques de renouvellement urbain : très positif pour le résidentiel et les équipements " +
+      "publics, très négatif pour le tertiaire, négatif pour le photovoltaïque au sol, neutre " +
+      "pour la culture, l'industrie et la renaturation. Hors quartier prioritaire, le critère " +
+      "est neutre sur les sept usages.",
+  },
 ];
 
 /** Critères d'évaluation (avec poids) alimentés par une source, dérivés du registre autoritaire */

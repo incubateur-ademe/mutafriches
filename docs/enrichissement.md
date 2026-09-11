@@ -707,7 +707,7 @@ Deux couches distinctes du même WFS Géoplateforme, interrogées en parallèle 
 
 **Régimes d'interdiction** : la couche OFB en mélange deux, discriminés par le champ `zonage` :
 - « Interdiction ZAER (loi APER) toutes ENR sauf toiture » → le photovoltaïque au sol est interdit, seul régime retenu
-- « Interdiction ZAER (loi APER) éolien uniquement » → aucun usage de la matrice 29×7 ne porte l'éolien, régime ignoré
+- « Interdiction ZAER (loi APER) éolien uniquement » → aucun usage de la matrice 30×7 ne porte l'éolien, régime ignoré
 
 **Stratégie de géolocalisation** :
 1. Si géométrie disponible → intersection par polygone (plus précis)

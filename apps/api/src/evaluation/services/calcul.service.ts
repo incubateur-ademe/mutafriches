@@ -288,6 +288,7 @@ export class CalculService {
    * - v1.5 : ajout de presenceEspecesProtegees
    * - v1.6 : ajout de presenceZoneHumide
    * - v1.7 : ajout de zonageAbcLogement
+   * - v1.14 : ajout de siteEnQpv
    */
   protected extraireCriteres(
     site: Site,
@@ -369,6 +370,12 @@ export class CalculService {
         site.distanceReseauChaleur === null
           ? SEUIL_PROXIMITE_RESEAU_CHALEUR_M
           : site.distanceReseauChaleur;
+    }
+
+    // Quartier prioritaire de la politique de la ville (v1.14+). Affectation directe : `false`
+    // est une réponse à part entière, seul `undefined` doit faire ignorer le critère.
+    if (!poidsCriteres || "siteEnQpv" in poidsCriteres) {
+      criteres.siteEnQpv = site.siteEnQpv;
     }
 
     return criteres;
