@@ -21,10 +21,10 @@ import {
 import { ScoreImpact, ScoreParUsage } from "./algorithme.types";
 
 // Configuration des poids
-// 29 critères au total, poids total = 31 (source de vérité de la doc de l'algo)
+// 30 critères au total, poids total = 32 (source de vérité de la doc de l'algo)
 export const POIDS_CRITERES = {
   // ------------------------------------------------
-  // 19 critères enrichis automatiquement (module enrichissement) — poids 19.5
+  // 20 critères enrichis automatiquement (module enrichissement) — poids 20.5
   // ------------------------------------------------
   surfaceSite: 2,
   surfaceBati: 2,
@@ -44,6 +44,7 @@ export const POIDS_CRITERES = {
   zonagePatrimonial: 1,
   zoneAccelerationEnr: 1,
   zonageAbcLogement: 0.5,
+  siteEnQpv: 1,
   distanceIte: 0.5,
 
   // ------------------------------------------------
@@ -1149,6 +1150,28 @@ export const MATRICE_SCORING = {
       [UsageType.INDUSTRIE]: ScoreImpact.NEUTRE,
       [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
       [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.TRES_NEGATIF,
+    },
+  },
+
+  // Quartier prioritaire de la politique de la ville (QPV)
+  siteEnQpv: {
+    true: {
+      [UsageType.RESIDENTIEL]: ScoreImpact.TRES_POSITIF,
+      [UsageType.EQUIPEMENTS]: ScoreImpact.TRES_POSITIF,
+      [UsageType.CULTURE]: ScoreImpact.NEUTRE,
+      [UsageType.TERTIAIRE]: ScoreImpact.TRES_NEGATIF,
+      [UsageType.INDUSTRIE]: ScoreImpact.NEUTRE,
+      [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
+      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEGATIF,
+    },
+    false: {
+      [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
+      [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
+      [UsageType.CULTURE]: ScoreImpact.NEUTRE,
+      [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
+      [UsageType.INDUSTRIE]: ScoreImpact.NEUTRE,
+      [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
+      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
     },
   },
 

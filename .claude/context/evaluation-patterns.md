@@ -15,13 +15,13 @@ apps/api/src/evaluation/
 │       ├── metadata.dto.ts                  # Enums et versions (GET /evaluation/metadata)
 │       └── mutabilite.dto.ts                # Résultats de calcul (POST /evaluation/calculer)
 ├── entities/
-│   ├── site.entity.ts                       # Objet métier central (29 critères)
+│   ├── site.entity.ts                       # Objet métier central (30 critères)
 │   └── evaluation.entity.ts                 # Évaluation persistée (snapshots + résultats)
 ├── repositories/
 │   └── evaluation.repository.ts             # Persistance + cache (Drizzle ORM)
 ├── services/
 │   ├── algorithme/
-│   │   ├── algorithme.config.ts             # Matrice 29×7 (critères × usages)
+│   │   ├── algorithme.config.ts             # Matrice 30×7 (critères × usages)
 │   │   ├── algorithme.constants.ts          # Seuils, poids, niveaux
 │   │   ├── algorithme.types.ts              # Types internes algorithme
 │   │   ├── fiabilite.calculator.ts          # Calcul fiabilité (0-10)
@@ -81,9 +81,9 @@ OrchestrateurService.calculerMutabilite()
 
 ## Algorithme de scoring
 
-### Matrice 29 critères × 7 usages
+### Matrice 30 critères × 7 usages
 
-L'algorithme évalue 29 critères pour chacun des 7 usages possibles d'une friche.
+L'algorithme évalue 30 critères pour chacun des 7 usages possibles d'une friche.
 
 #### Les 7 usages
 
@@ -105,14 +105,14 @@ POSITIF      = 1
 TRES_POSITIF = 2
 ```
 
-#### Les 29 critères (19 enrichis + 10 complémentaires)
+#### Les 30 critères (20 enrichis + 10 complémentaires)
 
 > Source de vérité : `POIDS_CRITERES` dans `algorithme.config.ts` (les poids ne changent
 > pas avec la dérivation). `raccordementEau` reste structurellement dans
 > `DonneesComplementairesInputDto` (et donc dans le snapshot de cache) mais sa valeur est
 > désormais **dérivée automatiquement** de `surfaceBati`, plus saisie par l'utilisateur.
 
-**Enrichis automatiquement** (poids total : 19.5) :
+**Enrichis automatiquement** (poids total : 20.5) :
 
 | Critère | Poids | Type |
 |---------|-------|------|
@@ -134,6 +134,7 @@ TRES_POSITIF = 2
 | `zonagePatrimonial` | 1 | Enum (3 valeurs) |
 | `zoneAccelerationEnr` | 1 | Enum (4 valeurs, dont zone d'exclusion APER) |
 | `zonageAbcLogement` | 0.5 | Enum (A / Abis / B1 / B2 / C) |
+| `siteEnQpv` | 1 | Booléen (test spatial du centroïde, ADR-0039) |
 | `distanceIte` | 0.5 | Enum (<1km bon état / <1km mauvais état / >1km) |
 
 > **Unité des distances** (v1.10) : `distanceAutoroute` et `distanceRaccordementElectrique` sont enrichis en **mètres** (IGN WFS, Enedis) et stockés ainsi dans le DTO/Site ; `extraireCriteres` les convertit en **km** via `metresVersKm` avant scoring (la matrice reste en km, source de vérité Excel). `distanceTransportCommun` et `distanceReseauChaleur` sont en mètres des deux côtés (pas de conversion). Cf. ADR-0027.
@@ -162,7 +163,7 @@ TRES_POSITIF = 2
 | `presenceEspecesProtegees` | 1 | Enum (Oui / Non / Ne sait pas) |
 | `presenceZoneHumide` | 1 | Enum (Oui / Non / Ne sait pas) |
 
-**Poids total : 31**
+**Poids total : 32**
 
 ### Formule de calcul
 
@@ -344,7 +345,7 @@ Modifier uniquement les seuils dans la fonction. Ne pas changer la structure.
 
 ### Modifier les poids
 
-Les poids sont dans `POIDS_CRITERES` (`algorithme.config.ts`). Le poids total (31) est recalculé automatiquement par le `FiabiliteCalculator`.
+Les poids sont dans `POIDS_CRITERES` (`algorithme.config.ts`). Le poids total (32) est recalculé automatiquement par le `FiabiliteCalculator`.
 
 ---
 
@@ -352,7 +353,7 @@ Les poids sont dans `POIDS_CRITERES` (`algorithme.config.ts`). Le poids total (3
 
 ### Algorithme
 
-- [ ] Matrice 29×7 cohérente (chaque critère a un score pour chaque usage)
+- [ ] Matrice 30×7 cohérente (chaque critère a un score pour chaque usage)
 - [ ] Poids déclarés dans `POIDS_CRITERES` pour chaque critère
 - [ ] Score NEUTRE (0.5) géré dans les deux sens (avantages + contraintes)
 - [ ] Critères ignorés si `undefined`, `null`, ou `"ne-sait-pas"`

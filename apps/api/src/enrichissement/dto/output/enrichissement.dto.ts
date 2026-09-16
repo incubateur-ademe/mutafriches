@@ -224,6 +224,14 @@ export class EnrichissementSwaggerDto implements IEnrichissementOutput {
   zonagePatrimonial?: ZonagePatrimonial;
 
   @ApiProperty({
+    description:
+      "Site situé dans un quartier prioritaire de la politique de la ville (QPV). false = recherche spatiale effectuée, site hors de tout périmètre",
+    required: false,
+    example: false,
+  })
+  siteEnQpv?: boolean;
+
+  @ApiProperty({
     description: "Position par rapport à la trame verte et bleue",
     required: false,
     example: TrameVerteEtBleue.HORS_TRAME,

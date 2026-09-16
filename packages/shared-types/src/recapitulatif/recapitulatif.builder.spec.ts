@@ -38,10 +38,10 @@ describe("buildRecapitulatifSite", () => {
     expect(sections.map((s) => s.id)).toEqual(["site-bati", "environnement", "risques-zonages"]);
   });
 
-  it("répartit les 29 critères sur les sections", () => {
+  it("répartit les 30 critères sur les sections", () => {
     const sections = buildRecapitulatifSite(enrichissement, complementaires);
     const criteres = sections.flatMap((s) => s.criteres).filter((c) => !c.informatif);
-    expect(criteres).toHaveLength(29);
+    expect(criteres).toHaveLength(30);
   });
 
   // Sans ce garde-fou, un critère sans résolveur s'affiche "Non disponible" en silence,
@@ -107,7 +107,7 @@ describe("buildRecapitulatifSite", () => {
   it("affiche 'Non disponible' pour les valeurs manquantes", () => {
     const sections = buildRecapitulatifSite(undefined, undefined);
     const criteres = sections.flatMap((s) => s.criteres);
-    expect(criteres).toHaveLength(30);
+    expect(criteres).toHaveLength(31);
     expect(criteres.every((c) => c.valeurAffichee === "Non disponible")).toBe(true);
   });
 

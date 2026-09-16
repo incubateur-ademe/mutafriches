@@ -209,6 +209,10 @@ export function getCritereTagLabel(
       return null;
     }
 
+    // Hors QPV, le critère est neutre partout : il n'atteint jamais le podium des avantages
+    case "siteEnQpv":
+      return valeur === true ? "QPV" : null;
+
     default:
       return critere;
   }

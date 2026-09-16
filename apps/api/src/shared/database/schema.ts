@@ -13,6 +13,7 @@ import { rawLovac } from "./schemas/raw-lovac.schema";
 import { rawZonageAbc } from "./schemas/raw-zonage-abc.schema";
 import { rawIcu } from "./schemas/raw-icu.schema";
 import { rawReseauxChaleur } from "./schemas/raw-reseaux-chaleur.schema";
+import { rawQpv } from "./schemas/raw-qpv.schema";
 import { apiHealthSnapshots } from "./schemas/api-health-snapshots.schema";
 import { partenaires } from "./schemas/partenaires.schema";
 import { partenaireSites } from "./schemas/partenaire-sites.schema";
@@ -35,6 +36,7 @@ export {
   rawZonageAbc,
   rawIcu,
   rawReseauxChaleur,
+  rawQpv,
   apiHealthSnapshots,
   partenaires,
   partenaireSites,
@@ -57,6 +59,7 @@ export const schema = {
   rawZonageAbc,
   rawIcu,
   rawReseauxChaleur,
+  rawQpv,
   apiHealthSnapshots,
   partenaires,
   partenaireSites,

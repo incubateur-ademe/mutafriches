@@ -28,13 +28,13 @@
            │
            ↓
 ┌──────────────────────┐
-│  ENRICHISSEMENT      │ ←── APIs externes + 8 bases locales
-│  10 domaines         │     (IGN, Enedis, GeoRisques, ZAER...)
+│  ENRICHISSEMENT      │ ←── APIs externes + 9 bases locales
+│  13 domaines         │     (IGN, Enedis, GeoRisques, ZAER...)
 └──────────┬───────────┘
            │
            ↓
 ┌──────────────────────┐
-│  ÉVALUATION          │ ←── Matrice 29 critères × 7 usages
+│  ÉVALUATION          │ ←── Matrice 30 critères × 7 usages
 │  Mutabilité          │
 └──────────┬───────────┘
            │
@@ -103,11 +103,11 @@ mutafriches/
 
 ### Enrichissement
 
-Le module d'enrichissement interroge une dizaine d'**APIs de données externes** et **8 bases locales PostGIS** pour pré-remplir automatiquement les critères d'un site (mono ou multi-parcelle) :
+Le module d'enrichissement interroge une dizaine d'**APIs de données externes** et **9 bases locales PostGIS** pour pré-remplir automatiquement les critères d'un site (mono ou multi-parcelle) :
 
-- **10 domaines** : Cadastre, Énergie, Transport, Urbanisme, Risques Naturels, Risques Technologiques, Pollution, Zonages, ENR/ZAER, GeoRisques brut
+- **13 domaines** : Cadastre, Énergie, Réseau de chaleur, Transport, ITE fret, Urbanisme, Risques Naturels, Risques Technologiques, Pollution, Zonages, ENR/ZAER, Climat/ICU, GeoRisques brut
 - **APIs externes** : IGN, BDNB, Enedis, GeoRisques (×13 endpoints), API Carto, ZAER WFS, data.gouv.fr...
-- **8 bases locales** : Transport, BPE (commerces), Sites pollués ADEME, ITE fret, LOVAC (logements vacants), Zonage ABC, ICU (îlots de chaleur), Réseaux de chaleur
+- **9 bases locales** : Transport, BPE (commerces), Sites pollués ADEME, ITE fret, LOVAC (logements vacants), Zonage ABC, ICU (îlots de chaleur), Réseaux de chaleur, QPV (quartiers prioritaires)
 - **Multi-parcelle** : Support de 1 à 20 parcelles par site
 - **Cache 24h** : Optimisation des performances
 
@@ -123,7 +123,7 @@ L'algorithme calcule un **indice de mutabilité 0-100%** pour **7 usages** possi
 6. Renaturation
 7. Photovoltaïque au sol
 
-**Matrice** : 29 critères × 7 usages
+**Matrice** : 30 critères × 7 usages
 **Fiabilité** : Indice 0-10 selon la complétude des données d'entrée (pondéré par poids des critères)
 
 ### Intégration
