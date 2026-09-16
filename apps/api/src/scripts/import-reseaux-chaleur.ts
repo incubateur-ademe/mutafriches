@@ -1,0 +1,246 @@
+/* eslint-disable no-console */
+/**
+ * Script d'import du référentiel des réseaux de chaleur urbains en base.
+ *
+ * Usage (depuis la racine du monorepo) :
+ *   pnpm db:reseaux-chaleur:import
+ *
+ * Source : API France Chaleur Urbaine (ministère de la Transition écologique), endpoint
+ * public `GET /v1/networks` — licence Ouverte 2.0.
+ *   https://www.data.gouv.fr/dataservices/api-france-chaleur-urbaine
+ *
+ * Le tracé est TÉLÉCHARGÉ à l'exécution et non commité : le GeoJSON pèse 63 Mo (2 millions
+ * de segments), soit dix fois le plus gros référentiel du dépôt. L'endpoint est public,
+ * stable et sans authentification, ce qui rend le fichier inutile à versionner.
+ *
+ * Pourquoi un référentiel local plutôt que l'appel live à `/v1/eligibility` : cet endpoint
+ * mesure la distance sur une géométrie partielle pour une partie des réseaux (cf. ADR-0037).
+ *
+ * Prérequis :
+ *   - La migration 0032_raw_reseaux_chaleur.sql doit avoir été exécutée.
+ *   - PostGIS doit être activé sur la base.
+ *
+ * À rejouer à chaque évolution du référentiel FCU (les réseaux en construction évoluent en
+ * continu) : une à deux fois par an, ou sur signalement d'un écart.
+ *
+ * Comportement :
+ *   - Télécharge le GeoJSON (WGS84)
+ *   - Valide l'intégralité de la réponse AVANT de vider la table (une réponse tronquée ne
+ *     doit jamais écraser un référentiel valide)
+ *   - Truncate raw_reseaux_chaleur puis insère par batch (idempotent)
+ *   - Normalise les géométries en MultiLineString valides (ST_Multi + ST_MakeValid)
+ *   - Log la progression dans raw_imports_log
+ */
+
+import { drizzle } from "drizzle-orm/postgres-js";
+import { sql, SQL } from "drizzle-orm";
+import postgres from "postgres";
+import { getAppConfig } from "../config";
+
+const SOURCE_URL = "https://france-chaleur-urbaine.beta.gouv.fr/api/v1/networks";
+const BATCH_SIZE = 25;
+const DATASET_NAME = "reseaux-chaleur";
+const TIMEOUT_MS = 180_000;
+
+/**
+ * Plancher de sécurité : le millésime 2026 compte 1 307 réseaux. En dessous de 1 000, la
+ * réponse est tronquée ou le périmètre a fondu — on refuse d'écraser le référentiel.
+ */
+const MIN_RESEAUX_ATTENDUS = 1000;
+
+interface ReseauApi {
+  "Identifiant reseau"?: string;
+  nom_reseau?: string;
+  Gestionnaire?: string;
+  geom?: { type?: string; coordinates?: unknown } | null;
+}
+
+interface ReseauRow {
+  identifiantReseau: string | null;
+  nom: string | null;
+  gestionnaire: string | null;
+  traceComplet: boolean;
+  geometrie: string;
+}
+
+function tronquer(valeur: unknown, longueur: number): string | null {
+  const texte = typeof valeur === "string" ? valeur.trim() : "";
+  if (texte === "") return null;
+  return texte.length > longueur ? texte.slice(0, longueur) : texte;
+}
+
+/** Convertit un réseau de l'API en ligne prête à insérer, ou null s'il n'a pas de géométrie. */
+function versLigne(reseau: ReseauApi, index: number): ReseauRow | null {
+  const geom = reseau.geom;
+  if (!geom || !geom.coordinates) return null;
+
+  // 18 % des réseaux ne sont publiés que par un point : on les garde, en les marquant,
+  // car la distance à un point surestime la distance au réseau réel.
+  const lineaires = geom.type === "LineString" || geom.type === "MultiLineString";
+  const ponctuels = geom.type === "Point" || geom.type === "MultiPoint";
+  if (!lineaires && !ponctuels) {
+    throw new Error(`Réseau ${index} : géométrie inattendue (${String(geom.type)})`);
+  }
+
+  return {
+    identifiantReseau: tronquer(reseau["Identifiant reseau"], 20),
+    nom: tronquer(reseau.nom_reseau, 255),
+    gestionnaire: tronquer(reseau.Gestionnaire, 255),
+    traceComplet: lineaires,
+    geometrie: JSON.stringify(geom),
+  };
+}
+
+async function telecharger(): Promise<ReseauApi[]> {
+  const reponse = await fetch(SOURCE_URL, { signal: AbortSignal.timeout(TIMEOUT_MS) });
+  if (!reponse.ok) {
+    throw new Error(`Téléchargement échoué : HTTP ${reponse.status} ${reponse.statusText}`);
+  }
+  const donnees = (await reponse.json()) as unknown;
+  if (!Array.isArray(donnees)) {
+    throw new Error("Réponse inattendue : un tableau de réseaux était attendu");
+  }
+  return donnees as ReseauApi[];
+}
+
+async function insererBatch(db: ReturnType<typeof drizzle>, batch: ReseauRow[]): Promise<void> {
+  if (batch.length === 0) return;
+
+  const valeurs: SQL[] = batch.map(
+    (row) => sql`(
+      ${row.identifiantReseau},
+      ${row.nom},
+      ${row.gestionnaire},
+      ${row.traceComplet},
+      ST_MakeValid(ST_SetSRID(ST_GeomFromGeoJSON(${row.geometrie}), 4326))
+    )`,
+  );
+
+  await db.execute(sql`
+    INSERT INTO raw_reseaux_chaleur (identifiant_reseau, nom, gestionnaire, trace_complet, geom)
+    VALUES ${sql.join(valeurs, sql`, `)}
+  `);
+}
+
+async function importReseauxChaleur(): Promise<void> {
+  console.log("=".repeat(60));
+  console.log("Import des réseaux de chaleur urbains en base de données");
+  console.log("=".repeat(60));
+  console.log(`Source : ${SOURCE_URL}`);
+  console.log("-".repeat(60));
+
+  console.log("\nTéléchargement du référentiel (environ 63 Mo)...");
+  const reseaux = await telecharger();
+  console.log(`Réponse reçue : ${reseaux.length} réseaux`);
+
+  // Validation complète avant toute écriture : on ne vide la table que si la réponse tient.
+  const lignes = reseaux
+    .map((reseau, index) => versLigne(reseau, index))
+    .filter((ligne): ligne is ReseauRow => ligne !== null);
+  const sansGeometrie = reseaux.length - lignes.length;
+
+  if (reseaux.length < MIN_RESEAUX_ATTENDUS) {
+    throw new Error(
+      `Réponse suspecte : ${reseaux.length} réseaux reçus, minimum attendu ${MIN_RESEAUX_ATTENDUS}. ` +
+        "Import interrompu, le référentiel existant est conservé.",
+    );
+  }
+
+  const client = postgres(getAppConfig().database);
+  const db = drizzle(client);
+  const debut = Date.now();
+  let importes = 0;
+
+  const logResult = await db.execute<{ id: number }>(sql`
+    INSERT INTO raw_imports_log (dataset_name, source_path)
+    VALUES (${DATASET_NAME}, ${SOURCE_URL})
+    RETURNING id
+  `);
+  const logId = (logResult as unknown as Array<{ id: number }>)[0].id;
+  console.log(`Log import créé : id=${logId}`);
+
+  try {
+    console.log("Vidage de la table raw_reseaux_chaleur...");
+    await db.execute(sql`TRUNCATE TABLE raw_reseaux_chaleur RESTART IDENTITY`);
+
+    console.log("Début de l'import...\n");
+    for (let i = 0; i < lignes.length; i += BATCH_SIZE) {
+      const batch = lignes.slice(i, i + BATCH_SIZE);
+      await insererBatch(db, batch);
+      importes += batch.length;
+      process.stdout.write(`\rProgression : ${importes}/${lignes.length} réseaux importés`);
+    }
+    process.stdout.write("\n");
+
+    const duree = (Date.now() - debut) / 1000;
+    await db.execute(sql`
+      UPDATE raw_imports_log
+      SET finished_at = NOW(),
+          status = 'success',
+          rows_imported = ${importes},
+          rows_total = ${lignes.length}
+      WHERE id = ${logId}
+    `);
+
+    const statsResult = await db.execute<{
+      total: string;
+      avec_identifiant: string;
+      sans_trace: string;
+      geom_invalides: string;
+      longueur_km: number;
+    }>(sql`
+      SELECT
+        COUNT(*) AS total,
+        COUNT(identifiant_reseau) AS avec_identifiant,
+        COUNT(*) FILTER (WHERE NOT trace_complet) AS sans_trace,
+        COUNT(*) FILTER (WHERE geom IS NULL OR NOT ST_IsValid(geom)) AS geom_invalides,
+        ROUND((SUM(ST_Length(geom::geography)) / 1000)::numeric) AS longueur_km
+      FROM raw_reseaux_chaleur
+    `);
+    const stats = (
+      statsResult as unknown as Array<{
+        total: string;
+        avec_identifiant: string;
+        sans_trace: string;
+        geom_invalides: string;
+        longueur_km: number;
+      }>
+    )[0];
+
+    console.log("-".repeat(60));
+    console.log("TERMINÉ !");
+    console.log("-".repeat(60));
+    console.log(`Réseaux importés : ${stats.total}`);
+    console.log(`Avec identifiant national : ${stats.avec_identifiant}`);
+    console.log(`Réseaux réduits à un point (tracé non publié) : ${stats.sans_trace}`);
+    console.log(`Réseaux sans aucune géométrie (ignorés) : ${sansGeometrie}`);
+    console.log(`Longueur cumulée : ${stats.longueur_km} km`);
+    console.log(`Géométries invalides : ${stats.geom_invalides}`);
+    console.log(`Durée : ${duree.toFixed(1)}s`);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    await db.execute(sql`
+      UPDATE raw_imports_log
+      SET finished_at = NOW(),
+          status = 'failed',
+          rows_imported = ${importes},
+          rows_total = ${lignes.length},
+          error_message = ${message}
+      WHERE id = ${logId}
+    `);
+    throw error;
+  } finally {
+    await client.end();
+    console.log("Connexion base de données fermée");
+  }
+}
+
+importReseauxChaleur().catch((error: unknown) => {
+  const message = error instanceof Error ? error.message : String(error);
+  console.error("\nErreur :", message);
+  const cause = (error as { cause?: { message?: string } })?.cause;
+  if (cause?.message) {
+    console.error("  cause :", cause.message);
+  }
+  process.exit(1);
+});
