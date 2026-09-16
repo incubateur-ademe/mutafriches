@@ -2,7 +2,7 @@
 
 ## Vue d'ensemble
 
-Le module d'enrichissement est le cœur de Mutafriches. Il enrichit automatiquement les données d'une parcelle cadastrale en interrogeant une dizaine d'**APIs publiques externes** (dont GéoRisques, qui expose 13 endpoints) et **7 bases locales** (4 PostGIS spatiales + les référentiels communaux LOVAC, zonage ABC et ICU).
+Le module d'enrichissement est le cœur de Mutafriches. Il enrichit automatiquement les données d'une parcelle cadastrale en interrogeant une dizaine d'**APIs publiques externes** (dont GéoRisques, qui expose 13 endpoints) et **8 bases locales** (5 PostGIS spatiales + les référentiels communaux LOVAC, zonage ABC et ICU).
 
 **Endpoint** : `POST /enrichissement`
 **Entrée** : Identifiant(s) cadastral(s) — mono-parcelle ou multi-parcelle (1 à 20 parcelles)
@@ -23,7 +23,7 @@ Le module d'enrichissement est le cœur de Mutafriches. Il enrichit automatiquem
       calcul centroïde, géométrie union, parcelle prédominante
    ↓
 3. Enrichissement SÉQUENTIEL des domaines (dans l'ordre du code) :
-   ├─ ÉNERGIE (Enedis + France Chaleur Urbaine)
+   ├─ ÉNERGIE (Enedis + référentiel local réseaux de chaleur)
    ├─ TRANSPORT (Service Public + IGN + data.gouv)
    │    └─ ITE FRET (référentiel local raw_ite_fret, Cerema)
    ├─ URBANISME (LOVAC + Zonage ABC logement + BPE)
@@ -138,12 +138,12 @@ Les enrichissements suivants utilisent des coordonnées différentes selon le do
 ### Responsabilité
 Calculer la distance au point de raccordement électrique et au réseau de chaleur urbain les plus proches.
 
-### APIs utilisées
+### Sources utilisées
 
-| API | Source | Données récupérées |
-|-----|--------|-------------------|
-| **Enedis** | `data.enedis.fr` | Distance raccordement électrique (postes HTA + lignes BT) |
-| **France Chaleur Urbaine** | `france-chaleur-urbaine.beta.gouv.fr` | Distance au réseau de chaleur urbain le plus proche |
+| Source | Type | Données récupérées |
+|--------|------|-------------------|
+| **Enedis** | API externe (`data.enedis.fr`) | Distance raccordement électrique (postes HTA + lignes BT) |
+| **France Chaleur Urbaine** | Référentiel local (`raw_reseaux_chaleur`) | Tracés des réseaux de chaleur et de froid urbains |
 
 ### Règles de gestion
 
@@ -167,16 +167,15 @@ Calculer la distance au point de raccordement électrique et au réseau de chale
 1. **Prérequis** : Coordonnées parcelle disponibles
    - Si manquantes → échec, champ `distanceReseauChaleur` non renseigné
 
-2. **Appel** : `GET /v1/eligibility?lat=&lon=` (endpoint public, sans authentification,
-   timeout court de 3 s puisque l'orchestration est séquentielle)
+2. **Calcul** : `ST_Distance` sur le référentiel local `raw_reseaux_chaleur` (rayon 5 km),
+   alimenté depuis France Chaleur Urbaine par `pnpm db:reseaux-chaleur:import`.
+   L'appel live `/v1/eligibility` a été abandonné : il mesure la distance sur une géométrie
+   partielle pour environ 8 % des réseaux (ADR-0037).
 
-3. **Sémantique de la réponse** — l'API distingue trois situations :
-   - `distance` numérique → distance en mètres au réseau le plus proche (arrondie)
-   - `distance: null` avec un réseau identifié → réseau connu dont FCU n'a pas le tracé
-   - `distance: null` sans réseau identifié → aucun réseau à proximité
-
-   Les deux derniers cas donnent `null` : **c'est un succès, pas une source échouée**. Les
+3. **Aucun réseau dans le rayon** → `null`. **C'est un succès, pas une source échouée** : le
    marquer en échec invaliderait le cache strict de tous les sites hors réseau de chaleur.
+   18 % des réseaux n'ont pas de tracé publié (seule la chaufferie est localisée) : pour
+   ceux-là, `trace_complet` vaut `false` et la distance obtenue est un majorant.
 
 4. **Scoring** : seuil de 500 m, en mètres de bout en bout (aucune conversion en km).
    `null` est ramené à la tranche « >= 500 m » à la frontière de l'algorithme.
@@ -800,14 +799,14 @@ expose 13 endpoints, appelés séparément).
 | Domaine | API(s) externe(s) |
 |---------|-------------------|
 | Cadastre | IGN Cadastre, BDNB |
-| Énergie | Enedis, France Chaleur Urbaine |
+| Énergie | Enedis |
 | Transport | API Service Public, IGN WFS |
 | Urbanisme | *(aucune : LOVAC, zonage ABC et BPE sont des référentiels locaux)* |
 | Zonages | API Carto Nature, API Carto GPU |
 | ENR | ZAER WFS Géoplateforme |
 | Risques | GéoRisques (1 API, 13 endpoints) |
 
-### Bases Locales (7)
+### Bases Locales (8)
 
 | Domaine | Table | Données | Type |
 |---------|-------|---------|------|
@@ -818,7 +817,8 @@ expose 13 endpoints, appelés séparément).
 | Urbanisme | raw_lovac | Logements vacants LOVAC par commune | Table de correspondance (code INSEE) |
 | Urbanisme | raw_zonage_abc | Zonage ABC du logement par commune | Table de correspondance (code INSEE) |
 | Climat | raw_icu | Îlots de chaleur urbain (CSTB) | PostGIS (spatial) |
-| **TOTAL** | | | **7** |
+| Énergie | raw_reseaux_chaleur | Tracés des réseaux de chaleur (France Chaleur Urbaine) | PostGIS (spatial) |
+| **TOTAL** | | | **8** |
 
 ---
 
