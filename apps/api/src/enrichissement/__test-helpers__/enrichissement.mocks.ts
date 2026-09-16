@@ -35,10 +35,6 @@ interface MockEnedisService {
   getDistanceRaccordement: Mock;
 }
 
-interface MockFranceChaleurUrbaineService {
-  getEligibilite: Mock;
-}
-
 interface MockTransportEnrichissementService {
   enrichir: Mock;
 }
@@ -230,15 +226,6 @@ export function createMockReseauChaleurEnrichissementService(): MockReseauChaleu
 export function createMockEnedisService(): MockEnedisService {
   return {
     getDistanceRaccordement: vi.fn(),
-  };
-}
-
-/**
- * Mock du FranceChaleurUrbaineService
- */
-export function createMockFranceChaleurUrbaineService(): MockFranceChaleurUrbaineService {
-  return {
-    getEligibilite: vi.fn(),
   };
 }
 

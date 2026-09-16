@@ -1,6 +1,6 @@
 {
   "name": "mutafriches",
-  "version": "1.33.3",
+  "version": "1.34.0",
   "private": true,
   "description": "Monorepo pour l'analyse de mutabilité des friches urbaines",
   "packageManager": "pnpm@11.24.0",
@@ -40,6 +40,7 @@
     "db:lovac:import": "pnpm --filter api run db:lovac:import",
     "db:zonage-abc:import": "pnpm --filter api run db:zonage-abc:import",
     "db:icu:import": "pnpm --filter api run db:icu:import",
+    "db:reseaux-chaleur:import": "pnpm --filter api run db:reseaux-chaleur:import",
     "db:partenaires:seed": "pnpm --filter api run db:partenaires:seed",
     "db:partenaires:backfill-canal": "pnpm --filter api run db:partenaires:backfill-canal",
     "partenaires:prefetch": "pnpm --filter api run partenaires:prefetch",

@@ -131,6 +131,7 @@ pnpm db:studio              # Interface graphique Drizzle Studio
 pnpm db:lovac:import        # Référentiel LOVAC (logements vacants, annuel)
 pnpm db:zonage-abc:import   # Référentiel zonage ABC (tension du logement, à chaque arrêté)
 pnpm db:icu:import          # Référentiel îlots de chaleur urbain (ICU, à chaque millésime)
+pnpm db:reseaux-chaleur:import          # Référentiel îlots de chaleur urbain (réseaux de chaleur, à chaque millésime)
 ```
 
 ### Contact multisites (calendrier ZCal)

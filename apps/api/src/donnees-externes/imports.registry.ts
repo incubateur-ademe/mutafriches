@@ -64,6 +64,13 @@ export const IMPORT_DATASETS: readonly ImportDatasetDefinition[] = [
     docUrl: "https://www.data.gouv.fr/datasets/liste-des-communes-selon-le-zonage-abc",
   },
   {
+    key: "reseaux-chaleur",
+    label: "Réseaux de chaleur urbains",
+    datasetNamePattern: "reseaux-chaleur",
+    countTable: "raw_reseaux_chaleur",
+    docUrl: "https://www.data.gouv.fr/dataservices/api-france-chaleur-urbaine",
+  },
+  {
     key: "icu",
     label: "Îlots de chaleur urbain (ICU)",
     datasetNamePattern: "icu",

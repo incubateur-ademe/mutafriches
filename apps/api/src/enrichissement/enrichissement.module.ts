@@ -42,7 +42,6 @@ import { ZonageReglementaireCalculator } from "./services/zonage/zonage-reglemen
 import { CadastreService } from "./adapters/cadastre/cadastre.service";
 import { BdnbService } from "./adapters/bdnb/bdnb.service";
 import { EnedisService } from "./adapters/enedis/enedis.service";
-import { FranceChaleurUrbaineService } from "./adapters/france-chaleur-urbaine/france-chaleur-urbaine.service";
 import { ServicePublicService } from "./adapters/service-public/service-public.service";
 import { IgnWfsService } from "./adapters/ign-wfs/ign-wfs.service";
 
@@ -74,6 +73,7 @@ import { ZonageAbcRepository } from "./repositories/zonage-abc.repository";
 import { TransportStopsRepository } from "./repositories/transport-stops.repository";
 import { AdemeSitesPolluesRepository } from "./repositories/ademe-sites-pollues.repository";
 import { IteFretRepository } from "./repositories/ite-fret.repository";
+import { ReseauxChaleurRepository } from "./repositories/reseaux-chaleur.repository";
 import { IcuRepository } from "./repositories/icu.repository";
 
 @Module({
@@ -91,6 +91,7 @@ import { IcuRepository } from "./repositories/icu.repository";
     TransportStopsRepository,
     AdemeSitesPolluesRepository,
     IteFretRepository,
+    ReseauxChaleurRepository,
     IcuRepository,
 
     // Services de domaine
@@ -131,7 +132,6 @@ import { IcuRepository } from "./repositories/icu.repository";
     CadastreService,
     BdnbService,
     EnedisService,
-    FranceChaleurUrbaineService,
 
     // Adapters GeoRisques
     GeoRisquesOrchestrator,

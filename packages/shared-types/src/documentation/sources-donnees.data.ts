@@ -69,18 +69,21 @@ export const SOURCES_DONNEES: SourceDonnees[] = [
     id: "france-chaleur-urbaine",
     nom: "Réseaux de chaleur urbains (France Chaleur Urbaine)",
     organisme: "France Chaleur Urbaine — ministère de la Transition écologique",
-    type: "api-externe",
+    type: "referentiel-local",
     urlDoc: "https://www.data.gouv.fr/dataservices/api-france-chaleur-urbaine",
     sourcesEnrichissement: [SourceEnrichissement.FRANCE_CHALEUR_URBAINE],
     champsRecuperes: [
-      "Distance à vol d'oiseau au réseau de chaleur urbain le plus proche (en mètres)",
+      "Tracés des réseaux de chaleur et de froid urbains, importés dans la base PostGIS " +
+        "`raw_reseaux_chaleur` (1 307 réseaux, environ 10 400 km de canalisations)",
     ],
     traitementAlgo:
-      "La distance est comparée à un seuil unique de 500 m : sous ce seuil, la possibilité de " +
-      "raccordement valorise fortement les usages résidentiel, équipements et culture, et " +
-      "positivement le tertiaire. Au-delà, l'effet est neutre pour les sept usages. Quand aucune " +
-      "distance n'est exploitable — aucun réseau à proximité, ou réseau connu dont le tracé n'est " +
-      "pas disponible — le site est traité comme situé au-delà du seuil.",
+      "La distance entre le site et le tracé le plus proche est calculée localement, puis comparée " +
+      "à un seuil unique de 500 m : sous ce seuil, la possibilité de raccordement valorise " +
+      "fortement les usages résidentiel, équipements et culture, et positivement le tertiaire. " +
+      "Au-delà, l'effet est neutre pour les sept usages. Un site sans réseau dans le rayon de " +
+      "recherche est traité comme situé au-delà du seuil. Pour les réseaux dont seul " +
+      "l'emplacement de la chaufferie est publié (18 % du référentiel), la distance obtenue est " +
+      "un majorant.",
   },
   {
     id: "transport-accessibilite",
