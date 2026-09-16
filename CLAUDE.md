@@ -151,13 +151,14 @@ Règles :
 Pour **chaque feature identifiée** (un groupe cohérent de modifications, typiquement une nouvelle conversation) :
 
 - **Créer une branche dédiée** avant tout commit, systématiquement (`feat/<slug>`, `fix/<slug>`, `chore/<slug>`…). **JAMAIS de commit directement sur `main`** : si la branche courante est `main`, créer et basculer sur une branche dédiée (`git checkout -b <type>/<slug>`) avant le premier commit. `main` ne reçoit des changements que par merge de PR.
-- **Découper en commits** atomiques et cohérents (un commit = une étape qui laisse `pnpm validate` vert).
+- **Découper en commits** atomiques et cohérents, **systématiquement** (un commit = une étape qui laisse `pnpm validate` vert). Ne JAMAIS livrer une feature en un commit fourre-tout : séparer au minimum le code de la documentation (ADR, README, doc des sources) et le bump de version. Annoncer le découpage proposé avant de committer.
 - **Réutiliser / mutualiser** le code existant dès que possible plutôt que de dupliquer (composants, services, types partagés).
 - **Justifier les choix** : dans la description des commits (le pourquoi), et via un ADR (`/adr`) si le choix est architecturalement significatif.
 - **Auditer les vulnérabilités** (voir section dédiée) : lancer `pnpm audit` sur toute feature qui touche aux dépendances.
 - **Vérifier le `README.md`** : à chaque feature, contrôler si le README doit être mis à jour (nouvelle commande, nouvelle source de données, changement d'installation/déploiement, nouvelle route). Ne le modifier que si un élément documenté a réellement changé — pas de doc superflue.
 - **Vérifier la doc des sources de données** : si la feature ajoute, retire ou modifie une source d'enrichissement (nouvelle API/base, changement des champs récupérés ou de leur traitement), mettre à jour `SOURCES_DONNEES` (`packages/shared-types/src/documentation/sources-donnees.data.ts`) **dans le même commit**, puis régénérer le Markdown avec `pnpm docs:sources:gen` (rebuild `shared-types` au préalable). La page UI `/documentation-donnees` et l'export PDF en découlent automatiquement (source de vérité unique, cf. ADR-0026) — ne jamais éditer le `.md` à la main.
-- **Proposer à l'utilisateur des tests manuels E2E côté UI** à réaliser lui-même, en fin de feature : un parcours pas à pas couvrant le comportement attendu.
+- **Proposer à l'utilisateur des tests manuels E2E côté UI** à réaliser lui-même, **systématiquement** en fin de feature : un parcours pas à pas, numéroté, couvrant le comportement attendu et les cas limites. Signaler les pièges qui fausseraient le test (cache d'enrichissement ou d'évaluation à purger, import de référentiel à rejouer, données de démo). Ne jamais clore une feature sans cette liste.
+- **Proposer un titre et un descriptif de PR**, **systématiquement** en fin de feature, prêts à copier-coller : un titre en Conventional Commits (sous 70 caractères) et un descriptif de quelques phrases — le problème, la solution retenue, le pourquoi. Pas de listes à rallonge ni de recopie du diff. Ne jamais créer ni pousser la PR soi-même (cf. règle de commit).
 
 ### Vérification post-implémentation
 
