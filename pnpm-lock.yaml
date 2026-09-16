@@ -215,8 +215,8 @@ importers:
   apps/ui:
     dependencies:
       '@gouvfr/dsfr':
-        specifier: ^1.14.4
-        version: 1.14.4
+        specifier: ^1.15.3
+        version: 1.15.3
       '@mutafriches/shared-types':
         specifier: workspace:*
         version: link:../../packages/shared-types
@@ -651,8 +651,8 @@ packages:
     resolution: {integrity: sha512-43/qtrDUokr7LJqoF2c3+RInu/t4zfrpYdoSDfYyhg52rwLV6TnOvdG4fXm7IkSB3wErkcmJS9iEhjVtOSEjjA==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
-  '@gouvfr/dsfr@1.14.4':
-    resolution: {integrity: sha512-Ca17apmTyAF2tMFwMcLwQN7fTlbfMFeyYSLUIUmjoSg1XVF4vDDkbvvKBpWJWaoTLDSFZBbvvHzcDyxw9wSkLA==}
+  '@gouvfr/dsfr@1.15.3':
+    resolution: {integrity: sha512-R9AALZc1LfZjtytWZMOaUIOHWTkllBZ/sZlsL8TpKZVgF3qUKXt/uNYh+L1D1Fh4p92ZqWxbtNcebsigBZe5pQ==}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
 
   '@humanfs/core@0.19.2':
@@ -5097,7 +5097,7 @@ snapshots:
       '@eslint/core': 0.17.0
       levn: 0.4.1
 
-  '@gouvfr/dsfr@1.14.4': {}
+  '@gouvfr/dsfr@1.15.3': {}
 
   '@humanfs/core@0.19.2':
     dependencies:

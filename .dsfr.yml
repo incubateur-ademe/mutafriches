@@ -1,0 +1,9 @@
+# Acceptation des modalités d'utilisation du Système de Design de l'État (DSFR).
+#
+# Depuis la 1.15, le paquet @gouvfr/dsfr exécute un `preinstall` qui refuse l'installation
+# tant que la version des CGU acceptée ici ne correspond pas à celle de doc/legal/cgu.md.
+# Sans ce fichier, `pnpm install` échoue — en CI comme au build Scalingo.
+#
+# La version ci-dessous doit être relevée à chaque nouvelle version des CGU, après relecture.
+# Source : node_modules/@gouvfr/dsfr/doc/legal/cgu.md (frontmatter `cguVersion`).
+accept-license: "1.0.1"
