@@ -61,7 +61,8 @@ interface MockZonageAbcRepository {
 }
 
 interface MockIcuRepository {
-  findZoneContenant: Mock;
+  findZoneProche: Mock;
+  communeEstCouverte: Mock;
 }
 
 interface MockIcuEnrichissementService {
@@ -506,7 +507,8 @@ export function createMockZonageAbcRepository(): MockZonageAbcRepository {
  */
 export function createMockIcuRepository(): MockIcuRepository {
   return {
-    findZoneContenant: vi.fn(),
+    findZoneProche: vi.fn(),
+    communeEstCouverte: vi.fn(),
   };
 }
 

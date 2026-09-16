@@ -126,7 +126,7 @@ describe("buildRecapitulatifSite", () => {
     expect(icu?.sourceLabel).toBe("ICU (CSTB)");
   });
 
-  it("distingue un site sous le seuil d'un site hors périmètre d'étude", () => {
+  it("distingue un site non concerné d'une commune hors périmètre d'étude", () => {
     const sousSeuil = buildRecapitulatifSite(
       { ...enrichissement, ilotChaleurUrbain: IlotChaleurUrbain.NON },
       complementaires,
@@ -139,8 +139,8 @@ describe("buildRecapitulatifSite", () => {
       sections.flatMap((s) => s.criteres).find((c) => c.key === "ilotChaleurUrbain")
         ?.valeurAffichee;
 
-    expect(valeur(sousSeuil)).toBe("Non (- de 5,5 °C)");
-    expect(valeur(horsPerimetre)).toBe("Non couvert par la cartographie");
+    expect(valeur(sousSeuil)).toBe("Non — aucun îlot de chaleur identifié");
+    expect(valeur(horsPerimetre)).toBe("Commune non couverte par la cartographie");
   });
 
   it("n'ajoute aucune donnée informative aux critères de l'algorithme", () => {

@@ -215,8 +215,8 @@ export const ZONAGE_ABC_LOGEMENT_LABELS: Record<ZonageAbcLogement, string> = {
 
 export const ILOT_CHALEUR_URBAIN_LABELS: Record<IlotChaleurUrbain, string> = {
   [IlotChaleurUrbain.OUI]: "Oui (+ de 5,5 °C)",
-  [IlotChaleurUrbain.NON]: "Non (- de 5,5 °C)",
-  [IlotChaleurUrbain.NON_COUVERT]: "Non couvert par la cartographie",
+  [IlotChaleurUrbain.NON]: "Non — aucun îlot de chaleur identifié",
+  [IlotChaleurUrbain.NON_COUVERT]: "Commune non couverte par la cartographie",
 };
 
 export const DISTANCE_ITE_LABELS: Record<DistanceIte, string> = {
