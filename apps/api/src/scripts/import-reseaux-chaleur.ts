@@ -23,6 +23,9 @@
  * À rejouer à chaque évolution du référentiel FCU (les réseaux en construction évoluent en
  * continu) : une à deux fois par an, ou sur signalement d'un écart.
  *
+ * Attention : l'endpoint source est limité à 2 requêtes par minute. En cas d'échec, attendre
+ * une minute avant de relancer.
+ *
  * Comportement :
  *   - Télécharge le GeoJSON (WGS84)
  *   - Valide l'intégralité de la réponse AVANT de vider la table (une réponse tronquée ne
@@ -91,16 +94,117 @@ function versLigne(reseau: ReseauApi, index: number): ReseauRow | null {
   };
 }
 
-async function telecharger(): Promise<ReseauApi[]> {
+/**
+ * Découpe un flux JSON représentant un tableau d'objets, et émet chaque objet de premier
+ * niveau séparément.
+ *
+ * Indispensable ici : `response.json()` sur les 63 Mo du référentiel construit d'un coup les
+ * 2,3 millions de points en objets JavaScript, soit ~580 Mo de RSS — au-delà de ce qu'encaisse
+ * un conteneur one-off Scalingo, qui tue le process (exit 137). En parsant réseau par réseau,
+ * seul l'objet courant vit en mémoire, et l'on n'en conserve que la géométrie sérialisée.
+ */
+async function* decouperTableauJson(flux: ReadableStream<Uint8Array>): AsyncGenerator<string> {
+  const decodeur = new TextDecoder();
+  const lecteur = flux.getReader();
+
+  let tampon = "";
+  let position = 0;
+  let profondeur = 0;
+  let debutObjet = -1;
+  let dansChaine = false;
+  let echappement = false;
+
+  while (true) {
+    const { done, value } = await lecteur.read();
+    if (done) break;
+    tampon += decodeur.decode(value, { stream: true });
+
+    let consomme = 0;
+    for (let i = position; i < tampon.length; i++) {
+      const caractere = tampon[i];
+
+      if (dansChaine) {
+        if (echappement) echappement = false;
+        else if (caractere === "\\") echappement = true;
+        else if (caractere === '"') dansChaine = false;
+        continue;
+      }
+
+      if (caractere === '"') dansChaine = true;
+      else if (caractere === "{") {
+        if (profondeur === 0) debutObjet = i;
+        profondeur++;
+      } else if (caractere === "}") {
+        profondeur--;
+        if (profondeur === 0 && debutObjet !== -1) {
+          yield tampon.slice(debutObjet, i + 1);
+          consomme = i + 1;
+          debutObjet = -1;
+        }
+      }
+    }
+
+    // Un seul découpage par chunk : re-slicer à chaque objet rendait le parcours quadratique.
+    if (consomme > 0) {
+      tampon = tampon.slice(consomme);
+      if (debutObjet !== -1) debutObjet -= consomme;
+      position = tampon.length;
+    } else {
+      position = tampon.length;
+    }
+  }
+}
+
+/**
+ * Parcourt le référentiel en flux et appelle `traiter` sur chaque lot de lignes prêtes.
+ *
+ * Rien n'est accumulé : seul le lot courant vit en mémoire. Retourne le nombre de réseaux
+ * reçus et le nombre de lignes exploitables.
+ */
+async function parcourirReferentiel(
+  traiter: (lot: ReseauRow[]) => Promise<void>,
+): Promise<{ recus: number; retenus: number }> {
   const reponse = await fetch(SOURCE_URL, { signal: AbortSignal.timeout(TIMEOUT_MS) });
+  if (reponse.status === 429) {
+    throw new Error(
+      "France Chaleur Urbaine limite /v1/networks à 2 requêtes par minute. " +
+        "Attendre une minute avant de relancer l'import.",
+    );
+  }
   if (!reponse.ok) {
     throw new Error(`Téléchargement échoué : HTTP ${reponse.status} ${reponse.statusText}`);
   }
-  const donnees = (await reponse.json()) as unknown;
-  if (!Array.isArray(donnees)) {
-    throw new Error("Réponse inattendue : un tableau de réseaux était attendu");
+  if (!reponse.body) {
+    throw new Error("Réponse sans corps : impossible de lire le référentiel en flux");
   }
-  return donnees as ReseauApi[];
+
+  let recus = 0;
+  let retenus = 0;
+  let lot: ReseauRow[] = [];
+
+  for await (const objet of decouperTableauJson(reponse.body)) {
+    const reseau = JSON.parse(objet) as ReseauApi;
+    recus++;
+
+    const ligne = versLigne(reseau, recus - 1);
+    if (!ligne) continue;
+
+    lot.push(ligne);
+    retenus++;
+
+    if (lot.length >= BATCH_SIZE) {
+      await traiter(lot);
+      lot = [];
+    }
+  }
+
+  if (lot.length > 0) await traiter(lot);
+
+  if (recus === 0) {
+    throw new Error("Réponse inattendue : aucun réseau lu dans le flux");
+  }
+
+  return { recus, retenus };
 }
 
 async function insererBatch(db: ReturnType<typeof drizzle>, batch: ReseauRow[]): Promise<void> {
@@ -129,27 +233,11 @@ async function importReseauxChaleur(): Promise<void> {
   console.log(`Source : ${SOURCE_URL}`);
   console.log("-".repeat(60));
 
-  console.log("\nTéléchargement du référentiel (environ 63 Mo)...");
-  const reseaux = await telecharger();
-  console.log(`Réponse reçue : ${reseaux.length} réseaux`);
-
-  // Validation complète avant toute écriture : on ne vide la table que si la réponse tient.
-  const lignes = reseaux
-    .map((reseau, index) => versLigne(reseau, index))
-    .filter((ligne): ligne is ReseauRow => ligne !== null);
-  const sansGeometrie = reseaux.length - lignes.length;
-
-  if (reseaux.length < MIN_RESEAUX_ATTENDUS) {
-    throw new Error(
-      `Réponse suspecte : ${reseaux.length} réseaux reçus, minimum attendu ${MIN_RESEAUX_ATTENDUS}. ` +
-        "Import interrompu, le référentiel existant est conservé.",
-    );
-  }
-
   const client = postgres(getAppConfig().database);
   const db = drizzle(client);
   const debut = Date.now();
   let importes = 0;
+  let recus = 0;
 
   const logResult = await db.execute<{ id: number }>(sql`
     INSERT INTO raw_imports_log (dataset_name, source_path)
@@ -160,25 +248,40 @@ async function importReseauxChaleur(): Promise<void> {
   console.log(`Log import créé : id=${logId}`);
 
   try {
-    console.log("Vidage de la table raw_reseaux_chaleur...");
-    await db.execute(sql`TRUNCATE TABLE raw_reseaux_chaleur RESTART IDENTITY`);
+    console.log("\nTéléchargement du référentiel en flux (environ 63 Mo)...");
 
-    console.log("Début de l'import...\n");
-    for (let i = 0; i < lignes.length; i += BATCH_SIZE) {
-      const batch = lignes.slice(i, i + BATCH_SIZE);
-      await insererBatch(db, batch);
-      importes += batch.length;
-      process.stdout.write(`\rProgression : ${importes}/${lignes.length} réseaux importés`);
-    }
-    process.stdout.write("\n");
+    // TRUNCATE et INSERT dans une seule transaction : le référentiel existant n'est remplacé
+    // qu'au COMMIT. Une réponse tronquée, une géométrie invalide ou une coupure réseau
+    // déclenchent un ROLLBACK et laissent la table intacte — ce que la validation préalable
+    // assurait avant, mais sans accumuler les 63 Mo en mémoire.
+    await db.transaction(async (tx) => {
+      await tx.execute(sql`TRUNCATE TABLE raw_reseaux_chaleur RESTART IDENTITY`);
 
+      const compteurs = await parcourirReferentiel(async (lot) => {
+        await insererBatch(tx as unknown as ReturnType<typeof drizzle>, lot);
+        importes += lot.length;
+        process.stdout.write(`\rProgression : ${importes} réseaux importés`);
+      });
+      process.stdout.write("\n");
+
+      recus = compteurs.recus;
+
+      if (recus < MIN_RESEAUX_ATTENDUS) {
+        throw new Error(
+          `Réponse suspecte : ${recus} réseaux reçus, minimum attendu ${MIN_RESEAUX_ATTENDUS}. ` +
+            "Import annulé, le référentiel existant est conservé.",
+        );
+      }
+    });
+
+    const sansGeometrie = recus - importes;
     const duree = (Date.now() - debut) / 1000;
     await db.execute(sql`
       UPDATE raw_imports_log
       SET finished_at = NOW(),
           status = 'success',
           rows_imported = ${importes},
-          rows_total = ${lignes.length}
+          rows_total = ${recus}
       WHERE id = ${logId}
     `);
 
@@ -224,7 +327,7 @@ async function importReseauxChaleur(): Promise<void> {
       SET finished_at = NOW(),
           status = 'failed',
           rows_imported = ${importes},
-          rows_total = ${lignes.length},
+          rows_total = ${recus},
           error_message = ${message}
       WHERE id = ${logId}
     `);
