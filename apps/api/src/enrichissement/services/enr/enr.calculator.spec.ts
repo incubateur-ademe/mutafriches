@@ -9,8 +9,8 @@ describe("EnrCalculator", () => {
   });
 
   describe("evaluer", () => {
-    it("devrait retourner NON si zaer est undefined", () => {
-      expect(calculator.evaluer(undefined)).toBe(ZoneAccelerationEnr.NON);
+    it("devrait retourner undefined si l'enrichissement ZAER a échoué", () => {
+      expect(calculator.evaluer(undefined)).toBeUndefined();
     });
 
     it("devrait retourner NON si enZoneZaer est false", () => {
