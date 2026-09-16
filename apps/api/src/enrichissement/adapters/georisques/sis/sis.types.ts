@@ -53,11 +53,7 @@ export interface SisApiResponse {
  * Statut de classification SIS normalisé
  */
 export type SisStatutClassification =
-  | "À évaluer"
-  | "En cours d'évaluation"
-  | "Évalué"
-  | "Non concerné"
-  | string; // Fallback pour valeurs inconnues
+  "À évaluer" | "En cours d'évaluation" | "Évalué" | "Non concerné" | string; // Fallback pour valeurs inconnues
 
 /**
  * Résultat SIS normalisé pour Mutafriches

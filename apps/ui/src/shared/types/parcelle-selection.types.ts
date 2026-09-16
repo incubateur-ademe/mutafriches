@@ -38,12 +38,7 @@ export interface PreviewParcelle {
  * - max-parcelles : le nombre maximum de parcelles est atteint (20)
  */
 export type SelectionState =
-  | "idle"
-  | "previewing"
-  | "already-added"
-  | "non-adjacent"
-  | "max-size"
-  | "max-parcelles";
+  "idle" | "previewing" | "already-added" | "non-adjacent" | "max-size" | "max-parcelles";
 
 /** Seuil maximal de surface cumulée en m² (10 hectares) */
 export const MAX_SITE_AREA_M2 = 100_000;
