@@ -14,23 +14,43 @@ import {
 
 const TYPENAME_ACCELERATION = "zaer:zaer";
 // detail_filiere a été scindé en 3 niveaux hiérarchiques côté WFS
-const PROPRIETES_ACCELERATION = "nom,filiere,detail_filiere1,detail_filiere2,detail_filiere3";
+const PROPRIETES_ACCELERATION = [
+  "nom",
+  "filiere",
+  "detail_filiere1",
+  "detail_filiere2",
+  "detail_filiere3",
+];
 
 // Couche OFB des interdictions APER : elle mélange deux régimes, discriminés par `zonage`
 // (« toutes ENR sauf toiture » et « éolien uniquement »). L'alias
 // OFB_ZONES.EXCLUES.SAUF.TOITURE pointe la même donnée mais son DescribeFeatureType est cassé.
 const TYPENAME_EXCLUSION =
   "OFB_INTERDICTION-ZAER-SAUF-TOITURE:zones_exclues_aires_acceleration_sauf_toiture";
-const PROPRIETES_EXCLUSION = "code,nom_zone,type_zone,zonage";
+const PROPRIETES_EXCLUSION = ["code", "nom_zone", "type_zone", "zonage"];
+
+const SRS_URN = "urn:ogc:def:crs:EPSG::4326";
+
+/**
+ * Géométrie GML produite à la demande : la construction valide les coordonnées et peut donc
+ * lever, ce qui doit rester à l'intérieur du try/catch de la requête (un adapter ne throw pas).
+ */
+type ConstructeurGml = () => string;
+const LIMITE_FEATURES = 100;
+const TIMEOUT_MS = 15_000;
 
 /**
  * Adapter WFS pour les zonages liés à la loi APER
  *
- * Interroge le WFS Géoplateforme à la volée via CQL_FILTER=INTERSECTS, sur deux
- * couches distinctes : les zones d'accélération et les zones d'interdiction.
+ * Interroge le WFS Géoplateforme à la volée par un GetFeature POST (XML natif WFS 2.0,
+ * filtre fes:Intersects sur une géométrie GML), sur deux couches distinctes : les zones
+ * d'accélération et les zones d'interdiction.
+ *
+ * POST et non GET : le WKT d'une parcelle un peu découpée dépasse la limite d'URL du
+ * serveur (8 192 octets), qui répond alors 414 sur les deux couches (ADR-0038).
  *
  * Note importante : le WFS 2.0.0 en EPSG:4326 attend les coordonnées
- * en ordre (latitude, longitude) dans les filtres CQL, alors que le GeoJSON
+ * en ordre (latitude, longitude) dans les filtres, alors que le GeoJSON
  * utilise (longitude, latitude). Vérifié sur les deux couches.
  *
  * Source : https://data.geopf.fr/wfs
@@ -48,7 +68,7 @@ export class ZaerWfsService {
   async findZaerIntersectingSite(
     geometrie: GeometrieParcelle,
   ): Promise<ApiResponse<ZaerWfsResult[]>> {
-    return this.queryAcceleration(this.filtreGeometrie(geometrie));
+    return this.queryAcceleration(() => this.gmlSurfaces(geometrie));
   }
 
   /**
@@ -58,7 +78,7 @@ export class ZaerWfsService {
     latitude: number,
     longitude: number,
   ): Promise<ApiResponse<ZaerWfsResult[]>> {
-    return this.queryAcceleration(this.filtrePoint(latitude, longitude));
+    return this.queryAcceleration(() => this.gmlPoint(latitude, longitude));
   }
 
   /**
@@ -67,7 +87,7 @@ export class ZaerWfsService {
   async findExclusionIntersectingSite(
     geometrie: GeometrieParcelle,
   ): Promise<ApiResponse<ZaerExclusionResult[]>> {
-    return this.queryExclusion(this.filtreGeometrie(geometrie));
+    return this.queryExclusion(() => this.gmlSurfaces(geometrie));
   }
 
   /**
@@ -77,17 +97,17 @@ export class ZaerWfsService {
     latitude: number,
     longitude: number,
   ): Promise<ApiResponse<ZaerExclusionResult[]>> {
-    return this.queryExclusion(this.filtrePoint(latitude, longitude));
+    return this.queryExclusion(() => this.gmlPoint(latitude, longitude));
   }
 
-  private async queryAcceleration(cqlFilter: string): Promise<ApiResponse<ZaerWfsResult[]>> {
+  private async queryAcceleration(gml: ConstructeurGml): Promise<ApiResponse<ZaerWfsResult[]>> {
     const startTime = Date.now();
 
     try {
       const features = await this.getFeatures<ZaerWfsProperties>(
         TYPENAME_ACCELERATION,
         PROPRIETES_ACCELERATION,
-        cqlFilter,
+        gml(),
       );
 
       const seen = new Set<string>();
@@ -109,14 +129,14 @@ export class ZaerWfsService {
     }
   }
 
-  private async queryExclusion(cqlFilter: string): Promise<ApiResponse<ZaerExclusionResult[]>> {
+  private async queryExclusion(gml: ConstructeurGml): Promise<ApiResponse<ZaerExclusionResult[]>> {
     const startTime = Date.now();
 
     try {
       const features = await this.getFeatures<ZaerExclusionWfsProperties>(
         TYPENAME_EXCLUSION,
         PROPRIETES_EXCLUSION,
-        cqlFilter,
+        gml(),
       );
 
       const seen = new Set<string>();
@@ -147,30 +167,41 @@ export class ZaerWfsService {
    */
   private async getFeatures<P>(
     typename: string,
-    propertyName: string,
-    cqlFilter: string,
+    proprietes: string[],
+    gmlGeometrie: string,
   ): Promise<WfsFeature<P>[]> {
-    const params = {
-      service: "WFS",
-      version: "2.0.0",
-      request: "GetFeature",
-      typename,
-      outputFormat: "application/json",
-      propertyName,
-      CQL_FILTER: cqlFilter,
-      count: "100",
-    };
+    const requete = this.requeteGetFeature(typename, proprietes, gmlGeometrie);
 
-    this.logger.debug(`Requête WFS ${typename} : CQL_FILTER=${cqlFilter}`);
+    this.logger.debug(`Requête WFS ${typename} : ${requete.length} octets de XML`);
 
     const response = await firstValueFrom(
-      this.httpService.get<WfsFeatureCollection<P>>(this.baseUrl, {
-        params,
-        timeout: 15_000,
+      this.httpService.post<WfsFeatureCollection<P>>(this.baseUrl, requete, {
+        headers: { "Content-Type": "application/xml" },
+        timeout: TIMEOUT_MS,
       }),
     );
 
     return response.data.features ?? [];
+  }
+
+  /** Enveloppe GetFeature XML (WFS 2.0) avec filtre spatial sur la colonne `geom` */
+  private requeteGetFeature(typename: string, proprietes: string[], gmlGeometrie: string): string {
+    const propertyNames = proprietes
+      .map((p) => `<wfs:PropertyName>${p}</wfs:PropertyName>`)
+      .join("");
+
+    return (
+      `<?xml version="1.0" encoding="UTF-8"?>` +
+      `<wfs:GetFeature service="WFS" version="2.0.0" outputFormat="application/json"` +
+      ` count="${LIMITE_FEATURES}"` +
+      ` xmlns:wfs="http://www.opengis.net/wfs/2.0"` +
+      ` xmlns:fes="http://www.opengis.net/fes/2.0"` +
+      ` xmlns:gml="http://www.opengis.net/gml/3.2">` +
+      `<wfs:Query typeNames="${typename}">${propertyNames}` +
+      `<fes:Filter><fes:Intersects><fes:ValueReference>geom</fes:ValueReference>` +
+      gmlGeometrie +
+      `</fes:Intersects></fes:Filter></wfs:Query></wfs:GetFeature>`
+    );
   }
 
   private succes<T>(
@@ -215,42 +246,63 @@ export class ZaerWfsService {
     return niveaux.length > 0 ? niveaux.join(" / ") : null;
   }
 
-  private filtreGeometrie(geometrie: GeometrieParcelle): string {
-    return `INTERSECTS(geom,${this.geometrieToWkt(geometrie)})`;
-  }
-
-  private filtrePoint(latitude: number, longitude: number): string {
-    // WFS EPSG:4326 attend (lat, lon) dans le WKT
-    return `INTERSECTS(geom,POINT(${latitude} ${longitude}))`;
+  /** Point GML, axes inversés (lat, lon) pour le WFS EPSG:4326 */
+  private gmlPoint(latitude: number, longitude: number): string {
+    return (
+      `<gml:Point srsName="${SRS_URN}">` +
+      `<gml:pos>${this.coordonnee(latitude)} ${this.coordonnee(longitude)}</gml:pos>` +
+      `</gml:Point>`
+    );
   }
 
   /**
-   * Convertit une GeometrieParcelle GeoJSON en WKT avec axes inversés (lat, lon)
-   * pour le WFS EPSG:4326
+   * Convertit une GeometrieParcelle GeoJSON en gml:MultiSurface, axes inversés (lat, lon).
+   * Un Polygon simple passe par un MultiSurface à un membre : une seule forme à produire.
    */
-  private geometrieToWkt(geometrie: GeometrieParcelle): string {
-    if (geometrie.type === "Polygon") {
-      const coords = geometrie.coordinates as number[][][];
-      const rings = coords.map((ring) => this.ringToWkt(ring)).join(",");
-      return `POLYGON(${rings})`;
+  private gmlSurfaces(geometrie: GeometrieParcelle): string {
+    const polygones =
+      geometrie.type === "Polygon"
+        ? [geometrie.coordinates as number[][][]]
+        : (geometrie.coordinates as number[][][][]);
+
+    const membres = polygones
+      .map((polygone) => `<gml:surfaceMember>${this.gmlPolygon(polygone)}</gml:surfaceMember>`)
+      .join("");
+
+    return `<gml:MultiSurface srsName="${SRS_URN}">${membres}</gml:MultiSurface>`;
+  }
+
+  /** Premier anneau = contour extérieur, les suivants = trous */
+  private gmlPolygon(polygone: number[][][]): string {
+    const [exterieur, ...trous] = polygone;
+
+    const interieurs = trous
+      .map((trou) => `<gml:interior>${this.gmlLinearRing(trou)}</gml:interior>`)
+      .join("");
+
+    return (
+      `<gml:Polygon><gml:exterior>${this.gmlLinearRing(exterieur)}</gml:exterior>` +
+      `${interieurs}</gml:Polygon>`
+    );
+  }
+
+  private gmlLinearRing(ring: number[][]): string {
+    const posList = ring
+      .map(([lon, lat]) => `${this.coordonnee(lat)} ${this.coordonnee(lon)}`)
+      .join(" ");
+
+    return `<gml:LinearRing><gml:posList>${posList}</gml:posList></gml:LinearRing>`;
+  }
+
+  /**
+   * Seules valeurs non constantes injectées dans le XML : on refuse tout ce qui n'est pas
+   * un nombre fini plutôt que de laisser passer une chaîne dans le document.
+   */
+  private coordonnee(valeur: number): string {
+    if (!Number.isFinite(valeur)) {
+      throw new Error(`Coordonnée invalide dans la géométrie du site : ${String(valeur)}`);
     }
 
-    // MultiPolygon
-    const coords = geometrie.coordinates as number[][][][];
-    const polygons = coords
-      .map((polygon) => {
-        const rings = polygon.map((ring) => this.ringToWkt(ring)).join(",");
-        return `(${rings})`;
-      })
-      .join(",");
-    return `MULTIPOLYGON(${polygons})`;
-  }
-
-  /**
-   * Convertit un anneau de coordonnées GeoJSON [lon, lat] en WKT (lat lon)
-   */
-  private ringToWkt(ring: number[][]): string {
-    const points = ring.map(([lon, lat]) => `${lat} ${lon}`).join(",");
-    return `(${points})`;
+    return String(valeur);
   }
 }

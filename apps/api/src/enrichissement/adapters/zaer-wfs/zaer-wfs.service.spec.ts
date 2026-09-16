@@ -5,11 +5,11 @@ import { ZaerWfsService } from "./zaer-wfs.service";
 
 describe("ZaerWfsService", () => {
   let service: ZaerWfsService;
-  let httpGet: ReturnType<typeof vi.fn>;
+  let httpPost: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
-    httpGet = vi.fn();
-    service = new ZaerWfsService({ get: httpGet } as unknown as HttpService);
+    httpPost = vi.fn();
+    service = new ZaerWfsService({ post: httpPost } as unknown as HttpService);
   });
 
   const feature = (properties: Record<string, unknown>) => ({
@@ -21,23 +21,23 @@ describe("ZaerWfsService", () => {
 
   const collection = (features: unknown[]) => of({ data: { type: "FeatureCollection", features } });
 
-  const paramsDuDernierAppel = () =>
-    (httpGet.mock.calls.at(-1)?.[1] as { params: Record<string, string> }).params;
+  const requeteDuDernierAppel = () => httpPost.mock.calls.at(-1)?.[1] as string;
 
   describe("zones d'accélération", () => {
     it("interroge la couche zaer:zaer sans demander le champ zonage", async () => {
-      httpGet.mockReturnValue(collection([]));
+      httpPost.mockReturnValue(collection([]));
 
       await service.findZaerAtPoint(47.25, 6.03);
 
-      const params = paramsDuDernierAppel();
-      expect(params.typename).toBe("zaer:zaer");
-      expect(params.propertyName).not.toContain("zonage");
-      expect(params.CQL_FILTER).toBe("INTERSECTS(geom,POINT(47.25 6.03))");
+      const requete = requeteDuDernierAppel();
+      expect(requete).toContain('typeNames="zaer:zaer"');
+      expect(requete).not.toContain("<wfs:PropertyName>zonage</wfs:PropertyName>");
+      // Le WFS EPSG:4326 attend (lat, lon), l'inverse du GeoJSON
+      expect(requete).toContain("<gml:pos>47.25 6.03</gml:pos>");
     });
 
     it("coalesce les niveaux de detail_filiere et déduplique", async () => {
-      httpGet.mockReturnValue(
+      httpPost.mockReturnValue(
         collection([
           feature({
             nom: "Zone communale",
@@ -64,31 +64,31 @@ describe("ZaerWfsService", () => {
     });
 
     it("retourne une erreur sans throw quand le WFS échoue", async () => {
-      httpGet.mockReturnValue(throwError(() => new Error("503")));
+      httpPost.mockReturnValue(throwError(() => new Error("503")));
 
       const res = await service.findZaerAtPoint(47.25, 6.03);
 
       expect(res.success).toBe(false);
-      expect(httpGet).toHaveBeenCalledTimes(1);
+      expect(httpPost).toHaveBeenCalledTimes(1);
     });
   });
 
   describe("zones d'interdiction", () => {
     it("interroge la couche OFB des interdictions avec le même filtre", async () => {
-      httpGet.mockReturnValue(collection([]));
+      httpPost.mockReturnValue(collection([]));
 
       await service.findExclusionAtPoint(45.88, -1.07);
 
-      const params = paramsDuDernierAppel();
-      expect(params.typename).toBe(
-        "OFB_INTERDICTION-ZAER-SAUF-TOITURE:zones_exclues_aires_acceleration_sauf_toiture",
+      const requete = requeteDuDernierAppel();
+      expect(requete).toContain(
+        'typeNames="OFB_INTERDICTION-ZAER-SAUF-TOITURE:zones_exclues_aires_acceleration_sauf_toiture"',
       );
-      expect(params.propertyName).toContain("zonage");
-      expect(params.CQL_FILTER).toBe("INTERSECTS(geom,POINT(45.88 -1.07))");
+      expect(requete).toContain("<wfs:PropertyName>zonage</wfs:PropertyName>");
+      expect(requete).toContain("<gml:pos>45.88 -1.07</gml:pos>");
     });
 
     it("remonte le régime brut de chaque zone d'interdiction", async () => {
-      httpGet.mockReturnValue(
+      httpPost.mockReturnValue(
         collection([
           feature({
             code: "FR3600077",
@@ -124,15 +124,15 @@ describe("ZaerWfsService", () => {
         type_zone: "Réserve naturelle nationale",
         zonage: "Interdiction ZAER (loi APER) toutes ENR sauf toiture",
       };
-      httpGet.mockReturnValue(collection([feature(props), feature(props)]));
+      httpPost.mockReturnValue(collection([feature(props), feature(props)]));
 
       const res = await service.findExclusionAtPoint(45.88, -1.07);
 
       expect(res.data).toHaveLength(1);
     });
 
-    it("utilise INTERSECTS sur la géométrie quand elle est disponible", async () => {
-      httpGet.mockReturnValue(collection([]));
+    it("utilise la géométrie du site quand elle est disponible", async () => {
+      httpPost.mockReturnValue(collection([]));
 
       await service.findExclusionIntersectingSite({
         type: "Polygon",
@@ -146,10 +146,85 @@ describe("ZaerWfsService", () => {
         ],
       });
 
+      const requete = requeteDuDernierAppel();
       // Le WFS EPSG:4326 attend (lat, lon), l'inverse du GeoJSON
-      expect(paramsDuDernierAppel().CQL_FILTER).toBe(
-        "INTERSECTS(geom,POLYGON((47.25 6.03,47.25 6.04,47.26 6.04,47.25 6.03)))",
+      expect(requete).toContain(
+        "<gml:posList>47.25 6.03 47.25 6.04 47.26 6.04 47.25 6.03</gml:posList>",
       );
+      expect(requete).toContain("<gml:MultiSurface");
+      expect(requete).toContain("<fes:ValueReference>geom</fes:ValueReference>");
+    });
+
+    it("transporte les trous d'un polygone et les membres d'un multipolygone", async () => {
+      httpPost.mockReturnValue(collection([]));
+
+      await service.findExclusionIntersectingSite({
+        type: "MultiPolygon",
+        coordinates: [
+          [
+            [
+              [6.0, 47.0],
+              [6.1, 47.0],
+              [6.1, 47.1],
+              [6.0, 47.0],
+            ],
+            [
+              [6.02, 47.02],
+              [6.03, 47.02],
+              [6.03, 47.03],
+              [6.02, 47.02],
+            ],
+          ],
+          [
+            [
+              [6.5, 47.5],
+              [6.6, 47.5],
+              [6.6, 47.6],
+              [6.5, 47.5],
+            ],
+          ],
+        ],
+      });
+
+      const requete = requeteDuDernierAppel();
+      expect(requete.match(/<gml:surfaceMember>/g)).toHaveLength(2);
+      expect(requete).toContain("<gml:interior>");
+      expect(requete).toContain("<gml:posList>47.02 6.02 47.02 6.03 47.03 6.03 47.02 6.02");
+    });
+
+    it("passe une géométrie trop volumineuse pour une URL GET", async () => {
+      httpPost.mockReturnValue(collection([]));
+
+      // ~2 000 sommets : le WKT équivalent dépassait la limite d'URL du serveur (8 192 octets)
+      const anneau = Array.from({ length: 2000 }, (_, i) => [6.03 + i / 1e6, 47.25 + i / 1e6]);
+      anneau.push([6.03, 47.25]);
+
+      const res = await service.findExclusionIntersectingSite({
+        type: "Polygon",
+        coordinates: [anneau],
+      });
+
+      expect(res.success).toBe(true);
+      expect(requeteDuDernierAppel().length).toBeGreaterThan(8192);
+    });
+
+    it("refuse une géométrie dont une coordonnée n'est pas un nombre", async () => {
+      httpPost.mockReturnValue(collection([]));
+
+      const res = await service.findExclusionIntersectingSite({
+        type: "Polygon",
+        coordinates: [
+          [
+            [6.03, 47.25],
+            [Number.NaN, 47.25],
+            [6.04, 47.26],
+            [6.03, 47.25],
+          ],
+        ],
+      });
+
+      expect(res.success).toBe(false);
+      expect(httpPost).not.toHaveBeenCalled();
     });
   });
 });
