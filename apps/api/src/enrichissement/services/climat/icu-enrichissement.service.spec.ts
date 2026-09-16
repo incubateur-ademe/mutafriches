@@ -12,6 +12,7 @@ describe("IcuEnrichissementService", () => {
   const siteAvecCoordonnees = (): Site => {
     const site = new Site();
     site.identifiantParcelle = "49007000AB0001";
+    site.codeInsee = "49007";
     site.coordonnees = { latitude: 47.4784, longitude: -0.5632 };
     return site;
   };
@@ -28,7 +29,11 @@ describe("IcuEnrichissementService", () => {
 
   it("classe le site en îlot de chaleur au-dessus du seuil", async () => {
     const site = siteAvecCoordonnees();
-    icuRepository.findZoneContenant.mockResolvedValue({ codeGiris: "4900701", iuhi: 7.49 });
+    icuRepository.findZoneProche.mockResolvedValue({
+      codeGiris: "4900701",
+      iuhi: 7.49,
+      distanceM: 0,
+    });
 
     const result = await service.enrichir(site);
 
@@ -41,7 +46,11 @@ describe("IcuEnrichissementService", () => {
 
   it("classe le site sous le seuil en zone cartographiée", async () => {
     const site = siteAvecCoordonnees();
-    icuRepository.findZoneContenant.mockResolvedValue({ codeGiris: "4900702", iuhi: 4.9 });
+    icuRepository.findZoneProche.mockResolvedValue({
+      codeGiris: "4900702",
+      iuhi: 4.9,
+      distanceM: 0,
+    });
 
     const result = await service.enrichir(site);
 
@@ -52,9 +61,10 @@ describe("IcuEnrichissementService", () => {
 
   it("classe le seuil exact en îlot de chaleur", async () => {
     const site = siteAvecCoordonnees();
-    icuRepository.findZoneContenant.mockResolvedValue({
+    icuRepository.findZoneProche.mockResolvedValue({
       codeGiris: "4900703",
       iuhi: SEUIL_ILOT_CHALEUR_C,
+      distanceM: 0,
     });
 
     await service.enrichir(site);
@@ -62,9 +72,41 @@ describe("IcuEnrichissementService", () => {
     expect(site.ilotChaleurUrbain).toBe(IlotChaleurUrbain.OUI);
   });
 
-  it("distingue un site hors périmètre d'étude d'un site sous le seuil", async () => {
+  it("rattache le site à la zone voisine retenue dans la tolérance de bord", async () => {
     const site = siteAvecCoordonnees();
-    icuRepository.findZoneContenant.mockResolvedValue(null);
+    icuRepository.findZoneProche.mockResolvedValue({
+      codeGiris: "4900704",
+      iuhi: 6.47,
+      distanceM: 120,
+    });
+
+    await service.enrichir(site);
+
+    expect(site.ilotChaleurUrbain).toBe(IlotChaleurUrbain.OUI);
+    expect(site.intensiteIlotChaleurC).toBe(6.47);
+    expect(icuRepository.communeEstCouverte).not.toHaveBeenCalled();
+  });
+
+  it("déclare non concerné un site sans zone proche dans une commune étudiée", async () => {
+    const site = siteAvecCoordonnees();
+    icuRepository.findZoneProche.mockResolvedValue(null);
+    icuRepository.communeEstCouverte.mockResolvedValue(true);
+
+    const result = await service.enrichir(site);
+
+    expect(icuRepository.communeEstCouverte).toHaveBeenCalledWith("49007");
+    expect(site.ilotChaleurUrbain).toBe(IlotChaleurUrbain.NON);
+    expect(site.intensiteIlotChaleurC).toBeNull();
+    expect(result.success).toBe(true);
+    expect(result.sourcesUtilisees).toContain(SourceEnrichissement.ICU);
+    expect(result.sourcesEchouees).toHaveLength(0);
+  });
+
+  it("distingue une commune hors périmètre d'étude d'une commune étudiée", async () => {
+    const site = siteAvecCoordonnees();
+    site.codeInsee = "49018";
+    icuRepository.findZoneProche.mockResolvedValue(null);
+    icuRepository.communeEstCouverte.mockResolvedValue(false);
 
     const result = await service.enrichir(site);
 
@@ -78,7 +120,7 @@ describe("IcuEnrichissementService", () => {
 
   it("gère l'échec technique de lecture du référentiel", async () => {
     const site = siteAvecCoordonnees();
-    icuRepository.findZoneContenant.mockResolvedValue(undefined);
+    icuRepository.findZoneProche.mockResolvedValue(undefined);
 
     const result = await service.enrichir(site);
 
@@ -86,6 +128,32 @@ describe("IcuEnrichissementService", () => {
     expect(result.success).toBe(false);
     expect(result.sourcesEchouees).toContain(SourceEnrichissement.ICU);
     expect(result.champsManquants).toContain("ilotChaleurUrbain");
+  });
+
+  it("gère l'échec technique du test de couverture communale", async () => {
+    const site = siteAvecCoordonnees();
+    icuRepository.findZoneProche.mockResolvedValue(null);
+    icuRepository.communeEstCouverte.mockResolvedValue(undefined);
+
+    const result = await service.enrichir(site);
+
+    expect(site.ilotChaleurUrbain).toBeUndefined();
+    expect(result.success).toBe(false);
+    expect(result.sourcesUtilisees).toHaveLength(0);
+    expect(result.sourcesEchouees).toContain(SourceEnrichissement.ICU);
+    expect(result.champsManquants).toContain("ilotChaleurUrbain");
+  });
+
+  it("sans code INSEE, ne peut pas conclure à une commune étudiée", async () => {
+    const site = siteAvecCoordonnees();
+    site.codeInsee = "";
+    icuRepository.findZoneProche.mockResolvedValue(null);
+
+    const result = await service.enrichir(site);
+
+    expect(site.ilotChaleurUrbain).toBe(IlotChaleurUrbain.NON_COUVERT);
+    expect(result.success).toBe(true);
+    expect(icuRepository.communeEstCouverte).not.toHaveBeenCalled();
   });
 
   it("gère l'absence de coordonnées sans interroger le référentiel", async () => {
@@ -97,6 +165,6 @@ describe("IcuEnrichissementService", () => {
     expect(result.success).toBe(false);
     expect(result.sourcesEchouees).toContain(SourceEnrichissement.ICU);
     expect(result.champsManquants).toContain("ilotChaleurUrbain");
-    expect(icuRepository.findZoneContenant).not.toHaveBeenCalled();
+    expect(icuRepository.findZoneProche).not.toHaveBeenCalled();
   });
 });

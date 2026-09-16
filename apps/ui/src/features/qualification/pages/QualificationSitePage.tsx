@@ -311,7 +311,9 @@ export const QualificationSitePage: React.FC = () => {
               <>
                 Donnée informative : elle n'entre pas dans le calcul de mutabilité. Issue de la
                 cartographie nationale des indicateurs liés à l'îlot de chaleur urbain (CSTB), qui
-                ne couvre qu'environ 600 communes — un site hors de ce périmètre n'a pas été mesuré.
+                couvre environ 600 communes, et à l'intérieur de celles-ci les seules zones urbaines
+                denses. Un site situé dans une commune étudiée mais hors de ces zones est réputé non
+                concerné ; une commune absente du périmètre n'a pas été mesurée.
                 <br />
                 <a
                   href="https://www.data.gouv.fr/datasets/cartographie-nationale-des-indicateurs-lies-a-lilot-de-chaleur-urbain"

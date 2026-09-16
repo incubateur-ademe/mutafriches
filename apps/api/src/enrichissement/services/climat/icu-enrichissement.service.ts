@@ -26,45 +26,74 @@ export class IcuEnrichissementService {
     const sourcesUtilisees: string[] = [];
     const sourcesEchouees: string[] = [];
     const champsManquants: string[] = [];
-
-    if (!site.coordonnees) {
-      this.logger.warn(`Pas de coordonnées pour ICU - site ${site.identifiantParcelle}`);
+    const echec = (): EnrichmentResult => {
       sourcesEchouees.push(SourceEnrichissement.ICU);
       champsManquants.push("ilotChaleurUrbain");
       return { success: false, sourcesUtilisees, sourcesEchouees, champsManquants };
+    };
+
+    if (!site.coordonnees) {
+      this.logger.warn(`Pas de coordonnées pour ICU - site ${site.identifiantParcelle}`);
+      return echec();
     }
 
-    const zone = await this.icuRepository.findZoneContenant(
+    const zone = await this.icuRepository.findZoneProche(
       site.coordonnees.latitude,
       site.coordonnees.longitude,
     );
 
     // undefined = lecture en échec : on ne peut rien affirmer sur l'exposition du site
     if (zone === undefined) {
-      sourcesEchouees.push(SourceEnrichissement.ICU);
-      champsManquants.push("ilotChaleurUrbain");
-      return { success: false, sourcesUtilisees, sourcesEchouees, champsManquants };
+      return echec();
     }
 
-    // Source utilisée même hors périmètre : la recherche a fonctionné
-    sourcesUtilisees.push(SourceEnrichissement.ICU);
-
     if (zone === null) {
-      site.ilotChaleurUrbain = IlotChaleurUrbain.NON_COUVERT;
+      const couverture = await this.determinerCouverture(site);
+      if (couverture === undefined) {
+        return echec();
+      }
+
+      sourcesUtilisees.push(SourceEnrichissement.ICU);
+      site.ilotChaleurUrbain = couverture;
       site.intensiteIlotChaleurC = null;
-      this.logger.log(`ICU: site hors périmètre d'étude (${site.identifiantParcelle})`);
       return { success: true, sourcesUtilisees, sourcesEchouees, champsManquants };
     }
 
+    sourcesUtilisees.push(SourceEnrichissement.ICU);
     site.ilotChaleurUrbain =
       zone.iuhi >= SEUIL_ILOT_CHALEUR_C ? IlotChaleurUrbain.OUI : IlotChaleurUrbain.NON;
     site.intensiteIlotChaleurC = zone.iuhi;
 
     this.logger.log(
-      `ICU: ${site.ilotChaleurUrbain} (${zone.iuhi} °C, zone ${zone.codeGiris}) ` +
-        `pour ${site.identifiantParcelle}`,
+      `ICU: ${site.ilotChaleurUrbain} (${zone.iuhi} °C, zone ${zone.codeGiris} ` +
+        `à ${Math.round(zone.distanceM)} m) pour ${site.identifiantParcelle}`,
     );
 
     return { success: true, sourcesUtilisees, sourcesEchouees, champsManquants };
+  }
+
+  /**
+   * Aucune zone à proximité : reste à savoir si la commune a été étudiée. Les zones CSTB ne
+   * couvrent que l'enveloppe urbaine dense (environ 57 % du territoire communal à Angers),
+   * si bien qu'une commune du périmètre laisse de larges secteurs sans zone. Les confondre
+   * annonçait « non couvert par la cartographie » à des sites pourtant étudiés (ADR-0037).
+   */
+  private async determinerCouverture(site: Site): Promise<IlotChaleurUrbain | undefined> {
+    if (!site.codeInsee) {
+      this.logger.warn(`Pas de code INSEE pour ICU - site ${site.identifiantParcelle}`);
+      return IlotChaleurUrbain.NON_COUVERT;
+    }
+
+    const communeCouverte = await this.icuRepository.communeEstCouverte(site.codeInsee);
+    if (communeCouverte === undefined) {
+      return undefined;
+    }
+
+    this.logger.log(
+      `ICU: aucune zone à proximité, commune ${site.codeInsee} ` +
+        `${communeCouverte ? "étudiée" : "hors périmètre"} (${site.identifiantParcelle})`,
+    );
+
+    return communeCouverte ? IlotChaleurUrbain.NON : IlotChaleurUrbain.NON_COUVERT;
   }
 }

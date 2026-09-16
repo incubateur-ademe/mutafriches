@@ -264,14 +264,16 @@ export const SOURCES_DONNEES: SourceDonnees[] = [
       "https://www.data.gouv.fr/datasets/cartographie-nationale-des-indicateurs-lies-a-lilot-de-chaleur-urbain",
     sourcesEnrichissement: [SourceEnrichissement.ICU],
     champsRecuperes: [
-      "Intensité maximale absolue de l'îlot de chaleur urbain (°C) de la zone contenant le site " +
-        "(base PostGIS `raw_icu`, 1 955 zones sur environ 600 communes)",
+      "Intensité maximale absolue de l'îlot de chaleur urbain (°C) de la zone contenant le site, " +
+        "ou de la zone la plus proche à moins de 150 m (base PostGIS `raw_icu`, 1 955 zones sur " +
+        "environ 600 communes)",
     ],
     traitementAlgo:
       "Aucun : la donnée est restituée à titre informatif et n'entre pas dans le calcul de " +
       "mutabilité ni dans la fiabilité (ADR-0034). Elle est ramenée à trois états via le seuil " +
-      "de 5,5 °C — concerné, non concerné, ou hors périmètre d'étude lorsque le site n'est " +
-      "couvert par aucune zone cartographiée.",
+      "de 5,5 °C — concerné, non concerné, ou commune hors périmètre d'étude. Les zones ne " +
+      "couvrant que l'enveloppe urbaine dense des communes étudiées, un site sans zone à " +
+      "proximité dans une commune étudiée est déclaré non concerné (ADR-0037).",
   },
 ];
 

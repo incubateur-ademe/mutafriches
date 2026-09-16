@@ -14,11 +14,11 @@ const BADGES: Record<IlotChaleurUrbain, { label: string; className: string }> = 
     className: "fr-badge fr-badge--green-emeraude fr-icon-warning-line fr-badge--icon-left",
   },
   [IlotChaleurUrbain.NON]: {
-    label: "Non (- de 5,5 °C)",
+    label: "Non — aucun îlot de chaleur identifié",
     className: "fr-badge fr-badge--green-emeraude fr-icon-checkbox-line fr-badge--icon-left",
   },
   [IlotChaleurUrbain.NON_COUVERT]: {
-    label: "Non couvert par la cartographie",
+    label: "Commune non couverte par la cartographie",
     className: "fr-badge fr-badge--green-emeraude fr-icon-question-line fr-badge--icon-left",
   },
 };
