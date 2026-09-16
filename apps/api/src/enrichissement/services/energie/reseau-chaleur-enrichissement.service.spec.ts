@@ -2,61 +2,64 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { SourceEnrichissement } from "@mutafriches/shared-types";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { Site } from "../../../evaluation/entities/site.entity";
-import { FranceChaleurUrbaineService } from "../../adapters/france-chaleur-urbaine/france-chaleur-urbaine.service";
+import { ReseauxChaleurRepository } from "../../repositories/reseaux-chaleur.repository";
 import { ReseauChaleurEnrichissementService } from "./reseau-chaleur-enrichissement.service";
 
-const reponse = (data: Record<string, unknown>) => ({
-  success: true,
-  data,
-  source: SourceEnrichissement.FRANCE_CHALEUR_URBAINE,
+const reseau = (distance: number, overrides: Record<string, unknown> = {}) => ({
+  distance,
+  nom: "Réseau de Belle Beille",
+  gestionnaire: "ALTER SERVICES",
+  identifiantReseau: "4911C",
+  traceComplet: true,
+  ...overrides,
 });
 
 describe("ReseauChaleurEnrichissementService", () => {
   let service: ReseauChaleurEnrichissementService;
-  let adapter: { getEligibilite: ReturnType<typeof vi.fn> };
+  let repository: { findReseauProche: ReturnType<typeof vi.fn> };
   let site: Site;
 
   beforeEach(async () => {
-    adapter = { getEligibilite: vi.fn() };
+    repository = { findReseauProche: vi.fn() };
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ReseauChaleurEnrichissementService,
-        { provide: FranceChaleurUrbaineService, useValue: adapter },
+        { provide: ReseauxChaleurRepository, useValue: repository },
       ],
     }).compile();
 
     service = module.get<ReseauChaleurEnrichissementService>(ReseauChaleurEnrichissementService);
 
     site = new Site();
-    site.identifiantParcelle = "49353000AV1652";
-    site.coordonnees = { latitude: 47.4457, longitude: -0.4667 };
+    site.identifiantParcelle = "49020000AK0118";
+    site.coordonnees = { latitude: 47.474038, longitude: -0.606407 };
   });
 
-  it("enrichit la distance au réseau de chaleur", async () => {
-    adapter.getEligibilite.mockResolvedValue(reponse({ distance: 444, futurNetwork: false }));
+  it("enrichit la distance au réseau le plus proche", async () => {
+    repository.findReseauProche.mockResolvedValue(reseau(59));
 
     const resultat = await service.enrichir(site);
 
-    expect(adapter.getEligibilite).toHaveBeenCalledWith(47.4457, -0.4667);
-    expect(site.distanceReseauChaleur).toBe(444);
+    expect(repository.findReseauProche).toHaveBeenCalledWith(47.474038, -0.606407);
+    expect(site.distanceReseauChaleur).toBe(59);
     expect(resultat.success).toBe(true);
     expect(resultat.sourcesUtilisees).toContain(SourceEnrichissement.FRANCE_CHALEUR_URBAINE);
     expect(resultat.champsManquants).toHaveLength(0);
   });
 
   it("arrondit la distance au mètre", async () => {
-    adapter.getEligibilite.mockResolvedValue(reponse({ distance: 486.72, futurNetwork: true }));
+    repository.findReseauProche.mockResolvedValue(reseau(486.72));
 
     await service.enrichir(site);
 
     expect(site.distanceReseauChaleur).toBe(487);
   });
 
-  // Une absence de distance est un résultat de recherche : la compter en source échouée
+  // Une absence de réseau est un résultat de recherche : la compter en source échouée
   // invaliderait le cache strict de tous les sites hors réseau de chaleur.
-  it("traite une distance nulle comme un succès, pas comme une source échouée", async () => {
-    adapter.getEligibilite.mockResolvedValue(reponse({ distance: null, futurNetwork: false }));
+  it("traite l'absence de réseau comme un succès, pas comme une source échouée", async () => {
+    repository.findReseauProche.mockResolvedValue(null);
 
     const resultat = await service.enrichir(site);
 
@@ -67,35 +70,29 @@ describe("ReseauChaleurEnrichissementService", () => {
     expect(resultat.champsManquants).toHaveLength(0);
   });
 
-  it("traite de la même façon un réseau connu dont le tracé est indisponible", async () => {
-    adapter.getEligibilite.mockResolvedValue(
-      reponse({ distance: null, futurNetwork: false, id: "4916C", name: "LES PLAINES - TRELAZE" }),
-    );
+  it("exploite un réseau dont seul le point est publié", async () => {
+    repository.findReseauProche.mockResolvedValue(reseau(312, { traceComplet: false }));
 
     const resultat = await service.enrichir(site);
 
-    expect(site.distanceReseauChaleur).toBeNull();
-    expect(resultat.sourcesEchouees).toHaveLength(0);
+    expect(site.distanceReseauChaleur).toBe(312);
+    expect(resultat.success).toBe(true);
   });
 
-  it("gère l'absence de coordonnées sans appeler l'API", async () => {
+  it("gère l'absence de coordonnées sans interroger le référentiel", async () => {
     site.coordonnees = undefined;
 
     const resultat = await service.enrichir(site);
 
-    expect(adapter.getEligibilite).not.toHaveBeenCalled();
+    expect(repository.findReseauProche).not.toHaveBeenCalled();
     expect(site.distanceReseauChaleur).toBeUndefined();
     expect(resultat.success).toBe(false);
     expect(resultat.sourcesEchouees).toContain(SourceEnrichissement.FRANCE_CHALEUR_URBAINE);
     expect(resultat.champsManquants).toContain("distanceReseauChaleur");
   });
 
-  it("gère l'échec de l'API en laissant le champ indisponible", async () => {
-    adapter.getEligibilite.mockResolvedValue({
-      success: false,
-      error: "timeout of 3000ms exceeded",
-      source: SourceEnrichissement.FRANCE_CHALEUR_URBAINE,
-    });
+  it("gère l'échec de la requête en laissant le champ indisponible", async () => {
+    repository.findReseauProche.mockRejectedValue(new Error("relation inexistante"));
 
     const resultat = await service.enrichir(site);
 

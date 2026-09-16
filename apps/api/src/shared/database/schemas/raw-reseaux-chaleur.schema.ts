@@ -1,4 +1,4 @@
-import { pgTable, serial, varchar, timestamp, index } from "drizzle-orm/pg-core";
+import { pgTable, serial, varchar, boolean, timestamp, index } from "drizzle-orm/pg-core";
 
 /**
  * Table raw_reseaux_chaleur : tracés des réseaux de chaleur et de froid urbains.
@@ -12,8 +12,13 @@ import { pgTable, serial, varchar, timestamp, index } from "drizzle-orm/pg-core"
  * une partie des réseaux, avec des écarts allant jusqu'à plusieurs centaines de mètres
  * (cf. ADR-0037).
  *
- * Note : la colonne geom (geometry(MultiLineString, 4326)) et son index GIST sont ajoutés
- * via la migration SQL — Drizzle ne type pas les colonnes PostGIS (cf. raw_icu, raw_bpe).
+ * 18 % des réseaux publiés n'ont pas de tracé : France Chaleur Urbaine ne fournit alors que
+ * la position d'un point (chaufferie). La colonne `trace_complet` permet de les distinguer,
+ * car la distance mesurée sur un point surestime la distance au réseau réel.
+ *
+ * Note : la colonne geom (geometry(Geometry, 4326) — lignes ET points) et son index GIST
+ * sont ajoutés via la migration SQL : Drizzle ne type pas les colonnes PostGIS
+ * (cf. raw_icu, raw_bpe).
  */
 export const rawReseauxChaleur = pgTable(
   "raw_reseaux_chaleur",
@@ -28,6 +33,9 @@ export const rawReseauxChaleur = pgTable(
 
     /** Exploitant du réseau */
     gestionnaire: varchar("gestionnaire", { length: 255 }),
+
+    /** false = seule la position d'un point est publiée, le tracé est inconnu */
+    traceComplet: boolean("trace_complet").notNull().default(true),
 
     /** Date d'import dans la base */
     importedAt: timestamp("imported_at").defaultNow().notNull(),
