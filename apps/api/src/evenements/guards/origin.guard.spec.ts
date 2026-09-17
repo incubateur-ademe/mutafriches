@@ -168,4 +168,78 @@ describe("OriginGuard (Evenements - Mutafriches uniquement)", () => {
       expect(customGuard.canActivate(context)).toBe(true);
     });
   });
+
+  // Un header Origin ne porte jamais de slash final : sans normalisation au parsing,
+  // une entree saisie avec un slash est morte et l'appelant recoit un 403 muet.
+  describe("Normalisation des origines configurees", () => {
+    beforeEach(() => {
+      process.env.NODE_ENV = "production";
+    });
+
+    it("devrait autoriser une origine configuree avec un slash final", () => {
+      process.env.ALLOWED_ORIGINS = "https://custom-domain.fr/";
+      guard = new OriginGuard();
+
+      const context = createMockContext({ origin: "https://custom-domain.fr" });
+      expect(guard.canActivate(context)).toBe(true);
+    });
+
+    it("devrait autoriser une origine configuree avec espaces, slash final et casse mixte", () => {
+      process.env.ALLOWED_ORIGINS = " HTTPS://Custom-Domain.FR/ , https://autre-domaine.fr// ";
+      guard = new OriginGuard();
+
+      expect(guard.canActivate(createMockContext({ origin: "https://custom-domain.fr" }))).toBe(
+        true,
+      );
+      expect(guard.canActivate(createMockContext({ origin: "https://autre-domaine.fr" }))).toBe(
+        true,
+      );
+    });
+
+    it("devrait ignorer les entrees vides sans tout autoriser", () => {
+      process.env.ALLOWED_ORIGINS = "https://custom-domain.fr/,, ,/";
+      guard = new OriginGuard();
+
+      expect(guard.canActivate(createMockContext({ origin: "https://custom-domain.fr" }))).toBe(
+        true,
+      );
+      expect(() =>
+        guard.canActivate(createMockContext({ origin: "https://malicious-site.com" })),
+      ).toThrow(ForbiddenException);
+    });
+
+    it("ne devrait pas autoriser Origin null via une entree opaque configuree", () => {
+      process.env.ALLOWED_ORIGINS = "file:///opt/app/";
+      guard = new OriginGuard();
+
+      expect(() => guard.canActivate(createMockContext({ origin: "null" }))).toThrow(
+        ForbiddenException,
+      );
+    });
+
+    // Regression : la normalisation ne doit pas assouplir la comparaison stricte
+    it("devrait bloquer un suffixe usurpe d'une origine configuree avec slash final", () => {
+      process.env.ALLOWED_ORIGINS = "https://custom-domain.fr/";
+      guard = new OriginGuard();
+
+      const context = createMockContext({ origin: "https://custom-domain.fr.attacker.com" });
+      expect(() => guard.canActivate(context)).toThrow(ForbiddenException);
+    });
+
+    it("devrait bloquer un sous-domaine d'une origine configuree avec slash final", () => {
+      process.env.ALLOWED_ORIGINS = "https://custom-domain.fr/";
+      guard = new OriginGuard();
+
+      const context = createMockContext({ origin: "https://evil.custom-domain.fr" });
+      expect(() => guard.canActivate(context)).toThrow(ForbiddenException);
+    });
+
+    it("devrait bloquer le meme hote en http quand https est configure", () => {
+      process.env.ALLOWED_ORIGINS = "https://custom-domain.fr/";
+      guard = new OriginGuard();
+
+      const context = createMockContext({ origin: "http://custom-domain.fr" });
+      expect(() => guard.canActivate(context)).toThrow(ForbiddenException);
+    });
+  });
 });
