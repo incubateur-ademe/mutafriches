@@ -357,6 +357,15 @@ export class EnrichissementService {
   }
 
   /**
+   * Lecture seule du cache site : ni enrichissement, ni journalisation d'appel.
+   * Sert aux traitements de masse (export CNIG) qui ne doivent pas peupler `enrichissements`.
+   */
+  async lireCacheSite(identifiants: string[]): Promise<EnrichissementOutputDto | null> {
+    const cache = await this.siteRepository.findValidCache(identifiants, true);
+    return cache?.donnees ?? null;
+  }
+
+  /**
    * Enrichit un site multi-parcellaire depuis toutes les sources externes
    *
    * Stratégie "Parcelle virtuelle" : construit une Parcelle à partir du Site

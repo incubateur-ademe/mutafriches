@@ -97,6 +97,11 @@ export class AppConfig {
     return "http://localhost:3000";
   }
 
+  // URL publique de l'application (pages partenaires, liens exposés dans les exports).
+  get publicUrl(): string {
+    return this.env.API_URL ?? this.defaultApiUrl;
+  }
+
   get scripts() {
     return {
       apiUrl: this.env.API_URL ?? this.defaultApiUrl,
