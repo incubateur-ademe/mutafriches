@@ -142,6 +142,16 @@ export const PARTENAIRES_PREFETCH: Record<string, SitePrefetch[]> = {
 };
 ```
 
+## Export CNIG
+
+Le bouton « Exporter tous les sites » produit un fichier unique au standard CNIG Friches
+(`ExportSitesModal` → `POST /api/partenaires/:slug/export`). Rien à faire par partenaire :
+l'export s'appuie sur les sites en base et le cache d'enrichissement.
+
+La connaissance terrain (localStorage) part avec la requête pour les seuls sites qualifiés dans
+le navigateur, et alimente cinq attributs du standard. Couverture des 51 attributs et pièges :
+`docs/export-cnig.md`, décision : ADR-0042.
+
 ## Conventions
 
 - `slug` : en minuscules, sans espace (segment d'URL).

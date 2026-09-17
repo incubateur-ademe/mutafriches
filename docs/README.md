@@ -10,6 +10,7 @@
 - **[Sources de données externes](./sources-donnees-externes.md)** - Doc partenaires (champs récupérés, traitement, critères alimentés) — générée via `pnpm docs:sources:gen`
 - **[Algorithme d'Évaluation](./evaluation-mutabilite.md)** - Calcul des indices de mutabilité
 - **[Tracking & Analytics](./analytics-tracking.md)** - Événements, session vs utilisateur, requêtes Metabase
+- **[Export CNIG Friches](./export-cnig.md)** - Export d'un inventaire partenaire au standard national (couverture des 51 attributs)
 - **[Ajouter un partenaire](./ajout-partenaire.md)** - Todolist pour publier une nouvelle page partenaire multisite
 - **[Vulnérabilités de dépendances](./security/vulnerabilites-acceptees.md)** - Suivi `pnpm audit` : corrections, acceptations justifiées, planchers d'override
 
