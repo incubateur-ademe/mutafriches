@@ -17,18 +17,25 @@ import {
 
 const TIMEOUT_MS = 15000;
 
-async function fetchCadastre(params: Record<string, string>): Promise<ParcelleCadastre | null> {
+async function fetchCadastreBrut(
+  params: Record<string, string>,
+): Promise<ApicartoCadastreResponse | null> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
   try {
     const res = await fetch(apicartoCadastreUrl(params), { signal: controller.signal });
     if (!res.ok) return null;
-    return premiereParcelle((await res.json()) as ApicartoCadastreResponse);
+    return (await res.json()) as ApicartoCadastreResponse;
   } catch {
     return null;
   } finally {
     clearTimeout(timer);
   }
+}
+
+async function fetchCadastre(params: Record<string, string>): Promise<ParcelleCadastre | null> {
+  const reponse = await fetchCadastreBrut(params);
+  return reponse ? premiereParcelle(reponse) : null;
 }
 
 // Résout l'IDU réel par attributs (l'API renvoie l'IDU, COM_ABS inclus).
@@ -38,6 +45,16 @@ export function parcelleByAttributes(
   numero: string,
 ): Promise<ParcelleCadastre | null> {
   return fetchCadastre(apicartoParamsParAttributs(codeInsee, section, numero));
+}
+
+// Réponse complète : nécessaire pour départager les parcelles homonymes d'une commune
+// nouvelle par leur préfixe COM_ABS (cf. parcelleAvecPrefixe).
+export function parcellesByAttributes(
+  codeInsee: string,
+  section: string,
+  numero: string,
+): Promise<ApicartoCadastreResponse | null> {
+  return fetchCadastreBrut(apicartoParamsParAttributs(codeInsee, section, numero));
 }
 
 // Résout la parcelle contenant un point WGS84 (contre-vérification par coordonnées).

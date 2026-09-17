@@ -45,6 +45,7 @@
     "db:partenaires:seed": "pnpm --filter api run db:partenaires:seed",
     "db:partenaires:backfill-canal": "pnpm --filter api run db:partenaires:backfill-canal",
     "partenaires:prefetch": "pnpm --filter api run partenaires:prefetch",
+    "partenaires:resolve-idu": "pnpm --filter api run partenaires:resolve-idu",
     "docs:sources:gen": "node scripts/generate-sources-doc.cjs",
     "validate": "pnpm format && pnpm lint:fix && pnpm typecheck && pnpm test",
     "setup": "bash scripts/setup.sh",

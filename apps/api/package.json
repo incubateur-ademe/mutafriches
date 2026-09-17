@@ -42,7 +42,8 @@
     "db:qpv:import": "node dist/src/scripts/import-qpv.js",
     "db:partenaires:seed": "node dist/src/scripts/seed-partenaires.js",
     "db:partenaires:backfill-canal": "node dist/src/scripts/backfill-canal-partenaire.js",
-    "partenaires:prefetch": "node dist/src/scripts/prefetch-partenaires.js"
+    "partenaires:prefetch": "node dist/src/scripts/prefetch-partenaires.js",
+    "partenaires:resolve-idu": "node dist/src/scripts/resolve-idu-partenaire.js"
   },
   "dependencies": {
     "@mutafriches/shared-types": "workspace:*",
