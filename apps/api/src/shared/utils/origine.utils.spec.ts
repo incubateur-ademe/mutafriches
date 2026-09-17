@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { normaliserOrigine, normaliserOrigines } from "./origine.utils";
+import { estOrigineLocale, normaliserOrigine, normaliserOrigines } from "./origine.utils";
 
 describe("normaliserOrigine", () => {
   it("devrait retirer le slash final", () => {
@@ -72,5 +72,36 @@ describe("normaliserOrigines", () => {
 
   it("devrait fonctionner sans logger", () => {
     expect(normaliserOrigines(["https://partenaire.fr/"])).toEqual(["https://partenaire.fr"]);
+  });
+});
+
+describe("estOrigineLocale", () => {
+  it("accepte localhost sur n'importe quel port", () => {
+    expect(estOrigineLocale("http://localhost:5173")).toBe(true);
+    expect(estOrigineLocale("http://localhost:5174")).toBe(true);
+    expect(estOrigineLocale("http://localhost:3000")).toBe(true);
+    expect(estOrigineLocale("http://localhost")).toBe(true);
+  });
+
+  it("accepte les adresses de bouclage et le HTTPS local", () => {
+    expect(estOrigineLocale("http://127.0.0.1:5173")).toBe(true);
+    expect(estOrigineLocale("http://[::1]:5173")).toBe(true);
+    expect(estOrigineLocale("https://localhost:5173")).toBe(true);
+  });
+
+  it("refuse une origine distante", () => {
+    expect(estOrigineLocale("https://mutafriches.beta.gouv.fr")).toBe(false);
+    expect(estOrigineLocale("https://exemple.fr")).toBe(false);
+  });
+
+  it("refuse un domaine qui imite localhost", () => {
+    expect(estOrigineLocale("https://localhost.attaquant.fr")).toBe(false);
+    expect(estOrigineLocale("https://notlocalhost")).toBe(false);
+    expect(estOrigineLocale("http://127.0.0.1.attaquant.fr")).toBe(false);
+  });
+
+  it("refuse une origine absente ou vide", () => {
+    expect(estOrigineLocale()).toBe(false);
+    expect(estOrigineLocale("")).toBe(false);
   });
 });

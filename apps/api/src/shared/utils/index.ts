@@ -10,4 +10,4 @@ export {
 export type { Environment } from "./environment.utils";
 export { APP_VERSION } from "./version.utils";
 export { safeError } from "./safe-error";
-export { normaliserOrigine, normaliserOrigines } from "./origine.utils";
+export { estOrigineLocale, normaliserOrigine, normaliserOrigines } from "./origine.utils";

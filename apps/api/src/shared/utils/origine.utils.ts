@@ -44,3 +44,21 @@ export function normaliserOrigines(valeurs: string[], logger?: Logger): string[]
     return origines;
   }, []);
 }
+
+/** Origine locale : `localhost`, boucle locale ou IPv6 de boucle, quel que soit le port. */
+const ORIGINE_LOCALE = /^https?:\/\/(localhost|127\.0\.0\.1|\[::1\])(:\d{1,5})?$/;
+
+/**
+ * Reconnaît une origine locale, quel que soit le port.
+ *
+ * En développement, le port du serveur Vite n'est pas garanti : il glisse sur 5174, 5175, etc.
+ * dès que 5173 est pris. Figer l'origine autorisée sur un port fait alors échouer toutes les
+ * requêtes par un blocage CORS côté navigateur — réponse servie normalement par l'API, mais
+ * jetée par le navigateur, qui la remonte en « Failed to fetch ». Aucun log ne le signale.
+ */
+export function estOrigineLocale(origine?: string): boolean {
+  if (!origine) {
+    return false;
+  }
+  return ORIGINE_LOCALE.test(origine.trim());
+}
