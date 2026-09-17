@@ -95,6 +95,17 @@ describe("CnigExportService", () => {
     expect(fichier.contenu).toContain("92025_92025000BY0265");
   });
 
+  it("ne compose la réponse qu'avec le slug lu en base, jamais celui reçu en paramètre", async () => {
+    repository.findBySlug.mockResolvedValue({ slug: "cci-92", nom: "CCI 92" });
+
+    const fichier = await service.exporter("cci-92-alias", { format: "csv" });
+
+    expect(fichier.nomFichier).toContain("friches-cnig-cci-92-");
+    expect(fichier.nomFichier).not.toContain("alias");
+    expect(fichier.contenu).toContain("/partenaires/cci-92,");
+    expect(fichier.contenu).not.toContain("alias");
+  });
+
   it("renseigne la source avec le partenaire et l'URL de sa page", async () => {
     const fichier = await service.exporter("cci-92", { format: "csv" });
 

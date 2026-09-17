@@ -278,6 +278,22 @@ describe("extension Mutafriches", () => {
     expect(extension.mf_version_algorithme).toBe("1.13");
   });
 
+  it("ignore un usage prioritaire ou un indice non reconnus", () => {
+    const extension = construireExtensionMutafriches(
+      {
+        indices: { [UsageType.RENATURATION]: "72,4" as never, [UsageType.CULTURE]: 55 },
+        usagePrioritaire: "<script>" as never,
+        fiabilite: "8.5" as never,
+      },
+      "1.13",
+    );
+
+    expect(extension.mf_indice_renaturation).toBeNull();
+    expect(extension.mf_indice_culture).toBe(55);
+    expect(extension.mf_usage_prioritaire).toBeNull();
+    expect(extension.mf_fiabilite).toBeNull();
+  });
+
   it("laisse tout vide pour un site non évalué, version d'algorithme comprise", () => {
     const extension = construireExtensionMutafriches(undefined, "1.13");
 

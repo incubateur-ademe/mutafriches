@@ -140,6 +140,15 @@ describe("nomFichierExport", () => {
     expect(nomFichierExport("cci-92", "csv", false, date)).toBe("friches-cnig-cci-92-20260917.csv");
   });
 
+  it("n'écrit que des caractères de slug dans le nom, destiné à un en-tête HTTP", () => {
+    expect(nomFichierExport('cci"92\r\nX', "csv", false, date)).toBe(
+      "friches-cnig-cci92x-20260917.csv",
+    );
+    expect(nomFichierExport("!!!", "csv", false, date)).toBe(
+      "friches-cnig-partenaire-20260917.csv",
+    );
+  });
+
   it("distingue le fichier étendu des colonnes Mutafriches", () => {
     expect(nomFichierExport("cci-92", "geojson", true, date)).toBe(
       "friches-cnig-cci-92-20260917-etendu.geojson",

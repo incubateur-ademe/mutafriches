@@ -89,14 +89,24 @@ export function versGeoJson(
   return JSON.stringify({ type: "FeatureCollection", name: nom, features }, null, 2);
 }
 
-/** Nom de fichier : `friches-cnig-<slug>-<AAAAMMJJ>[-etendu].<ext>`. */
+/**
+ * Nom de fichier : `friches-cnig-<slug>-<AAAAMMJJ>[-etendu].<ext>`.
+ *
+ * Le nom part dans un en-tête `Content-Disposition` : on n'y laisse que des caractères de
+ * slug, pour qu'aucune valeur inattendue ne puisse casser l'en-tête.
+ */
 export function nomFichierExport(
   slug: string,
   format: "csv" | "geojson",
   inclureMutabilite: boolean,
   date: Date = new Date(),
 ): string {
+  const slugSur =
+    slug
+      .toLowerCase()
+      .replace(/[^a-z0-9-]/g, "")
+      .slice(0, 50) || "partenaire";
   const jour = date.toISOString().slice(0, 10).replace(/-/g, "");
   const suffixe = inclureMutabilite ? "-etendu" : "";
-  return `friches-cnig-${slug}-${jour}${suffixe}.${format}`;
+  return `friches-cnig-${slugSur}-${jour}${suffixe}.${format}`;
 }

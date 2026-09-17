@@ -1,4 +1,4 @@
-import { IsBoolean, IsIn, IsObject, IsOptional, IsString, MaxLength } from "class-validator";
+import { IsBoolean, IsIn, IsObject, IsOptional, Matches } from "class-validator";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import type {
   DonneesComplementairesInputDto,
@@ -40,9 +40,11 @@ export class ExportCnigDto implements ExportCnigInputDto {
   @IsObject()
   mutabilite?: Record<string, MutabiliteResumeeExportDto>;
 
+  // Recopiée telle quelle dans le fichier : restreinte au format des versions d'algorithme.
   @ApiPropertyOptional({ example: "1.13" })
   @IsOptional()
-  @IsString()
-  @MaxLength(20)
+  @Matches(/^\d{1,3}(\.\d{1,3}){0,2}$/, {
+    message: "versionAlgorithme doit être une version de la forme 1.13",
+  })
   versionAlgorithme?: string;
 }

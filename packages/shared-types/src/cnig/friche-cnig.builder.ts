@@ -219,23 +219,32 @@ export function resumerMutabilite(mutabilite: MutabiliteOutputDto): MutabiliteRe
   };
 }
 
+const USAGES_CONNUS = new Set<string>(Object.values(UsageType));
+
+// Le résumé de mutabilité arrive du client : seules des valeurs reconnues entrent dans le
+// fichier, les autres sont ignorées plutôt que recopiées.
+function indice(valeur: unknown): number | null {
+  return typeof valeur === "number" && Number.isFinite(valeur) ? valeur : null;
+}
+
 /** Colonnes Mutafriches hors standard : indices par usage, fiabilité, version d'algorithme. */
 export function construireExtensionMutafriches(
   mutabilite?: MutabiliteResumeeExportDto | null,
   versionAlgorithme?: string,
 ): ExtensionMutafriches {
   const indices = mutabilite?.indices ?? {};
+  const usage = mutabilite?.usagePrioritaire;
 
   return {
-    mf_indice_residentiel: indices[UsageType.RESIDENTIEL] ?? null,
-    mf_indice_equipements: indices[UsageType.EQUIPEMENTS] ?? null,
-    mf_indice_culture: indices[UsageType.CULTURE] ?? null,
-    mf_indice_tertiaire: indices[UsageType.TERTIAIRE] ?? null,
-    mf_indice_industrie: indices[UsageType.INDUSTRIE] ?? null,
-    mf_indice_renaturation: indices[UsageType.RENATURATION] ?? null,
-    mf_indice_photovoltaique: indices[UsageType.PHOTOVOLTAIQUE] ?? null,
-    mf_usage_prioritaire: mutabilite?.usagePrioritaire ?? null,
-    mf_fiabilite: mutabilite?.fiabilite ?? null,
+    mf_indice_residentiel: indice(indices[UsageType.RESIDENTIEL]),
+    mf_indice_equipements: indice(indices[UsageType.EQUIPEMENTS]),
+    mf_indice_culture: indice(indices[UsageType.CULTURE]),
+    mf_indice_tertiaire: indice(indices[UsageType.TERTIAIRE]),
+    mf_indice_industrie: indice(indices[UsageType.INDUSTRIE]),
+    mf_indice_renaturation: indice(indices[UsageType.RENATURATION]),
+    mf_indice_photovoltaique: indice(indices[UsageType.PHOTOVOLTAIQUE]),
+    mf_usage_prioritaire: usage && USAGES_CONNUS.has(usage) ? usage : null,
+    mf_fiabilite: indice(mutabilite?.fiabilite),
     mf_version_algorithme: mutabilite ? (versionAlgorithme ?? null) : null,
   };
 }

@@ -55,17 +55,23 @@ export class CnigExportService {
   async exporter(slug: string, options: ExportCnigInputDto): Promise<FichierExportCnig> {
     const partenaire = await this.partenaireRepository.findBySlug(slug);
     if (!partenaire) {
-      throw new NotFoundException(`Partenaire introuvable : ${slug}`);
+      // Le slug demandé est journalisé, pas renvoyé : une réponse ne réexpose pas son entrée.
+      this.logger.warn(`Export demandé pour un partenaire introuvable : ${slug}`);
+      throw new NotFoundException("Partenaire introuvable");
     }
 
-    const sites = await this.partenaireRepository.findSites(slug);
+    // Tout ce qui ressort dans le fichier et ses en-têtes vient désormais de la base, jamais
+    // du paramètre de route : un identifiant arbitraire ne peut pas se retrouver dans la réponse.
+    const slugPartenaire = partenaire.slug;
+
+    const sites = await this.partenaireRepository.findSites(slugPartenaire);
     const dateExport = new Date();
     const echeance = Date.now() + BUDGET_ENRICHISSEMENT_MS;
 
     const source = {
       nom: NOM_SOURCE,
       producteur: partenaire.nom,
-      url: `${this.config.publicUrl}/partenaires/${slug}`,
+      url: `${this.config.publicUrl}/partenaires/${slugPartenaire}`,
       contact: CONTACT_SOURCE,
     };
 
@@ -75,7 +81,7 @@ export class CnigExportService {
 
     await this.parLots(sites, async (site) => {
       const parcelles = site.parcelles as string[];
-      const enrichissement = await this.resoudreEnrichissement(slug, parcelles, echeance);
+      const enrichissement = await this.resoudreEnrichissement(slugPartenaire, parcelles, echeance);
 
       const ligne = construireFricheCnig({
         site: {
@@ -126,15 +132,16 @@ export class CnigExportService {
     );
 
     this.logger.log(
-      `Export CNIG ${slug} : ${entrees.length}/${sites.length} sites, format ${options.format}`,
+      `Export CNIG ${slugPartenaire} : ${entrees.length}/${sites.length} sites, ` +
+        `format ${options.format}`,
     );
 
     return {
       contenu:
         options.format === "geojson"
-          ? versGeoJson(entrees, `friches-${slug}`, inclureMutabilite)
+          ? versGeoJson(entrees, `friches-${slugPartenaire}`, inclureMutabilite)
           : versCsv(entrees, inclureMutabilite),
-      nomFichier: nomFichierExport(slug, options.format, inclureMutabilite, dateExport),
+      nomFichier: nomFichierExport(slugPartenaire, options.format, inclureMutabilite, dateExport),
       typeMime:
         options.format === "geojson"
           ? "application/geo+json; charset=utf-8"

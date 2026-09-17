@@ -18,6 +18,7 @@ import type {
   PartenaireSiteOutputDto,
 } from "@mutafriches/shared-types";
 import { IntegrateurOriginGuard } from "../shared/guards";
+import { ParseSlugPipe } from "../shared/pipes";
 import { PartenairesService } from "./partenaires.service";
 import { CnigExportService } from "./export/cnig-export.service";
 import { RenommerSiteDto } from "./dto/input/renommer-site.dto";
@@ -41,7 +42,7 @@ export class PartenairesController {
   @Get(":slug")
   @ApiOperation({ summary: "Récupère un partenaire et ses sites" })
   @ApiParam({ name: "slug", example: "aura" })
-  async getPartenaire(@Param("slug") slug: string): Promise<PartenaireOutputDto> {
+  async getPartenaire(@Param("slug", ParseSlugPipe) slug: string): Promise<PartenaireOutputDto> {
     return this.partenairesService.getPartenaire(slug);
   }
 
@@ -50,7 +51,7 @@ export class PartenairesController {
   @ApiOperation({ summary: "Ajoute un site (enrichit, dérive le nom par défaut, persiste)" })
   @ApiParam({ name: "slug", example: "aura" })
   async ajouterSite(
-    @Param("slug") slug: string,
+    @Param("slug", ParseSlugPipe) slug: string,
     @Body() body: AjouterSiteDto,
   ): Promise<AjouterSitePartenaireOutputDto> {
     return this.partenairesService.ajouterSite(slug, body.parcelles);
@@ -77,7 +78,7 @@ export class PartenairesController {
   @ApiParam({ name: "slug", example: "cci-92" })
   @ApiProduces("text/csv", "application/geo+json")
   async exporterCnig(
-    @Param("slug") slug: string,
+    @Param("slug", ParseSlugPipe) slug: string,
     @Body() body: ExportCnigDto,
     @Res() res: Response,
   ): Promise<void> {
@@ -101,7 +102,7 @@ export class PartenairesController {
   @ApiParam({ name: "slug", example: "aura" })
   @ApiParam({ name: "id", example: "f267a350-84ab-45e4-a289-79a6a122237b" })
   async renommerSite(
-    @Param("slug") slug: string,
+    @Param("slug", ParseSlugPipe) slug: string,
     @Param("id") id: string,
     @Body() body: RenommerSiteDto,
   ): Promise<PartenaireSiteOutputDto> {
