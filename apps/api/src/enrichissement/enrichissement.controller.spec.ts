@@ -461,6 +461,7 @@ describe("EnrichissementController", () => {
         true,
         "cartofriches",
         undefined,
+        undefined,
       );
     });
 
@@ -478,6 +479,33 @@ describe("EnrichissementController", () => {
         undefined,
         undefined,
         "scet",
+        undefined,
+      );
+    });
+
+    it("devrait transmettre le marqueur de pre-chauffe au service de detection", async () => {
+      // Arrange
+      enrichissementService.enrichir.mockResolvedValue(mockOutput);
+      const req = { headers: {} } as any;
+
+      // Act
+      await controller.enrichirParcelle(
+        mockInput,
+        undefined,
+        undefined,
+        undefined,
+        req,
+        undefined,
+        true,
+      );
+
+      // Assert
+      expect(origineDetectionService.detecterOrigine).toHaveBeenCalledWith(
+        req,
+        undefined,
+        undefined,
+        undefined,
+        true,
       );
     });
 

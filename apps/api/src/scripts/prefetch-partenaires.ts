@@ -50,7 +50,9 @@ const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 async function prefetchSite(partenaire: string, site: SitePrefetch): Promise<PrefetchResult> {
   const startTime = Date.now();
-  const url = `${API_URL}/enrichissement?acceptDegradedCache=true`;
+  // prefetch=true : sans ce marqueur, ces appels robots sont enregistrés comme des
+  // qualifications utilisateur et faussent tout ratio d'usage (ADR-0041).
+  const url = `${API_URL}/enrichissement?acceptDegradedCache=true&prefetch=true`;
 
   try {
     const body =

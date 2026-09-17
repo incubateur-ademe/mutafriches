@@ -31,9 +31,10 @@ const SEED_ORIGIN = "https://mutafriches.beta.gouv.fr";
 const sleep = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
 
 // Centroïde d'un site via l'enrichissement (réchauffe aussi le cache serveur).
+// prefetch=true : appel robot, à ne pas compter comme une qualification utilisateur (ADR-0041).
 async function getCentroide(parcelles: string[]): Promise<Coordonnees | null> {
   const body = parcelles.length === 1 ? { identifiant: parcelles[0] } : { identifiants: parcelles };
-  const res = await fetch(`${API_URL}/enrichissement?acceptDegradedCache=true`, {
+  const res = await fetch(`${API_URL}/enrichissement?acceptDegradedCache=true&prefetch=true`, {
     method: "POST",
     headers: { "Content-Type": "application/json", Origin: SEED_ORIGIN },
     body: JSON.stringify(body),

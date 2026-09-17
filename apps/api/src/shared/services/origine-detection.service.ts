@@ -25,19 +25,22 @@ export class OrigineDetectionService {
    * Logique de détection :
    * 1. Si query param iframe=true -> IFRAME_INTEGREE (prioritaire)
    * 2. Sinon, détection auto depuis referer/origin (API_DIRECTE / SITE_STANDALONE / IFRAME)
-   * 3. Contexte page partenaire (query param partenaire=<slug>) : uniquement si la source
+   * 3. Pré-chauffe du cache (query param prefetch=true) -> PREFETCH
+   * 4. Contexte page partenaire (query param partenaire=<slug>) : uniquement si la source
    *    détectée est SITE_STANDALONE, tague integrateur = 'partenaire:<slug>'.
    *
    * @param req - Request Express (optionnel)
    * @param isIframe - Query param iframe (optionnel)
    * @param integrateur - Query param integrateur (optionnel, mode iframe)
    * @param partenaire - Query param partenaire : slug d'une page partenaire (optionnel)
+   * @param prefetch - Query param prefetch : appel robot de pré-chauffe du cache (optionnel)
    */
   detecterOrigine(
     req?: Request,
     isIframe?: boolean,
     integrateur?: string,
     partenaire?: string,
+    prefetch?: boolean,
   ): OrigineUtilisation {
     // 1. Si iframe=true en query param, forcer le mode iframe (prioritaire)
     const iframeMode = String(isIframe) === "true";
@@ -51,7 +54,14 @@ export class OrigineDetectionService {
     // 2. Détection automatique depuis la requête
     const origine = this.detecterOrigineAuto(req);
 
-    // 3. Contexte page partenaire : uniquement si l'origine détectée est le site standalone
+    // 3. Pré-chauffe du cache : robot, jamais un utilisateur. Sans ce marqueur, ses appels
+    // sont comptés comme des qualifications et écrasent les statistiques d'usage (ADR-0041).
+    // Même garde que le canal partenaire : honoré depuis le domaine standalone uniquement.
+    if (prefetch === true && origine.source === SourceUtilisation.SITE_STANDALONE) {
+      return { source: SourceUtilisation.PREFETCH };
+    }
+
+    // 4. Contexte page partenaire : uniquement si l'origine détectée est le site standalone
     // (les pages partenaires y vivent). On évite ainsi qu'un appel API_DIRECTE ou iframe
     // usurpe le canal via un simple query param. Seul l'intégrateur est tagué, source conservée.
     const slug = this.normaliserSlugPartenaire(partenaire);
