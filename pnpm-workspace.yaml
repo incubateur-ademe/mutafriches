@@ -17,6 +17,7 @@ allowBuilds:
   "@swc/core": true # compilateur natif (unplugin-swc, tests)
   "@nestjs/core": false # postinstall = message de funding, inutile
   "@scarf/scarf": false # télémétrie, à ne pas exécuter
+  "@gouvfr/dsfr": true # preinstall = contrôle d'acceptation des CGU (cf. .dsfr.yml), doit s'exécuter
 
 # Force des versions patchées pour des CVE de transitifs (DoS) qu'aucune dép directe ne couvre.
 # Runtime express : qs et path-to-regexp servent à parser query strings / matcher les routes.

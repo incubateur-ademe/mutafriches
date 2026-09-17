@@ -96,6 +96,12 @@ pnpm start:dev
 
 > Le script `pnpm setup` copie le `.env.example`, installe les dépendances, démarre PostgreSQL via Docker et synchronise le schéma de base de données.
 
+> **Installer depuis la racine du monorepo.** Depuis sa version 1.15, `@gouvfr/dsfr` contrôle à
+> l'installation l'acceptation des modalités d'utilisation du DSFR, via le fichier `.dsfr.yml`
+> qu'il cherche dans le répertoire d'où la commande est lancée (cf. ADR-0040). Un
+> `cd apps/ui && pnpm install` échoue donc sur `[NO_YML]` ; utiliser `pnpm --filter ui …` depuis
+> la racine.
+
 **Accès :**
 
 - UI React : **<http://localhost:5173>**
