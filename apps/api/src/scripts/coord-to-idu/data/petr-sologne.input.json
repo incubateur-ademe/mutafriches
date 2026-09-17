@@ -1,0 +1,308 @@
+[
+  {
+    "id": "28",
+    "nom": "SOCCOIM",
+    "commune": "ARDON",
+    "departement": "45",
+    "numParcelle": "B618/ B748/ B750/ B979",
+    "surface": "221105",
+    "origine": "CARTOFRICHES"
+  },
+  {
+    "id": "29",
+    "nom": "Décharge d'ordures ménagères",
+    "commune": "ARDON",
+    "departement": "45",
+    "numParcelle": "A152/ A154/ A155",
+    "surface": "96427",
+    "origine": "CARTOFRICHES"
+  },
+  {
+    "id": "66",
+    "nom": "Le Plateau",
+    "commune": "BRAY-SAINT-AIGNAN",
+    "departement": "45",
+    "numParcelle": "267B18/ 267B21/ 267B316/ 267B317/ 267B325/ 267B326/ 267B347/ 267B361/ 267B379/ 267B380",
+    "surface": "20400",
+    "origine": "Commune"
+  },
+  {
+    "id": "11",
+    "nom": "FAURE",
+    "commune": "CHATEAUNEUF-SUR-LOIRE",
+    "departement": "45",
+    "numParcelle": "AN546",
+    "surface": "6829",
+    "origine": "CARTOFRICHES"
+  },
+  {
+    "id": "12",
+    "nom": "",
+    "commune": "CHATEAUNEUF-SUR-LOIRE",
+    "departement": "45",
+    "numParcelle": "BC0958",
+    "surface": "846",
+    "origine": "CARTOFRICHES/DDT45 (36)"
+  },
+  {
+    "id": "13",
+    "nom": "CODIFRANCE (ex DISVAL)",
+    "commune": "CHATEAUNEUF-SUR-LOIRE",
+    "departement": "45",
+    "numParcelle": "BC522/ BC531",
+    "surface": "9209",
+    "origine": "CARTOFRICHES"
+  },
+  {
+    "id": "14",
+    "nom": "",
+    "commune": "CHATEAUNEUF-SUR-LOIRE",
+    "departement": "45",
+    "numParcelle": "BI103/ BI104/ BI105/ BI106/ BI109/ BI110/ BI111/ BI112/ BI113/ BI114/ BI115/ BI116/ BI117/ BI118/ BI119/ BI91/ BI92/ BI93/ BI94/ BI95/ BI96/ BI97/ BI98",
+    "surface": "22806",
+    "origine": "BASOL/PETR CCL"
+  },
+  {
+    "id": "15",
+    "nom": "Cémoi",
+    "commune": "CHATEAUNEUF-SUR-LOIRE",
+    "departement": "45",
+    "numParcelle": "BK207",
+    "surface": "15223",
+    "origine": "BASOL/ DDT45 (35)"
+  },
+  {
+    "id": "67",
+    "nom": "Emprise SNCF - La Gare",
+    "commune": "CHATEAUNEUF-SUR-LOIRE",
+    "departement": "45",
+    "numParcelle": "AN911",
+    "surface": "34211",
+    "origine": "Commune"
+  },
+  {
+    "id": "18",
+    "nom": "Ancienne laiterie",
+    "commune": "FAY-AUX-LOGES",
+    "departement": "45",
+    "numParcelle": "AR268/ AR405/ AR415",
+    "surface": "6639",
+    "origine": "CARTOFRICHES / DDT45 (38)"
+  },
+  {
+    "id": "61",
+    "nom": "Usine du Canal",
+    "commune": "FAY-AUX-LOGES",
+    "departement": "45",
+    "numParcelle": "ZT72/ ZT90",
+    "surface": "4042",
+    "origine": "Commune"
+  },
+  {
+    "id": "62",
+    "nom": "Friche SNCF",
+    "commune": "FAY-AUX-LOGES",
+    "departement": "45",
+    "numParcelle": "AR671",
+    "surface": "22688",
+    "origine": "Commune"
+  },
+  {
+    "id": "31",
+    "nom": "Charpentiers de Paris",
+    "commune": "LA FERTE-SAINT-AUBIN",
+    "departement": "45",
+    "numParcelle": "BK253/ BK254/ BK258/ BK259",
+    "surface": "16174",
+    "origine": "CARTOFRICHES"
+  },
+  {
+    "id": "34",
+    "nom": "Halle et terrain SNCF",
+    "commune": "LA FERTE-SAINT-AUBIN",
+    "departement": "45",
+    "numParcelle": "BL510/ BL511",
+    "surface": "4759",
+    "origine": "CARTOFRICHES"
+  },
+  {
+    "id": "36",
+    "nom": "Bâtiment SNCF",
+    "commune": "LA FERTE-SAINT-AUBIN",
+    "departement": "45",
+    "numParcelle": "BL509",
+    "surface": "417",
+    "origine": "CARTOFRICHES"
+  },
+  {
+    "id": "37",
+    "nom": "Appel à projet Recyclage Foncier 2021 (Dossier N° 3665273)",
+    "commune": "LA FERTE-SAINT-AUBIN",
+    "departement": "45",
+    "numParcelle": "BL153",
+    "surface": "1194",
+    "origine": "CARTOFRICHES"
+  },
+  {
+    "id": "38",
+    "nom": "Ancienne charcuterie Camus",
+    "commune": "LA FERTE-SAINT-AUBIN",
+    "departement": "45",
+    "numParcelle": "AX226/ AX227/ AX228/ AX229/ AX230/ AX231/ AX232/ AX233/ AX234",
+    "surface": "619",
+    "origine": "CARTOFRICHES/PETR CCPS"
+  },
+  {
+    "id": "1",
+    "nom": "Ancienne entreprise de luminaire",
+    "commune": "LOURY",
+    "departement": "45",
+    "numParcelle": "A719",
+    "surface": "2508",
+    "origine": "PETR CCF DDT"
+  },
+  {
+    "id": "64",
+    "nom": "",
+    "commune": "LOURY",
+    "departement": "45",
+    "numParcelle": "A717",
+    "surface": "4454",
+    "origine": "Commune"
+  },
+  {
+    "id": "65",
+    "nom": "Ancien Silo Agropithiviers",
+    "commune": "LOURY",
+    "departement": "45",
+    "numParcelle": "AD1194/ AD184/ AD793",
+    "surface": "6362",
+    "origine": "Commune"
+  },
+  {
+    "id": "4",
+    "nom": "RND",
+    "commune": "NEUVILLE-AUX-BOIS",
+    "departement": "45",
+    "numParcelle": "AA121",
+    "surface": "20190",
+    "origine": "BASOL"
+  },
+  {
+    "id": "74",
+    "nom": "ZI Montfort",
+    "commune": "NEUVILLE-AUX-BOIS",
+    "departement": "45",
+    "numParcelle": "AA405/ AA404/ AA172",
+    "surface": "27293",
+    "origine": "Commune"
+  },
+  {
+    "id": "47",
+    "nom": "Bâtiment de l'entreprise TREMEAU",
+    "commune": "OUZOUER-SUR-LOIRE",
+    "departement": "45",
+    "numParcelle": "AM96",
+    "surface": "3161",
+    "origine": "PETR CCVS (elus)"
+  },
+  {
+    "id": "23",
+    "nom": "CARUELLE",
+    "commune": "SAINT-DENIS-DE-L'HOTEL",
+    "departement": "45",
+    "numParcelle": "AL345",
+    "surface": "38163",
+    "origine": "BASOL/PETR CCL"
+  },
+  {
+    "id": "75",
+    "nom": "LES BELLEBATS",
+    "commune": "SAINT-DENIS-DE-L'HOTEL",
+    "departement": "45",
+    "numParcelle": "AL389",
+    "surface": "17846",
+    "origine": "Commune"
+  },
+  {
+    "id": "76",
+    "nom": "ROUTE DE CHENAILLES",
+    "commune": "SAINT-DENIS-DE-L'HOTEL",
+    "departement": "45",
+    "numParcelle": "ZE277",
+    "surface": "23382",
+    "origine": "Commune"
+  },
+  {
+    "id": "52",
+    "nom": "Décharges d'ordures ménagères",
+    "commune": "SAINT-FLORENT",
+    "departement": "45",
+    "numParcelle": "AD233",
+    "surface": "56336",
+    "origine": "CARTOFRICHES"
+  },
+  {
+    "id": "73",
+    "nom": "Décharges d'ordures ménagères",
+    "commune": "SAINT-FLORENT",
+    "departement": "45",
+    "numParcelle": "AC126/ AC128",
+    "surface": "45764",
+    "origine": "Commune"
+  },
+  {
+    "id": "54",
+    "nom": "Friche Aulneau",
+    "commune": "SULLY-SUR-LOIRE",
+    "departement": "45",
+    "numParcelle": "AT671/ AT672/ AT673/ AT674/ AT675/ AT676/ AT677/ AT678",
+    "surface": "48890",
+    "origine": "CARTOFRICHES"
+  },
+  {
+    "id": "55",
+    "nom": "Simca",
+    "commune": "SULLY-SUR-LOIRE",
+    "departement": "45",
+    "numParcelle": "AI618/ AI675/ AI680",
+    "surface": "5301",
+    "origine": "CARTOFRICHES"
+  },
+  {
+    "id": "58",
+    "nom": "Habitat collectif Simca",
+    "commune": "SULLY-SUR-LOIRE",
+    "departement": "45",
+    "numParcelle": "AI678",
+    "surface": "652",
+    "origine": "CARTOFRICHES"
+  },
+  {
+    "id": "6",
+    "nom": "Décharge d'ordures ménagères",
+    "commune": "TRAINOU",
+    "departement": "45",
+    "numParcelle": "AE351",
+    "surface": "5116",
+    "origine": "CARTOFRICHES"
+  },
+  {
+    "id": "8",
+    "nom": "Discothèque",
+    "commune": "VENNECY",
+    "departement": "45",
+    "numParcelle": "ZD65/ ZD98",
+    "surface": "13800",
+    "origine": "PETR CCF DDT"
+  },
+  {
+    "id": "27",
+    "nom": "Traitement de poteaux télégraphiques",
+    "commune": "VITRY-AUX-LOGES",
+    "departement": "45",
+    "numParcelle": "C1373/ C1410/ C1412",
+    "surface": "6136",
+    "origine": "CARTOFRICHES/DDT 45 (40)"
+  }
+]

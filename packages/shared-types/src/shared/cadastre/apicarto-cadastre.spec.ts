@@ -3,6 +3,7 @@ import {
   apicartoCadastreUrl,
   apicartoParamsParAttributs,
   apicartoParamsParPoint,
+  parcelleAvecPrefixe,
   premiereParcelle,
   toParcelleCadastre,
 } from "./apicarto-cadastre";
@@ -72,5 +73,36 @@ describe("toParcelleCadastre / premiereParcelle", () => {
   it("retourne null si aucune feature", () => {
     expect(premiereParcelle({ features: [] })).toBeNull();
     expect(premiereParcelle({})).toBeNull();
+  });
+});
+
+describe("parcelleAvecPrefixe", () => {
+  // Bray-Saint-Aignan : même section/numéro dans deux communes absorbées.
+  const feature000 = {
+    properties: {
+      idu: "450532670B0018",
+      code_insee: "45053",
+      section: "0B",
+      numero: "0018",
+    },
+  };
+  const feature267 = {
+    properties: {
+      idu: "450530000B0018",
+      code_insee: "45053",
+      section: "0B",
+      numero: "0018",
+    },
+  };
+
+  it("sélectionne la parcelle du préfixe COM_ABS attendu", () => {
+    const response = { features: [feature267, feature000] };
+    expect(parcelleAvecPrefixe(response, "267")?.idu).toBe("450532670B0018");
+    expect(parcelleAvecPrefixe(response, "000")?.idu).toBe("450530000B0018");
+  });
+
+  it("retourne null si aucune parcelle ne porte le préfixe", () => {
+    expect(parcelleAvecPrefixe({ features: [feature000] }, "999")).toBeNull();
+    expect(parcelleAvecPrefixe({}, "000")).toBeNull();
   });
 });

@@ -1,0 +1,1013 @@
+[
+  {
+    "id": "28",
+    "nom": "SOCCOIM",
+    "commune": "ARDON",
+    "insee": "45006",
+    "parcelles": [
+      {
+        "ref": "B618",
+        "idu": "45006000B0618",
+        "commune": "Ardon"
+      },
+      {
+        "ref": "B748",
+        "idu": "45006000B0748",
+        "commune": "Ardon"
+      },
+      {
+        "ref": "B750",
+        "idu": "45006000B0750",
+        "commune": "Ardon"
+      },
+      {
+        "ref": "B979",
+        "idu": "45006000B0979",
+        "commune": "Ardon"
+      }
+    ],
+    "idusValides": ["45006000B0618", "45006000B0748", "45006000B0750", "45006000B0979"],
+    "pointIdu": null,
+    "pointDansSite": false,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "29",
+    "nom": "Décharge d'ordures ménagères",
+    "commune": "ARDON",
+    "insee": "45006",
+    "parcelles": [
+      {
+        "ref": "A152",
+        "idu": "45006000A0152",
+        "commune": "Ardon"
+      },
+      {
+        "ref": "A154",
+        "idu": "45006000A0154",
+        "commune": "Ardon"
+      },
+      {
+        "ref": "A155",
+        "idu": "45006000A0155",
+        "commune": "Ardon"
+      }
+    ],
+    "idusValides": ["45006000A0152", "45006000A0154", "45006000A0155"],
+    "pointIdu": null,
+    "pointDansSite": false,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "66",
+    "nom": "Le Plateau",
+    "commune": "BRAY-SAINT-AIGNAN",
+    "insee": "45051",
+    "parcelles": [
+      {
+        "ref": "267B18",
+        "idu": "45051267B0018",
+        "commune": "Bray-Saint-Aignan"
+      },
+      {
+        "ref": "267B21",
+        "idu": "45051267B0021",
+        "commune": "Bray-Saint-Aignan"
+      },
+      {
+        "ref": "267B316",
+        "idu": "45051267B0316",
+        "commune": "Bray-Saint-Aignan"
+      },
+      {
+        "ref": "267B317",
+        "idu": "45051267B0317",
+        "commune": "Bray-Saint-Aignan"
+      },
+      {
+        "ref": "267B325",
+        "idu": "45051267B0325",
+        "commune": "Bray-Saint-Aignan"
+      },
+      {
+        "ref": "267B326",
+        "idu": "45051267B0326",
+        "commune": "Bray-Saint-Aignan"
+      },
+      {
+        "ref": "267B347",
+        "idu": "45051267B0347",
+        "commune": "Bray-Saint-Aignan"
+      },
+      {
+        "ref": "267B361",
+        "idu": "45051267B0361",
+        "commune": "Bray-Saint-Aignan"
+      },
+      {
+        "ref": "267B379",
+        "idu": "45051267B0379",
+        "commune": "Bray-Saint-Aignan"
+      },
+      {
+        "ref": "267B380",
+        "idu": "45051267B0380",
+        "commune": "Bray-Saint-Aignan"
+      }
+    ],
+    "idusValides": [
+      "45051267B0018",
+      "45051267B0021",
+      "45051267B0316",
+      "45051267B0317",
+      "45051267B0325",
+      "45051267B0326",
+      "45051267B0347",
+      "45051267B0361",
+      "45051267B0379",
+      "45051267B0380"
+    ],
+    "pointIdu": null,
+    "pointDansSite": false,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "11",
+    "nom": "FAURE",
+    "commune": "CHATEAUNEUF-SUR-LOIRE",
+    "insee": "45082",
+    "parcelles": [
+      {
+        "ref": "AN546",
+        "idu": "45082000AN0546",
+        "commune": "Châteauneuf-sur-Loire"
+      }
+    ],
+    "idusValides": ["45082000AN0546"],
+    "pointIdu": null,
+    "pointDansSite": false,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "12",
+    "nom": "",
+    "commune": "CHATEAUNEUF-SUR-LOIRE",
+    "insee": "45082",
+    "parcelles": [
+      {
+        "ref": "BC0958",
+        "idu": "45082000BC0958",
+        "commune": "Châteauneuf-sur-Loire"
+      }
+    ],
+    "idusValides": ["45082000BC0958"],
+    "pointIdu": null,
+    "pointDansSite": false,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "13",
+    "nom": "CODIFRANCE (ex DISVAL)",
+    "commune": "CHATEAUNEUF-SUR-LOIRE",
+    "insee": "45082",
+    "parcelles": [
+      {
+        "ref": "BC522",
+        "idu": "45082000BC0522",
+        "commune": "Châteauneuf-sur-Loire"
+      },
+      {
+        "ref": "BC531",
+        "idu": "45082000BC0531",
+        "commune": "Châteauneuf-sur-Loire"
+      }
+    ],
+    "idusValides": ["45082000BC0522", "45082000BC0531"],
+    "pointIdu": null,
+    "pointDansSite": false,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "14",
+    "nom": "",
+    "commune": "CHATEAUNEUF-SUR-LOIRE",
+    "insee": "45082",
+    "parcelles": [
+      {
+        "ref": "BI103",
+        "idu": "45082000BI0103",
+        "commune": "Châteauneuf-sur-Loire"
+      },
+      {
+        "ref": "BI104",
+        "idu": "45082000BI0104",
+        "commune": "Châteauneuf-sur-Loire"
+      },
+      {
+        "ref": "BI105",
+        "idu": "45082000BI0105",
+        "commune": "Châteauneuf-sur-Loire"
+      },
+      {
+        "ref": "BI106",
+        "idu": "45082000BI0106",
+        "commune": "Châteauneuf-sur-Loire"
+      },
+      {
+        "ref": "BI109",
+        "idu": "45082000BI0109",
+        "commune": "Châteauneuf-sur-Loire"
+      },
+      {
+        "ref": "BI110",
+        "idu": "45082000BI0110",
+        "commune": "Châteauneuf-sur-Loire"
+      },
+      {
+        "ref": "BI111",
+        "idu": "45082000BI0111",
+        "commune": "Châteauneuf-sur-Loire"
+      },
+      {
+        "ref": "BI112",
+        "idu": "45082000BI0112",
+        "commune": "Châteauneuf-sur-Loire"
+      },
+      {
+        "ref": "BI113",
+        "idu": "45082000BI0113",
+        "commune": "Châteauneuf-sur-Loire"
+      },
+      {
+        "ref": "BI114",
+        "idu": "45082000BI0114",
+        "commune": "Châteauneuf-sur-Loire"
+      },
+      {
+        "ref": "BI115",
+        "idu": "45082000BI0115",
+        "commune": "Châteauneuf-sur-Loire"
+      },
+      {
+        "ref": "BI116",
+        "idu": "45082000BI0116",
+        "commune": "Châteauneuf-sur-Loire"
+      },
+      {
+        "ref": "BI117",
+        "idu": "45082000BI0117",
+        "commune": "Châteauneuf-sur-Loire"
+      },
+      {
+        "ref": "BI118",
+        "idu": "45082000BI0118",
+        "commune": "Châteauneuf-sur-Loire"
+      },
+      {
+        "ref": "BI119",
+        "idu": "45082000BI0119",
+        "commune": "Châteauneuf-sur-Loire"
+      },
+      {
+        "ref": "BI91",
+        "idu": "45082000BI0091",
+        "commune": "Châteauneuf-sur-Loire"
+      },
+      {
+        "ref": "BI92",
+        "idu": "45082000BI0092",
+        "commune": "Châteauneuf-sur-Loire"
+      },
+      {
+        "ref": "BI93",
+        "idu": "45082000BI0093",
+        "commune": "Châteauneuf-sur-Loire"
+      },
+      {
+        "ref": "BI94",
+        "idu": "45082000BI0094",
+        "commune": "Châteauneuf-sur-Loire"
+      },
+      {
+        "ref": "BI95",
+        "idu": "45082000BI0095",
+        "commune": "Châteauneuf-sur-Loire"
+      },
+      {
+        "ref": "BI96",
+        "idu": "45082000BI0096",
+        "commune": "Châteauneuf-sur-Loire"
+      },
+      {
+        "ref": "BI97",
+        "idu": "45082000BI0097",
+        "commune": "Châteauneuf-sur-Loire"
+      },
+      {
+        "ref": "BI98",
+        "idu": "45082000BI0098",
+        "commune": "Châteauneuf-sur-Loire"
+      }
+    ],
+    "idusValides": [
+      "45082000BI0103",
+      "45082000BI0104",
+      "45082000BI0105",
+      "45082000BI0106",
+      "45082000BI0109",
+      "45082000BI0110",
+      "45082000BI0111",
+      "45082000BI0112",
+      "45082000BI0113",
+      "45082000BI0114",
+      "45082000BI0115",
+      "45082000BI0116",
+      "45082000BI0117",
+      "45082000BI0118",
+      "45082000BI0119",
+      "45082000BI0091",
+      "45082000BI0092",
+      "45082000BI0093",
+      "45082000BI0094",
+      "45082000BI0095",
+      "45082000BI0096",
+      "45082000BI0097",
+      "45082000BI0098"
+    ],
+    "pointIdu": null,
+    "pointDansSite": false,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "15",
+    "nom": "Cémoi",
+    "commune": "CHATEAUNEUF-SUR-LOIRE",
+    "insee": "45082",
+    "parcelles": [
+      {
+        "ref": "BK207",
+        "idu": "45082000BK0207",
+        "commune": "Châteauneuf-sur-Loire"
+      }
+    ],
+    "idusValides": ["45082000BK0207"],
+    "pointIdu": null,
+    "pointDansSite": false,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "67",
+    "nom": "Emprise SNCF - La Gare",
+    "commune": "CHATEAUNEUF-SUR-LOIRE",
+    "insee": "45082",
+    "parcelles": [
+      {
+        "ref": "AN911",
+        "idu": "45082000AN0911",
+        "commune": "Châteauneuf-sur-Loire"
+      }
+    ],
+    "idusValides": ["45082000AN0911"],
+    "pointIdu": null,
+    "pointDansSite": false,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "18",
+    "nom": "Ancienne laiterie",
+    "commune": "FAY-AUX-LOGES",
+    "insee": "45142",
+    "parcelles": [
+      {
+        "ref": "AR268",
+        "idu": "45142000AR0268",
+        "commune": "Fay-aux-Loges"
+      },
+      {
+        "ref": "AR405",
+        "idu": "45142000AR0405",
+        "commune": "Fay-aux-Loges"
+      },
+      {
+        "ref": "AR415",
+        "idu": "45142000AR0415",
+        "commune": "Fay-aux-Loges"
+      }
+    ],
+    "idusValides": ["45142000AR0268", "45142000AR0405", "45142000AR0415"],
+    "pointIdu": null,
+    "pointDansSite": false,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "61",
+    "nom": "Usine du Canal",
+    "commune": "FAY-AUX-LOGES",
+    "insee": "45142",
+    "parcelles": [
+      {
+        "ref": "ZT72",
+        "idu": "45142000ZT0072",
+        "commune": "Fay-aux-Loges"
+      },
+      {
+        "ref": "ZT90",
+        "idu": "45142000ZT0090",
+        "commune": "Fay-aux-Loges"
+      }
+    ],
+    "idusValides": ["45142000ZT0072", "45142000ZT0090"],
+    "pointIdu": null,
+    "pointDansSite": false,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "62",
+    "nom": "Friche SNCF",
+    "commune": "FAY-AUX-LOGES",
+    "insee": "45142",
+    "parcelles": [
+      {
+        "ref": "AR671",
+        "idu": "45142000AR0671",
+        "commune": "Fay-aux-Loges"
+      }
+    ],
+    "idusValides": ["45142000AR0671"],
+    "pointIdu": null,
+    "pointDansSite": false,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "31",
+    "nom": "Charpentiers de Paris",
+    "commune": "LA FERTE-SAINT-AUBIN",
+    "insee": "45146",
+    "parcelles": [
+      {
+        "ref": "BK253",
+        "idu": "45146000BK0253",
+        "commune": "La Ferté-Saint-Aubin"
+      },
+      {
+        "ref": "BK254",
+        "idu": "45146000BK0254",
+        "commune": "La Ferté-Saint-Aubin"
+      },
+      {
+        "ref": "BK258",
+        "idu": "45146000BK0258",
+        "commune": "La Ferté-Saint-Aubin"
+      },
+      {
+        "ref": "BK259",
+        "idu": "45146000BK0259",
+        "commune": "La Ferté-Saint-Aubin"
+      }
+    ],
+    "idusValides": ["45146000BK0253", "45146000BK0254", "45146000BK0258", "45146000BK0259"],
+    "pointIdu": null,
+    "pointDansSite": false,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "34",
+    "nom": "Halle et terrain SNCF",
+    "commune": "LA FERTE-SAINT-AUBIN",
+    "insee": "45146",
+    "parcelles": [
+      {
+        "ref": "BL510",
+        "idu": "45146000BL0510",
+        "commune": "La Ferté-Saint-Aubin"
+      },
+      {
+        "ref": "BL511",
+        "idu": "45146000BL0511",
+        "commune": "La Ferté-Saint-Aubin"
+      }
+    ],
+    "idusValides": ["45146000BL0510", "45146000BL0511"],
+    "pointIdu": null,
+    "pointDansSite": false,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "36",
+    "nom": "Bâtiment SNCF",
+    "commune": "LA FERTE-SAINT-AUBIN",
+    "insee": "45146",
+    "parcelles": [
+      {
+        "ref": "BL509",
+        "idu": "45146000BL0509",
+        "commune": "La Ferté-Saint-Aubin"
+      }
+    ],
+    "idusValides": ["45146000BL0509"],
+    "pointIdu": null,
+    "pointDansSite": false,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "37",
+    "nom": "Appel à projet Recyclage Foncier 2021 (Dossier N° 3665273)",
+    "commune": "LA FERTE-SAINT-AUBIN",
+    "insee": "45146",
+    "parcelles": [
+      {
+        "ref": "BL153",
+        "idu": "45146000BL0153",
+        "commune": "La Ferté-Saint-Aubin"
+      }
+    ],
+    "idusValides": ["45146000BL0153"],
+    "pointIdu": null,
+    "pointDansSite": false,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "38",
+    "nom": "Ancienne charcuterie Camus",
+    "commune": "LA FERTE-SAINT-AUBIN",
+    "insee": "45146",
+    "parcelles": [
+      {
+        "ref": "AX226",
+        "idu": "45146000AX0226",
+        "commune": "La Ferté-Saint-Aubin"
+      },
+      {
+        "ref": "AX227",
+        "idu": "45146000AX0227",
+        "commune": "La Ferté-Saint-Aubin"
+      },
+      {
+        "ref": "AX228",
+        "idu": "45146000AX0228",
+        "commune": "La Ferté-Saint-Aubin"
+      },
+      {
+        "ref": "AX229",
+        "idu": "45146000AX0229",
+        "commune": "La Ferté-Saint-Aubin"
+      },
+      {
+        "ref": "AX230",
+        "idu": "45146000AX0230",
+        "commune": "La Ferté-Saint-Aubin"
+      },
+      {
+        "ref": "AX231",
+        "idu": "45146000AX0231",
+        "commune": "La Ferté-Saint-Aubin"
+      },
+      {
+        "ref": "AX232",
+        "idu": "45146000AX0232",
+        "commune": "La Ferté-Saint-Aubin"
+      },
+      {
+        "ref": "AX233",
+        "idu": "45146000AX0233",
+        "commune": "La Ferté-Saint-Aubin"
+      },
+      {
+        "ref": "AX234",
+        "idu": "45146000AX0234",
+        "commune": "La Ferté-Saint-Aubin"
+      }
+    ],
+    "idusValides": [
+      "45146000AX0226",
+      "45146000AX0227",
+      "45146000AX0228",
+      "45146000AX0229",
+      "45146000AX0230",
+      "45146000AX0231",
+      "45146000AX0232",
+      "45146000AX0233",
+      "45146000AX0234"
+    ],
+    "pointIdu": null,
+    "pointDansSite": false,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "1",
+    "nom": "Ancienne entreprise de luminaire",
+    "commune": "LOURY",
+    "insee": "45188",
+    "parcelles": [
+      {
+        "ref": "A719",
+        "idu": "45188000A0719",
+        "commune": "Loury"
+      }
+    ],
+    "idusValides": ["45188000A0719"],
+    "pointIdu": null,
+    "pointDansSite": false,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "64",
+    "nom": "",
+    "commune": "LOURY",
+    "insee": "45188",
+    "parcelles": [
+      {
+        "ref": "A717",
+        "idu": "45188000A0717",
+        "commune": "Loury"
+      }
+    ],
+    "idusValides": ["45188000A0717"],
+    "pointIdu": null,
+    "pointDansSite": false,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "65",
+    "nom": "Ancien Silo Agropithiviers",
+    "commune": "LOURY",
+    "insee": "45188",
+    "parcelles": [
+      {
+        "ref": "AD1194",
+        "idu": "45188000AD1194",
+        "commune": "Loury"
+      },
+      {
+        "ref": "AD184",
+        "idu": "45188000AD0184",
+        "commune": "Loury"
+      },
+      {
+        "ref": "AD793",
+        "idu": "45188000AD0793",
+        "commune": "Loury"
+      }
+    ],
+    "idusValides": ["45188000AD1194", "45188000AD0184", "45188000AD0793"],
+    "pointIdu": null,
+    "pointDansSite": false,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "4",
+    "nom": "RND",
+    "commune": "NEUVILLE-AUX-BOIS",
+    "insee": "45224",
+    "parcelles": [
+      {
+        "ref": "AA121",
+        "idu": "45224000AA0121",
+        "commune": "Neuville-aux-Bois"
+      }
+    ],
+    "idusValides": ["45224000AA0121"],
+    "pointIdu": null,
+    "pointDansSite": false,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "74",
+    "nom": "ZI Montfort",
+    "commune": "NEUVILLE-AUX-BOIS",
+    "insee": "45224",
+    "parcelles": [
+      {
+        "ref": "AA405",
+        "idu": "45224000AA0405",
+        "commune": "Neuville-aux-Bois"
+      },
+      {
+        "ref": "AA404",
+        "idu": "45224000AA0404",
+        "commune": "Neuville-aux-Bois"
+      },
+      {
+        "ref": "AA172",
+        "idu": "45224000AA0172",
+        "commune": "Neuville-aux-Bois"
+      }
+    ],
+    "idusValides": ["45224000AA0405", "45224000AA0404", "45224000AA0172"],
+    "pointIdu": null,
+    "pointDansSite": false,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "47",
+    "nom": "Bâtiment de l'entreprise TREMEAU",
+    "commune": "OUZOUER-SUR-LOIRE",
+    "insee": "45244",
+    "parcelles": [
+      {
+        "ref": "AM96",
+        "idu": "45244000AM0096",
+        "commune": "Ouzouer-sur-Loire"
+      }
+    ],
+    "idusValides": ["45244000AM0096"],
+    "pointIdu": null,
+    "pointDansSite": false,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "23",
+    "nom": "CARUELLE",
+    "commune": "SAINT-DENIS-DE-L'HOTEL",
+    "insee": "45273",
+    "parcelles": [
+      {
+        "ref": "AL345",
+        "idu": "45273000AL0345",
+        "commune": "Saint-Denis-de-l'Hôtel"
+      }
+    ],
+    "idusValides": ["45273000AL0345"],
+    "pointIdu": null,
+    "pointDansSite": false,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "75",
+    "nom": "LES BELLEBATS",
+    "commune": "SAINT-DENIS-DE-L'HOTEL",
+    "insee": "45273",
+    "parcelles": [
+      {
+        "ref": "AL389",
+        "idu": "45273000AL0389",
+        "commune": "Saint-Denis-de-l'Hôtel"
+      }
+    ],
+    "idusValides": ["45273000AL0389"],
+    "pointIdu": null,
+    "pointDansSite": false,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "76",
+    "nom": "ROUTE DE CHENAILLES",
+    "commune": "SAINT-DENIS-DE-L'HOTEL",
+    "insee": "45273",
+    "parcelles": [
+      {
+        "ref": "ZE277",
+        "idu": "45273000ZE0277",
+        "commune": "Saint-Denis-de-l'Hôtel"
+      }
+    ],
+    "idusValides": ["45273000ZE0277"],
+    "pointIdu": null,
+    "pointDansSite": false,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "52",
+    "nom": "Décharges d'ordures ménagères",
+    "commune": "SAINT-FLORENT",
+    "insee": "45277",
+    "parcelles": [
+      {
+        "ref": "AD233",
+        "idu": "45277000AD0233",
+        "commune": "Saint-Florent"
+      }
+    ],
+    "idusValides": ["45277000AD0233"],
+    "pointIdu": null,
+    "pointDansSite": false,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "73",
+    "nom": "Décharges d'ordures ménagères",
+    "commune": "SAINT-FLORENT",
+    "insee": "45277",
+    "parcelles": [
+      {
+        "ref": "AC126",
+        "idu": "45277000AC0126",
+        "commune": "Saint-Florent"
+      },
+      {
+        "ref": "AC128",
+        "idu": "45277000AC0128",
+        "commune": "Saint-Florent"
+      }
+    ],
+    "idusValides": ["45277000AC0126", "45277000AC0128"],
+    "pointIdu": null,
+    "pointDansSite": false,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "54",
+    "nom": "Friche Aulneau",
+    "commune": "SULLY-SUR-LOIRE",
+    "insee": "45315",
+    "parcelles": [
+      {
+        "ref": "AT671",
+        "idu": "45315000AT0671",
+        "commune": "Sully-sur-Loire"
+      },
+      {
+        "ref": "AT672",
+        "idu": "45315000AT0672",
+        "commune": "Sully-sur-Loire"
+      },
+      {
+        "ref": "AT673",
+        "idu": "45315000AT0673",
+        "commune": "Sully-sur-Loire"
+      },
+      {
+        "ref": "AT674",
+        "idu": "45315000AT0674",
+        "commune": "Sully-sur-Loire"
+      },
+      {
+        "ref": "AT675",
+        "idu": "45315000AT0675",
+        "commune": "Sully-sur-Loire"
+      },
+      {
+        "ref": "AT676",
+        "idu": "45315000AT0676",
+        "commune": "Sully-sur-Loire"
+      },
+      {
+        "ref": "AT677",
+        "idu": "45315000AT0677",
+        "commune": "Sully-sur-Loire"
+      },
+      {
+        "ref": "AT678",
+        "idu": "45315000AT0678",
+        "commune": "Sully-sur-Loire"
+      }
+    ],
+    "idusValides": [
+      "45315000AT0671",
+      "45315000AT0672",
+      "45315000AT0673",
+      "45315000AT0674",
+      "45315000AT0675",
+      "45315000AT0676",
+      "45315000AT0677",
+      "45315000AT0678"
+    ],
+    "pointIdu": null,
+    "pointDansSite": false,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "55",
+    "nom": "Simca",
+    "commune": "SULLY-SUR-LOIRE",
+    "insee": "45315",
+    "parcelles": [
+      {
+        "ref": "AI618",
+        "idu": "45315000AI0618",
+        "commune": "Sully-sur-Loire"
+      },
+      {
+        "ref": "AI675",
+        "idu": "45315000AI0675",
+        "commune": "Sully-sur-Loire"
+      },
+      {
+        "ref": "AI680",
+        "idu": "45315000AI0680",
+        "commune": "Sully-sur-Loire"
+      }
+    ],
+    "idusValides": ["45315000AI0618", "45315000AI0675", "45315000AI0680"],
+    "pointIdu": null,
+    "pointDansSite": false,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "58",
+    "nom": "Habitat collectif Simca",
+    "commune": "SULLY-SUR-LOIRE",
+    "insee": "45315",
+    "parcelles": [
+      {
+        "ref": "AI678",
+        "idu": "45315000AI0678",
+        "commune": "Sully-sur-Loire"
+      }
+    ],
+    "idusValides": ["45315000AI0678"],
+    "pointIdu": null,
+    "pointDansSite": false,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "6",
+    "nom": "Décharge d'ordures ménagères",
+    "commune": "TRAINOU",
+    "insee": "45327",
+    "parcelles": [
+      {
+        "ref": "AE351",
+        "idu": "45327000AE0351",
+        "commune": "Traînou"
+      }
+    ],
+    "idusValides": ["45327000AE0351"],
+    "pointIdu": null,
+    "pointDansSite": false,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "8",
+    "nom": "Discothèque",
+    "commune": "VENNECY",
+    "insee": "45333",
+    "parcelles": [
+      {
+        "ref": "ZD65",
+        "idu": "45333000ZD0065",
+        "commune": "Vennecy"
+      },
+      {
+        "ref": "ZD98",
+        "idu": "45333000ZD0098",
+        "commune": "Vennecy"
+      }
+    ],
+    "idusValides": ["45333000ZD0065", "45333000ZD0098"],
+    "pointIdu": null,
+    "pointDansSite": false,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "27",
+    "nom": "Traitement de poteaux télégraphiques",
+    "commune": "VITRY-AUX-LOGES",
+    "insee": "45346",
+    "parcelles": [
+      {
+        "ref": "C1373",
+        "idu": "45346000C1373",
+        "commune": "Vitry-aux-Loges"
+      },
+      {
+        "ref": "C1410",
+        "idu": "45346000C1410",
+        "commune": "Vitry-aux-Loges"
+      },
+      {
+        "ref": "C1412",
+        "idu": "45346000C1412",
+        "commune": "Vitry-aux-Loges"
+      }
+    ],
+    "idusValides": ["45346000C1373", "45346000C1410", "45346000C1412"],
+    "pointIdu": null,
+    "pointDansSite": false,
+    "statut": "OK",
+    "messages": []
+  }
+]

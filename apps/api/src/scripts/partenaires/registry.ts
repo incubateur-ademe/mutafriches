@@ -1,7 +1,9 @@
 import { SitePrefetch } from "./types";
 import { CCI92_SITES } from "./cci92";
 import { AURA_SITES } from "./aura";
+import { CCPEIDF_SITES } from "./ccpeidf";
 import { DDT_VOSGES_SITES } from "./ddt-vosges";
+import { PETR_SOLOGNE_SITES } from "./petr-sologne";
 import { SCET_SITES } from "./scet";
 
 /**
@@ -18,6 +20,8 @@ export const PARTENAIRES_PREFETCH: Record<string, SitePrefetch[]> = {
   aura: AURA_SITES,
   "ddt-vosges": DDT_VOSGES_SITES,
   scet: SCET_SITES,
+  "petr-sologne": PETR_SOLOGNE_SITES,
+  ccpeidf: CCPEIDF_SITES,
 };
 
 /** Métadonnées d'un partenaire pour le seed en base (db:partenaires:seed). */
@@ -56,5 +60,18 @@ export const PARTENAIRES_META: Record<string, PartenaireMeta> = {
     description:
       "Qualification et mutabilité des friches de la CC du Pays de Montereau (77), inventaire du SCET (groupe Caisse des Dépôts).",
     departement: "77",
+  },
+  // TODO métier : faire confirmer par EODD les libellés des deux territoires.
+  "petr-sologne": {
+    nom: "PETR Forêt d'Orléans-Loire-Sologne (45)",
+    description:
+      "Qualification et mutabilité des friches du PETR (Loiret), inventaire réalisé par EODD.",
+    departement: "45",
+  },
+  ccpeidf: {
+    nom: "CC des Portes Euréliennes d'Île-de-France (28)",
+    description:
+      "Qualification et mutabilité des friches de la CCPEIDF (Eure-et-Loir), inventaire réalisé par EODD.",
+    departement: "28",
   },
 };
