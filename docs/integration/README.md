@@ -247,7 +247,46 @@ La documentation complète de l'API (schémas, DTOs, exemples) est disponible su
 
 ### Autorisation des origines
 
-Pour utiliser l'API directe en production, votre domaine doit être autorisé. Contactez-nous pour l'ajouter à la liste blanche.
+Les deux `POST` (`/enrichissement`, `/evaluation/calculer`) sont réservés aux domaines
+autorisés. Il n'y a **pas de clé d'API** : l'autorisation porte sur le header `Origin` de vos
+requêtes. Les lectures (`GET /evaluation/{id}`, `GET /evaluation/metadata`) sont ouvertes.
+
+Écrivez-nous à `contact@mutafriches.beta.gouv.fr` en précisant :
+
+- l'**origine exacte** à autoriser, schéma compris (`https://exemple.fr`). La comparaison est
+  stricte : `https://www.exemple.fr` est une autre origine, et les sous-domaines ne sont pas
+  couverts implicitement ;
+- un **identifiant d'intégrateur** (slug) pour distinguer vos appels dans nos statistiques ;
+- votre volumétrie prévisionnelle.
+
+#### Appels serveur à serveur
+
+Si vos appels ne partent pas d'un navigateur (script, notebook, batch, poste de travail), aucun
+header `Origin` n'est envoyé par défaut et l'API répond `403 Origin required`. Posez-le
+vous-même, avec l'origine que nous avons autorisée :
+
+```bash
+curl -X POST "https://mutafriches.beta.gouv.fr/enrichissement?integrateur=votre-slug" \
+  -H "Content-Type: application/json" \
+  -H "Origin: https://exemple.fr" \
+  -d '{"identifiant":"25056000HZ0346"}'
+```
+
+Vous n'avez pas besoin d'un site web publié pour cela : l'origine sert d'identifiant
+conventionnel de votre organisation, pas d'adresse à joindre.
+
+### Limites
+
+| Limite | Valeur |
+|--------|--------|
+| Parcelles par site (`identifiants[]`) | 20 |
+| Débit | 100 requêtes/minute par IP |
+| Cache d'enrichissement | 24 h par site (rejouer un site identique est immédiat) |
+
+Un site de plus de 20 parcelles est rejeté en `400`. Ne le découpez pas en plusieurs appels :
+chaque appel produit un site distinct, avec sa propre surface agrégée et sa propre parcelle
+prédominante (celle qui porte les zonages et les risques), donc des indices différents.
+Signalez-nous le cas, la limite peut être revue.
 
 ---
 
@@ -350,6 +389,8 @@ window.addEventListener('message', (event) => {
 | Iframe ne se charge pas | Vérifiez la connexion internet et l'URL de Mutafriches |
 | Bouton callback absent | Le bouton apparaît uniquement à l'étape 3 après les résultats |
 | Origine non autorisée | Vérifiez que votre domaine est autorisé pour votre intégrateur |
+| `403` sur `/enrichissement` en appel serveur | Ajoutez le header `Origin` avec l'origine autorisée (cf. « Appels serveur à serveur ») |
+| `400 Maximum 20 parcelles par site` | Un site est limité à 20 parcelles ; contactez-nous plutôt que de découper le site |
 
 ## ✅ Checklist de mise en production
 
