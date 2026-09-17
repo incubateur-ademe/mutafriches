@@ -182,6 +182,50 @@ describe("Géométries WKT", () => {
     );
   });
 
+  it("referme un anneau que la source a laissé ouvert", () => {
+    const wkt = geometrieVersWkt({
+      type: "Polygon",
+      coordinates: [
+        [
+          [3.95, 49.33],
+          [3.89, 49.38],
+          [3.96, 49.42],
+        ],
+      ],
+    });
+    expect(wkt).toBe("POLYGON((49.33 3.95, 49.38 3.89, 49.42 3.96, 49.33 3.95))");
+  });
+
+  it("rejette l'emprise entière si une position est invalide, plutôt que de la déformer", () => {
+    const wkt = geometrieVersWkt({
+      type: "Polygon",
+      coordinates: [
+        [
+          [3.95, 49.33],
+          [Number.NaN, 49.38],
+          [3.96, 49.42],
+          [3.9, 49.4],
+          [3.95, 49.33],
+        ],
+      ],
+    });
+    expect(wkt).toBeNull();
+  });
+
+  it("rejette un polygone dont un trou est invalide, pour ne pas publier ses seuls trous", () => {
+    const contour = [
+      [3.95, 49.33],
+      [3.89, 49.38],
+      [3.96, 49.42],
+      [3.95, 49.33],
+    ];
+    const trouInvalide = [
+      [3.93, 49.35],
+      [3.92, 49.36],
+    ];
+    expect(geometrieVersWkt({ type: "Polygon", coordinates: [contour, trouInvalide] })).toBeNull();
+  });
+
   it("ignore un anneau qui ne ferme pas une surface", () => {
     expect(
       geometrieVersWkt({

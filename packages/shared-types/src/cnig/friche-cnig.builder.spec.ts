@@ -183,6 +183,23 @@ describe("construireFricheCnig", () => {
     expect(friche.desserte_commentaire).toContain("voie de grande circulation");
   });
 
+  it("réserve la place du préfixe de neutralisation dans la longueur du standard", () => {
+    const nomFormule = construireFricheCnig({
+      site: { ...site, nom: `=${"a".repeat(300)}` },
+      enrichissement: enrichissement(),
+      source: SOURCE,
+    })!;
+    const nomOrdinaire = construireFricheCnig({
+      site: { ...site, nom: "a".repeat(300) },
+      enrichissement: enrichissement(),
+      source: SOURCE,
+    })!;
+
+    // 254 + l'apostrophe ajoutée à l'écriture CSV = 255, la longueur du standard.
+    expect(nomFormule.site_nom).toHaveLength(254);
+    expect(nomOrdinaire.site_nom).toHaveLength(255);
+  });
+
   it("tronque le nom de source à la longueur du standard", () => {
     const friche = construireFricheCnig({
       site,

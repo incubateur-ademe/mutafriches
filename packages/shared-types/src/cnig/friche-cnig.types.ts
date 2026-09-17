@@ -13,6 +13,17 @@ export const CNIG_SANS_OBJET = "sans objet";
 /** Séparateur des champs à valeurs multiples (standard §4.2). */
 export const CNIG_SEPARATEUR_VALEURS = "|";
 
+/**
+ * Un tableur interprète une cellule commençant par l'un de ces caractères comme une formule.
+ * Les valeurs concernées sont préfixées d'une apostrophe à l'écriture du CSV : la troncature
+ * au format du standard réserve donc un caractère pour ce préfixe.
+ */
+const DEBUT_DE_FORMULE = /^[=+\-@\t\r]/;
+
+export function estDebutDeFormule(valeur: string): boolean {
+  return DEBUT_DE_FORMULE.test(valeur);
+}
+
 /** Version du standard reprise dans la documentation et les métadonnées d'export. */
 export const CNIG_VERSION_STANDARD = "v2023-12 rev2025-12";
 

@@ -19,16 +19,35 @@ function estPositionValide(position: number[]): boolean {
   return position.length >= 2 && Number.isFinite(position[0]) && Number.isFinite(position[1]);
 }
 
-// Un anneau GeoJSON ([lon, lat]) devient une suite « lat lon » séparée par des virgules.
+function estFerme(anneau: number[][]): boolean {
+  const premier = anneau[0];
+  const dernier = anneau[anneau.length - 1];
+  return premier[0] === dernier[0] && premier[1] === dernier[1];
+}
+
+/**
+ * Un anneau GeoJSON ([lon, lat]) devient une suite « lat lon » séparée par des virgules.
+ *
+ * Une position invalide fait rejeter l'anneau entier plutôt que d'être écartée : retirer un
+ * sommet déformerait l'emprise, et rien ne garantirait que l'anneau reste fermé — un polygone
+ * WKT ouvert casse l'import SIG. `geomsurf` admettant une valeur vide (standard §3.3), mieux
+ * vaut pas d'emprise qu'une emprise fausse.
+ */
 function anneauWkt(anneau: number[][]): string | null {
-  const positions = anneau.filter(estPositionValide);
+  if (anneau.length < 3 || !anneau.every(estPositionValide)) return null;
+
+  const positions = estFerme(anneau) ? anneau : [...anneau, anneau[0]];
   if (positions.length < 4) return null;
+
   return `(${positions.map(([lon, lat]) => `${nombre(lat)} ${nombre(lon)}`).join(", ")})`;
 }
 
+// Même règle au niveau du polygone : un anneau rejeté (contour ou trou) invalide le polygone,
+// sinon on publierait une emprise réduite à ses trous.
 function polygoneWkt(anneaux: number[][][]): string | null {
-  const rendus = anneaux.map(anneauWkt).filter((a): a is string => a !== null);
-  return rendus.length > 0 ? `(${rendus.join(", ")})` : null;
+  const rendus = anneaux.map(anneauWkt);
+  if (rendus.length === 0 || rendus.some((a) => a === null)) return null;
+  return `(${rendus.join(", ")})`;
 }
 
 /** `geompoint` — centroïde du site. */

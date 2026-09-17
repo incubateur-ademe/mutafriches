@@ -27,6 +27,7 @@ import {
 import {
   CNIG_INCONNU,
   CNIG_SEPARATEUR_VALEURS,
+  estDebutDeFormule,
   type ExtensionMutafriches,
   type FricheCnig,
 } from "./friche-cnig.types";
@@ -64,8 +65,11 @@ export interface ConstruireFricheCnigInput {
 const LONGUEUR_MAX_SOURCE_NOM = 20;
 const LONGUEUR_MAX_TEXTE = 255;
 
+// La longueur du standard s'entend préfixe de neutralisation compris : une valeur qui en
+// recevra un à l'écriture CSV est tronquée un caractère plus tôt.
 function tronquer(valeur: string, longueur: number): string {
-  return valeur.length > longueur ? valeur.slice(0, longueur) : valeur;
+  const maximum = estDebutDeFormule(valeur) ? longueur - 1 : longueur;
+  return valeur.length > maximum ? valeur.slice(0, maximum) : valeur;
 }
 
 function entierOuNull(valeur?: number | null): number | null {

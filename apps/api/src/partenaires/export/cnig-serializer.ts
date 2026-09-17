@@ -1,5 +1,9 @@
 import type { Coordonnees, GeometrieParcelle, LigneExportCnig } from "@mutafriches/shared-types";
-import { COLONNES_EXTENSION_MUTAFRICHES, COLONNES_FRICHE_CNIG } from "@mutafriches/shared-types";
+import {
+  COLONNES_EXTENSION_MUTAFRICHES,
+  COLONNES_FRICHE_CNIG,
+  estDebutDeFormule,
+} from "@mutafriches/shared-types";
 
 /** Une friche prête à sérialiser : ses attributs CNIG et sa géométrie d'origine (GeoJSON). */
 export interface EntreeExportCnig {
@@ -16,12 +20,11 @@ const FIN_DE_LIGNE = "\r\n";
 
 const CARACTERES_A_ECHAPPER = /[",\r\n]/;
 
-// Un tableur interprète une cellule commençant par ces caractères comme une formule.
-// Les noms de site étant éditables par les utilisateurs, on désamorce à l'écriture.
-const DEBUTS_DE_FORMULE = /^[=+\-@\t\r]/;
-
+// Un tableur interprète une cellule commençant par certains caractères comme une formule.
+// Les noms de site étant éditables par les utilisateurs, on désamorce à l'écriture. Le
+// prédicat vient du modèle, qui réserve la place du préfixe à la troncature.
 function neutraliserFormule(valeur: string): string {
-  return DEBUTS_DE_FORMULE.test(valeur) ? `'${valeur}` : valeur;
+  return estDebutDeFormule(valeur) ? `'${valeur}` : valeur;
 }
 
 function cellule(valeur: string | number | null | undefined): string {
