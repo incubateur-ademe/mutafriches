@@ -13,16 +13,35 @@ Procédure pas à pas pour publier une nouvelle page partenaire multisite
 
 - [ ] Obtenir la **liste des parcelles** (IDU cadastraux, 14 caractères) du partenaire.
   - **Partenaire sans IDU** (fichier avec seulement des coordonnées et/ou des numéros de
-    parcelle, ex. inventaire SCET/CCPM) : résoudre les IDU réels via l'API Carto Cadastre.
+    parcelle, ex. inventaire SCET/CCPM, inventaires EODD) : résoudre les IDU réels via l'API
+    Carto Cadastre.
     - Outil de mise au point ponctuel : page de test `/test/resolution-idu` (numéro de parcelle
       + INSEE, ou point WGS84).
-    - Traitement par lot : script `apps/api/src/scripts/resolve-idu-scet.ts` (générique,
-      moteur dans `apps/api/src/scripts/coord-to-idu/`). Il reprojette les coordonnées
-      Lambert-93 → WGS84, résout chaque IDU par attributs (`code_insee`/section/numéro) et
-      contre-vérifie par les coordonnées ; il génère directement `parcelles.ts` (UI) et
-      `<slug>.ts` (backend), et un rapport d'audit `data/<slug>.resolved.json`. Adapter le
-      chemin d'entrée/sortie pour un nouveau partenaire.
+    - Traitement par lot : script `apps/api/src/scripts/resolve-idu-partenaire.ts` (moteur dans
+      `apps/api/src/scripts/coord-to-idu/`). Il résout chaque IDU par attributs
+      (`code_insee`/section/numéro), contre-vérifie par les coordonnées quand la source en
+      fournit (reprojection Lambert-93 → WGS84), et génère directement `parcelles.ts` (UI) et
+      `<slug>.ts` (backend), plus un rapport d'audit `data/<slug>.resolved.json`.
+      ```bash
+      # 1. décrire le partenaire dans coord-to-idu/partenaires.config.ts
+      # 2. déposer l'inventaire anonymisé dans coord-to-idu/data/<slug>.input.json
+      pnpm --filter api build:nest
+      PARTENAIRE=<slug> pnpm partenaires:resolve-idu
+      ```
+    - **Ni IDU ni coordonnées** (seulement « commune + numéros de parcelle ») : renseigner
+      `departement` dans le descripteur, le code INSEE est résolu depuis le nom de commune via
+      la BAN. Sans coordonnées, la contre-vérification saute : relire le rapport d'audit site
+      par site, le statut `OK` n'y atteste que la résolution par attributs.
+    - Vérifier le rapport **avant** de commiter : tout site en `ECHEC` ou `PARTIEL` est à
+      arbitrer à la main. Un IDU inventé ferait échouer la pré-chauffe et afficherait une
+      parcelle fausse à l'utilisateur.
 - [ ] Choisir un **`slug`** (minuscules, sans espace ; segment d'URL, ex. `aura`, `cci-92`).
+- [ ] **Un inventaire = un territoire = une page.** Un bureau d'études qui livre plusieurs
+      inventaires donne autant de pages que de territoires (ex. EODD → `petr-sologne` et
+      `ccpeidf`), nommées d'après le territoire et créditant le bureau d'études dans la
+      `description`. Fusionner deux territoires sur une page casserait `departement`
+      (mono-valué), mélangerait le `storageKey`, l'export CNIG et le canal de mesure
+      `partenaire:<slug>`, et exposerait à chaque territoire les friches de l'autre.
 - [ ] Définir le **regroupement en sites** : des parcelles partageant le même `idtup` forment
       un seul site (mono ou multi-parcelle).
   - Site mono-parcelle : `idtup = idpar` (l'identifiant cadastral).

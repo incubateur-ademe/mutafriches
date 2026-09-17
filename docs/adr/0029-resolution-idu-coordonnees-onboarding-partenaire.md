@@ -26,8 +26,8 @@ parcelles.
 > (`code_insee` + section + numéro), qui renvoie l'IDU réel (COM_ABS inclus), et
 > contre-vérification par coordonnées (reprojection Lambert-93 → WGS84 puis requête `geom`).
 
-Le moteur est piloté par un script d'onboarding (`resolve-idu-scet.ts`) qui lit un inventaire
-anonymisé, résout tous les IDU, produit un rapport d'audit (`data/<slug>.resolved.json`) et
+Le moteur est piloté par un script d'onboarding (`resolve-idu-partenaire.ts`, générique et
+piloté par descripteur depuis la v1.38) qui lit un inventaire anonymisé, résout tous les IDU, produit un rapport d'audit (`data/<slug>.resolved.json`) et
 **génère directement** les fichiers de données UI et backend. La logique pure (décomposition du
 champ numéro, construction d'un IDU candidat) vit dans `packages/shared-types`
 (`parseNumParcelle`, `buildIduCandidate`) et est partagée avec une page de test UI
@@ -77,13 +77,19 @@ champ numéro, construction d'un IDU candidat) vit dans `packages/shared-types`
 ### Migration (si applicable)
 
 Pour un futur partenaire sans IDU : anonymiser l'inventaire en JSON (sans données nominatives),
-adapter les chemins d'entrée/sortie du script, exécuter, vérifier le rapport, puis suivre la
+ajouter son descripteur dans `coord-to-idu/partenaires.config.ts`, exécuter
+`PARTENAIRE=<slug> pnpm partenaires:resolve-idu`, vérifier le rapport, puis suivre la
 procédure `docs/ajout-partenaire.md`.
+
+Un inventaire qui ne porte **ni IDU ni coordonnées** (cas EODD) reste couvert : le code INSEE
+est résolu depuis le nom de commune via la BAN, la contre-vérification par coordonnées est
+alors simplement sautée et le statut se lit sur la seule résolution par attributs.
 
 ## Liens
 
 - Moteur : `apps/api/src/scripts/coord-to-idu/`
-- Script d'onboarding : `apps/api/src/scripts/resolve-idu-scet.ts`
+- Script d'onboarding : `apps/api/src/scripts/resolve-idu-partenaire.ts`
+- Descripteurs partenaires : `apps/api/src/scripts/coord-to-idu/partenaires.config.ts`
 - Logique partagée : `packages/shared-types/src/shared/utils/cadastre-ref.utils.ts`
 - Page de test : `apps/ui/src/features/tests/test-coord-idu/pages/CoordIduPage.tsx`
 - Procédure : `docs/ajout-partenaire.md`
