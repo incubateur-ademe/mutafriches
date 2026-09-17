@@ -38,7 +38,10 @@ Deux confusions fréquentes chez le demandeur :
 - [ ] Choisir la **valeur exacte d'origine** à whitelister, en accord avec le demandeur.
       Le guard fait une **égalité stricte** sur `scheme + host + port` : `https://exemple.fr` et
       `https://www.exemple.fr` sont deux entrées distinctes, et aucun sous-domaine n'est couvert
-      implicitement.
+      implicitement. Les écarts de saisie bénins (slash final, casse, port par défaut) sont
+      normalisés au démarrage et journalisés
+      (`docs/adr/0042-normalisation-origines-whitelistees.md`) : saisir tout de même le schéma
+      et l'hôte seuls, la variable reste plus lisible.
 - [ ] Choisir un **slug de tracking** (`integrateur=<slug>`, minuscules sans espace) pour
       distinguer ses appels dans les statistiques.
 - [ ] Vérifier que les **limites** ci-dessous conviennent à son volume (nombre de parcelles par
@@ -56,6 +59,9 @@ scalingo --app mutafriches-preprod env-set ALLOWED_INTEGRATOR_ORIGINS="<valeur e
 ```
 
 La modification redémarre l'application : attendre la fin du redéploiement avant de tester.
+Au démarrage, l'application journalise chaque origine qu'elle a dû réécrire
+(`Origine autorisée normalisée : ...`) — un bon contrôle que la valeur écrite est celle
+attendue.
 
 ## 3. Vérifier
 
