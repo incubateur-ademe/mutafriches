@@ -2,6 +2,7 @@ import {
   parcelleAvecPrefixe,
   parseNumParcelle,
   PREFIXE_COM_ABS_DEFAUT,
+  sanitizeCodeInsee,
   sanitizeCommuneName,
   sanitizeParcelIdForApi,
 } from "@mutafriches/shared-types";
@@ -78,8 +79,12 @@ export async function resolveSite(site: SiteInput): Promise<SiteResolution> {
     messages.push(`Champ num_parcelle illisible : "${site.numParcelle}"`);
   }
 
-  // Code INSEE : fourni par la source, sinon résolu depuis le nom de commune.
-  let insee = site.insee ?? "";
+  // Code INSEE : fourni par la source (validé, il part dans une URL), sinon résolu depuis le
+  // nom de commune.
+  let insee = sanitizeCodeInsee(site.insee) ?? "";
+  if (site.insee && !insee) {
+    messages.push(`Code INSEE invalide dans l'inventaire : "${site.insee}"`);
+  }
   if (!insee) {
     const resolue = site.departement
       ? await communeVersInsee(site.commune, site.departement)
