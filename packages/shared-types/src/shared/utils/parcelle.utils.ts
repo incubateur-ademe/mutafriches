@@ -84,6 +84,8 @@ export function normalizeParcelId(id: string): string {
 }
 
 // Même format pour la validation publique et la barrière après normalisation.
+// La section vaut 1 ou 2 caractères alphanumériques : lettres ("A", "HZ"), chiffres ("01",
+// "38") ou mixte ("A1") — ne pas la restreindre aux lettres.
 const PARCEL_ID_PATTERN = /^(?:[0-9]{2}|97[1-6]|2[AB])[0-9]{3}[0-9]{3}[A-Z0-9]{1,2}[0-9]{4}$/;
 
 /**
@@ -93,7 +95,7 @@ const PARCEL_ID_PATTERN = /^(?:[0-9]{2}|97[1-6]|2[AB])[0-9]{3}[0-9]{3}[A-Z0-9]{1
  * - Code département : 2 ou 3 chiffres (01-95, 2A, 2B, 971-976)
  * - Code commune : 3 chiffres
  * - Code commune absorbée : 3 chiffres (000 si pas de fusion)
- * - Section : 1 ou 2 lettres majuscules
+ * - Section : 1 ou 2 caractères alphanumériques majuscules
  * - Numéro de parcelle : 4 chiffres
  *
  * Exemples valides (après normalisation) :
