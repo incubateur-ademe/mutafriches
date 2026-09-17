@@ -40,7 +40,7 @@ Deux confusions fréquentes chez le demandeur :
       `https://www.exemple.fr` sont deux entrées distinctes, et aucun sous-domaine n'est couvert
       implicitement. Les écarts de saisie bénins (slash final, casse, port par défaut) sont
       normalisés au démarrage et journalisés
-      (`docs/adr/0042-normalisation-origines-whitelistees.md`) : saisir tout de même le schéma
+      (`docs/adr/0043-normalisation-origines-whitelistees.md`) : saisir tout de même le schéma
       et l'hôte seuls, la variable reste plus lisible.
 - [ ] Choisir un **slug de tracking** (`integrateur=<slug>`, minuscules sans espace) pour
       distinguer ses appels dans les statistiques.

@@ -1,4 +1,4 @@
-# ADR-0042 : Normalisation des origines whitelistées au parsing
+# ADR-0043 : Normalisation des origines whitelistées au parsing
 
 **Date** : 2026-09-17
 **Statut** : Accepté

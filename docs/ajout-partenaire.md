@@ -59,7 +59,7 @@ N'ajouter ici qu'un partenaire dont les **IDU sont réels** (des identifiants fi
       — aucun code à modifier (cf. `IntegrateurOriginGuard`).
       Saisir le schéma et l'hôte seuls (`https://partenaire.fr`), sans slash final ni chemin :
       un header `Origin` n'en porte jamais. Le guard normalise ces écarts au démarrage
-      (ADR-0042) et journalise chaque entrée réécrite, mais la variable reste plus lisible
+      (ADR-0043) et journalise chaque entrée réécrite, mais la variable reste plus lisible
       sans eux. La liste s'ajoute aux origines par défaut, elle ne les remplace pas.
       Procédure détaillée, cas serveur à serveur et vérification :
       [docs/acces-api-integrateur.md](./acces-api-integrateur.md).
