@@ -57,6 +57,10 @@ N'ajouter ici qu'un partenaire dont les **IDU sont réels** (des identifiants fi
 
 - [ ] Ajouter l'origine du partenaire à `ALLOWED_INTEGRATOR_ORIGINS` (variable d'env Scalingo)
       — aucun code à modifier (cf. `IntegrateurOriginGuard`).
+      Saisir le schéma et l'hôte seuls (`https://partenaire.fr`), sans slash final ni chemin :
+      un header `Origin` n'en porte jamais. Le guard normalise ces écarts au démarrage
+      (ADR-0042) et journalise chaque entrée réécrite, mais la variable reste plus lisible
+      sans eux. La liste s'ajoute aux origines par défaut, elle ne les remplace pas.
 
 ## 4. Vérification
 

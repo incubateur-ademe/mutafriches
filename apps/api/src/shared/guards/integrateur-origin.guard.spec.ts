@@ -250,6 +250,126 @@ describe("IntegrateurOriginGuard", () => {
     });
   });
 
+  // Un header Origin ne porte jamais de slash final : sans normalisation au parsing,
+  // une entree saisie avec un slash est morte et l'integrateur recoit un 403 muet.
+  describe("Normalisation des origines configurees", () => {
+    beforeEach(() => {
+      process.env.NODE_ENV = "production";
+    });
+
+    it("devrait autoriser une origine configuree avec un slash final", () => {
+      process.env.ALLOWED_INTEGRATOR_ORIGINS = "https://vmap-ofriches.data.arnia-bfc.fr/";
+      const guard = new IntegrateurOriginGuard();
+
+      const context = createMockExecutionContext({
+        origin: "https://vmap-ofriches.data.arnia-bfc.fr",
+      });
+      expect(guard.canActivate(context)).toBe(true);
+    });
+
+    it("devrait autoriser une origine configuree avec plusieurs slashs finaux", () => {
+      process.env.ALLOWED_INTEGRATOR_ORIGINS = "https://partenaire.fr//";
+      const guard = new IntegrateurOriginGuard();
+
+      const context = createMockExecutionContext({
+        origin: "https://partenaire.fr",
+      });
+      expect(guard.canActivate(context)).toBe(true);
+    });
+
+    it("devrait autoriser une origine configuree avec espaces et slash final", () => {
+      process.env.ALLOWED_INTEGRATOR_ORIGINS = " https://partenaire.fr/ , https://autre.fr/ ";
+      const guard = new IntegrateurOriginGuard();
+
+      expect(
+        guard.canActivate(createMockExecutionContext({ origin: "https://partenaire.fr" })),
+      ).toBe(true);
+      expect(guard.canActivate(createMockExecutionContext({ origin: "https://autre.fr" }))).toBe(
+        true,
+      );
+    });
+
+    it("devrait autoriser une origine configuree en casse mixte", () => {
+      process.env.ALLOWED_INTEGRATOR_ORIGINS = "HTTPS://Partenaire.FR/";
+      const guard = new IntegrateurOriginGuard();
+
+      const context = createMockExecutionContext({
+        origin: "https://partenaire.fr",
+      });
+      expect(guard.canActivate(context)).toBe(true);
+    });
+
+    it("devrait conserver le port non standard d'une origine configuree", () => {
+      process.env.ALLOWED_INTEGRATOR_ORIGINS = "https://partenaire.fr:8443/";
+      const guard = new IntegrateurOriginGuard();
+
+      expect(
+        guard.canActivate(createMockExecutionContext({ origin: "https://partenaire.fr:8443" })),
+      ).toBe(true);
+      expect(() =>
+        guard.canActivate(createMockExecutionContext({ origin: "https://partenaire.fr" })),
+      ).toThrow(ForbiddenException);
+    });
+
+    it("devrait ignorer les entrees vides sans tout autoriser", () => {
+      process.env.ALLOWED_INTEGRATOR_ORIGINS = "https://partenaire.fr/,, ,/";
+      const guard = new IntegrateurOriginGuard();
+
+      expect(
+        guard.canActivate(createMockExecutionContext({ origin: "https://partenaire.fr" })),
+      ).toBe(true);
+      expect(() =>
+        guard.canActivate(createMockExecutionContext({ origin: "https://malicious-site.com" })),
+      ).toThrow(ForbiddenException);
+    });
+
+    it("ne devrait pas autoriser Origin null via une entree opaque configuree", () => {
+      process.env.ALLOWED_INTEGRATOR_ORIGINS = "file:///opt/app/";
+      const guard = new IntegrateurOriginGuard();
+
+      expect(() => guard.canActivate(createMockExecutionContext({ origin: "null" }))).toThrow(
+        ForbiddenException,
+      );
+    });
+
+    // Regression : la normalisation ne doit pas assouplir la comparaison stricte
+    it("devrait bloquer un suffixe usurpe d'une origine configuree avec slash final", () => {
+      process.env.ALLOWED_INTEGRATOR_ORIGINS = "https://vmap-ofriches.data.arnia-bfc.fr/";
+      const guard = new IntegrateurOriginGuard();
+
+      const context = createMockExecutionContext({
+        origin: "https://vmap-ofriches.data.arnia-bfc.fr.attacker.com",
+      });
+
+      expect(() => guard.canActivate(context)).toThrow(ForbiddenException);
+      expect(() => guard.canActivate(context)).toThrow("Origin not allowed");
+    });
+
+    it("devrait bloquer un sous-domaine d'une origine configuree avec slash final", () => {
+      process.env.ALLOWED_INTEGRATOR_ORIGINS = "https://partenaire.fr/";
+      const guard = new IntegrateurOriginGuard();
+
+      const context = createMockExecutionContext({
+        origin: "https://evil.partenaire.fr",
+      });
+
+      expect(() => guard.canActivate(context)).toThrow(ForbiddenException);
+      expect(() => guard.canActivate(context)).toThrow("Origin not allowed");
+    });
+
+    it("devrait bloquer le meme hote en http quand https est configure", () => {
+      process.env.ALLOWED_INTEGRATOR_ORIGINS = "https://partenaire.fr/";
+      const guard = new IntegrateurOriginGuard();
+
+      const context = createMockExecutionContext({
+        origin: "http://partenaire.fr",
+      });
+
+      expect(() => guard.canActivate(context)).toThrow(ForbiddenException);
+      expect(() => guard.canActivate(context)).toThrow("Origin not allowed");
+    });
+  });
+
   describe("Mode staging", () => {
     it("devrait appliquer les memes regles qu'en production", () => {
       process.env.NODE_ENV = "staging";

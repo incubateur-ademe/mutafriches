@@ -6,7 +6,7 @@ import {
   Logger,
 } from "@nestjs/common";
 import { Request } from "express";
-import { isDevelopment } from "../../shared/utils";
+import { isDevelopment, normaliserOrigines } from "../../shared/utils";
 import { getAppConfig } from "../../config";
 
 /**
@@ -26,14 +26,19 @@ export class OriginGuard implements CanActivate {
 
   constructor() {
     const envOrigins = getAppConfig().origins.allowed;
+
+    // ALLOWED_ORIGINS remplace la liste par defaut (contrairement au guard integrateurs)
+    let originesBrutes: string[];
     if (envOrigins) {
-      this.allowedOrigins = envOrigins.split(",").map((o) => o.trim());
+      originesBrutes = envOrigins.split(",");
     } else {
       // En developpement, autoriser aussi localhost
-      this.allowedOrigins = isDevelopment()
+      originesBrutes = isDevelopment()
         ? [...MUTAFRICHES_ORIGINS, "http://localhost:5173"]
         : MUTAFRICHES_ORIGINS;
     }
+
+    this.allowedOrigins = normaliserOrigines(originesBrutes, this.logger);
   }
 
   canActivate(context: ExecutionContext): boolean {

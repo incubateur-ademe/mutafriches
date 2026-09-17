@@ -6,7 +6,7 @@ import {
   Logger,
 } from "@nestjs/common";
 import { Request } from "express";
-import { isDevelopment } from "../utils";
+import { isDevelopment, normaliserOrigines } from "../utils";
 import { getAppConfig } from "../../config";
 
 // Domaines autorises par defaut pour les integrateurs
@@ -28,9 +28,11 @@ export class IntegrateurOriginGuard implements CanActivate {
 
   constructor() {
     const envOrigins = getAppConfig().origins.allowedIntegrators;
-    this.allowedOrigins = envOrigins
-      ? [...DEFAULT_ALLOWED_ORIGINS, ...envOrigins.split(",").map((o) => o.trim())]
+    const originesBrutes = envOrigins
+      ? [...DEFAULT_ALLOWED_ORIGINS, ...envOrigins.split(",")]
       : DEFAULT_ALLOWED_ORIGINS;
+
+    this.allowedOrigins = normaliserOrigines(originesBrutes, this.logger);
   }
 
   canActivate(context: ExecutionContext): boolean {
