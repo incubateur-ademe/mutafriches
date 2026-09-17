@@ -61,6 +61,8 @@ N'ajouter ici qu'un partenaire dont les **IDU sont réels** (des identifiants fi
       un header `Origin` n'en porte jamais. Le guard normalise ces écarts au démarrage
       (ADR-0042) et journalise chaque entrée réécrite, mais la variable reste plus lisible
       sans eux. La liste s'ajoute aux origines par défaut, elle ne les remplace pas.
+      Procédure détaillée, cas serveur à serveur et vérification :
+      [docs/acces-api-integrateur.md](./acces-api-integrateur.md).
 
 ## 4. Vérification
 
@@ -100,3 +102,4 @@ comme des qualifications utilisateur.
 - Détail des fichiers et exemples de code : `apps/ui/src/features/partenaires/README.md`
 - ADR socle : `docs/adr/0015-pages-partenaires-multisites-mutualisees.md`
 - ADR persistance en base (à venir) : `docs/adr/0021-persistance-base-partenaires-sites.md`
+- Ouvrir un accès API à un tiers : `docs/acces-api-integrateur.md`

@@ -12,11 +12,12 @@
 - **[Tracking & Analytics](./analytics-tracking.md)** - Événements, session vs utilisateur, requêtes Metabase
 - **[Export CNIG Friches](./export-cnig.md)** - Export d'un inventaire partenaire au standard national (couverture des 51 attributs)
 - **[Ajouter un partenaire](./ajout-partenaire.md)** - Todolist pour publier une nouvelle page partenaire multisite
+- **[Ouvrir un accès API](./acces-api-integrateur.md)** - Procédure d'autorisation d'un intégrateur (whitelist d'origines, cas serveur à serveur)
 - **[Vulnérabilités de dépendances](./security/vulnerabilites-acceptees.md)** - Suivi `pnpm audit` : corrections, acceptations justifiées, planchers d'override
 
 ### Pour les intégrateurs
 
-- **[Guide d'Intégration](./integration/README.md)** - Intégrer Mutafriches dans votre site web
+- **[Guide d'Intégration](./integration/README.md)** - Intégrer Mutafriches dans votre site web (iframe ou API REST directe)
 
 ## Vue d'ensemble du système
 
