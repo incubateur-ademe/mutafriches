@@ -18,6 +18,7 @@ import postgres from "postgres";
 import { v4 as uuidv4 } from "uuid";
 import { and, eq, isNull } from "drizzle-orm";
 import type { Coordonnees, EnrichissementOutputDto } from "@mutafriches/shared-types";
+import { normalizeParcelId } from "@mutafriches/shared-types";
 import { getAppConfig } from "../config";
 import { partenaires } from "../shared/database/schemas/partenaires.schema";
 import { partenaireSites } from "../shared/database/schemas/partenaire-sites.schema";
@@ -68,7 +69,9 @@ async function upsertPartenaires(db: ReturnType<typeof drizzle>, slugs: string[]
           id: uuidv4(),
           partenaireSlug: slug,
           idtup: site.idtup,
-          parcelles: site.parcelles,
+          // Forme canonique, comme ajouterSite() : sans ça, toute jointure avec
+          // enrichissements rate les sections "0X" que l'API normalise (ADR-0041).
+          parcelles: site.parcelles.map(normalizeParcelId),
           commune: site.commune,
           nom: site.nom ?? null,
           origine: "seed",
