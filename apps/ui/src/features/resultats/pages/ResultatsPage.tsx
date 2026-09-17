@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useEventTracking } from "../../../shared/hooks/useEventTracking";
+import { identifiantCadastralTracking } from "../../../shared/form/tracking.utils";
 import {
   MutabiliteOutputDto,
   TypeEvenement,
@@ -139,10 +140,10 @@ export const ResultatsPage: React.FC = () => {
       setMutabilityData(result);
       sendIframeMessages(result);
 
-      // Identifiant cadastral valide (<= 20 car.) : parcelle prédominante ou 1re parcelle.
-      // state.identifiantSite est la liste jointe, invalide en multi (colonne DTO varchar(20)).
-      const identifiantEvenement =
-        state.enrichmentData.parcellePredominante ?? state.identifiantSite?.split(",")[0];
+      const identifiantEvenement = identifiantCadastralTracking(
+        state.enrichmentData,
+        state.identifiantSite,
+      );
       // Tracker l'affichage des résultats avec l'evaluationId (dédoublonnage analytics)
       track(TypeEvenement.RESULTATS_MUTABILITE, {
         evaluationId: result.evaluationId || undefined,
@@ -194,8 +195,10 @@ export const ResultatsPage: React.FC = () => {
       // Résultat déjà disponible : tracker l'affichage des résultats avec l'evaluationId connu
       track(TypeEvenement.RESULTATS_MUTABILITE, {
         evaluationId: state.mutabilityResult.evaluationId || undefined,
-        identifiantCadastral:
-          state.enrichmentData?.parcellePredominante ?? state.identifiantSite?.split(",")[0],
+        identifiantCadastral: identifiantCadastralTracking(
+          state.enrichmentData,
+          state.identifiantSite,
+        ),
       });
       // Initialisation unique au montage (garde hasInitializedRef) : setState intentionnel
       // eslint-disable-next-line react-hooks/set-state-in-effect
