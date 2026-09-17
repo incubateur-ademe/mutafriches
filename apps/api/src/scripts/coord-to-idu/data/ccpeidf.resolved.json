@@ -1,0 +1,904 @@
+[
+  {
+    "id": "13",
+    "nom": "SCI du CDI 19 (Aubijoux)",
+    "commune": "AUNEAU-BLEURY-SAINT-SYMPHORIEN",
+    "insee": "28015",
+    "parcelles": [
+      {
+        "ref": "AT0001",
+        "idu": "28015000AT0001",
+        "commune": "Auneau-Bleury-Saint-Symphorien"
+      },
+      {
+        "ref": "AT0029",
+        "idu": "28015000AT0029",
+        "commune": "Auneau-Bleury-Saint-Symphorien"
+      }
+    ],
+    "idusValides": [
+      "28015000AT0001",
+      "28015000AT0029"
+    ],
+    "pointIdu": null,
+    "pointDansSite": false,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "14",
+    "nom": "La Sianne",
+    "commune": "AUNEAU-BLEURY-SAINT-SYMPHORIEN",
+    "insee": "28015",
+    "parcelles": [
+      {
+        "ref": "AS0375",
+        "idu": "28015000AS0375",
+        "commune": "Auneau-Bleury-Saint-Symphorien"
+      }
+    ],
+    "idusValides": [
+      "28015000AS0375"
+    ],
+    "pointIdu": null,
+    "pointDansSite": false,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "60",
+    "nom": "Entreprise ATMOS",
+    "commune": "AUNEAU-BLEURY-SAINT-SYMPHORIEN",
+    "insee": "28015",
+    "parcelles": [
+      {
+        "ref": "AV0008",
+        "idu": "28015000AV0008",
+        "commune": "Auneau-Bleury-Saint-Symphorien"
+      },
+      {
+        "ref": "AV0009",
+        "idu": "28015000AV0009",
+        "commune": "Auneau-Bleury-Saint-Symphorien"
+      },
+      {
+        "ref": "AV0010",
+        "idu": "28015000AV0010",
+        "commune": "Auneau-Bleury-Saint-Symphorien"
+      }
+    ],
+    "idusValides": [
+      "28015000AV0008",
+      "28015000AV0009",
+      "28015000AV0010"
+    ],
+    "pointIdu": null,
+    "pointDansSite": false,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "55",
+    "nom": "Ancienne décharge",
+    "commune": "BAILLEAU-ARMENONVILLE",
+    "insee": "28023",
+    "parcelles": [
+      {
+        "ref": "ZA0061",
+        "idu": "28023000ZA0061",
+        "commune": "Bailleau-Armenonville"
+      },
+      {
+        "ref": "ZA0062",
+        "idu": "28023000ZA0062",
+        "commune": "Bailleau-Armenonville"
+      },
+      {
+        "ref": "ZA0083",
+        "idu": "28023000ZA0083",
+        "commune": "Bailleau-Armenonville"
+      },
+      {
+        "ref": "ZA0084",
+        "idu": "28023000ZA0084",
+        "commune": "Bailleau-Armenonville"
+      },
+      {
+        "ref": "ZA0085",
+        "idu": "28023000ZA0085",
+        "commune": "Bailleau-Armenonville"
+      },
+      {
+        "ref": "ZA0086",
+        "idu": "28023000ZA0086",
+        "commune": "Bailleau-Armenonville"
+      },
+      {
+        "ref": "ZA0087",
+        "idu": "28023000ZA0087",
+        "commune": "Bailleau-Armenonville"
+      },
+      {
+        "ref": "ZA0089",
+        "idu": "28023000ZA0089",
+        "commune": "Bailleau-Armenonville"
+      },
+      {
+        "ref": "ZA0090",
+        "idu": "28023000ZA0090",
+        "commune": "Bailleau-Armenonville"
+      },
+      {
+        "ref": "ZA0091",
+        "idu": "28023000ZA0091",
+        "commune": "Bailleau-Armenonville"
+      },
+      {
+        "ref": "ZB0005",
+        "idu": "28023000ZB0005",
+        "commune": "Bailleau-Armenonville"
+      },
+      {
+        "ref": "ZB0006",
+        "idu": "28023000ZB0006",
+        "commune": "Bailleau-Armenonville"
+      },
+      {
+        "ref": "ZB0007",
+        "idu": "28023000ZB0007",
+        "commune": "Bailleau-Armenonville"
+      }
+    ],
+    "idusValides": [
+      "28023000ZA0061",
+      "28023000ZA0062",
+      "28023000ZA0083",
+      "28023000ZA0084",
+      "28023000ZA0085",
+      "28023000ZA0086",
+      "28023000ZA0087",
+      "28023000ZA0089",
+      "28023000ZA0090",
+      "28023000ZA0091",
+      "28023000ZB0005",
+      "28023000ZB0006",
+      "28023000ZB0007"
+    ],
+    "pointIdu": null,
+    "pointDansSite": false,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "15",
+    "nom": "Site Alimel",
+    "commune": "BEVILLE-LE-COMTE",
+    "insee": "28039",
+    "parcelles": [
+      {
+        "ref": "F1444",
+        "idu": "28039000F1444",
+        "commune": "Béville-le-Comte"
+      },
+      {
+        "ref": "F1445",
+        "idu": "28039000F1445",
+        "commune": "Béville-le-Comte"
+      },
+      {
+        "ref": "F1446",
+        "idu": "28039000F1446",
+        "commune": "Béville-le-Comte"
+      },
+      {
+        "ref": "F1447",
+        "idu": "28039000F1447",
+        "commune": "Béville-le-Comte"
+      },
+      {
+        "ref": "F1448",
+        "idu": "28039000F1448",
+        "commune": "Béville-le-Comte"
+      },
+      {
+        "ref": "F1450",
+        "idu": "28039000F1450",
+        "commune": "Béville-le-Comte"
+      }
+    ],
+    "idusValides": [
+      "28039000F1444",
+      "28039000F1445",
+      "28039000F1446",
+      "28039000F1447",
+      "28039000F1448",
+      "28039000F1450"
+    ],
+    "pointIdu": null,
+    "pointDansSite": false,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "16",
+    "nom": "SC Kagy Alia HAVART",
+    "commune": "BEVILLE-LE-COMTE",
+    "insee": "28039",
+    "parcelles": [
+      {
+        "ref": "ZN0074",
+        "idu": "28039000ZN0074",
+        "commune": "Béville-le-Comte"
+      },
+      {
+        "ref": "ZN0076",
+        "idu": "28039000ZN0076",
+        "commune": "Béville-le-Comte"
+      },
+      {
+        "ref": "ZN0078",
+        "idu": "28039000ZN0078",
+        "commune": "Béville-le-Comte"
+      }
+    ],
+    "idusValides": [
+      "28039000ZN0074",
+      "28039000ZN0076",
+      "28039000ZN0078"
+    ],
+    "pointIdu": null,
+    "pointDansSite": false,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "1",
+    "nom": "Groupe Diogo Fernandez",
+    "commune": "COULOMBS",
+    "insee": "28113",
+    "parcelles": [
+      {
+        "ref": "ZE0033",
+        "idu": "28113000ZE0033",
+        "commune": "Coulombs"
+      },
+      {
+        "ref": "ZE0034",
+        "idu": "28113000ZE0034",
+        "commune": "Coulombs"
+      },
+      {
+        "ref": "ZE0108",
+        "idu": "28113000ZE0108",
+        "commune": "Coulombs"
+      },
+      {
+        "ref": "ZE0109",
+        "idu": "28113000ZE0109",
+        "commune": "Coulombs"
+      },
+      {
+        "ref": "ZE0110",
+        "idu": "28113000ZE0110",
+        "commune": "Coulombs"
+      }
+    ],
+    "idusValides": [
+      "28113000ZE0033",
+      "28113000ZE0034",
+      "28113000ZE0108",
+      "28113000ZE0109",
+      "28113000ZE0110"
+    ],
+    "pointIdu": null,
+    "pointDansSite": false,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "61",
+    "nom": "Bernard POLVE",
+    "commune": "COULOMBS",
+    "insee": "28113",
+    "parcelles": [
+      {
+        "ref": "AI0120",
+        "idu": "28113000AI0120",
+        "commune": "Coulombs"
+      },
+      {
+        "ref": "AI0121",
+        "idu": "28113000AI0121",
+        "commune": "Coulombs"
+      },
+      {
+        "ref": "AI0122",
+        "idu": "28113000AI0122",
+        "commune": "Coulombs"
+      },
+      {
+        "ref": "AI0123",
+        "idu": "28113000AI0123",
+        "commune": "Coulombs"
+      },
+      {
+        "ref": "AI0124",
+        "idu": "28113000AI0124",
+        "commune": "Coulombs"
+      },
+      {
+        "ref": "AI0125",
+        "idu": "28113000AI0125",
+        "commune": "Coulombs"
+      },
+      {
+        "ref": "AI0126",
+        "idu": "28113000AI0126",
+        "commune": "Coulombs"
+      }
+    ],
+    "idusValides": [
+      "28113000AI0120",
+      "28113000AI0121",
+      "28113000AI0122",
+      "28113000AI0123",
+      "28113000AI0124",
+      "28113000AI0125",
+      "28113000AI0126"
+    ],
+    "pointIdu": null,
+    "pointDansSite": false,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "7",
+    "nom": "B.M.S",
+    "commune": "EPERNON",
+    "insee": "28140",
+    "parcelles": [
+      {
+        "ref": "AN0011",
+        "idu": "28140000AN0011",
+        "commune": "Épernon"
+      },
+      {
+        "ref": "AN0013",
+        "idu": "28140000AN0013",
+        "commune": "Épernon"
+      }
+    ],
+    "idusValides": [
+      "28140000AN0011",
+      "28140000AN0013"
+    ],
+    "pointIdu": null,
+    "pointDansSite": false,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "8",
+    "nom": "ROUVER",
+    "commune": "EPERNON",
+    "insee": "28140",
+    "parcelles": [
+      {
+        "ref": "AM0062",
+        "idu": "28140000AM0062",
+        "commune": "Épernon"
+      },
+      {
+        "ref": "AN0008",
+        "idu": "28140000AN0008",
+        "commune": "Épernon"
+      }
+    ],
+    "idusValides": [
+      "28140000AM0062",
+      "28140000AN0008"
+    ],
+    "pointIdu": null,
+    "pointDansSite": false,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "9",
+    "nom": "APTIV",
+    "commune": "EPERNON",
+    "insee": "28140",
+    "parcelles": [
+      {
+        "ref": "AM0023",
+        "idu": "28140000AM0023",
+        "commune": "Épernon"
+      }
+    ],
+    "idusValides": [
+      "28140000AM0023"
+    ],
+    "pointIdu": null,
+    "pointDansSite": false,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "12",
+    "nom": "SCI Les Maraichers",
+    "commune": "GALLARDON",
+    "insee": "28168",
+    "parcelles": [
+      {
+        "ref": "ZH0098",
+        "idu": "28168000ZH0098",
+        "commune": "Gallardon"
+      }
+    ],
+    "idusValides": [
+      "28168000ZH0098"
+    ],
+    "pointIdu": null,
+    "pointDansSite": false,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "56",
+    "nom": "Ancienne imprimerie",
+    "commune": "GALLARDON",
+    "insee": "28168",
+    "parcelles": [
+      {
+        "ref": "ZI0400",
+        "idu": "28168000ZI0400",
+        "commune": "Gallardon"
+      }
+    ],
+    "idusValides": [
+      "28168000ZI0400"
+    ],
+    "pointIdu": null,
+    "pointDansSite": false,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "58",
+    "nom": "Ancienne décharge",
+    "commune": "GALLARDON",
+    "insee": "28168",
+    "parcelles": [
+      {
+        "ref": "ZB0262",
+        "idu": "28168000ZB0262",
+        "commune": "Gallardon"
+      }
+    ],
+    "idusValides": [
+      "28168000ZB0262"
+    ],
+    "pointIdu": null,
+    "pointDansSite": false,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "10",
+    "nom": "ZA la Croix Brisée",
+    "commune": "HANCHES",
+    "insee": "28191",
+    "parcelles": [
+      {
+        "ref": "AC0006",
+        "idu": "28191000AC0006",
+        "commune": "Hanches"
+      },
+      {
+        "ref": "AC0007",
+        "idu": "28191000AC0007",
+        "commune": "Hanches"
+      },
+      {
+        "ref": "AC0008",
+        "idu": "28191000AC0008",
+        "commune": "Hanches"
+      },
+      {
+        "ref": "AC0009",
+        "idu": "28191000AC0009",
+        "commune": "Hanches"
+      },
+      {
+        "ref": "AC0011",
+        "idu": "28191000AC0011",
+        "commune": "Hanches"
+      },
+      {
+        "ref": "AC0010",
+        "idu": "28191000AC0010",
+        "commune": "Hanches"
+      }
+    ],
+    "idusValides": [
+      "28191000AC0006",
+      "28191000AC0007",
+      "28191000AC0008",
+      "28191000AC0009",
+      "28191000AC0011",
+      "28191000AC0010"
+    ],
+    "pointIdu": null,
+    "pointDansSite": false,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "11",
+    "nom": "CPO FC centre de formation professionnelle continue",
+    "commune": "HANCHES",
+    "insee": "28191",
+    "parcelles": [
+      {
+        "ref": "AM0122",
+        "idu": "28191000AM0122",
+        "commune": "Hanches"
+      },
+      {
+        "ref": "AM0123",
+        "idu": "28191000AM0123",
+        "commune": "Hanches"
+      },
+      {
+        "ref": "AM0124",
+        "idu": "28191000AM0124",
+        "commune": "Hanches"
+      },
+      {
+        "ref": "AM0125",
+        "idu": "28191000AM0125",
+        "commune": "Hanches"
+      },
+      {
+        "ref": "AM126",
+        "idu": "28191000AM0126",
+        "commune": "Hanches"
+      },
+      {
+        "ref": "AM0127",
+        "idu": "28191000AM0127",
+        "commune": "Hanches"
+      },
+      {
+        "ref": "AM0128",
+        "idu": "28191000AM0128",
+        "commune": "Hanches"
+      },
+      {
+        "ref": "AM0129",
+        "idu": "28191000AM0129",
+        "commune": "Hanches"
+      },
+      {
+        "ref": "AM0130",
+        "idu": "28191000AM0130",
+        "commune": "Hanches"
+      },
+      {
+        "ref": "AM0131",
+        "idu": "28191000AM0131",
+        "commune": "Hanches"
+      },
+      {
+        "ref": "AM0188",
+        "idu": "28191000AM0188",
+        "commune": "Hanches"
+      }
+    ],
+    "idusValides": [
+      "28191000AM0122",
+      "28191000AM0123",
+      "28191000AM0124",
+      "28191000AM0125",
+      "28191000AM0126",
+      "28191000AM0127",
+      "28191000AM0128",
+      "28191000AM0129",
+      "28191000AM0130",
+      "28191000AM0131",
+      "28191000AM0188"
+    ],
+    "pointIdu": null,
+    "pointDansSite": false,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "25",
+    "nom": "Sté SIPLAST",
+    "commune": "LE GUE-DE-LONGROI",
+    "insee": "28188",
+    "parcelles": [
+      {
+        "ref": "AC0162",
+        "idu": "28188000AC0162",
+        "commune": "Le Gué-de-Longroi"
+      },
+      {
+        "ref": "AC0163",
+        "idu": "28188000AC0163",
+        "commune": "Le Gué-de-Longroi"
+      },
+      {
+        "ref": "AC0164",
+        "idu": "28188000AC0164",
+        "commune": "Le Gué-de-Longroi"
+      }
+    ],
+    "idusValides": [
+      "28188000AC0162",
+      "28188000AC0163",
+      "28188000AC0164"
+    ],
+    "pointIdu": null,
+    "pointDansSite": false,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "57",
+    "nom": "Ancienne décharge publique",
+    "commune": "LE GUE-DE-LONGROI",
+    "insee": "28188",
+    "parcelles": [
+      {
+        "ref": "AB0346",
+        "idu": "28188000AB0346",
+        "commune": "Le Gué-de-Longroi"
+      },
+      {
+        "ref": "AB0354",
+        "idu": "28188000AB0354",
+        "commune": "Le Gué-de-Longroi"
+      },
+      {
+        "ref": "AB0355",
+        "idu": "28188000AB0355",
+        "commune": "Le Gué-de-Longroi"
+      },
+      {
+        "ref": "AB0356",
+        "idu": "28188000AB0356",
+        "commune": "Le Gué-de-Longroi"
+      }
+    ],
+    "idusValides": [
+      "28188000AB0346",
+      "28188000AB0354",
+      "28188000AB0355",
+      "28188000AB0356"
+    ],
+    "pointIdu": null,
+    "pointDansSite": false,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "54",
+    "nom": "Bulitt Auto",
+    "commune": "LEVAINVILLE",
+    "insee": "28208",
+    "parcelles": [
+      {
+        "ref": "AB0011",
+        "idu": "28208000AB0011",
+        "commune": "Levainville"
+      },
+      {
+        "ref": "AB0012",
+        "idu": "28208000AB0012",
+        "commune": "Levainville"
+      },
+      {
+        "ref": "AB0013",
+        "idu": "28208000AB0013",
+        "commune": "Levainville"
+      },
+      {
+        "ref": "AB0014",
+        "idu": "28208000AB0014",
+        "commune": "Levainville"
+      },
+      {
+        "ref": "AB0015",
+        "idu": "28208000AB0015",
+        "commune": "Levainville"
+      },
+      {
+        "ref": "AB0016",
+        "idu": "28208000AB0016",
+        "commune": "Levainville"
+      },
+      {
+        "ref": "AB0017",
+        "idu": "28208000AB0017",
+        "commune": "Levainville"
+      },
+      {
+        "ref": "AB0018",
+        "idu": "28208000AB0018",
+        "commune": "Levainville"
+      },
+      {
+        "ref": "AB0019",
+        "idu": "28208000AB0019",
+        "commune": "Levainville"
+      },
+      {
+        "ref": "AB0020",
+        "idu": "28208000AB0020",
+        "commune": "Levainville"
+      },
+      {
+        "ref": "AB0021",
+        "idu": "28208000AB0021",
+        "commune": "Levainville"
+      },
+      {
+        "ref": "AB0023",
+        "idu": "28208000AB0023",
+        "commune": "Levainville"
+      },
+      {
+        "ref": "AB0024",
+        "idu": "28208000AB0024",
+        "commune": "Levainville"
+      },
+      {
+        "ref": "AB0025",
+        "idu": "28208000AB0025",
+        "commune": "Levainville"
+      },
+      {
+        "ref": "AB0194",
+        "idu": "28208000AB0194",
+        "commune": "Levainville"
+      },
+      {
+        "ref": "AB0195",
+        "idu": "28208000AB0195",
+        "commune": "Levainville"
+      },
+      {
+        "ref": "AB0199",
+        "idu": "28208000AB0199",
+        "commune": "Levainville"
+      },
+      {
+        "ref": "AB0213",
+        "idu": "28208000AB0213",
+        "commune": "Levainville"
+      }
+    ],
+    "idusValides": [
+      "28208000AB0011",
+      "28208000AB0012",
+      "28208000AB0013",
+      "28208000AB0014",
+      "28208000AB0015",
+      "28208000AB0016",
+      "28208000AB0017",
+      "28208000AB0018",
+      "28208000AB0019",
+      "28208000AB0020",
+      "28208000AB0021",
+      "28208000AB0023",
+      "28208000AB0024",
+      "28208000AB0025",
+      "28208000AB0194",
+      "28208000AB0195",
+      "28208000AB0199",
+      "28208000AB0213"
+    ],
+    "pointIdu": null,
+    "pointDansSite": false,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "2",
+    "nom": "EGA",
+    "commune": "NOGENT-LE-ROI",
+    "insee": "28279",
+    "parcelles": [
+      {
+        "ref": "ZD0048",
+        "idu": "28279000ZD0048",
+        "commune": "Nogent-le-Roi"
+      },
+      {
+        "ref": "ZD0049",
+        "idu": "28279000ZD0049",
+        "commune": "Nogent-le-Roi"
+      }
+    ],
+    "idusValides": [
+      "28279000ZD0048",
+      "28279000ZD0049"
+    ],
+    "pointIdu": null,
+    "pointDansSite": false,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "3",
+    "nom": "EXACOMPTA",
+    "commune": "NOGENT-LE-ROI",
+    "insee": "28279",
+    "parcelles": [
+      {
+        "ref": "AB0242",
+        "idu": "28279000AB0242",
+        "commune": "Nogent-le-Roi"
+      },
+      {
+        "ref": "AB0243",
+        "idu": "28279000AB0243",
+        "commune": "Nogent-le-Roi"
+      },
+      {
+        "ref": "AB0244",
+        "idu": "28279000AB0244",
+        "commune": "Nogent-le-Roi"
+      },
+      {
+        "ref": "AB0245",
+        "idu": "28279000AB0245",
+        "commune": "Nogent-le-Roi"
+      }
+    ],
+    "idusValides": [
+      "28279000AB0242",
+      "28279000AB0243",
+      "28279000AB0244",
+      "28279000AB0245"
+    ],
+    "pointIdu": null,
+    "pointDansSite": false,
+    "statut": "OK",
+    "messages": []
+  },
+  {
+    "id": "6",
+    "nom": "Arsenal de Saint-Piat",
+    "commune": "SAINT-PIAT",
+    "insee": "28357",
+    "parcelles": [
+      {
+        "ref": "AD0196",
+        "idu": "28357000AD0196",
+        "commune": "Saint-Piat"
+      },
+      {
+        "ref": "AD0249",
+        "idu": "28357000AD0249",
+        "commune": "Saint-Piat"
+      },
+      {
+        "ref": "AD0264",
+        "idu": "28357000AD0264",
+        "commune": "Saint-Piat"
+      }
+    ],
+    "idusValides": [
+      "28357000AD0196",
+      "28357000AD0249",
+      "28357000AD0264"
+    ],
+    "pointIdu": null,
+    "pointDansSite": false,
+    "statut": "OK",
+    "messages": []
+  }
+]
