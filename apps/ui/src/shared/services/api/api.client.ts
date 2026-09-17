@@ -10,9 +10,10 @@ class ApiClient {
   }
 
   /**
-   * Méthode privée pour faire une requête HTTP
+   * Exécute la requête et remonte les erreurs réseau et HTTP de façon uniforme.
+   * La réponse brute est renvoyée : à l'appelant de la lire en JSON ou en fichier.
    */
-  private async request<T>(endpoint: string, options: HttpRequestOptions = {}): Promise<T> {
+  private async executer(endpoint: string, options: HttpRequestOptions = {}): Promise<Response> {
     try {
       const { params, ...fetchOptions } = options;
 
@@ -37,8 +38,7 @@ class ApiClient {
         throw new ApiError(errorInfo.message, errorInfo.statusCode, errorInfo.error);
       }
 
-      // Retourner la réponse JSON
-      return response.json() as Promise<T>;
+      return response;
     } catch (error) {
       // Gérer les erreurs réseau
       if (isNetworkError(error)) {
@@ -63,6 +63,11 @@ class ApiClient {
     }
   }
 
+  private async request<T>(endpoint: string, options: HttpRequestOptions = {}): Promise<T> {
+    const response = await this.executer(endpoint, options);
+    return response.json() as Promise<T>;
+  }
+
   /**
    * Requête GET
    */
@@ -82,6 +87,24 @@ class ApiClient {
       method: "POST",
       body: body ? JSON.stringify(body) : undefined,
     });
+  }
+
+  /**
+   * Requête POST attendant un fichier en réponse (exports).
+   * Renvoie le contenu et les en-têtes, qui portent le nom de fichier et le rapport d'export.
+   */
+  async postFichier(
+    endpoint: string,
+    body?: unknown,
+    options?: HttpRequestOptions,
+  ): Promise<{ blob: Blob; headers: Headers }> {
+    const response = await this.executer(endpoint, {
+      ...options,
+      method: "POST",
+      body: body ? JSON.stringify(body) : undefined,
+    });
+
+    return { blob: await response.blob(), headers: response.headers };
   }
 
   /**

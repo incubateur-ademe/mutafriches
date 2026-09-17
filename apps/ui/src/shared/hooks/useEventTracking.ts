@@ -178,6 +178,15 @@ export function useEventTracking(options?: { integrateurOverride?: string }) {
     [track],
   );
 
+  const trackExportSitesPartenaire = useCallback(
+    (partenaireSlug: string, format: string) => {
+      return track(TypeEvenement.EXPORT_SITES_PARTENAIRE, {
+        donnees: { partenaireSlug, format },
+      });
+    },
+    [track],
+  );
+
   return {
     track,
     trackFeedback,
@@ -192,5 +201,6 @@ export function useEventTracking(options?: { integrateurOverride?: string }) {
     trackParcelleSupprimee,
     trackJaugeDepassee,
     trackPartagePartenaire,
+    trackExportSitesPartenaire,
   };
 }

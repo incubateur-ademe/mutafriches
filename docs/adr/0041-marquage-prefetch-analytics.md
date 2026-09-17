@@ -100,6 +100,10 @@ Le marquage couvre les deux tables : mono-parcelle (`enrichissements`) et multi-
   partenaire. L'`idtup` n'est pas dérivé des parcelles pour les sites du seed (clé fournie par
   le partenaire), donc normaliser l'existant ne casse ni la contrainte d'unicité ni les données
   localStorage des utilisateurs, qui sont clées par `idtup` (ADR-0021).
+  **Les lignes déjà en base n'ont volontairement pas été rattrapées** : le seed insère en
+  `ON CONFLICT DO NOTHING`, donc les sites CCI92 antérieurs gardent leur forme brute. Une
+  jointure avec `enrichissements` continuera de les manquer — sans conséquence fonctionnelle
+  (le contrôleur normalise à la réception), seulement une part partenaire sous-estimée.
 - Le pré-chauffe dédoublonne les sites partageant le même ensemble de parcelles : même clé de
   cache, donc second appel sans valeur.
 - Les lignes à `source_utilisation` NULL subsistent (~500), d'origines non départagées :

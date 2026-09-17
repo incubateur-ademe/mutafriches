@@ -6,7 +6,7 @@ import { NestExpressApplication } from "@nestjs/platform-express";
 import { SwaggerModule } from "@nestjs/swagger";
 import { Request, Response, NextFunction } from "express";
 import { ValidationPipe, Logger } from "@nestjs/common";
-import { isProduction } from "./shared/utils";
+import { estOrigineLocale, isProduction } from "./shared/utils";
 import { buildSwaggerConfig, getSwaggerSetupOptions } from "./shared/swagger";
 import { getAppConfig } from "./config";
 import { SafeConsoleLogger } from "./shared/logger/safe-console-logger";
@@ -41,16 +41,18 @@ async function bootstrap() {
     // Trust proxy pour Scalingo et autres environnements
     if (isProduction()) {
       app.set("trust proxy", 1);
-      logger.log("Proxy configure pour l'environnement de production");
+      logger.log("Proxy configuré pour l'environnement de production");
     }
 
-    // Configuration CORS pour le developpement
+    // Configuration CORS pour le développement : tout port local, le serveur Vite glissant
+    // sur 5174 et suivants quand 5173 est déjà pris.
     if (!isProduction()) {
       app.enableCors({
-        origin: "http://localhost:5173",
+        origin: (origine: string | undefined, callback) =>
+          callback(null, !origine || estOrigineLocale(origine)),
         credentials: true,
       });
-      logger.log("CORS configure pour le developpement (http://localhost:5173)");
+      logger.log("CORS configuré pour le développement (toute origine locale)");
     }
 
     if (isProduction()) {
