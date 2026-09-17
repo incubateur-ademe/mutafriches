@@ -5,6 +5,7 @@ import { Stepper } from "../../../shared/components/layout";
 import { Layout } from "../../../shared/components/layout/Layout";
 import { useFormContext } from "../../../shared/form/useFormContext";
 import { useEventTracking } from "../../../shared/hooks/useEventTracking";
+import { identifiantCadastralTracking } from "../../../shared/form/tracking.utils";
 import { TypeEvenement } from "@mutafriches/shared-types";
 import { StepNavigation } from "../components/StepNavigation";
 import { SiteFormValues, DEFAULT_SITE_VALUES, ValidationErrors } from "../config/types";
@@ -55,10 +56,13 @@ export const QualificationSitePage: React.FC = () => {
     if (!hasTrackedVisit.current) {
       hasTrackedVisit.current = true;
       track(TypeEvenement.QUALIFICATION_SITE, {
-        identifiantCadastral: state.identifiantSite || undefined,
+        identifiantCadastral: identifiantCadastralTracking(
+          state.enrichmentData,
+          state.identifiantSite,
+        ),
       });
     }
-  }, [canAccessStep, navigate, setCurrentStep, track, state.identifiantSite]);
+  }, [canAccessStep, navigate, setCurrentStep, track, state.enrichmentData, state.identifiantSite]);
 
   const handleChange = (fieldName: keyof SiteFormValues, value: string) => {
     setValues((prev) => ({ ...prev, [fieldName]: value }));

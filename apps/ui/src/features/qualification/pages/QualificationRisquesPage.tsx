@@ -5,6 +5,7 @@ import { Stepper } from "../../../shared/components/layout";
 import { Layout } from "../../../shared/components/layout/Layout";
 import { useFormContext } from "../../../shared/form/useFormContext";
 import { useEventTracking } from "../../../shared/hooks/useEventTracking";
+import { identifiantCadastralTracking } from "../../../shared/form/tracking.utils";
 import { MESSAGE_ZONE_EXCLUSION_ENR, TypeEvenement } from "@mutafriches/shared-types";
 import { EnrichedInfoField, StepNavigation } from "../components";
 import { DebugPanelGate } from "../../debug/components/DebugPanelGate";
@@ -27,10 +28,13 @@ export const QualificationRisquesPage: React.FC = () => {
     if (!hasTrackedVisit.current) {
       hasTrackedVisit.current = true;
       track(TypeEvenement.QUALIFICATION_RISQUES, {
-        identifiantCadastral: state.identifiantSite || undefined,
+        identifiantCadastral: identifiantCadastralTracking(
+          state.enrichmentData,
+          state.identifiantSite,
+        ),
       });
     }
-  }, [canAccessStep, navigate, setCurrentStep, track, state.identifiantSite]);
+  }, [canAccessStep, navigate, setCurrentStep, track, state.enrichmentData, state.identifiantSite]);
 
   const handlePrevious = () => {
     navigate(ROUTES.QUALIFICATION_ENVIRONNEMENT);

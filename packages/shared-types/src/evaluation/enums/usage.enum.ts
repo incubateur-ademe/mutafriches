@@ -14,9 +14,13 @@ export enum UsageType {
 
 /**
  * Source d'utilisation de l'API
+ *
+ * PREFETCH isole les appels robots de pré-chauffe du cache : sans lui, ils sont
+ * indistinguables d'une qualification utilisateur (cf. ADR-0041).
  */
 export enum SourceUtilisation {
   SITE_STANDALONE = "SITE_STANDALONE",
   IFRAME_INTEGREE = "IFRAME_INTEGREE",
   API_DIRECTE = "API_DIRECTE",
+  PREFETCH = "PREFETCH",
 }

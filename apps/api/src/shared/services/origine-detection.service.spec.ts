@@ -309,5 +309,60 @@ describe("OrigineDetectionService", () => {
         });
       });
     });
+
+    describe("Pre-chauffe du cache (query param prefetch)", () => {
+      it("devrait retourner PREFETCH depuis le domaine standalone", () => {
+        const req = {
+          headers: { origin: "https://mutafriches.beta.gouv.fr" },
+        } as any;
+
+        const result = service.detecterOrigine(req, false, undefined, undefined, true);
+
+        expect(result).toEqual({
+          source: SourceUtilisation.PREFETCH,
+        });
+      });
+
+      it("ne devrait PAS taguer si la source n'est pas SITE_STANDALONE (anti-usurpation)", () => {
+        const result = service.detecterOrigine(undefined, false, undefined, undefined, true);
+
+        expect(result).toEqual({
+          source: SourceUtilisation.API_DIRECTE,
+        });
+      });
+
+      it("devrait primer sur le contexte partenaire", () => {
+        const req = {
+          headers: { referer: "https://mutafriches.beta.gouv.fr/partenaires/scet" },
+        } as any;
+
+        const result = service.detecterOrigine(req, false, undefined, "scet", true);
+
+        expect(result).toEqual({
+          source: SourceUtilisation.PREFETCH,
+        });
+      });
+
+      it("devrait laisser iframe prioritaire sur la pre-chauffe", () => {
+        const result = service.detecterOrigine(undefined, true, "cartofriches", undefined, true);
+
+        expect(result).toEqual({
+          source: SourceUtilisation.IFRAME_INTEGREE,
+          integrateur: "cartofriches",
+        });
+      });
+
+      it("ne devrait rien changer sans le query param", () => {
+        const req = {
+          headers: { origin: "https://mutafriches.beta.gouv.fr" },
+        } as any;
+
+        const result = service.detecterOrigine(req, false);
+
+        expect(result).toEqual({
+          source: SourceUtilisation.SITE_STANDALONE,
+        });
+      });
+    });
   });
 });

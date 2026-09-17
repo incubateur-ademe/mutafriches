@@ -73,6 +73,13 @@ export class EnrichissementController {
     description:
       "Slug de la page partenaire d'origine (ex : `scet`). Enregistre `integrateur = partenaire:<slug>` pour le suivi par canal.",
   })
+  @ApiQuery({
+    name: "prefetch",
+    required: false,
+    type: Boolean,
+    description:
+      "Réservé à la pré-chauffe automatique du cache. Enregistre `source_utilisation = PREFETCH` pour exclure ces appels robots des statistiques d'usage.",
+  })
   @ApiResponse({
     status: 201,
     description: "Enrichissement réussi",
@@ -87,6 +94,7 @@ export class EnrichissementController {
     @Query("acceptDegradedCache") acceptDegradedCacheRaw?: string,
     @Req() req?: Request,
     @Query("partenaire") partenaire?: string,
+    @Query("prefetch", ParseOptionalBooleanPipe) prefetch?: boolean,
   ): Promise<EnrichissementOutputDto> {
     const acceptDegradedCache = acceptDegradedCacheRaw === "true";
     try {
@@ -128,6 +136,7 @@ export class EnrichissementController {
         isIframe,
         integrateur,
         partenaire,
+        prefetch,
       );
 
       this.logger.log(

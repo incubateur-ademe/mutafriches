@@ -5,6 +5,7 @@ import { Stepper } from "../../../shared/components/layout";
 import { Layout } from "../../../shared/components/layout/Layout";
 import { useFormContext } from "../../../shared/form/useFormContext";
 import { useEventTracking } from "../../../shared/hooks/useEventTracking";
+import { identifiantCadastralTracking } from "../../../shared/form/tracking.utils";
 import { TypeEvenement } from "@mutafriches/shared-types";
 import { StepNavigation } from "../components/StepNavigation";
 import { EnrichedInfoField, FormSelectField } from "../components";
@@ -53,10 +54,13 @@ export const QualificationEnvironnementPage: React.FC = () => {
     if (!hasTrackedVisit.current) {
       hasTrackedVisit.current = true;
       track(TypeEvenement.QUALIFICATION_ENVIRONNEMENT, {
-        identifiantCadastral: state.identifiantSite || undefined,
+        identifiantCadastral: identifiantCadastralTracking(
+          state.enrichmentData,
+          state.identifiantSite,
+        ),
       });
     }
-  }, [canAccessStep, navigate, setCurrentStep, track, state.identifiantSite]);
+  }, [canAccessStep, navigate, setCurrentStep, track, state.enrichmentData, state.identifiantSite]);
 
   const handleChange = (fieldName: keyof EnvironnementFormValues, value: string) => {
     setValues((prev) => ({ ...prev, [fieldName]: value }));
@@ -101,7 +105,10 @@ export const QualificationEnvironnementPage: React.FC = () => {
         // Tracker l'événement de saisie des données complémentaires
         const dataRecord = updatedManualData as Record<string, string>;
         await track(TypeEvenement.DONNEES_COMPLEMENTAIRES_SAISIES, {
-          identifiantCadastral: state.identifiantSite || undefined,
+          identifiantCadastral: identifiantCadastralTracking(
+            state.enrichmentData,
+            state.identifiantSite,
+          ),
           donnees: {
             nombreChampsSaisis: Object.keys(dataRecord).filter(
               (k) => dataRecord[k] && dataRecord[k] !== "",

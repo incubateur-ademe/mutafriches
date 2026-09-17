@@ -50,7 +50,9 @@ const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 async function prefetchSite(partenaire: string, site: SitePrefetch): Promise<PrefetchResult> {
   const startTime = Date.now();
-  const url = `${API_URL}/enrichissement?acceptDegradedCache=true`;
+  // prefetch=true : sans ce marqueur, ces appels robots sont enregistrés comme des
+  // qualifications utilisateur et faussent tout ratio d'usage (ADR-0041).
+  const url = `${API_URL}/enrichissement?acceptDegradedCache=true&prefetch=true`;
 
   try {
     const body =
@@ -127,12 +129,32 @@ async function resoudreSites(): Promise<{ partenaire: string; site: SitePrefetch
     process.exit(1);
   }
 
-  return retenus.flatMap((p) =>
+  const aplatis = retenus.flatMap((p) =>
     p.sites.map((s) => ({
       partenaire: p.slug,
       site: { idtup: s.idtup, commune: s.commune, parcelles: s.parcelles },
     })),
   );
+
+  // Dédoublonnage sur l'ensemble de parcelles : deux entrées portant les mêmes parcelles
+  // partagent la même clé de cache, le second appel est donc du gaspillage pur (une ligne
+  // d'enrichissement de plus, un aller-retour HTTP, aucune donnée nouvelle). Un site qui
+  // partage une parcelle avec un autre sans avoir le même ensemble reste traité : sa clé
+  // de cache est différente.
+  const vus = new Set<string>();
+  const dedoublonnes = aplatis.filter(({ site }) => {
+    const cle = [...site.parcelles].sort().join(",");
+    if (vus.has(cle)) return false;
+    vus.add(cle);
+    return true;
+  });
+
+  const doublons = aplatis.length - dedoublonnes.length;
+  if (doublons > 0) {
+    console.log(`${doublons} site(s) en doublon ignoré(s) (même ensemble de parcelles)`);
+  }
+
+  return dedoublonnes;
 }
 
 async function main(): Promise<void> {

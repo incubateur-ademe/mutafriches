@@ -18,6 +18,7 @@ import postgres from "postgres";
 import { v4 as uuidv4 } from "uuid";
 import { and, eq, isNull } from "drizzle-orm";
 import type { Coordonnees, EnrichissementOutputDto } from "@mutafriches/shared-types";
+import { normalizeParcelId } from "@mutafriches/shared-types";
 import { getAppConfig } from "../config";
 import { partenaires } from "../shared/database/schemas/partenaires.schema";
 import { partenaireSites } from "../shared/database/schemas/partenaire-sites.schema";
@@ -31,9 +32,10 @@ const SEED_ORIGIN = "https://mutafriches.beta.gouv.fr";
 const sleep = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
 
 // Centroïde d'un site via l'enrichissement (réchauffe aussi le cache serveur).
+// prefetch=true : appel robot, à ne pas compter comme une qualification utilisateur (ADR-0041).
 async function getCentroide(parcelles: string[]): Promise<Coordonnees | null> {
   const body = parcelles.length === 1 ? { identifiant: parcelles[0] } : { identifiants: parcelles };
-  const res = await fetch(`${API_URL}/enrichissement?acceptDegradedCache=true`, {
+  const res = await fetch(`${API_URL}/enrichissement?acceptDegradedCache=true&prefetch=true`, {
     method: "POST",
     headers: { "Content-Type": "application/json", Origin: SEED_ORIGIN },
     body: JSON.stringify(body),
@@ -67,7 +69,9 @@ async function upsertPartenaires(db: ReturnType<typeof drizzle>, slugs: string[]
           id: uuidv4(),
           partenaireSlug: slug,
           idtup: site.idtup,
-          parcelles: site.parcelles,
+          // Forme canonique, comme ajouterSite() : sans ça, toute jointure avec
+          // enrichissements rate les sections "0X" que l'API normalise (ADR-0041).
+          parcelles: site.parcelles.map(normalizeParcelId),
           commune: site.commune,
           nom: site.nom ?? null,
           origine: "seed",
