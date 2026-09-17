@@ -89,8 +89,11 @@ export async function resolveSite(site: SiteInput): Promise<SiteResolution> {
     const resolue = site.departement
       ? await communeVersInsee(site.commune, site.departement)
       : null;
-    if (resolue) {
-      insee = resolue.codeInsee;
+    // Seconde barrière, au point où une valeur réseau entre dans le pipeline : `insee` part
+    // ensuite dans une URL apicarto et dans les fichiers générés (CodeQL js/http-to-file-access).
+    const inseeResolu = sanitizeCodeInsee(resolue?.codeInsee);
+    if (inseeResolu) {
+      insee = inseeResolu;
     } else {
       messages.push(
         `Code INSEE introuvable pour "${site.commune}" (département ${site.departement ?? "?"})`,

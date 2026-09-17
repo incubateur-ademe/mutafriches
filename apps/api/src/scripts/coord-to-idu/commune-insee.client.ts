@@ -59,22 +59,21 @@ export async function communeVersInsee(
 
     const data = (await res.json()) as { features?: BanFeature[] };
 
-    // La réponse repart en paramètre d'URL apicarto et dans les fichiers générés : on la valide
-    // avant tout usage, et on écarte les candidats hors département.
-    const candidats = (data.features ?? [])
-      .map((f) => ({
-        codeInsee: sanitizeCodeInsee(f.properties?.citycode),
-        nom: sanitizeCommuneName(f.properties?.city),
-      }))
-      .filter(
-        (c): c is CommuneInsee =>
-          c.codeInsee !== null &&
-          c.nom !== null &&
-          appartientAuDepartement(c.codeInsee, departementSur),
-      );
+    // La réponse repart en paramètre d'URL apicarto et dans les fichiers générés : chaque champ
+    // est validé par un garde explicite avant d'être retenu. La BAN classant par pertinence, le
+    // premier candidat valide du bon département fait foi.
+    for (const feature of data.features ?? []) {
+      const codeInsee = sanitizeCodeInsee(feature.properties?.citycode);
+      if (!codeInsee) continue;
 
-    // La BAN classe par pertinence : le premier candidat du bon département fait foi.
-    return candidats[0] ?? null;
+      const nom = sanitizeCommuneName(feature.properties?.city);
+      if (!nom) continue;
+
+      if (!appartientAuDepartement(codeInsee, departementSur)) continue;
+
+      return { codeInsee, nom };
+    }
+    return null;
   } catch {
     return null;
   } finally {
