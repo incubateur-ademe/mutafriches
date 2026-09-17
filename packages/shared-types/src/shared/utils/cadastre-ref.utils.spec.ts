@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { buildIduCandidate, parseNumParcelle, prefixeDeIdu } from "./cadastre-ref.utils";
+import {
+  buildIduCandidate,
+  parseNumParcelle,
+  prefixeDeIdu,
+  segmentsIllisibles,
+} from "./cadastre-ref.utils";
 
 describe("parseNumParcelle", () => {
   it("parse une parcelle unique", () => {
@@ -114,5 +119,23 @@ describe("prefixeDeIdu", () => {
   it("retourne null hors des longueurs attendues", () => {
     expect(prefixeDeIdu("77305000AH13")).toBeNull();
     expect(prefixeDeIdu(undefined)).toBeNull();
+  });
+});
+
+describe("segmentsIllisibles", () => {
+  it("liste les segments qu'aucune forme ne reconnaît", () => {
+    expect(segmentsIllisibles("AB12//xx/13")).toEqual(["XX"]);
+  });
+
+  it("ne signale rien quand tout est reconnu", () => {
+    expect(segmentsIllisibles("267B18/ 0F1444/ AH13/ 14")).toEqual([]);
+    expect(segmentsIllisibles("")).toEqual([]);
+  });
+
+  // Le complément exact de parseNumParcelle : tout segment non vide est soit parsé, soit listé.
+  it("complète parseNumParcelle sans recouvrement", () => {
+    const champ = "AB12/ zz / 13 / 0F9/ ???";
+    const nonVides = champ.split("/").filter((s) => s.trim().length > 0).length;
+    expect(parseNumParcelle(champ).length + segmentsIllisibles(champ).length).toBe(nonVides);
   });
 });

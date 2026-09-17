@@ -1,6 +1,7 @@
 import {
   parcelleAvecPrefixe,
   parseNumParcelle,
+  segmentsIllisibles,
   PREFIXE_COM_ABS_DEFAUT,
   sanitizeCodeInsee,
   sanitizeCommuneName,
@@ -79,6 +80,13 @@ export async function resolveSite(site: SiteInput): Promise<SiteResolution> {
     messages.push(`Champ num_parcelle illisible : "${site.numParcelle}"`);
   }
 
+  // Un segment écarté par le parseur est une parcelle perdue : le signaler plutôt que de la
+  // laisser disparaître silencieusement de l'inventaire.
+  const illisibles = segmentsIllisibles(site.numParcelle);
+  if (illisibles.length > 0) {
+    messages.push(`Segments de parcelle ignorés : ${illisibles.join(", ")}`);
+  }
+
   // Code INSEE : fourni par la source (validé, il part dans une URL), sinon résolu depuis le
   // nom de commune.
   let insee = sanitizeCodeInsee(site.insee) ?? "";
@@ -148,7 +156,9 @@ export async function resolveSite(site: SiteInput): Promise<SiteResolution> {
   let statut: StatutResolution;
   if (idusValides.length === 0) {
     statut = "ECHEC";
-  } else if (idusValides.length < refs.length) {
+  } else if (idusValides.length < refs.length || illisibles.length > 0) {
+    // Un segment illisible ne figure pas dans `refs` : sans ce test, un site amputé d'une
+    // parcelle ressortirait « OK ».
     statut = "PARTIEL";
   } else if (pointIdu && !pointDansSite) {
     statut = "MISMATCH";

@@ -85,10 +85,31 @@ export function parseNumParcelle(champ: string): ReferenceParcelle[] {
     if (numeroSeul && sectionCourante) {
       result.push({ prefixe: prefixeCourant, section: sectionCourante, numero: numeroSeul[1] });
     }
-    // Tout autre segment est illisible : ignoré ici, rapporté par l'appelant.
+    // Tout autre segment est illisible : ignoré ici. `segmentsIllisibles` permet à l'appelant
+    // de les lister, une parcelle perdue en silence étant invisible à l'audit.
   }
 
   return result;
+}
+
+/**
+ * Segments qu'aucune forme connue ne reconnaît, donc écartés par `parseNumParcelle`.
+ * À rapporter : sans cela, une parcelle disparaît de l'inventaire sans laisser de trace.
+ */
+export function segmentsIllisibles(champ: string): string[] {
+  if (!champ || typeof champ !== "string") return [];
+
+  const reconnu = (segment: string): boolean =>
+    SEGMENT_PREFIXE.test(segment) ||
+    SEGMENT_SECTION_PADDEE.test(segment) ||
+    SEGMENT_SIMPLE.test(segment) ||
+    SEGMENT_NUMERO_SEUL.test(segment);
+
+  return champ
+    .toUpperCase()
+    .split("/")
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0 && !reconnu(s));
 }
 
 /**
