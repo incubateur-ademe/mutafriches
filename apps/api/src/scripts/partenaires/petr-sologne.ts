@@ -42,7 +42,6 @@ export const PETR_SOLOGNE_SITES: SitePrefetch[] = [
     idtup: "petr45-12",
     commune: "Châteauneuf-sur-Loire",
     parcelles: ["45082000BC0958"],
-    nom: "Société SARL LOTFI (station-service)",
   },
   {
     idtup: "petr45-13",
@@ -78,7 +77,6 @@ export const PETR_SOLOGNE_SITES: SitePrefetch[] = [
       "45082000BI0097",
       "45082000BI0098",
     ],
-    nom: "DA COSTA Antoine",
   },
   {
     idtup: "petr45-15",
@@ -160,7 +158,6 @@ export const PETR_SOLOGNE_SITES: SitePrefetch[] = [
     idtup: "petr45-64",
     commune: "Loury",
     parcelles: ["45188000A0717"],
-    nom: "Hangar Ballegeer Wilfrid",
   },
   {
     idtup: "petr45-65",

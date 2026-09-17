@@ -37,7 +37,7 @@
   },
   {
     "id": "12",
-    "nom": "Société SARL LOTFI (station-service)",
+    "nom": "",
     "commune": "CHATEAUNEUF-SUR-LOIRE",
     "departement": "45",
     "numParcelle": "BC0958",
@@ -55,7 +55,7 @@
   },
   {
     "id": "14",
-    "nom": "DA COSTA Antoine",
+    "nom": "",
     "commune": "CHATEAUNEUF-SUR-LOIRE",
     "departement": "45",
     "numParcelle": "BI103/ BI104/ BI105/ BI106/ BI109/ BI110/ BI111/ BI112/ BI113/ BI114/ BI115/ BI116/ BI117/ BI118/ BI119/ BI91/ BI92/ BI93/ BI94/ BI95/ BI96/ BI97/ BI98",
@@ -163,7 +163,7 @@
   },
   {
     "id": "64",
-    "nom": "Hangar Ballegeer Wilfrid",
+    "nom": "",
     "commune": "LOURY",
     "departement": "45",
     "numParcelle": "A717",

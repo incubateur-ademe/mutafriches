@@ -35,6 +35,13 @@ Procédure pas à pas pour publier une nouvelle page partenaire multisite
     - Vérifier le rapport **avant** de commiter : tout site en `ECHEC` ou `PARTIEL` est à
       arbitrer à la main. Un IDU inventé ferait échouer la pré-chauffe et afficherait une
       parcelle fausse à l'utilisateur.
+- [ ] **Anonymiser les libellés de sites avant tout commit.** Le dépôt est public et les
+      fichiers d'inventaire, le rapport d'audit et les sites générés y sont versionnés : un
+      libellé qui nomme une personne physique (« Prénom NOM », ou une SCI/SARL portant un
+      patronyme) publie une donnée personnelle rattachée à une parcelle précise. Retirer le
+      `nom` de ces sites — le nom par défaut (rue la plus proche, ADR-0021) prend le relais.
+      Les raisons sociales et marques (« Cémoi », « EXACOMPTA ») se conservent : ce sont des
+      données d'entreprise, déjà publiées par BASOL et CARTOFRICHES.
 - [ ] Choisir un **`slug`** (minuscules, sans espace ; segment d'URL, ex. `aura`, `cci-92`).
 - [ ] **Un inventaire = un territoire = une page.** Un bureau d'études qui livre plusieurs
       inventaires donne autant de pages que de territoires (ex. EODD → `petr-sologne` et

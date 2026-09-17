@@ -78,12 +78,16 @@ function genSitesTs(descripteur: DescripteurResolution, resolutions: SiteResolut
   const blocs: string[] = [];
   for (const site of resolutions) {
     const parcelles = site.idusValides.map((idu) => `      "${idu}",`).join("\n");
+    // Libellé omis quand l'inventaire n'en fournit pas : le nom par défaut (rue la plus
+    // proche, ADR-0021) prend le relais. C'est le cas des sites dont le libellé source
+    // identifiait une personne physique et a donc été retiré à l'anonymisation.
+    const nom = site.nom ? `    nom: "${esc(site.nom)}",\n` : "";
     blocs.push(
       `  {\n` +
         `    idtup: "${idtupFor(descripteur, site)}",\n` +
         `    commune: "${esc(communeFor(site))}",\n` +
         `    parcelles: [\n${parcelles}\n    ],\n` +
-        `    nom: "${esc(site.nom)}",\n` +
+        nom +
         `  },`,
     );
   }

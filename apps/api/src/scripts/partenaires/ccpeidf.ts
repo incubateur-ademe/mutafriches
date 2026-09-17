@@ -58,7 +58,6 @@ export const CCPEIDF_SITES: SitePrefetch[] = [
     idtup: "ccpeidf-16",
     commune: "Béville-le-Comte",
     parcelles: ["28039000ZN0074", "28039000ZN0076", "28039000ZN0078"],
-    nom: "SC Kagy Alia HAVART",
   },
   {
     idtup: "ccpeidf-1",
@@ -70,7 +69,6 @@ export const CCPEIDF_SITES: SitePrefetch[] = [
       "28113000ZE0109",
       "28113000ZE0110",
     ],
-    nom: "Groupe Diogo Fernandez",
   },
   {
     idtup: "ccpeidf-61",
@@ -84,7 +82,6 @@ export const CCPEIDF_SITES: SitePrefetch[] = [
       "28113000AI0125",
       "28113000AI0126",
     ],
-    nom: "Bernard POLVE",
   },
   {
     idtup: "ccpeidf-7",
