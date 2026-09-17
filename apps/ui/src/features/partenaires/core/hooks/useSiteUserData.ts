@@ -41,6 +41,13 @@ function save(base: string, map: Map<string, SiteUserData>): void {
   }
 }
 
+/** Ce qu'un utilisateur a saisi et calculé pour un site, dans ce navigateur. */
+export interface SaisieSite {
+  idtup: string;
+  manualData: Record<string, string>;
+  mutability: MutabiliteOutputDto | null;
+}
+
 export interface SiteUserDataStore {
   getManualData(idtup: string): Record<string, string>;
   setManualData(idtup: string, data: Record<string, string>): void;
@@ -54,6 +61,8 @@ export interface SiteUserDataStore {
   qualifiedIds(): Set<string>;
   /** idtups ayant une mutabilité calculée (double check). */
   evaluatedIds(): Set<string>;
+  /** Toutes les saisies du navigateur : sert à alimenter l'export CNIG. */
+  toutesLesSaisies(): SaisieSite[];
 }
 
 const aUneSaisie = (data: Record<string, string>): boolean =>
@@ -117,6 +126,12 @@ export function useSiteUserData(storageKey: string): SiteUserDataStore {
         }
         return set;
       },
+      toutesLesSaisies: () =>
+        Array.from(map(), ([idtup, d]) => ({
+          idtup,
+          manualData: d.manualData,
+          mutability: d.mutability,
+        })),
     };
   }, [storageKey]);
 }

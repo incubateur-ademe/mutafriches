@@ -4,19 +4,24 @@ import {
   EnrichissementOutputDto,
   MutabiliteOutputDto,
   TypeEvenement,
+  type RapportExportCnig,
 } from "@mutafriches/shared-types";
 import { Layout } from "@shared/components/layout/Layout";
 import { ROUTES } from "@shared/config/routes.config";
 import { useEventTracking } from "@shared/hooks/useEventTracking";
 import { enrichissementService } from "@shared/services/api/api.enrichissement.service";
+import { partenairesService } from "@shared/services/api/api.partenaires.service";
 import { evaluationService } from "@shared/services/api/api.evaluation.service";
 import { buildMutabilityInput } from "@features/resultats/utils/mutability.mapper";
+import { downloadBlob } from "@features/resultats/export/downloadFile";
 import { useAlgorithmeVersions } from "@features/comparaison-algo/hooks/useAlgorithmeVersions";
 import { SiteList } from "../components/SiteList";
 import { SiteDetail } from "../components/SiteDetail";
 import { AddSiteModal } from "../components/AddSiteModal";
+import { ExportSitesModal, type OptionsExportSites } from "../components/ExportSitesModal";
 import { DonneesExternesLink } from "../components/DonneesExternesLink";
 import { PartagerButton } from "../components/PartagerButton";
+import { buildExportPayload } from "../export/buildExportPayload";
 import { usePartenaireSites } from "../hooks/usePartenaireSites";
 import { useSiteUserData } from "../hooks/useSiteUserData";
 import { getPartnerBySlug } from "../../registry";
@@ -46,12 +51,16 @@ const MultisiteView: React.FC<{ config: PartnerConfig }> = ({ config }) => {
   const selectedVersion = versions[versions.length - 1]?.version ?? "";
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
+  const [exportError, setExportError] = useState<string | null>(null);
+  const [exportRapport, setExportRapport] = useState<RapportExportCnig | null>(null);
 
   // Sites lus en base (repli sur la config statique). Cf. ADR-0021, phases 1 et 3.
   const { sitesByCommune, renommerSite, ajouterSite } = usePartenaireSites(config);
 
   // Événements tagués `partenaire:<slug>` : mesure d'usage propre (hors prefetch), cf. ADR-0030.
-  const { track, trackEvaluationTerminee } = useEventTracking({
+  const { track, trackEvaluationTerminee, trackExportSitesPartenaire } = useEventTracking({
     integrateurOverride: `partenaire:${config.slug}`,
   });
 
@@ -172,9 +181,42 @@ const MultisiteView: React.FC<{ config: PartnerConfig }> = ({ config }) => {
     [ajouterSite, handleSelectSite],
   );
 
+  // L'export tourne côté serveur (cache d'enrichissement), mais la connaissance terrain vit
+  // dans ce navigateur : elle part avec la requête, pour les seuls sites qualifiés ici.
+  const handleExportSites = useCallback(
+    async ({ format, inclureMutabilite }: OptionsExportSites) => {
+      setIsExporting(true);
+      setExportError(null);
+      setExportRapport(null);
+      try {
+        const payload = buildExportPayload(userData.toutesLesSaisies(), {
+          format,
+          inclureMutabilite,
+          versionAlgorithme: selectedVersion || undefined,
+        });
+        const { blob, nomFichier, rapport } = await partenairesService.exporterCnig(
+          config.slug,
+          payload,
+        );
+        downloadBlob(blob, nomFichier);
+        setExportRapport(rapport ?? null);
+        void trackExportSitesPartenaire(config.slug, format);
+      } catch (err: unknown) {
+        setExportError(err instanceof Error ? err.message : "Erreur lors de l'export");
+      } finally {
+        setIsExporting(false);
+      }
+    },
+    [config.slug, userData, selectedVersion, trackExportSitesPartenaire],
+  );
+
   // Recalculés à chaque rendu : les actions (saisie, calcul) modifient un state → re-rendu.
   const qualifiedSiteIds = userData.qualifiedIds();
   const evaluatedSiteIds = userData.evaluatedIds();
+  const nombreSites = Object.values(sitesByCommune).reduce(
+    (total, sites) => total + sites.length,
+    0,
+  );
 
   return (
     <Layout fullWidth>
@@ -182,7 +224,16 @@ const MultisiteView: React.FC<{ config: PartnerConfig }> = ({ config }) => {
         <div className="fr-mb-4w">
           <div className="flex items-start justify-between gap-4">
             <h1 className="fr-h3 fr-mb-1w">{config.nom}</h1>
-            <PartagerButton slug={config.slug} nom={config.nom} />
+            <div className="fr-btns-group fr-btns-group--inline fr-btns-group--sm fr-mb-0">
+              <PartagerButton slug={config.slug} nom={config.nom} />
+              <button
+                type="button"
+                className="fr-btn fr-btn--secondary fr-icon-download-line fr-btn--icon-left"
+                onClick={() => setIsExportModalOpen(true)}
+              >
+                Exporter tous les sites
+              </button>
+            </div>
           </div>
           <DonneesExternesLink />
         </div>
@@ -232,6 +283,16 @@ const MultisiteView: React.FC<{ config: PartnerConfig }> = ({ config }) => {
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
         onSubmit={handleAddSiteSubmit}
+      />
+
+      <ExportSitesModal
+        isOpen={isExportModalOpen}
+        nombreSites={nombreSites}
+        loading={isExporting}
+        erreur={exportError}
+        rapport={exportRapport}
+        onClose={() => setIsExportModalOpen(false)}
+        onExport={handleExportSites}
       />
     </Layout>
   );
