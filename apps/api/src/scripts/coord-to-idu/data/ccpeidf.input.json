@@ -1,0 +1,200 @@
+[
+  {
+    "id": "13",
+    "nom": "SCI du CDI 19 (Aubijoux)",
+    "commune": "AUNEAU-BLEURY-SAINT-SYMPHORIEN",
+    "departement": "28",
+    "numParcelle": "AT0001 /  AT0029",
+    "surface": "3815",
+    "origine": "SVEI"
+  },
+  {
+    "id": "14",
+    "nom": "La Sianne",
+    "commune": "AUNEAU-BLEURY-SAINT-SYMPHORIEN",
+    "departement": "28",
+    "numParcelle": "AS0375",
+    "surface": "2607",
+    "origine": "SVEI"
+  },
+  {
+    "id": "60",
+    "nom": "Entreprise ATMOS",
+    "commune": "AUNEAU-BLEURY-SAINT-SYMPHORIEN",
+    "departement": "28",
+    "numParcelle": "AV0008 / AV0009 / AV0010",
+    "surface": "22707",
+    "origine": "COMMUNE"
+  },
+  {
+    "id": "55",
+    "nom": "Ancienne décharge",
+    "commune": "BAILLEAU-ARMENONVILLE",
+    "departement": "28",
+    "numParcelle": "ZA0061 /  ZA0062 /  ZA0083 / ZA0084 / ZA0085 / ZA0086 / ZA0087 / ZA0089/ ZA0090 / ZA0091 / ZB0005 / ZB0006 / ZB0007",
+    "surface": "150890",
+    "origine": "COMMUNE"
+  },
+  {
+    "id": "15",
+    "nom": "Site Alimel",
+    "commune": "BEVILLE-LE-COMTE",
+    "departement": "28",
+    "numParcelle": "0F1444 /0F1445 / 0F1446 / 0F1447 /  0F1448 / 0F1450",
+    "surface": "15791",
+    "origine": "SVEI"
+  },
+  {
+    "id": "16",
+    "nom": "SC Kagy Alia HAVART",
+    "commune": "BEVILLE-LE-COMTE",
+    "departement": "28",
+    "numParcelle": "ZN0074 / ZN0076 / ZN0078",
+    "surface": "8153",
+    "origine": "SVEI"
+  },
+  {
+    "id": "1",
+    "nom": "Groupe Diogo Fernandez",
+    "commune": "COULOMBS",
+    "departement": "28",
+    "numParcelle": "ZE0033 / ZE0034 / ZE0108 / ZE0109 / ZE0110",
+    "surface": "27682",
+    "origine": "SVEI"
+  },
+  {
+    "id": "61",
+    "nom": "Bernard POLVE",
+    "commune": "COULOMBS",
+    "departement": "28",
+    "numParcelle": "AI0120 / AI0121 / AI0122 / AI0123 /AI0124 / AI0125 / AI0126",
+    "surface": "4192",
+    "origine": "PREFECTURE"
+  },
+  {
+    "id": "7",
+    "nom": "B.M.S",
+    "commune": "EPERNON",
+    "departement": "28",
+    "numParcelle": "AN0011 /  AN0013",
+    "surface": "19645",
+    "origine": "SVEI"
+  },
+  {
+    "id": "8",
+    "nom": "ROUVER",
+    "commune": "EPERNON",
+    "departement": "28",
+    "numParcelle": "AM0062 / AN0008",
+    "surface": "32943",
+    "origine": "SVEI"
+  },
+  {
+    "id": "9",
+    "nom": "APTIV",
+    "commune": "EPERNON",
+    "departement": "28",
+    "numParcelle": "AM0023",
+    "surface": "15876",
+    "origine": "SVEI"
+  },
+  {
+    "id": "12",
+    "nom": "SCI Les Maraichers",
+    "commune": "GALLARDON",
+    "departement": "28",
+    "numParcelle": "ZH0098",
+    "surface": "26538",
+    "origine": "SVEI"
+  },
+  {
+    "id": "56",
+    "nom": "Ancienne imprimerie",
+    "commune": "GALLARDON",
+    "departement": "28",
+    "numParcelle": "ZI0400",
+    "surface": "11555",
+    "origine": "COMMUNE"
+  },
+  {
+    "id": "58",
+    "nom": "Ancienne décharge",
+    "commune": "GALLARDON",
+    "departement": "28",
+    "numParcelle": "ZB0262",
+    "surface": "2792",
+    "origine": "COMMUNE"
+  },
+  {
+    "id": "10",
+    "nom": "ZA la Croix Brisée",
+    "commune": "HANCHES",
+    "departement": "28",
+    "numParcelle": "AC0006/ AC0007 / AC0008/ AC0009 / AC0011 /  AC0010",
+    "surface": "43243",
+    "origine": "SVEI"
+  },
+  {
+    "id": "11",
+    "nom": "CPO FC centre de formation professionnelle continue",
+    "commune": "HANCHES",
+    "departement": "28",
+    "numParcelle": "AM0122 / AM0123/ AM0124 / AM0125 / AM126 / AM0127/ AM0128/ AM0129/ AM0130 / AM0131 / AM0188",
+    "surface": "53702",
+    "origine": "SVEI"
+  },
+  {
+    "id": "25",
+    "nom": "Sté SIPLAST",
+    "commune": "LE GUE-DE-LONGROI",
+    "departement": "28",
+    "numParcelle": "AC0162 / AC0163 / AC0164",
+    "surface": "18303",
+    "origine": "CARTOFRICHE"
+  },
+  {
+    "id": "57",
+    "nom": "Ancienne décharge publique",
+    "commune": "LE GUE-DE-LONGROI",
+    "departement": "28",
+    "numParcelle": "AB0346/ AB0354 / AB0355 / AB0356",
+    "surface": "7215",
+    "origine": "COMMUNE"
+  },
+  {
+    "id": "54",
+    "nom": "Bulitt Auto",
+    "commune": "LEVAINVILLE",
+    "departement": "28",
+    "numParcelle": "AB0011 / AB0012 / AB0013 /  AB0014 / AB0015 / AB0016 / AB0017 / AB0018 / AB0019 / AB0020 / AB0021 / AB0023/ AB0024/AB0025/ AB0194/ AB0195/ AB0199/ AB0213",
+    "surface": "16158",
+    "origine": "SVEI"
+  },
+  {
+    "id": "2",
+    "nom": "EGA",
+    "commune": "NOGENT-LE-ROI",
+    "departement": "28",
+    "numParcelle": "ZD0048 / ZD0049",
+    "surface": "9818",
+    "origine": "SVEI"
+  },
+  {
+    "id": "3",
+    "nom": "EXACOMPTA",
+    "commune": "NOGENT-LE-ROI",
+    "departement": "28",
+    "numParcelle": "AB0242 /  AB0243 / AB0244 / AB0245",
+    "surface": "6130",
+    "origine": "SVEI"
+  },
+  {
+    "id": "6",
+    "nom": "Arsenal de Saint-Piat",
+    "commune": "SAINT-PIAT",
+    "departement": "28",
+    "numParcelle": "AD0196  / AD0249 / AD0264",
+    "surface": "2160",
+    "origine": "SVEI"
+  }
+]
