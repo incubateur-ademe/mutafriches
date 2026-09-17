@@ -16,10 +16,7 @@
         "commune": "Auneau-Bleury-Saint-Symphorien"
       }
     ],
-    "idusValides": [
-      "28015000AT0001",
-      "28015000AT0029"
-    ],
+    "idusValides": ["28015000AT0001", "28015000AT0029"],
     "pointIdu": null,
     "pointDansSite": false,
     "statut": "OK",
@@ -37,9 +34,7 @@
         "commune": "Auneau-Bleury-Saint-Symphorien"
       }
     ],
-    "idusValides": [
-      "28015000AS0375"
-    ],
+    "idusValides": ["28015000AS0375"],
     "pointIdu": null,
     "pointDansSite": false,
     "statut": "OK",
@@ -67,11 +62,7 @@
         "commune": "Auneau-Bleury-Saint-Symphorien"
       }
     ],
-    "idusValides": [
-      "28015000AV0008",
-      "28015000AV0009",
-      "28015000AV0010"
-    ],
+    "idusValides": ["28015000AV0008", "28015000AV0009", "28015000AV0010"],
     "pointIdu": null,
     "pointDansSite": false,
     "statut": "OK",
@@ -241,11 +232,7 @@
         "commune": "Béville-le-Comte"
       }
     ],
-    "idusValides": [
-      "28039000ZN0074",
-      "28039000ZN0076",
-      "28039000ZN0078"
-    ],
+    "idusValides": ["28039000ZN0074", "28039000ZN0076", "28039000ZN0078"],
     "pointIdu": null,
     "pointDansSite": false,
     "statut": "OK",
@@ -368,10 +355,7 @@
         "commune": "Épernon"
       }
     ],
-    "idusValides": [
-      "28140000AN0011",
-      "28140000AN0013"
-    ],
+    "idusValides": ["28140000AN0011", "28140000AN0013"],
     "pointIdu": null,
     "pointDansSite": false,
     "statut": "OK",
@@ -394,10 +378,7 @@
         "commune": "Épernon"
       }
     ],
-    "idusValides": [
-      "28140000AM0062",
-      "28140000AN0008"
-    ],
+    "idusValides": ["28140000AM0062", "28140000AN0008"],
     "pointIdu": null,
     "pointDansSite": false,
     "statut": "OK",
@@ -415,9 +396,7 @@
         "commune": "Épernon"
       }
     ],
-    "idusValides": [
-      "28140000AM0023"
-    ],
+    "idusValides": ["28140000AM0023"],
     "pointIdu": null,
     "pointDansSite": false,
     "statut": "OK",
@@ -435,9 +414,7 @@
         "commune": "Gallardon"
       }
     ],
-    "idusValides": [
-      "28168000ZH0098"
-    ],
+    "idusValides": ["28168000ZH0098"],
     "pointIdu": null,
     "pointDansSite": false,
     "statut": "OK",
@@ -455,9 +432,7 @@
         "commune": "Gallardon"
       }
     ],
-    "idusValides": [
-      "28168000ZI0400"
-    ],
+    "idusValides": ["28168000ZI0400"],
     "pointIdu": null,
     "pointDansSite": false,
     "statut": "OK",
@@ -475,9 +450,7 @@
         "commune": "Gallardon"
       }
     ],
-    "idusValides": [
-      "28168000ZB0262"
-    ],
+    "idusValides": ["28168000ZB0262"],
     "pointIdu": null,
     "pointDansSite": false,
     "statut": "OK",
@@ -635,11 +608,7 @@
         "commune": "Le Gué-de-Longroi"
       }
     ],
-    "idusValides": [
-      "28188000AC0162",
-      "28188000AC0163",
-      "28188000AC0164"
-    ],
+    "idusValides": ["28188000AC0162", "28188000AC0163", "28188000AC0164"],
     "pointIdu": null,
     "pointDansSite": false,
     "statut": "OK",
@@ -672,12 +641,7 @@
         "commune": "Le Gué-de-Longroi"
       }
     ],
-    "idusValides": [
-      "28188000AB0346",
-      "28188000AB0354",
-      "28188000AB0355",
-      "28188000AB0356"
-    ],
+    "idusValides": ["28188000AB0346", "28188000AB0354", "28188000AB0355", "28188000AB0356"],
     "pointIdu": null,
     "pointDansSite": false,
     "statut": "OK",
@@ -822,10 +786,7 @@
         "commune": "Nogent-le-Roi"
       }
     ],
-    "idusValides": [
-      "28279000ZD0048",
-      "28279000ZD0049"
-    ],
+    "idusValides": ["28279000ZD0048", "28279000ZD0049"],
     "pointIdu": null,
     "pointDansSite": false,
     "statut": "OK",
@@ -858,12 +819,7 @@
         "commune": "Nogent-le-Roi"
       }
     ],
-    "idusValides": [
-      "28279000AB0242",
-      "28279000AB0243",
-      "28279000AB0244",
-      "28279000AB0245"
-    ],
+    "idusValides": ["28279000AB0242", "28279000AB0243", "28279000AB0244", "28279000AB0245"],
     "pointIdu": null,
     "pointDansSite": false,
     "statut": "OK",
@@ -891,11 +847,7 @@
         "commune": "Saint-Piat"
       }
     ],
-    "idusValides": [
-      "28357000AD0196",
-      "28357000AD0249",
-      "28357000AD0264"
-    ],
+    "idusValides": ["28357000AD0196", "28357000AD0249", "28357000AD0264"],
     "pointIdu": null,
     "pointDansSite": false,
     "statut": "OK",

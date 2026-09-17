@@ -6,22 +6,13 @@ export const PETR_SOLOGNE_SITES: SitePrefetch[] = [
   {
     idtup: "petr45-28",
     commune: "Ardon",
-    parcelles: [
-      "45006000B0618",
-      "45006000B0748",
-      "45006000B0750",
-      "45006000B0979",
-    ],
+    parcelles: ["45006000B0618", "45006000B0748", "45006000B0750", "45006000B0979"],
     nom: "SOCCOIM",
   },
   {
     idtup: "petr45-29",
     commune: "Ardon",
-    parcelles: [
-      "45006000A0152",
-      "45006000A0154",
-      "45006000A0155",
-    ],
+    parcelles: ["45006000A0152", "45006000A0154", "45006000A0155"],
     nom: "Décharge d'ordures ménagères",
   },
   {
@@ -44,26 +35,19 @@ export const PETR_SOLOGNE_SITES: SitePrefetch[] = [
   {
     idtup: "petr45-11",
     commune: "Châteauneuf-sur-Loire",
-    parcelles: [
-      "45082000AN0546",
-    ],
+    parcelles: ["45082000AN0546"],
     nom: "FAURE",
   },
   {
     idtup: "petr45-12",
     commune: "Châteauneuf-sur-Loire",
-    parcelles: [
-      "45082000BC0958",
-    ],
+    parcelles: ["45082000BC0958"],
     nom: "Société SARL LOTFI (station-service)",
   },
   {
     idtup: "petr45-13",
     commune: "Châteauneuf-sur-Loire",
-    parcelles: [
-      "45082000BC0522",
-      "45082000BC0531",
-    ],
+    parcelles: ["45082000BC0522", "45082000BC0531"],
     nom: "CODIFRANCE (ex DISVAL)",
   },
   {
@@ -99,80 +83,55 @@ export const PETR_SOLOGNE_SITES: SitePrefetch[] = [
   {
     idtup: "petr45-15",
     commune: "Châteauneuf-sur-Loire",
-    parcelles: [
-      "45082000BK0207",
-    ],
+    parcelles: ["45082000BK0207"],
     nom: "Cémoi",
   },
   {
     idtup: "petr45-67",
     commune: "Châteauneuf-sur-Loire",
-    parcelles: [
-      "45082000AN0911",
-    ],
+    parcelles: ["45082000AN0911"],
     nom: "Emprise SNCF - La Gare",
   },
   {
     idtup: "petr45-18",
     commune: "Fay-aux-Loges",
-    parcelles: [
-      "45142000AR0268",
-      "45142000AR0405",
-      "45142000AR0415",
-    ],
+    parcelles: ["45142000AR0268", "45142000AR0405", "45142000AR0415"],
     nom: "Ancienne laiterie",
   },
   {
     idtup: "petr45-61",
     commune: "Fay-aux-Loges",
-    parcelles: [
-      "45142000ZT0072",
-      "45142000ZT0090",
-    ],
+    parcelles: ["45142000ZT0072", "45142000ZT0090"],
     nom: "Usine du Canal",
   },
   {
     idtup: "petr45-62",
     commune: "Fay-aux-Loges",
-    parcelles: [
-      "45142000AR0671",
-    ],
+    parcelles: ["45142000AR0671"],
     nom: "Friche SNCF",
   },
   {
     idtup: "petr45-31",
     commune: "La Ferté-Saint-Aubin",
-    parcelles: [
-      "45146000BK0253",
-      "45146000BK0254",
-      "45146000BK0258",
-      "45146000BK0259",
-    ],
+    parcelles: ["45146000BK0253", "45146000BK0254", "45146000BK0258", "45146000BK0259"],
     nom: "Charpentiers de Paris",
   },
   {
     idtup: "petr45-34",
     commune: "La Ferté-Saint-Aubin",
-    parcelles: [
-      "45146000BL0510",
-      "45146000BL0511",
-    ],
+    parcelles: ["45146000BL0510", "45146000BL0511"],
     nom: "Halle et terrain SNCF",
   },
   {
     idtup: "petr45-36",
     commune: "La Ferté-Saint-Aubin",
-    parcelles: [
-      "45146000BL0509",
-    ],
+    parcelles: ["45146000BL0509"],
     nom: "Bâtiment SNCF",
   },
   {
     idtup: "petr45-37",
     commune: "La Ferté-Saint-Aubin",
-    parcelles: [
-      "45146000BL0153",
-    ],
+    parcelles: ["45146000BL0153"],
     nom: "Appel à projet Recyclage Foncier 2021 (Dossier N° 3665273)",
   },
   {
@@ -194,94 +153,67 @@ export const PETR_SOLOGNE_SITES: SitePrefetch[] = [
   {
     idtup: "petr45-1",
     commune: "Loury",
-    parcelles: [
-      "45188000A0719",
-    ],
+    parcelles: ["45188000A0719"],
     nom: "Ancienne entreprise de luminaire",
   },
   {
     idtup: "petr45-64",
     commune: "Loury",
-    parcelles: [
-      "45188000A0717",
-    ],
+    parcelles: ["45188000A0717"],
     nom: "Hangar Ballegeer Wilfrid",
   },
   {
     idtup: "petr45-65",
     commune: "Loury",
-    parcelles: [
-      "45188000AD1194",
-      "45188000AD0184",
-      "45188000AD0793",
-    ],
+    parcelles: ["45188000AD1194", "45188000AD0184", "45188000AD0793"],
     nom: "Ancien Silo Agropithiviers",
   },
   {
     idtup: "petr45-4",
     commune: "Neuville-aux-Bois",
-    parcelles: [
-      "45224000AA0121",
-    ],
+    parcelles: ["45224000AA0121"],
     nom: "RND",
   },
   {
     idtup: "petr45-74",
     commune: "Neuville-aux-Bois",
-    parcelles: [
-      "45224000AA0405",
-      "45224000AA0404",
-      "45224000AA0172",
-    ],
+    parcelles: ["45224000AA0405", "45224000AA0404", "45224000AA0172"],
     nom: "ZI Montfort",
   },
   {
     idtup: "petr45-47",
     commune: "Ouzouer-sur-Loire",
-    parcelles: [
-      "45244000AM0096",
-    ],
+    parcelles: ["45244000AM0096"],
     nom: "Bâtiment de l'entreprise TREMEAU",
   },
   {
     idtup: "petr45-23",
     commune: "Saint-Denis-de-l'Hôtel",
-    parcelles: [
-      "45273000AL0345",
-    ],
+    parcelles: ["45273000AL0345"],
     nom: "CARUELLE",
   },
   {
     idtup: "petr45-75",
     commune: "Saint-Denis-de-l'Hôtel",
-    parcelles: [
-      "45273000AL0389",
-    ],
+    parcelles: ["45273000AL0389"],
     nom: "LES BELLEBATS",
   },
   {
     idtup: "petr45-76",
     commune: "Saint-Denis-de-l'Hôtel",
-    parcelles: [
-      "45273000ZE0277",
-    ],
+    parcelles: ["45273000ZE0277"],
     nom: "ROUTE DE CHENAILLES",
   },
   {
     idtup: "petr45-52",
     commune: "Saint-Florent",
-    parcelles: [
-      "45277000AD0233",
-    ],
+    parcelles: ["45277000AD0233"],
     nom: "Décharges d'ordures ménagères",
   },
   {
     idtup: "petr45-73",
     commune: "Saint-Florent",
-    parcelles: [
-      "45277000AC0126",
-      "45277000AC0128",
-    ],
+    parcelles: ["45277000AC0126", "45277000AC0128"],
     nom: "Décharges d'ordures ménagères",
   },
   {
@@ -302,46 +234,31 @@ export const PETR_SOLOGNE_SITES: SitePrefetch[] = [
   {
     idtup: "petr45-55",
     commune: "Sully-sur-Loire",
-    parcelles: [
-      "45315000AI0618",
-      "45315000AI0675",
-      "45315000AI0680",
-    ],
+    parcelles: ["45315000AI0618", "45315000AI0675", "45315000AI0680"],
     nom: "Simca",
   },
   {
     idtup: "petr45-58",
     commune: "Sully-sur-Loire",
-    parcelles: [
-      "45315000AI0678",
-    ],
+    parcelles: ["45315000AI0678"],
     nom: "Habitat collectif Simca",
   },
   {
     idtup: "petr45-6",
     commune: "Traînou",
-    parcelles: [
-      "45327000AE0351",
-    ],
+    parcelles: ["45327000AE0351"],
     nom: "Décharge d'ordures ménagères",
   },
   {
     idtup: "petr45-8",
     commune: "Vennecy",
-    parcelles: [
-      "45333000ZD0065",
-      "45333000ZD0098",
-    ],
+    parcelles: ["45333000ZD0065", "45333000ZD0098"],
     nom: "Discothèque",
   },
   {
     idtup: "petr45-27",
     commune: "Vitry-aux-Loges",
-    parcelles: [
-      "45346000C1373",
-      "45346000C1410",
-      "45346000C1412",
-    ],
+    parcelles: ["45346000C1373", "45346000C1410", "45346000C1412"],
     nom: "Traitement de poteaux télégraphiques",
   },
 ];

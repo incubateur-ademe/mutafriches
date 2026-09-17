@@ -6,28 +6,19 @@ export const CCPEIDF_SITES: SitePrefetch[] = [
   {
     idtup: "ccpeidf-13",
     commune: "Auneau-Bleury-Saint-Symphorien",
-    parcelles: [
-      "28015000AT0001",
-      "28015000AT0029",
-    ],
+    parcelles: ["28015000AT0001", "28015000AT0029"],
     nom: "SCI du CDI 19 (Aubijoux)",
   },
   {
     idtup: "ccpeidf-14",
     commune: "Auneau-Bleury-Saint-Symphorien",
-    parcelles: [
-      "28015000AS0375",
-    ],
+    parcelles: ["28015000AS0375"],
     nom: "La Sianne",
   },
   {
     idtup: "ccpeidf-60",
     commune: "Auneau-Bleury-Saint-Symphorien",
-    parcelles: [
-      "28015000AV0008",
-      "28015000AV0009",
-      "28015000AV0010",
-    ],
+    parcelles: ["28015000AV0008", "28015000AV0009", "28015000AV0010"],
     nom: "Entreprise ATMOS",
   },
   {
@@ -66,11 +57,7 @@ export const CCPEIDF_SITES: SitePrefetch[] = [
   {
     idtup: "ccpeidf-16",
     commune: "Béville-le-Comte",
-    parcelles: [
-      "28039000ZN0074",
-      "28039000ZN0076",
-      "28039000ZN0078",
-    ],
+    parcelles: ["28039000ZN0074", "28039000ZN0076", "28039000ZN0078"],
     nom: "SC Kagy Alia HAVART",
   },
   {
@@ -102,51 +89,37 @@ export const CCPEIDF_SITES: SitePrefetch[] = [
   {
     idtup: "ccpeidf-7",
     commune: "Épernon",
-    parcelles: [
-      "28140000AN0011",
-      "28140000AN0013",
-    ],
+    parcelles: ["28140000AN0011", "28140000AN0013"],
     nom: "B.M.S",
   },
   {
     idtup: "ccpeidf-8",
     commune: "Épernon",
-    parcelles: [
-      "28140000AM0062",
-      "28140000AN0008",
-    ],
+    parcelles: ["28140000AM0062", "28140000AN0008"],
     nom: "ROUVER",
   },
   {
     idtup: "ccpeidf-9",
     commune: "Épernon",
-    parcelles: [
-      "28140000AM0023",
-    ],
+    parcelles: ["28140000AM0023"],
     nom: "APTIV",
   },
   {
     idtup: "ccpeidf-12",
     commune: "Gallardon",
-    parcelles: [
-      "28168000ZH0098",
-    ],
+    parcelles: ["28168000ZH0098"],
     nom: "SCI Les Maraichers",
   },
   {
     idtup: "ccpeidf-56",
     commune: "Gallardon",
-    parcelles: [
-      "28168000ZI0400",
-    ],
+    parcelles: ["28168000ZI0400"],
     nom: "Ancienne imprimerie",
   },
   {
     idtup: "ccpeidf-58",
     commune: "Gallardon",
-    parcelles: [
-      "28168000ZB0262",
-    ],
+    parcelles: ["28168000ZB0262"],
     nom: "Ancienne décharge",
   },
   {
@@ -183,22 +156,13 @@ export const CCPEIDF_SITES: SitePrefetch[] = [
   {
     idtup: "ccpeidf-25",
     commune: "Le Gué-de-Longroi",
-    parcelles: [
-      "28188000AC0162",
-      "28188000AC0163",
-      "28188000AC0164",
-    ],
+    parcelles: ["28188000AC0162", "28188000AC0163", "28188000AC0164"],
     nom: "Sté SIPLAST",
   },
   {
     idtup: "ccpeidf-57",
     commune: "Le Gué-de-Longroi",
-    parcelles: [
-      "28188000AB0346",
-      "28188000AB0354",
-      "28188000AB0355",
-      "28188000AB0356",
-    ],
+    parcelles: ["28188000AB0346", "28188000AB0354", "28188000AB0355", "28188000AB0356"],
     nom: "Ancienne décharge publique",
   },
   {
@@ -229,31 +193,19 @@ export const CCPEIDF_SITES: SitePrefetch[] = [
   {
     idtup: "ccpeidf-2",
     commune: "Nogent-le-Roi",
-    parcelles: [
-      "28279000ZD0048",
-      "28279000ZD0049",
-    ],
+    parcelles: ["28279000ZD0048", "28279000ZD0049"],
     nom: "EGA",
   },
   {
     idtup: "ccpeidf-3",
     commune: "Nogent-le-Roi",
-    parcelles: [
-      "28279000AB0242",
-      "28279000AB0243",
-      "28279000AB0244",
-      "28279000AB0245",
-    ],
+    parcelles: ["28279000AB0242", "28279000AB0243", "28279000AB0244", "28279000AB0245"],
     nom: "EXACOMPTA",
   },
   {
     idtup: "ccpeidf-6",
     commune: "Saint-Piat",
-    parcelles: [
-      "28357000AD0196",
-      "28357000AD0249",
-      "28357000AD0264",
-    ],
+    parcelles: ["28357000AD0196", "28357000AD0249", "28357000AD0264"],
     nom: "Arsenal de Saint-Piat",
   },
 ];

@@ -26,12 +26,7 @@
         "commune": "Ardon"
       }
     ],
-    "idusValides": [
-      "45006000B0618",
-      "45006000B0748",
-      "45006000B0750",
-      "45006000B0979"
-    ],
+    "idusValides": ["45006000B0618", "45006000B0748", "45006000B0750", "45006000B0979"],
     "pointIdu": null,
     "pointDansSite": false,
     "statut": "OK",
@@ -59,11 +54,7 @@
         "commune": "Ardon"
       }
     ],
-    "idusValides": [
-      "45006000A0152",
-      "45006000A0154",
-      "45006000A0155"
-    ],
+    "idusValides": ["45006000A0152", "45006000A0154", "45006000A0155"],
     "pointIdu": null,
     "pointDansSite": false,
     "statut": "OK",
@@ -155,9 +146,7 @@
         "commune": "Châteauneuf-sur-Loire"
       }
     ],
-    "idusValides": [
-      "45082000AN0546"
-    ],
+    "idusValides": ["45082000AN0546"],
     "pointIdu": null,
     "pointDansSite": false,
     "statut": "OK",
@@ -175,9 +164,7 @@
         "commune": "Châteauneuf-sur-Loire"
       }
     ],
-    "idusValides": [
-      "45082000BC0958"
-    ],
+    "idusValides": ["45082000BC0958"],
     "pointIdu": null,
     "pointDansSite": false,
     "statut": "OK",
@@ -200,10 +187,7 @@
         "commune": "Châteauneuf-sur-Loire"
       }
     ],
-    "idusValides": [
-      "45082000BC0522",
-      "45082000BC0531"
-    ],
+    "idusValides": ["45082000BC0522", "45082000BC0531"],
     "pointIdu": null,
     "pointDansSite": false,
     "statut": "OK",
@@ -373,9 +357,7 @@
         "commune": "Châteauneuf-sur-Loire"
       }
     ],
-    "idusValides": [
-      "45082000BK0207"
-    ],
+    "idusValides": ["45082000BK0207"],
     "pointIdu": null,
     "pointDansSite": false,
     "statut": "OK",
@@ -393,9 +375,7 @@
         "commune": "Châteauneuf-sur-Loire"
       }
     ],
-    "idusValides": [
-      "45082000AN0911"
-    ],
+    "idusValides": ["45082000AN0911"],
     "pointIdu": null,
     "pointDansSite": false,
     "statut": "OK",
@@ -423,11 +403,7 @@
         "commune": "Fay-aux-Loges"
       }
     ],
-    "idusValides": [
-      "45142000AR0268",
-      "45142000AR0405",
-      "45142000AR0415"
-    ],
+    "idusValides": ["45142000AR0268", "45142000AR0405", "45142000AR0415"],
     "pointIdu": null,
     "pointDansSite": false,
     "statut": "OK",
@@ -450,10 +426,7 @@
         "commune": "Fay-aux-Loges"
       }
     ],
-    "idusValides": [
-      "45142000ZT0072",
-      "45142000ZT0090"
-    ],
+    "idusValides": ["45142000ZT0072", "45142000ZT0090"],
     "pointIdu": null,
     "pointDansSite": false,
     "statut": "OK",
@@ -471,9 +444,7 @@
         "commune": "Fay-aux-Loges"
       }
     ],
-    "idusValides": [
-      "45142000AR0671"
-    ],
+    "idusValides": ["45142000AR0671"],
     "pointIdu": null,
     "pointDansSite": false,
     "statut": "OK",
@@ -506,12 +477,7 @@
         "commune": "La Ferté-Saint-Aubin"
       }
     ],
-    "idusValides": [
-      "45146000BK0253",
-      "45146000BK0254",
-      "45146000BK0258",
-      "45146000BK0259"
-    ],
+    "idusValides": ["45146000BK0253", "45146000BK0254", "45146000BK0258", "45146000BK0259"],
     "pointIdu": null,
     "pointDansSite": false,
     "statut": "OK",
@@ -534,10 +500,7 @@
         "commune": "La Ferté-Saint-Aubin"
       }
     ],
-    "idusValides": [
-      "45146000BL0510",
-      "45146000BL0511"
-    ],
+    "idusValides": ["45146000BL0510", "45146000BL0511"],
     "pointIdu": null,
     "pointDansSite": false,
     "statut": "OK",
@@ -555,9 +518,7 @@
         "commune": "La Ferté-Saint-Aubin"
       }
     ],
-    "idusValides": [
-      "45146000BL0509"
-    ],
+    "idusValides": ["45146000BL0509"],
     "pointIdu": null,
     "pointDansSite": false,
     "statut": "OK",
@@ -575,9 +536,7 @@
         "commune": "La Ferté-Saint-Aubin"
       }
     ],
-    "idusValides": [
-      "45146000BL0153"
-    ],
+    "idusValides": ["45146000BL0153"],
     "pointIdu": null,
     "pointDansSite": false,
     "statut": "OK",
@@ -663,9 +622,7 @@
         "commune": "Loury"
       }
     ],
-    "idusValides": [
-      "45188000A0719"
-    ],
+    "idusValides": ["45188000A0719"],
     "pointIdu": null,
     "pointDansSite": false,
     "statut": "OK",
@@ -683,9 +640,7 @@
         "commune": "Loury"
       }
     ],
-    "idusValides": [
-      "45188000A0717"
-    ],
+    "idusValides": ["45188000A0717"],
     "pointIdu": null,
     "pointDansSite": false,
     "statut": "OK",
@@ -713,11 +668,7 @@
         "commune": "Loury"
       }
     ],
-    "idusValides": [
-      "45188000AD1194",
-      "45188000AD0184",
-      "45188000AD0793"
-    ],
+    "idusValides": ["45188000AD1194", "45188000AD0184", "45188000AD0793"],
     "pointIdu": null,
     "pointDansSite": false,
     "statut": "OK",
@@ -735,9 +686,7 @@
         "commune": "Neuville-aux-Bois"
       }
     ],
-    "idusValides": [
-      "45224000AA0121"
-    ],
+    "idusValides": ["45224000AA0121"],
     "pointIdu": null,
     "pointDansSite": false,
     "statut": "OK",
@@ -765,11 +714,7 @@
         "commune": "Neuville-aux-Bois"
       }
     ],
-    "idusValides": [
-      "45224000AA0405",
-      "45224000AA0404",
-      "45224000AA0172"
-    ],
+    "idusValides": ["45224000AA0405", "45224000AA0404", "45224000AA0172"],
     "pointIdu": null,
     "pointDansSite": false,
     "statut": "OK",
@@ -787,9 +732,7 @@
         "commune": "Ouzouer-sur-Loire"
       }
     ],
-    "idusValides": [
-      "45244000AM0096"
-    ],
+    "idusValides": ["45244000AM0096"],
     "pointIdu": null,
     "pointDansSite": false,
     "statut": "OK",
@@ -807,9 +750,7 @@
         "commune": "Saint-Denis-de-l'Hôtel"
       }
     ],
-    "idusValides": [
-      "45273000AL0345"
-    ],
+    "idusValides": ["45273000AL0345"],
     "pointIdu": null,
     "pointDansSite": false,
     "statut": "OK",
@@ -827,9 +768,7 @@
         "commune": "Saint-Denis-de-l'Hôtel"
       }
     ],
-    "idusValides": [
-      "45273000AL0389"
-    ],
+    "idusValides": ["45273000AL0389"],
     "pointIdu": null,
     "pointDansSite": false,
     "statut": "OK",
@@ -847,9 +786,7 @@
         "commune": "Saint-Denis-de-l'Hôtel"
       }
     ],
-    "idusValides": [
-      "45273000ZE0277"
-    ],
+    "idusValides": ["45273000ZE0277"],
     "pointIdu": null,
     "pointDansSite": false,
     "statut": "OK",
@@ -867,9 +804,7 @@
         "commune": "Saint-Florent"
       }
     ],
-    "idusValides": [
-      "45277000AD0233"
-    ],
+    "idusValides": ["45277000AD0233"],
     "pointIdu": null,
     "pointDansSite": false,
     "statut": "OK",
@@ -892,10 +827,7 @@
         "commune": "Saint-Florent"
       }
     ],
-    "idusValides": [
-      "45277000AC0126",
-      "45277000AC0128"
-    ],
+    "idusValides": ["45277000AC0126", "45277000AC0128"],
     "pointIdu": null,
     "pointDansSite": false,
     "statut": "OK",
@@ -985,11 +917,7 @@
         "commune": "Sully-sur-Loire"
       }
     ],
-    "idusValides": [
-      "45315000AI0618",
-      "45315000AI0675",
-      "45315000AI0680"
-    ],
+    "idusValides": ["45315000AI0618", "45315000AI0675", "45315000AI0680"],
     "pointIdu": null,
     "pointDansSite": false,
     "statut": "OK",
@@ -1007,9 +935,7 @@
         "commune": "Sully-sur-Loire"
       }
     ],
-    "idusValides": [
-      "45315000AI0678"
-    ],
+    "idusValides": ["45315000AI0678"],
     "pointIdu": null,
     "pointDansSite": false,
     "statut": "OK",
@@ -1027,9 +953,7 @@
         "commune": "Traînou"
       }
     ],
-    "idusValides": [
-      "45327000AE0351"
-    ],
+    "idusValides": ["45327000AE0351"],
     "pointIdu": null,
     "pointDansSite": false,
     "statut": "OK",
@@ -1052,10 +976,7 @@
         "commune": "Vennecy"
       }
     ],
-    "idusValides": [
-      "45333000ZD0065",
-      "45333000ZD0098"
-    ],
+    "idusValides": ["45333000ZD0065", "45333000ZD0098"],
     "pointIdu": null,
     "pointDansSite": false,
     "statut": "OK",
@@ -1083,11 +1004,7 @@
         "commune": "Vitry-aux-Loges"
       }
     ],
-    "idusValides": [
-      "45346000C1373",
-      "45346000C1410",
-      "45346000C1412"
-    ],
+    "idusValides": ["45346000C1373", "45346000C1410", "45346000C1412"],
     "pointIdu": null,
     "pointDansSite": false,
     "statut": "OK",
