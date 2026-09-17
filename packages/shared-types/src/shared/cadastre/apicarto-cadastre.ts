@@ -7,6 +7,8 @@
  * conventions apicarto (padding section/numéro, `source_ign`, forme du `geom`).
  */
 
+import { prefixeDeIdu } from "../utils/cadastre-ref.utils";
+
 export const APICARTO_CADASTRE_URL = "https://apicarto.ign.fr/api/cadastre/parcelle";
 
 export interface ParcelleCadastre {
@@ -82,5 +84,20 @@ export function toParcelleCadastre(feature: ApicartoCadastreFeature): ParcelleCa
 // Première parcelle d'une réponse apicarto, ou null si aucune.
 export function premiereParcelle(response: ApicartoCadastreResponse): ParcelleCadastre | null {
   const feature = response.features?.[0];
+  return feature ? toParcelleCadastre(feature) : null;
+}
+
+/**
+ * Parcelle dont l'IDU porte le préfixe COM_ABS attendu.
+ *
+ * Sur une commune nouvelle, un même couple (section, numéro) peut exister dans plusieurs
+ * communes absorbées : prendre la première feature renverrait une parcelle voisine
+ * plausible mais fausse. À n'utiliser que lorsque la source porte le préfixe.
+ */
+export function parcelleAvecPrefixe(
+  response: ApicartoCadastreResponse,
+  prefixe: string,
+): ParcelleCadastre | null {
+  const feature = response.features?.find((f) => prefixeDeIdu(f.properties.idu) === prefixe);
   return feature ? toParcelleCadastre(feature) : null;
 }

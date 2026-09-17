@@ -1,47 +1,84 @@
 import { describe, expect, it } from "vitest";
-import { buildIduCandidate, parseNumParcelle } from "./cadastre-ref.utils";
+import { buildIduCandidate, parseNumParcelle, prefixeDeIdu } from "./cadastre-ref.utils";
 
 describe("parseNumParcelle", () => {
   it("parse une parcelle unique", () => {
-    expect(parseNumParcelle("AH13")).toEqual([{ section: "AH", numero: "13" }]);
+    expect(parseNumParcelle("AH13")).toEqual([{ prefixe: "000", section: "AH", numero: "13" }]);
   });
 
   it("hérite de la section pour les numéros suivants", () => {
     expect(parseNumParcelle("AB160/161/163")).toEqual([
-      { section: "AB", numero: "160" },
-      { section: "AB", numero: "161" },
-      { section: "AB", numero: "163" },
+      { prefixe: "000", section: "AB", numero: "160" },
+      { prefixe: "000", section: "AB", numero: "161" },
+      { prefixe: "000", section: "AB", numero: "163" },
     ]);
   });
 
   it("gère plusieurs sections dans le même champ", () => {
     expect(parseNumParcelle("AC578/ZB580")).toEqual([
-      { section: "AC", numero: "578" },
-      { section: "ZB", numero: "580" },
+      { prefixe: "000", section: "AC", numero: "578" },
+      { prefixe: "000", section: "ZB", numero: "580" },
     ]);
   });
 
   it("gère une section à une seule lettre", () => {
     expect(parseNumParcelle("A3/4/5")).toEqual([
-      { section: "A", numero: "3" },
-      { section: "A", numero: "4" },
-      { section: "A", numero: "5" },
+      { prefixe: "000", section: "A", numero: "3" },
+      { prefixe: "000", section: "A", numero: "4" },
+      { prefixe: "000", section: "A", numero: "5" },
     ]);
   });
 
   it("normalise la casse et les espaces", () => {
-    expect(parseNumParcelle(" zi10 ")).toEqual([{ section: "ZI", numero: "10" }]);
+    expect(parseNumParcelle(" zi10 ")).toEqual([{ prefixe: "000", section: "ZI", numero: "10" }]);
   });
 
   it("ignore les segments illisibles", () => {
     expect(parseNumParcelle("AB12//xx/13")).toEqual([
-      { section: "AB", numero: "12" },
-      { section: "AB", numero: "13" },
+      { prefixe: "000", section: "AB", numero: "12" },
+      { prefixe: "000", section: "AB", numero: "13" },
     ]);
   });
 
   it("retourne un tableau vide pour une entrée vide", () => {
     expect(parseNumParcelle("")).toEqual([]);
+  });
+
+  // Commune nouvelle : le préfixe COM_ABS de la commune absorbée précède la section
+  // (inventaire EODD, Bray-Saint-Aignan).
+  it("gère un préfixe COM_ABS de commune absorbée", () => {
+    expect(parseNumParcelle("267B18/ 267B21/ 267B316")).toEqual([
+      { prefixe: "267", section: "B", numero: "18" },
+      { prefixe: "267", section: "B", numero: "21" },
+      { prefixe: "267", section: "B", numero: "316" },
+    ]);
+  });
+
+  it("hérite du préfixe COM_ABS pour les numéros seuls suivants", () => {
+    expect(parseNumParcelle("267B18/21")).toEqual([
+      { prefixe: "267", section: "B", numero: "18" },
+      { prefixe: "267", section: "B", numero: "21" },
+    ]);
+  });
+
+  it("repasse au préfixe par défaut après une section sans préfixe", () => {
+    expect(parseNumParcelle("267B18/AC12")).toEqual([
+      { prefixe: "267", section: "B", numero: "18" },
+      { prefixe: "000", section: "AC", numero: "12" },
+    ]);
+  });
+
+  // Section écrite déjà paddée à 2 caractères (inventaire EODD, Béville-le-Comte).
+  it("gère une section paddée d'un zéro", () => {
+    expect(parseNumParcelle("0F1444 /0F1445")).toEqual([
+      { prefixe: "000", section: "F", numero: "1444" },
+      { prefixe: "000", section: "F", numero: "1445" },
+    ]);
+  });
+
+  it("ne confond pas une section paddée avec un préfixe COM_ABS", () => {
+    expect(parseNumParcelle("0F1444")[0].prefixe).toBe("000");
+    expect(parseNumParcelle("000B18")[0].prefixe).toBe("000");
   });
 });
 
@@ -56,5 +93,26 @@ describe("buildIduCandidate", () => {
 
   it("pad le numéro à 4 chiffres", () => {
     expect(buildIduCandidate("88011", "B", "22")).toBe("880110000B0022");
+  });
+
+  it("intègre le préfixe COM_ABS fourni", () => {
+    expect(buildIduCandidate("45053", "B", "18", "267")).toBe("450532670B0018");
+  });
+});
+
+describe("prefixeDeIdu", () => {
+  it("extrait le préfixe d'un IDU à 14 caractères", () => {
+    expect(prefixeDeIdu("450532670B0018")).toBe("267");
+    expect(prefixeDeIdu("77305000AH0013")).toBe("000");
+  });
+
+  // L'API Carto renvoie parfois la section non paddée (13 caractères).
+  it("extrait le préfixe d'un IDU à 13 caractères", () => {
+    expect(prefixeDeIdu("29151000C2489")).toBe("000");
+  });
+
+  it("retourne null hors des longueurs attendues", () => {
+    expect(prefixeDeIdu("77305000AH13")).toBeNull();
+    expect(prefixeDeIdu(undefined)).toBeNull();
   });
 });
