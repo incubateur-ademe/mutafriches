@@ -41,10 +41,10 @@ async function bootstrap() {
     // Trust proxy pour Scalingo et autres environnements
     if (isProduction()) {
       app.set("trust proxy", 1);
-      logger.log("Proxy configure pour l'environnement de production");
+      logger.log("Proxy configuré pour l'environnement de production");
     }
 
-    // Configuration CORS pour le developpement : tout port local, le serveur Vite glissant
+    // Configuration CORS pour le développement : tout port local, le serveur Vite glissant
     // sur 5174 et suivants quand 5173 est déjà pris.
     if (!isProduction()) {
       app.enableCors({
@@ -52,7 +52,7 @@ async function bootstrap() {
           callback(null, !origine || estOrigineLocale(origine)),
         credentials: true,
       });
-      logger.log("CORS configure pour le developpement (toute origine locale)");
+      logger.log("CORS configuré pour le développement (toute origine locale)");
     }
 
     if (isProduction()) {
