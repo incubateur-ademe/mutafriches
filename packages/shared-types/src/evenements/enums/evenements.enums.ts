@@ -37,6 +37,9 @@ export enum TypeEvenement {
 
   // Partage d'une page partenaire (clic sur le bouton "Partager")
   PARTAGE_PAGE_PARTENAIRE = "partage_page_partenaire",
+
+  // Export CNIG de tous les sites d'une page partenaire
+  EXPORT_SITES_PARTENAIRE = "export_sites_partenaire",
 }
 
 export enum ModeUtilisation {
