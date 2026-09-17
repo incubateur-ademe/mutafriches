@@ -83,6 +83,9 @@ export function normalizeParcelId(id: string): string {
   return id;
 }
 
+// Même format pour la validation publique et la barrière après normalisation.
+const PARCEL_ID_PATTERN = /^(?:[0-9]{2}|97[1-6]|2[AB])[0-9]{3}[0-9]{3}[A-Z0-9]{1,2}[0-9]{4}$/;
+
 /**
  * Vérifie si un identifiant de parcelle cadastrale est valide
  *
@@ -104,30 +107,7 @@ export function normalizeParcelId(id: string): string {
  * @returns true si l'identifiant est valide après normalisation, false sinon
  */
 export function isValidParcelId(id: string): boolean {
-  if (!id || typeof id !== "string") return false;
-
-  // Normaliser l'IDU avant validation
-  const normalizedId = normalizeParcelId(id);
-
-  // La longueur varie selon le format :
-  // - Métropole avec section 1 lettre : 2 + 3 + 3 + 1 + 4 = 13 car
-  // - Métropole avec section 2 lettres : 2 + 3 + 3 + 2 + 4 = 14 car
-  // - DOM avec section 1 lettre : 3 + 3 + 3 + 1 + 4 = 14 car
-  // - DOM avec section 2 lettres : 3 + 3 + 3 + 2 + 4 = 15 car
-  // - Corse avec section 1 lettre : 2 + 3 + 3 + 1 + 4 = 13 car
-  // - Corse avec section 2 lettres : 2 + 3 + 3 + 2 + 4 = 14 car
-
-  const patterns = [
-    // Métropole : dept(2) + commune(3) + comAbs(3) + section(1-2) + parcelle(4) = 13-14 car
-    // Section peut être : lettres (A, AB), chiffres (01, 38), ou alphanum (A1)
-    /^[0-9]{2}[0-9]{3}[0-9]{3}[A-Z0-9]{1,2}[0-9]{4}$/,
-    // DOM (971-976) : dept(3) + commune(3) + comAbs(3) + section(1-2) + parcelle(4) = 14-15 car
-    /^97[1-6][0-9]{3}[0-9]{3}[A-Z0-9]{1,2}[0-9]{4}$/,
-    // Corse (2A, 2B) : dept(2) + commune(3) + comAbs(3) + section(1-2) + parcelle(4) = 13-14 car
-    /^2[AB][0-9]{3}[0-9]{3}[A-Z0-9]{1,2}[0-9]{4}$/,
-  ];
-
-  return patterns.some((pattern) => pattern.test(normalizedId));
+  return sanitizeParcelIdForApi(id) !== null;
 }
 
 /**
@@ -138,10 +118,12 @@ export function isValidParcelId(id: string): boolean {
  * @returns IDU normalisé et validé, ou null si invalide
  */
 export function sanitizeParcelIdForApi(id: string): string | null {
-  if (!isValidParcelId(id)) {
-    return null;
-  }
-  return normalizeParcelId(id);
+  if (!id || typeof id !== "string") return null;
+
+  const normalizedId = normalizeParcelId(id);
+  // Valider la valeur retournée, sans la reconstruire après le contrôle.
+  if (!PARCEL_ID_PATTERN.test(normalizedId)) return null;
+  return normalizedId;
 }
 
 /**
