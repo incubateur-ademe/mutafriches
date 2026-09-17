@@ -435,6 +435,69 @@ La modale « Analyser plusieurs sites » (page résultats) embarque un **calendr
 
 Pièges rencontrés en session. Chaque entrée documente un piège pour éviter d'y retomber.
 
+### `enrichissements` ne compte pas des qualifications utilisateur
+
+- La table enregistre une ligne par appel à `POST /enrichissement`, **cache hits re-loggés
+  inclus** (`enrichissement_source_id` non nul) et **robots inclus**. La pré-chauffe
+  quotidienne des sites partenaires y écrit une ligne par parcelle et par jour : en septembre
+  2026, 12 319 lignes pour 1 324 parcelles distinctes, dont 69 % de pré-chauffe.
+- Tout ratio construit sur cette table comme dénominateur est faux d'un facteur ~5. Le
+  « taux de conversion » Metabase affichait 13,3 % là où le parcours réel est à ~69 %.
+- Depuis l'ADR-0041, écarter la pré-chauffe avec `source_utilisation IS DISTINCT FROM
+  'PREFETCH'` (un `<>` exclurait aussi les ~500 lignes à NULL, d'origine inconnue mais pas
+  robotique) — et **le marquage ne vaut que pour l'avenir** : sur l'historique, mesurer l'usage
+  sur `evenements_utilisateur` (`enrichissement_termine` → `resultats_mutabilite`), qu'aucun
+  robot n'alimente.
+- `evaluations` reste un signal propre : la pré-chauffe n'appelle jamais `/evaluation/calculer`.
+- `integrateur LIKE 'partenaire:%'` n'est **pas** un filtre fiable avant fin juillet 2026 : le
+  backfill a rétro-tagué de l'historique de pré-chauffe.
+
+### Événement rejeté silencieusement : l'identifiant doit être mono-parcelle
+
+- Le DTO d'événement impose `@MaxLength(20)` et `@Matches(/^[0-9A-Z]+$/)` sur
+  `identifiantCadastral`. En multi-parcelle, `state.identifiantSite` est la **liste jointe par
+  virgules** (`"49020000AK0118,49020000AK0119"`) : 29 caractères et une virgule, donc rejetée
+  en 400. `EvenementsService.enregistrerEvenement()` avale l'erreur — le parcours continue,
+  l'événement disparaît, rien n'apparaît ni en console ni en base.
+- **Toujours** passer par `identifiantCadastralTracking(state.enrichmentData,
+  state.identifiantSite)` (`apps/ui/src/shared/form/tracking.utils.ts`) pour tout événement
+  porteur d'un identifiant. Ne jamais transmettre `state.identifiantSite` directement.
+- **Impact historique à connaître avant de lire toute statistique d'étape.** Le bug a touché
+  les trois pages de qualification jusqu'en septembre 2026 : toute session multi-parcelle
+  perdait ses trois étapes, tout en conservant `enrichissement_termine` et
+  `resultats_mutabilite` (qui, eux, dérivaient déjà un identifiant valide). Conséquences :
+  - `qualification_site`, `qualification_environnement` et `qualification_risques` sont
+    **sous-comptés** sur tout l'historique — d'environ 14 % des sessions arrivées aux
+    résultats, soit la part d'usage multi-parcelle (18 sessions sur 130, 90 jours au
+    2026-09-17).
+  - L'entonnoir paraissait incohérent : plus de sessions aux résultats qu'à la dernière étape.
+  - Leurs effectifs vont **bondir après le déploiement du correctif** sans qu'aucun
+    comportement utilisateur n'ait changé : ne pas lire ce saut comme une amélioration.
+  - En revanche, le taux `enrichissement_termine` → `resultats_mutabilite` n'est **pas**
+    affecté et reste comparable avant/après.
+
+### Deux parcours émettent `resultats_mutabilite`, un seul passe par la qualification
+
+- Le parcours standalone (`/analyser`) enchaîne enrichissement → `qualification_site` →
+  `qualification_environnement` → `qualification_risques` → `resultats_mutabilite`. La page
+  partenaire (`/partenaires/<slug>`) enchaîne enrichissement → `resultats_mutabilite` **sans
+  aucune étape de qualification** : la connaissance terrain s'y saisit en ligne et vit en
+  localStorage (ADR-0021).
+- Les deux parcours se séparent via `integrateur LIKE 'partenaire:%'`, posé par
+  `useEventTracking({ integrateurOverride })` : toujours ventiler avant de comparer des étapes,
+  les populations n'ayant rien à voir (professionnels traitant une liste d'un côté, découverte
+  du produit de l'autre).
+- **Ne pas surestimer cet effet pour autant.** Au 2026-09-17, le parcours partenaire pèse 8
+  sessions sur 888 : il n'explique quasiment rien d'un entonnoir incohérent. L'essentiel de
+  l'écart venait du bug de tracking multi-parcelle décrit ci-dessous.
+- **Piège d'arithmétique** : `résultats − risques` ne donne PAS le nombre de sessions arrivées
+  aux résultats sans étape risques, puisque des sessions atteignent les risques sans aller aux
+  résultats. Les deux quantités se compensent. Toujours compter directement
+  `COUNT(*) FILTER (WHERE resultats AND NOT risques)`.
+- **Ce n'est pas de la fragmentation de session** : une session coupée produit une seconde
+  session sans `enrichissement_termine`, donc exclue du dénominateur. La fragmentation retire
+  du numérateur, elle ne peut pas créer d'excédent.
+
 ### `dist` de shared-types périmé → tests API en échec fantôme
 
 - Les tests de l'API résolvent `@mutafriches/shared-types` depuis son **`dist` compilé** (le `vitest.config.ts` de l'API n'aliase que `@` → `/src`, pas le package). Un `dist` obsolète fait donc échouer des tests API sur des symptômes trompeurs (ex. `criteres-metadata.guard.spec.ts` : `CRITERES_METADATA` vs `POIDS_CRITERES` désalignés alors que les **sources** sont cohérentes).

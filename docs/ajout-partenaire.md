@@ -80,6 +80,10 @@ scalingo --app <app> run "PARTENAIRE=<slug> pnpm partenaires:prefetch"
 Un rafraîchissement périodique est par ailleurs assuré par le workflow GitHub
 `.github/workflows/partenaires-prefetch.yml` (le TTL du cache serveur est de 24h).
 
+Ces appels sont enregistrés avec `source_utilisation = PREFETCH` (query param `prefetch=true`,
+cf. ADR-0041) : les exclure de toute statistique d'usage, sans quoi la pré-chauffe est comptée
+comme des qualifications utilisateur.
+
 ## Conventions
 
 - `slug` : minuscules, sans espace (segment d'URL). **Identique** côté UI et côté prefetch API.
