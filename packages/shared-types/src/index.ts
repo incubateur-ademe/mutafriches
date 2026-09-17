@@ -21,5 +21,8 @@ export * from "./documentation";
 // Cartofriches (comparaison avec l'API Cerema)
 export * from "./cartofriches";
 
+// Standard CNIG Friches (export des sites partenaires)
+export * from "./cnig";
+
 // Shared
 export * from "./shared";
