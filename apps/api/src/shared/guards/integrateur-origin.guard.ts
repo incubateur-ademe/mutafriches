@@ -28,9 +28,41 @@ export class IntegrateurOriginGuard implements CanActivate {
 
   constructor() {
     const envOrigins = getAppConfig().origins.allowedIntegrators;
-    this.allowedOrigins = envOrigins
-      ? [...DEFAULT_ALLOWED_ORIGINS, ...envOrigins.split(",").map((o) => o.trim())]
+    const originesBrutes = envOrigins
+      ? [...DEFAULT_ALLOWED_ORIGINS, ...envOrigins.split(",")]
       : DEFAULT_ALLOWED_ORIGINS;
+
+    this.allowedOrigins = originesBrutes
+      .map((origine) => this.normaliserOrigine(origine))
+      .filter((origine): origine is string => origine !== null);
+  }
+
+  // Un header Origin ne porte jamais de slash final : sans normalisation, une entrée
+  // configurée avec un slash ne matche jamais et l'intégrateur reçoit un 403 muet.
+  private normaliserOrigine(valeur: string): string | null {
+    const brute = valeur.trim().replace(/\/+$/, "");
+    if (!brute) {
+      return null;
+    }
+
+    let normalisee = brute;
+    try {
+      // new URL normalise la casse du schéma et de l'hôte, ainsi que le port par défaut.
+      // Une origine opaque (file:, data:) donne la chaîne "null" : on la rejette pour ne
+      // pas autoriser par accident les requêtes portant `Origin: null`.
+      const origineUrl = new URL(brute).origin;
+      if (origineUrl !== "null") {
+        normalisee = origineUrl;
+      }
+    } catch {
+      // Valeur non parsable : on conserve la chaîne nettoyée, la comparaison stricte tranchera.
+    }
+
+    if (normalisee !== valeur) {
+      this.logger.log(`Origine intégrateur normalisée : "${valeur}" -> "${normalisee}"`);
+    }
+
+    return normalisee;
   }
 
   canActivate(context: ExecutionContext): boolean {
