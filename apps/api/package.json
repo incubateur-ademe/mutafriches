@@ -52,7 +52,7 @@
     "@nestjs/core": "^11.1.27",
     "@nestjs/platform-express": "^11.1.27",
     "@nestjs/swagger": "^11.4.4",
-    "@nestjs/throttler": "^6.5.0",
+    "@nestjs/throttler": "^6.7.0",
     "@turf/area": "^7.4.0",
     "@turf/centroid": "^7.4.0",
     "@turf/helpers": "^7.4.0",
