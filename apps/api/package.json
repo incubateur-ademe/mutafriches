@@ -48,7 +48,7 @@
   "dependencies": {
     "@mutafriches/shared-types": "workspace:*",
     "@nestjs/axios": "^4.0.1",
-    "@nestjs/common": "^11.1.27",
+    "@nestjs/common": "^12.0.3",
     "@nestjs/core": "^11.1.27",
     "@nestjs/platform-express": "^11.1.27",
     "@nestjs/swagger": "^11.4.4",
