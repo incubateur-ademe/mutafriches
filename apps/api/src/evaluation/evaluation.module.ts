@@ -11,6 +11,6 @@ import { EnrichissementModule } from "../enrichissement/enrichissement.module";
   imports: [DatabaseModule, EnrichissementModule],
   controllers: [EvaluationController],
   providers: [OrchestrateurService, CalculService, FiabiliteCalculator, EvaluationRepository],
-  exports: [OrchestrateurService],
+  exports: [OrchestrateurService, CalculService],
 })
 export class EvaluationModule {}

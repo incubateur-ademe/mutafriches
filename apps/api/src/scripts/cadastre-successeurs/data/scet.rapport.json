@@ -1,0 +1,132 @@
+{
+  "millesimeCourant": "2026-06-01",
+  "sites": [
+    {
+      "idtup": "scet-28",
+      "commune": "La Grande-Paroisse",
+      "parcellesAvant": ["77210000AH0013"],
+      "disparues": [
+        {
+          "id": "77210000AH0013",
+          "dernierMillesime": "2026-03-01"
+        }
+      ],
+      "successeurs": [
+        {
+          "id": "77210000AH0016",
+          "surfaceM2": 461713.7225041991,
+          "partDansSite": 0.9999999999893656,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "77210000AH0014",
+          "surfaceM2": 219615.03322786873,
+          "partDansSite": 0.9999999777436753,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "77210000AH0015",
+          "surfaceM2": 6206.944323153574,
+          "partDansSite": 0.9999982077591375,
+          "confirmeApicarto": true
+        }
+      ],
+      "ecartes": [],
+      "couverture": 0.9999991129938387,
+      "parcellesApres": ["77210000AH0016", "77210000AH0014", "77210000AH0015"]
+    },
+    {
+      "idtup": "scet-22",
+      "commune": "Montereau-Fault-Yonne",
+      "parcellesAvant": ["77305000AM0393", "77305000AM0394"],
+      "disparues": [
+        {
+          "id": "77305000AM0393",
+          "dernierMillesime": "2026-03-01"
+        }
+      ],
+      "successeurs": [
+        {
+          "id": "77305000AM0456",
+          "surfaceM2": 2442.531631260765,
+          "partDansSite": 1.0000000000633416,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "77305000AM0457",
+          "surfaceM2": 442.8103454440154,
+          "partDansSite": 1,
+          "confirmeApicarto": true
+        }
+      ],
+      "ecartes": [],
+      "couverture": 0.9999851789048699,
+      "parcellesApres": ["77305000AM0394", "77305000AM0456", "77305000AM0457"]
+    },
+    {
+      "idtup": "scet-19",
+      "commune": "Esmans",
+      "parcellesAvant": [
+        "77172000A0306",
+        "77172000A0307",
+        "77172000A0308",
+        "77172000A0309",
+        "77172000A0310",
+        "77172000A0311",
+        "77172000A1116",
+        "77172000A1118",
+        "77172000A1120",
+        "77172000A1122",
+        "77172000A1124",
+        "77172000A1126",
+        "77172000A1128",
+        "77172000A1132",
+        "77172000A1133",
+        "77172000A1136",
+        "77172000A1137"
+      ],
+      "disparues": [
+        {
+          "id": "771720000A1133",
+          "dernierMillesime": "2026-03-01"
+        }
+      ],
+      "successeurs": [
+        {
+          "id": "771720000A1162",
+          "surfaceM2": 256.590003920865,
+          "partDansSite": 0.999933640415736,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "771720000A1163",
+          "surfaceM2": 1.393150445499588,
+          "partDansSite": 0.9993040031635241,
+          "confirmeApicarto": true
+        }
+      ],
+      "ecartes": [],
+      "couverture": 1.0000000000666385,
+      "parcellesApres": [
+        "77172000A0306",
+        "77172000A0307",
+        "77172000A0308",
+        "77172000A0309",
+        "77172000A0310",
+        "77172000A0311",
+        "77172000A1116",
+        "77172000A1118",
+        "77172000A1120",
+        "77172000A1122",
+        "77172000A1124",
+        "77172000A1126",
+        "77172000A1128",
+        "77172000A1132",
+        "77172000A1136",
+        "77172000A1137",
+        "771720000A1162",
+        "771720000A1163"
+      ]
+    }
+  ]
+}

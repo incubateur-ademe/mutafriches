@@ -1,5 +1,6 @@
 import { useMemo, useRef } from "react";
 import type { MutabiliteOutputDto } from "@mutafriches/shared-types";
+import type { ContexteCalcul } from "../calcul-obsolete";
 
 // Persistance locale (par utilisateur) de la saisie « Connaissance terrain » et de la
 // mutabilité associée, par site (idtup). Propre à l'appareil/navigateur — cf. ADR-0021.
@@ -9,6 +10,8 @@ const STORAGE_VERSION = 1;
 interface SiteUserData {
   manualData: Record<string, string>;
   mutability: MutabiliteOutputDto | null;
+  // Absent sur les calculs antérieurs au suivi des changements (ADR-0045)
+  contexte?: ContexteCalcul;
   /** La qualification (enrichissement) a été lancée et terminée pour ce site. */
   qualified?: boolean;
 }
@@ -52,7 +55,8 @@ export interface SiteUserDataStore {
   getManualData(idtup: string): Record<string, string>;
   setManualData(idtup: string, data: Record<string, string>): void;
   getMutability(idtup: string): MutabiliteOutputDto | null;
-  setMutability(idtup: string, data: MutabiliteOutputDto): void;
+  getContexte(idtup: string): ContexteCalcul | undefined;
+  setMutability(idtup: string, data: MutabiliteOutputDto, contexte: ContexteCalcul): void;
   clearMutability(idtup: string): void;
   remove(idtup: string): void;
   /** Marque la qualification (enrichissement) comme terminée pour ce site. */
@@ -90,14 +94,15 @@ export function useSiteUserData(storageKey: string): SiteUserDataStore {
         persist();
       },
       getMutability: (idtup) => entry(idtup).mutability,
-      setMutability: (idtup, data) => {
-        map().set(idtup, { ...entry(idtup), mutability: data });
+      getContexte: (idtup) => entry(idtup).contexte,
+      setMutability: (idtup, data, contexte) => {
+        map().set(idtup, { ...entry(idtup), mutability: data, contexte });
         persist();
       },
       clearMutability: (idtup) => {
         const e = map().get(idtup);
         if (e?.mutability) {
-          map().set(idtup, { ...e, mutability: null });
+          map().set(idtup, { ...e, mutability: null, contexte: undefined });
           persist();
         }
       },

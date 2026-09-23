@@ -22,6 +22,7 @@ import { ExportSitesModal, type OptionsExportSites } from "../components/ExportS
 import { DonneesExternesLink } from "../components/DonneesExternesLink";
 import { PartagerButton } from "../components/PartagerButton";
 import { buildExportPayload } from "../export/buildExportPayload";
+import { contexteCalcul, type ContexteCalcul } from "../calcul-obsolete";
 import { usePartenaireSites } from "../hooks/usePartenaireSites";
 import { useSiteUserData } from "../hooks/useSiteUserData";
 import { getPartnerBySlug } from "../../registry";
@@ -45,6 +46,7 @@ const MultisiteView: React.FC<{ config: PartnerConfig }> = ({ config }) => {
   const [enrichmentData, setEnrichmentData] = useState<EnrichissementOutputDto | null>(null);
   const [mutabilityData, setMutabilityData] = useState<MutabiliteOutputDto | null>(null);
   const [manualData, setManualData] = useState<Record<string, string>>({});
+  const [contexte, setContexte] = useState<ContexteCalcul | undefined>(undefined);
 
   const { versions } = useAlgorithmeVersions();
   // Ordre chronologique ascendant : la dernière entrée est la version courante (contrat API)
@@ -79,6 +81,7 @@ const MultisiteView: React.FC<{ config: PartnerConfig }> = ({ config }) => {
 
       setManualData(userData.getManualData(site.idtup));
       setMutabilityData(userData.getMutability(site.idtup));
+      setContexte(userData.getContexte(site.idtup));
 
       const cachedEnrichment = enrichmentCacheRef.current.get(site.idtup);
       if (cachedEnrichment) {
@@ -124,6 +127,7 @@ const MultisiteView: React.FC<{ config: PartnerConfig }> = ({ config }) => {
       userData.setManualData(selectedSite.idtup, updated);
       userData.clearMutability(selectedSite.idtup);
       setMutabilityData(null);
+      setContexte(undefined);
     },
     [selectedSite, manualData, userData],
   );
@@ -140,8 +144,10 @@ const MultisiteView: React.FC<{ config: PartnerConfig }> = ({ config }) => {
         versionAlgorithme: selectedVersion || undefined,
         partenaire: config.slug,
       });
-      userData.setMutability(selectedSite.idtup, result);
+      const nouveauContexte = contexteCalcul(enrichmentData, selectedVersion);
+      userData.setMutability(selectedSite.idtup, result, nouveauContexte);
       setMutabilityData(result);
+      setContexte(nouveauContexte);
       const identifiantEvenement = enrichmentData.parcellePredominante ?? selectedSite.parcelles[0];
       track(TypeEvenement.RESULTATS_MUTABILITE, {
         evaluationId: result.evaluationId || undefined,
@@ -192,7 +198,6 @@ const MultisiteView: React.FC<{ config: PartnerConfig }> = ({ config }) => {
         const payload = buildExportPayload(userData.toutesLesSaisies(), {
           format,
           inclureMutabilite,
-          versionAlgorithme: selectedVersion || undefined,
         });
         const { blob, nomFichier, rapport } = await partenairesService.exporterCnig(
           config.slug,
@@ -207,7 +212,7 @@ const MultisiteView: React.FC<{ config: PartnerConfig }> = ({ config }) => {
         setIsExporting(false);
       }
     },
-    [config.slug, userData, selectedVersion, trackExportSitesPartenaire],
+    [config.slug, userData, trackExportSitesPartenaire],
   );
 
   // Recalculés à chaque rendu : les actions (saisie, calcul) modifient un state → re-rendu.
@@ -258,6 +263,7 @@ const MultisiteView: React.FC<{ config: PartnerConfig }> = ({ config }) => {
                 onRenameSite={handleRenameSite}
                 enrichmentData={enrichmentData}
                 mutabilityData={mutabilityData}
+                contexteCalcul={contexte}
                 manualData={manualData}
                 isEnriching={loadingState === "enriching"}
                 isCalculating={loadingState === "calculating"}

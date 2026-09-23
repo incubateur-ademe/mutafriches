@@ -1,15 +1,10 @@
-import {
-  resumerMutabilite,
-  type ExportCnigInputDto,
-  type FormatExportCnig,
-} from "@mutafriches/shared-types";
+import { type ExportCnigInputDto, type FormatExportCnig } from "@mutafriches/shared-types";
 import { buildDonneesComplementaires } from "@features/resultats/utils/mutability.mapper";
 import type { SaisieSite } from "../hooks/useSiteUserData";
 
 interface OptionsExport {
   format: FormatExportCnig;
   inclureMutabilite: boolean;
-  versionAlgorithme?: string;
 }
 
 const aUneSaisie = (manualData: Record<string, string>): boolean =>
@@ -21,10 +16,13 @@ const aUneSaisie = (manualData: Record<string, string>): boolean =>
  * Seuls les sites réellement qualifiés dans ce navigateur sont transmis : la charge utile
  * suit le nombre de sites saisis, pas le nombre de sites du partenaire (316 pour la DDT des
  * Vosges), et reste sous la limite de taille du corps de requête.
+ *
+ * La mutabilité n'est pas transmise : le serveur la recalcule sur l'enrichissement du jour,
+ * la copie locale pouvant dater d'un autre enrichissement (ADR-0045).
  */
 export function buildExportPayload(
   saisies: SaisieSite[],
-  { format, inclureMutabilite, versionAlgorithme }: OptionsExport,
+  { format, inclureMutabilite }: OptionsExport,
 ): ExportCnigInputDto {
   const payload: ExportCnigInputDto = { format, inclureMutabilite };
 
@@ -36,19 +34,6 @@ export function buildExportPayload(
   }
   if (Object.keys(connaissanceTerrain).length > 0) {
     payload.connaissanceTerrain = connaissanceTerrain;
-  }
-
-  if (!inclureMutabilite) return payload;
-
-  const mutabilite: ExportCnigInputDto["mutabilite"] = {};
-  for (const saisie of saisies) {
-    if (saisie.mutability) {
-      mutabilite[saisie.idtup] = resumerMutabilite(saisie.mutability);
-    }
-  }
-  if (Object.keys(mutabilite).length > 0) {
-    payload.mutabilite = mutabilite;
-    payload.versionAlgorithme = versionAlgorithme;
   }
 
   return payload;

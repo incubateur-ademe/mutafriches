@@ -11,6 +11,7 @@ import {
   TrameVerteEtBleue,
   Coordonnees,
   GeometrieParcelle,
+  GeometrieParcelleIdentifiee,
   ZaerEnrichissement,
 } from "@mutafriches/shared-types";
 
@@ -98,6 +99,15 @@ export class EnrichissementSwaggerDto implements IEnrichissementOutput {
     type: Object,
   })
   geometrieSite?: GeometrieParcelle;
+
+  @ApiProperty({
+    description:
+      "Géométrie de chaque parcelle trouvée au cadastre (présent en mode multi-parcelle)",
+    required: false,
+    type: Object,
+    isArray: true,
+  })
+  geometriesParcelles?: GeometrieParcelleIdentifiee[];
 
   @ApiProperty({
     description: "Surface totale du site en mètres carrés",

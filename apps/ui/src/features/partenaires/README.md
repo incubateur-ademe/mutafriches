@@ -149,7 +149,16 @@ Le bouton « Exporter tous les sites » produit un fichier unique au standard CN
 l'export s'appuie sur les sites en base et le cache d'enrichissement.
 
 La connaissance terrain (localStorage) part avec la requête pour les seuls sites qualifiés dans
-le navigateur, et alimente cinq attributs du standard. Couverture des 51 attributs et pièges :
+le navigateur, et alimente cinq attributs du standard. La mutabilité ne part pas : le serveur la
+recalcule sur l'enrichissement du jour (ADR-0045).
+
+## Mutabilité locale et cron
+
+Le cron réenrichit chaque nuit sans toucher au localStorage : la saisie est conservée, mais la
+mutabilité stockée reste celle du calcul initial. Elle est enregistrée avec son contexte (valeurs
+des 20 critères automatiques, version, date, cf. `calcul-obsolete.ts`) ; à la réouverture, un
+écart déclenche une alerte avec un bouton « Recalculer ». Une donnée devenue indisponible (panne
+de source) est signalée sans conseiller de recalcul, qui dégraderait le résultat. Couverture des 51 attributs et pièges :
 `docs/export-cnig.md`, décision : ADR-0042.
 
 ## Conventions

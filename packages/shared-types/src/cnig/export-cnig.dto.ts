@@ -7,7 +7,7 @@ import type { DonneesComplementairesInputDto } from "../evaluation/dto/donnees-c
 export type FormatExportCnig = "csv" | "geojson";
 
 /**
- * Mutabilité résumée d'un site, transmise par l'UI pour les colonnes hors standard.
+ * Mutabilité résumée d'un site, recalculée à l'export pour les colonnes hors standard.
  * Volontairement compacte : le détail par critère n'a pas sa place dans un export CNIG.
  */
 export interface MutabiliteResumeeExportDto {
@@ -21,7 +21,11 @@ export interface MutabiliteResumeeExportDto {
 
 export interface ExportCnigInputDto {
   format: FormatExportCnig;
-  /** Ajoute les colonnes `mf_*`, hors standard. Le fichier n'est alors plus conforme. */
+  /**
+   * Ajoute les colonnes `mf_*`, hors standard. Le fichier n'est alors plus conforme.
+   * Les indices sont recalculés côté serveur (version courante) pour les sites dont la
+   * connaissance terrain est transmise.
+   */
   inclureMutabilite?: boolean;
   /**
    * Connaissance terrain saisie par l'utilisateur, par `idtup`. Stockée localement dans son
@@ -29,10 +33,6 @@ export interface ExportCnigInputDto {
    * Seuls les sites effectivement qualifiés sont transmis.
    */
   connaissanceTerrain?: Record<string, DonneesComplementairesInputDto>;
-  /** Mutabilité calculée localement, par `idtup`. Ignorée si `inclureMutabilite` est faux. */
-  mutabilite?: Record<string, MutabiliteResumeeExportDto>;
-  /** Version d'algorithme utilisée pour les calculs transmis. */
-  versionAlgorithme?: string;
 }
 
 /** Un site écarté de l'export, et pourquoi. */

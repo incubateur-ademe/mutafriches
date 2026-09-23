@@ -511,6 +511,18 @@ Pièges rencontrés en session. Chaque entrée documente un piège pour éviter 
 - Correctif : repasser l'iframe en `loading = "eager"` dès son insertion (cf. `ZcalEmbed.tsx`, ADR-0031). Vérifier en Firefox headless : `firefox --headless --profile <dir> --screenshot out.png <url>`.
 - Le script d'embed ZCal est gardé par `window.zcal` : il ne scanne le DOM qu'une fois par page, réinjecter la balise `<script>` est un no-op.
 
+### Parcelle partenaire absente du cadastre : écartée en silence
+
+- Les listes partenaires viennent des fichiers fonciers, souvent d'un millésime de retard sur
+  apicarto. Une parcelle divisée ou renumérotée depuis n'est pas trouvée, et
+  `enrichirMulti` la retire du site sans erreur (seule trace : `Cadastre:<id>` dans
+  `sourcesEchouees`). Carte partielle, surface sous-estimée, indices faussés.
+- Symptôme : « le site a 8 parcelles mais une seule est en surbrillance ». Ce n'est pas un bug
+  de carte. La page partenaire l'affiche désormais en alerte.
+- Correctif : `pnpm partenaires:reconcilier-cadastre` (ADR-0044), puis report des successeurs
+  dans les fichiers UI et backend, et migration de données sur `partenaire_sites` : le seed
+  ne réécrit jamais un site existant (`ON CONFLICT DO NOTHING`).
+
 ### Identifiants cadastraux
 
 - Les identifiants Corse utilisent `2A` / `2B` au lieu de `20` dans le code département

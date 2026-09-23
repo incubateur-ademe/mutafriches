@@ -1,0 +1,85 @@
+{
+  "millesimeCourant": "2026-06-01",
+  "sites": [
+    {
+      "idtup": "49222000AB0174",
+      "commune": "MOZÉ-SUR-LOUET",
+      "parcellesAvant": ["49222000AB0174"],
+      "disparues": [
+        {
+          "id": "49222000AB0174",
+          "dernierMillesime": "2025-12-01"
+        }
+      ],
+      "successeurs": [
+        {
+          "id": "49222000AB0248",
+          "surfaceM2": 17573.011029164856,
+          "partDansSite": 0.9999836324212076,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "49222000AB0250",
+          "surfaceM2": 66.83702640371965,
+          "partDansSite": 1,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "49222000AB0251",
+          "surfaceM2": 57.20077700201021,
+          "partDansSite": 1.0000000000939149,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "49222000AB0252",
+          "surfaceM2": 66.45670493535148,
+          "partDansSite": 1.0000000000161668,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "49222000AB0253",
+          "surfaceM2": 64.77766416569756,
+          "partDansSite": 0.999999999966828,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "49222000AB0254",
+          "surfaceM2": 63.50023896482557,
+          "partDansSite": 0.9999999998984822,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "49222000AB0255",
+          "surfaceM2": 62.156952451090525,
+          "partDansSite": 1.0000000000345706,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "49222000AB0256",
+          "surfaceM2": 95.36566936814353,
+          "partDansSite": 0.9999999998648066,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "49222000AB0249",
+          "surfaceM2": 835.98805385242,
+          "partDansSite": 0.9995914155791511,
+          "confirmeApicarto": true
+        }
+      ],
+      "ecartes": [],
+      "couverture": 0.999986247274061,
+      "parcellesApres": [
+        "49222000AB0248",
+        "49222000AB0250",
+        "49222000AB0251",
+        "49222000AB0252",
+        "49222000AB0253",
+        "49222000AB0254",
+        "49222000AB0255",
+        "49222000AB0256",
+        "49222000AB0249"
+      ]
+    }
+  ]
+}

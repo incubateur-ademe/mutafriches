@@ -17,6 +17,13 @@ import { PartagerButton } from "./PartagerButton";
 import { RenameSiteModal } from "./RenameSiteModal";
 import type { PartnerSite } from "../types";
 import { downloadJson } from "../download-json";
+import { parcellesIntrouvables } from "../parcelles-introuvables";
+import {
+  ecartCalcul,
+  recalculConseille,
+  type ContexteCalcul,
+  type EcartCalcul,
+} from "../calcul-obsolete";
 
 interface SiteDetailProps {
   site: PartnerSite;
@@ -24,6 +31,7 @@ interface SiteDetailProps {
   partenaireNom: string;
   enrichmentData: EnrichissementOutputDto | null;
   mutabilityData: MutabiliteOutputDto | null;
+  contexteCalcul?: ContexteCalcul;
   manualData: Record<string, string>;
   isEnriching: boolean;
   isCalculating: boolean;
@@ -59,6 +67,7 @@ export const SiteDetail: React.FC<SiteDetailProps> = ({
   partenaireNom,
   enrichmentData,
   mutabilityData,
+  contexteCalcul,
   manualData,
   isEnriching,
   isCalculating,
@@ -87,6 +96,14 @@ export const SiteDetail: React.FC<SiteDetailProps> = ({
 
   // Emprise du site : union en multi-parcelle, polygone complet sinon
   const geometrieSite = enrichmentData?.geometrieSite ?? enrichmentData?.geometrie;
+  const introuvables = enrichmentData
+    ? parcellesIntrouvables(site.parcelles, enrichmentData.identifiantsParcelles)
+    : [];
+
+  const ecart =
+    mutabilityData && enrichmentData
+      ? ecartCalcul(contexteCalcul, enrichmentData, selectedVersion)
+      : null;
 
   const handleExportMutabilite = () => {
     if (!enrichmentData || !mutabilityData) return;
@@ -141,8 +158,20 @@ export const SiteDetail: React.FC<SiteDetailProps> = ({
           <SiteMap
             key={site.idtup}
             geometrie={geometrieSite}
+            parcelles={enrichmentData?.geometriesParcelles}
             centre={enrichmentData?.coordonnees}
           />
+        </div>
+      )}
+
+      {introuvables.length > 0 && (
+        <div className="fr-alert fr-alert--warning fr-alert--sm fr-mb-2w">
+          <p>
+            {introuvables.length} parcelle{introuvables.length > 1 ? "s" : ""} sur{" "}
+            {site.parcelles.length} absente{introuvables.length > 1 ? "s" : ""} du cadastre actuel,
+            probablement renumérotée{introuvables.length > 1 ? "s" : ""} : {introuvables.join(", ")}
+            . La carte, la surface et les indices ne portent que sur les parcelles restantes.
+          </p>
         </div>
       )}
 
@@ -228,6 +257,15 @@ export const SiteDetail: React.FC<SiteDetailProps> = ({
                 <DonneesComplementairesSection manualData={manualData} noWrapper />
               </DsfrAccordion>
 
+              {ecart && (
+                <CalculObsoleteAlert
+                  ecart={ecart}
+                  dateCalcul={contexteCalcul?.date}
+                  isCalculating={isCalculating}
+                  onRecalculer={onCalculerMutabilite}
+                />
+              )}
+
               <DsfrAccordion title="Résultats de l'évaluation" badge={BADGE_CALCULE} defaultOpen>
                 <EvaluationSection mutabilityData={mutabilityData} noWrapper />
               </DsfrAccordion>
@@ -262,6 +300,57 @@ export const SiteDetail: React.FC<SiteDetailProps> = ({
             </div>
           )}
         </>
+      )}
+    </div>
+  );
+};
+
+const CalculObsoleteAlert: React.FC<{
+  ecart: EcartCalcul;
+  dateCalcul?: string;
+  isCalculating: boolean;
+  onRecalculer: () => void;
+}> = ({ ecart, dateCalcul, isCalculating, onRecalculer }) => {
+  const conseille = recalculConseille(ecart);
+  const depuis = dateCalcul
+    ? `depuis votre calcul du ${new Date(dateCalcul).toLocaleDateString("fr-FR")}`
+    : "depuis votre calcul";
+
+  return (
+    <div
+      className={`fr-alert fr-alert--sm fr-mb-2w ${conseille ? "fr-alert--warning" : "fr-alert--info"}`}
+    >
+      {ecart.contexteInconnu && (
+        <p>
+          Ce résultat a été calculé avant le suivi des mises à jour : les données automatiques ont
+          pu changer depuis. Recalculez pour vous assurer qu'il reflète les données actuelles.
+        </p>
+      )}
+      {ecart.criteresModifies.length > 0 && (
+        <p>
+          Les données automatiques ont changé {depuis} : {ecart.criteresModifies.join(", ")}.
+        </p>
+      )}
+      {ecart.versionChangee && <p>Une nouvelle version de l'algorithme est disponible.</p>}
+      {ecart.criteresIndisponibles.length > 0 && (
+        <p>
+          Momentanément indisponible{ecart.criteresIndisponibles.length > 1 ? "s" : ""} :{" "}
+          {ecart.criteresIndisponibles.join(", ")}.{" "}
+          {conseille
+            ? "Mieux vaut recalculer quand ces données seront revenues."
+            : "Votre résultat, calculé quand elles étaient disponibles, reste le plus complet."}
+        </p>
+      )}
+      {conseille && (
+        <button
+          type="button"
+          className="fr-btn fr-btn--sm fr-btn--secondary fr-icon-refresh-line fr-btn--icon-left fr-mt-1w"
+          onClick={onRecalculer}
+          disabled={isCalculating}
+          aria-busy={isCalculating}
+        >
+          {isCalculating ? "Calcul en cours..." : "Recalculer avec les données actuelles"}
+        </button>
       )}
     </div>
   );

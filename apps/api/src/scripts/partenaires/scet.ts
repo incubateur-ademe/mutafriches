@@ -5,7 +5,7 @@ export const SCET_SITES: SitePrefetch[] = [
   {
     idtup: "scet-28",
     commune: "La Grande-Paroisse",
-    parcelles: ["77210000AH0013"],
+    parcelles: ["77210000AH0014", "77210000AH0015", "77210000AH0016"],
     nom: "Centrale EDF",
   },
   {
@@ -89,7 +89,7 @@ export const SCET_SITES: SitePrefetch[] = [
   {
     idtup: "scet-22",
     commune: "Montereau-Fault-Yonne",
-    parcelles: ["77305000AM0393", "77305000AM0394"],
+    parcelles: ["77305000AM0394", "77305000AM0456", "77305000AM0457"],
     nom: "Terrain APRR - Confluent",
   },
   {
@@ -199,9 +199,10 @@ export const SCET_SITES: SitePrefetch[] = [
       "77172000A1126",
       "77172000A1128",
       "77172000A1132",
-      "77172000A1133",
       "77172000A1136",
       "77172000A1137",
+      "77172000A1162",
+      "77172000A1163",
     ],
     nom: "Ex Magasins meubles",
   },

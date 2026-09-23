@@ -1,0 +1,444 @@
+{
+  "millesimeCourant": "2026-06-01",
+  "sites": [
+    {
+      "idtup": "uf920250027182",
+      "commune": "COLOMBES",
+      "parcellesAvant": [
+        "920250000B0203",
+        "920250000B0206",
+        "920250000B0245",
+        "920250000B0259",
+        "920250000B0253",
+        "920250000B0254",
+        "920250000B0260"
+      ],
+      "disparues": [
+        {
+          "id": "920250000B0245",
+          "dernierMillesime": "2025-12-01"
+        },
+        {
+          "id": "920250000B0260",
+          "dernierMillesime": "2025-12-01"
+        }
+      ],
+      "successeurs": [
+        {
+          "id": "920250000B0302",
+          "surfaceM2": 4890.438220413318,
+          "partDansSite": 0.9999999999789092,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "920250000B0299",
+          "surfaceM2": 2556.9332854506065,
+          "partDansSite": 0.9999901321185714,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "920250000B0303",
+          "surfaceM2": 403.29727023033945,
+          "partDansSite": 0.9999999994385527,
+          "confirmeApicarto": true
+        }
+      ],
+      "ecartes": [],
+      "couverture": 0.9999070468476323,
+      "parcellesApres": [
+        "920250000B0203",
+        "920250000B0206",
+        "920250000B0259",
+        "920250000B0253",
+        "920250000B0254",
+        "920250000B0302",
+        "920250000B0299",
+        "920250000B0303"
+      ]
+    },
+    {
+      "idtup": "uf920360030903",
+      "commune": "GENNEVILLIERS",
+      "parcellesAvant": [
+        "920360000J0440",
+        "920360000J0001",
+        "920360000J0003",
+        "920360000J0451",
+        "920360000J0461",
+        "920360000K0255",
+        "920360000K0282",
+        "920360000L0162"
+      ],
+      "disparues": [
+        {
+          "id": "920360000J0440",
+          "dernierMillesime": "2025-09-01"
+        },
+        {
+          "id": "920360000J0001",
+          "dernierMillesime": "2025-09-01"
+        },
+        {
+          "id": "920360000J0003",
+          "dernierMillesime": "2025-09-01"
+        },
+        {
+          "id": "920360000J0451",
+          "dernierMillesime": "2025-09-01"
+        },
+        {
+          "id": "920360000J0461",
+          "dernierMillesime": "2025-09-01"
+        },
+        {
+          "id": "920360000K0255",
+          "dernierMillesime": "2025-09-01"
+        },
+        {
+          "id": "920360000K0282",
+          "dernierMillesime": "2025-09-01"
+        }
+      ],
+      "successeurs": [
+        {
+          "id": "920360000J0513",
+          "surfaceM2": 2045.3571664638735,
+          "partDansSite": 1.0000000001491818,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "920360000J0514",
+          "surfaceM2": 1456.4599464294206,
+          "partDansSite": 0.9999894116909697,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "920360000J0515",
+          "surfaceM2": 209.80868382497295,
+          "partDansSite": 0.9998094720540612,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "920360000J0502",
+          "surfaceM2": 957.1503801931462,
+          "partDansSite": 0.999984494159179,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "920360000J0503",
+          "surfaceM2": 182.98081118997177,
+          "partDansSite": 0.9999534868395309,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "920360000J0512",
+          "surfaceM2": 2101.5931072272665,
+          "partDansSite": 1,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "920360000J0510",
+          "surfaceM2": 306.3922322216277,
+          "partDansSite": 1.0000000000701323,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "920360000J0516",
+          "surfaceM2": 538.7762511591875,
+          "partDansSite": 1.0000000000079765,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "920360000J0504",
+          "surfaceM2": 141.3084111802624,
+          "partDansSite": 1.0000000000152065,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "920360000J0509",
+          "surfaceM2": 31.616679324384528,
+          "partDansSite": 0.9999999999320358,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "920360000J0511",
+          "surfaceM2": 27.81463575587656,
+          "partDansSite": 0.9999999993819646,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "920360000J0508",
+          "surfaceM2": 47.01474377458551,
+          "partDansSite": 1,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "920360000J0507",
+          "surfaceM2": 107.8764541925724,
+          "partDansSite": 1.0000000000597573,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "920360000K0311",
+          "surfaceM2": 5101.315561566405,
+          "partDansSite": 1,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "920360000K0303",
+          "surfaceM2": 1.1045907463880393,
+          "partDansSite": 0.9991700396480937,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "920360000K0313",
+          "surfaceM2": 12.838276672499884,
+          "partDansSite": 1.000000000125531,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "920360000K0312",
+          "surfaceM2": 133.94594580535085,
+          "partDansSite": 0.9999999999358308,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "920360000K0302",
+          "surfaceM2": 15.251822716062884,
+          "partDansSite": 0.9998470834834536,
+          "confirmeApicarto": true
+        }
+      ],
+      "ecartes": [],
+      "couverture": 0.999948108296537,
+      "parcellesApres": [
+        "920360000L0162",
+        "920360000J0513",
+        "920360000J0514",
+        "920360000J0515",
+        "920360000J0502",
+        "920360000J0503",
+        "920360000J0512",
+        "920360000J0510",
+        "920360000J0516",
+        "920360000J0504",
+        "920360000J0509",
+        "920360000J0511",
+        "920360000J0508",
+        "920360000J0507",
+        "920360000K0311",
+        "920360000K0303",
+        "920360000K0313",
+        "920360000K0312",
+        "920360000K0302"
+      ]
+    },
+    {
+      "idtup": "uf920360029310",
+      "commune": "GENNEVILLIERS",
+      "parcellesAvant": [
+        "920360000J0007",
+        "920360000J0008",
+        "920360000J0009",
+        "920360000J0010",
+        "920360000J0247",
+        "920360000K0080",
+        "920360000K0083"
+      ],
+      "disparues": [
+        {
+          "id": "920360000J0007",
+          "dernierMillesime": "2025-09-01"
+        },
+        {
+          "id": "920360000J0008",
+          "dernierMillesime": "2025-09-01"
+        },
+        {
+          "id": "920360000J0009",
+          "dernierMillesime": "2025-09-01"
+        }
+      ],
+      "successeurs": [
+        {
+          "id": "920360000J0488",
+          "surfaceM2": 975.6857545781327,
+          "partDansSite": 0.9996755201253619,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "920360000J0490",
+          "surfaceM2": 345.00315096402176,
+          "partDansSite": 0.9997921042155519,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "920360000J0492",
+          "surfaceM2": 163.37050574381448,
+          "partDansSite": 1.0000000001052236,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "920360000J0489",
+          "surfaceM2": 346.40803624751993,
+          "partDansSite": 0.9999270291649399,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "920360000J0494",
+          "surfaceM2": 65.23162425053674,
+          "partDansSite": 1,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "920360000J0491",
+          "surfaceM2": 16.474200892442703,
+          "partDansSite": 0.9994052870404542,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "920360000J0493",
+          "surfaceM2": 72.86762862198884,
+          "partDansSite": 0.9999999999410217,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "920360000J0495",
+          "surfaceM2": 210.5355440229804,
+          "partDansSite": 0.9999999998979363,
+          "confirmeApicarto": true
+        }
+      ],
+      "ecartes": [],
+      "couverture": 0.9999533965170935,
+      "parcellesApres": [
+        "920360000J0010",
+        "920360000J0247",
+        "920360000K0080",
+        "920360000K0083",
+        "920360000J0488",
+        "920360000J0490",
+        "920360000J0492",
+        "920360000J0489",
+        "920360000J0494",
+        "920360000J0491",
+        "920360000J0493",
+        "920360000J0495"
+      ]
+    },
+    {
+      "idtup": "920360000L0163",
+      "commune": "GENNEVILLIERS",
+      "parcellesAvant": ["920360000L0163"],
+      "disparues": [
+        {
+          "id": "920360000L0163",
+          "dernierMillesime": "2026-03-01"
+        }
+      ],
+      "successeurs": [
+        {
+          "id": "920360000L0292",
+          "surfaceM2": 899.2683628034868,
+          "partDansSite": 1.000000000038232,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "920360000L0290",
+          "surfaceM2": 1431.437767762338,
+          "partDansSite": 0.9999999999954966,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "920360000L0291",
+          "surfaceM2": 1385.9584370063653,
+          "partDansSite": 1.0000000000124032,
+          "confirmeApicarto": true
+        }
+      ],
+      "ecartes": [],
+      "couverture": 0.9999993006547016,
+      "parcellesApres": ["920360000L0292", "920360000L0290", "920360000L0291"]
+    },
+    {
+      "idtup": "920360000L0164",
+      "commune": "GENNEVILLIERS",
+      "parcellesAvant": ["920360000L0164"],
+      "disparues": [
+        {
+          "id": "920360000L0164",
+          "dernierMillesime": "2025-09-01"
+        }
+      ],
+      "successeurs": [
+        {
+          "id": "920360000L0297",
+          "surfaceM2": 1121.6553885392682,
+          "partDansSite": 0.9999455054827172,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "920360000L0299",
+          "surfaceM2": 484.8426142545057,
+          "partDansSite": 0.9999482763052439,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "920360000L0298",
+          "surfaceM2": 892.773908892174,
+          "partDansSite": 0.9999716829514919,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "920360000L0300",
+          "surfaceM2": 217.76307185356873,
+          "partDansSite": 0.9999572515183653,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "920360000L0301",
+          "surfaceM2": 104.04535078168067,
+          "partDansSite": 0.9999544025590998,
+          "confirmeApicarto": true
+        }
+      ],
+      "ecartes": [],
+      "couverture": 0.9999999999931444,
+      "parcellesApres": [
+        "920360000L0297",
+        "920360000L0299",
+        "920360000L0298",
+        "920360000L0300",
+        "920360000L0301"
+      ]
+    },
+    {
+      "idtup": "920360000L0266",
+      "commune": "GENNEVILLIERS",
+      "parcellesAvant": ["920360000L0266"],
+      "disparues": [
+        {
+          "id": "920360000L0266",
+          "dernierMillesime": "2025-09-01"
+        }
+      ],
+      "successeurs": [
+        {
+          "id": "920360000L0287",
+          "surfaceM2": 3633.6983728920063,
+          "partDansSite": 0.9999997185342135,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "920360000L0286",
+          "surfaceM2": 3389.2009230990243,
+          "partDansSite": 0.9999954964810931,
+          "confirmeApicarto": true
+        }
+      ],
+      "ecartes": [],
+      "couverture": 0.999993630867004,
+      "parcellesApres": ["920360000L0287", "920360000L0286"]
+    }
+  ]
+}

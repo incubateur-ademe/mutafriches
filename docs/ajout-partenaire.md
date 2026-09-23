@@ -35,6 +35,19 @@ Procédure pas à pas pour publier une nouvelle page partenaire multisite
     - Vérifier le rapport **avant** de commiter : tout site en `ECHEC` ou `PARTIEL` est à
       arbitrer à la main. Un IDU inventé ferait échouer la pré-chauffe et afficherait une
       parcelle fausse à l'utilisateur.
+- [ ] **Réconcilier avec le cadastre courant** (ADR-0044). Les fichiers fonciers ont souvent un
+      millésime de retard : une parcelle divisée ou renumérotée depuis est écartée par
+      l'enrichissement, ce qui réduit la carte, la surface et fausse les indices. Une fois
+      `apps/api/src/scripts/partenaires/<slug>.ts` en place :
+      ```bash
+      pnpm --filter api build:nest
+      PARTENAIRE=<slug> pnpm partenaires:reconcilier-cadastre
+      ```
+      Le rapport `cadastre-successeurs/data/<slug>.rapport.json` propose, pour chaque site
+      touché, les parcelles actuelles qui remplacent les disparues (`parcellesApres`). Arbitrer à
+      la main toute couverture inférieure à 100 % ou parcelle `ecartes`, puis reporter les
+      listes dans les fichiers UI et backend. À relancer à chaque nouveau millésime cadastral :
+      l'alerte « parcelles absentes du cadastre actuel » de la page partenaire le signale.
 - [ ] **Anonymiser les libellés de sites avant tout commit.** Le dépôt est public et les
       fichiers d'inventaire, le rapport d'audit et les sites générés y sont versionnés : un
       libellé qui nomme une personne physique (« Prénom NOM », ou une SCI/SARL portant un

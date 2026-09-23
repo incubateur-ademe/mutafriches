@@ -90,9 +90,14 @@ l'adresse de sa page, `source_contact` l'adresse de contact de l'équipe.
 
 ## Colonnes Mutafriches (hors standard)
 
-Ajoutées seulement si l'option est cochée, en fin de fichier, et renseignées pour les seuls
-sites évalués depuis ce navigateur : `mf_indice_<usage>` (7 usages), `mf_usage_prioritaire`,
-`mf_fiabilite`, `mf_version_algorithme`. Le fichier n'est alors plus strictement conforme.
+Ajoutées seulement si l'option est cochée, en fin de fichier : `mf_indice_<usage>` (7 usages),
+`mf_usage_prioritaire`, `mf_fiabilite`, `mf_version_algorithme`. Le fichier n'est alors plus
+strictement conforme.
+
+Elles sont renseignées pour les sites dont la connaissance terrain a été saisie dans ce
+navigateur, et **recalculées par le serveur** au moment de l'export, sur l'enrichissement du
+jour et avec la version courante de l'algorithme (ADR-0045). La mutabilité affichée à l'écran,
+elle, peut dater d'un calcul antérieur : la page le signale par une alerte.
 
 ## Points d'attention
 

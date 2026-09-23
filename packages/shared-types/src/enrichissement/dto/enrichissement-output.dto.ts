@@ -12,6 +12,11 @@ import { ZonageAbcLogement } from "../enums/zonage-abc-logement.enum";
 import { DistanceIte } from "../enums/distance-ite.enum";
 import { IlotChaleurUrbain } from "../enums/ilot-chaleur-urbain.enum";
 
+export interface GeometrieParcelleIdentifiee {
+  identifiant: string;
+  geometrie: GeometrieParcelle;
+}
+
 /**
  * Résultat de l'enrichissement automatique des données de parcelle ou site
  * Contient uniquement les données extraites automatiquement depuis des sources externes
@@ -35,6 +40,8 @@ export interface EnrichissementOutputDto {
   communePredominante?: string;
   /** Géométrie union du site (union de toutes les parcelles) */
   geometrieSite?: GeometrieParcelle;
+  /** Géométrie de chaque parcelle trouvée au cadastre (contours sur la carte) */
+  geometriesParcelles?: GeometrieParcelleIdentifiee[];
 
   // Données physiques du site
   surfaceSite: number;
