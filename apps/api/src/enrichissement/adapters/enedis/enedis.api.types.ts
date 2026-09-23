@@ -13,20 +13,12 @@ export interface EnedisApiResponse<T> {
 }
 
 /**
- * Géométrie GeoJSON retournée par l'API
- */
-export interface EnedisGeometry {
-  type: "Point" | "LineString";
-  coordinates: [number, number] | Array<[number, number]>; // [lon, lat]
-}
-
-/**
  * Enregistrement d'un poste électrique (dataset: poste-electrique)
  */
 export interface EnedisPosteElectriqueRecord {
   _id: string;
   _geo_distance?: number;
-  _geopoint?: string;
+  _geopoint?: string; // "lat,lon"
   code_commune: string;
   nom_commune: string;
   code_epci?: string;
@@ -37,13 +29,14 @@ export interface EnedisPosteElectriqueRecord {
   nom_region: string;
   code_iris?: string;
   nom_iris?: string;
-  geometry: EnedisGeometry;
+  // GeoJSON sérialisé en chaîne par Data-Fair, pas un objet
+  geometry?: string;
   x?: number;
   y?: number;
 }
 
 /**
- * Enregistrement d'une ligne BT (dataset: reseau-bt)
+ * Enregistrement d'une ligne BT (datasets : reseau-bt, reseau-souterrain-bt)
  */
 export interface EnedisLigneBTRecord {
   _id: string;
@@ -57,7 +50,7 @@ export interface EnedisLigneBTRecord {
   nom_region?: string;
   code_iris?: string;
   nom_iris?: string;
-  geometry?: EnedisGeometry;
+  geometry?: string;
 }
 
 /**

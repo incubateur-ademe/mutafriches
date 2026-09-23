@@ -59,10 +59,10 @@ export const SOURCES_DONNEES: SourceDonnees[] = [
     sourcesEnrichissement: [SourceEnrichissement.ENEDIS_RACCORDEMENT],
     champsRecuperes: [
       "Distance au poste électrique le plus proche (rayon 5 km)",
-      "Distance au réseau basse tension (rayon 500 m)",
+      "Distance au réseau basse tension, aérien et souterrain (rayon 500 m)",
     ],
     traitementAlgo:
-      "La distance au point de raccordement le plus proche est classée par seuils (proche, " +
+      "La distance au point de raccordement le plus proche, poste ou ligne, est classée par seuils (proche, " +
       "intermédiaire, éloigné) pour évaluer la facilité de raccordement électrique.",
   },
   {

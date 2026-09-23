@@ -142,7 +142,7 @@ Calculer la distance au point de raccordement électrique et au réseau de chale
 
 | Source | Type | Données récupérées |
 |--------|------|-------------------|
-| **Enedis** | API externe (`data.enedis.fr`) | Distance raccordement électrique (postes HTA + lignes BT) |
+| **Enedis** | API externe (`data.enedis.fr`) | Distance raccordement électrique (postes HTA + lignes BT aériennes et souterraines) |
 | **France Chaleur Urbaine** | Référentiel local (`raw_reseaux_chaleur`) | Tracés des réseaux de chaleur et de froid urbains |
 
 ### Règles de gestion
@@ -153,9 +153,13 @@ Calculer la distance au point de raccordement électrique et au réseau de chale
    - Si manquantes → échec, champ `distanceRaccordementElectrique` non renseigné
 
 2. **Calcul distance**
-   - Recherche postes électriques (HTA, rayon 5 km) et lignes BT (rayon 500 m)
-   - Calcul distance Haversine entre parcelle et infrastructure la plus proche
-   - Retour : distance en mètres (arrondie)
+   - Recherche postes électriques (HTA, rayon 5 km) et lignes BT aériennes et souterraines
+     (rayon 500 m) : en zone urbaine dense, le réseau BT est souvent entièrement enterré
+   - Distance fournie par l'API (`_geo_distance`, au tracé pour les lignes) ; la plus courte,
+     tous réseaux confondus, est retenue
+   - Retour : distance en mètres
+   - Piège : Data-Fair sert `geometry` en **chaîne JSON**, pas en objet. Lire `_geo_distance`
+     et `_geopoint` ; un filtre sur `geometry.coordinates` écartait tous les postes jusqu'en v1.39.
 
 3. **Aucune infrastructure dans les rayons** → `null`, jamais une distance sentinelle.
    C'est un succès de recherche : le champ compte dans la fiabilité, et l'algorithme le
