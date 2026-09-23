@@ -5,7 +5,8 @@ import { pgTable, serial, varchar, timestamp, index } from "drizzle-orm/pg-core"
  * production EnR HTA/BT (Enedis, en lien avec RTE).
  *
  * Source : carte Enedis des zones en contrainte, importée en local via
- * `pnpm db:zones-contrainte-enr:import <fichier>`.
+ * `pnpm db:zones-contrainte-enr:import` (GeoJSON commité, préparé par
+ * `pnpm data:zones-contrainte-enr:preparer`).
  * https://observatoire.enedis.fr/services/carte-zones-contrainte-projets-enr
  *
  * Une zone = territoire alimenté par un poste source (~2 300 en métropole). Le fichier source
