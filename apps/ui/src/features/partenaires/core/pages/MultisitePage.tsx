@@ -192,7 +192,6 @@ const MultisiteView: React.FC<{ config: PartnerConfig }> = ({ config }) => {
         const payload = buildExportPayload(userData.toutesLesSaisies(), {
           format,
           inclureMutabilite,
-          versionAlgorithme: selectedVersion || undefined,
         });
         const { blob, nomFichier, rapport } = await partenairesService.exporterCnig(
           config.slug,
@@ -207,7 +206,7 @@ const MultisiteView: React.FC<{ config: PartnerConfig }> = ({ config }) => {
         setIsExporting(false);
       }
     },
-    [config.slug, userData, selectedVersion, trackExportSitesPartenaire],
+    [config.slug, userData, trackExportSitesPartenaire],
   );
 
   // Recalculés à chaque rendu : les actions (saisie, calcul) modifient un state → re-rendu.

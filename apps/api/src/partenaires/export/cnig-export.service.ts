@@ -3,13 +3,19 @@ import {
   SourceUtilisation,
   construireExtensionMutafriches,
   construireFricheCnig,
+  resumerMutabilite,
+  type DonneesComplementairesInputDto,
   type EnrichissementOutputDto,
   type ExportCnigInputDto,
+  type MutabiliteResumeeExportDto,
   type RapportExportCnig,
   type SiteEcarteExportCnig,
 } from "@mutafriches/shared-types";
 import { AppConfig } from "../../config";
 import { EnrichissementService } from "../../enrichissement/services/enrichissement.service";
+import { Site } from "../../evaluation/entities/site.entity";
+import { CalculService } from "../../evaluation/services/calcul.service";
+import { VERSION_COURANTE } from "../../evaluation/services/algorithme/versions";
 import type { PartenaireSite } from "../../shared/database/schemas/partenaire-sites.schema";
 import { PartenaireRepository } from "../repositories/partenaire.repository";
 import { nomFichierExport, versCsv, versGeoJson, type EntreeExportCnig } from "./cnig-serializer";
@@ -49,6 +55,7 @@ export class CnigExportService {
   constructor(
     private readonly partenaireRepository: PartenaireRepository,
     private readonly enrichissementService: EnrichissementService,
+    private readonly calculService: CalculService,
     private readonly config: AppConfig,
   ) {}
 
@@ -82,6 +89,7 @@ export class CnigExportService {
     await this.parLots(sites, async (site) => {
       const parcelles = site.parcelles as string[];
       const enrichissement = await this.resoudreEnrichissement(slugPartenaire, parcelles, echeance);
+      const complementaires = options.connaissanceTerrain?.[site.idtup];
 
       const ligne = construireFricheCnig({
         site: {
@@ -93,7 +101,7 @@ export class CnigExportService {
           dateIdentification: site.createdAt,
         },
         enrichissement,
-        complementaires: options.connaissanceTerrain?.[site.idtup],
+        complementaires,
         source,
         dateActualisation: dateExport,
       });
@@ -111,8 +119,8 @@ export class CnigExportService {
 
       const extension = inclureMutabilite
         ? construireExtensionMutafriches(
-            options.mutabilite?.[site.idtup],
-            options.versionAlgorithme,
+            await this.calculerMutabilite(enrichissement, complementaires),
+            VERSION_COURANTE,
           )
         : {};
 
@@ -152,6 +160,29 @@ export class CnigExportService {
         sitesEcartes,
       },
     };
+  }
+
+  /**
+   * Recalcule la mutabilité sur l'enrichissement du jour plutôt que de reprendre celle stockée
+   * dans le navigateur, qui peut dater d'un autre enrichissement ou d'une autre version.
+   * Calcul pur, sans persistance : un export ne doit pas compter comme une évaluation.
+   */
+  private async calculerMutabilite(
+    enrichissement: EnrichissementOutputDto | undefined,
+    complementaires: DonneesComplementairesInputDto | undefined,
+  ): Promise<MutabiliteResumeeExportDto | undefined> {
+    if (!enrichissement || !complementaires) return undefined;
+    try {
+      const site = Site.fromEnrichissement(enrichissement, complementaires);
+      if (site.champsEssentielsManquants().length > 0) return undefined;
+      return resumerMutabilite(await this.calculService.calculer(site));
+    } catch (erreur: unknown) {
+      const message = erreur instanceof Error ? erreur.message : "erreur inconnue";
+      this.logger.warn(
+        `Mutabilité non calculée pour ${enrichissement.identifiantParcelle} : ${message}`,
+      );
+      return undefined;
+    }
   }
 
   /**

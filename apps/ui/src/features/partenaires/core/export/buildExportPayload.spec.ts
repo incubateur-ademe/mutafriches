@@ -39,7 +39,7 @@ const saisieVide: SaisieSite = {
   mutability: null,
 };
 
-const options = { format: "csv" as const, inclureMutabilite: false, versionAlgorithme: "1.13" };
+const options = { format: "csv" as const, inclureMutabilite: false };
 
 describe("buildExportPayload", () => {
   it("ne transmet que les sites réellement qualifiés dans ce navigateur", () => {
@@ -63,35 +63,11 @@ describe("buildExportPayload", () => {
     expect(payload.connaissanceTerrain).toBeUndefined();
   });
 
-  it("n'envoie pas la mutabilité tant qu'elle n'est pas demandée", () => {
-    const payload = buildExportPayload([saisieQualifiee], options);
+  it("ne transmet jamais la mutabilité locale : le serveur la recalcule", () => {
+    const payload = buildExportPayload([saisieQualifiee], { ...options, inclureMutabilite: true });
 
-    expect(payload.mutabilite).toBeUndefined();
-    expect(payload.versionAlgorithme).toBeUndefined();
-  });
-
-  it("résume la mutabilité et joint la version d'algorithme quand elle est demandée", () => {
-    const payload = buildExportPayload([saisieQualifiee, saisieVide], {
-      ...options,
-      inclureMutabilite: true,
-    });
-
-    expect(payload.mutabilite).toEqual({
-      "92025000BY0265": {
-        indices: { renaturation: 72.4, residentiel: 61.2 },
-        usagePrioritaire: UsageType.RENATURATION,
-        fiabilite: 8.5,
-      },
-    });
-    expect(payload.versionAlgorithme).toBe("1.13");
-  });
-
-  it("n'envoie pas de détail de calcul : seul le résumé voyage", () => {
-    const payload = buildExportPayload([saisieQualifiee], {
-      ...options,
-      inclureMutabilite: true,
-    });
-
-    expect(JSON.stringify(payload)).not.toContain("detailsCalcul");
+    expect(payload.inclureMutabilite).toBe(true);
+    expect(JSON.stringify(payload)).not.toContain("indices");
+    expect(JSON.stringify(payload)).not.toContain("versionAlgorithme");
   });
 });

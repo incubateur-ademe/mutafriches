@@ -9,6 +9,8 @@ import {
 import { CnigExportService } from "./cnig-export.service";
 import type { AppConfig } from "../../config";
 import type { EnrichissementService } from "../../enrichissement/services/enrichissement.service";
+import type { CalculService } from "../../evaluation/services/calcul.service";
+import { VERSION_COURANTE } from "../../evaluation/services/algorithme/versions";
 import type { PartenaireRepository } from "../repositories/partenaire.repository";
 import type { PartenaireSite } from "../../shared/database/schemas/partenaire-sites.schema";
 
@@ -58,6 +60,7 @@ describe("CnigExportService", () => {
     lireCacheSite: ReturnType<typeof vi.fn>;
     enrichirSite: ReturnType<typeof vi.fn>;
   };
+  let calculService: { calculer: ReturnType<typeof vi.fn> };
   let service: CnigExportService;
 
   beforeEach(() => {
@@ -70,9 +73,17 @@ describe("CnigExportService", () => {
       enrichirSite: vi.fn(),
     };
 
+    calculService = {
+      calculer: vi.fn().mockResolvedValue({
+        fiabilite: { note: 8.5 },
+        resultats: [{ rang: 1, usage: UsageType.RENATURATION, indiceMutabilite: 72.4 }],
+      }),
+    };
+
     service = new CnigExportService(
       repository as unknown as PartenaireRepository,
       enrichissementService as unknown as EnrichissementService,
+      calculService as unknown as CalculService,
       { publicUrl: "https://mutafriches.beta.gouv.fr" } as AppConfig,
     );
   });
@@ -185,33 +196,55 @@ describe("CnigExportService", () => {
     expect(fichier.contenu).toContain("dégradation très importante");
   });
 
-  it("ignore les indices de mutabilité tant qu'ils ne sont pas demandés", async () => {
-    const fichier = await service.exporter("cci-92", {
-      format: "csv",
-      mutabilite: { "92025000BY0265": { indices: { [UsageType.RENATURATION]: 72.4 } } },
-    });
+  const connaissanceTerrain = {
+    "92025000BY0265": {
+      etatBatiInfrastructure: EtatBatiInfrastructure.DEGRADATION_MOYENNE,
+    } as never,
+  };
+
+  it("ne calcule pas la mutabilité tant qu'elle n'est pas demandée", async () => {
+    const fichier = await service.exporter("cci-92", { format: "csv", connaissanceTerrain });
 
     expect(fichier.contenu).not.toContain("mf_indice_renaturation");
+    expect(calculService.calculer).not.toHaveBeenCalled();
   });
 
-  it("ajoute les colonnes Mutafriches et renomme le fichier quand elles sont demandées", async () => {
+  it("recalcule la mutabilité sur l'enrichissement du jour, en version courante", async () => {
     const fichier = await service.exporter("cci-92", {
       format: "csv",
       inclureMutabilite: true,
-      versionAlgorithme: "1.13",
-      mutabilite: {
-        "92025000BY0265": {
-          indices: { [UsageType.RENATURATION]: 72.4 },
-          usagePrioritaire: UsageType.RENATURATION,
-          fiabilite: 8.5,
-        },
-      },
+      connaissanceTerrain,
     });
 
+    expect(calculService.calculer).toHaveBeenCalledTimes(1);
     expect(fichier.nomFichier).toContain("-etendu.csv");
     expect(fichier.contenu).toContain("mf_indice_renaturation");
     expect(fichier.contenu).toContain("72.4");
-    expect(fichier.contenu).toContain("1.13");
+    expect(fichier.contenu).toContain(VERSION_COURANTE);
+  });
+
+  it("ignore une mutabilité transmise par un ancien client", async () => {
+    const fichier = await service.exporter("cci-92", {
+      format: "csv",
+      inclureMutabilite: true,
+      mutabilite: { "92025000BY0265": { indices: { [UsageType.RENATURATION]: 12.3 } } },
+    } as never);
+
+    expect(fichier.contenu).not.toContain("12.3");
+    expect(calculService.calculer).not.toHaveBeenCalled();
+  });
+
+  it("exporte le site sans indices si le calcul échoue", async () => {
+    calculService.calculer.mockRejectedValue(new Error("boom"));
+
+    const fichier = await service.exporter("cci-92", {
+      format: "csv",
+      inclureMutabilite: true,
+      connaissanceTerrain,
+    });
+
+    expect(fichier.rapport.sitesExportes).toBe(1);
+    expect(fichier.contenu).not.toContain("72.4");
   });
 
   it("produit un GeoJSON quand ce format est demandé", async () => {
