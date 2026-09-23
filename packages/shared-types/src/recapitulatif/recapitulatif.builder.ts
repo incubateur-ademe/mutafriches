@@ -36,7 +36,6 @@ import {
   DISTANCE_ITE_LABELS,
   ILOT_CHALEUR_URBAIN_LABELS,
   MESSAGE_ZONE_EXCLUSION_ENR,
-  MESSAGE_RESEAU_SATURE_ENR,
 } from "./valeurs.labels";
 
 type Enrichissement = EnrichissementOutputDto | undefined;
@@ -94,7 +93,6 @@ export const CRITERES_AVEC_RESOLVEUR = Object.keys(RESOLVEURS);
 /** Précisions affichées sous le libellé d'un critère, quand la donnée le justifie */
 const MENTIONS: Record<string, (e: Enrichissement) => string | undefined> = {
   zoneAccelerationEnr: (e) => (e?.zaer?.enZoneExclusion ? MESSAGE_ZONE_EXCLUSION_ENR : undefined),
-  saturationReseauEnr: (e) => (e?.saturationReseauEnr ? MESSAGE_RESEAU_SATURE_ENR : undefined),
 };
 
 /** Résolveurs des données informatives (hors algorithme) */

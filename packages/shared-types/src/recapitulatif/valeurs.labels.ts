@@ -235,10 +235,6 @@ export const ZONE_ACCELERATION_ENR_LABELS: Record<ZoneAccelerationEnr, string> =
 /** Message affiché quand le site est en zone d'interdiction APER (qualification, récap, détail) */
 export const MESSAGE_ZONE_EXCLUSION_ENR = "Pas de projet possible hors photovoltaïque en toiture.";
 
-/** Message affiché quand le site est en zone de réseau saturé (qualification, récap) */
-export const MESSAGE_RESEAU_SATURE_ENR =
-  "Raccordement d'un projet de production EnR impossible sans travaux préalables sur le réseau.";
-
 // ------------------------------------------------------------------
 // Libellés courts des sources (badge "Source")
 // ------------------------------------------------------------------

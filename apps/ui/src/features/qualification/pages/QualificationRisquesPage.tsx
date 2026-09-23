@@ -6,11 +6,7 @@ import { Layout } from "../../../shared/components/layout/Layout";
 import { useFormContext } from "../../../shared/form/useFormContext";
 import { useEventTracking } from "../../../shared/hooks/useEventTracking";
 import { identifiantCadastralTracking } from "../../../shared/form/tracking.utils";
-import {
-  MESSAGE_RESEAU_SATURE_ENR,
-  MESSAGE_ZONE_EXCLUSION_ENR,
-  TypeEvenement,
-} from "@mutafriches/shared-types";
+import { MESSAGE_ZONE_EXCLUSION_ENR, TypeEvenement } from "@mutafriches/shared-types";
 import { EnrichedInfoField, StepNavigation } from "../components";
 import { DebugPanelGate } from "../../debug/components/DebugPanelGate";
 
@@ -245,8 +241,6 @@ export const QualificationRisquesPage: React.FC = () => {
           id="saturation-reseau-enr"
           label="Saturation électrique du réseau pour projets d'énergies renouvelables"
           value={uiData?.saturationReseauEnr}
-          enAlerte={uiData?.saturationReseauEnr === "Oui"}
-          message={uiData?.saturationReseauEnr === "Oui" ? MESSAGE_RESEAU_SATURE_ENR : undefined}
           tooltip={
             <>
               Données Enedis et RTE, fournies à titre indicatif et sans valeur contractuelle :
