@@ -1,0 +1,42 @@
+name: Rappel — rafraîchir les zones de contrainte EnR
+
+# Le fichier Enedis refuse les téléchargements automatisés (protection anti-robots) :
+# l'import reste manuel, ce workflow ouvre seulement une issue de rappel (ADR-0046).
+on:
+  schedule:
+    # Le 1er de chaque mois à 07:00 UTC
+    - cron: "0 7 1 * *"
+  workflow_dispatch:
+
+permissions:
+  issues: write
+
+jobs:
+  rappel:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ouvre une issue de rappel si aucune n'est déjà ouverte
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          TITRE: "Rafraîchir le référentiel des zones de contrainte EnR (Enedis)"
+        run: |
+          deja_ouverte=$(gh issue list --state open --search "in:title \"$TITRE\"" --json number --jq 'length')
+          if [ "$deja_ouverte" != "0" ]; then
+            echo "Une issue de rappel est déjà ouverte, rien à faire."
+            exit 0
+          fi
+
+          cat > corps.md <<'EOF'
+          Rafraîchissement mensuel de la carte Enedis des zones saturées pour les projets EnR (ADR-0046).
+
+          1. Ouvrir dans un navigateur puis enregistrer le fichier (~27 Mo) :
+             https://observatoire.enedis.fr/sites/enedis_ote/files/processed_json/capca.json
+          2. Importer en préproduction puis en production :
+             ```
+             scalingo --app mutafriches-preprod run --file capca.json "pnpm db:zones-contrainte-enr:import /tmp/uploads/capca.json"
+             scalingo --app mutafriches run --file capca.json "pnpm db:zones-contrainte-enr:import /tmp/uploads/capca.json"
+             ```
+          3. Contrôler le décompte par statut affiché en fin d'import (environ 10 % de zones saturées), puis fermer cette issue.
+          EOF
+          gh issue create --title "$TITRE" --body-file corps.md
