@@ -17,6 +17,7 @@ import { PartagerButton } from "./PartagerButton";
 import { RenameSiteModal } from "./RenameSiteModal";
 import type { PartnerSite } from "../types";
 import { downloadJson } from "../download-json";
+import { parcellesIntrouvables } from "../parcelles-introuvables";
 
 interface SiteDetailProps {
   site: PartnerSite;
@@ -87,6 +88,9 @@ export const SiteDetail: React.FC<SiteDetailProps> = ({
 
   // Emprise du site : union en multi-parcelle, polygone complet sinon
   const geometrieSite = enrichmentData?.geometrieSite ?? enrichmentData?.geometrie;
+  const introuvables = enrichmentData
+    ? parcellesIntrouvables(site.parcelles, enrichmentData.identifiantsParcelles)
+    : [];
 
   const handleExportMutabilite = () => {
     if (!enrichmentData || !mutabilityData) return;
@@ -143,6 +147,17 @@ export const SiteDetail: React.FC<SiteDetailProps> = ({
             geometrie={geometrieSite}
             centre={enrichmentData?.coordonnees}
           />
+        </div>
+      )}
+
+      {introuvables.length > 0 && (
+        <div className="fr-alert fr-alert--warning fr-alert--sm fr-mb-2w">
+          <p>
+            {introuvables.length} parcelle{introuvables.length > 1 ? "s" : ""} sur{" "}
+            {site.parcelles.length} absente{introuvables.length > 1 ? "s" : ""} du cadastre actuel,
+            probablement renumérotée{introuvables.length > 1 ? "s" : ""} : {introuvables.join(", ")}
+            . La carte, la surface et les indices ne portent que sur les parcelles restantes.
+          </p>
         </div>
       )}
 
