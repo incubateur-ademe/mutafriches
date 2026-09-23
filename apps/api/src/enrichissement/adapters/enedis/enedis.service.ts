@@ -42,15 +42,25 @@ export class EnedisService {
   ): Promise<ApiResponse<EnedisRaccordement>> {
     try {
       const postesProches = await this.rechercherPostes(latitude, longitude, ENEDIS_RAYONS.POSTES);
-      const lignesBTProches = await this.rechercherLignesBT(
-        latitude,
-        longitude,
-        ENEDIS_RAYONS.LIGNES_BT,
-      );
+      // En zone urbaine dense, le réseau BT est souvent entièrement souterrain.
+      const [lignesAeriennes, lignesSouterraines] = await Promise.all([
+        this.rechercherLignesBT("reseau-bt", latitude, longitude, ENEDIS_RAYONS.LIGNES_BT),
+        this.rechercherLignesBT(
+          "reseau-souterrain-bt",
+          latitude,
+          longitude,
+          ENEDIS_RAYONS.LIGNES_BT,
+        ),
+      ]);
+
+      const posteProche = postesProches[0];
+      const ligneBTProche = [...lignesAeriennes, ...lignesSouterraines].sort(
+        (a, b) => a.distance - b.distance,
+      )[0];
 
       // Recherche effectuée, aucune infrastructure dans les rayons : null, et surtout pas
       // une distance sentinelle qui remonterait telle quelle jusqu'à l'écran.
-      if (postesProches.length === 0 && lignesBTProches.length === 0) {
+      if (!posteProche && !ligneBTProche) {
         return {
           success: true,
           source: ENEDIS_SOURCE,
@@ -62,24 +72,22 @@ export class EnedisService {
         };
       }
 
-      // Calcul de la distance minimale et du type optimal
-      const posteProche = postesProches[0];
-      const ligneBTProche = lignesBTProches[0];
-
       let raccordementOptimal: EnedisRaccordement;
 
-      if (ligneBTProche && ligneBTProche.distance < ENEDIS_SEUILS.RACCORDEMENT_BT) {
+      if (ligneBTProche && (!posteProche || ligneBTProche.distance <= posteProche.distance)) {
+        const raccordementDirect = ligneBTProche.distance < ENEDIS_SEUILS.RACCORDEMENT_BT;
         raccordementOptimal = {
           distance: ligneBTProche.distance,
-          type: "BT",
-          capaciteDisponible: true,
+          // Au-delà du seuil, une extension de réseau est nécessaire
+          type: raccordementDirect ? "BT" : "HTA",
+          capaciteDisponible: raccordementDirect,
           infrastructureProche: {
             type: "ligne_bt",
             distance: ligneBTProche.distance,
             tension: "BT",
           },
         };
-      } else if (posteProche) {
+      } else {
         const typeTension = posteProche.distance < ENEDIS_SEUILS.TYPE_BT_VS_HTA ? "BT" : "HTA";
         raccordementOptimal = {
           distance: posteProche.distance,
@@ -88,27 +96,12 @@ export class EnedisService {
           posteProche: {
             nom: `Poste ${posteProche.commune}`,
             commune: posteProche.commune,
-            coordonnees: {
-              latitude: posteProche.coordonnees.latitude,
-              longitude: posteProche.coordonnees.longitude,
-            },
+            coordonnees: posteProche.coordonnees,
           },
           infrastructureProche: {
             type: "poste",
             distance: posteProche.distance,
             tension: typeTension,
-          },
-        };
-      } else {
-        // Fallback - utilisation de la ligne BT la plus proche
-        raccordementOptimal = {
-          distance: ligneBTProche.distance,
-          type: "HTA", // Extension de réseau nécessaire
-          capaciteDisponible: false,
-          infrastructureProche: {
-            type: "ligne_bt",
-            distance: ligneBTProche.distance,
-            tension: "BT",
           },
         };
       }
@@ -132,13 +125,6 @@ export class EnedisService {
     }
   }
 
-  /**
-   * Fonction pour rechercher les postes électriques proches
-   * @param latitude
-   * @param longitude
-   * @param rayonMetres
-   * @returns
-   */
   private async rechercherPostes(
     latitude: number,
     longitude: number,
@@ -159,36 +145,30 @@ export class EnedisService {
     const response = await this.callEnedisApi<EnedisPosteElectriqueRecord>(params);
 
     return response.results
-      .filter((record) => record.geometry?.coordinates)
       .map((record) => {
-        const coords = record.geometry.coordinates as [number, number];
+        const coordonnees = parserGeopoint(record._geopoint);
+        if (!coordonnees) return null;
         return {
           distance:
-            record._geo_distance ?? calculateDistance(latitude, longitude, coords[1], coords[0]),
+            record._geo_distance ??
+            calculateDistance(latitude, longitude, coordonnees.latitude, coordonnees.longitude),
           commune: record.nom_commune,
-          coordonnees: {
-            latitude: coords[1],
-            longitude: coords[0],
-          },
+          coordonnees,
         };
       })
+      .filter((poste) => poste !== null)
       .sort((a, b) => a.distance - b.distance);
   }
 
-  /**
-   * Fonction pour rechercher les lignes BT proches
-   * @param latitude
-   * @param longitude
-   * @param rayonMetres
-   * @returns
-   */
+  // Une erreur sur un dataset BT ne doit pas faire échouer tout le raccordement.
   private async rechercherLignesBT(
+    dataset: "reseau-bt" | "reseau-souterrain-bt",
     latitude: number,
     longitude: number,
     rayonMetres: number,
-  ): Promise<Array<{ distance: number; type: string; tension: string }>> {
+  ): Promise<Array<{ distance: number }>> {
     const params: EnedisApiParams = {
-      dataset: "reseau-bt",
+      dataset,
       size: ENEDIS_NOMBRE_RESULTATS.LIGNES_BT,
       geo_distance: `${longitude},${latitude},${rayonMetres}`,
     };
@@ -196,31 +176,14 @@ export class EnedisService {
     try {
       const response = await this.callEnedisApi<EnedisLigneBTRecord>(params);
 
+      // _geo_distance est la distance au tracé : le _geopoint d'une ligne n'en est qu'un point.
       return response.results
-        .filter((record) => record.geometry?.coordinates || record._geo_distance !== undefined)
-        .map((record) => {
-          // Utiliser _geo_distance fourni par l'API si disponible
-          let distance = record._geo_distance;
-          if (distance === undefined && record.geometry?.coordinates) {
-            const coords = record.geometry.coordinates;
-            if (Array.isArray(coords[0])) {
-              const firstPoint = coords[0] as [number, number];
-              distance = calculateDistance(latitude, longitude, firstPoint[1], firstPoint[0]);
-            } else {
-              const point = coords as [number, number];
-              distance = calculateDistance(latitude, longitude, point[1], point[0]);
-            }
-          }
-          return {
-            distance: distance ?? 0,
-            type: "BT",
-            tension: "BT",
-          };
-        })
+        .filter((record) => typeof record._geo_distance === "number")
+        .map((record) => ({ distance: record._geo_distance as number }))
         .sort((a, b) => a.distance - b.distance);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Erreur inconnue";
-      this.logger.warn(`Dataset reseau-bt non disponible: ${errorMessage}`);
+      this.logger.warn(`Dataset ${dataset} non disponible: ${errorMessage}`);
       return [];
     }
   }
@@ -255,4 +218,11 @@ export class EnedisService {
       throw error;
     }
   }
+}
+
+// Data-Fair sert la géométrie en chaîne JSON ; _geopoint ("lat,lon") est plus simple à lire.
+function parserGeopoint(geopoint?: string): { latitude: number; longitude: number } | null {
+  const [latitude, longitude] = (geopoint ?? "").split(",").map(Number);
+  if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) return null;
+  return { latitude, longitude };
 }

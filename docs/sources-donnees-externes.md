@@ -71,11 +71,11 @@ La surface bâtie est agrégée sur la parcelle puis classée par seuils. Elle s
 **Champs récupérés**
 
 - Distance au poste électrique le plus proche (rayon 5 km)
-- Distance au réseau basse tension (rayon 500 m)
+- Distance au réseau basse tension, aérien et souterrain (rayon 500 m)
 
 **Traitement dans l'algorithme**
 
-La distance au point de raccordement le plus proche est classée par seuils (proche, intermédiaire, éloigné) pour évaluer la facilité de raccordement électrique.
+La distance au point de raccordement le plus proche, poste ou ligne, est classée par seuils (proche, intermédiaire, éloigné) pour évaluer la facilité de raccordement électrique.
 
 **Critères d'évaluation alimentés**
 
