@@ -300,7 +300,8 @@ pnpm db:zonage-abc:import   # Importer le référentiel zonage ABC (tension du m
 pnpm db:icu:import          # Importer le référentiel des îlots de chaleur urbain (ICU)
 pnpm db:reseaux-chaleur:import  # Importer les tracés des réseaux de chaleur urbains
 pnpm db:qpv:import          # Importer le référentiel des quartiers prioritaires (QPV)
-pnpm db:zones-contrainte-enr:import <capca.json>  # Importer les zones de contrainte réseau EnR (Enedis, fichier manuel)
+pnpm db:zones-contrainte-enr:import  # Importer les zones de contrainte réseau EnR (Enedis)
+pnpm data:zones-contrainte-enr:preparer <capca.json>  # Régénérer le GeoJSON commité depuis le fichier Enedis
 ```
 
 ## Architecture
@@ -374,7 +375,7 @@ Le test dédié (`versions.spec.ts`) garantit l'ordre chronologique ascendant st
 - **Référentiel local LOVAC** (`raw_lovac`) : taux de logements vacants par commune, importé annuellement (`pnpm db:lovac:import`) — remplace l'appel live data.gouv.fr, rate-limité sous charge (cf ADR)
 - **Référentiel local Zonage ABC** (`raw_zonage_abc`) : zone A/Abis/B1/B2/C par commune, importé à chaque arrêté (`pnpm db:zonage-abc:import`) — remplace l'appel live data.gouv.fr pour la même raison (ADR-0032)
 - **Référentiel local Réseaux de chaleur** (`raw_reseaux_chaleur`) : tracés des réseaux de chaleur et de froid, importés depuis France Chaleur Urbaine (`pnpm db:reseaux-chaleur:import`) — remplace l'appel live `/v1/eligibility`, qui mesure la distance sur une géométrie partielle pour environ 8 % des réseaux (ADR-0037)
-- **Référentiel local Zones de contrainte EnR** (`raw_zones_contrainte_enr`) : zones de postes sources saturées pour raccorder des projets EnR (Enedis/RTE), importées chaque mois depuis un fichier **téléchargé à la main** (protection anti-robots, pas d'API) — rappel par issue GitHub mensuelle (ADR-0046)
+- **Référentiel local Zones de contrainte EnR** (`raw_zones_contrainte_enr`) : zones de postes sources saturées pour raccorder des projets EnR (Enedis/RTE), importées depuis un GeoJSON compressé commité (`scripts/data/zones-contrainte-enr.geojson.gz`), régénéré chaque mois à partir d'un fichier Enedis **téléchargé à la main** (protection anti-robots, pas d'API) — rappel par issue GitHub mensuelle (ADR-0046)
 - **Référentiel local ICU** (`raw_icu`) : îlots de chaleur urbain (CSTB), test spatial sur ~600 communes, importé à chaque millésime (`pnpm db:icu:import`) — **donnée informative, hors algorithme** (ADR-0034)
 
 ## Tests

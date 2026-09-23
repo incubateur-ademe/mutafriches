@@ -1,4 +1,4 @@
-# ADR-0046 : Zones de contrainte réseau EnR — référentiel local importé à la main
+# ADR-0046 : Zones de contrainte réseau EnR — fichier commité, téléchargé à la main
 
 **Date** : 2026-09-23
 **Statut** : Accepté
@@ -27,9 +27,9 @@ HTA/BT, publiée sur openservices.enedis.fr. Constats du 2026-09-23 :
 
 ## Décision
 
-> Nous importons la carte dans une table PostGIS locale (`raw_zones_contrainte_enr`) à partir d'un
-> fichier téléchargé à la main dans un navigateur, et nous testons le centroïde du site contre ces
-> zones.
+> Nous téléchargeons la carte à la main dans un navigateur, la réduisons en un GeoJSON compressé
+> commité, l'importons dans une table PostGIS locale (`raw_zones_contrainte_enr`), et testons le
+> centroïde du site contre ces zones.
 
 - **Correspondance des statuts** : `SATUREE` → `true` ; `TRES_FAVORABLE`, `FAVORABLE` et
   `EN_TENSION` → `false` (une zone en tension reste raccordable, choix métier du 2026-09-23) ;
@@ -38,21 +38,35 @@ HTA/BT, publiée sur openservices.enedis.fr. Constats du 2026-09-23 :
   serait un faux négatif plausible, donc indétectable.
 - **Centroïde** : même règle que pour le QPV (ADR-0039). Les zones font plusieurs km², un site
   n'en chevauche une seconde qu'exceptionnellement.
-- **Fichier non commité** : il pèse 27 Mo et change chaque jour. Le script
-  `import-zones-contrainte-enr.ts` prend son chemin en argument ; en production, il est transmis
-  par `scalingo run --file` (déposé dans `/tmp/uploads`).
+- **Fichier commité, comme le QPV et l'ICU** : `preparer-zones-contrainte-enr.ts` ne garde que
+  l'identifiant et le statut des zones et arrondit les coordonnées à 5 décimales (~1 m, pour des
+  zones de plusieurs km²). Le résultat, compressé en gzip par `zlib` (natif, sans dépendance),
+  est commité dans `apps/api/src/scripts/data/zones-contrainte-enr.geojson.gz` : 4,3 Mo contre
+  27 Mo bruts (8,5 Mo en gzip seul). L'import le lit sans argument, comme les autres
+  référentiels commités.
+- **Pas de commit sans changement** : le script de préparation est déterministe (zones triées par
+  identifiant) et liste les changements de statut par rapport à la version commitée. Une
+  régénération identique ne réécrit pas le fichier ; sans changement de statut, on ne committe pas.
 - **Rafraîchissement mensuel** : un workflow GitHub planifié ouvre le 1er de chaque mois une issue
   de rappel décrivant la procédure. Il ne télécharge rien lui-même.
+- **Géométries vides** : trois zones non saturées du fichier source (72700, 74039, 74468) ont une
+  géométrie vide ; elles sont importées telles quelles et ne contiennent aucun site.
 
 ## Options envisagées
 
-### Option A — Référentiel local, import manuel et rappel mensuel (retenue)
+### Option A — Fichier réduit commité, import depuis le repo, rappel mensuel (retenue)
 
 - Avantages : critère enrichi automatiquement, sans saisie utilisateur ; test spatial local, sans
   latence ni dépendance à un service tiers pendant l'enrichissement ; respecte la protection mise
   en place par Enedis.
 - Inconvénients : donnée jusqu'à un mois en retard sur la carte ; étape manuelle qui peut être
   oubliée (atténuée par l'issue de rappel et l'alerte en log quand la table est vide).
+
+### Option A bis — Fichier brut non commité, transmis par `scalingo run --file`
+
+- Avantages : aucun poids dans le repo, aucune rediffusion de la donnée.
+- Inconvénients : fonctionnement différent des autres référentiels ; aucune trace versionnée de la
+  donnée importée ; import non rejouable sans retrouver le fichier. Écartée.
 
 ### Option B — Saisie utilisateur Oui / Non / Ne sait pas, avec un lien vers la carte
 
@@ -83,24 +97,28 @@ HTA/BT, publiée sur openservices.enedis.fr. Constats du 2026-09-23 :
   en fiabilité.
 - « Neutre » n'est pas sans effet : hors zone saturée (environ 90 % des sites), le score 0,5
   s'ajoute aux avantages et aux contraintes et rapproche les sept indices de 50 %.
-- **Réutilisation** : le fichier est public mais n'a pas de licence explicite. Confirmer auprès
-  d'Enedis les conditions de réutilisation, et demander une diffusion en open data qui permettrait
-  d'automatiser l'import.
+- **Croissance du repo** : git compresse mal les différences entre deux fichiers gzip, chaque
+  version ajoute environ 4 Mo à l'historique (au plus ~50 Mo par an). Repli possible : 4 décimales
+  (3,4 Mo).
+- **Rediffusion** : le repo est public, committer le fichier revient à rediffuser la donnée
+  Enedis, qui n'a pas de licence explicite. Confirmer auprès d'Enedis les conditions de
+  réutilisation, et demander une diffusion en open data qui permettrait d'automatiser l'import.
 - Si Enedis change le format ou les statuts du fichier, l'import échoue sans rien écrire (statut
   inconnu refusé) : c'est voulu.
 
 ### Migration
 
 1. `pnpm db:migrate` (migration `0036_raw_zones_contrainte_enr`, jouée par le `postdeploy`).
-2. Sur chaque environnement :
-   `scalingo --app <app> run --file capca.json "pnpm db:zones-contrainte-enr:import /tmp/uploads/capca.json"`.
+2. Sur chaque environnement : `scalingo --app <app> run "pnpm db:zones-contrainte-enr:import"`.
 3. Tant que l'import n'a pas eu lieu, le critère est indisponible pour tous les sites (erreur
    loguée une fois par processus).
 
 ## Liens
 
 - Source : https://openservices.enedis.fr/service/carte-zones-contrainte-projets-enr/
-- Script : `apps/api/src/scripts/import-zones-contrainte-enr.ts`
+- Scripts : `apps/api/src/scripts/preparer-zones-contrainte-enr.ts`,
+  `apps/api/src/scripts/import-zones-contrainte-enr.ts`
+- Données : `apps/api/src/scripts/data/zones-contrainte-enr.geojson.gz`
 - Repository : `apps/api/src/enrichissement/repositories/zones-contrainte-enr.repository.ts`
 - Service : `apps/api/src/enrichissement/services/reseau-electrique-enr/saturation-reseau-enr-enrichissement.service.ts`
 - Algorithme : `apps/api/src/evaluation/services/algorithme/versions/v1.15.ts`
