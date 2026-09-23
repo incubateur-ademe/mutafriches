@@ -1,7 +1,11 @@
 import React, { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import L from "leaflet";
 import type { GeoJsonObject } from "geojson";
-import { Coordonnees, GeometrieParcelle } from "@mutafriches/shared-types";
+import {
+  Coordonnees,
+  GeometrieParcelle,
+  GeometrieParcelleIdentifiee,
+} from "@mutafriches/shared-types";
 import { useLeafletMap } from "@shared/hooks/useLeafletMap";
 import { MapLayerType } from "@shared/config/map-layers.config";
 import { MapLayerSelector } from "@features/analyser/components/parcelle-map/MapLayerSelector";
@@ -9,6 +13,7 @@ import "@features/analyser/components/parcelle-map/MapLayerSelector.css";
 
 interface SiteMapProps {
   geometrie: GeometrieParcelle; // emprise du site (union des parcelles)
+  parcelles?: GeometrieParcelleIdentifiee[]; // contours internes (l'union les efface)
   centre?: Coordonnees; // centroïde pour le centrage initial
   height?: string;
 }
@@ -21,9 +26,22 @@ const SITE_STYLE: L.PathOptions = {
   fillOpacity: 0.2,
 };
 
+// Limites entre parcelles, discrètes pour ne pas concurrencer l'emprise
+const PARCELLE_STYLE: L.PathOptions = {
+  color: "#000091",
+  weight: 1,
+  dashArray: "4 3",
+  fill: false,
+};
+
 // Carte en lecture seule affichant l'emprise des parcelles d'un site partenaire.
 // Réutilise l'infra Leaflet existante (fonds IGN, limites cadastrales, sélecteur de couches).
-export const SiteMap: React.FC<SiteMapProps> = ({ geometrie, centre, height = "260px" }) => {
+export const SiteMap: React.FC<SiteMapProps> = ({
+  geometrie,
+  parcelles,
+  centre,
+  height = "260px",
+}) => {
   // Id de conteneur stable et unique (Leaflet cible un id DOM)
   const reactId = useId();
   const containerId = useMemo(() => `site-map-${reactId.replace(/:/g, "")}`, [reactId]);
@@ -81,6 +99,24 @@ export const SiteMap: React.FC<SiteMapProps> = ({ geometrie, centre, height = "2
       geoLayerRef.current = null;
     };
   }, [geometrie, mapRef]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !parcelles || parcelles.length < 2) return;
+
+    const group = L.layerGroup(
+      parcelles.map(({ identifiant, geometrie: geom }) =>
+        L.geoJSON(geom as GeoJsonObject, { style: () => PARCELLE_STYLE }).bindTooltip(identifiant, {
+          sticky: true,
+        }),
+      ),
+    );
+    group.addTo(map);
+
+    return () => {
+      group.remove();
+    };
+  }, [parcelles, mapRef]);
 
   return (
     <div className="mf-ms-map">

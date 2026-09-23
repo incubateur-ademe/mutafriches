@@ -145,6 +145,7 @@ export const SiteDetail: React.FC<SiteDetailProps> = ({
           <SiteMap
             key={site.idtup}
             geometrie={geometrieSite}
+            parcelles={enrichmentData?.geometriesParcelles}
             centre={enrichmentData?.coordonnees}
           />
         </div>

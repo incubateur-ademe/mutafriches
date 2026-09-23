@@ -1,4 +1,8 @@
-import { Coordonnees, GeometrieParcelle } from "@mutafriches/shared-types";
+import {
+  Coordonnees,
+  GeometrieParcelle,
+  GeometrieParcelleIdentifiee,
+} from "@mutafriches/shared-types";
 
 /**
  * Données initiales d'une parcelle individuelle au sein d'un site
@@ -31,6 +35,12 @@ export class Site {
 
   /** Géométrie union du site (union de toutes les parcelles) */
   geometrieUnion?: GeometrieParcelle;
+
+  get geometriesParcelles(): GeometrieParcelleIdentifiee[] {
+    return this.parcelles
+      .filter((p) => p.geometrie !== undefined)
+      .map((p) => ({ identifiant: p.identifiantParcelle, geometrie: p.geometrie }));
+  }
 
   get identifiantsParcelles(): string[] {
     return this.parcelles.map((p) => p.identifiantParcelle);

@@ -569,6 +569,7 @@ export class EnrichissementService {
         parcellePredominante: site.parcellePredominante.identifiantParcelle,
         communePredominante: site.communePredominante.commune,
         geometrieSite: site.geometrieUnion,
+        geometriesParcelles: site.geometriesParcelles,
 
         // Données physiques
         surfaceSite: site.surfaceTotale,
