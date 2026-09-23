@@ -105,6 +105,14 @@ export interface EnrichissementOutputDto {
    */
   siteEnQpv?: boolean;
 
+  // Saturation du réseau électrique pour les projets EnR (ADR-0046)
+  /**
+   * `true` si le site est dans une zone de poste source saturée (carte Enedis/RTE), `false`
+   * dans une zone raccordable, EN_TENSION comprise. `undefined` = hors périmètre Enedis
+   * (régie locale), référentiel illisible ou enrichissement antérieur à v1.15.
+   */
+  saturationReseauEnr?: boolean;
+
   // Îlot de chaleur urbain — donnée informative, hors algorithme (ADR-0034)
   /** undefined = enrichissement en échec ; NON_COUVERT = site hors périmètre d'étude */
   ilotChaleurUrbain?: IlotChaleurUrbain;

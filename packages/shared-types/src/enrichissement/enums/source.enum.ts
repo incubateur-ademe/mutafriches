@@ -30,4 +30,5 @@ export enum SourceEnrichissement {
   ICU = "ICU-CSTB",
   FRANCE_CHALEUR_URBAINE = "France-Chaleur-Urbaine",
   QPV = "QPV-ANCT",
+  ZONES_CONTRAINTE_ENR = "Enedis-Zones-Contrainte-EnR",
 }

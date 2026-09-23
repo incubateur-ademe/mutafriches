@@ -72,6 +72,8 @@ export class Site {
    * spatiale effectuée hors de tout périmètre ; `undefined` = donnée indisponible (ADR-0039)
    */
   siteEnQpv?: boolean;
+  /** Zone saturée pour raccorder un projet EnR ; `undefined` = hors périmètre Enedis (ADR-0046) */
+  saturationReseauEnr?: boolean;
   /** Catégorie de distance à une Installation Terminale Embranchée (ITE) fret */
   distanceIte?: DistanceIte;
   /** Distance réelle en mètres à l'ITE la plus proche (si trouvée dans le rayon de recherche) */
@@ -197,6 +199,7 @@ export class Site {
     // Affectation directe : un ternaire transformerait `false` — la grande majorité des sites —
     // en `undefined`, le critère serait alors ignoré au scoring ET décompté de la fiabilité.
     site.siteEnQpv = donnees.siteEnQpv;
+    site.saturationReseauEnr = donnees.saturationReseauEnr;
 
     // Fret
     site.distanceIte = donnees.distanceIte ? (donnees.distanceIte as DistanceIte) : undefined;

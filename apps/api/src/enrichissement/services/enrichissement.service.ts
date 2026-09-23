@@ -18,6 +18,7 @@ import { IteFretEnrichissementService } from "./transport/ite-fret-enrichissemen
 import { UrbanismeEnrichissementService } from "./urbanisme/urbanisme-enrichissement.service";
 import { IcuEnrichissementService } from "./climat/icu-enrichissement.service";
 import { QpvEnrichissementService } from "./qpv/qpv-enrichissement.service";
+import { SaturationReseauEnrEnrichissementService } from "./reseau-electrique-enr/saturation-reseau-enr-enrichissement.service";
 import { RisquesNaturelsEnrichissementService } from "./risques-naturels/risques-naturels-enrichissement.service";
 import { RisquesTechnologiquesEnrichissementService } from "./risques-technologiques/risques-technologiques-enrichissement.service";
 import { GeoRisquesEnrichissementService } from "./georisques/georisques-enrichissement.service";
@@ -51,6 +52,7 @@ export class EnrichissementService {
     private readonly urbanismeEnrichissement: UrbanismeEnrichissementService,
     private readonly icuEnrichissement: IcuEnrichissementService,
     private readonly qpvEnrichissement: QpvEnrichissementService,
+    private readonly saturationReseauEnrEnrichissement: SaturationReseauEnrEnrichissementService,
     private readonly risquesNaturelsEnrichissement: RisquesNaturelsEnrichissementService,
     private readonly risquesTechnologiquesEnrichissement: RisquesTechnologiquesEnrichissementService,
     private readonly georisquesEnrichissement: GeoRisquesEnrichissementService,
@@ -233,6 +235,15 @@ export class EnrichissementService {
       const qpvResult = await this.qpvEnrichissement.enrichir(siteEval);
       this.mergeEnrichmentResult(qpvResult, sourcesUtilisees, champsManquants, sourcesEchouees);
 
+      // 10.d Saturation du réseau électrique pour les projets EnR
+      const saturationEnrResult = await this.saturationReseauEnrEnrichissement.enrichir(siteEval);
+      this.mergeEnrichmentResult(
+        saturationEnrResult,
+        sourcesUtilisees,
+        champsManquants,
+        sourcesEchouees,
+      );
+
       // 11. CALCULER LA FIABILITE
       const sourcesUniques = [...new Set(sourcesUtilisees)];
       const champsManquantsUniques = [...new Set(champsManquants)];
@@ -285,6 +296,9 @@ export class EnrichissementService {
 
         // Quartier prioritaire de la politique de la ville
         siteEnQpv: siteEval.siteEnQpv,
+
+        // Saturation du réseau électrique pour les projets EnR
+        saturationReseauEnr: siteEval.saturationReseauEnr,
 
         // Îlot de chaleur urbain (informatif, hors algorithme)
         ilotChaleurUrbain: siteEval.ilotChaleurUrbain,
@@ -542,6 +556,15 @@ export class EnrichissementService {
       const qpvResult = await this.qpvEnrichissement.enrichir(siteEval);
       this.mergeEnrichmentResult(qpvResult, sourcesUtilisees, champsManquants, sourcesEchouees);
 
+      // 11.d Saturation du réseau électrique pour les projets EnR
+      const saturationEnrResult = await this.saturationReseauEnrEnrichissement.enrichir(siteEval);
+      this.mergeEnrichmentResult(
+        saturationEnrResult,
+        sourcesUtilisees,
+        champsManquants,
+        sourcesEchouees,
+      );
+
       // 12. DETERMINER LE STATUT
       const sourcesUniques = [...new Set(sourcesUtilisees)];
       const champsManquantsUniques = [...new Set(champsManquants)];
@@ -598,6 +621,9 @@ export class EnrichissementService {
 
         // Quartier prioritaire de la politique de la ville
         siteEnQpv: siteEval.siteEnQpv,
+
+        // Saturation du réseau électrique pour les projets EnR
+        saturationReseauEnr: siteEval.saturationReseauEnr,
 
         // Îlot de chaleur urbain (informatif, hors algorithme)
         ilotChaleurUrbain: siteEval.ilotChaleurUrbain,

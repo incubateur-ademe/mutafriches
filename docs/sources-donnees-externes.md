@@ -358,6 +358,24 @@ Ramenée à un booléen. En quartier prioritaire, la reconversion sert directeme
 | --- | --- |
 | Quartier prioritaire de la politique de la ville | 1 |
 
+### Zones de contrainte réseau pour les projets EnR
+
+- **Type** : Référentiel local
+- **Opérateur** : Enedis, en lien avec RTE
+- **Documentation** : https://openservices.enedis.fr/service/carte-zones-contrainte-projets-enr/
+
+**Champs récupérés**
+
+- Statut de la zone de poste source contenant le centroïde du site (très favorable, favorable, en tension, saturée), par test spatial contre la carte Enedis des zones en contrainte pour raccorder de nouveaux projets de production HTA/BT (base PostGIS `raw_zones_contrainte_enr`, environ 2 300 zones, rafraîchie chaque mois)
+
+**Traitement dans l'algorithme**
+
+Ramené à un booléen : seule une zone saturée compte comme saturée, une zone en tension restant raccordable. En zone saturée, très négatif pour le photovoltaïque, neutre pour les six autres usages ; hors zone saturée, neutre sur les sept usages. Hors périmètre Enedis (entreprises locales de distribution), la donnée est indisponible. Données indicatives, sans valeur contractuelle (ADR-0046).
+
+**Critères d'évaluation alimentés**
+
+Aucun : cette source alimente une donnée informative, restituée à l'utilisateur sans effet sur l'indice de mutabilité ni sur la fiabilité.
+
 ## Critères saisis manuellement
 
 Ces critères ne proviennent pas d'une source externe : ils sont renseignés par l'utilisateur
