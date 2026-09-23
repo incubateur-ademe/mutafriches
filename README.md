@@ -140,6 +140,7 @@ pnpm db:zonage-abc:import   # Référentiel zonage ABC (tension du logement, à 
 pnpm db:icu:import          # Référentiel îlots de chaleur urbain (ICU, à chaque millésime)
 pnpm db:reseaux-chaleur:import          # Référentiel îlots de chaleur urbain (réseaux de chaleur, à chaque millésime)
 pnpm db:qpv:import          # Référentiel quartiers prioritaires (QPV, à chaque arrêté)
+pnpm db:zones-contrainte-enr:import <capca.json>  # Zones saturées réseau EnR (Enedis, mensuel, fichier manuel — ADR-0046)
 ```
 
 Le conteneur PostgreSQL ne publie son port que sur `127.0.0.1` : la base locale, qui peut contenir
