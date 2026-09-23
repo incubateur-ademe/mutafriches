@@ -40,6 +40,7 @@
     "db:icu:import": "node dist/src/scripts/import-icu.js",
     "db:reseaux-chaleur:import": "node dist/src/scripts/import-reseaux-chaleur.js",
     "db:qpv:import": "node dist/src/scripts/import-qpv.js",
+    "db:zones-contrainte-enr:import": "node dist/src/scripts/import-zones-contrainte-enr.js",
     "db:partenaires:seed": "node dist/src/scripts/seed-partenaires.js",
     "db:partenaires:backfill-canal": "node dist/src/scripts/backfill-canal-partenaire.js",
     "partenaires:prefetch": "node dist/src/scripts/prefetch-partenaires.js",

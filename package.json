@@ -43,6 +43,7 @@
     "db:icu:import": "pnpm --filter api run db:icu:import",
     "db:reseaux-chaleur:import": "pnpm --filter api run db:reseaux-chaleur:import",
     "db:qpv:import": "pnpm --filter api run db:qpv:import",
+    "db:zones-contrainte-enr:import": "pnpm --filter api run db:zones-contrainte-enr:import",
     "db:partenaires:seed": "pnpm --filter api run db:partenaires:seed",
     "db:partenaires:backfill-canal": "pnpm --filter api run db:partenaires:backfill-canal",
     "partenaires:prefetch": "pnpm --filter api run partenaires:prefetch",
