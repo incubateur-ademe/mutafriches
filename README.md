@@ -283,7 +283,7 @@ Documentation complète dans le dossier [`docs/`](./docs/) :
 
 - **[Index Général](./docs/README.md)** - Vue d'ensemble et navigation
 - **[Module Enrichissement](./docs/enrichissement.md)** - 13 domaines, APIs externes et bases locales, règles de gestion
-- **[Algorithme d'Évaluation](./docs/evaluation-mutabilite.md)** - Matrice 30×7, calcul mutabilité
+- **[Algorithme d'Évaluation](./docs/evaluation-mutabilite.md)** - Matrice 31×7, calcul mutabilité
 - **[Guide d'Intégration](./docs/integration/README.md)** - Iframe + PostMessage
 - **[Vulnérabilités de dépendances](./docs/security/vulnerabilites-acceptees.md)** - Suivi `pnpm audit` et justifications d'acceptation
 - **[Ops](./docs/ops/README.md)** - Scalingo (logs, psql en lecture), restauration de dump en local

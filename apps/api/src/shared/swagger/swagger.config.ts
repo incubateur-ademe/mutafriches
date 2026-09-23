@@ -30,7 +30,7 @@ API publique de **Mutafriches** — analyse de la mutabilité des friches urbain
 Cette API expose deux services principaux :
 
 - **Enrichissement** d'une parcelle cadastrale à partir de ~24 sources publiques (IGN, BDNB, GéoRisques, Enedis, ZAER, etc.)
-- **Évaluation de mutabilité** sur 7 usages (résidentiel, équipements, culture, tertiaire, industrie, renaturation, photovoltaïque) à partir d'une matrice 30 critères × 7 usages
+- **Évaluation de mutabilité** sur 7 usages (résidentiel, équipements, culture, tertiaire, industrie, renaturation, photovoltaïque) à partir d'une matrice 31 critères × 7 usages
 
 ---
 
@@ -108,7 +108,7 @@ export function buildSwaggerConfig() {
       "enrichissement",
       "Enrichissement d'une parcelle cadastrale à partir de ~24 sources publiques",
     )
-    .addTag("evaluation", "Calcul de mutabilité sur 7 usages (matrice 30 critères × 7 usages)")
+    .addTag("evaluation", "Calcul de mutabilité sur 7 usages (matrice 31 critères × 7 usages)")
     .addTag("stats", "KPIs publics Mutafriches")
     .addTag("donnees-externes", "Statut des sources externes (cache, monitoring)")
     .addTag("health", "Vérification de l'état de santé de l'API")

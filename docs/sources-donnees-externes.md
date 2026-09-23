@@ -10,10 +10,10 @@ qu'ils alimentent.
 
 ## Comment sont utilisées ces données
 
-L'analyse de mutabilité repose sur 30 critères, notés pour 7 usages possibles d'une friche.
-20 critères sont **enrichis automatiquement** à partir des sources ci-dessous ; 10 sont
+L'analyse de mutabilité repose sur 31 critères, notés pour 7 usages possibles d'une friche.
+21 critères sont **enrichis automatiquement** à partir des sources ci-dessous ; 10 sont
 **saisis manuellement** par l'utilisateur. Chaque critère porte un poids ; le poids total
-est de 32. La part des critères effectivement renseignés détermine l'indice de fiabilité
+est de 33. La part des critères effectivement renseignés détermine l'indice de fiabilité
 de l'analyse.
 
 ## Sources enrichies automatiquement
@@ -374,7 +374,9 @@ Ramené à un booléen : seule une zone saturée compte comme saturée, une zone
 
 **Critères d'évaluation alimentés**
 
-Aucun : cette source alimente une donnée informative, restituée à l'utilisateur sans effet sur l'indice de mutabilité ni sur la fiabilité.
+| Critère d'évaluation alimenté | Poids |
+| --- | --- |
+| Saturation du réseau électrique pour les projets EnR | 1 |
 
 ## Critères saisis manuellement
 

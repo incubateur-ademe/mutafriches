@@ -80,8 +80,8 @@ describe("Scoring du quartier prioritaire de la ville", () => {
     const horsQpv = await service.calculer(siteAvecQpv(false));
     const sansDonnee = await service.calculer(siteAvecQpv(undefined));
 
-    expect(horsQpv.fiabilite.poidsTotal).toBe(32);
-    expect(sansDonnee.fiabilite.poidsTotal).toBe(32);
+    expect(horsQpv.fiabilite.poidsTotal).toBe(33);
+    expect(sansDonnee.fiabilite.poidsTotal).toBe(33);
     expect(horsQpv.fiabilite.poidsRenseignes).toBe(sansDonnee.fiabilite.poidsRenseignes + 1);
   });
 });

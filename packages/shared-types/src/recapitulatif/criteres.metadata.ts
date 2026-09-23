@@ -2,7 +2,7 @@ import { SourceEnrichissement } from "../enrichissement";
 import { CritereMetadata } from "./recapitulatif.types";
 
 /**
- * Registre autoritaire des 30 critères du récapitulatif du site.
+ * Registre autoritaire des 31 critères du récapitulatif du site.
  *
  * Source de vérité partagée : libellé, section, type de saisie, poids et source
  * d'enrichissement de chaque critère. L'ensemble des clés et des poids doit rester
@@ -276,6 +276,15 @@ export const CRITERES_METADATA: Record<string, CritereMetadata> = {
     poids: 1,
     source: SourceEnrichissement.QPV,
     ordre: 30,
+  },
+  saturationReseauEnr: {
+    key: "saturationReseauEnr",
+    label: "Saturation du réseau électrique pour les projets EnR",
+    section: "risques-zonages",
+    saisie: "AUTOMATIQUE",
+    poids: 1,
+    source: SourceEnrichissement.ZONES_CONTRAINTE_ENR,
+    ordre: 31,
   },
 };
 
