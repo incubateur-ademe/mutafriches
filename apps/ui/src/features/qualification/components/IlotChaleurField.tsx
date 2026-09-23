@@ -18,8 +18,8 @@ const BADGES: Record<IlotChaleurUrbain, { label: string; className: string }> = 
     className: "fr-badge fr-badge--green-emeraude fr-icon-checkbox-line fr-badge--icon-left",
   },
   [IlotChaleurUrbain.NON_COUVERT]: {
-    label: "Commune non couverte par la cartographie",
-    className: "fr-badge fr-badge--green-emeraude fr-icon-question-line fr-badge--icon-left",
+    label: "Commune non couverte",
+    className: "fr-badge fr-badge--yellow-tournesol fr-icon-question-line fr-badge--icon-left",
   },
 };
 
