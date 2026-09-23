@@ -41,6 +41,13 @@ describe("getCritereTagLabel", () => {
     });
   });
 
+  describe("saturationReseauEnr", () => {
+    it("ne produit jamais de tag, le critère n'étant jamais un avantage", () => {
+      expect(getCritereTagLabel("saturationReseauEnr", true)).toBeNull();
+      expect(getCritereTagLabel("saturationReseauEnr", false)).toBeNull();
+    });
+  });
+
   // Garde-fou générique : sans `case`, le podium afficherait la clé technique du critère.
   it("retourne la clé brute pour un critère sans libellé dédié", () => {
     expect(getCritereTagLabel("critereInconnu", 42)).toBe("critereInconnu");

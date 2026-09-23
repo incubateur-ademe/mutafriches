@@ -213,6 +213,10 @@ export function getCritereTagLabel(
     case "siteEnQpv":
       return valeur === true ? "QPV" : null;
 
+    // Très négatif ou neutre selon l'usage : n'atteint jamais le podium des avantages
+    case "saturationReseauEnr":
+      return null;
+
     default:
       return critere;
   }

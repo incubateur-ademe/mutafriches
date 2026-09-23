@@ -76,6 +76,24 @@ describe("transformEnrichmentToUiData - quartier prioritaire de la ville", () =>
   });
 });
 
+describe("transformEnrichmentToUiData - saturation du réseau électrique EnR", () => {
+  it("affiche 'Oui' en zone saturée et 'Non' en zone raccordable", () => {
+    expect(
+      transformEnrichmentToUiData(makeEnrichissement({ saturationReseauEnr: true }))
+        .saturationReseauEnr,
+    ).toBe("Oui");
+    expect(
+      transformEnrichmentToUiData(makeEnrichissement({ saturationReseauEnr: false }))
+        .saturationReseauEnr,
+    ).toBe("Non");
+  });
+
+  it("laisse le champ vide hors périmètre Enedis (undefined)", () => {
+    const ui = transformEnrichmentToUiData(makeEnrichissement({ saturationReseauEnr: undefined }));
+    expect(ui.saturationReseauEnr).toBe("");
+  });
+});
+
 describe("transformEnrichmentToUiData - distance au réseau de chaleur", () => {
   it("affiche la distance quand elle est renseignée", () => {
     const ui = transformEnrichmentToUiData(makeEnrichissement({ distanceReseauChaleur: 320 }));

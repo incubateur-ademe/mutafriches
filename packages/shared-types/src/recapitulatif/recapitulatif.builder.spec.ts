@@ -10,6 +10,7 @@ import {
 } from "../enrichissement";
 import { CRITERES_METADATA_LIST } from "./criteres.metadata";
 import { buildRecapitulatifSite, CRITERES_AVEC_RESOLVEUR } from "./recapitulatif.builder";
+import { MESSAGE_RESEAU_SATURE_ENR } from "./valeurs.labels";
 
 const enrichissement = {
   surfaceSite: 11338,
@@ -102,6 +103,18 @@ describe("buildRecapitulatifSite", () => {
     expect(keys).toContain("risqueRetraitGonflementArgile");
     expect(keys).toContain("risqueCavitesSouterraines");
     expect(keys).toContain("risqueInondation");
+  });
+
+  it("mentionne l'impossibilité de raccorder un projet EnR en zone saturée", () => {
+    const critere = (saturationReseauEnr: boolean) =>
+      buildRecapitulatifSite({ ...enrichissement, saturationReseauEnr }, complementaires)
+        .flatMap((s) => s.criteres)
+        .find((c) => c.key === "saturationReseauEnr");
+
+    expect(critere(true)?.valeurAffichee).toBe("Oui");
+    expect(critere(true)?.mention).toBe(MESSAGE_RESEAU_SATURE_ENR);
+    expect(critere(false)?.valeurAffichee).toBe("Non");
+    expect(critere(false)?.mention).toBeUndefined();
   });
 
   it("affiche 'Non disponible' pour les valeurs manquantes", () => {
