@@ -3,7 +3,9 @@ import type { PartnerParcelle } from "../../core/types";
 // Parcelles du SCET (friches de la CC du Pays de Montereau, 77), regroupées par idtup.
 // Source : inventaire SCET 2025, IDU résolus via API Carto Cadastre (resolve-idu-scet).
 export const PARCELLES_SCET: PartnerParcelle[] = [
-  { idpar: "77210000AH0013", commune: "La Grande-Paroisse", idtup: "scet-28" },
+  { idpar: "77210000AH0014", commune: "La Grande-Paroisse", idtup: "scet-28" },
+  { idpar: "77210000AH0015", commune: "La Grande-Paroisse", idtup: "scet-28" },
+  { idpar: "77210000AH0016", commune: "La Grande-Paroisse", idtup: "scet-28" },
   { idpar: "77305000AB0160", commune: "Montereau-Fault-Yonne", idtup: "scet-20" },
   { idpar: "77305000AB0161", commune: "Montereau-Fault-Yonne", idtup: "scet-20" },
   { idpar: "77305000AB0163", commune: "Montereau-Fault-Yonne", idtup: "scet-20" },
@@ -32,7 +34,8 @@ export const PARCELLES_SCET: PartnerParcelle[] = [
   { idpar: "77305000AN0550", commune: "Montereau-Fault-Yonne", idtup: "scet-1" },
   { idpar: "77305000AN0551", commune: "Montereau-Fault-Yonne", idtup: "scet-1" },
   { idpar: "77305000AN0087", commune: "Montereau-Fault-Yonne", idtup: "scet-16" },
-  { idpar: "77305000AM0393", commune: "Montereau-Fault-Yonne", idtup: "scet-22" },
+  { idpar: "77305000AM0456", commune: "Montereau-Fault-Yonne", idtup: "scet-22" },
+  { idpar: "77305000AM0457", commune: "Montereau-Fault-Yonne", idtup: "scet-22" },
   { idpar: "77305000AM0394", commune: "Montereau-Fault-Yonne", idtup: "scet-22" },
   { idpar: "77194000ZI0010", commune: "Forges", idtup: "scet-29" },
   { idpar: "77305000AD0003", commune: "Montereau-Fault-Yonne", idtup: "scet-11" },
@@ -81,7 +84,8 @@ export const PARCELLES_SCET: PartnerParcelle[] = [
   { idpar: "77172000A1126", commune: "Esmans", idtup: "scet-19" },
   { idpar: "77172000A1128", commune: "Esmans", idtup: "scet-19" },
   { idpar: "77172000A1132", commune: "Esmans", idtup: "scet-19" },
-  { idpar: "77172000A1133", commune: "Esmans", idtup: "scet-19" },
+  { idpar: "77172000A1162", commune: "Esmans", idtup: "scet-19" },
+  { idpar: "77172000A1163", commune: "Esmans", idtup: "scet-19" },
   { idpar: "77172000A1136", commune: "Esmans", idtup: "scet-19" },
   { idpar: "77172000A1137", commune: "Esmans", idtup: "scet-19" },
   { idpar: "77482000C0950", commune: "Varennes-sur-Seine", idtup: "scet-23" },

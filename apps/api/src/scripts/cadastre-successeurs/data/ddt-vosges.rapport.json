@@ -1,0 +1,3056 @@
+{
+  "millesimeCourant": "2026-06-01",
+  "sites": [
+    {
+      "idtup": "ddt88-355",
+      "commune": "Anould",
+      "parcellesAvant": [
+        "88009000AC0142",
+        "88009000AC0294",
+        "88009000AC0295",
+        "88009000AC0296",
+        "88009000AC0297",
+        "88009000AC0298"
+      ],
+      "disparues": [
+        {
+          "id": "88009000AC0297",
+          "dernierMillesime": "2022-07-01"
+        },
+        {
+          "id": "88009000AC0298",
+          "dernierMillesime": "2022-07-01"
+        }
+      ],
+      "successeurs": [
+        {
+          "id": "88009000AC0894",
+          "surfaceM2": 11009.290372941317,
+          "partDansSite": 0.9999972302934651,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88009000AC0895",
+          "surfaceM2": 1919.5348022130142,
+          "partDansSite": 1,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88009000AC0896",
+          "surfaceM2": 10184.52791394819,
+          "partDansSite": 1.000000000014769,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88009000AC0893",
+          "surfaceM2": 652.1036211207293,
+          "partDansSite": 0.999972808930743,
+          "confirmeApicarto": true
+        }
+      ],
+      "ecartes": [],
+      "couverture": 1,
+      "parcellesApres": [
+        "88009000AC0142",
+        "88009000AC0294",
+        "88009000AC0295",
+        "88009000AC0296",
+        "88009000AC0894",
+        "88009000AC0895",
+        "88009000AC0896",
+        "88009000AC0893"
+      ]
+    },
+    {
+      "idtup": "ddt88-120",
+      "commune": "Archettes",
+      "parcellesAvant": ["88012000AL0003", "88012000AL0004"],
+      "disparues": [
+        {
+          "id": "88012000AL0003",
+          "dernierMillesime": "2024-07-01"
+        },
+        {
+          "id": "88012000AL0004",
+          "dernierMillesime": "2025-04-01"
+        }
+      ],
+      "successeurs": [
+        {
+          "id": "88012000AL0506",
+          "surfaceM2": 1025.5652244191388,
+          "partDansSite": 0.9999832241552825,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88012000AL0515",
+          "surfaceM2": 1167.8121959458763,
+          "partDansSite": 0.9999674690645239,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88012000AL0514",
+          "surfaceM2": 1352.138578094303,
+          "partDansSite": 0.9999999999729836,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88012000AL0508",
+          "surfaceM2": 762.8324920579965,
+          "partDansSite": 0.9997531004037101,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88012000AL0516",
+          "surfaceM2": 334.91951408118103,
+          "partDansSite": 0.9998532985403495,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88012000AL0509",
+          "surfaceM2": 2114.439969107343,
+          "partDansSite": 0.9997998993258363,
+          "confirmeApicarto": true
+        }
+      ],
+      "ecartes": [],
+      "couverture": 0.9999799348114214,
+      "parcellesApres": [
+        "88012000AL0506",
+        "88012000AL0515",
+        "88012000AL0514",
+        "88012000AL0508",
+        "88012000AL0516",
+        "88012000AL0509"
+      ]
+    },
+    {
+      "idtup": "ddt88-38",
+      "commune": "Archettes",
+      "parcellesAvant": ["88250000AA0083", "88250000AA0088"],
+      "disparues": [
+        {
+          "id": "88250000AA0083",
+          "dernierMillesime": "2025-04-01"
+        },
+        {
+          "id": "88250000AA0088",
+          "dernierMillesime": "2021-04-01"
+        }
+      ],
+      "successeurs": [
+        {
+          "id": "88250000AA0103",
+          "surfaceM2": 365.1840273550984,
+          "partDansSite": 0.9999999999941157,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88250000AA0104",
+          "surfaceM2": 3569.591157007687,
+          "partDansSite": 0.9999968444582221,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88250000AA0116",
+          "surfaceM2": 347.1148593415222,
+          "partDansSite": 1.0000000000742857,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88250000AA0102",
+          "surfaceM2": 88.87204489503534,
+          "partDansSite": 1.0000000000211564,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88250000AA0114",
+          "surfaceM2": 57.92554995315663,
+          "partDansSite": 0.9999077842764367,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88250000AA0113",
+          "surfaceM2": 57.96320408503586,
+          "partDansSite": 1.000000000018536,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88250000AA0112",
+          "surfaceM2": 58.048198632364624,
+          "partDansSite": 0.9998924458754249,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88250000AA0111",
+          "surfaceM2": 57.60113882659782,
+          "partDansSite": 0.9998512680314868,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88250000AA0110",
+          "surfaceM2": 59.85029880033086,
+          "partDansSite": 1,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88250000AA0115",
+          "surfaceM2": 71.71960701927746,
+          "partDansSite": 0.9998805030326213,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88250000AA0100",
+          "surfaceM2": 130.68818687114563,
+          "partDansSite": 0.9999999999013467,
+          "confirmeApicarto": true
+        }
+      ],
+      "ecartes": [],
+      "couverture": 0.9999638000178539,
+      "parcellesApres": [
+        "88250000AA0103",
+        "88250000AA0104",
+        "88250000AA0116",
+        "88250000AA0102",
+        "88250000AA0114",
+        "88250000AA0113",
+        "88250000AA0112",
+        "88250000AA0111",
+        "88250000AA0110",
+        "88250000AA0115",
+        "88250000AA0100"
+      ]
+    },
+    {
+      "idtup": "ddt88-419",
+      "commune": "Bussang",
+      "parcellesAvant": [
+        "88081000AH0051",
+        "88081000AH0059",
+        "88081000AH0060",
+        "88081000AH0106",
+        "88081000AH0118",
+        "88081000AH0119",
+        "88081000AH0120"
+      ],
+      "disparues": [
+        {
+          "id": "88081000AH0106",
+          "dernierMillesime": "2022-01-01"
+        }
+      ],
+      "successeurs": [
+        {
+          "id": "88081000AH0123",
+          "surfaceM2": 3719.3766653355888,
+          "partDansSite": 0.999990142913569,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88081000AH0124",
+          "surfaceM2": 80.76001351465516,
+          "partDansSite": 0.9999673383764058,
+          "confirmeApicarto": true
+        }
+      ],
+      "ecartes": [],
+      "couverture": 0.9999719644325354,
+      "parcellesApres": [
+        "88081000AH0051",
+        "88081000AH0059",
+        "88081000AH0060",
+        "88081000AH0118",
+        "88081000AH0119",
+        "88081000AH0120",
+        "88081000AH0123",
+        "88081000AH0124"
+      ]
+    },
+    {
+      "idtup": "ddt88-456",
+      "commune": "Bussang",
+      "parcellesAvant": ["88081000AE0163"],
+      "disparues": [
+        {
+          "id": "88081000AE0163",
+          "dernierMillesime": "2025-04-01"
+        }
+      ],
+      "successeurs": [
+        {
+          "id": "88081000AE0283",
+          "surfaceM2": 836.1410527005136,
+          "partDansSite": 0.999963260404847,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88081000AE0282",
+          "surfaceM2": 6029.102952407143,
+          "partDansSite": 0.9999939910197462,
+          "confirmeApicarto": true
+        }
+      ],
+      "ecartes": [],
+      "couverture": 1.000000000029109,
+      "parcellesApres": ["88081000AE0283", "88081000AE0282"]
+    },
+    {
+      "idtup": "ddt88-162",
+      "commune": "Certilleux",
+      "parcellesAvant": ["88083000ZA0075"],
+      "disparues": [
+        {
+          "id": "88083000ZA0075",
+          "dernierMillesime": "2023-04-01"
+        }
+      ],
+      "successeurs": [
+        {
+          "id": "88083000ZA0273",
+          "surfaceM2": 721.9759834802704,
+          "partDansSite": 0.9999831615246916,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88083000ZA0274",
+          "surfaceM2": 1256.618488953725,
+          "partDansSite": 0.9999020985403364,
+          "confirmeApicarto": true
+        }
+      ],
+      "ecartes": [],
+      "couverture": 1.000000000032583,
+      "parcellesApres": ["88083000ZA0273", "88083000ZA0274"]
+    },
+    {
+      "idtup": "ddt88-111",
+      "commune": "Chavelot",
+      "parcellesAvant": [
+        "88099000AE0183",
+        "88099000AE0197",
+        "88099000AL0154",
+        "88099000AL0155",
+        "88099000AL0176",
+        "88099000AL0177",
+        "88099000AL0178",
+        "88099000AL0179",
+        "88099000AL0188",
+        "88099000AM0153",
+        "88099000AR0057",
+        "88099000AR0135",
+        "88099000AR0138",
+        "88099000AR0139",
+        "88099000AR0140",
+        "88099000AR0145",
+        "88099000AR0148",
+        "88099000AR0149",
+        "88099000AR0150",
+        "88099000AR0153",
+        "88099000AR0155",
+        "88099000AR0157",
+        "88099000AR0159",
+        "88099000AR0161",
+        "88099000AR0162",
+        "88099000AR0163",
+        "88099000AR0164"
+      ],
+      "disparues": [
+        {
+          "id": "88099000AR0163",
+          "dernierMillesime": "2025-04-01"
+        }
+      ],
+      "successeurs": [
+        {
+          "id": "88099000AR0167",
+          "surfaceM2": 24709.282995306137,
+          "partDansSite": 0.9999816929161082,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88099000AR0168",
+          "surfaceM2": 9566.806638266296,
+          "partDansSite": 0.9999574675426882,
+          "confirmeApicarto": true
+        }
+      ],
+      "ecartes": [],
+      "couverture": 1,
+      "parcellesApres": [
+        "88099000AE0183",
+        "88099000AE0197",
+        "88099000AL0154",
+        "88099000AL0155",
+        "88099000AL0176",
+        "88099000AL0177",
+        "88099000AL0178",
+        "88099000AL0179",
+        "88099000AL0188",
+        "88099000AM0153",
+        "88099000AR0057",
+        "88099000AR0135",
+        "88099000AR0138",
+        "88099000AR0139",
+        "88099000AR0140",
+        "88099000AR0145",
+        "88099000AR0148",
+        "88099000AR0149",
+        "88099000AR0150",
+        "88099000AR0153",
+        "88099000AR0155",
+        "88099000AR0157",
+        "88099000AR0159",
+        "88099000AR0161",
+        "88099000AR0162",
+        "88099000AR0164",
+        "88099000AR0167",
+        "88099000AR0168"
+      ]
+    },
+    {
+      "idtup": "ddt88-27",
+      "commune": "Chavelot",
+      "parcellesAvant": [
+        "88465000AE0167",
+        "88465000AE0171",
+        "88465000AE0172",
+        "88465000AE0188",
+        "88465000AE0228"
+      ],
+      "disparues": [
+        {
+          "id": "88465000AE0167",
+          "dernierMillesime": "2025-01-01"
+        },
+        {
+          "id": "88465000AE0171",
+          "dernierMillesime": "2025-01-01"
+        },
+        {
+          "id": "88465000AE0172",
+          "dernierMillesime": "2025-01-01"
+        },
+        {
+          "id": "88465000AE0188",
+          "dernierMillesime": "2025-01-01"
+        },
+        {
+          "id": "88465000AE0228",
+          "dernierMillesime": "2025-01-01"
+        }
+      ],
+      "successeurs": [
+        {
+          "id": "88465000AY0064",
+          "surfaceM2": 12829.760600359363,
+          "partDansSite": 0.9787818557200754,
+          "confirmeApicarto": true
+        }
+      ],
+      "ecartes": [
+        {
+          "id": "88465000AY0070",
+          "surfaceM2": 12606.159109498258,
+          "partDansSite": 0.01568305528226981
+        },
+        {
+          "id": "88465000AY0062",
+          "surfaceM2": 6608.1173097433775,
+          "partDansSite": 0.0003340038272021962
+        },
+        {
+          "id": "88465000AY0061",
+          "surfaceM2": 2273.8982859503176,
+          "partDansSite": 0.00844709788447864
+        }
+      ],
+      "couverture": 0.982850130644015,
+      "parcellesApres": ["88465000AY0064"]
+    },
+    {
+      "idtup": "ddt88-81",
+      "commune": "Châtillon-sur-Saône",
+      "parcellesAvant": ["88096000AB0019", "88096000AB0153"],
+      "disparues": [
+        {
+          "id": "88096000AB0019",
+          "dernierMillesime": "2021-10-01"
+        },
+        {
+          "id": "88096000AB0153",
+          "dernierMillesime": "2021-10-01"
+        }
+      ],
+      "successeurs": [
+        {
+          "id": "88096000AB0284",
+          "surfaceM2": 581.824172563966,
+          "partDansSite": 0.9999949778510587,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88096000AB0293",
+          "surfaceM2": 930.4542021462813,
+          "partDansSite": 0.9999465384780333,
+          "confirmeApicarto": true
+        }
+      ],
+      "ecartes": [],
+      "couverture": 0.9900558380275933,
+      "parcellesApres": ["88096000AB0284", "88096000AB0293"]
+    },
+    {
+      "idtup": "ddt88-208",
+      "commune": "Docelles",
+      "parcellesAvant": [
+        "88135000AI0053",
+        "88135000AI0115",
+        "88135000AI0117",
+        "88135000AI0264",
+        "88135000AI0266",
+        "88135000AI0267",
+        "88135000AI0268",
+        "88135000AI0269",
+        "88135000AI0270"
+      ],
+      "disparues": [
+        {
+          "id": "88135000AI0115",
+          "dernierMillesime": "2024-10-01"
+        },
+        {
+          "id": "88135000AI0267",
+          "dernierMillesime": "2024-10-01"
+        },
+        {
+          "id": "88135000AI0268",
+          "dernierMillesime": "2024-10-01"
+        },
+        {
+          "id": "88135000AI0269",
+          "dernierMillesime": "2024-10-01"
+        }
+      ],
+      "successeurs": [
+        {
+          "id": "88135000AI0289",
+          "surfaceM2": 4250.853283624163,
+          "partDansSite": 1.000000000016176,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88135000AI0291",
+          "surfaceM2": 851.2933934342014,
+          "partDansSite": 1,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88135000AI0286",
+          "surfaceM2": 582.0105736384913,
+          "partDansSite": 1,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88135000AI0290",
+          "surfaceM2": 1650.1047381727956,
+          "partDansSite": 1,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88135000AI0288",
+          "surfaceM2": 509.6668986893073,
+          "partDansSite": 1.0000000000168645,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88135000AI0284",
+          "surfaceM2": 246.7432400321877,
+          "partDansSite": 0.9999842194852605,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88135000AI0287",
+          "surfaceM2": 89.84465119042027,
+          "partDansSite": 1.0000000000239169,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88135000AI0285",
+          "surfaceM2": 977.4869589302755,
+          "partDansSite": 0.9999858793733151,
+          "confirmeApicarto": true
+        }
+      ],
+      "ecartes": [],
+      "couverture": 0.999989035184981,
+      "parcellesApres": [
+        "88135000AI0053",
+        "88135000AI0117",
+        "88135000AI0264",
+        "88135000AI0266",
+        "88135000AI0270",
+        "88135000AI0289",
+        "88135000AI0291",
+        "88135000AI0286",
+        "88135000AI0290",
+        "88135000AI0288",
+        "88135000AI0284",
+        "88135000AI0287",
+        "88135000AI0285"
+      ]
+    },
+    {
+      "idtup": "ddt88-353",
+      "commune": "Dommartin-lès-Remiremont",
+      "parcellesAvant": ["884980000B1155", "884980000B1157", "884980000B1159"],
+      "disparues": [
+        {
+          "id": "884980000B1155",
+          "dernierMillesime": "2021-10-01"
+        },
+        {
+          "id": "884980000B1157",
+          "dernierMillesime": "2021-10-01"
+        },
+        {
+          "id": "884980000B1159",
+          "dernierMillesime": "2021-10-01"
+        }
+      ],
+      "successeurs": [
+        {
+          "id": "88498000AD0003",
+          "surfaceM2": 4911.218438803232,
+          "partDansSite": 0.7762353945425947,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88498000AD0002",
+          "surfaceM2": 477.7923377485786,
+          "partDansSite": 0.7200981309349478,
+          "confirmeApicarto": true
+        }
+      ],
+      "ecartes": [],
+      "couverture": 0.8078133736093939,
+      "parcellesApres": ["88498000AD0003", "88498000AD0002"]
+    },
+    {
+      "idtup": "ddt88-376",
+      "commune": "Fraize",
+      "parcellesAvant": ["88181000AI0395", "88181000AI0398"],
+      "disparues": [
+        {
+          "id": "88181000AI0395",
+          "dernierMillesime": "2024-04-01"
+        }
+      ],
+      "successeurs": [
+        {
+          "id": "88181000AI0432",
+          "surfaceM2": 14271.482577508903,
+          "partDansSite": 0.9999641909072388,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88181000AI0428",
+          "surfaceM2": 2782.189827755888,
+          "partDansSite": 0.9999452074771521,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88181000AI0431",
+          "surfaceM2": 145.1438885271603,
+          "partDansSite": 1.0000000000592186,
+          "confirmeApicarto": true
+        }
+      ],
+      "ecartes": [],
+      "couverture": 0.9999990606259528,
+      "parcellesApres": ["88181000AI0398", "88181000AI0432", "88181000AI0428", "88181000AI0431"]
+    },
+    {
+      "idtup": "ddt88-334",
+      "commune": "Frebécourt",
+      "parcellesAvant": [
+        "883210000D0148",
+        "883210000D0149",
+        "883210000D0150",
+        "883210000D0151",
+        "883210000D0152",
+        "883210000D0153",
+        "883210000D0154",
+        "883210000D0155",
+        "883210000D0156",
+        "883210000D0157",
+        "883210000D0158",
+        "883210000D0159",
+        "883210000D0160",
+        "883210000D0161",
+        "883210000D0162",
+        "883210000D0192",
+        "883210000D0213",
+        "883210000D0214",
+        "883210000D0215",
+        "883210000D0216"
+      ],
+      "disparues": [
+        {
+          "id": "883210000D0151",
+          "dernierMillesime": "2025-12-01"
+        },
+        {
+          "id": "883210000D0161",
+          "dernierMillesime": "2025-12-01"
+        }
+      ],
+      "successeurs": [
+        {
+          "id": "883210000D0410",
+          "surfaceM2": 89591.83157935497,
+          "partDansSite": 1.000000000015254,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "883210000D0409",
+          "surfaceM2": 26206.917288378037,
+          "partDansSite": 1.00000000000432,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "883210000D0407",
+          "surfaceM2": 391.1548584860257,
+          "partDansSite": 1.000000000043948,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "883210000D0408",
+          "surfaceM2": 2068.888109541482,
+          "partDansSite": 0.9999999999916908,
+          "confirmeApicarto": true
+        }
+      ],
+      "ecartes": [],
+      "couverture": 1,
+      "parcellesApres": [
+        "883210000D0148",
+        "883210000D0149",
+        "883210000D0150",
+        "883210000D0152",
+        "883210000D0153",
+        "883210000D0154",
+        "883210000D0155",
+        "883210000D0156",
+        "883210000D0157",
+        "883210000D0158",
+        "883210000D0159",
+        "883210000D0160",
+        "883210000D0162",
+        "883210000D0192",
+        "883210000D0213",
+        "883210000D0214",
+        "883210000D0215",
+        "883210000D0216",
+        "883210000D0410",
+        "883210000D0409",
+        "883210000D0407",
+        "883210000D0408"
+      ]
+    },
+    {
+      "idtup": "ddt88-49",
+      "commune": "Golbey",
+      "parcellesAvant": [
+        "88209000AH0163",
+        "88209000AH0316",
+        "88209000AH0319",
+        "88209000AK0170",
+        "88209000AK0171",
+        "88209000AK0172",
+        "88209000AK0173"
+      ],
+      "disparues": [
+        {
+          "id": "88209000AK0170",
+          "dernierMillesime": "2021-10-01"
+        }
+      ],
+      "successeurs": [
+        {
+          "id": "88209000AK0216",
+          "surfaceM2": 15571.609858570286,
+          "partDansSite": 0.9999999836415258,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88209000AK0226",
+          "surfaceM2": 2028.7810020866866,
+          "partDansSite": 0.9999999999859661,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88209000AK0227",
+          "surfaceM2": 2227.948062067318,
+          "partDansSite": 0.9999999999537051,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88209000AK0212",
+          "surfaceM2": 45.89170350222239,
+          "partDansSite": 1.0000000007491738,
+          "confirmeApicarto": true
+        }
+      ],
+      "ecartes": [],
+      "couverture": 1.0000000000121092,
+      "parcellesApres": [
+        "88209000AH0163",
+        "88209000AH0316",
+        "88209000AH0319",
+        "88209000AK0171",
+        "88209000AK0172",
+        "88209000AK0173",
+        "88209000AK0216",
+        "88209000AK0226",
+        "88209000AK0227",
+        "88209000AK0212"
+      ]
+    },
+    {
+      "idtup": "ddt88-109",
+      "commune": "Grandvillers",
+      "parcellesAvant": ["882160000B0162", "882160000B0164", "882160000B0168", "882160000B0624"],
+      "disparues": [
+        {
+          "id": "882160000B0164",
+          "dernierMillesime": "2025-12-01"
+        },
+        {
+          "id": "882160000B0168",
+          "dernierMillesime": "2025-12-01"
+        },
+        {
+          "id": "882160000B0624",
+          "dernierMillesime": "2025-12-01"
+        }
+      ],
+      "successeurs": [
+        {
+          "id": "882160000B0652",
+          "surfaceM2": 837.5846742115019,
+          "partDansSite": 0.9999999999179047,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "882160000B0651",
+          "surfaceM2": 619.6612785369183,
+          "partDansSite": 1.000000000013871,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "882160000B0653",
+          "surfaceM2": 10056.553587220425,
+          "partDansSite": 0.9999999999726499,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "882160000B0650",
+          "surfaceM2": 471.0477741729341,
+          "partDansSite": 1,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "882160000B0654",
+          "surfaceM2": 1416.1662222649686,
+          "partDansSite": 1,
+          "confirmeApicarto": true
+        }
+      ],
+      "ecartes": [],
+      "couverture": 0.9999848479456918,
+      "parcellesApres": [
+        "882160000B0162",
+        "882160000B0652",
+        "882160000B0651",
+        "882160000B0653",
+        "882160000B0650",
+        "882160000B0654"
+      ]
+    },
+    {
+      "idtup": "ddt88-24",
+      "commune": "Hymont",
+      "parcellesAvant": [
+        "88246000AC0093",
+        "88246000AC0094",
+        "88246000AC0115",
+        "88246000AC0116",
+        "88246000AC0118",
+        "88246000AC0163",
+        "88246000ZB0089",
+        "88246000ZB0090",
+        "88246000ZB0091",
+        "88246000ZB0092"
+      ],
+      "disparues": [
+        {
+          "id": "88246000AC0115",
+          "dernierMillesime": "2025-04-01"
+        },
+        {
+          "id": "88246000AC0118",
+          "dernierMillesime": "2025-04-01"
+        },
+        {
+          "id": "88246000AC0163",
+          "dernierMillesime": "2025-04-01"
+        }
+      ],
+      "successeurs": [
+        {
+          "id": "88246000AC0219",
+          "surfaceM2": 25733.353715251076,
+          "partDansSite": 1.0000000000089766,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88246000AC0211",
+          "surfaceM2": 1717.7634870589961,
+          "partDansSite": 1,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88246000AC0216",
+          "surfaceM2": 34622.48744944802,
+          "partDansSite": 1.0000000000034757,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88246000AC0213",
+          "surfaceM2": 782.0602803044242,
+          "partDansSite": 1.0000000002637714,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88246000AC0212",
+          "surfaceM2": 670.2243519467565,
+          "partDansSite": 0.9999999999390841,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88246000AC0214",
+          "surfaceM2": 565.8419117199327,
+          "partDansSite": 1.0000000000322793,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88246000AC0215",
+          "surfaceM2": 997.4120371989833,
+          "partDansSite": 1,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88246000AC0218",
+          "surfaceM2": 1106.4582934624173,
+          "partDansSite": 1,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88246000AC0210",
+          "surfaceM2": 627.881975931551,
+          "partDansSite": 0.9999999999383986,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88246000AC0217",
+          "surfaceM2": 1341.059817767129,
+          "partDansSite": 1,
+          "confirmeApicarto": true
+        }
+      ],
+      "ecartes": [],
+      "couverture": 0.9999954801064479,
+      "parcellesApres": [
+        "88246000AC0093",
+        "88246000AC0094",
+        "88246000AC0116",
+        "88246000ZB0089",
+        "88246000ZB0090",
+        "88246000ZB0091",
+        "88246000ZB0092",
+        "88246000AC0219",
+        "88246000AC0211",
+        "88246000AC0216",
+        "88246000AC0213",
+        "88246000AC0212",
+        "88246000AC0214",
+        "88246000AC0215",
+        "88246000AC0218",
+        "88246000AC0210",
+        "88246000AC0217"
+      ]
+    },
+    {
+      "idtup": "ddt88-347",
+      "commune": "Laval-sur-Vologne",
+      "parcellesAvant": [
+        "88261000AB0062",
+        "88261000AB0063",
+        "88261000AB0064",
+        "88261000AB0065",
+        "88261000AB0068",
+        "88261000AB0069",
+        "88261000AB0070",
+        "88261000AB0071",
+        "88261000AB0072",
+        "88261000AB0074",
+        "88261000AB0075",
+        "88261000AB0076",
+        "88261000AB0077",
+        "88261000AB0078",
+        "88261000AB0079",
+        "88261000AB0081",
+        "88261000AB0082",
+        "88261000AB0083",
+        "88261000AB0085",
+        "88261000AB0086",
+        "88261000AB0112"
+      ],
+      "disparues": [
+        {
+          "id": "88261000AB0069",
+          "dernierMillesime": "2025-04-01"
+        },
+        {
+          "id": "88261000AB0072",
+          "dernierMillesime": "2025-04-01"
+        },
+        {
+          "id": "88261000AB0074",
+          "dernierMillesime": "2025-04-01"
+        },
+        {
+          "id": "88261000AB0076",
+          "dernierMillesime": "2025-04-01"
+        },
+        {
+          "id": "88261000AB0077",
+          "dernierMillesime": "2025-04-01"
+        },
+        {
+          "id": "88261000AB0078",
+          "dernierMillesime": "2025-04-01"
+        },
+        {
+          "id": "88261000AB0079",
+          "dernierMillesime": "2025-04-01"
+        },
+        {
+          "id": "88261000AB0081",
+          "dernierMillesime": "2025-04-01"
+        }
+      ],
+      "successeurs": [
+        {
+          "id": "88261000AB0126",
+          "surfaceM2": 5844.626812706859,
+          "partDansSite": 0.9999991203489891,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88261000AB0133",
+          "surfaceM2": 553.7890206587157,
+          "partDansSite": 1,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88261000AB0135",
+          "surfaceM2": 3461.915694374325,
+          "partDansSite": 1,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88261000AB0131",
+          "surfaceM2": 2791.552128774748,
+          "partDansSite": 0.9999999999771,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88261000AB0129",
+          "surfaceM2": 2115.053645964351,
+          "partDansSite": 0.9999999999702196,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88261000AB0130",
+          "surfaceM2": 2285.4760070196317,
+          "partDansSite": 0.999999999977435,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88261000AB0127",
+          "surfaceM2": 1819.7255503630956,
+          "partDansSite": 1.0000000000141702,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88261000AB0137",
+          "surfaceM2": 3506.300214102297,
+          "partDansSite": 1.0000000000282672,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88261000AB0138",
+          "surfaceM2": 1267.6757505799978,
+          "partDansSite": 1,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88261000AB0136",
+          "surfaceM2": 914.4018421102531,
+          "partDansSite": 1,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88261000AB0134",
+          "surfaceM2": 699.2519791999108,
+          "partDansSite": 1,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88261000AB0132",
+          "surfaceM2": 927.2097560390685,
+          "partDansSite": 0.9999999998516803,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88261000AB0123",
+          "surfaceM2": 3828.9151954971153,
+          "partDansSite": 1,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88261000AB0124",
+          "surfaceM2": 822.8198532750633,
+          "partDansSite": 0.9999999999033741,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88261000AB0128",
+          "surfaceM2": 374.6246164078969,
+          "partDansSite": 1.0000000001032459,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88261000AB0125",
+          "surfaceM2": 295.00498245523664,
+          "partDansSite": 0.999992140908012,
+          "confirmeApicarto": true
+        }
+      ],
+      "ecartes": [],
+      "couverture": 0.9999979675396058,
+      "parcellesApres": [
+        "88261000AB0062",
+        "88261000AB0063",
+        "88261000AB0064",
+        "88261000AB0065",
+        "88261000AB0068",
+        "88261000AB0070",
+        "88261000AB0071",
+        "88261000AB0075",
+        "88261000AB0082",
+        "88261000AB0083",
+        "88261000AB0085",
+        "88261000AB0086",
+        "88261000AB0112",
+        "88261000AB0126",
+        "88261000AB0133",
+        "88261000AB0135",
+        "88261000AB0131",
+        "88261000AB0129",
+        "88261000AB0130",
+        "88261000AB0127",
+        "88261000AB0137",
+        "88261000AB0138",
+        "88261000AB0136",
+        "88261000AB0134",
+        "88261000AB0132",
+        "88261000AB0123",
+        "88261000AB0124",
+        "88261000AB0128",
+        "88261000AB0125"
+      ]
+    },
+    {
+      "idtup": "ddt88-407",
+      "commune": "Laveline-devant-Bruyères",
+      "parcellesAvant": ["88262000AE0067", "88262000AE0103", "88262000AE0105", "88262000AE0106"],
+      "disparues": [
+        {
+          "id": "88262000AE0103",
+          "dernierMillesime": "2025-04-01"
+        },
+        {
+          "id": "88262000AE0106",
+          "dernierMillesime": "2022-01-01"
+        }
+      ],
+      "successeurs": [
+        {
+          "id": "88262000AE0109",
+          "surfaceM2": 8414.220660487541,
+          "partDansSite": 0.9999988181093143,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88262000AE0108",
+          "surfaceM2": 24822.322271364734,
+          "partDansSite": 0.9999994904678084,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88262000AE0110",
+          "surfaceM2": 2398.448494611388,
+          "partDansSite": 0.9999999999888011,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88262000AE0111",
+          "surfaceM2": 4954.813585089011,
+          "partDansSite": 0.9999999999846586,
+          "confirmeApicarto": true
+        }
+      ],
+      "ecartes": [],
+      "couverture": 0.9999913225398793,
+      "parcellesApres": [
+        "88262000AE0067",
+        "88262000AE0105",
+        "88262000AE0109",
+        "88262000AE0108",
+        "88262000AE0110",
+        "88262000AE0111"
+      ]
+    },
+    {
+      "idtup": "ddt88-229",
+      "commune": "Le Syndicat",
+      "parcellesAvant": ["88462000AO0073", "88462000AO0075"],
+      "disparues": [
+        {
+          "id": "88462000AO0073",
+          "dernierMillesime": "2024-10-01"
+        }
+      ],
+      "successeurs": [
+        {
+          "id": "88462000AO0147",
+          "surfaceM2": 8695.87302503096,
+          "partDansSite": 1.0000000000217453,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88462000AO0145",
+          "surfaceM2": 3578.3988035479133,
+          "partDansSite": 0.9999999999873898,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88462000AO0146",
+          "surfaceM2": 207.82348289238624,
+          "partDansSite": 1.0000000000413583,
+          "confirmeApicarto": true
+        }
+      ],
+      "ecartes": [],
+      "couverture": 0.9999989277518455,
+      "parcellesApres": ["88462000AO0075", "88462000AO0147", "88462000AO0145", "88462000AO0146"]
+    },
+    {
+      "idtup": "ddt88-301",
+      "commune": "Le Val-d'Ajol",
+      "parcellesAvant": [
+        "88487000AI0019",
+        "88487000AI0020",
+        "88487000AI0021",
+        "88487000AI0022",
+        "88487000AI0023",
+        "88487000AI0024",
+        "88487000AI0118",
+        "88487000AI0119",
+        "88487000AI0130",
+        "88487000AI0131",
+        "88487000AI0132",
+        "88487000AI0133",
+        "88487000BT0242"
+      ],
+      "disparues": [
+        {
+          "id": "88487000AI0020",
+          "dernierMillesime": "2024-04-01"
+        },
+        {
+          "id": "88487000AI0021",
+          "dernierMillesime": "2024-04-01"
+        },
+        {
+          "id": "88487000AI0023",
+          "dernierMillesime": "2024-04-01"
+        },
+        {
+          "id": "88487000AI0024",
+          "dernierMillesime": "2024-04-01"
+        },
+        {
+          "id": "88487000AI0119",
+          "dernierMillesime": "2022-04-01"
+        },
+        {
+          "id": "88487000AI0130",
+          "dernierMillesime": "2024-04-01"
+        },
+        {
+          "id": "88487000BT0242",
+          "dernierMillesime": "2024-04-01"
+        }
+      ],
+      "successeurs": [
+        {
+          "id": "88487000AI0329",
+          "surfaceM2": 1551.7054758766878,
+          "partDansSite": 0.9999999999649472,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88487000AI0335",
+          "surfaceM2": 5552.6581444707135,
+          "partDansSite": 0.9999851096531593,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88487000AI0325",
+          "surfaceM2": 5043.098460923442,
+          "partDansSite": 0.9999605240506798,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88487000AI0299",
+          "surfaceM2": 293.17377652011805,
+          "partDansSite": 1.0000000000293179,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88487000AI0300",
+          "surfaceM2": 16.060697318401598,
+          "partDansSite": 1,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88487000AI0331",
+          "surfaceM2": 291.16524715723216,
+          "partDansSite": 1.0000000000295202,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88487000AI0333",
+          "surfaceM2": 820.5404446376309,
+          "partDansSite": 1,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88487000AI0326",
+          "surfaceM2": 1054.6374145191792,
+          "partDansSite": 0.9999233571944549,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88487000AI0327",
+          "surfaceM2": 1493.0234164034493,
+          "partDansSite": 0.9999987865034066,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88487000AI0330",
+          "surfaceM2": 212.01197559739117,
+          "partDansSite": 1,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88487000AI0328",
+          "surfaceM2": 277.861011416984,
+          "partDansSite": 1.0000000000638003,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88487000AI0332",
+          "surfaceM2": 118.50796051155291,
+          "partDansSite": 1,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88487000AI0334",
+          "surfaceM2": 426.3802914075334,
+          "partDansSite": 0.9999999999662974,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88487000AI0336",
+          "surfaceM2": 3.0514509216039682,
+          "partDansSite": 0.9994142645967055,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88487000BT0376",
+          "surfaceM2": 386.84340529321435,
+          "partDansSite": 0.9999642449646587,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88487000BT0378",
+          "surfaceM2": 556.8221478291936,
+          "partDansSite": 1.0000000000115772,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88487000BT0377",
+          "surfaceM2": 51.35390284753338,
+          "partDansSite": 1.0000000002510583,
+          "confirmeApicarto": true
+        }
+      ],
+      "ecartes": [],
+      "couverture": 0.9999902423844975,
+      "parcellesApres": [
+        "88487000AI0019",
+        "88487000AI0022",
+        "88487000AI0118",
+        "88487000AI0131",
+        "88487000AI0132",
+        "88487000AI0133",
+        "88487000AI0329",
+        "88487000AI0335",
+        "88487000AI0325",
+        "88487000AI0299",
+        "88487000AI0300",
+        "88487000AI0331",
+        "88487000AI0333",
+        "88487000AI0326",
+        "88487000AI0327",
+        "88487000AI0330",
+        "88487000AI0328",
+        "88487000AI0332",
+        "88487000AI0334",
+        "88487000AI0336",
+        "88487000BT0376",
+        "88487000BT0378",
+        "88487000BT0377"
+      ]
+    },
+    {
+      "idtup": "ddt88-250",
+      "commune": "Liffol-le-Grand",
+      "parcellesAvant": [
+        "88270000ZN0033",
+        "88270000ZN0065",
+        "88270000ZN0073",
+        "88270000ZN0082",
+        "88270000ZN0084",
+        "88270000ZN0088",
+        "88270000ZN0092",
+        "88270000ZN0106"
+      ],
+      "disparues": [
+        {
+          "id": "88270000ZN0065",
+          "dernierMillesime": "2024-07-01"
+        },
+        {
+          "id": "88270000ZN0088",
+          "dernierMillesime": "2024-01-01"
+        },
+        {
+          "id": "88270000ZN0092",
+          "dernierMillesime": "2024-01-01"
+        },
+        {
+          "id": "88270000ZN0106",
+          "dernierMillesime": "2024-01-01"
+        }
+      ],
+      "successeurs": [
+        {
+          "id": "88270000ZN0124",
+          "surfaceM2": 11420.11849845321,
+          "partDansSite": 1,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88270000ZN0119",
+          "surfaceM2": 10631.191810977596,
+          "partDansSite": 0.9999929745822334,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88270000ZN0126",
+          "surfaceM2": 12039.379344397916,
+          "partDansSite": 1.0000000000042837,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88270000ZN0123",
+          "surfaceM2": 114.95948504989009,
+          "partDansSite": 1.0000000002990694,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88270000ZN0114",
+          "surfaceM2": 4537.711944976932,
+          "partDansSite": 0.999999999999053,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88270000ZN0121",
+          "surfaceM2": 122.73540200048069,
+          "partDansSite": 0.9999999998949543,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88270000ZN0125",
+          "surfaceM2": 62.32893753291851,
+          "partDansSite": 1,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88270000ZN0122",
+          "surfaceM2": 2642.1403391406916,
+          "partDansSite": 0.9999999999528297,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88270000ZN0118",
+          "surfaceM2": 360.95422773360207,
+          "partDansSite": 1,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88270000ZN0120",
+          "surfaceM2": 1007.289201307555,
+          "partDansSite": 0.9999926373087477,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88270000ZN0117",
+          "surfaceM2": 756.7484761531132,
+          "partDansSite": 1,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88270000ZN0116",
+          "surfaceM2": 2708.0941303367113,
+          "partDansSite": 0.9999999999873045,
+          "confirmeApicarto": true
+        }
+      ],
+      "ecartes": [],
+      "couverture": 0.9999957536566759,
+      "parcellesApres": [
+        "88270000ZN0033",
+        "88270000ZN0073",
+        "88270000ZN0082",
+        "88270000ZN0084",
+        "88270000ZN0124",
+        "88270000ZN0119",
+        "88270000ZN0126",
+        "88270000ZN0123",
+        "88270000ZN0114",
+        "88270000ZN0121",
+        "88270000ZN0125",
+        "88270000ZN0122",
+        "88270000ZN0118",
+        "88270000ZN0120",
+        "88270000ZN0117",
+        "88270000ZN0116"
+      ]
+    },
+    {
+      "idtup": "ddt88-423",
+      "commune": "Madonne-et-Lamerey",
+      "parcellesAvant": ["882810000C0649", "882810000C0650"],
+      "disparues": [
+        {
+          "id": "882810000C0649",
+          "dernierMillesime": "2025-09-01"
+        }
+      ],
+      "successeurs": [
+        {
+          "id": "882810000C0905",
+          "surfaceM2": 1697.0668029356566,
+          "partDansSite": 1.0000000000151943,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "882810000C0904",
+          "surfaceM2": 480.98011347031655,
+          "partDansSite": 1.0000000000714808,
+          "confirmeApicarto": true
+        }
+      ],
+      "ecartes": [],
+      "couverture": 0.9999999999980269,
+      "parcellesApres": ["882810000C0650", "882810000C0905", "882810000C0904"]
+    },
+    {
+      "idtup": "ddt88-318",
+      "commune": "Moriville",
+      "parcellesAvant": ["883130000E0348", "883130000E0349"],
+      "disparues": [
+        {
+          "id": "883130000E0349",
+          "dernierMillesime": "2022-10-01"
+        }
+      ],
+      "successeurs": [
+        {
+          "id": "883130000E0432",
+          "surfaceM2": 437.2795343161092,
+          "partDansSite": 0.9998310469263392,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "883130000E0433",
+          "surfaceM2": 128.0274076656885,
+          "partDansSite": 0.9991338462227511,
+          "confirmeApicarto": true
+        }
+      ],
+      "ecartes": [],
+      "couverture": 0.9999999999847904,
+      "parcellesApres": ["883130000E0348", "883130000E0432", "883130000E0433"]
+    },
+    {
+      "idtup": "ddt88-373",
+      "commune": "Neufchâteau",
+      "parcellesAvant": ["88321000AK0149"],
+      "disparues": [
+        {
+          "id": "88321000AK0149",
+          "dernierMillesime": "2026-03-01"
+        }
+      ],
+      "successeurs": [
+        {
+          "id": "88321000AK0155",
+          "surfaceM2": 2341.2722369469434,
+          "partDansSite": 0.999997319827381,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88321000AK0156",
+          "surfaceM2": 4.651051902329358,
+          "partDansSite": 0.9990085572345586,
+          "confirmeApicarto": true
+        }
+      ],
+      "ecartes": [],
+      "couverture": 0.9999985640236918,
+      "parcellesApres": ["88321000AK0155", "88321000AK0156"]
+    },
+    {
+      "idtup": "ddt88-394",
+      "commune": "Plainfaing",
+      "parcellesAvant": ["883490000E3086", "883490000E3087"],
+      "disparues": [
+        {
+          "id": "883490000E3087",
+          "dernierMillesime": "2022-10-01"
+        }
+      ],
+      "successeurs": [
+        {
+          "id": "883490000E3475",
+          "surfaceM2": 3921.5908387858176,
+          "partDansSite": 0.9999989934579574,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "883490000E3476",
+          "surfaceM2": 1000.8515842187802,
+          "partDansSite": 0.9999889876332723,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "883490000E3474",
+          "surfaceM2": 642.1793521582326,
+          "partDansSite": 0.9999995511181126,
+          "confirmeApicarto": true
+        }
+      ],
+      "ecartes": [],
+      "couverture": 0.9999907104244626,
+      "parcellesApres": ["883490000E3086", "883490000E3475", "883490000E3476", "883490000E3474"]
+    },
+    {
+      "idtup": "ddt88-305",
+      "commune": "Plombières-les-Bains",
+      "parcellesAvant": ["88351000AB0466", "88351000AB0467", "88351000AB0468", "88351000AB0737"],
+      "disparues": [
+        {
+          "id": "88351000AB0467",
+          "dernierMillesime": "2024-10-01"
+        }
+      ],
+      "successeurs": [
+        {
+          "id": "88351000AB0790",
+          "surfaceM2": 477.4545177617695,
+          "partDansSite": 0.999999999990999,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88351000AB0789",
+          "surfaceM2": 216.65776475728842,
+          "partDansSite": 1,
+          "confirmeApicarto": true
+        }
+      ],
+      "ecartes": [],
+      "couverture": 0.9998961278376813,
+      "parcellesApres": [
+        "88351000AB0466",
+        "88351000AB0468",
+        "88351000AB0737",
+        "88351000AB0790",
+        "88351000AB0789"
+      ]
+    },
+    {
+      "idtup": "ddt88-176",
+      "commune": "Rambervillers",
+      "parcellesAvant": ["88367000AM0249"],
+      "disparues": [
+        {
+          "id": "88367000AM0249",
+          "dernierMillesime": "2023-07-01"
+        }
+      ],
+      "successeurs": [
+        {
+          "id": "88367000AM0330",
+          "surfaceM2": 253.8057362880354,
+          "partDansSite": 0.9999061989334858,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88367000AM0328",
+          "surfaceM2": 3838.009778040526,
+          "partDansSite": 0.9999880117766585,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88367000AM0329",
+          "surfaceM2": 247.57828679048689,
+          "partDansSite": 1.0000000000325473,
+          "confirmeApicarto": true
+        }
+      ],
+      "ecartes": [],
+      "couverture": 0.9999939402082331,
+      "parcellesApres": ["88367000AM0330", "88367000AM0328", "88367000AM0329"]
+    },
+    {
+      "idtup": "ddt88-119",
+      "commune": "Raon-l'Étape",
+      "parcellesAvant": [
+        "883720000B0208",
+        "883720000B0209",
+        "883720000B1480",
+        "883720000B1481",
+        "883720000B1523",
+        "883720000B1524",
+        "883720000B1776"
+      ],
+      "disparues": [
+        {
+          "id": "883720000B0208",
+          "dernierMillesime": "2026-03-01"
+        },
+        {
+          "id": "883720000B0209",
+          "dernierMillesime": "2026-03-01"
+        }
+      ],
+      "successeurs": [
+        {
+          "id": "883720000B2050",
+          "surfaceM2": 3729.8603641280465,
+          "partDansSite": 1.0000000000155551,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "883720000B2049",
+          "surfaceM2": 207.97086018866733,
+          "partDansSite": 1.000000000041329,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "883720000B2051",
+          "surfaceM2": 259.06148614996,
+          "partDansSite": 1,
+          "confirmeApicarto": true
+        }
+      ],
+      "ecartes": [],
+      "couverture": 1,
+      "parcellesApres": [
+        "883720000B1480",
+        "883720000B1481",
+        "883720000B1523",
+        "883720000B1524",
+        "883720000B1776",
+        "883720000B2050",
+        "883720000B2049",
+        "883720000B2051"
+      ]
+    },
+    {
+      "idtup": "ddt88-25",
+      "commune": "Saint-Dié-des-Vosges",
+      "parcellesAvant": ["884130000A0141", "884130000A1108", "884130000A1201", "884130000A1202"],
+      "disparues": [
+        {
+          "id": "884130000A0141",
+          "dernierMillesime": "2024-04-01"
+        },
+        {
+          "id": "884130000A1201",
+          "dernierMillesime": "2024-04-01"
+        }
+      ],
+      "successeurs": [
+        {
+          "id": "884130000A1217",
+          "surfaceM2": 428.8480059576344,
+          "partDansSite": 1,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "884130000A1216",
+          "surfaceM2": 1623.7062725037256,
+          "partDansSite": 1.0000000000317615,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "884130000A1214",
+          "surfaceM2": 5917.291574294358,
+          "partDansSite": 0.9999999999893554,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "884130000A1218",
+          "surfaceM2": 473.39205978636585,
+          "partDansSite": 1,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "884130000A1215",
+          "surfaceM2": 37.760405428405704,
+          "partDansSite": 1,
+          "confirmeApicarto": true
+        }
+      ],
+      "ecartes": [],
+      "couverture": 1,
+      "parcellesApres": [
+        "884130000A1108",
+        "884130000A1202",
+        "884130000A1217",
+        "884130000A1216",
+        "884130000A1214",
+        "884130000A1218",
+        "884130000A1215"
+      ]
+    },
+    {
+      "idtup": "ddt88-363",
+      "commune": "Saint-Dié-des-Vosges",
+      "parcellesAvant": ["88413000AW0401", "88413000AW0402"],
+      "disparues": [
+        {
+          "id": "88413000AW0401",
+          "dernierMillesime": "2025-12-01"
+        }
+      ],
+      "successeurs": [
+        {
+          "id": "88413000AW0419",
+          "surfaceM2": 4166.326418122823,
+          "partDansSite": 0.999932998017761,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88413000AW0420",
+          "surfaceM2": 1319.539059793174,
+          "partDansSite": 0.9999466997837331,
+          "confirmeApicarto": true
+        }
+      ],
+      "ecartes": [],
+      "couverture": 0.9999999999817848,
+      "parcellesApres": ["88413000AW0402", "88413000AW0419", "88413000AW0420"]
+    },
+    {
+      "idtup": "ddt88-437",
+      "commune": "Saint-Dié-des-Vosges",
+      "parcellesAvant": [
+        "88413000BM0019",
+        "88413000BM0083",
+        "88413000BM0084",
+        "88413000BM0085",
+        "88413000BM0094",
+        "88413000BM0097",
+        "88413000BM0100",
+        "88413000BM0110",
+        "88413000BM0111",
+        "88413000BM0112",
+        "88413000BM0113",
+        "88413000BM0114",
+        "88413000BM0115",
+        "88413000BM0117",
+        "88413000BM0118",
+        "88413000BM0119",
+        "88413000BM0120",
+        "88413000BM0121",
+        "88413000BM0122",
+        "88413000BM0123",
+        "88413000BM0124",
+        "88413000BM0125",
+        "88413000BM0126",
+        "88413000BM0127",
+        "88413000BM0128"
+      ],
+      "disparues": [
+        {
+          "id": "88413000BM0115",
+          "dernierMillesime": "2025-04-01"
+        },
+        {
+          "id": "88413000BM0128",
+          "dernierMillesime": "2025-04-01"
+        }
+      ],
+      "successeurs": [
+        {
+          "id": "88413000BM0188",
+          "surfaceM2": 6093.8867981136245,
+          "partDansSite": 0.9999990303673152,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88413000BM0189",
+          "surfaceM2": 2025.8261182604035,
+          "partDansSite": 0.9999957090754139,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88413000BM0191",
+          "surfaceM2": 363.964420585319,
+          "partDansSite": 1.000000000094462,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88413000BM0190",
+          "surfaceM2": 81.40009616865444,
+          "partDansSite": 1.0000000000478464,
+          "confirmeApicarto": true
+        }
+      ],
+      "ecartes": [],
+      "couverture": 1,
+      "parcellesApres": [
+        "88413000BM0019",
+        "88413000BM0083",
+        "88413000BM0084",
+        "88413000BM0085",
+        "88413000BM0094",
+        "88413000BM0097",
+        "88413000BM0100",
+        "88413000BM0110",
+        "88413000BM0111",
+        "88413000BM0112",
+        "88413000BM0113",
+        "88413000BM0114",
+        "88413000BM0117",
+        "88413000BM0118",
+        "88413000BM0119",
+        "88413000BM0120",
+        "88413000BM0121",
+        "88413000BM0122",
+        "88413000BM0123",
+        "88413000BM0124",
+        "88413000BM0125",
+        "88413000BM0126",
+        "88413000BM0127",
+        "88413000BM0188",
+        "88413000BM0189",
+        "88413000BM0191",
+        "88413000BM0190"
+      ]
+    },
+    {
+      "idtup": "ddt88-90",
+      "commune": "Saint-Dié-des-Vosges",
+      "parcellesAvant": [
+        "88413000AV0285",
+        "88413000AV0290",
+        "88413000AV0327",
+        "88413000AV0329",
+        "88413000AV0330"
+      ],
+      "disparues": [
+        {
+          "id": "88413000AV0329",
+          "dernierMillesime": "2022-04-01"
+        }
+      ],
+      "successeurs": [
+        {
+          "id": "88413000AV0406",
+          "surfaceM2": 1700.891579780857,
+          "partDansSite": 0.999994710073801,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88413000AV0408",
+          "surfaceM2": 1652.8344325020855,
+          "partDansSite": 1.0000000000026001,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88413000AV0407",
+          "surfaceM2": 1659.1579751747008,
+          "partDansSite": 0.9999986777166631,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88413000AV0409",
+          "surfaceM2": 2881.4319858227036,
+          "partDansSite": 0.999999999985085,
+          "confirmeApicarto": true
+        }
+      ],
+      "ecartes": [],
+      "couverture": 0.9999840743758779,
+      "parcellesApres": [
+        "88413000AV0285",
+        "88413000AV0290",
+        "88413000AV0327",
+        "88413000AV0330",
+        "88413000AV0406",
+        "88413000AV0408",
+        "88413000AV0407",
+        "88413000AV0409"
+      ]
+    },
+    {
+      "idtup": "ddt88-225",
+      "commune": "Saint-Maurice-sur-Moselle",
+      "parcellesAvant": ["88426000AB0028", "88426000AB0180", "88426000AB0327"],
+      "disparues": [
+        {
+          "id": "88426000AB0180",
+          "dernierMillesime": "2022-04-01"
+        },
+        {
+          "id": "88426000AB0327",
+          "dernierMillesime": "2022-04-01"
+        }
+      ],
+      "successeurs": [
+        {
+          "id": "88426000AB0340",
+          "surfaceM2": 677.3515045265531,
+          "partDansSite": 0.9999999999048292,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88426000AB0339",
+          "surfaceM2": 179.2589007680857,
+          "partDansSite": 1.0000000000239742,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88426000AB0338",
+          "surfaceM2": 69.8377559779311,
+          "partDansSite": 1,
+          "confirmeApicarto": true
+        }
+      ],
+      "ecartes": [],
+      "couverture": 0.9991732862162619,
+      "parcellesApres": ["88426000AB0028", "88426000AB0340", "88426000AB0339", "88426000AB0338"]
+    },
+    {
+      "idtup": "ddt88-58",
+      "commune": "Saint-Maurice-sur-Moselle",
+      "parcellesAvant": ["88426000AD0230", "88426000AD0435"],
+      "disparues": [
+        {
+          "id": "88426000AD0230",
+          "dernierMillesime": "2026-03-01"
+        },
+        {
+          "id": "88426000AD0435",
+          "dernierMillesime": "2026-03-01"
+        }
+      ],
+      "successeurs": [
+        {
+          "id": "88426000AD0445",
+          "surfaceM2": 217.99811316131115,
+          "partDansSite": 1,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88426000AD0446",
+          "surfaceM2": 162.82909205299427,
+          "partDansSite": 1.0000000001451637,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88426000AD0444",
+          "surfaceM2": 368.39118591740714,
+          "partDansSite": 0.9997997886200826,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88426000AD0443",
+          "surfaceM2": 521.3515642459455,
+          "partDansSite": 0.9999867990693997,
+          "confirmeApicarto": true
+        }
+      ],
+      "ecartes": [],
+      "couverture": 0.9999361887644728,
+      "parcellesApres": ["88426000AD0445", "88426000AD0446", "88426000AD0444", "88426000AD0443"]
+    },
+    {
+      "idtup": "ddt88-3",
+      "commune": "Saint-Nabord",
+      "parcellesAvant": ["88429000AK0393", "88429000AK0395"],
+      "disparues": [
+        {
+          "id": "88429000AK0393",
+          "dernierMillesime": "2026-03-01"
+        },
+        {
+          "id": "88429000AK0395",
+          "dernierMillesime": "2026-03-01"
+        }
+      ],
+      "successeurs": [
+        {
+          "id": "88429000AK0528",
+          "surfaceM2": 583.9596583304424,
+          "partDansSite": 1,
+          "confirmeApicarto": true
+        }
+      ],
+      "ecartes": [],
+      "couverture": 1,
+      "parcellesApres": ["88429000AK0528"]
+    },
+    {
+      "idtup": "ddt88-303",
+      "commune": "Saint-Étienne-lès-Remiremont",
+      "parcellesAvant": [
+        "88415000AO0036",
+        "88415000AO0057",
+        "88415000AO0114",
+        "88415000AO0200",
+        "88415000AO0247"
+      ],
+      "disparues": [
+        {
+          "id": "88415000AO0114",
+          "dernierMillesime": "2025-12-01"
+        },
+        {
+          "id": "88415000AO0200",
+          "dernierMillesime": "2025-12-01"
+        }
+      ],
+      "successeurs": [
+        {
+          "id": "88415000AO0265",
+          "surfaceM2": 18955.45649381164,
+          "partDansSite": 0.9999838523801842,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88415000AO0263",
+          "surfaceM2": 62.04662262439189,
+          "partDansSite": 0.9976183191122779,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88415000AO0264",
+          "surfaceM2": 12.95948071317027,
+          "partDansSite": 1.0000000000414524,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88415000AO0269",
+          "surfaceM2": 4.476816461850831,
+          "partDansSite": 1.0005043657761439,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88415000AO0270",
+          "surfaceM2": 85.394911674966,
+          "partDansSite": 1,
+          "confirmeApicarto": true
+        }
+      ],
+      "ecartes": [],
+      "couverture": 0.9999973868939572,
+      "parcellesApres": [
+        "88415000AO0036",
+        "88415000AO0057",
+        "88415000AO0247",
+        "88415000AO0265",
+        "88415000AO0263",
+        "88415000AO0264",
+        "88415000AO0269",
+        "88415000AO0270"
+      ]
+    },
+    {
+      "idtup": "ddt88-23",
+      "commune": "Thaon-les-Vosges",
+      "parcellesAvant": [
+        "88465000AT0063",
+        "88465000AT0064",
+        "88465000AT0065",
+        "88465000AT0066",
+        "88465000AT0244",
+        "88465000AT0245"
+      ],
+      "disparues": [
+        {
+          "id": "88465000AT0063",
+          "dernierMillesime": "2025-01-01"
+        },
+        {
+          "id": "88465000AT0064",
+          "dernierMillesime": "2025-01-01"
+        },
+        {
+          "id": "88465000AT0065",
+          "dernierMillesime": "2025-01-01"
+        },
+        {
+          "id": "88465000AT0066",
+          "dernierMillesime": "2025-01-01"
+        },
+        {
+          "id": "88465000AT0244",
+          "dernierMillesime": "2025-01-01"
+        },
+        {
+          "id": "88465000AT0245",
+          "dernierMillesime": "2025-01-01"
+        }
+      ],
+      "successeurs": [
+        {
+          "id": "88465000AW0090",
+          "surfaceM2": 11263.740935999132,
+          "partDansSite": 0.9957818988997695,
+          "confirmeApicarto": true
+        }
+      ],
+      "ecartes": [
+        {
+          "id": "88465000AW0014",
+          "surfaceM2": 178062.06753940173,
+          "partDansSite": 0.000044694621843046764
+        },
+        {
+          "id": "88465000AW0078",
+          "surfaceM2": 7185.57314442887,
+          "partDansSite": 0.0030859482064278243
+        },
+        {
+          "id": "88465000AW0017",
+          "surfaceM2": 4814.111727123918,
+          "partDansSite": 0.01624868977286667
+        },
+        {
+          "id": "88465000AW0089",
+          "surfaceM2": 544.3757812928417,
+          "partDansSite": 0.06385920505621039
+        },
+        {
+          "id": "88465000AW0077",
+          "surfaceM2": 607.7028061804908,
+          "partDansSite": 0.00603255288599511
+        },
+        {
+          "id": "88465000AW0076",
+          "surfaceM2": 970.1132374160215,
+          "partDansSite": 0.008417809462610318
+        },
+        {
+          "id": "88465000AW0073",
+          "surfaceM2": 686.2061464316384,
+          "partDansSite": 0.008610706422397597
+        },
+        {
+          "id": "88465000AW0074",
+          "surfaceM2": 587.0232662719422,
+          "partDansSite": 0.00986834279096047
+        },
+        {
+          "id": "88465000AW0075",
+          "surfaceM2": 559.035331118492,
+          "partDansSite": 0.009963847794690896
+        }
+      ],
+      "couverture": 0.9814403273639668,
+      "parcellesApres": ["88465000AW0090"]
+    },
+    {
+      "idtup": "ddt88-165",
+      "commune": "Vecoux",
+      "parcellesAvant": [
+        "884980000B0420",
+        "884980000B0525",
+        "884980000B0532",
+        "884980000B0533",
+        "884980000B0537",
+        "884980000B0538",
+        "884980000B0539",
+        "884980000B0540",
+        "884980000B0541",
+        "884980000B0543",
+        "884980000B0544",
+        "884980000B0545",
+        "884980000B0546",
+        "884980000B0547",
+        "884980000B0551",
+        "884980000B1866",
+        "884980000B1868",
+        "884980000B1870",
+        "884980000B2369",
+        "884980000B2371",
+        "884980000B2372"
+      ],
+      "disparues": [
+        {
+          "id": "884980000B0420",
+          "dernierMillesime": "2021-10-01"
+        },
+        {
+          "id": "884980000B0525",
+          "dernierMillesime": "2021-10-01"
+        },
+        {
+          "id": "884980000B0532",
+          "dernierMillesime": "2021-10-01"
+        },
+        {
+          "id": "884980000B0533",
+          "dernierMillesime": "2021-10-01"
+        },
+        {
+          "id": "884980000B0537",
+          "dernierMillesime": "2021-10-01"
+        },
+        {
+          "id": "884980000B0538",
+          "dernierMillesime": "2021-10-01"
+        },
+        {
+          "id": "884980000B0539",
+          "dernierMillesime": "2021-10-01"
+        },
+        {
+          "id": "884980000B0540",
+          "dernierMillesime": "2021-10-01"
+        },
+        {
+          "id": "884980000B0541",
+          "dernierMillesime": "2021-10-01"
+        },
+        {
+          "id": "884980000B0543",
+          "dernierMillesime": "2021-10-01"
+        },
+        {
+          "id": "884980000B0544",
+          "dernierMillesime": "2021-10-01"
+        },
+        {
+          "id": "884980000B0545",
+          "dernierMillesime": "2021-10-01"
+        },
+        {
+          "id": "884980000B0546",
+          "dernierMillesime": "2021-10-01"
+        },
+        {
+          "id": "884980000B0547",
+          "dernierMillesime": "2021-10-01"
+        },
+        {
+          "id": "884980000B0551",
+          "dernierMillesime": "2021-10-01"
+        },
+        {
+          "id": "884980000B1866",
+          "dernierMillesime": "2021-10-01"
+        },
+        {
+          "id": "884980000B1868",
+          "dernierMillesime": "2021-10-01"
+        },
+        {
+          "id": "884980000B1870",
+          "dernierMillesime": "2021-10-01"
+        },
+        {
+          "id": "884980000B2369",
+          "dernierMillesime": "2021-10-01"
+        },
+        {
+          "id": "884980000B2371",
+          "dernierMillesime": "2021-10-01"
+        },
+        {
+          "id": "884980000B2372",
+          "dernierMillesime": "2021-10-01"
+        }
+      ],
+      "successeurs": [
+        {
+          "id": "88498000AB0038",
+          "surfaceM2": 4734.902495678376,
+          "partDansSite": 0.8853896984122611,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88498000AC0028",
+          "surfaceM2": 42883.396655149896,
+          "partDansSite": 0.9799035214084918,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88498000AC0023",
+          "surfaceM2": 12307.493966399146,
+          "partDansSite": 0.9013360955785634,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88498000AC0029",
+          "surfaceM2": 1900.5219190825417,
+          "partDansSite": 0.8058678388061978,
+          "confirmeApicarto": true
+        }
+      ],
+      "ecartes": [
+        {
+          "id": "88498000AB0037",
+          "surfaceM2": 10431.480180092058,
+          "partDansSite": 0.06965714540341118
+        },
+        {
+          "id": "88498000AB0045",
+          "surfaceM2": 784.3628267523221,
+          "partDansSite": 0.05775931806313045
+        },
+        {
+          "id": "88498000AB0046",
+          "surfaceM2": 2500.838843548653,
+          "partDansSite": 0.04121904086049956
+        },
+        {
+          "id": "88498000AC0031",
+          "surfaceM2": 9887.885179408266,
+          "partDansSite": 0.009028019553642528
+        },
+        {
+          "id": "88498000AC0032",
+          "surfaceM2": 8921.953136341559,
+          "partDansSite": 0.0021327917860245677
+        },
+        {
+          "id": "88498000AC0053",
+          "surfaceM2": 12920.932293670996,
+          "partDansSite": 0.0016291003600241208
+        },
+        {
+          "id": "88498000AC0027",
+          "surfaceM2": 376.8269788743126,
+          "partDansSite": 0.30671597992105215
+        }
+      ],
+      "couverture": 0.9137484740989451,
+      "parcellesApres": ["88498000AB0038", "88498000AC0028", "88498000AC0023", "88498000AC0029"]
+    },
+    {
+      "idtup": "ddt88-302",
+      "commune": "Vecoux",
+      "parcellesAvant": ["884980000B1691", "884980000B2256", "884980000B2258"],
+      "disparues": [
+        {
+          "id": "884980000B1691",
+          "dernierMillesime": "2021-10-01"
+        },
+        {
+          "id": "884980000B2256",
+          "dernierMillesime": "2021-10-01"
+        },
+        {
+          "id": "884980000B2258",
+          "dernierMillesime": "2021-10-01"
+        }
+      ],
+      "successeurs": [
+        {
+          "id": "88498000AB0046",
+          "surfaceM2": 2500.838843548653,
+          "partDansSite": 0.8160217755624478,
+          "confirmeApicarto": true
+        }
+      ],
+      "ecartes": [
+        {
+          "id": "88498000AB0054",
+          "surfaceM2": 868.9669368466833,
+          "partDansSite": 0.1334870575000242
+        }
+      ],
+      "couverture": 0.8459729226998011,
+      "parcellesApres": ["88498000AB0046"]
+    },
+    {
+      "idtup": "ddt88-372",
+      "commune": "Ventron",
+      "parcellesAvant": ["88500000AB0490"],
+      "disparues": [
+        {
+          "id": "88500000AB0490",
+          "dernierMillesime": "2024-10-01"
+        }
+      ],
+      "successeurs": [
+        {
+          "id": "88500000AB0498",
+          "surfaceM2": 1752.8772530953568,
+          "partDansSite": 0.9999771969467774,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88500000AB0499",
+          "surfaceM2": 815.2326705065994,
+          "partDansSite": 0.9999737965202506,
+          "confirmeApicarto": true
+        }
+      ],
+      "ecartes": [],
+      "couverture": 0.9999999999811732,
+      "parcellesApres": ["88500000AB0498", "88500000AB0499"]
+    },
+    {
+      "idtup": "ddt88-7",
+      "commune": "Vioménil",
+      "parcellesAvant": [
+        "88515000AB0247",
+        "88515000AB0254",
+        "88515000AB0279",
+        "88515000AB0397",
+        "88515000AB0403",
+        "88515000AB0404",
+        "88515000ZB0049"
+      ],
+      "disparues": [
+        {
+          "id": "88515000AB0247",
+          "dernierMillesime": "2021-04-01"
+        },
+        {
+          "id": "88515000AB0254",
+          "dernierMillesime": "2021-04-01"
+        },
+        {
+          "id": "88515000AB0279",
+          "dernierMillesime": "2021-04-01"
+        },
+        {
+          "id": "88515000AB0397",
+          "dernierMillesime": "2021-04-01"
+        },
+        {
+          "id": "88515000AB0403",
+          "dernierMillesime": "2021-04-01"
+        }
+      ],
+      "successeurs": [
+        {
+          "id": "88515000AB0416",
+          "surfaceM2": 133.31427010062498,
+          "partDansSite": 0.9999999999677635,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88515000AB0411",
+          "surfaceM2": 44.149353295930844,
+          "partDansSite": 1.0000000000212936,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88515000AB0414",
+          "surfaceM2": 243.78488459713412,
+          "partDansSite": 1,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88515000AB0409",
+          "surfaceM2": 64.79960145246294,
+          "partDansSite": 0.9999461946207734,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88515000AB0412",
+          "surfaceM2": 1537.5797679594993,
+          "partDansSite": 0.999999125413113,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88515000AB0405",
+          "surfaceM2": 206.31541219567345,
+          "partDansSite": 1,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88515000AB0410",
+          "surfaceM2": 1.3818788600194885,
+          "partDansSite": 0.9999999999028134,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88515000AB0406",
+          "surfaceM2": 17.560757346596436,
+          "partDansSite": 1,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88515000AB0413",
+          "surfaceM2": 1023.8679230946739,
+          "partDansSite": 0.9999857870371397,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88515000AB0407",
+          "surfaceM2": 165.16790147473324,
+          "partDansSite": 1.0000000001187146,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88515000AB0408",
+          "surfaceM2": 129.14979786585877,
+          "partDansSite": 0.9999785178531336,
+          "confirmeApicarto": true
+        }
+      ],
+      "ecartes": [],
+      "couverture": 0.9998366644234723,
+      "parcellesApres": [
+        "88515000AB0404",
+        "88515000ZB0049",
+        "88515000AB0416",
+        "88515000AB0411",
+        "88515000AB0414",
+        "88515000AB0409",
+        "88515000AB0412",
+        "88515000AB0405",
+        "88515000AB0410",
+        "88515000AB0406",
+        "88515000AB0413",
+        "88515000AB0407",
+        "88515000AB0408"
+      ]
+    },
+    {
+      "idtup": "ddt88-321",
+      "commune": "Vittel",
+      "parcellesAvant": ["88516000AL0021", "88516000AL0022", "88516000AL0023"],
+      "disparues": [
+        {
+          "id": "88516000AL0022",
+          "dernierMillesime": "2024-07-01"
+        }
+      ],
+      "successeurs": [
+        {
+          "id": "88516000AL0393",
+          "surfaceM2": 162.7871270457135,
+          "partDansSite": 1.0000000000185627,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88516000AL0392",
+          "surfaceM2": 2679.917534899566,
+          "partDansSite": 1,
+          "confirmeApicarto": true
+        }
+      ],
+      "ecartes": [],
+      "couverture": 0.9999822790891146,
+      "parcellesApres": ["88516000AL0021", "88516000AL0023", "88516000AL0393", "88516000AL0392"]
+    },
+    {
+      "idtup": "ddt88-233",
+      "commune": "Xertigny",
+      "parcellesAvant": ["88530000AB0496", "88530000AB0655"],
+      "disparues": [
+        {
+          "id": "88530000AB0655",
+          "dernierMillesime": "2026-03-01"
+        }
+      ],
+      "successeurs": [
+        {
+          "id": "88530000AB0717",
+          "surfaceM2": 4636.065367468164,
+          "partDansSite": 0.999999999993569,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88530000AB0718",
+          "surfaceM2": 127.27505348583315,
+          "partDansSite": 1,
+          "confirmeApicarto": true
+        }
+      ],
+      "ecartes": [],
+      "couverture": 0.9999999999910341,
+      "parcellesApres": ["88530000AB0496", "88530000AB0717", "88530000AB0718"]
+    },
+    {
+      "idtup": "ddt88-323",
+      "commune": "Xertigny",
+      "parcellesAvant": [
+        "88530000BR0068",
+        "88530000BR0069",
+        "88530000BR0158",
+        "88530000BR0160",
+        "88530000BR0162",
+        "88530000BR0163",
+        "88530000BR0164",
+        "88530000BR0165",
+        "88530000BR0166",
+        "88530000BR0167"
+      ],
+      "disparues": [
+        {
+          "id": "88530000BR0068",
+          "dernierMillesime": "2025-04-01"
+        },
+        {
+          "id": "88530000BR0069",
+          "dernierMillesime": "2025-04-01"
+        },
+        {
+          "id": "88530000BR0158",
+          "dernierMillesime": "2025-04-01"
+        },
+        {
+          "id": "88530000BR0160",
+          "dernierMillesime": "2025-04-01"
+        },
+        {
+          "id": "88530000BR0162",
+          "dernierMillesime": "2025-04-01"
+        },
+        {
+          "id": "88530000BR0163",
+          "dernierMillesime": "2025-04-01"
+        },
+        {
+          "id": "88530000BR0164",
+          "dernierMillesime": "2025-04-01"
+        },
+        {
+          "id": "88530000BR0165",
+          "dernierMillesime": "2025-04-01"
+        },
+        {
+          "id": "88530000BR0166",
+          "dernierMillesime": "2025-04-01"
+        },
+        {
+          "id": "88530000BR0167",
+          "dernierMillesime": "2025-04-01"
+        }
+      ],
+      "successeurs": [
+        {
+          "id": "88530000BR0168",
+          "surfaceM2": 20288.68590732191,
+          "partDansSite": 0.8349990529860304,
+          "confirmeApicarto": true
+        }
+      ],
+      "ecartes": [],
+      "couverture": 1,
+      "parcellesApres": ["88530000BR0168"]
+    },
+    {
+      "idtup": "ddt88-210",
+      "commune": "Éloyes",
+      "parcellesAvant": [
+        "88158000AK0021",
+        "88158000AK0022",
+        "88158000AK0023",
+        "88158000AK0027",
+        "88158000AK0028",
+        "88158000AK0033",
+        "88158000AK0035",
+        "88158000AK0036",
+        "88158000AK0196",
+        "88158000AK0201"
+      ],
+      "disparues": [
+        {
+          "id": "88158000AK0201",
+          "dernierMillesime": "2022-10-01"
+        }
+      ],
+      "successeurs": [
+        {
+          "id": "88158000AK0210",
+          "surfaceM2": 11401.800477115788,
+          "partDansSite": 0.9999999999972439,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88158000AK0211",
+          "surfaceM2": 679.6848389212508,
+          "partDansSite": 0.9999999999573203,
+          "confirmeApicarto": true
+        }
+      ],
+      "ecartes": [],
+      "couverture": 0.9999948684805386,
+      "parcellesApres": [
+        "88158000AK0021",
+        "88158000AK0022",
+        "88158000AK0023",
+        "88158000AK0027",
+        "88158000AK0028",
+        "88158000AK0033",
+        "88158000AK0035",
+        "88158000AK0036",
+        "88158000AK0196",
+        "88158000AK0210",
+        "88158000AK0211"
+      ]
+    },
+    {
+      "idtup": "ddt88-171",
+      "commune": "Épinal",
+      "parcellesAvant": ["88160000AC0127"],
+      "disparues": [
+        {
+          "id": "88160000AC0127",
+          "dernierMillesime": "2024-01-01"
+        }
+      ],
+      "successeurs": [
+        {
+          "id": "88160000AC0687",
+          "surfaceM2": 576.6720684878405,
+          "partDansSite": 1.0000000000074525,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88160000AC0688",
+          "surfaceM2": 1314.0545781631524,
+          "partDansSite": 1,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88160000AC0689",
+          "surfaceM2": 1351.0385199505074,
+          "partDansSite": 1.0000000000318097,
+          "confirmeApicarto": true
+        }
+      ],
+      "ecartes": [],
+      "couverture": 0.9999682336477757,
+      "parcellesApres": ["88160000AC0687", "88160000AC0688", "88160000AC0689"]
+    },
+    {
+      "idtup": "ddt88-396",
+      "commune": "Épinal",
+      "parcellesAvant": [
+        "88160000BM0011",
+        "88160000BM0012",
+        "88160000BM0014",
+        "88160000BM0015",
+        "88160000BM0016",
+        "88160000BM0017",
+        "88160000BM0018",
+        "88160000BM0019",
+        "88160000BM0022",
+        "88160000BM0158",
+        "88160000BM0223",
+        "88160000BM0225",
+        "88160000BM0227",
+        "88160000BM0228",
+        "88160000BM0288",
+        "88160000BM0290",
+        "88160000BM0389",
+        "88160000BM0397",
+        "88160000BM0398",
+        "88160000BM0399",
+        "88160000BM0400",
+        "88160000BM0401",
+        "88160000BM0402",
+        "88160000BM0403",
+        "88160000BM0404",
+        "88160000BM0405",
+        "88160000BM0406",
+        "88160000BM0407",
+        "88160000BM0408",
+        "88160000BM0409",
+        "88160000BM0410"
+      ],
+      "disparues": [
+        {
+          "id": "88160000BM0158",
+          "dernierMillesime": "2023-04-01"
+        },
+        {
+          "id": "88160000BM0400",
+          "dernierMillesime": "2023-04-01"
+        },
+        {
+          "id": "88160000BM0402",
+          "dernierMillesime": "2023-04-01"
+        },
+        {
+          "id": "88160000BM0410",
+          "dernierMillesime": "2023-04-01"
+        }
+      ],
+      "successeurs": [
+        {
+          "id": "88160000BM0468",
+          "surfaceM2": 2214.4626660427984,
+          "partDansSite": 0.9999727252220649,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88160000BM0465",
+          "surfaceM2": 450.49577830506746,
+          "partDansSite": 1.0000000000190794,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88160000BM0461",
+          "surfaceM2": 403.7611042580683,
+          "partDansSite": 0.9999806552852951,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88160000BM0457",
+          "surfaceM2": 271.11678552153376,
+          "partDansSite": 0.9996042113245553,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88160000BM0466",
+          "surfaceM2": 2831.4175882778204,
+          "partDansSite": 0.9999948545473258,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88160000BM0467",
+          "surfaceM2": 180.09287872757093,
+          "partDansSite": 0.999756268148015,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88160000BM0463",
+          "surfaceM2": 18.125099786478582,
+          "partDansSite": 1,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88160000BM0459",
+          "surfaceM2": 213.01450542744325,
+          "partDansSite": 1.0000000000201752,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88160000BM0464",
+          "surfaceM2": 69.42661570809169,
+          "partDansSite": 0.9999999997523943,
+          "confirmeApicarto": true
+        },
+        {
+          "id": "88160000BM0460",
+          "surfaceM2": 110.70703422095862,
+          "partDansSite": 0.9999999999708853,
+          "confirmeApicarto": true
+        }
+      ],
+      "ecartes": [],
+      "couverture": 0.999999585521458,
+      "parcellesApres": [
+        "88160000BM0011",
+        "88160000BM0012",
+        "88160000BM0014",
+        "88160000BM0015",
+        "88160000BM0016",
+        "88160000BM0017",
+        "88160000BM0018",
+        "88160000BM0019",
+        "88160000BM0022",
+        "88160000BM0223",
+        "88160000BM0225",
+        "88160000BM0227",
+        "88160000BM0228",
+        "88160000BM0288",
+        "88160000BM0290",
+        "88160000BM0389",
+        "88160000BM0397",
+        "88160000BM0398",
+        "88160000BM0399",
+        "88160000BM0401",
+        "88160000BM0403",
+        "88160000BM0404",
+        "88160000BM0405",
+        "88160000BM0406",
+        "88160000BM0407",
+        "88160000BM0408",
+        "88160000BM0409",
+        "88160000BM0468",
+        "88160000BM0465",
+        "88160000BM0461",
+        "88160000BM0457",
+        "88160000BM0466",
+        "88160000BM0467",
+        "88160000BM0463",
+        "88160000BM0459",
+        "88160000BM0464",
+        "88160000BM0460"
+      ]
+    }
+  ]
+}
