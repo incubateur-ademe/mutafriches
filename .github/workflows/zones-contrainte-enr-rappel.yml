@@ -32,11 +32,17 @@ jobs:
 
           1. Ouvrir dans un navigateur puis enregistrer le fichier (~27 Mo) :
              https://observatoire.enedis.fr/sites/enedis_ote/files/processed_json/capca.json
-          2. Importer en préproduction puis en production :
+          2. Régénérer le fichier commité (après `pnpm --filter api build:nest`) :
              ```
-             scalingo --app mutafriches-preprod run --file capca.json "pnpm db:zones-contrainte-enr:import /tmp/uploads/capca.json"
-             scalingo --app mutafriches run --file capca.json "pnpm db:zones-contrainte-enr:import /tmp/uploads/capca.json"
+             pnpm data:zones-contrainte-enr:preparer ~/Downloads/capca.json
              ```
-          3. Contrôler le décompte par statut affiché en fin d'import (environ 10 % de zones saturées), puis fermer cette issue.
+          3. Si aucun statut n'a changé, fermer cette issue sans committer. Sinon, committer
+             `apps/api/src/scripts/data/zones-contrainte-enr.geojson.gz` via une PR.
+          4. Une fois déployé, importer en préproduction puis en production :
+             ```
+             scalingo --app mutafriches-preprod run "pnpm db:zones-contrainte-enr:import"
+             scalingo --app mutafriches run "pnpm db:zones-contrainte-enr:import"
+             ```
+          5. Contrôler le décompte par statut affiché en fin d'import, puis fermer cette issue.
           EOF
           gh issue create --title "$TITRE" --body-file corps.md
