@@ -40,8 +40,8 @@ jobs:
              `apps/api/src/scripts/data/zones-contrainte-enr.geojson.gz` via une PR.
           4. Une fois déployé, importer en préproduction puis en production :
              ```
-             scalingo --app mutafriches-preprod run "pnpm db:zones-contrainte-enr:import"
-             scalingo --app mutafriches run "pnpm db:zones-contrainte-enr:import"
+             scalingo --app mutafriches-preprod --region osc-fr1 run "pnpm db:zones-contrainte-enr:import"
+             scalingo --app mutafriches --region osc-secnum-fr1 run "pnpm db:zones-contrainte-enr:import"
              ```
           5. Contrôler le décompte par statut affiché en fin d'import, puis fermer cette issue.
           EOF

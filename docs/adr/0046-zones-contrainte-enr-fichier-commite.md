@@ -109,7 +109,9 @@ HTA/BT, publiée sur openservices.enedis.fr. Constats du 2026-09-23 :
 ### Migration
 
 1. `pnpm db:migrate` (migration `0036_raw_zones_contrainte_enr`, jouée par le `postdeploy`).
-2. Sur chaque environnement : `scalingo --app <app> run "pnpm db:zones-contrainte-enr:import"`.
+2. Sur chaque environnement (région obligatoire, cf. `docs/ops/scalingo.md`) :
+   `scalingo --app mutafriches-preprod --region osc-fr1 run "pnpm db:zones-contrainte-enr:import"`,
+   puis `scalingo --app mutafriches --region osc-secnum-fr1 run "pnpm db:zones-contrainte-enr:import"`.
 3. Tant que l'import n'a pas eu lieu, le critère est indisponible pour tous les sites (erreur
    loguée une fois par processus).
 
