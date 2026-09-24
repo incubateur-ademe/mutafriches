@@ -134,6 +134,7 @@ pnpm db:stop                # Arrêter PostgreSQL
 pnpm db:reset               # Reset complet (supprime les données)
 pnpm db:push                # Synchroniser le schéma
 pnpm db:studio              # Interface graphique Drizzle Studio
+pnpm db:restore             # Charger un dump dans la base locale (liste et confirmation)
 pnpm db:lovac:import        # Référentiel LOVAC (logements vacants, annuel)
 pnpm db:zonage-abc:import   # Référentiel zonage ABC (tension du logement, à chaque arrêté)
 pnpm db:icu:import          # Référentiel îlots de chaleur urbain (ICU, à chaque millésime)
@@ -143,6 +144,9 @@ pnpm db:qpv:import          # Référentiel quartiers prioritaires (QPV, à chaq
 
 Le conteneur PostgreSQL ne publie son port que sur `127.0.0.1` : la base locale, qui peut contenir
 un dump de production, n'est pas joignable depuis le réseau (wifi public, coworking).
+
+Les dumps restent hors du dépôt : indiquer leur dossier dans `apps/api/.env` (`DB_BACKUP_DIR`),
+cf. [`docs/ops/db-local.md`](./docs/ops/db-local.md).
 
 ### Contact multisites (calendrier ZCal)
 
@@ -282,6 +286,7 @@ Documentation complète dans le dossier [`docs/`](./docs/) :
 - **[Algorithme d'Évaluation](./docs/evaluation-mutabilite.md)** - Matrice 30×7, calcul mutabilité
 - **[Guide d'Intégration](./docs/integration/README.md)** - Iframe + PostMessage
 - **[Vulnérabilités de dépendances](./docs/security/vulnerabilites-acceptees.md)** - Suivi `pnpm audit` et justifications d'acceptation
+- **[Ops](./docs/ops/README.md)** - Scalingo (logs, psql en lecture), restauration de dump en local
 
 ---
 

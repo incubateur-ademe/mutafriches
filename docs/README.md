@@ -14,6 +14,7 @@
 - **[Ajouter un partenaire](./ajout-partenaire.md)** - Todolist pour publier une nouvelle page partenaire multisite
 - **[Ouvrir un accès API](./acces-api-integrateur.md)** - Procédure d'autorisation d'un intégrateur (whitelist d'origines, cas serveur à serveur)
 - **[Vulnérabilités de dépendances](./security/vulnerabilites-acceptees.md)** - Suivi `pnpm audit` : corrections, acceptations justifiées, planchers d'override
+- **[Ops](./ops/README.md)** - Scalingo (connexion, logs, psql en lecture) et base locale (restauration de dump, purge des caches)
 
 ### Pour les intégrateurs
 

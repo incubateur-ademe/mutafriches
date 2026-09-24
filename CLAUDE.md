@@ -288,6 +288,7 @@ pnpm db:generate            # Générer les migrations Drizzle
 pnpm db:migrate             # Appliquer les migrations
 pnpm db:push                # Synchroniser le schéma directement
 pnpm db:studio              # Interface Drizzle Studio
+pnpm db:restore             # Charger un dump dans la base locale (dumps hors dépôt, DB_BACKUP_DIR)
 
 # Import de données
 pnpm db:bpe:import          # Importer les données BPE (commerces INSEE)
@@ -573,7 +574,7 @@ Pièges rencontrés en session. Chaque entrée documente un piège pour éviter 
 
 - Les review apps par PR (`mutafriches-preprod-prXXX`) ont une **base de données éphémère créée à la volée** par Scalingo (clone de l'app parente au moment de la création de la PR). Tester une migration sur une review app **ne reflète pas** ce qui se passera en production : la DB de la review app peut être quasi-vide ou contenir un snapshot daté.
 - Pour valider une migration avant un merge en main, **toujours** :
-  1. La rejouer sur la DB locale restaurée depuis un backup de prod (`bash .local/restore-db.sh <backup>.tar.gz`)
+  1. La rejouer sur la DB locale restaurée depuis un backup de prod (`pnpm db:restore`, cf. `docs/ops/db-local.md`)
   2. Vérifier les requêtes/jointures contre la volumétrie réelle
 - **`ts-node` ne fonctionne PAS en runtime sur Scalingo** : il est en `devDependencies` et Scalingo le supprime au `Pruning devDependencies` (changement de buildpack autour de pnpm 10.x). Tous les scripts CLI (imports, prefetch, etc.) doivent être appelés sur la version compilée par `nest build` :
   ```json
