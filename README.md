@@ -141,6 +141,9 @@ pnpm db:reseaux-chaleur:import          # Référentiel îlots de chaleur urbain
 pnpm db:qpv:import          # Référentiel quartiers prioritaires (QPV, à chaque arrêté)
 ```
 
+Le conteneur PostgreSQL ne publie son port que sur `127.0.0.1` : la base locale, qui peut contenir
+un dump de production, n'est pas joignable depuis le réseau (wifi public, coworking).
+
 ### Contact multisites (calendrier ZCal)
 
 La modale « Analyser plusieurs sites » embarque un **calendrier ZCal** en iframe pour la prise
