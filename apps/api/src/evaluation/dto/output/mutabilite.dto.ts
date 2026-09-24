@@ -18,8 +18,8 @@ export class MutabiliteSwaggerDto implements IMutabiliteOutput {
       note: 8.5,
       text: "Très fiable",
       description: "Données complètes et vérifiées pour 85% des critères analysés",
-      criteresRenseignes: 26,
-      criteresTotal: 30,
+      criteresRenseignes: 27,
+      criteresTotal: 31,
     },
     type: Object,
   })

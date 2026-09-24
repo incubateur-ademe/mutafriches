@@ -297,6 +297,26 @@ export const SOURCES_DONNEES: SourceDonnees[] = [
       "pour la culture, l'industrie et la renaturation. Hors quartier prioritaire, le critère " +
       "est neutre sur les sept usages.",
   },
+  {
+    id: "zones-contrainte-enr",
+    nom: "Zones de contrainte réseau pour les projets EnR",
+    organisme: "Enedis, en lien avec RTE",
+    type: "referentiel-local",
+    urlDoc: "https://openservices.enedis.fr/service/carte-zones-contrainte-projets-enr/",
+    sourcesEnrichissement: [SourceEnrichissement.ZONES_CONTRAINTE_ENR],
+    champsRecuperes: [
+      "Statut de la zone de poste source contenant le centroïde du site (très favorable, " +
+        "favorable, en tension, saturée), par test spatial contre la carte Enedis des zones en " +
+        "contrainte pour raccorder de nouveaux projets de production HTA/BT (base PostGIS " +
+        "`raw_zones_contrainte_enr`, environ 2 300 zones, rafraîchie chaque mois)",
+    ],
+    traitementAlgo:
+      "Ramené à un booléen : seule une zone saturée compte comme saturée, une zone en tension " +
+      "restant raccordable. En zone saturée, très négatif pour le photovoltaïque, neutre pour " +
+      "les six autres usages ; hors zone saturée, neutre sur les sept usages. Hors périmètre " +
+      "Enedis (entreprises locales de distribution), la donnée est indisponible. Données " +
+      "indicatives, sans valeur contractuelle (ADR-0046).",
+  },
 ];
 
 /** Critères d'évaluation (avec poids) alimentés par une source, dérivés du registre autoritaire */

@@ -85,10 +85,11 @@ describe("FiabiliteCalculator", () => {
     });
 
     it("devrait favoriser les criteres a poids eleve", () => {
-      // 2 criteres de poids 2 chacun = 4
+      // 3 critères de poids 2 = 6 (à 4 contre 3, l'arrondi au 0,5 confond les notes sur 33)
       const criteresPoidsEleves = {
         surfaceSite: 10000, // poids 2
         surfaceBati: 5000, // poids 2
+        zonageReglementaire: "zone-urbaine-u", // poids 2
       };
 
       // 4 criteres de poids 1 ou 0.5 = 3
@@ -103,7 +104,7 @@ describe("FiabiliteCalculator", () => {
       const resultFaibles = calculator.calculer(criteresPoidsFaibles);
 
       expect(resultEleves.note).toBeGreaterThan(resultFaibles.note);
-      expect(resultEleves.poidsRenseignes).toBe(4);
+      expect(resultEleves.poidsRenseignes).toBe(6);
       expect(resultFaibles.poidsRenseignes).toBe(3);
     });
 

@@ -84,6 +84,7 @@ const RESOLVEURS: Record<string, (e: Enrichissement, c: Complementaires) => stri
   zoneAccelerationEnr: (e) => libelleEnum(ZONE_ACCELERATION_ENR_LABELS, e?.zoneAccelerationEnr),
   zonageAbcLogement: (e) => libelleEnum(ZONAGE_ABC_LOGEMENT_LABELS, e?.zonageAbcLogement),
   siteEnQpv: (e) => formatBooleen(e?.siteEnQpv),
+  saturationReseauEnr: (e) => formatBooleen(e?.saturationReseauEnr),
 };
 
 /** Clés couvertes par un résolveur. Exposé pour le garde-fou de couverture (cf. spec). */

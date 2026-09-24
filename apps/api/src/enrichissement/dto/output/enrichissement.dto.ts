@@ -242,6 +242,14 @@ export class EnrichissementSwaggerDto implements IEnrichissementOutput {
   siteEnQpv?: boolean;
 
   @ApiProperty({
+    description:
+      "Site situé dans une zone où le réseau électrique est saturé pour raccorder de nouveaux projets EnR (carte Enedis/RTE). Absent hors périmètre Enedis",
+    required: false,
+    example: false,
+  })
+  saturationReseauEnr?: boolean;
+
+  @ApiProperty({
     description: "Position par rapport à la trame verte et bleue",
     required: false,
     example: TrameVerteEtBleue.HORS_TRAME,

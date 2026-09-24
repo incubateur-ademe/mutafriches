@@ -87,6 +87,13 @@ export const IMPORT_DATASETS: readonly ImportDatasetDefinition[] = [
       "https://www.data.gouv.fr/datasets/quartiers-prioritaires-de-la-politique-de-la-ville-qpv",
   },
   {
+    key: "zones-contrainte-enr",
+    label: "Zones de contrainte réseau pour les projets EnR (Enedis)",
+    datasetNamePattern: "zones-contrainte-enr",
+    countTable: "raw_zones_contrainte_enr",
+    docUrl: "https://observatoire.enedis.fr/services/carte-zones-contrainte-projets-enr",
+  },
+  {
     key: "decoupage-administratif",
     label: "Découpage administratif (communes / EPCI)",
     datasetNamePattern: "decoupage-administratif-etalab-%",

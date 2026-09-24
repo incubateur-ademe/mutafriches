@@ -73,6 +73,14 @@ interface MockQpvEnrichissementService {
   enrichir: Mock;
 }
 
+interface MockZonesContrainteEnrRepository {
+  findStatutZoneContenant: Mock;
+}
+
+interface MockSaturationReseauEnrEnrichissementService {
+  enrichir: Mock;
+}
+
 interface MockRisquesNaturelsEnrichissementService {
   enrichir: Mock;
 }
@@ -529,6 +537,24 @@ export function createMockQpvRepository(): MockQpvRepository {
  * Mock du QpvEnrichissementService
  */
 export function createMockQpvEnrichissementService(): MockQpvEnrichissementService {
+  return {
+    enrichir: vi.fn(),
+  };
+}
+
+/**
+ * Mock du ZonesContrainteEnrRepository
+ */
+export function createMockZonesContrainteEnrRepository(): MockZonesContrainteEnrRepository {
+  return {
+    findStatutZoneContenant: vi.fn(),
+  };
+}
+
+/**
+ * Mock du SaturationReseauEnrEnrichissementService
+ */
+export function createMockSaturationReseauEnrEnrichissementService(): MockSaturationReseauEnrEnrichissementService {
   return {
     enrichir: vi.fn(),
   };

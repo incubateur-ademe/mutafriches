@@ -43,6 +43,9 @@ export interface ParcelleUiModel {
   /** Site en quartier prioritaire de la politique de la ville (chaîne vide = indisponible) */
   siteEnQpv: string;
 
+  /** Zone de réseau électrique saturé pour les projets EnR (chaîne vide = indisponible) */
+  saturationReseauEnr: string;
+
   /** Exposition à un îlot de chaleur urbain — informatif, hors algorithme */
   ilotChaleurUrbain?: IlotChaleurUrbain;
 

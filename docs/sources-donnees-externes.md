@@ -10,10 +10,10 @@ qu'ils alimentent.
 
 ## Comment sont utilisées ces données
 
-L'analyse de mutabilité repose sur 30 critères, notés pour 7 usages possibles d'une friche.
-20 critères sont **enrichis automatiquement** à partir des sources ci-dessous ; 10 sont
+L'analyse de mutabilité repose sur 31 critères, notés pour 7 usages possibles d'une friche.
+21 critères sont **enrichis automatiquement** à partir des sources ci-dessous ; 10 sont
 **saisis manuellement** par l'utilisateur. Chaque critère porte un poids ; le poids total
-est de 32. La part des critères effectivement renseignés détermine l'indice de fiabilité
+est de 33. La part des critères effectivement renseignés détermine l'indice de fiabilité
 de l'analyse.
 
 ## Sources enrichies automatiquement
@@ -357,6 +357,26 @@ Ramenée à un booléen. En quartier prioritaire, la reconversion sert directeme
 | Critère d'évaluation alimenté | Poids |
 | --- | --- |
 | Quartier prioritaire de la politique de la ville | 1 |
+
+### Zones de contrainte réseau pour les projets EnR
+
+- **Type** : Référentiel local
+- **Opérateur** : Enedis, en lien avec RTE
+- **Documentation** : https://openservices.enedis.fr/service/carte-zones-contrainte-projets-enr/
+
+**Champs récupérés**
+
+- Statut de la zone de poste source contenant le centroïde du site (très favorable, favorable, en tension, saturée), par test spatial contre la carte Enedis des zones en contrainte pour raccorder de nouveaux projets de production HTA/BT (base PostGIS `raw_zones_contrainte_enr`, environ 2 300 zones, rafraîchie chaque mois)
+
+**Traitement dans l'algorithme**
+
+Ramené à un booléen : seule une zone saturée compte comme saturée, une zone en tension restant raccordable. En zone saturée, très négatif pour le photovoltaïque, neutre pour les six autres usages ; hors zone saturée, neutre sur les sept usages. Hors périmètre Enedis (entreprises locales de distribution), la donnée est indisponible. Données indicatives, sans valeur contractuelle (ADR-0046).
+
+**Critères d'évaluation alimentés**
+
+| Critère d'évaluation alimenté | Poids |
+| --- | --- |
+| Saturation du réseau électrique pour les projets EnR | 1 |
 
 ## Critères saisis manuellement
 

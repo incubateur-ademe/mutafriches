@@ -196,7 +196,7 @@ export const QualificationRisquesPage: React.FC = () => {
 
       <hr className="fr-my-4w" />
 
-      {/* Zone 4 - Zonage ABC & quartier prioritaire */}
+      {/* Zone 4 - Zonage ABC, quartier prioritaire & saturation réseau EnR */}
       <div className="fr-grid-row fr-grid-row--gutters">
         <EnrichedInfoField
           id="zonage-abc-logement"
@@ -232,6 +232,26 @@ export const QualificationRisquesPage: React.FC = () => {
                 className="fr-link fr-text--xs"
               >
                 data.gouv.fr - Quartiers prioritaires
+              </a>
+            </>
+          }
+        />
+
+        <EnrichedInfoField
+          id="saturation-reseau-enr"
+          label="Saturation électrique du réseau pour projets d'énergies renouvelables"
+          value={uiData?.saturationReseauEnr}
+          tooltip={
+            <>
+              Données Enedis et RTE, fournies à titre indicatif et sans valeur contractuelle :
+              <br />
+              <a
+                href="https://openservices.enedis.fr/service/carte-zones-contrainte-projets-enr/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="fr-link fr-text--xs"
+              >
+                openservices.enedis.fr - Carte des zones de contrainte EnR
               </a>
             </>
           }

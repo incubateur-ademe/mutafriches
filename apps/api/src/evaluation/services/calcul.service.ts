@@ -289,6 +289,7 @@ export class CalculService {
    * - v1.6 : ajout de presenceZoneHumide
    * - v1.7 : ajout de zonageAbcLogement
    * - v1.14 : ajout de siteEnQpv
+   * - v1.15 : ajout de saturationReseauEnr
    */
   protected extraireCriteres(
     site: Site,
@@ -376,6 +377,11 @@ export class CalculService {
     // est une réponse à part entière, seul `undefined` doit faire ignorer le critère.
     if (!poidsCriteres || "siteEnQpv" in poidsCriteres) {
       criteres.siteEnQpv = site.siteEnQpv;
+    }
+
+    // Saturation réseau EnR (v1.15+). Même règle : `false` est scoré, `undefined` ignoré.
+    if (!poidsCriteres || "saturationReseauEnr" in poidsCriteres) {
+      criteres.saturationReseauEnr = site.saturationReseauEnr;
     }
 
     return criteres;
