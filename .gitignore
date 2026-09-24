@@ -89,6 +89,12 @@ postgres_data/
 *.bak
 *~
 
+# Dumps de base : copie de la prod, jamais dans le dépôt (cf. scripts/dev/restore-db.sh)
+/backups/
+*.pgsql
+*.dump
+*.tar.gz
+
 # Diagnostic reports
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 

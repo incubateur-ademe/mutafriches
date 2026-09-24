@@ -285,5 +285,5 @@ La fiabilité **ne modifie pas** le classement. C'est un indicateur séparé qui
 ---
 
 > **Dernière mise à jour** : Septembre 2026 (algorithme v1.14)
-> **Contact** : <samir.benfares@beta.gouv.fr>
+> **Contact** : <contact@mutafriches.beta.gouv.fr>
 > **Repository** : [https://github.com/incubateur-ademe/mutafriches](https://github.com/incubateur-ademe/mutafriches)
