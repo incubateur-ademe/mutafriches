@@ -92,7 +92,7 @@ Envoyé quand l'analyse est terminée avec les résultats complets :
     ],
     metadata: {
       dateAnalyse: "2026-03-15T10:30:00Z",
-      versionAlgorithme: "2.0.0"
+      versionAlgorithme: "<version courante>"  // cf. GET /evaluation/metadata
     }
   }
 }
@@ -183,7 +183,8 @@ En plus de l'intégration iframe, les partenaires peuvent appeler l'API REST dir
 1. **Enrichir un site** (mono ou multi-parcelle)
 
 ```bash
-POST https://mutafriches.beta.gouv.fr/enrichissement?integrateur=votre-id
+POST https://mutafriches.beta.gouv.fr/enrichissement
+Origin: https://votre-origine-autorisee.fr
 Content-Type: application/json
 
 # Mono-parcelle
@@ -196,7 +197,8 @@ Content-Type: application/json
 2. **Calculer la mutabilité** avec les données enrichies + données complémentaires
 
 ```bash
-POST https://mutafriches.beta.gouv.fr/evaluation/calculer?integrateur=votre-id
+POST https://mutafriches.beta.gouv.fr/evaluation/calculer
+Origin: https://votre-origine-autorisee.fr
 Content-Type: application/json
 
 {
@@ -256,8 +258,12 @@ requêtes. Les lectures (`GET /evaluation/{id}`, `GET /evaluation/metadata`) son
 - l'**origine exacte** à autoriser, schéma compris (`https://exemple.fr`). La comparaison est
   stricte : `https://www.exemple.fr` est une autre origine, et les sous-domaines ne sont pas
   couverts implicitement ;
-- un **identifiant d'intégrateur** (slug) pour distinguer vos appels dans nos statistiques ;
-- votre volumétrie prévisionnelle.
+- le **contexte d'appel** (page web ou serveur) ;
+- votre **usage** et votre **volumétrie** prévisionnelle.
+
+Il n'y a pas d'identifiant d'intégrateur à demander : vos appels sont reconnus dans nos
+statistiques par l'origine autorisée. Le paramètre `?integrateur=` ne concerne que le mode
+iframe.
 
 #### Appels serveur à serveur
 
@@ -266,7 +272,7 @@ header `Origin` n'est envoyé par défaut et l'API répond `403 Origin required`
 vous-même, avec l'origine que nous avons autorisée :
 
 ```bash
-curl -X POST "https://mutafriches.beta.gouv.fr/enrichissement?integrateur=votre-slug" \
+curl -X POST "https://mutafriches.beta.gouv.fr/enrichissement" \
   -H "Content-Type: application/json" \
   -H "Origin: https://exemple.fr" \
   -d '{"identifiant":"25056000HZ0346"}'
@@ -274,6 +280,43 @@ curl -X POST "https://mutafriches.beta.gouv.fr/enrichissement?integrateur=votre-
 
 Vous n'avez pas besoin d'un site web publié pour cela : l'origine sert d'identifiant
 conventionnel de votre organisation, pas d'adresse à joindre.
+
+#### Exemple complet en ligne de commande
+
+Enrichissement, calcul puis relecture, avec `jq`. À jouer de préférence en pré-production :
+
+```bash
+BASE=https://mutafriches.incubateur.ademe.dev
+ORIGINE=https://exemple.fr   # votre origine autorisée
+
+# 1. Enrichir le site (1 à 20 parcelles)
+curl -sS -X POST "$BASE/enrichissement" \
+  -H "Content-Type: application/json" -H "Origin: $ORIGINE" \
+  -d '{"identifiants":["49020000AK0118"]}' > enrichissement.json
+
+# 2. Calculer : réponse de l'étape 1 renvoyée intégralement + les 9 champs complémentaires
+jq -n --slurpfile e enrichissement.json '{
+  donneesEnrichies: $e[0],
+  donneesComplementaires: {
+    typeProprietaire: "public",
+    etatBatiInfrastructure: "degradation-moyenne",
+    presencePollution: "ne-sait-pas",
+    valeurArchitecturaleHistorique: "ordinaire",
+    qualitePaysage: "ordinaire",
+    qualiteVoieDesserte: "accessible",
+    trameVerteEtBleue: "hors-trame",
+    presenceEspecesProtegees: "non",
+    presenceZoneHumide: "non"
+  }
+}' | curl -sS -X POST "$BASE/evaluation/calculer" \
+  -H "Content-Type: application/json" -H "Origin: $ORIGINE" \
+  -d @- > evaluation.json
+
+jq '{evaluationId, fiabilite: .fiabilite.note, resultats: [.resultats[] | {rang, usage, indiceMutabilite}]}' evaluation.json
+
+# 3. Relire l'évaluation (lecture ouverte, sans Origin)
+curl -sS "$BASE/evaluation/$(jq -r .evaluationId evaluation.json)"
+```
 
 ### Limites
 
@@ -419,7 +462,7 @@ window.addEventListener('message', (event) => {
 ### Documentation
 
 - Site web : [https://mutafriches.beta.gouv.fr](https://mutafriches.beta.gouv.fr)
-- Documentation API : [https://mutafriches.beta.gouv.fr/docs](https://mutafriches.beta.gouv.fr/docs)
+- Documentation API (Swagger) : [https://mutafriches.beta.gouv.fr/api](https://mutafriches.beta.gouv.fr/api)
 
 ### Contact technique
 
@@ -431,7 +474,3 @@ Pour obtenir votre identifiant d'intégrateur, contactez-nous par mail afin d'é
 
 - [Design System de l'État (DSFR)](https://www.systeme-de-design.gouv.fr/)
 - [Documentation PostMessage MDN](https://developer.mozilla.org/fr/docs/Web/API/Window/postMessage)
-
----
-
-*Version 2.0 - Mars 2026*  

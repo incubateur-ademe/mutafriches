@@ -104,6 +104,13 @@ Remplacer `session_id` par `visitor_id` et `COUNT(*)` par `COUNT(DISTINCT evalua
 
 Le canal se lit d'abord sur `integrateur` (dont la convention `partenaire:<slug>`), puis sur `source_utilisation` en repli. Bloc `CASE` commun aux requêtes ci-dessous :
 
+> Un appel API depuis une origine tierce est enregistré avec l'hôte de son `Origin` dans
+> `integrateur` (ex. `benefriches.ademe.fr`), jamais avec le `?integrateur=` passé en query,
+> qui n'est lu qu'en mode iframe. Jusqu'en septembre 2026, ces appels étaient classés
+> `IFRAME_INTEGREE` à tort ; ils sont désormais `API_DIRECTE`. Le bucket « Iframe » se vide
+> donc après le déploiement, sans changement d'usage : les intégrateurs nommés ci-dessous, lus
+> sur `integrateur`, ne sont pas affectés.
+
 ```sql
 CASE
   WHEN integrateur = 'partenaire:ddt-vosges'          THEN 'DDT Vosges'

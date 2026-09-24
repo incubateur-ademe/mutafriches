@@ -505,6 +505,16 @@ Pièges rencontrés en session. Chaque entrée documente un piège pour éviter 
   session sans `enrichissement_termine`, donc exclue du dénominateur. La fragmentation retire
   du numérateur, elle ne peut pas créer d'excédent.
 
+### Un intégrateur API est identifié par l'hôte de son `Origin`, pas par `?integrateur=`
+
+- `OrigineDetectionService` ne lit `?integrateur=` qu'avec `iframe=true`. En appel API direct,
+  `integrateur` vaut l'hôte de l'origine whitelistée (`benefriches.ademe.fr`) : les buckets
+  Metabase (`ILIKE '%benefriches%'`…) reposent sur cette valeur. Ne pas promettre de slug à
+  un intégrateur, et ne pas élargir `?integrateur=` sans réécrire ces buckets (ADR-0030).
+- Jusqu'en septembre 2026, ces appels étaient classés `IFRAME_INTEGREE` à tort (l'iframe tourne
+  sur notre domaine, elle ne peut pas porter une origine tierce). Ils passent en `API_DIRECTE` :
+  le bucket « Iframe » s'effondre au déploiement sans que l'usage ait changé.
+
 ### `dist` de shared-types périmé → tests API en échec fantôme
 
 - Les tests de l'API résolvent `@mutafriches/shared-types` depuis son **`dist` compilé** (le `vitest.config.ts` de l'API n'aliase que `@` → `/src`, pas le package). Un `dist` obsolète fait donc échouer des tests API sur des symptômes trompeurs (ex. `criteres-metadata.guard.spec.ts` : `CRITERES_METADATA` vs `POIDS_CRITERES` désalignés alors que les **sources** sont cohérentes).
