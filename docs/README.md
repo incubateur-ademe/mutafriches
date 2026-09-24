@@ -12,7 +12,7 @@
 - **[Tracking & Analytics](./analytics-tracking.md)** - Événements, session vs utilisateur, requêtes Metabase
 - **[Export CNIG Friches](./export-cnig.md)** - Export d'un inventaire partenaire au standard national (couverture des 51 attributs)
 - **[Ajouter un partenaire](./ajout-partenaire.md)** - Todolist pour publier une nouvelle page partenaire multisite
-- **[Ouvrir un accès API](./acces-api-integrateur.md)** - Procédure d'autorisation d'un intégrateur (whitelist d'origines, cas serveur à serveur)
+- **[Ouvrir un accès API](./acces-api-integrateur.md)** - Modèle d'onboarding à dupliquer dans Notion (fiche, checklist, mails, curls) et référence (whitelist d'origines, limites)
 - **[Vulnérabilités de dépendances](./security/vulnerabilites-acceptees.md)** - Suivi `pnpm audit` : corrections, acceptations justifiées, planchers d'override
 - **[Ops](./ops/README.md)** - Scalingo (connexion, logs, psql en lecture) et base locale (restauration de dump, purge des caches)
 
