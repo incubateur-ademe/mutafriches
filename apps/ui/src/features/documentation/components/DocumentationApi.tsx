@@ -11,45 +11,13 @@ export function DocumentationApi() {
 
       <h2 className="fr-h3 fr-mt-6w">Identification du partenaire</h2>
       <p>
-        L'API ne nécessite <strong>ni clé ni token</strong>. Deux mécanismes interviennent lors d'un
-        appel :
+        L'API ne nécessite <strong>ni clé ni token</strong>. Les appels d'écriture{" "}
+        <code>(POST)</code> sont autorisés selon l'en-tête HTTP <code>Origin</code> (ou{" "}
+        <code>Referer</code> en repli) : votre domaine doit figurer dans la liste autorisée par
+        l'équipe Mutafriches, sinon la requête est rejetée (<code>403</code>). Cette origine sert
+        aussi à reconnaître vos appels dans nos statistiques : aucun identifiant supplémentaire
+        n'est à transmettre.
       </p>
-      <div className="fr-table fr-table--bordered">
-        <table>
-          <thead>
-            <tr>
-              <th>Niveau</th>
-              <th>Mécanisme</th>
-              <th>Rôle</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>
-                <strong>Autorisation</strong> (obligatoire)
-              </td>
-              <td>
-                En-tête HTTP <code>Origin</code> (ou <code>Referer</code> en repli)
-              </td>
-              <td>
-                Votre domaine doit figurer dans la liste autorisée par l'équipe Mutafriches. Toute
-                requête provenant d'une origine non autorisée est rejetée (<code>403</code>).
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <strong>Identification</strong> (recommandé)
-              </td>
-              <td>
-                Paramètre de requête <code>?integrateur=&lt;votre-id&gt;</code>
-              </td>
-              <td>
-                Trace la provenance des appels pour le suivi statistique. Optionnel mais recommandé.
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
 
       <p className="fr-text--sm">
         Les navigateurs envoient automatiquement l'en-tête <code>Origin</code>. Pour des appels
@@ -58,7 +26,7 @@ export function DocumentationApi() {
 
       <div className="fr-highlight">
         <pre>
-          <code>{`POST https://mutafriches.beta.gouv.fr/enrichissement?integrateur=mon-service
+          <code>{`POST https://mutafriches.beta.gouv.fr/enrichissement
 Content-Type: application/json
 Origin: https://mon-service.gouv.fr
 
@@ -71,9 +39,8 @@ Origin: https://mon-service.gouv.fr
       <div className="fr-callout fr-callout--brown-caramel fr-mt-2w">
         <h3 className="fr-callout__title">Faire autoriser votre domaine</h3>
         <p className="fr-callout__text">
-          Pour obtenir votre identifiant d'intégrateur et faire ajouter votre domaine à la liste
-          autorisée, contactez l'équipe Mutafriches (voir en bas de page). Sans cette étape, vos
-          appels en production seront refusés.
+          Pour faire ajouter votre domaine à la liste autorisée, contactez l'équipe Mutafriches
+          (voir en bas de page). Sans cette étape, vos appels en production seront refusés.
         </p>
       </div>
 
