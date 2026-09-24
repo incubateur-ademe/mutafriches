@@ -368,7 +368,8 @@ Le test dédié (`versions.spec.ts`) garantit l'ordre chronologique ascendant st
 - **GéoRisques** (`georisques.gouv.fr`) : 13 APIs risques (RGA, SIS, ICPE, cavités, inondation, CATNAT, etc.)
 - **API Carto Nature** (`apicarto.ign.fr`) : zonages environnementaux (Natura 2000, ZNIEFF, Parcs)
 - **API Carto GPU** (`apicarto.ign.fr`) : zonages patrimoniaux et réglementaires (PLU, Monuments)
-- **IGN WFS** (`data.geopf.fr`) : voies de grande circulation (autoroutes)
+- **IGN WFS** (`data.geopf.fr`) : tronçons autoroutiers et bretelles BD TOPO, d'où sont déduites les entrées d'autoroute
+- **IGN Itinéraire** (`data.geopf.fr/navigation`) : distance par la route jusqu'à l'entrée d'autoroute la plus proche, ~10 requêtes/s par IP (ADR-0047)
 - **ZAER WFS** (`data.geopf.fr`) : zones d'accélération des énergies renouvelables
 - **API Service Public** (`service-public.fr`) : coordonnées mairies (centre-ville)
 - **Bases locales PostGIS** : arrêts de transport (data.gouv), BPE INSEE (commerces), sites pollués ADEME

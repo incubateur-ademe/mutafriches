@@ -205,7 +205,8 @@ Déterminer l'accessibilité de la parcelle (centre-ville, autoroute, transports
 | API | Source | Données récupérées |
 |-----|--------|-------------------|
 | **API Service Public** | `service-public.fr` | Coordonnées mairie (centre-ville) |
-| **IGN WFS** | `geoservices.ign.fr` | Voies de grande circulation (autoroutes) |
+| **IGN WFS** | `geoservices.ign.fr` | Tronçons autoroutiers et bretelles (BD TOPO) |
+| **IGN Itinéraire** | `data.geopf.fr/navigation` | Distance par la route jusqu'aux entrées d'autoroute |
 | **Transport data.gouv** | Base locale PostGIS | Arrêts de transport en commun (import data.gouv.fr) |
 
 ### Règles de gestion
@@ -222,16 +223,25 @@ Déterminer l'accessibilité de la parcelle (centre-ville, autoroute, transports
 SEUIL_CENTRE_VILLE_M = 1000  // 1 km
 ```
 
-#### 3.2 Distance autoroute
+#### 3.2 Distance par la route à l'accès autoroutier
+
+Service `AccesAutoroutierService`, cf. ADR-0047.
 
 **Algorithme** :
-1. Recherche des voies de grande circulation dans un rayon de 15 km via IGN WFS — filtrage **côté serveur** (`DWITHIN` + nature/importance) pour éviter la troncature du WFS geopf à 5000 tronçons, qui pouvait exclure l'autoroute la plus proche (cf. ADR-0028)
-2. Calcul de la distance à la voie la plus proche
-3. Retour : distance brute en mètres
+1. Pour chaque rayon (5, 15 puis 50 km), récupérer les tronçons `Type autoroutier` et `Bretelle` via IGN WFS, filtrés côté serveur (`DWITHIN`, cf. ADR-0028)
+2. En déduire les entrées (`AccesAutoroutierCalculator`) : tête des bretelles d'insertion, orientées par `sens_de_circulation`, et origine des chaussées sans amont
+3. Calculer l'itinéraire le plus court en voiture (IGN Itinéraire) vers les entrées, de la plus proche à vol d'oiseau à la plus lointaine, jusqu'à ce que le vol d'oiseau dépasse la meilleure route (4 appels au plus)
+4. Arrêter dès que la meilleure route tient dans le rayon, sinon passer au rayon suivant
+5. Retour :
+   - distance en mètres par la route ;
+   - `null` si aucune entrée dans 50 km (scoré « au-delà de 5 km ») ;
+   - `undefined` si le WFS échoue ;
+   - distance à vol d'oiseau si aucun itinéraire n'aboutit (source `IGN Itinéraire` en échec).
 
 **Constantes** :
 ```typescript
-RAYON_RECHERCHE_AUTOROUTE_M = 15000  // 15 km
+RAYONS_RECHERCHE_ACCES_AUTOROUTIER_M = [5000, 15000, 50000]
+MAX_ITINERAIRES_ACCES_AUTOROUTIER = 4  // quota IGN ~10 requêtes/s par IP
 ```
 
 #### 3.3 Distance transport en commun
@@ -265,7 +275,7 @@ l'installation terminale embranchée avec son état. Réactivé dans l'algorithm
 ```typescript
 {
   siteEnCentreVille: boolean              // true si distance mairie <= 1000m
-  distanceAutoroute: number               // Distance en mètres
+  distanceAutoroute: number | null        // Mètres par la route, null si aucun accès dans 50 km
   distanceTransportCommun: number | null  // Distance en mètres ou null si aucun
   distanceIte?: "moins-1km-bon-etat" | "moins-1km-mauvais-etat" | "plus-1km"
 }
