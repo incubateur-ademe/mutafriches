@@ -57,7 +57,8 @@ export class EnrichissementController {
     name: "integrateur",
     required: false,
     type: String,
-    description: "Nom de l'intégrateur (ex : `benefriches`). Utilisé pour le tracking d'origine.",
+    description:
+      "Réservé au mode iframe (avec `iframe=true`). En appel API direct, il est ignoré : l'intégrateur est identifié par l'hôte de son en-tête `Origin`.",
   })
   @ApiQuery({
     name: "acceptDegradedCache",
