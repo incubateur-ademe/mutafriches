@@ -6,17 +6,21 @@
 # Charge un dump PostgreSQL dans la base LOCALE (conteneur Docker du projet).
 # La base locale est détruite et recréée : ce script n'a rien à faire ailleurs.
 #
-# Usage: bash scripts/dev/restore-db.sh [-d <directory>] [-k] <backup_file.tar.gz>
+# Usage: pnpm db:restore [-d <directory>] [-k] [-y] [backup_file.tar.gz]
+#
+# Sans nom de fichier, propose les dumps du dossier, du plus récent au plus ancien.
 #
 # Options:
 #   -d <directory>  Répertoire des dumps (défaut : DB_BACKUP_DIR de l'environnement ou de
 #                   apps/api/.env, sinon ~/mutafriches-backups)
 #   -k              Garder les fichiers temporaires après restauration
+#   -y              Ne pas demander de confirmation avant d'écraser la base
 #   -h              Afficher l'aide
 #
 # Exemple:
-#   bash scripts/dev/restore-db.sh 20260121001027_mutafriches_8469.tar.gz
-#   bash scripts/dev/restore-db.sh -d ~/dumps -k mon_backup.tar.gz
+#   pnpm db:restore
+#   pnpm db:restore 20260121001027_mutafriches_8469.tar.gz
+#   pnpm db:restore -d ~/dumps -k mon_backup.tar.gz
 #
 # Un dump de production contient les évaluations et événements réels : le supprimer une
 # fois le diagnostic terminé (cf. docs/ops/db-local.md).
@@ -48,6 +52,7 @@ DEFAULT_BACKUP_DIR="${DEFAULT_BACKUP_DIR/#\~/$HOME}"
 # Variables
 BACKUP_DIR="$DEFAULT_BACKUP_DIR"
 KEEP_FILES=false
+CONFIRMER=true
 BACKUP_FILE=""
 PGSQL_FILE=""
 CONTAINER_BACKUP_PATH=""
@@ -81,23 +86,55 @@ print_info() {
     echo -e "${BLUE}[INFO]${NC} $1"
 }
 
-# Fonction d'aide
+# Fonction d'aide. Argument optionnel : le code de sortie (0 pour -h, 1 sur erreur d'usage).
 show_help() {
-    echo "Usage: $0 [-d <directory>] [-k] <backup_file.tar.gz>"
+    echo "Usage: pnpm db:restore [-d <directory>] [-k] [-y] [backup_file.tar.gz]"
     echo ""
     echo "Charge un dump PostgreSQL dans la base LOCALE '$DB_NAME' (conteneur Docker)."
-    echo "La base locale est détruite et recréée."
+    echo "La base locale est détruite et recréée. Sans nom de fichier, propose les dumps du dossier."
     echo ""
     echo "Options:"
     echo "  -d <directory>  Répertoire des dumps (défaut: $DEFAULT_BACKUP_DIR)"
     echo "  -k              Garder les fichiers temporaires après restauration"
+    echo "  -y              Ne pas demander de confirmation avant d'écraser la base"
     echo "  -h              Afficher cette aide"
     echo ""
     echo "Exemples:"
-    echo "  $0 20260121001027_mutafriches_8469.tar.gz"
-    echo "  $0 -d ~/dumps mon_backup.tar.gz"
-    echo "  $0 -k mon_backup.tar.gz"
+    echo "  pnpm db:restore"
+    echo "  pnpm db:restore 20260121001027_mutafriches_8469.tar.gz"
+    echo "  pnpm db:restore -d ~/dumps -k mon_backup.tar.gz"
     exit "${1:-0}"
+}
+
+# Liste les dumps du plus récent au plus ancien ; fzf s'il est installé, sinon un menu numéroté.
+choisir_dump() {
+    local dumps=() f i choix
+    while IFS= read -r f; do dumps+=("$f"); done < <(cd "$BACKUP_DIR" && ls -t -- *.tar.gz 2>/dev/null)
+
+    if [ ${#dumps[@]} -eq 0 ]; then
+        print_error "Aucun dump .tar.gz dans $BACKUP_DIR"
+        exit 1
+    fi
+
+    if command -v fzf > /dev/null; then
+        BACKUP_FILE=$(printf '%s\n' "${dumps[@]}" | fzf --prompt="Dump à restaurer > " --height=40% --reverse) \
+            || { print_info "Abandon, rien n'a été modifié"; exit 0; }
+        return
+    fi
+
+    echo "Dumps dans $BACKUP_DIR (du plus récent au plus ancien) :"
+    for i in "${!dumps[@]}"; do
+        printf "  %2d) %-45s %s  %s\n" $((i + 1)) "${dumps[$i]}" \
+            "$(date -r "$BACKUP_DIR/${dumps[$i]}" '+%d/%m %H:%M')" \
+            "$(du -h "$BACKUP_DIR/${dumps[$i]}" | cut -f1)"
+    done
+    read -r -p "Numéro [1] : " choix || { echo; exit 1; }
+    choix="${choix:-1}"
+    if ! [[ "$choix" =~ ^[0-9]+$ ]] || [ "$choix" -lt 1 ] || [ "$choix" -gt ${#dumps[@]} ]; then
+        print_error "Choix invalide : $choix"
+        exit 1
+    fi
+    BACKUP_FILE="${dumps[$((choix - 1))]}"
 }
 
 # Fonction de nettoyage
@@ -137,13 +174,16 @@ handle_error() {
 trap 'handle_error $LINENO' ERR
 
 # Parsing des arguments
-while getopts "d:kh" opt; do
+while getopts "d:kyh" opt; do
     case $opt in
         d)
             BACKUP_DIR="$OPTARG"
             ;;
         k)
             KEEP_FILES=true
+            ;;
+        y)
+            CONFIRMER=false
             ;;
         h)
             show_help
@@ -157,14 +197,7 @@ done
 
 shift $((OPTIND-1))
 
-# Vérifier le paramètre obligatoire
-if [ -z "$1" ]; then
-    print_error "Le nom du fichier backup est obligatoire"
-    echo ""
-    show_help 1
-fi
-
-BACKUP_FILE="$1"
+BACKUP_FILE="${1:-}"
 
 # =============================================================================
 # DÉBUT DU SCRIPT
@@ -177,10 +210,6 @@ echo "  Mutafriches"
 echo "=============================================="
 echo ""
 
-print_info "Fichier backup : $BACKUP_FILE"
-print_info "Répertoire : $BACKUP_DIR"
-print_info "Conserver les fichiers temporaires : $KEEP_FILES"
-
 # Vérifier que le répertoire existe
 if [ ! -d "$BACKUP_DIR" ]; then
     print_error "Le répertoire n'existe pas : $BACKUP_DIR"
@@ -191,6 +220,12 @@ fi
 # Résoudre en absolu : le script fait un `cd` plus bas, après quoi un chemin relatif
 # serait réinterprété depuis le nouveau répertoire courant.
 BACKUP_DIR=$(cd "$BACKUP_DIR" && pwd)
+
+[ -n "$BACKUP_FILE" ] || choisir_dump
+
+print_info "Fichier backup : $BACKUP_FILE"
+print_info "Répertoire : $BACKUP_DIR"
+print_info "Conserver les fichiers temporaires : $KEEP_FILES"
 
 # Vérifier que le fichier tar.gz existe
 TAR_FILE_PATH="$BACKUP_DIR/$BACKUP_FILE"
@@ -215,6 +250,17 @@ if ! docker ps --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
 fi
 
 print_success "Container Docker '$CONTAINER_NAME' actif"
+
+# Dernier point de retour : tout ce qui suit supprime la base locale.
+if [ "$CONFIRMER" = true ]; then
+    echo ""
+    print_warning "La base locale '$DB_NAME' va être supprimée puis remplacée par $BACKUP_FILE."
+    read -r -p "Continuer ? [o/N] " reponse || { echo; exit 1; }
+    case "$reponse" in
+        o|O|oui|OUI) ;;
+        *) print_info "Abandon, rien n'a été modifié"; exit 0 ;;
+    esac
+fi
 
 # -----------------------------------------------------------------------------
 # ÉTAPE 1 : Extraction du fichier tar.gz

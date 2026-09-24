@@ -32,6 +32,7 @@
     "db:generate": "cd apps/api && pnpm drizzle-kit generate",
     "db:migrate": "cd apps/api && pnpm drizzle-kit migrate",
     "db:introspect": "cd apps/api && pnpm drizzle-kit introspect",
+    "db:restore": "bash scripts/dev/restore-db.sh",
     "db:bpe:import": "pnpm --filter api run db:bpe:import",
     "db:transport-stops:import": "pnpm --filter api run db:transport-stops:import",
     "db:ademe-sites:import": "pnpm --filter api run db:ademe-sites:import",
