@@ -98,7 +98,7 @@ export function commentaireDesserte(enrichissement?: EnrichissementOutputDto): s
 
   const morceaux: string[] = [];
   const autoroute = distanceLisible(enrichissement.distanceAutoroute);
-  if (autoroute) morceaux.push(`voie de grande circulation à ${autoroute}`);
+  if (autoroute) morceaux.push(`accès autoroutier à ${autoroute} par la route`);
 
   const transport = distanceLisible(enrichissement.distanceTransportCommun);
   if (transport) morceaux.push(`transport en commun à ${transport}`);

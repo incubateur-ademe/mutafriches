@@ -21,3 +21,6 @@ export const SEUIL_PROXIMITE_RESEAU_CHALEUR_M = 500;
  * remonter jusqu'à l'affichage.
  */
 export const DISTANCE_RACCORDEMENT_HORS_RAYON_M = 5000;
+
+// Aucun accès autoroutier dans le rayon de recherche (50 km) : tranche « au-delà de 5 km » (ADR-0047)
+export const DISTANCE_ACCES_AUTOROUTIER_HORS_RAYON_M = 50000;

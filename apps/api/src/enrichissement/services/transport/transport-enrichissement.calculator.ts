@@ -17,7 +17,7 @@ export class TransportCalculator {
   }
 
   /**
-   * Catégorise la distance à l'autoroute/voie rapide la plus proche
+   * Catégorise la distance à l'accès autoroutier le plus proche
    *
    * Règles métier (basées sur Excel Mutafriches) :
    * - < 1 km : "Moins de 1km"
@@ -26,7 +26,7 @@ export class TransportCalculator {
    * - 5-10 km : "Entre 5 et 10km"
    * - > 10 km : "Plus de 10km"
    *
-   * @param distanceMetres - Distance en mètres à la voie de grande circulation
+   * @param distanceMetres - Distance par la route à l'accès autoroutier, en mètres
    * @returns Catégorie de distance
    */
   static categoriserDistanceAutoroute(distanceMetres: number): string {

@@ -47,7 +47,8 @@ export class Site {
   surfaceSite: number;
   surfaceBati?: number;
   siteEnCentreVille: boolean;
-  distanceAutoroute: number;
+  /** Distance en mètres par la route. null = aucun accès autoroutier dans 50 km */
+  distanceAutoroute: number | null;
   /** Distance en mètres. null = aucun arrêt trouvé dans le rayon de recherche (2km) */
   distanceTransportCommun: number | null;
   proximiteCommercesServices: boolean;

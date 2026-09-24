@@ -3,13 +3,10 @@ import { SourceEnrichissement } from "@mutafriches/shared-types";
 import { Site } from "../../../evaluation/entities/site.entity";
 import { EnrichmentResult } from "../shared/enrichissement.types";
 import { ServicePublicService } from "../../adapters/service-public/service-public.service";
-import { IgnWfsService } from "../../adapters/ign-wfs/ign-wfs.service";
 import { calculateDistance } from "../../adapters/shared/distance.utils";
 import { TransportCalculator } from "./transport-enrichissement.calculator";
-import {
-  RAYON_RECHERCHE_AUTOROUTE_M,
-  RAYON_RECHERCHE_TRANSPORT_M,
-} from "./transport-enrichissement.constants";
+import { AccesAutoroutierService } from "./acces-autoroutier.service";
+import { RAYON_RECHERCHE_TRANSPORT_M } from "./transport-enrichissement.constants";
 import { TransportStopsRepository } from "../../repositories/transport-stops.repository";
 
 /**
@@ -17,7 +14,7 @@ import { TransportStopsRepository } from "../../repositories/transport-stops.rep
  *
  * Responsabilites :
  * - Determiner si le site est en centre-ville (distance a la mairie)
- * - Calculer la distance a la voie de grande circulation la plus proche
+ * - Calculer la distance par la route à l'accès autoroutier le plus proche
  * - Calculer la distance au transport en commun le plus proche
  */
 @Injectable()
@@ -26,7 +23,7 @@ export class TransportEnrichissementService {
 
   constructor(
     private readonly servicePublicService: ServicePublicService,
-    private readonly ignWfsService: IgnWfsService,
+    private readonly accesAutoroutierService: AccesAutoroutierService,
     private readonly transportStopsRepository: TransportStopsRepository,
   ) {}
 
@@ -128,50 +125,52 @@ export class TransportEnrichissementService {
     }
   }
 
-  /**
-   * Calcule la distance a la voie de grande circulation la plus proche via IGN WFS
-   */
+  // Distance par la route à l'entrée d'autoroute / voie express la plus proche (ADR-0047)
   private async enrichirDistanceAutoroute(
     site: Site,
     sourcesUtilisees: string[],
     sourcesEchouees: string[],
     champsManquants: string[],
   ): Promise<void> {
-    try {
-      if (!site.coordonnees) {
-        throw new Error("Coordonnees non disponibles");
-      }
-
-      this.logger.debug(`Recherche voie grande circulation pour ${site.identifiantParcelle}`);
-
-      const wfsResult = await this.ignWfsService.getDistanceVoieGrandeCirculation(
-        site.coordonnees.latitude,
-        site.coordonnees.longitude,
-        RAYON_RECHERCHE_AUTOROUTE_M,
-      );
-
-      if (!wfsResult.success || !wfsResult.data) {
-        throw new Error(wfsResult.error || "Aucune voie trouvee");
-      }
-
-      const distanceMetres = wfsResult.data.distanceMetres;
-
-      // Stocker la distance brute et la categorie
-      site.distanceAutoroute = Math.round(distanceMetres);
-
-      sourcesUtilisees.push(SourceEnrichissement.IGN_WFS);
-
-      this.logger.log(
-        `Distance autoroute: ${Math.round(distanceMetres)}m ` +
-          `(${TransportCalculator.categoriserDistanceAutoroute(distanceMetres)}) ` +
-          `pour ${site.identifiantParcelle}`,
-      );
-    } catch (error) {
-      this.logger.error("Erreur lors de la recherche autoroute:", error);
+    if (!site.coordonnees) {
       sourcesEchouees.push(SourceEnrichissement.IGN_WFS);
       champsManquants.push("distanceAutoroute");
       site.distanceAutoroute = undefined;
+      return;
     }
+
+    const resultat = await this.accesAutoroutierService.calculerDistance(site.coordonnees);
+
+    if (resultat.statut === "erreur") {
+      this.logger.error(`Erreur lors de la recherche d'accès autoroutier : ${resultat.message}`);
+      sourcesEchouees.push(SourceEnrichissement.IGN_WFS);
+      champsManquants.push("distanceAutoroute");
+      site.distanceAutoroute = undefined;
+      return;
+    }
+
+    sourcesUtilisees.push(SourceEnrichissement.IGN_WFS);
+
+    if (resultat.statut === "aucun") {
+      // Recherche aboutie sans accès : ramené à la tranche « au-delà de 5 km » au scoring
+      site.distanceAutoroute = null;
+      this.logger.log(`Aucun accès autoroutier à proximité de ${site.identifiantParcelle}`);
+      return;
+    }
+
+    if (resultat.parLaRoute) {
+      sourcesUtilisees.push(SourceEnrichissement.IGN_ITINERAIRE);
+    } else {
+      sourcesEchouees.push(SourceEnrichissement.IGN_ITINERAIRE);
+    }
+
+    site.distanceAutoroute = Math.round(resultat.distanceMetres);
+    this.logger.log(
+      `Accès autoroutier : ${site.distanceAutoroute} m ` +
+        `${resultat.parLaRoute ? "par la route" : "à vol d'oiseau"} ` +
+        `(${TransportCalculator.categoriserDistanceAutoroute(resultat.distanceMetres)}) ` +
+        `pour ${site.identifiantParcelle}`,
+    );
   }
 
   /**

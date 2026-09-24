@@ -8,11 +8,12 @@
  */
 export const SEUIL_CENTRE_VILLE_M = 1000;
 
-/**
- * Rayon de recherche pour trouver les voies de grande circulation
- * Unité : mètres (15km = 15000m)
- */
-export const RAYON_RECHERCHE_AUTOROUTE_M = 15000;
+// Rayons croissants : en zone dense, un rayon large dépasse le plafond WFS et répond en 30 s.
+// Au-delà du dernier, aucun accès autoroutier (ADR-0047).
+export const RAYONS_RECHERCHE_ACCES_AUTOROUTIER_M = [5000, 15000, 50000] as const;
+
+// Le service d'itinéraire IGN plafonne à ~10 requêtes/s par IP (pré-chauffe partenaire en parallèle).
+export const MAX_ITINERAIRES_ACCES_AUTOROUTIER = 4;
 
 /**
  * Rayon de recherche pour les transports en commun (en metres)

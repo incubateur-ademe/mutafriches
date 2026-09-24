@@ -42,7 +42,7 @@ describe("ecartCalcul", () => {
 
     expect(ecart?.criteresModifies).toEqual([
       "Surface du site",
-      "Distance à une voie de grande circulation",
+      "Distance par la route à un accès autoroutier",
     ]);
     expect(recalculConseille(ecart!)).toBe(true);
   });

@@ -112,12 +112,13 @@ La distance entre le site et le tracé le plus proche est calculée localement, 
 **Champs récupérés**
 
 - Coordonnées de la mairie (API Annuaire) pour situer le centre-ville
-- Tronçons routiers de type autoroutier / voie à grande circulation (IGN WFS BD TOPO)
+- Tronçons autoroutiers, voies express et bretelles (IGN WFS BD TOPO), d'où sont déduites les entrées d'autoroute
+- Distance par la route jusqu'aux entrées les plus proches (service de calcul d'itinéraire IGN Géoplateforme)
 - Arrêts de transport en commun (référentiel GTFS local, base PostGIS)
 
 **Traitement dans l'algorithme**
 
-La proximité de la mairie détermine si le site est en centre-ville (booléen). La distance à la voie de grande circulation la plus proche et la distance à l'arrêt de transport le plus proche (seuil 500 m) sont classées par seuils.
+La proximité de la mairie détermine si le site est en centre-ville (booléen). La distance par la route jusqu'à l'entrée d'autoroute ou de voie express la plus proche est classée en tranches (moins de 1 km, 1 à 2 km, 2 à 5 km, au-delà) ; un site sans accès dans un rayon de 50 km est traité comme situé au-delà de 5 km. La distance à l'arrêt de transport le plus proche est comparée à un seuil de 500 m.
 
 **Critères d'évaluation alimentés**
 
@@ -125,7 +126,7 @@ La proximité de la mairie détermine si le site est en centre-ville (booléen).
 | --- | --- |
 | Site en centre-ville | 1 |
 | Distance aux transports en commun | 1 |
-| Distance à une voie de grande circulation | 0.5 |
+| Distance par la route à un accès autoroutier | 0.5 |
 
 ### Commerces et services de proximité (BPE)
 

@@ -211,7 +211,7 @@ describe("comparerSites", () => {
     expect(commerces?.cartofriches).toBe("non exposé");
   });
 
-  it("compare la voie de grande circulation (Mutafriches en m, Cartofriches en km)", () => {
+  it("compare l'accès autoroutier (Mutafriches en m, Cartofriches en km)", () => {
     const lignes = comparerSites(
       enrich({ distanceAutoroute: 4000 }),
       friche({ desserte_distance_route: 4 }),
@@ -223,7 +223,7 @@ describe("comparerSites", () => {
     expect(voie?.cartofriches).toBe("4 km");
   });
 
-  it("signale un écart de voie de grande circulation quand les distances divergent nettement", () => {
+  it("signale un écart d'accès autoroutier quand les distances divergent nettement", () => {
     const lignes = comparerSites(
       enrich({ distanceAutoroute: 4000 }),
       friche({ desserte_distance_route: 21 }),
@@ -232,7 +232,7 @@ describe("comparerSites", () => {
     expect(voie?.ecart).toBe(true);
   });
 
-  it("ne compare pas la voie de grande circulation si Mutafriches est hors rayon (absente)", () => {
+  it("ne compare pas l'accès autoroutier si la recherche Mutafriches a échoué", () => {
     const lignes = comparerSites(
       enrich({ distanceAutoroute: undefined }),
       friche({ desserte_distance_route: 21 }),
@@ -241,6 +241,16 @@ describe("comparerSites", () => {
     expect(voie?.comparable).toBe(false);
     expect(voie?.ecart).toBe(false);
     expect(voie?.cartofriches).toBe("21 km");
+  });
+
+  it("ne compare pas l'accès autoroutier quand Mutafriches n'en trouve aucun dans 50 km", () => {
+    const lignes = comparerSites(
+      enrich({ distanceAutoroute: null }),
+      friche({ desserte_distance_route: 58 }),
+    );
+    const voie = lignes.find((l) => l.cle === "distanceAutoroute");
+    expect(voie?.comparable).toBe(false);
+    expect(voie?.note).toContain("50 km");
   });
 });
 

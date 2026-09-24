@@ -248,6 +248,7 @@ export const SOURCE_LABELS: Partial<Record<SourceEnrichissement, string>> = {
   [SourceEnrichissement.LOVAC]: "LOVAC",
   [SourceEnrichissement.TRANSPORT_DATA_GOUV]: "Transport Data Gouv",
   [SourceEnrichissement.IGN_WFS]: "IGN",
+  [SourceEnrichissement.IGN_ITINERAIRE]: "IGN",
   [SourceEnrichissement.GEORISQUES_ICPE]: "GéoRisques",
   [SourceEnrichissement.GEORISQUES_RGA]: "GéoRisques",
   [SourceEnrichissement.GEORISQUES_CAVITES]: "GéoRisques",

@@ -57,6 +57,18 @@ describe("transformEnrichmentToUiData - zonage ABC logement", () => {
   });
 });
 
+describe("transformEnrichmentToUiData - accès autoroutier", () => {
+  it("affiche la distance par la route en mètres", () => {
+    const ui = transformEnrichmentToUiData(makeEnrichissement({ distanceAutoroute: 2141 }));
+    expect(ui.distanceAutoroute).toBe(`${(2141).toLocaleString("fr-FR")} m`);
+  });
+
+  it("signale l'absence d'accès quand la recherche n'a rien donné (null)", () => {
+    const ui = transformEnrichmentToUiData(makeEnrichissement({ distanceAutoroute: null }));
+    expect(ui.distanceAutoroute).toBe("Aucun accès autoroutier à moins de 50 km");
+  });
+});
+
 describe("transformEnrichmentToUiData - quartier prioritaire de la ville", () => {
   it("affiche 'Oui' quand le site est en quartier prioritaire", () => {
     const ui = transformEnrichmentToUiData(makeEnrichissement({ siteEnQpv: true }));

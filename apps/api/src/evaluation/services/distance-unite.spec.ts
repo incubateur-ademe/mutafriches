@@ -91,6 +91,18 @@ describe("Unité des distances (mètres → km à la frontière de l'algo)", () 
     });
   });
 
+  it("score l'absence d'accès autoroutier (null) dans la tranche > 5 km (ADR-0047)", async () => {
+    const evaluation = new EvaluationBuilder()
+      .withEnrichissement({ distanceAutoroute: null, distanceRaccordementElectrique: 300 })
+      .build();
+    const site = Site.fromEnrichissement(
+      evaluation.donneesEnrichissement,
+      evaluation.donneesComplementaires,
+    );
+
+    expect(await scoreBrutCritere(site, UsageType.INDUSTRIE, "distanceAutoroute")).toBe(-2);
+  });
+
   // T3 : sémantique null/undefined préservée (le critère reste ignoré).
   describe("metresVersKm préserve null/undefined", () => {
     it("undefined reste undefined", () => {

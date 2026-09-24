@@ -236,18 +236,20 @@ export const QualificationEnvironnementPage: React.FC = () => {
 
           <EnrichedInfoField
             id="distance-voie-grande-circulation"
-            label="Distance à une voie à grande circulation"
+            label="Distance par la route à un accès autoroutier"
             value={uiData?.distanceAutoroute}
             tooltip={
               <>
-                Récupéré depuis l'API IGN Géoplateforme WFS :<br />
+                Distance par la route jusqu'à l'entrée d'autoroute ou de voie express la plus
+                proche, calculée avec les services IGN Géoplateforme (BD TOPO et calcul
+                d'itinéraire) :<br />
                 <a
-                  href="https://geoservices.ign.fr/services-web-essentiels"
+                  href="https://geoservices.ign.fr/documentation/services/services-geoplateforme/itineraire"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="fr-link fr-text--xs"
                 >
-                  geoservices.ign.fr/services-web-essentiels
+                  geoservices.ign.fr
                 </a>
               </>
             }

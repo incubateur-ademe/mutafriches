@@ -1,7 +1,7 @@
 # ADR-0028 : Filtrage côté serveur des voies de grande circulation (WFS IGN)
 
 **Date** : 2026-07-09
-**Statut** : Accepté
+**Statut** : Accepté — méthode de calcul remplacée par l'ADR-0047 (le filtrage serveur `DWITHIN` reste en place)
 
 ## Contexte
 

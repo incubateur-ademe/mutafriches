@@ -13,6 +13,7 @@ import { RisqueNaturel } from "@mutafriches/shared-types";
 import { Site } from "../entities/site.entity";
 import { MATRICE_SCORING, POIDS_CRITERES } from "./algorithme/algorithme.config";
 import {
+  DISTANCE_ACCES_AUTOROUTIER_HORS_RAYON_M,
   DISTANCE_RACCORDEMENT_HORS_RAYON_M,
   SEUIL_PROXIMITE_RESEAU_CHALEUR_M,
 } from "./algorithme/algorithme.constants";
@@ -309,7 +310,11 @@ export class CalculService {
       siteEnCentreVille: site.siteEnCentreVille,
       // Frontière d'unité : le DTO/Site stocke ces distances en mètres, la matrice les score
       // en km. distanceTransportCommun reste en mètres des deux côtés (pas de conversion).
-      distanceAutoroute: metresVersKm(site.distanceAutoroute),
+      distanceAutoroute: metresVersKm(
+        site.distanceAutoroute === null
+          ? DISTANCE_ACCES_AUTOROUTIER_HORS_RAYON_M
+          : site.distanceAutoroute,
+      ),
       distanceTransportCommun: site.distanceTransportCommun,
       proximiteCommercesServices: site.proximiteCommercesServices,
       distanceRaccordementElectrique: metresVersKm(
