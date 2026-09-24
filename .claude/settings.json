@@ -1,4 +1,39 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash(pnpm format)",
+      "Bash(pnpm format:check)",
+      "Bash(pnpm lint)",
+      "Bash(pnpm lint:fix)",
+      "Bash(pnpm typecheck)",
+      "Bash(pnpm test)",
+      "Bash(pnpm validate)",
+      "Bash(pnpm build)",
+      "Bash(pnpm build:shared)",
+      "Bash(pnpm audit)",
+      "Bash(pnpm audit --prod)",
+      "Bash(pnpm --filter api test src/*)",
+      "Bash(pnpm --filter ui test src/*)",
+      "Bash(pnpm --filter shared-types test src/*)"
+    ],
+    "ask": ["Bash(git push:*)"],
+    "deny": [
+      "Bash(git commit --no-verify:*)",
+      "Bash(git commit *--no-verify*)",
+      "Bash(git commit -n:*)",
+      "Bash(git commit * -n)",
+      "Bash(git commit * -n *)",
+      "Bash(git -c core.hooksPath=*)",
+      "Edit(.claude/settings.json)",
+      "Edit(.claude/settings.local.json)",
+      "Edit(.claude/hooks/**)",
+      "Edit(.git/**)",
+      "Read(.env*)",
+      "Read(**/.env*)",
+      "Edit(.env*)",
+      "Edit(**/.env*)"
+    ]
+  },
   "hooks": {
     "PostToolUse": [
       {
