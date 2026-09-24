@@ -159,7 +159,7 @@ Pour **chaque feature identifiée** (un groupe cohérent de modifications, typiq
 - **Vérifier la doc des sources de données** : si la feature ajoute, retire ou modifie une source d'enrichissement (nouvelle API/base, changement des champs récupérés ou de leur traitement), mettre à jour `SOURCES_DONNEES` (`packages/shared-types/src/documentation/sources-donnees.data.ts`) **dans le même commit**, puis régénérer le Markdown avec `pnpm docs:sources:gen` (rebuild `shared-types` au préalable). La page UI `/documentation-donnees` et l'export PDF en découlent automatiquement (source de vérité unique, cf. ADR-0026) — ne jamais éditer le `.md` à la main.
 - **Proposer à l'utilisateur des tests manuels E2E côté UI** à réaliser lui-même, **systématiquement** en fin de feature : un parcours pas à pas, numéroté, couvrant le comportement attendu et les cas limites. Signaler les pièges qui fausseraient le test (cache d'enrichissement ou d'évaluation à purger, import de référentiel à rejouer, données de démo). Ne jamais clore une feature sans cette liste.
 - **Donner l'ADRESSE POSTALE avec l'identifiant cadastral** pour chaque site de test. Le parcours commence par une recherche d'adresse sur la carte (`/analyser`) : un identifiant cadastral seul ne permet pas de retrouver la parcelle dans l'UI. Vérifier que l'adresse tombe bien DANS la parcelle visée — `https://api-adresse.data.gouv.fr/reverse/?lat=&lon=` depuis le centroïde donne l'adresse, et un test point-dans-polygone sur la géométrie apicarto confirme la correspondance. Exemple : `49020000AK0118` = **19 rue Georges Morel, 49070 Beaucouzé** (7 193 m², réseau de chaleur à 57 m).
-- **Proposer un titre et un descriptif de PR**, **systématiquement** en fin de feature, prêts à copier-coller : un titre en Conventional Commits (sous 70 caractères) et un descriptif de quelques phrases — le problème, la solution retenue, le pourquoi. Pas de listes à rallonge ni de recopie du diff. Ne jamais créer ni pousser la PR soi-même (cf. règle de commit).
+- **Proposer un titre et un descriptif de PR**, **systématiquement** en fin de feature, prêts à copier-coller : un titre en Conventional Commits (sous 70 caractères) et un descriptif de quelques phrases — le problème, la solution retenue, le pourquoi. Pas de listes à rallonge ni de recopie du diff. Ne créer ni pousser la PR que sur demande explicite (cf. règle de commit).
 
 ### Vérification post-implémentation
 
@@ -245,7 +245,7 @@ Règles :
 - Préférer le **pourquoi** au quoi (le diff montre déjà le quoi).
 - **Aucune mention d'auteur ou de co-auteur** dans le corps du commit (pas de `Co-Authored-By`, pas de `Generated with`, etc.). L'auteur git suffit.
 - Committer uniquement à la demande explicite de l'utilisateur.
-- **Ne jamais `git push`** (ni `push --force`, ni création/mise à jour de PR distante) : les push sont gérés **exclusivement par l'utilisateur**. Se limiter au commit local.
+- **Ne jamais `git push` de sa propre initiative.** Pousser et ouvrir la PR uniquement sur demande explicite de l'utilisateur, et **jamais en `--force`**. Le push reste soumis à confirmation par la règle `ask` de `.claude/settings.json`, y compris en mode auto. Sans demande, se limiter au commit local.
 
 ### Compaction du contexte
 
@@ -268,6 +268,7 @@ pnpm dev:ui                 # UI uniquement (Vite dev server)
 
 # Tests
 pnpm test                   # Tests unitaires (Vitest)
+pnpm --filter api test src/chemin/fichier.spec.ts   # Un seul fichier (chemin relatif au package)
 pnpm test:watch             # Tests en mode watch
 pnpm test:coverage          # Tests avec rapport de couverture
 
@@ -377,6 +378,7 @@ Le test dédié (`versions.spec.ts`) garantit l'ordre chronologique ascendant st
 ## Tests
 
 - Fichiers de test à côté des fichiers source (`*.spec.ts`)
+- Préférer un test ciblé à toute la suite : `pnpm --filter <api|ui|shared-types> test src/…/x.spec.ts`. **Sans `--`** (pnpm le transmet à Vitest, qui ignore alors le filtre et lance les 78 fichiers de l'API), et **pas depuis la racine** (`pnpm test <fichier>` applique le filtre à chaque package et échoue sur ceux qui n'ont pas ce fichier)
 - Utiliser des fixtures pour les données de test
 - Mock des APIs externes obligatoire
 - Coverage minimum attendu : 80%
