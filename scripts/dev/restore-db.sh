@@ -166,8 +166,11 @@ cleanup() {
 
 # Gestion des erreurs
 handle_error() {
+    trap - ERR
     print_error "Une erreur est survenue à la ligne $1"
     print_error "La restauration a échoué"
+    # Ne pas laisser traîner une copie décompressée de la base.
+    cleanup || true
     exit 1
 }
 
@@ -270,14 +273,16 @@ print_step "Extraction du fichier tar.gz..."
 cd "$BACKUP_DIR"
 
 # Nom lu dans l'archive : un .pgsql resté d'une restauration précédente ne doit pas être pris à sa place.
-PGSQL_FILE=$(tar -tzf "$BACKUP_FILE" | grep '\.pgsql$' | head -n 1 || true)
+MEMBRE_ARCHIVE=$(tar -tzf "$BACKUP_FILE" | grep '\.pgsql$' | head -n 1 || true)
 
-if [ -z "$PGSQL_FILE" ]; then
+if [ -z "$MEMBRE_ARCHIVE" ]; then
     print_error "Aucun fichier .pgsql dans l'archive $BACKUP_FILE"
     exit 1
 fi
 
-tar -xzf "$BACKUP_FILE" "$PGSQL_FILE"
+# Les archives Scalingo stockent le dump en chemin absolu (/xxx.pgsql) ; tar l'extrait sans le /.
+PGSQL_FILE=$(printf '%s' "$MEMBRE_ARCHIVE" | sed 's|^/*||')
+tar -xzf "$BACKUP_FILE" "$MEMBRE_ARCHIVE"
 
 print_success "Fichier extrait : $PGSQL_FILE"
 print_info "Taille : $(ls -lh "$PGSQL_FILE" | awk '{print $5}')"
@@ -288,9 +293,9 @@ print_info "Taille : $(ls -lh "$PGSQL_FILE" | awk '{print $5}')"
 print_step "Copie du fichier dans le container Docker..."
 
 # Chemin dans le container (double slash pour docker exec sous Git Bash)
-CONTAINER_BACKUP_PATH="//tmp/backup-$PGSQL_FILE"
+CONTAINER_BACKUP_PATH="//tmp/backup-$(basename "$PGSQL_FILE")"
 # Chemin pour docker cp (sans double slash)
-CONTAINER_CP_PATH="/tmp/backup-$PGSQL_FILE"
+CONTAINER_CP_PATH="/tmp/backup-$(basename "$PGSQL_FILE")"
 
 docker cp "$BACKUP_DIR/$PGSQL_FILE" "$CONTAINER_NAME:$CONTAINER_CP_PATH"
 
