@@ -377,13 +377,13 @@ pnpm db:bpe:import
 
 ```bash
 # Staging
-scalingo -a mutafriches-staging pgsql-console
+scalingo -a mutafriches-preprod --region osc-fr1 pgsql-console
 CREATE EXTENSION IF NOT EXISTS postgis;
 SELECT PostGIS_Version();
 \q
 
 # Production
-scalingo -a mutafriches pgsql-console
+scalingo -a mutafriches --region osc-secnum-fr1 pgsql-console
 CREATE EXTENSION IF NOT EXISTS postgis;
 SELECT PostGIS_Version();
 \q
@@ -393,10 +393,10 @@ SELECT PostGIS_Version();
 
 ```bash
 # Staging
-scalingo -a mutafriches-staging run "pnpm --filter api db:bpe:import"
+scalingo -a mutafriches-preprod --region osc-fr1 run "pnpm --filter api db:bpe:import"
 
 # Production
-scalingo -a mutafriches run "pnpm --filter api db:bpe:import"
+scalingo -a mutafriches --region osc-secnum-fr1 run "pnpm --filter api db:bpe:import"
 ```
 
 ### Régénérer le fichier filtré
