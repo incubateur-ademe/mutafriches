@@ -49,8 +49,11 @@ export interface EnrichissementOutputDto {
 
   // Données de localisation et accessibilité
   siteEnCentreVille: boolean;
-  /** Distance en mètres (convertie en km à la frontière de l'algorithme) */
-  distanceAutoroute: number;
+  /**
+   * Distance en mètres par la route jusqu'à l'entrée d'autoroute / voie express la plus proche
+   * (convertie en km à la frontière de l'algorithme). null = aucun accès dans 50 km.
+   */
+  distanceAutoroute: number | null;
   /** Distance en mètres. null = aucun arrêt trouvé dans le rayon de recherche (2km) */
   distanceTransportCommun: number | null;
   proximiteCommercesServices: boolean;

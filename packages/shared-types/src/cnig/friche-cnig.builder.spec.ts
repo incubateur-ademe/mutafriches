@@ -180,7 +180,7 @@ describe("construireFricheCnig", () => {
     })!;
 
     expect(friche.desserte_distance).toBeNull();
-    expect(friche.desserte_commentaire).toContain("voie de grande circulation");
+    expect(friche.desserte_commentaire).toContain("accès autoroutier");
   });
 
   it("réserve la place du préfixe de neutralisation dans la longueur du standard", () => {
@@ -236,7 +236,7 @@ describe("commentaireDesserte", () => {
       }),
     );
 
-    expect(commentaire).toContain("voie de grande circulation à 1,2 km");
+    expect(commentaire).toContain("accès autoroutier à 1,2 km par la route");
     expect(commentaire).toContain("transport en commun à 350 m");
     expect(commentaire).toContain("embranchement ferroviaire fret à moins d'1 km, en bon état");
     expect(commentaire).toContain("réseau de chaleur à 57 m");

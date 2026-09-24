@@ -53,7 +53,7 @@ export function getCritereTagLabel(
       return valeur === true || valeur === "true" ? "centre-ville" : "excentré";
 
     case "distanceAutoroute":
-      // Distance en mètres (5 km = 5000 m)
+      // Distance par la route en mètres (5 km = 5000 m)
       return Number(valeur) <= 5000 ? "prox. autoroute" : "éloigné autoroute";
 
     case "distanceTransportCommun":

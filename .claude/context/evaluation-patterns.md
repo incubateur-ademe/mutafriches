@@ -119,7 +119,7 @@ TRES_POSITIF = 2
 | `surfaceSite` | 2 | Numérique (4 seuils) |
 | `surfaceBati` | 2 | Numérique (3 seuils) |
 | `siteEnCentreVille` | 1 | Booléen |
-| `distanceAutoroute` | 0.5 | Numérique (4 seuils en km ; DTO en m) |
+| `distanceAutoroute` | 0.5 | Numérique (4 seuils en km ; DTO en m, par la route, nullable — ADR-0047) |
 | `distanceTransportCommun` | 1 | Numérique (2 seuils : <500m / >=500m) |
 | `proximiteCommercesServices` | 1 | Booléen |
 | `distanceRaccordementElectrique` | 1 | Numérique (3 seuils en km ; DTO en m, nullable) |
@@ -140,11 +140,13 @@ TRES_POSITIF = 2
 
 > **Unité des distances** (v1.10) : `distanceAutoroute` et `distanceRaccordementElectrique` sont enrichis en **mètres** (IGN WFS, Enedis) et stockés ainsi dans le DTO/Site ; `extraireCriteres` les convertit en **km** via `metresVersKm` avant scoring (la matrice reste en km, source de vérité Excel). `distanceTransportCommun` et `distanceReseauChaleur` sont en mètres des deux côtés (pas de conversion). Cf. ADR-0027.
 
-> **Distances nulles ramenées à une tranche** : deux critères de distance valent `null` quand
+> **Distances nulles ramenées à une tranche** : trois critères de distance valent `null` quand
 > la recherche a abouti sans résultat, et `extraireCriteres` les ramène à une valeur de tranche
 > plutôt que de laisser le critère être ignoré. `distanceRaccordementElectrique` → 5 000 m
 > (tranche « au-delà de 5 km ») quand Enedis ne trouve aucune infrastructure dans ses rayons ;
-> `distanceReseauChaleur` → 500 m (cf. ci-dessous). Ne jamais faire remonter une distance
+> `distanceAutoroute` → 50 000 m (tranche « au-delà de 5 km ») quand aucune entrée d'autoroute
+> ou de voie express n'est à moins de 50 km (ADR-0047) ; `distanceReseauChaleur` → 500 m
+> (cf. ci-dessous). Ne jamais faire remonter une distance
 > sentinelle depuis un adapter : elle s'affiche telle quelle à l'utilisateur.
 
 > **Distance nulle au réseau de chaleur** (v1.13) : `distanceReseauChaleur` vaut `null` quand aucune distance n'est exploitable (aucun réseau à proximité, ou réseau connu sans tracé). `extraireCriteres` la ramène au seuil de 500 m plutôt que de laisser le critère être ignoré — sinon un site sans réseau connu et un site simplement éloigné n'obtiennent pas le même indice. Cf. ADR-0036.

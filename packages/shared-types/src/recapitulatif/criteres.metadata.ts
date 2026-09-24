@@ -129,7 +129,7 @@ export const CRITERES_METADATA: Record<string, CritereMetadata> = {
   },
   distanceAutoroute: {
     key: "distanceAutoroute",
-    label: "Distance à une voie de grande circulation",
+    label: "Distance par la route à un accès autoroutier",
     section: "environnement",
     saisie: "AUTOMATIQUE",
     poids: 0.5,

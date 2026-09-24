@@ -308,16 +308,15 @@ function comparerCommercesServices(enrich: EnrichissementOutputDto): LigneEcart 
   };
 }
 
-/** Écart absolu (m) au-delà duquel la distance à la voie structurante est signalée */
+/** Écart absolu (m) au-delà duquel la distance à l'accès autoroutier est signalée */
 const SEUIL_ECART_VOIE_M = 1000;
 /** Écart relatif (%) requis en plus du seuil absolu pour signaler un écart */
 const SEUIL_ECART_VOIE_PCT = 30;
 
 /**
- * Distance à la voie de grande circulation.
- * Mutafriches (`distanceAutoroute`, IGN WFS) est en mètres, plafonné au rayon de recherche
- * (15 km) — au-delà la valeur est absente. Cartofriches (`desserte_distance_route`) est en km.
- * Définitions proches mais distinctes : tolérance large avant de signaler un écart.
+ * Distance à l'accès autoroutier. Mutafriches (`distanceAutoroute`) : mètres par la route jusqu'à
+ * l'entrée d'autoroute ou de voie express (ADR-0047), null au-delà de 50 km. Cartofriches
+ * (`desserte_distance_route`) : km, méthode non documentée. Tolérance large avant de signaler un écart.
  */
 function comparerVoieGrandeCirculation(
   enrich: EnrichissementOutputDto,
@@ -340,18 +339,19 @@ function comparerVoieGrandeCirculation(
     magnitude = `${signe}${Math.round(diffPct)}%`;
     ecart = Math.abs(diffM) > SEUIL_ECART_VOIE_M && Math.abs(diffPct) > SEUIL_ECART_VOIE_PCT;
     note =
-      "Mutafriches : voie grande circulation (IGN WFS). Cartofriches : desserte routière. " +
-      "Définitions proches mais distinctes.";
+      "Mutafriches : distance par la route à l'entrée d'autoroute ou de voie express (IGN). " +
+      "Cartofriches : desserte routière, méthode non documentée.";
+  } else if (mutaM === null) {
+    note = "Aucun accès autoroutier à moins de 50 km côté Mutafriches.";
   } else if (cfM !== null) {
-    note =
-      "Hors rayon de recherche Mutafriches (15 km) ou non trouvée ; Cartofriches renseigne une desserte routière.";
+    note = "Recherche d'accès autoroutier en échec côté Mutafriches.";
   } else {
-    note = "Distance à la voie structurante absente d'un des deux côtés.";
+    note = "Distance à l'accès autoroutier absente d'un des deux côtés.";
   }
 
   return {
     cle: "distanceAutoroute",
-    label: "Distance voie grande circulation",
+    label: "Distance accès autoroutier",
     mutafriches: fmtNombre(mutaM, " m"),
     cartofriches: fmtNombre(cfKm, " km"),
     ecart,

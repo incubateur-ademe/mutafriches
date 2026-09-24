@@ -79,6 +79,19 @@ const getDistanceReseauChaleurMessage = (enrichmentData: EnrichissementOutputDto
   return "";
 };
 
+// null = aucune entrée d'autoroute ni de voie express dans le rayon de recherche (ADR-0047)
+const getDistanceAutorouteMessage = (enrichmentData: EnrichissementOutputDto): string => {
+  if (enrichmentData.distanceAutoroute === null) {
+    return "Aucun accès autoroutier à moins de 50 km";
+  }
+
+  if (enrichmentData.distanceAutoroute !== undefined) {
+    return formatDistance(enrichmentData.distanceAutoroute);
+  }
+
+  return "";
+};
+
 /**
  * Transforme les données d'enrichissement brutes en format UI
  * Les valeurs vides ("") indiquent une donnée non accessible
@@ -112,8 +125,7 @@ export const transformEnrichmentToUiData = (
     // Transport
     centreVille: formatBoolean(enrichmentData.siteEnCentreVille),
 
-    // Distance autoroute formatée
-    distanceAutoroute: formatDistance(enrichmentData.distanceAutoroute),
+    distanceAutoroute: getDistanceAutorouteMessage(enrichmentData),
 
     // Taux de logements vacants formaté
     tauxLV:

@@ -131,11 +131,14 @@ export class EnrichissementSwaggerDto implements IEnrichissementOutput {
   siteEnCentreVille: boolean;
 
   @ApiProperty({
-    description: "Distance à l'entrée d'autoroute la plus proche en mètres",
+    description:
+      "Distance par la route (m) jusqu'à l'entrée d'autoroute ou de voie express la plus proche. " +
+      "null = aucun accès dans un rayon de 50 km",
     example: 1500,
     minimum: 0,
+    nullable: true,
   })
-  distanceAutoroute: number;
+  distanceAutoroute: number | null;
 
   @ApiProperty({
     description:

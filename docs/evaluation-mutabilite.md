@@ -247,7 +247,7 @@ La fiabilité **ne modifie pas** le classement. C'est un indicateur séparé qui
 | 1 | **Surface du site (m²)** | 2 | < 10 000 / 10-15 000 / 15-50 000 / > 50 000 | `surfaceSite` |
 | 2 | **Surface bâtie (m²)** | 2 | < 5 000 / 5-10 000 / > 10 000 | `surfaceBati` |
 | 3 | **En centre-ville** | 1 | Oui / Non | `siteEnCentreVille` |
-| 4 | **Distance autoroute (km ; DTO en m)** | 0.5 | < 1 / 1-2 / 2-5 / > 5 | `distanceAutoroute` |
+| 4 | **Distance par la route à l'accès autoroutier (km ; DTO en m)** | 0.5 | < 1 / 1-2 / 2-5 / > 5 | `distanceAutoroute` |
 | 5 | **Distance transport en commun (m)** | 1 | < 500 / >= 500 | `distanceTransportCommun` |
 | 6 | **Commerces/services à proximité** | 1 | Oui / Non | `proximiteCommercesServices` |
 | 7 | **Distance raccordement électrique (km ; DTO en m)** | 1 | < 1 / 1-5 / > 5 | `distanceRaccordementElectrique` |
@@ -267,6 +267,8 @@ La fiabilité **ne modifie pas** le classement. C'est un indicateur séparé qui
 | 21 | **Saturation du réseau électrique pour les projets EnR** | 1 | Oui / Non (zone saturée selon la carte Enedis/RTE ; une zone en tension n'est pas saturée) | `saturationReseauEnr` |
 
 > **Unité des distances** : `distanceAutoroute` et `distanceRaccordementElectrique` sont fournies en **mètres** par l'enrichissement (et stockées ainsi dans le DTO) puis converties en **km** à la frontière de l'algorithme (`metresVersKm` dans `extraireCriteres`, v1.10 / ADR-0027). Les seuils ci-dessus sont en km. `distanceTransportCommun` et `distanceReseauChaleur` restent en mètres des deux côtés.
+
+> **Accès autoroutier** : `distanceAutoroute` est la distance **par la route** jusqu'à l'entrée d'autoroute ou de voie express la plus proche (ADR-0047). Quand aucune entrée n'est à moins de 50 km (`null`), le critère est scoré dans la tranche « > 5 km » plutôt qu'ignoré : il compte donc dans la fiabilité.
 
 ### Critères complémentaires saisis (10)
 

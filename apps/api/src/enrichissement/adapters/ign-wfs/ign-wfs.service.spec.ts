@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { of } from "rxjs";
+import { of, throwError } from "rxjs";
 import { HttpService } from "@nestjs/axios";
 import { IgnWfsService } from "./ign-wfs.service";
 
@@ -14,27 +14,25 @@ describe("IgnWfsService", () => {
 
   const collection = (features: unknown[]) => of({ data: { type: "FeatureCollection", features } });
 
-  it("interroge le WFS avec un filtre serveur DWITHIN + nature/importance (sans BBOX)", async () => {
-    // Le filtrage serveur évite le plafond de 5000 tronçons qui tronquait la BBOX large (ADR-0028).
+  it("filtre côté serveur les tronçons autoroutiers et bretelles du rayon (ADR-0028)", async () => {
     httpGet.mockReturnValue(collection([]));
 
-    await service.getDistanceVoieGrandeCirculation(45.35, 4.807, 15000);
+    await service.getTronconsAutoroutiers(45.35, 4.807, 5000);
 
-    const config = httpGet.mock.calls[0][1] as { params: Record<string, string> };
-    const cql = config.params.CQL_FILTER;
-    expect(config.params.BBOX).toBeUndefined();
-    expect(cql).toContain("DWITHIN(geometrie,POINT(45.35 4.807),15000,meters)");
-    expect(cql).toContain("Type autoroutier");
-    expect(cql).toContain("Route à 2 chaussées");
-    expect(cql).toContain("importance IN ('1','2')");
+    const config = httpGet.mock.calls[0][1] as { params: Record<string, string>; timeout: number };
+    expect(config.params.CQL_FILTER).toBe(
+      "DWITHIN(geometrie,POINT(45.35 4.807),5000,meters) AND nature IN ('Type autoroutier','Bretelle')",
+    );
+    expect(config.params.PROPERTYNAME).toContain("sens_de_circulation");
+    expect(config.timeout).toBeGreaterThan(0);
   });
 
-  it("retourne la distance au tronçon de grande circulation le plus proche", async () => {
+  it("renvoie les tronçons linéaires et écarte les géométries inexploitables", async () => {
     httpGet.mockReturnValue(
       collection([
         {
           type: "Feature",
-          properties: { nature: "Type autoroutier", importance: "1" },
+          properties: { nature: "Bretelle", sens_de_circulation: "Sens direct" },
           geometry: {
             type: "LineString",
             coordinates: [
@@ -43,23 +41,31 @@ describe("IgnWfsService", () => {
             ],
           },
         },
+        { type: "Feature", properties: { nature: "Bretelle" }, geometry: null },
       ]),
     );
 
-    const res = await service.getDistanceVoieGrandeCirculation(45.35, 4.807, 15000);
+    const res = await service.getTronconsAutoroutiers(45.35, 4.807, 5000);
 
     expect(res.success).toBe(true);
-    expect(res.data?.distanceMetres).toBeGreaterThan(0);
-    expect(res.data?.distanceMetres).toBeLessThan(15000);
-    expect(res.data?.nombreTronconsProches).toBe(1);
+    expect(res.data).toHaveLength(1);
   });
 
-  it("échoue proprement si aucun tronçon n'est renvoyé", async () => {
+  it("renvoie une liste vide si aucun tronçon n'est dans le rayon", async () => {
     httpGet.mockReturnValue(collection([]));
 
-    const res = await service.getDistanceVoieGrandeCirculation(45.35, 4.807, 15000);
+    const res = await service.getTronconsAutoroutiers(45.35, 4.807, 5000);
+
+    expect(res.success).toBe(true);
+    expect(res.data).toEqual([]);
+  });
+
+  it("ne lève pas d'exception si le WFS échoue", async () => {
+    httpGet.mockReturnValue(throwError(() => new Error("timeout")));
+
+    const res = await service.getTronconsAutoroutiers(45.35, 4.807, 5000);
 
     expect(res.success).toBe(false);
-    expect(res.error).toContain("rayon");
+    expect(res.error).toBe("timeout");
   });
 });

@@ -2,14 +2,14 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import { SourceEnrichissement } from "@mutafriches/shared-types";
 import { TransportEnrichissementService } from "./transport-enrichissement.service";
 import { ServicePublicService } from "../../adapters/service-public/service-public.service";
-import { IgnWfsService } from "../../adapters/ign-wfs/ign-wfs.service";
+import { AccesAutoroutierService } from "./acces-autoroutier.service";
 import { TransportStopsRepository } from "../../repositories/transport-stops.repository";
 import { Site } from "../../../evaluation/entities/site.entity";
 
 describe("TransportEnrichissementService", () => {
   let service: TransportEnrichissementService;
   let servicePublicService: ServicePublicService;
-  let ignWfsService: IgnWfsService;
+  let accesAutoroutierService: AccesAutoroutierService;
   let transportStopsRepository: TransportStopsRepository;
 
   beforeEach(() => {
@@ -18,10 +18,9 @@ describe("TransportEnrichissementService", () => {
       getMairieCoordonnees: vi.fn(),
     } as unknown as ServicePublicService;
 
-    // Mock du IgnWfsService
-    ignWfsService = {
-      getDistanceVoieGrandeCirculation: vi.fn(),
-    } as unknown as IgnWfsService;
+    accesAutoroutierService = {
+      calculerDistance: vi.fn(),
+    } as unknown as AccesAutoroutierService;
 
     // Mock du TransportStopsRepository
     transportStopsRepository = {
@@ -30,7 +29,7 @@ describe("TransportEnrichissementService", () => {
 
     service = new TransportEnrichissementService(
       servicePublicService,
-      ignWfsService,
+      accesAutoroutierService,
       transportStopsRepository,
     );
   });
@@ -57,13 +56,10 @@ describe("TransportEnrichissementService", () => {
       });
 
       // Mock autoroute
-      vi.mocked(ignWfsService.getDistanceVoieGrandeCirculation).mockResolvedValue({
-        success: true,
-        data: {
-          distanceMetres: 3500,
-          nombreTronconsProches: 2,
-        },
-        source: "IGN WFS",
+      vi.mocked(accesAutoroutierService.calculerDistance).mockResolvedValue({
+        statut: "trouve",
+        distanceMetres: 3500,
+        parLaRoute: true,
       });
 
       // Mock transport
@@ -101,10 +97,10 @@ describe("TransportEnrichissementService", () => {
         source: "API Service Public",
       });
 
-      vi.mocked(ignWfsService.getDistanceVoieGrandeCirculation).mockResolvedValue({
-        success: true,
-        data: { distanceMetres: 1500, nombreTronconsProches: 1 },
-        source: "IGN WFS",
+      vi.mocked(accesAutoroutierService.calculerDistance).mockResolvedValue({
+        statut: "trouve",
+        distanceMetres: 1500,
+        parLaRoute: true,
       });
 
       vi.mocked(transportStopsRepository.findTransportStopProximite).mockResolvedValue(800);
@@ -134,10 +130,10 @@ describe("TransportEnrichissementService", () => {
         source: "API Service Public",
       });
 
-      vi.mocked(ignWfsService.getDistanceVoieGrandeCirculation).mockResolvedValue({
-        success: true,
-        data: { distanceMetres: 2000, nombreTronconsProches: 1 },
-        source: "IGN WFS",
+      vi.mocked(accesAutoroutierService.calculerDistance).mockResolvedValue({
+        statut: "trouve",
+        distanceMetres: 2000,
+        parLaRoute: true,
       });
 
       vi.mocked(transportStopsRepository.findTransportStopProximite).mockResolvedValue(600);
@@ -174,10 +170,10 @@ describe("TransportEnrichissementService", () => {
         source: "API Service Public",
       });
 
-      vi.mocked(ignWfsService.getDistanceVoieGrandeCirculation).mockResolvedValue({
-        success: true,
-        data: { distanceMetres: 4200, nombreTronconsProches: 3 },
-        source: "IGN WFS",
+      vi.mocked(accesAutoroutierService.calculerDistance).mockResolvedValue({
+        statut: "trouve",
+        distanceMetres: 4200,
+        parLaRoute: true,
       });
 
       vi.mocked(transportStopsRepository.findTransportStopProximite).mockResolvedValue(350);
@@ -214,14 +210,10 @@ describe("TransportEnrichissementService", () => {
         source: "API Service Public",
       });
 
-      // Mock : autoroute a 3.5km
-      vi.mocked(ignWfsService.getDistanceVoieGrandeCirculation).mockResolvedValue({
-        success: true,
-        data: {
-          distanceMetres: 3500,
-          nombreTronconsProches: 2,
-        },
-        source: "IGN WFS",
+      vi.mocked(accesAutoroutierService.calculerDistance).mockResolvedValue({
+        statut: "trouve",
+        distanceMetres: 3500,
+        parLaRoute: true,
       });
 
       vi.mocked(transportStopsRepository.findTransportStopProximite).mockResolvedValue(500);
@@ -233,14 +225,13 @@ describe("TransportEnrichissementService", () => {
       expect(site.distanceAutoroute).toBe(3500);
       expect(result.success).toBe(true);
       expect(result.sourcesUtilisees).toContain(SourceEnrichissement.IGN_WFS);
-      expect(ignWfsService.getDistanceVoieGrandeCirculation).toHaveBeenCalledWith(
-        48.0,
-        -4.0,
-        15000,
-      );
+      expect(accesAutoroutierService.calculerDistance).toHaveBeenCalledWith({
+        latitude: 48.0,
+        longitude: -4.0,
+      });
     });
 
-    it("devrait gerer le cas ou aucune autoroute n'est trouvee", async () => {
+    it("devrait gerer une erreur de la recherche d'accès autoroutier", async () => {
       // Arrange
       const site = new Site();
       site.identifiantParcelle = "RURAL123";
@@ -259,11 +250,9 @@ describe("TransportEnrichissementService", () => {
         source: "API Service Public",
       });
 
-      // Mock : aucune voie dans le rayon
-      vi.mocked(ignWfsService.getDistanceVoieGrandeCirculation).mockResolvedValue({
-        success: false,
-        error: "Aucune voie dans un rayon de 10000m",
-        source: "IGN WFS",
+      vi.mocked(accesAutoroutierService.calculerDistance).mockResolvedValue({
+        statut: "erreur",
+        message: "WFS indisponible",
       });
 
       vi.mocked(transportStopsRepository.findTransportStopProximite).mockResolvedValue(1200);
@@ -281,6 +270,57 @@ describe("TransportEnrichissementService", () => {
       expect(result.sourcesUtilisees).toContain(SourceEnrichissement.TRANSPORT_DATA_GOUV);
     });
 
+    it("devrait mettre null quand aucun accès autoroutier n'est dans le rayon", async () => {
+      const site = new Site();
+      site.identifiantParcelle = "RURAL123";
+      site.coordonnees = { latitude: 45.0, longitude: 2.0 };
+      vi.mocked(accesAutoroutierService.calculerDistance).mockResolvedValue({ statut: "aucun" });
+      vi.mocked(transportStopsRepository.findTransportStopProximite).mockResolvedValue(null);
+
+      const result = await service.enrichir(site);
+
+      // null = recherche aboutie sans résultat, pas une source en échec
+      expect(site.distanceAutoroute).toBeNull();
+      expect(result.sourcesUtilisees).toContain(SourceEnrichissement.IGN_WFS);
+      expect(result.champsManquants).not.toContain("distanceAutoroute");
+    });
+
+    it("devrait signaler l'itinéraire utilisé quand la distance est calculée par la route", async () => {
+      const site = new Site();
+      site.identifiantParcelle = "TEST";
+      site.coordonnees = { latitude: 48.0, longitude: -4.0 };
+      vi.mocked(accesAutoroutierService.calculerDistance).mockResolvedValue({
+        statut: "trouve",
+        distanceMetres: 2233.6,
+        parLaRoute: true,
+      });
+      vi.mocked(transportStopsRepository.findTransportStopProximite).mockResolvedValue(null);
+
+      const result = await service.enrichir(site);
+
+      expect(site.distanceAutoroute).toBe(2234);
+      expect(result.sourcesUtilisees).toContain(SourceEnrichissement.IGN_ITINERAIRE);
+    });
+
+    it("devrait signaler l'itinéraire en échec lors du repli à vol d'oiseau", async () => {
+      const site = new Site();
+      site.identifiantParcelle = "TEST";
+      site.coordonnees = { latitude: 48.0, longitude: -4.0 };
+      vi.mocked(accesAutoroutierService.calculerDistance).mockResolvedValue({
+        statut: "trouve",
+        distanceMetres: 1800,
+        parLaRoute: false,
+      });
+      vi.mocked(transportStopsRepository.findTransportStopProximite).mockResolvedValue(null);
+
+      const result = await service.enrichir(site);
+
+      expect(site.distanceAutoroute).toBe(1800);
+      expect(result.sourcesUtilisees).toContain(SourceEnrichissement.IGN_WFS);
+      expect(result.sourcesEchouees).toContain(SourceEnrichissement.IGN_ITINERAIRE);
+      expect(result.champsManquants).not.toContain("distanceAutoroute");
+    });
+
     it("devrait enrichir meme sans code INSEE (IGN WFS fonctionne)", async () => {
       // Arrange
       const site = new Site();
@@ -289,10 +329,10 @@ describe("TransportEnrichissementService", () => {
       site.coordonnees = { latitude: 48.0, longitude: -4.0 };
 
       // Mock : IGN WFS fonctionne sans code INSEE
-      vi.mocked(ignWfsService.getDistanceVoieGrandeCirculation).mockResolvedValue({
-        success: true,
-        data: { distanceMetres: 1200, nombreTronconsProches: 1 },
-        source: "IGN WFS",
+      vi.mocked(accesAutoroutierService.calculerDistance).mockResolvedValue({
+        statut: "trouve",
+        distanceMetres: 1200,
+        parLaRoute: true,
       });
 
       vi.mocked(transportStopsRepository.findTransportStopProximite).mockResolvedValue(750);
@@ -330,10 +370,10 @@ describe("TransportEnrichissementService", () => {
         source: "API Service Public",
       });
 
-      vi.mocked(ignWfsService.getDistanceVoieGrandeCirculation).mockResolvedValue({
-        success: true,
-        data: { distanceMetres: 500, nombreTronconsProches: 1 },
-        source: "IGN WFS",
+      vi.mocked(accesAutoroutierService.calculerDistance).mockResolvedValue({
+        statut: "trouve",
+        distanceMetres: 500,
+        parLaRoute: true,
       });
 
       // Mock : arret a 250m
@@ -372,10 +412,10 @@ describe("TransportEnrichissementService", () => {
         source: "API Service Public",
       });
 
-      vi.mocked(ignWfsService.getDistanceVoieGrandeCirculation).mockResolvedValue({
-        success: true,
-        data: { distanceMetres: 8000, nombreTronconsProches: 1 },
-        source: "IGN WFS",
+      vi.mocked(accesAutoroutierService.calculerDistance).mockResolvedValue({
+        statut: "trouve",
+        distanceMetres: 8000,
+        parLaRoute: true,
       });
 
       // Mock : aucun arret dans le rayon de 2km
@@ -415,10 +455,10 @@ describe("TransportEnrichissementService", () => {
         source: "API Service Public",
       });
 
-      vi.mocked(ignWfsService.getDistanceVoieGrandeCirculation).mockResolvedValue({
-        success: true,
-        data: { distanceMetres: 3000, nombreTronconsProches: 1 },
-        source: "IGN WFS",
+      vi.mocked(accesAutoroutierService.calculerDistance).mockResolvedValue({
+        statut: "trouve",
+        distanceMetres: 3000,
+        parLaRoute: true,
       });
 
       // Mock : erreur repository
@@ -458,10 +498,10 @@ describe("TransportEnrichissementService", () => {
         source: "API Service Public",
       });
 
-      vi.mocked(ignWfsService.getDistanceVoieGrandeCirculation).mockResolvedValue({
-        success: true,
-        data: { distanceMetres: 1000, nombreTronconsProches: 1 },
-        source: "IGN WFS",
+      vi.mocked(accesAutoroutierService.calculerDistance).mockResolvedValue({
+        statut: "trouve",
+        distanceMetres: 1000,
+        parLaRoute: true,
       });
 
       // Mock : distance avec decimales
@@ -501,7 +541,7 @@ describe("TransportEnrichissementService", () => {
       expect(result.champsManquants).toContain("distanceTransportCommun");
       // Ne doit pas appeler les APIs
       expect(servicePublicService.getMairieCoordonnees).not.toHaveBeenCalled();
-      expect(ignWfsService.getDistanceVoieGrandeCirculation).not.toHaveBeenCalled();
+      expect(accesAutoroutierService.calculerDistance).not.toHaveBeenCalled();
       expect(transportStopsRepository.findTransportStopProximite).not.toHaveBeenCalled();
     });
 
@@ -513,10 +553,10 @@ describe("TransportEnrichissementService", () => {
       site.commune = "Test Commune";
       site.coordonnees = { latitude: 48.0, longitude: -4.0 };
 
-      vi.mocked(ignWfsService.getDistanceVoieGrandeCirculation).mockResolvedValue({
-        success: true,
-        data: { distanceMetres: 5000, nombreTronconsProches: 2 },
-        source: "IGN WFS",
+      vi.mocked(accesAutoroutierService.calculerDistance).mockResolvedValue({
+        statut: "trouve",
+        distanceMetres: 5000,
+        parLaRoute: true,
       });
 
       vi.mocked(transportStopsRepository.findTransportStopProximite).mockResolvedValue(800);
@@ -550,10 +590,10 @@ describe("TransportEnrichissementService", () => {
         new Error("Timeout API"),
       );
 
-      vi.mocked(ignWfsService.getDistanceVoieGrandeCirculation).mockResolvedValue({
-        success: true,
-        data: { distanceMetres: 3000, nombreTronconsProches: 1 },
-        source: "IGN WFS",
+      vi.mocked(accesAutoroutierService.calculerDistance).mockResolvedValue({
+        statut: "trouve",
+        distanceMetres: 3000,
+        parLaRoute: true,
       });
 
       vi.mocked(transportStopsRepository.findTransportStopProximite).mockResolvedValue(650);
@@ -590,10 +630,10 @@ describe("TransportEnrichissementService", () => {
         source: "API Service Public",
       });
 
-      vi.mocked(ignWfsService.getDistanceVoieGrandeCirculation).mockResolvedValue({
-        success: true,
-        data: { distanceMetres: 2500, nombreTronconsProches: 1 },
-        source: "IGN WFS",
+      vi.mocked(accesAutoroutierService.calculerDistance).mockResolvedValue({
+        statut: "trouve",
+        distanceMetres: 2500,
+        parLaRoute: true,
       });
 
       // Mock : aucun arret trouve dans le rayon (pas une erreur, juste pas de resultat)
@@ -636,10 +676,10 @@ describe("TransportEnrichissementService", () => {
         source: "API Service Public",
       });
 
-      vi.mocked(ignWfsService.getDistanceVoieGrandeCirculation).mockResolvedValue({
-        success: true,
-        data: { distanceMetres: 1000, nombreTronconsProches: 1 },
-        source: "IGN WFS",
+      vi.mocked(accesAutoroutierService.calculerDistance).mockResolvedValue({
+        statut: "trouve",
+        distanceMetres: 1000,
+        parLaRoute: true,
       });
 
       vi.mocked(transportStopsRepository.findTransportStopProximite).mockResolvedValue(400);
@@ -670,10 +710,10 @@ describe("TransportEnrichissementService", () => {
         source: "API Service Public",
       });
 
-      vi.mocked(ignWfsService.getDistanceVoieGrandeCirculation).mockResolvedValue({
-        success: true,
-        data: { distanceMetres: 1000, nombreTronconsProches: 1 },
-        source: "IGN WFS",
+      vi.mocked(accesAutoroutierService.calculerDistance).mockResolvedValue({
+        statut: "trouve",
+        distanceMetres: 1000,
+        parLaRoute: true,
       });
 
       vi.mocked(transportStopsRepository.findTransportStopProximite).mockResolvedValue(500);

@@ -46,6 +46,8 @@ import { BdnbService } from "./adapters/bdnb/bdnb.service";
 import { EnedisService } from "./adapters/enedis/enedis.service";
 import { ServicePublicService } from "./adapters/service-public/service-public.service";
 import { IgnWfsService } from "./adapters/ign-wfs/ign-wfs.service";
+import { IgnItineraireService } from "./adapters/ign-itineraire/ign-itineraire.service";
+import { AccesAutoroutierService } from "./services/transport/acces-autoroutier.service";
 
 // Adapters GeoRisques
 import { GeoRisquesOrchestrator } from "./services/georisques/georisques.orchestrator";
@@ -114,6 +116,8 @@ import { ZonesContrainteEnrRepository } from "./repositories/zones-contrainte-en
     RisquesTechnologiquesEnrichissementService,
     ServicePublicService,
     IgnWfsService,
+    IgnItineraireService,
+    AccesAutoroutierService,
 
     // Calculators
     RisquesNaturelsCalculator,
