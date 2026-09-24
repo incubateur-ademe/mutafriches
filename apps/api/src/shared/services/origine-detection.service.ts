@@ -7,8 +7,8 @@ import { OrigineUtilisation, SourceUtilisation } from "@mutafriches/shared-types
  *
  * Detecte automatiquement si l'appel provient de :
  * - SITE_STANDALONE : Front React mutafriches.beta.gouv.fr
- * - IFRAME_INTEGREE : Front embarque dans un site partenaire
- * - API_DIRECTE : Appel direct par un consommateur de l'API
+ * - IFRAME_INTEGREE : Front embarque dans un site partenaire (query param iframe=true)
+ * - API_DIRECTE : Appel direct par un consommateur de l'API (integrateur = hôte de l'Origin)
  */
 @Injectable()
 export class OrigineDetectionService {
@@ -24,14 +24,14 @@ export class OrigineDetectionService {
    *
    * Logique de détection :
    * 1. Si query param iframe=true -> IFRAME_INTEGREE (prioritaire)
-   * 2. Sinon, détection auto depuis referer/origin (API_DIRECTE / SITE_STANDALONE / IFRAME)
+   * 2. Sinon, détection auto depuis referer/origin (API_DIRECTE / SITE_STANDALONE)
    * 3. Pré-chauffe du cache (query param prefetch=true) -> PREFETCH
    * 4. Contexte page partenaire (query param partenaire=<slug>) : uniquement si la source
    *    détectée est SITE_STANDALONE, tague integrateur = 'partenaire:<slug>'.
    *
    * @param req - Request Express (optionnel)
    * @param isIframe - Query param iframe (optionnel)
-   * @param integrateur - Query param integrateur (optionnel, mode iframe)
+   * @param integrateur - Query param integrateur (honoré en mode iframe uniquement)
    * @param partenaire - Query param partenaire : slug d'une page partenaire (optionnel)
    * @param prefetch - Query param prefetch : appel robot de pré-chauffe du cache (optionnel)
    */
@@ -129,8 +129,10 @@ export class OrigineDetectionService {
       return { source: SourceUtilisation.SITE_STANDALONE };
     }
 
+    // Hors domaine Mutafriches = appel API direct : l'iframe tourne sur notre domaine et
+    // pose iframe=true. L'intégrateur est identifié par son hôte whitelisté, pas par un slug.
     return {
-      source: SourceUtilisation.IFRAME_INTEGREE,
+      source: SourceUtilisation.API_DIRECTE,
       integrateur: this.extraireIntegrateur(url),
     };
   }

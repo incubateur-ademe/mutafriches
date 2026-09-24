@@ -138,7 +138,7 @@ describe("OrigineDetectionService", () => {
         });
       });
 
-      it("devrait detecter IFRAME_INTEGREE depuis domaine externe", () => {
+      it("devrait detecter API_DIRECTE depuis domaine externe", () => {
         const req = {
           headers: { referer: "https://cartofriches.fr/map" },
         } as any;
@@ -146,7 +146,7 @@ describe("OrigineDetectionService", () => {
         const result = service.detecterOrigine(req);
 
         expect(result).toEqual({
-          source: SourceUtilisation.IFRAME_INTEGREE,
+          source: SourceUtilisation.API_DIRECTE,
           integrateur: "cartofriches.fr",
         });
       });
@@ -159,7 +159,7 @@ describe("OrigineDetectionService", () => {
         const result = service.detecterOrigine(req);
 
         expect(result).toEqual({
-          source: SourceUtilisation.IFRAME_INTEGREE,
+          source: SourceUtilisation.API_DIRECTE,
           integrateur: "urbanvitaliz.fr",
         });
       });
@@ -174,7 +174,7 @@ describe("OrigineDetectionService", () => {
         const result = service.detecterOrigine(req);
 
         expect(result).toEqual({
-          source: SourceUtilisation.IFRAME_INTEGREE,
+          source: SourceUtilisation.API_DIRECTE,
           integrateur: "external-site.com",
         });
       });
@@ -190,6 +190,19 @@ describe("OrigineDetectionService", () => {
           source: SourceUtilisation.SITE_STANDALONE,
         });
       });
+
+      it("devrait identifier l'integrateur par son hote, pas par le slug en query param", () => {
+        const req = {
+          headers: { origin: "https://benefriches.ademe.fr" },
+        } as any;
+
+        const result = service.detecterOrigine(req, false, "autre-nom");
+
+        expect(result).toEqual({
+          source: SourceUtilisation.API_DIRECTE,
+          integrateur: "benefriches.ademe.fr",
+        });
+      });
     });
 
     describe("Gestion des cas limites", () => {
@@ -201,7 +214,7 @@ describe("OrigineDetectionService", () => {
         const result = service.detecterOrigine(req);
 
         expect(result).toEqual({
-          source: SourceUtilisation.IFRAME_INTEGREE,
+          source: SourceUtilisation.API_DIRECTE,
           integrateur: "example.com",
         });
       });
@@ -214,7 +227,7 @@ describe("OrigineDetectionService", () => {
         const result = service.detecterOrigine(req);
 
         expect(result).toEqual({
-          source: SourceUtilisation.IFRAME_INTEGREE,
+          source: SourceUtilisation.API_DIRECTE,
           integrateur: undefined,
         });
       });
