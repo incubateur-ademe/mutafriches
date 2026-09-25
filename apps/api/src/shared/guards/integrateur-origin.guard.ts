@@ -9,16 +9,11 @@ import { Request } from "express";
 import { isDevelopment, normaliserOrigines } from "../utils";
 import { getAppConfig } from "../../config";
 
-// Domaines autorises par defaut pour les integrateurs
-// Correspond à la liste des domaines de chacun des integrateurs connus
+// Seules nos propres origines sont codées : l'UI (standalone et iframe) appelle l'API depuis
+// notre domaine. Tout intégrateur tiers passe par ALLOWED_INTEGRATOR_ORIGINS.
 const DEFAULT_ALLOWED_ORIGINS = [
-  // Self - Mutafriches
   "https://mutafriches.beta.gouv.fr",
   "https://mutafriches.incubateur.ademe.dev",
-
-  // Bénéfriches
-  "https://benefriches.incubateur.ademe.dev",
-  "https://benefriches.ademe.fr",
 ];
 
 @Injectable()

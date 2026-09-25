@@ -236,8 +236,9 @@ Il n'y a **pas de clé d'API** : l'autorisation repose sur une whitelist d'origi
 Ouvrir un accès revient à ajouter une origine à la variable d'environnement
 `ALLOWED_INTEGRATOR_ORIGINS`. Aucun code à modifier, aucun secret à transmettre.
 
-`ALLOWED_INTEGRATOR_ORIGINS` **s'ajoute** aux origines par défaut codées dans le guard
-(Mutafriches, Bénéfriches).
+`ALLOWED_INTEGRATOR_ORIGINS` **s'ajoute** aux seules origines codées dans le guard, celles de
+Mutafriches, dont notre UI a besoin (standalone comme iframe). Bénéfriches, qui nous intègre en
+iframe, y figure comme n'importe quel intégrateur.
 
 ### Identification dans les statistiques
 

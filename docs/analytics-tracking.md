@@ -107,9 +107,10 @@ Le canal se lit d'abord sur `integrateur` (dont la convention `partenaire:<slug>
 > Un appel API depuis une origine tierce est enregistré avec l'hôte de son `Origin` dans
 > `integrateur` (ex. `benefriches.ademe.fr`), jamais avec le `?integrateur=` passé en query,
 > qui n'est lu qu'en mode iframe. Jusqu'en septembre 2026, ces appels étaient classés
-> `IFRAME_INTEGREE` à tort ; ils sont désormais `API_DIRECTE`. Le bucket « Iframe » se vide
-> donc après le déploiement, sans changement d'usage : les intégrateurs nommés ci-dessous, lus
-> sur `integrateur`, ne sont pas affectés.
+> `IFRAME_INTEGREE` à tort ; la migration 0037 a reclassé l'historique en `API_DIRECTE` (AURA,
+> Indre, ARNIA). Bénéfriches passe par l'iframe (`integrateur = 'benefriches'`) et reste
+> `IFRAME_INTEGREE`. Les intégrateurs nommés ci-dessous, lus sur `integrateur`, ne changent pas
+> de bucket.
 
 ```sql
 CASE
@@ -119,6 +120,8 @@ CASE
   WHEN integrateur ILIKE '%aurangevine%'              THEN 'AURA'
   WHEN integrateur ILIKE '%benefriches%'              THEN 'Bénéfriches'
   WHEN integrateur ILIKE '%indre.gouv%'               THEN 'DDT Indre'
+  WHEN integrateur ILIKE '%arnia-bfc%'                THEN 'ARNIA BFC'
+  WHEN integrateur ILIKE '%setec%'                    THEN 'Setec'
   WHEN source_utilisation = 'IFRAME_INTEGREE'         THEN 'Iframe'
   WHEN source_utilisation = 'API_DIRECTE'             THEN 'API directe'
   WHEN source_utilisation = 'SITE_STANDALONE' AND integrateur IS NULL THEN 'Bac à sable (site web)'

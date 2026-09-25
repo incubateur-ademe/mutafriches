@@ -37,7 +37,7 @@ Cette API expose deux services principaux :
 ### Authentification
 
 Les endpoints exposés aux intégrateurs sont protégés par un contrôle d'**origine HTTP** (header \`Origin\`, fallback \`Referer\`).
-Seules les origines whitelistées (Mutafriches, Benefriches, plus la variable \`ALLOWED_INTEGRATOR_ORIGINS\`) sont autorisées.
+Seules les origines whitelistées (Mutafriches, plus les intégrateurs de la variable \`ALLOWED_INTEGRATOR_ORIGINS\`) sont autorisées.
 Pas de clé API à transmettre — l'autorisation se fait au niveau du navigateur ou du serveur appelant.
 
 | Code | Quand | Sens |

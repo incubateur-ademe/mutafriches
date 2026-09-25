@@ -407,7 +407,7 @@ Toutes les variables sont lues via la classe centralisée **`AppConfig`** (`apps
 ### Sécurité des origines (API)
 
 - `ALLOWED_INTEGRATOR_ORIGINS` : Liste des origines supplémentaires autorisées pour les intégrateurs (séparées par des virgules)
-  - Origines par défaut : `mutafriches.beta.gouv.fr`, `mutafriches.incubateur.ademe.dev`, `benefriches.ademe.fr`, `benefriches.incubateur.ademe.dev`
+  - Origines par défaut : `mutafriches.beta.gouv.fr`, `mutafriches.incubateur.ademe.dev` (seules nos origines sont codées : Bénéfriches, qui passe par l'iframe, et tout autre intégrateur passent par cette variable)
   - En mode `development` : localhost autorisé automatiquement
   - Exemple : `ALLOWED_INTEGRATOR_ORIGINS=https://custom-domain.fr,https://autre-domaine.fr`
 
@@ -512,8 +512,12 @@ Pièges rencontrés en session. Chaque entrée documente un piège pour éviter 
   Metabase (`ILIKE '%benefriches%'`…) reposent sur cette valeur. Ne pas promettre de slug à
   un intégrateur, et ne pas élargir `?integrateur=` sans réécrire ces buckets (ADR-0030).
 - Jusqu'en septembre 2026, ces appels étaient classés `IFRAME_INTEGREE` à tort (l'iframe tourne
-  sur notre domaine, elle ne peut pas porter une origine tierce). Ils passent en `API_DIRECTE` :
-  le bucket « Iframe » s'effondre au déploiement sans que l'usage ait changé.
+  sur notre domaine, elle ne peut pas porter une origine tierce). La migration 0037 reclasse
+  l'historique en `API_DIRECTE` (AURA, Indre, ARNIA). Le vrai trafic iframe (`iframe=true` :
+  Bénéfriches, `demo`) reste `IFRAME_INTEGREE`.
+- En iframe, `integrateur` vaut le paramètre `integrator` de l'URL (`benefriches`), ou à défaut
+  l'hôte du parent : un hôte dans `integrateur` ne suffit donc pas à conclure à un appel API.
+  Seuls `enrichissements` et `sites` sont sans ambiguïté (l'UI n'y pose jamais `iframe=true`).
 
 ### `dist` de shared-types périmé → tests API en échec fantôme
 

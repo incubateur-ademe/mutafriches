@@ -11,8 +11,9 @@ import { createThrottledTestApp, describeThrottling } from "./helpers";
 
 // Origine valide pour les tests (Mutafriches prod)
 const VALID_ORIGIN = "https://mutafriches.beta.gouv.fr";
-// Origine d'un integrateur valide (Benefriches)
+// Origine d'un integrateur tiers, autorisée comme en production via la variable d'environnement
 const VALID_INTEGRATOR_ORIGIN = "https://benefriches.ademe.fr";
+process.env.ALLOWED_INTEGRATOR_ORIGINS = VALID_INTEGRATOR_ORIGIN;
 
 const mockMutabiliteOutput = {
   id: "eval-test-123",
