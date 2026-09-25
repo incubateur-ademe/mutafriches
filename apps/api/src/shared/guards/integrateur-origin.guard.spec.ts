@@ -80,22 +80,13 @@ describe("IntegrateurOriginGuard", () => {
       expect(guard.canActivate(context)).toBe(true);
     });
 
-    it("devrait autoriser benefriches.incubateur.ademe.dev", () => {
-      const guard = new IntegrateurOriginGuard();
-      const context = createMockExecutionContext({
-        origin: "https://benefriches.incubateur.ademe.dev",
-      });
-
-      expect(guard.canActivate(context)).toBe(true);
-    });
-
-    it("devrait autoriser benefriches.ademe.fr", () => {
+    it("ne devrait plus autoriser benefriches.ademe.fr sans ALLOWED_INTEGRATOR_ORIGINS", () => {
       const guard = new IntegrateurOriginGuard();
       const context = createMockExecutionContext({
         origin: "https://benefriches.ademe.fr",
       });
 
-      expect(guard.canActivate(context)).toBe(true);
+      expect(() => guard.canActivate(context)).toThrow("Origin not allowed");
     });
   });
 
@@ -134,6 +125,7 @@ describe("IntegrateurOriginGuard", () => {
 
     // Regression : un startsWith laissait passer les sous-domaines suffixes usurpes
     it("devrait bloquer un sous-domaine suffixe usurpe de benefriches.ademe.fr", () => {
+      process.env.ALLOWED_INTEGRATOR_ORIGINS = "https://benefriches.ademe.fr";
       const guard = new IntegrateurOriginGuard();
       const context = createMockExecutionContext({
         origin: "https://benefriches.ademe.fr.attacker.com",
@@ -144,6 +136,7 @@ describe("IntegrateurOriginGuard", () => {
     });
 
     it("devrait bloquer un autre suffixe usurpe de benefriches.ademe.fr", () => {
+      process.env.ALLOWED_INTEGRATOR_ORIGINS = "https://benefriches.ademe.fr";
       const guard = new IntegrateurOriginGuard();
       const context = createMockExecutionContext({
         origin: "https://benefriches.ademe.fr.evil.fr",
@@ -191,7 +184,7 @@ describe("IntegrateurOriginGuard", () => {
     it("devrait extraire l'origine du Referer (sans path)", () => {
       const guard = new IntegrateurOriginGuard();
       const context = createMockExecutionContext({
-        referer: "https://benefriches.ademe.fr/projects/123/details?tab=friches",
+        referer: "https://mutafriches.incubateur.ademe.dev/analyser?etape=2",
       });
 
       expect(guard.canActivate(context)).toBe(true);
