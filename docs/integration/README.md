@@ -323,6 +323,7 @@ curl -sS "$BASE/evaluation/$(jq -r .evaluationId evaluation.json)"
 | Limite | Valeur |
 |--------|--------|
 | Parcelles par site (`identifiants[]`) | 60 |
+| Taille d'une requête | 2 Mo |
 | Débit | 100 requêtes/minute par IP |
 | Cache d'enrichissement | 24 h par site (rejouer un site identique est immédiat) |
 

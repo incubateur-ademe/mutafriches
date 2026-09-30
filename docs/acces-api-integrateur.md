@@ -271,6 +271,7 @@ choisi librement, puisque seules les origines whitelistées passent le guard.
 |--------|--------|-----|
 | Parcelles par site | **60** (`identifiants[]`) | `MAX_PARCELLES_PAR_SITE_API` (shared-types) |
 | Débit | **100 requêtes/minute par IP** | `ThrottlerGuard` (`app.module.ts`) |
+| Taille du corps JSON | **2 Mo** (`413` au-delà) | `useBodyParser` (`main.ts`) |
 | Cache d'enrichissement | 24 h par site | rejouer un site identique ne recoûte rien |
 
 La limite de 60 parcelles (portée de 20 à 60 en septembre 2026 pour les friches de Setec) est
