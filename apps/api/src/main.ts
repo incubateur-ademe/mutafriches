@@ -20,6 +20,10 @@ async function bootstrap() {
 
     const app = await NestFactory.create<NestExpressApplication>(AppModule, { bufferLogs: true });
 
+    // Le calcul renvoie l'enrichissement complet, géométries comprises : un site de 55 parcelles
+    // dépasse déjà la limite Express par défaut (100 Ko) dès que le JSON est indenté.
+    app.useBodyParser("json", { limit: "2mb" });
+
     // Logger assainissant : évite de dérouler les objets erreur Axios (flood de logs)
     app.useLogger(new SafeConsoleLogger());
 
