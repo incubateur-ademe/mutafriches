@@ -11,3 +11,4 @@ export type { Environment } from "./environment.utils";
 export { APP_VERSION } from "./version.utils";
 export { safeError } from "./safe-error";
 export { estOrigineLocale, normaliserOrigine, normaliserOrigines } from "./origine.utils";
+export { mapParLots } from "./lots.utils";

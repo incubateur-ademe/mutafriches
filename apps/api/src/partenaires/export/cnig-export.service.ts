@@ -12,11 +12,11 @@ import {
   type SiteEcarteExportCnig,
 } from "@mutafriches/shared-types";
 import { AppConfig } from "../../config";
+import { mapParLots } from "../../shared/utils";
 import { EnrichissementService } from "../../enrichissement/services/enrichissement.service";
 import { Site } from "../../evaluation/entities/site.entity";
 import { CalculService } from "../../evaluation/services/calcul.service";
 import { VERSION_COURANTE } from "../../evaluation/services/algorithme/versions";
-import type { PartenaireSite } from "../../shared/database/schemas/partenaire-sites.schema";
 import { PartenaireRepository } from "../repositories/partenaire.repository";
 import { nomFichierExport, versCsv, versGeoJson, type EntreeExportCnig } from "./cnig-serializer";
 
@@ -86,7 +86,7 @@ export class CnigExportService {
     const sitesEcartes: SiteEcarteExportCnig[] = [];
     const inclureMutabilite = options.inclureMutabilite === true;
 
-    await this.parLots(sites, async (site) => {
+    await mapParLots(sites, CONCURRENCE, async (site) => {
       const parcelles = site.parcelles as string[];
       const enrichissement = await this.resoudreEnrichissement(slugPartenaire, parcelles, echeance);
       const complementaires = options.connaissanceTerrain?.[site.idtup];
@@ -222,16 +222,6 @@ export class CnigExportService {
       return await Promise.race([enrichissement, echeanceAtteinte]);
     } finally {
       clearTimeout(minuteur);
-    }
-  }
-
-  // Traitement par lots : borne la charge sur les APIs externes quand le cache est froid.
-  private async parLots(
-    sites: PartenaireSite[],
-    traiter: (site: PartenaireSite) => Promise<void>,
-  ): Promise<void> {
-    for (let debut = 0; debut < sites.length; debut += CONCURRENCE) {
-      await Promise.all(sites.slice(debut, debut + CONCURRENCE).map(traiter));
     }
   }
 }
