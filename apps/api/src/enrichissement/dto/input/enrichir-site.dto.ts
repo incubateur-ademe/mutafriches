@@ -1,6 +1,9 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsOptional, IsString, IsArray, ArrayMaxSize, ArrayMinSize } from "class-validator";
-import { EnrichirSiteInputDto as IEnrichirSiteInput } from "@mutafriches/shared-types";
+import {
+  EnrichirSiteInputDto as IEnrichirSiteInput,
+  MAX_PARCELLES_PAR_SITE_API,
+} from "@mutafriches/shared-types";
 
 const FORMAT_CADASTRAL_DESCRIPTION = `Format : 14 caractères \`DDDCCCSSNNNNPP\` (département 3 chiffres, commune 3 chiffres, section 2 caractères, numéro 4 chiffres, parcelle 2 chiffres). Cas particuliers : Corse (\`2A\`/\`2B\`), DOM-TOM (départements \`971\`–\`976\`).`;
 
@@ -22,17 +25,19 @@ export class EnrichirSiteSwaggerDto implements IEnrichirSiteInput {
   identifiant?: string;
 
   @ApiProperty({
-    description: `Liste d'identifiants cadastraux pour un site multi-parcelle (1 à 20). Prioritaire sur \`identifiant\` si les deux sont fournis. ${FORMAT_CADASTRAL_DESCRIPTION}`,
+    description: `Liste d'identifiants cadastraux pour un site multi-parcelle (1 à ${MAX_PARCELLES_PAR_SITE_API}). Prioritaire sur \`identifiant\` si les deux sont fournis. ${FORMAT_CADASTRAL_DESCRIPTION}`,
     example: ["25056000HZ0346", "25056000HZ0347"],
     required: false,
     type: [String],
     minItems: 1,
-    maxItems: 20,
+    maxItems: MAX_PARCELLES_PAR_SITE_API,
   })
   @IsOptional()
   @IsArray({ message: "Les identifiants doivent être un tableau" })
   @ArrayMinSize(1, { message: "Au moins un identifiant cadastral est requis" })
-  @ArrayMaxSize(20, { message: "Maximum 20 parcelles par site" })
+  @ArrayMaxSize(MAX_PARCELLES_PAR_SITE_API, {
+    message: `Maximum ${MAX_PARCELLES_PAR_SITE_API} parcelles par site`,
+  })
   @IsString({ each: true, message: "Chaque identifiant doit être une chaîne de caractères" })
   identifiants?: string[];
 }

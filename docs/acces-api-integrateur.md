@@ -36,7 +36,7 @@ Remplacer `{{ORIGINE}}` (ex. `https://exemple.fr`) et `{{HOTE}}` (ex. `exemple.f
 | Origine autorisée `{{ORIGINE}}` | |
 | Identifiant en base (`integrateur`) | `{{HOTE}}` (déduit de l'origine) |
 | Volumétrie prévue | sites / mois, pic éventuel |
-| Parcelles max par site | (≤ 20 ?) |
+| Parcelles max par site | (≤ 60 ?) |
 | Ouvert en staging le | |
 | Ouvert en production le | |
 | Bucket Metabase ajouté | oui / non |
@@ -50,7 +50,7 @@ Remplacer `{{ORIGINE}}` (ex. `https://exemple.fr`) et `{{HOTE}}` (ex. `exemple.f
 - [ ] Contexte d'appel connu : en serveur à serveur, le demandeur sait qu'il doit poser
       `Origin` lui-même.
 - [ ] Volumétrie compatible avec les [limites](#limites-à-annoncer) (100 req/min par IP,
-      20 parcelles par site). Sinon, en discuter avant d'ouvrir.
+      60 parcelles par site). Sinon, en discuter avant d'ouvrir.
 
 **Staging** (`mutafriches-preprod`)
 
@@ -135,7 +135,7 @@ Remplacer `{{ORIGINE}}` (ex. `https://exemple.fr`) et `{{HOTE}}` (ex. `exemple.f
 > BASE=https://mutafriches.incubateur.ademe.dev
 > ORIGINE={{ORIGINE}}
 >
-> # 1. Enrichir un site (1 à 20 parcelles)
+> # 1. Enrichir un site (1 à 60 parcelles)
 > curl -sS -X POST "$BASE/enrichissement" \
 >   -H "Content-Type: application/json" -H "Origin: $ORIGINE" \
 >   -d '{"identifiants":["49020000AK0118"]}' > enrichissement.json
@@ -172,7 +172,7 @@ Remplacer `{{ORIGINE}}` (ex. `https://exemple.fr`) et `{{HOTE}}` (ex. `exemple.f
 >   (`champsComplementairesRequis` et `enums.saisie`) ;
 > - renvoyez l'objet de l'étape 1 tel quel dans `donneesEnrichies`, sans le réduire.
 >
-> **Limites.** 20 parcelles par site, 100 requêtes par minute et par adresse IP. Un site
+> **Limites.** 60 parcelles par site, 100 requêtes par minute et par adresse IP. Un site
 > identique rejoué dans les 24 heures est servi depuis le cache. Ne découpez pas un grand
 > site en plusieurs appels : chaque appel devient un site distinct, avec des indices
 > différents. Écrivez-nous plutôt, la limite peut être revue.
@@ -269,18 +269,24 @@ choisi librement, puisque seules les origines whitelistées passent le guard.
 
 | Limite | Valeur | Où |
 |--------|--------|-----|
-| Parcelles par site | **20** (`identifiants[]`) | `enrichir-site.dto.ts` (`ArrayMaxSize`) |
+| Parcelles par site | **60** (`identifiants[]`) | `MAX_PARCELLES_PAR_SITE_API` (shared-types) |
 | Débit | **100 requêtes/minute par IP** | `ThrottlerGuard` (`app.module.ts`) |
 | Cache d'enrichissement | 24 h par site | rejouer un site identique ne recoûte rien |
 
-La limite de 20 parcelles est une **règle de validation**, pas une contrainte de stockage : la
-relever est un changement d'une ligne. Ce qu'il faut mesurer avant de le faire, c'est le
-cadastre : `CadastreEnrichissementService.enrichirMulti()` lance un `Promise.allSettled` **sans
-borne de concurrence** sur toutes les parcelles, soit autant d'appels simultanés à l'API Carto,
-et renvoie autant de géométries dans la réponse. Le reste de l'enrichissement travaille sur un
-site virtuel agrégé et ne dépend pas du nombre de parcelles.
+La limite de 60 parcelles (portée de 20 à 60 en septembre 2026 pour les friches de Setec) est
+une **règle de validation**, avec un plafond de stockage : `evaluations.site_id` (varchar 1000)
+range les identifiants joints par virgules, soit **66 parcelles au plus**. Aller au-delà impose
+une migration de cette colonne. La carte de l'UI garde sa propre limite (20 parcelles, 10 ha).
 
-Découper un site de 55 parcelles en trois appels de 20 **n'est pas équivalent** : la surface
+`CadastreEnrichissementService.enrichirMulti()` interroge l'API Carto et la BDNB **par lots de
+10 appels simultanés** (`mapParLots`) : un site de 60 parcelles coûte 6 salves, sans saturer ces
+services pour les autres utilisateurs. Le reste de l'enrichissement travaille sur un site virtuel
+agrégé et ne dépend pas du nombre de parcelles.
+
+Sur un grand site, zonages et risques restent lus sur la **parcelle prédominante** (la plus
+grande) : l'indice est calculable, mais plus approximatif si le site chevauche plusieurs zones.
+
+Découper un site de 55 parcelles en plusieurs appels **n'est pas équivalent** : la surface
 agrégée et la parcelle prédominante (qui porte zonages et risques) changent, donc les indices
 de mutabilité aussi.
 

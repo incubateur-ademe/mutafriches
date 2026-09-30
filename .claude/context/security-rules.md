@@ -30,7 +30,7 @@ const apiKey = this.configService.get<string>("MON_API_KEY");
 - **TOUJOURS** utiliser `class-validator` ou des pipes de validation
 - Valider les identifiants cadastraux (format 14 caractères, caractères autorisés)
 - Valider les codes INSEE (5 caractères numériques)
-- Limiter le nombre de parcelles en entrée (max 20)
+- Limiter le nombre de parcelles en entrée (`MAX_PARCELLES_PAR_SITE_API` = 60 ; plafond de stockage 66, cf. `evaluations.site_id`)
 
 ```typescript
 // Exemple de validation d'identifiant cadastral

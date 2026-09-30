@@ -26,7 +26,7 @@
 ┌──────────────────────┐
 │  Identifiant(s)      │
 │  cadastral(s)        │
-│  (1 à 20 parcelles)  │
+│  (1 à 60 parcelles)  │
 └──────────┬───────────┘
            │
            ↓
@@ -57,7 +57,7 @@ POST /enrichissement
 }
 ```
 
-### Enrichir un site (multi-parcelle, 1 à 20)
+### Enrichir un site (multi-parcelle, 1 à 60)
 
 ```bash
 POST /enrichissement
@@ -111,7 +111,7 @@ Le module d'enrichissement interroge une dizaine d'**APIs de données externes**
 - **13 domaines** : Cadastre, Énergie, Réseau de chaleur, Transport, ITE fret, Urbanisme, Risques Naturels, Risques Technologiques, Pollution, Zonages, ENR/ZAER, Climat/ICU, GeoRisques brut
 - **APIs externes** : IGN, BDNB, Enedis, GeoRisques (×13 endpoints), API Carto, ZAER WFS, data.gouv.fr...
 - **9 bases locales** : Transport, BPE (commerces), Sites pollués ADEME, ITE fret, LOVAC (logements vacants), Zonage ABC, ICU (îlots de chaleur), Réseaux de chaleur, QPV (quartiers prioritaires)
-- **Multi-parcelle** : Support de 1 à 20 parcelles par site
+- **Multi-parcelle** : Support de 1 à 60 parcelles par site via l'API (20 sur la carte)
 - **Cache 24h** : Optimisation des performances
 
 ### Évaluation de mutabilité

@@ -11,6 +11,10 @@ import { EnrichmentResult } from "../shared/enrichissement.types";
 import { ParcelleInitiale } from "./cadastre-enrichissement.types";
 import { Site, ParcelleData } from "../../entities/site.entity";
 import { SiteGeometryService } from "../site/site-geometry.service";
+import { mapParLots } from "../../../shared/utils";
+
+// Un site peut compter 60 parcelles : sans borne, autant d'appels simultanés à l'API Carto et à la BDNB.
+const APPELS_SIMULTANES_MAX = 10;
 
 /**
  * Service d'enrichissement du sous-domaine Cadastre
@@ -19,7 +23,7 @@ import { SiteGeometryService } from "../site/site-geometry.service";
  * - Récupérer les données cadastrales (identifiant, commune, surface, géométrie)
  * - Récupérer la surface bâtie depuis BDNB
  * - Initialiser l'objet Site (évaluation) avec les données de base
- * - Enrichir un site multi-parcellaire (appels parallèles)
+ * - Enrichir un site multi-parcellaire (appels parallèles par lots)
  */
 @Injectable()
 export class CadastreEnrichissementService {
@@ -114,12 +118,12 @@ export class CadastreEnrichissementService {
     const sourcesEchouees: string[] = [];
     const champsManquants: string[] = [];
 
-    // 1. Récupérer les données cadastrales en parallèle pour chaque parcelle
+    // 1. Récupérer les données cadastrales par lots (getCadastreData ne lève jamais)
     this.logger.log(
       `Enrichissement cadastre multi-parcellaire : ${identifiantsParcelles.length} parcelle(s)`,
     );
-    const cadastreResults = await Promise.allSettled(
-      identifiantsParcelles.map((id) => this.getCadastreData(id)),
+    const cadastreResults = await mapParLots(identifiantsParcelles, APPELS_SIMULTANES_MAX, (id) =>
+      this.getCadastreData(id),
     );
 
     // 2. Filtrer les résultats valides
@@ -127,11 +131,10 @@ export class CadastreEnrichissementService {
     let auMoinsUnCadastreOk = false;
 
     for (let i = 0; i < cadastreResults.length; i++) {
-      const result = cadastreResults[i];
+      const cadastreData = cadastreResults[i];
       const identifiant = identifiantsParcelles[i];
 
-      if (result.status === "fulfilled" && result.value !== null) {
-        const cadastreData = result.value;
+      if (cadastreData !== null) {
         auMoinsUnCadastreOk = true;
 
         parcellesData.push({
@@ -167,16 +170,16 @@ export class CadastreEnrichissementService {
 
     sourcesUtilisees.push(SourceEnrichissement.CADASTRE);
 
-    // 3. Récupérer la surface bâtie en parallèle pour chaque parcelle
-    const bdnbResults = await Promise.allSettled(
-      parcellesData.map((p) => this.getSurfaceBatie(p.identifiantParcelle)),
+    // 3. Récupérer la surface bâtie par lots (getSurfaceBatie ne lève jamais)
+    const surfacesBaties = await mapParLots(parcellesData, APPELS_SIMULTANES_MAX, (p) =>
+      this.getSurfaceBatie(p.identifiantParcelle),
     );
 
     let auMoinsUnBdnbOk = false;
-    for (let i = 0; i < bdnbResults.length; i++) {
-      const result = bdnbResults[i];
-      if (result.status === "fulfilled" && result.value !== null) {
-        parcellesData[i].surfaceBati = result.value;
+    for (let i = 0; i < surfacesBaties.length; i++) {
+      const surfaceBati = surfacesBaties[i];
+      if (surfaceBati !== null) {
+        parcellesData[i].surfaceBati = surfaceBati;
         auMoinsUnBdnbOk = true;
       }
     }
