@@ -1,3 +1,7 @@
+// Plafond de l'API : evaluations.site_id (varchar 1000) stocke les identifiants joints par
+// virgules, soit 66 parcelles au plus. La carte de l'UI garde sa propre limite (20).
+export const MAX_PARCELLES_PAR_SITE_API = 60;
+
 /**
  * Données d'entrée pour l'enrichissement d'un site (mono ou multi-parcelle)
  */

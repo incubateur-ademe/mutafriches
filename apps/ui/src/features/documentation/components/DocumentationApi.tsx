@@ -1,3 +1,5 @@
+import { MAX_PARCELLES_PAR_SITE_API } from "@mutafriches/shared-types";
+
 export function DocumentationApi() {
   return (
     <div>
@@ -159,7 +161,10 @@ Origin: https://mon-service.gouv.fr
               <td>
                 <code>/enrichissement</code>
               </td>
-              <td>Enrichir les données d'un site (mono ou multi-parcelle, 1 à 20)</td>
+              <td>
+                Enrichir les données d'un site (mono ou multi-parcelle, 1 à{" "}
+                {MAX_PARCELLES_PAR_SITE_API})
+              </td>
             </tr>
             <tr>
               <td>
@@ -201,7 +206,7 @@ Origin: https://mon-service.gouv.fr
         <div className="fr-stepper__steps" data-fr-current-step="1" data-fr-steps="3"></div>
         <p className="fr-stepper__details">
           Appelez <code>POST /enrichissement</code> avec un ou plusieurs identifiants cadastraux (1
-          à 20) pour récupérer les données automatiques.
+          à {MAX_PARCELLES_PAR_SITE_API}) pour récupérer les données automatiques.
         </p>
       </div>
 
@@ -248,7 +253,7 @@ Content-Type: application/json
       </div>
 
       <p className="fr-text--sm fr-mb-1w fr-mt-2w">
-        <strong>Multi-parcelle</strong> (1 à 20 parcelles) :
+        <strong>Multi-parcelle</strong> (1 à {MAX_PARCELLES_PAR_SITE_API} parcelles) :
       </p>
       <div className="fr-highlight">
         <pre>

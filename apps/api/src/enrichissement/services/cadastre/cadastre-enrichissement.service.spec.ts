@@ -15,6 +15,7 @@ describe("CadastreEnrichissementService", () => {
   let service: CadastreEnrichissementService;
   let cadastreService: ReturnType<typeof createMockCadastreService>;
   let bdnbService: ReturnType<typeof createMockBdnbService>;
+  let siteGeometryService: ReturnType<typeof createMockSiteGeometryService>;
 
   beforeEach(async () => {
     const mockCadastre = createMockCadastreService();
@@ -33,6 +34,7 @@ describe("CadastreEnrichissementService", () => {
     service = module.get<CadastreEnrichissementService>(CadastreEnrichissementService);
     cadastreService = mockCadastre;
     bdnbService = mockBdnb;
+    siteGeometryService = mockSiteGeometry;
   });
 
   describe("enrichir", () => {
@@ -211,6 +213,58 @@ describe("CadastreEnrichissementService", () => {
       expect(result.result.success).toBe(true);
       expect(result.result.sourcesUtilisees).toContain(SourceEnrichissement.CADASTRE);
       expect(result.result.sourcesEchouees).toContain(SourceEnrichissement.BDNB_SURFACE_BATIE);
+    });
+  });
+
+  describe("enrichirMulti", () => {
+    // Suit le nombre d'appels en vol pour vérifier la borne de simultanéité.
+    function appelDiffere<T>(compteur: { enCours: number; maximum: number }, valeur: T) {
+      return async (): Promise<T> => {
+        compteur.enCours += 1;
+        compteur.maximum = Math.max(compteur.maximum, compteur.enCours);
+        await new Promise((resolve) => setTimeout(resolve, 1));
+        compteur.enCours -= 1;
+        return valeur;
+      };
+    }
+
+    it("devrait borner à 10 les appels simultanés sur un site de 55 parcelles", async () => {
+      const identifiants = Array.from(
+        { length: 55 },
+        (_, i) => `70310000AS${String(i).padStart(4, "0")}`,
+      );
+      const cadastre = { enCours: 0, maximum: 0 };
+      const bdnb = { enCours: 0, maximum: 0 };
+
+      cadastreService.getParcelleInfo.mockImplementation((id: string) =>
+        appelDiffere(cadastre, {
+          success: true,
+          data: {
+            identifiant: id,
+            codeInsee: "70310",
+            commune: "Luxeuil-les-Bains",
+            surface: 100,
+            coordonnees: { latitude: 47.8, longitude: 6.4 },
+            geometrie: { type: "Polygon", coordinates: [] } as any,
+          },
+        })(),
+      );
+      bdnbService.getSurfaceBatie.mockImplementation(() =>
+        appelDiffere(bdnb, { success: true, data: 10 })(),
+      );
+      siteGeometryService.construireSite.mockReturnValue({ identifiantsParcelles: identifiants });
+
+      const result = await service.enrichirMulti(identifiants);
+
+      expect(result.result.success).toBe(true);
+      expect(cadastreService.getParcelleInfo).toHaveBeenCalledTimes(55);
+      expect(cadastre.maximum).toBeLessThanOrEqual(10);
+      expect(bdnb.maximum).toBeLessThanOrEqual(10);
+      const parcelles = siteGeometryService.construireSite.mock.calls[0][0] as {
+        surfaceBati?: number;
+      }[];
+      expect(parcelles).toHaveLength(55);
+      expect(parcelles.every((p) => p.surfaceBati === 10)).toBe(true);
     });
   });
 });
