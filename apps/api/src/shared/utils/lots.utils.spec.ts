@@ -2,13 +2,19 @@ import { describe, it, expect } from "vitest";
 import { mapParLots } from "./lots.utils";
 
 describe("mapParLots", () => {
-  it("devrait préserver l'ordre des résultats", async () => {
-    const resultats = await mapParLots([3, 1, 2], 2, async (n: number) => {
-      await new Promise((resolve) => setTimeout(resolve, n));
-      return n * 10;
-    });
+  it("devrait préserver l'ordre des résultats quel que soit l'ordre de résolution", async () => {
+    const resoudre = new Map<number, (valeur: number) => void>();
+    const resultats = mapParLots(
+      [3, 1, 2],
+      3,
+      (n: number) => new Promise<number>((resolve) => resoudre.set(n, resolve)),
+    );
 
-    expect(resultats).toEqual([30, 10, 20]);
+    resoudre.get(2)?.(20);
+    resoudre.get(1)?.(10);
+    resoudre.get(3)?.(30);
+
+    expect(await resultats).toEqual([30, 10, 20]);
   });
 
   it("ne devrait jamais dépasser la taille de lot en simultané", async () => {
