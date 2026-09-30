@@ -5,7 +5,7 @@
 Le module d'enrichissement est le cœur de Mutafriches. Il enrichit automatiquement les données d'une parcelle cadastrale en interrogeant une dizaine d'**APIs publiques externes** (dont GéoRisques, qui expose 13 endpoints) et **8 bases locales** (5 PostGIS spatiales + les référentiels communaux LOVAC, zonage ABC et ICU).
 
 **Endpoint** : `POST /enrichissement`
-**Entrée** : Identifiant(s) cadastral(s) — mono-parcelle ou multi-parcelle (1 à 20 parcelles)
+**Entrée** : Identifiant(s) cadastral(s) — mono-parcelle ou multi-parcelle (1 à 60 parcelles via l'API, 20 sur la carte)
 **Sortie** : Site enrichi avec l'ensemble des critères de mutabilité déductibles automatiquement (les critères complémentaires — pollution, état bâti, paysage, trame verte et bleue, etc. — sont saisis manuellement lors de l'évaluation)
 
 ---
@@ -92,7 +92,7 @@ Récupérer les données cadastrales de base et initialiser l'objet Site (mono o
 
 ### Mode multi-parcelle
 
-Lorsque plusieurs identifiants sont fournis (2 à 20 parcelles), le service effectue des calculs supplémentaires :
+Lorsque plusieurs identifiants sont fournis (2 à 60 parcelles), le service effectue des calculs supplémentaires (cadastre et BDNB interrogés par lots de 10 appels simultanés) :
 
 1. **Chargement** : toutes les parcelles sont récupérées via l'API Cadastre
 2. **Parcelle prédominante** : la parcelle avec la plus grande surface

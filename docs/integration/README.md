@@ -190,7 +190,7 @@ Content-Type: application/json
 # Mono-parcelle
 { "identifiant": "25056000HZ0346" }
 
-# Multi-parcelle (1 à 20 parcelles)
+# Multi-parcelle (1 à 60 parcelles)
 { "identifiants": ["25056000HZ0346", "25056000HZ0347", "25056000HZ0348"] }
 ```
 
@@ -289,7 +289,7 @@ Enrichissement, calcul puis relecture, avec `jq`. À jouer de préférence en pr
 BASE=https://mutafriches.incubateur.ademe.dev
 ORIGINE=https://exemple.fr   # votre origine autorisée
 
-# 1. Enrichir le site (1 à 20 parcelles)
+# 1. Enrichir le site (1 à 60 parcelles)
 curl -sS -X POST "$BASE/enrichissement" \
   -H "Content-Type: application/json" -H "Origin: $ORIGINE" \
   -d '{"identifiants":["49020000AK0118"]}' > enrichissement.json
@@ -322,11 +322,11 @@ curl -sS "$BASE/evaluation/$(jq -r .evaluationId evaluation.json)"
 
 | Limite | Valeur |
 |--------|--------|
-| Parcelles par site (`identifiants[]`) | 20 |
+| Parcelles par site (`identifiants[]`) | 60 |
 | Débit | 100 requêtes/minute par IP |
 | Cache d'enrichissement | 24 h par site (rejouer un site identique est immédiat) |
 
-Un site de plus de 20 parcelles est rejeté en `400`. Ne le découpez pas en plusieurs appels :
+Un site de plus de 60 parcelles est rejeté en `400`. Ne le découpez pas en plusieurs appels :
 chaque appel produit un site distinct, avec sa propre surface agrégée et sa propre parcelle
 prédominante (celle qui porte les zonages et les risques), donc des indices différents.
 Signalez-nous le cas, la limite peut être revue.
@@ -433,7 +433,7 @@ window.addEventListener('message', (event) => {
 | Bouton callback absent | Le bouton apparaît uniquement à l'étape 3 après les résultats |
 | Origine non autorisée | Vérifiez que votre domaine est autorisé pour votre intégrateur |
 | `403` sur `/enrichissement` en appel serveur | Ajoutez le header `Origin` avec l'origine autorisée (cf. « Appels serveur à serveur ») |
-| `400 Maximum 20 parcelles par site` | Un site est limité à 20 parcelles ; contactez-nous plutôt que de découper le site |
+| `400 Maximum 60 parcelles par site` | Un site est limité à 60 parcelles ; contactez-nous plutôt que de découper le site |
 
 ## ✅ Checklist de mise en production
 
