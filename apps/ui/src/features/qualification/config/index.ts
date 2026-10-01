@@ -29,3 +29,6 @@ export const FORM_FIELDS_LIST = Object.values(FORM_FIELDS_CONFIG);
 export const getFieldsBySection = (section: "site" | "environnement") => {
   return FORM_FIELDS_LIST.filter((field) => field.section === section);
 };
+
+// Cohérence « Pas de bâti » entre état et valeur patrimoniale
+export { champBatiMasque, normaliserBati } from "./bati.coherence";
