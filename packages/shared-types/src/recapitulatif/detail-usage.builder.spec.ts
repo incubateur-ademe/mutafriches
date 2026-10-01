@@ -76,4 +76,20 @@ describe("buildDetailUsage", () => {
     const total = sections.reduce((n, s) => n + s.criteres.length, 0);
     expect(total).toBe(3);
   });
+
+  it("marque « Bloquant » un critère excluant, quel que soit son score", () => {
+    const usageExclu: UsageResultatDetaille = {
+      ...usage,
+      exclu: true,
+      criteresExcluants: ["etatBatiInfrastructure"],
+    };
+    const criteres = buildDetailUsage(usageExclu, enrichissement, complementaires).flatMap(
+      (s) => s.criteres,
+    );
+    expect(criteres.find((c) => c.key === "etatBatiInfrastructure")?.impact).toEqual({
+      label: "Bloquant",
+      niveau: "bloquant",
+    });
+    expect(criteres.find((c) => c.key === "surfaceSite")?.impact.niveau).toBe("positif");
+  });
 });

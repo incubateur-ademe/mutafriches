@@ -1,6 +1,6 @@
 import { UsageResultat } from "@mutafriches/shared-types";
 import React from "react";
-import { getUsageInfo, getBadgeConfig } from "../utils/usagesLabels.utils";
+import { getUsageInfo, getBadgeConfig, MESSAGE_USAGE_EXCLU } from "../utils/usagesLabels.utils";
 import "./ResultTable.css";
 
 interface ResultsTableProps {
@@ -47,30 +47,36 @@ export const ResultsTable: React.FC<ResultsTableProps> = ({ results, onVoirDetai
                           <strong>{getUsageInfo(result.usage).label}</strong>
                         </td>
                         <td>
-                          <div className="result-table__bar-container">
-                            <div
-                              className="result-table__bar"
-                              style={{
-                                backgroundColor: badgeConfig.backgroundColor,
-                                width: `${result.indiceMutabilite}%`,
-                              }}
-                            />
-                            <span className="result-table__percentage">
-                              <strong>{Math.round(result.indiceMutabilite)}%</strong>
-                            </span>
-                          </div>
+                          {result.exclu ? (
+                            <p className="fr-text--sm fr-mb-0">{MESSAGE_USAGE_EXCLU}</p>
+                          ) : (
+                            <div className="result-table__bar-container">
+                              <div
+                                className="result-table__bar"
+                                style={{
+                                  backgroundColor: badgeConfig.backgroundColor,
+                                  width: `${result.indiceMutabilite}%`,
+                                }}
+                              />
+                              <span className="result-table__percentage">
+                                <strong>{Math.round(result.indiceMutabilite)}%</strong>
+                              </span>
+                            </div>
+                          )}
                         </td>
                         <td>
                           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                            <span
-                              className="result-table__badge"
-                              style={{
-                                color: badgeConfig.textColor,
-                                backgroundColor: badgeConfig.backgroundColor,
-                              }}
-                            >
-                              {badgeConfig.label}
-                            </span>
+                            {!result.exclu && (
+                              <span
+                                className="result-table__badge"
+                                style={{
+                                  color: badgeConfig.textColor,
+                                  backgroundColor: badgeConfig.backgroundColor,
+                                }}
+                              >
+                                {badgeConfig.label}
+                              </span>
+                            )}
                             {onVoirDetail && (
                               <button
                                 type="button"

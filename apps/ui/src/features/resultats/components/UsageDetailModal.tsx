@@ -7,7 +7,11 @@ import {
   UsageResultatDetaille,
 } from "@mutafriches/shared-types";
 import { ModalInfo } from "../../../shared/components/common/ModalInfo";
-import { getBadgeConfig, getUsageInfo } from "../utils/usagesLabels.utils";
+import {
+  getResultBadgeConfig,
+  getUsageInfo,
+  MESSAGE_USAGE_EXCLU,
+} from "../utils/usagesLabels.utils";
 import { UsageDetailTable, UsageRatioBar } from "@shared/components/recap";
 
 interface UsageDetailModalProps {
@@ -35,7 +39,7 @@ export const UsageDetailModal: React.FC<UsageDetailModalProps> = ({
   );
 
   const info = usage ? getUsageInfo(usage.usage) : null;
-  const badge = usage ? getBadgeConfig(usage.indiceMutabilite) : null;
+  const badge = usage ? getResultBadgeConfig(usage) : null;
   const avantages = usage?.avantages ?? 0;
   const contraintes = usage?.contraintes ?? 0;
 
@@ -57,10 +61,19 @@ export const UsageDetailModal: React.FC<UsageDetailModalProps> = ({
           <img src={info.image} alt="" width={32} height={32} />
           {info.label}
         </h2>
-        <p className="fr-mb-0 fr-mt-1w">
-          <strong>{Math.round(usage.indiceMutabilite)} % de compatibilité</strong>{" "}
-          <span style={{ fontWeight: 400 }}>Indice = avantages / (avantages + contraintes)</span>
-        </p>
+        {usage.exclu ? (
+          <p className="fr-mb-0 fr-mt-1w">
+            <strong>{MESSAGE_USAGE_EXCLU}.</strong>{" "}
+            <span style={{ fontWeight: 400 }}>
+              Les critères bloquants sont signalés dans le tableau.
+            </span>
+          </p>
+        ) : (
+          <p className="fr-mb-0 fr-mt-1w">
+            <strong>{Math.round(usage.indiceMutabilite)} % de compatibilité</strong>{" "}
+            <span style={{ fontWeight: 400 }}>Indice = avantages / (avantages + contraintes)</span>
+          </p>
+        )}
       </div>
     ) : undefined;
 
@@ -80,7 +93,7 @@ export const UsageDetailModal: React.FC<UsageDetailModalProps> = ({
               <p>{MESSAGE_ZONE_EXCLUSION_ENR}</p>
             </div>
           )}
-          <UsageRatioBar avantages={avantages} contraintes={contraintes} />
+          {!usage.exclu && <UsageRatioBar avantages={avantages} contraintes={contraintes} />}
           <UsageDetailTable sections={sections} />
         </>
       )}

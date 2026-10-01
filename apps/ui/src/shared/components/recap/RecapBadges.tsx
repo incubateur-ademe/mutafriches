@@ -35,6 +35,7 @@ const IMPACT_BADGE_CLASS: Record<ImpactNiveau, string> = {
   neutre: "fr-badge--yellow-tournesol",
   negatif: "fr-badge--error",
   "tres-negatif": "fr-badge--error",
+  bloquant: "fr-badge--orange-terre-battue",
 };
 
 /**

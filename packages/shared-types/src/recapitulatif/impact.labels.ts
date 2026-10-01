@@ -1,10 +1,14 @@
 /** Niveau d'impact d'un critère sur un usage donné */
-export type ImpactNiveau = "tres-positif" | "positif" | "neutre" | "negatif" | "tres-negatif";
+export type ImpactNiveau =
+  "tres-positif" | "positif" | "neutre" | "negatif" | "tres-negatif" | "bloquant";
 
 export interface ImpactCritere {
   label: string;
   niveau: ImpactNiveau;
 }
+
+// Critère ayant déclenché une règle d'exclusion de l'usage (v1.16) : prime sur le score
+export const IMPACT_BLOQUANT: ImpactCritere = { label: "Bloquant", niveau: "bloquant" };
 
 /**
  * Traduit le score brut d'un critère (ScoreImpact) en libellé + niveau d'impact.
