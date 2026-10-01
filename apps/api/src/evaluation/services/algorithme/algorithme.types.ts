@@ -24,6 +24,19 @@ export type ScoreParUsage = {
  */
 export type ScoreValue = ScoreImpact | number;
 
+// Une condition porte sur la valeur d'un critère telle que scorée (après extraireCriteres)
+export interface ConditionExclusion {
+  critere: string;
+  valeur: string | boolean;
+}
+
+// Usages rendus impossibles quand TOUTES les conditions sont vérifiées, quel que soit l'indice
+export interface RegleExclusion {
+  id: string;
+  usages: UsageType[];
+  conditions: ConditionExclusion[];
+}
+
 /**
  * Configuration d'une version de l'algorithme de mutabilité
  */
@@ -33,4 +46,6 @@ export interface AlgorithmeConfig {
   date: string;
   poidsCriteres: Record<string, number>;
   matriceScoring: Record<string, unknown>;
+  // Absent avant v1.16 : aucune exclusion, les évaluations passées restent reproductibles
+  reglesExclusion?: RegleExclusion[];
 }

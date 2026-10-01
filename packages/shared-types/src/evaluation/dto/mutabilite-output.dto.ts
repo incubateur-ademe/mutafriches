@@ -33,6 +33,10 @@ export interface UsageResultat {
   indiceMutabilite: number; // 0-100
   potentiel?: string; // "Favorable", "Modéré", etc.
   explication?: string; // Explication du score
+  /** Usage rendu impossible par une règle d'exclusion (v1.16+) : l'indice reste calculé mais n'est plus comparable */
+  exclu?: boolean;
+  /** Critères ayant déclenché l'exclusion, présents seulement si `exclu` */
+  criteresExcluants?: string[];
 }
 
 /**

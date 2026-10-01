@@ -2,7 +2,7 @@
 
 > **Version doc** : 2.1
 > **Date** : Mai 2026
-> **Algorithme** : v1.13
+> **Algorithme** : v1.16
 > **Objectif** : Évaluer la mutabilité des friches urbaines pour 7 usages potentiels
 
 ---
@@ -204,7 +204,7 @@ Interprétation : Cet usage présente beaucoup plus d'avantages que de contraint
 
 #### 5a. Classement des usages
 
-Les 7 usages sont classés par ordre décroissant d'indice de mutabilité :
+Les 7 usages sont classés par ordre décroissant d'indice de mutabilité, les usages exclus (voir 5c) étant relégués en fin de classement :
 
 | Rang | Usage | Indice | Signification |
 |------|-------|--------|---------------|
@@ -212,6 +212,19 @@ Les 7 usages sont classés par ordre décroissant d'indice de mutabilité :
 | 2-3 | Usages alternatifs viables | Ex: 65-75% | À considérer |
 | 4-5 | Usages possibles mais contraints | Ex: 40-50% | Difficiles |
 | 6-7 | Usages peu adaptés | Ex: <30% | Déconseillés |
+
+#### 5c. Critères excluants (v1.16)
+
+Certaines caractéristiques rendent un usage impossible, quel que soit son indice. Elles sont évaluées **après** le calcul des indices, sous forme de règles binaires indépendantes de la matrice de scoring (ADR-0048) :
+
+| Règle | Condition | Usages exclus |
+|-------|-----------|---------------|
+| Zone d'exclusion des EnR (loi APER) | `zoneAccelerationEnr` = Exclu des zones d'accélération ENR | Photovoltaïque au sol |
+| Zone humide et espèces protégées | `presenceZoneHumide` = Oui **et** `presenceEspecesProtegees` = Oui | Industrie, Bureaux (tertiaire) |
+
+- Toutes les conditions d'une règle doivent être réunies. « Ne sait pas » ne déclenche jamais d'exclusion.
+- Un usage exclu garde son indice calculé, exposé par l'API pour compatibilité, mais il est relégué en fin de classement, avec `exclu: true`, `potentiel: "Exclu"` et la liste `criteresExcluants`. L'interface n'affiche pas son pourcentage et marque ces critères « Bloquant » dans le détail de l'usage.
+- Les poids, la matrice et la fiabilité ne changent pas.
 
 #### 5b. Indice de fiabilité
 
@@ -287,6 +300,6 @@ La fiabilité **ne modifie pas** le classement. C'est un indicateur séparé qui
 
 ---
 
-> **Dernière mise à jour** : Septembre 2026 (algorithme v1.15)
+> **Dernière mise à jour** : Octobre 2026 (algorithme v1.16)
 > **Contact** : <contact@mutafriches.beta.gouv.fr>
 > **Repository** : [https://github.com/incubateur-ademe/mutafriches](https://github.com/incubateur-ademe/mutafriches)

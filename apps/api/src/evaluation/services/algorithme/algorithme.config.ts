@@ -18,7 +18,7 @@ import {
   ZonageAbcLogement,
   DistanceIte,
 } from "@mutafriches/shared-types";
-import { ScoreImpact, ScoreParUsage } from "./algorithme.types";
+import { RegleExclusion, ScoreImpact, ScoreParUsage } from "./algorithme.types";
 
 // Configuration des poids
 // 31 critères au total, poids total = 33 (source de vérité de la doc de l'algo)
@@ -1278,3 +1278,21 @@ export const MATRICE_SCORING = {
     },
   },
 } as const;
+
+// Exclusions binaires (v1.16) : l'usage est déclaré impossible, son indice n'est plus comparable
+export const REGLES_EXCLUSION: RegleExclusion[] = [
+  {
+    // Loi APER : seul le photovoltaïque en toiture reste possible en zone d'exclusion
+    id: "zone-exclusion-enr",
+    usages: [UsageType.PHOTOVOLTAIQUE],
+    conditions: [{ critere: "zoneAccelerationEnr", valeur: ZoneAccelerationEnr.EXCLUSION }],
+  },
+  {
+    id: "zone-humide-et-especes-protegees",
+    usages: [UsageType.INDUSTRIE, UsageType.TERTIAIRE],
+    conditions: [
+      { critere: "presenceZoneHumide", valeur: PresenceZoneHumide.OUI },
+      { critere: "presenceEspecesProtegees", valeur: PresenceEspecesProtegees.OUI },
+    ],
+  },
+];
