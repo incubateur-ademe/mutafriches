@@ -2,6 +2,7 @@ import React from "react";
 import { FormSelectField } from "@features/qualification/components";
 import { SITE_FIELDS } from "@features/qualification/config/fields/site.fields";
 import { ENVIRONNEMENT_FIELDS } from "@features/qualification/config/fields/environnement.fields";
+import { champBatiMasque } from "@features/qualification/config/bati.coherence";
 
 interface DonneesFormProps {
   values: Record<string, string>;
@@ -33,6 +34,7 @@ const TOOLTIPS: Record<string, string> = {
 };
 
 export const DonneesForm: React.FC<DonneesFormProps> = ({ values, onChange }) => {
+  const champCache = champBatiMasque(values);
   return (
     <div>
       {ALL_FIELDS.map((section) => (
@@ -40,15 +42,17 @@ export const DonneesForm: React.FC<DonneesFormProps> = ({ values, onChange }) =>
           <legend className="fr-fieldset__legend fr-text--lg fr-text--bold">{section.title}</legend>
           <div className="fr-fieldset__element">
             <div className="fr-grid-row fr-grid-row--gutters">
-              {section.fields.map((field) => (
-                <FormSelectField
-                  key={field.name}
-                  field={field}
-                  value={values[field.name] || ""}
-                  onChange={(value) => onChange(field.name, value)}
-                  tooltip={TOOLTIPS[field.name]}
-                />
-              ))}
+              {section.fields
+                .filter((field) => field.name !== champCache)
+                .map((field) => (
+                  <FormSelectField
+                    key={field.name}
+                    field={field}
+                    value={values[field.name] || ""}
+                    onChange={(value) => onChange(field.name, value)}
+                    tooltip={TOOLTIPS[field.name]}
+                  />
+                ))}
             </div>
           </div>
         </fieldset>

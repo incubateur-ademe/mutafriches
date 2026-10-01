@@ -13,13 +13,16 @@ import {
   RaccordementEau,
   TrameVerteEtBleue,
 } from "@mutafriches/shared-types";
+import { normaliserBati } from "@features/qualification/config/bati.coherence";
 
 /**
  * Convertit les données manuelles (Record<string, string>) en DTO typé
  */
 export function buildDonneesComplementaires(
-  manualData: Record<string, string>,
+  donneesSaisies: Record<string, string>,
 ): DonneesComplementairesInputDto {
+  // Couvre aussi les saisies partenaires et les sessions enregistrées avant la règle
+  const manualData = normaliserBati(donneesSaisies);
   return {
     typeProprietaire: (manualData.typeProprietaire ||
       TypeProprietaire.NE_SAIT_PAS) as TypeProprietaire,

@@ -11,6 +11,7 @@ import { StepNavigation } from "../components/StepNavigation";
 import { SiteFormValues, DEFAULT_SITE_VALUES, ValidationErrors } from "../config/types";
 import { SITE_FIELDS } from "../config/fields/site.fields";
 import { validateSiteForm } from "../config/validators";
+import { champBatiMasque, normaliserBati } from "../config/bati.coherence";
 import {
   EnrichedInfoField,
   FormSelectField,
@@ -96,7 +97,7 @@ export const QualificationSitePage: React.FC = () => {
     if (Object.keys(validationErrors).length === 0) {
       const updatedManualData = {
         ...state.manualData,
-        ...values,
+        ...normaliserBati(values),
         // Valeur dérivée, jamais saisie par l'utilisateur
         raccordementEau: raccordementEauAuto,
       };
@@ -116,6 +117,7 @@ export const QualificationSitePage: React.FC = () => {
   }
 
   const uiData = state.uiData;
+  const champBatiCache = champBatiMasque(values);
 
   return (
     <Layout>
@@ -276,25 +278,29 @@ export const QualificationSitePage: React.FC = () => {
 
         {/* Zone 3 */}
         <div className="fr-grid-row fr-grid-row--gutters">
-          <FormSelectField
-            field={SITE_FIELDS.valeurArchitecturaleHistorique}
-            value={values.valeurArchitecturaleHistorique}
-            onChange={(v) => handleChange("valeurArchitecturaleHistorique", v)}
-            error={
-              touched.valeurArchitecturaleHistorique
-                ? errors.valeurArchitecturaleHistorique
-                : undefined
-            }
-            tooltip="Donnez nous votre avis sur l'intérêt architectural  et/ou patrimonial du bâti présent sur le site.  Ce critère est subjectif et relatif à votre appréciation."
-          />
+          {champBatiCache !== "valeurArchitecturaleHistorique" && (
+            <FormSelectField
+              field={SITE_FIELDS.valeurArchitecturaleHistorique}
+              value={values.valeurArchitecturaleHistorique}
+              onChange={(v) => handleChange("valeurArchitecturaleHistorique", v)}
+              error={
+                touched.valeurArchitecturaleHistorique
+                  ? errors.valeurArchitecturaleHistorique
+                  : undefined
+              }
+              tooltip="Donnez nous votre avis sur l'intérêt architectural  et/ou patrimonial du bâti présent sur le site.  Ce critère est subjectif et relatif à votre appréciation."
+            />
+          )}
 
-          <FormSelectField
-            field={SITE_FIELDS.etatBatiInfrastructure}
-            value={values.etatBatiInfrastructure}
-            onChange={(v) => handleChange("etatBatiInfrastructure", v)}
-            error={touched.etatBatiInfrastructure ? errors.etatBatiInfrastructure : undefined}
-            tooltip="Renseignez l'état des constructions présentes sur le site. Le menu déroulant vous propose une graduation de l'état de dégradation."
-          />
+          {champBatiCache !== "etatBatiInfrastructure" && (
+            <FormSelectField
+              field={SITE_FIELDS.etatBatiInfrastructure}
+              value={values.etatBatiInfrastructure}
+              onChange={(v) => handleChange("etatBatiInfrastructure", v)}
+              error={touched.etatBatiInfrastructure ? errors.etatBatiInfrastructure : undefined}
+              tooltip="Renseignez l'état des constructions présentes sur le site. Le menu déroulant vous propose une graduation de l'état de dégradation."
+            />
+          )}
         </div>
 
         <hr className="fr-my-4w" />

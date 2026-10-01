@@ -1,14 +1,18 @@
 import { SiteFormValues, EnvironnementFormValues, ValidationErrors } from "./types";
 import { SITE_FIELDS_LIST } from "./fields/site.fields";
 import { ENVIRONNEMENT_FIELDS_LIST } from "./fields/environnement.fields";
+import { champBatiMasque } from "./bati.coherence";
 
 /**
  * Valide les champs du formulaire Site
  */
 export const validateSiteForm = (values: SiteFormValues): ValidationErrors<SiteFormValues> => {
   const errors: ValidationErrors<SiteFormValues> = {};
+  // Un champ masqué par "Pas de bâti" est complété à l'envoi
+  const masque = champBatiMasque(values);
 
   SITE_FIELDS_LIST.forEach((field) => {
+    if (field.name === masque) return;
     if (field.required && !values[field.name as keyof SiteFormValues]) {
       errors[field.name as keyof SiteFormValues] = "Ce champ est obligatoire";
     }
