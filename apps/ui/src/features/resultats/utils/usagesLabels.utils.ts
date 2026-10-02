@@ -1,4 +1,4 @@
-import { UsageType } from "@mutafriches/shared-types";
+import { UsageResultat, UsageType } from "@mutafriches/shared-types";
 
 /** Configuration complète d'un usage pour l'affichage */
 interface UsageConfig {
@@ -137,6 +137,25 @@ export const getBadgeConfig = (score: number): BadgeConfig => {
     backgroundColor: "#FFBDBE",
   };
 };
+
+// Usage exclu par une règle de l'algorithme (v1.16) : aucun indice n'est affiché (ADR-0048)
+export const MESSAGE_USAGE_EXCLU =
+  "Certaines caractéristiques du site peuvent bloquer sa mutabilité vers cet usage";
+
+// Couleurs du badge DSFR orange-terre-battue, aussi reprises par l'export PDF
+export const BADGE_EXCLU: BadgeConfig = {
+  label: "EXCLU",
+  textColor: "#755348",
+  backgroundColor: "#FEE9E5",
+};
+
+export const getResultBadgeConfig = (
+  result: Pick<UsageResultat, "indiceMutabilite" | "exclu">,
+): BadgeConfig => (result.exclu ? BADGE_EXCLU : getBadgeConfig(result.indiceMutabilite));
+
+// Le podium ne propose jamais un usage exclu, même si une règle future en excluait plus de 4
+export const getUsagesPodium = <T extends UsageResultat>(resultats: T[]): T[] =>
+  resultats.filter((r) => !r.exclu).slice(0, 3);
 
 export const getUsageInfo = (usage: string): UsageConfig => {
   const usageType = usage as UsageType;

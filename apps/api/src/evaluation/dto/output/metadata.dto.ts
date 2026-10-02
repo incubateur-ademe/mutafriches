@@ -1,5 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { METADATA_CHAMPS_DERIVES, METADATA_CHAMPS_REQUIS, METADATA_ENUMS } from "./metadata.enums";
+import { VERSION_COURANTE } from "../../services/algorithme/versions";
 
 /**
  * DTO Swagger représentant les métadonnées de l'évaluation.
@@ -34,7 +35,7 @@ export class MetadataSwaggerDto {
   @ApiProperty({
     description:
       "Versions actuellement servies par l'API. `api` suit le `package.json` du backend. `algorithme` correspond à la version courante (la liste complète est disponible via `GET /evaluation/algorithme/versions`).",
-    example: { api: "2.0.0", algorithme: "v1.15" },
+    example: { api: "2.0.0", algorithme: VERSION_COURANTE },
   })
   version: {
     api: string;

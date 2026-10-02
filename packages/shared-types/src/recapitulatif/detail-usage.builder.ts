@@ -6,7 +6,7 @@ import {
 } from "../evaluation";
 import { CRITERES_METADATA_LIST } from "./criteres.metadata";
 import { DetailUsageSection } from "./detail-usage.types";
-import { getImpactCritere } from "./impact.labels";
+import { getImpactCritere, IMPACT_BLOQUANT } from "./impact.labels";
 import { buildRecapitulatifSite } from "./recapitulatif.builder";
 import { SECTIONS_RECAPITULATIF_TITRES, SectionRecapitulatifId } from "./recapitulatif.types";
 import { VALEUR_NON_DISPONIBLE } from "./valeurs.labels";
@@ -20,6 +20,7 @@ type Complementaires = Partial<DonneesComplementairesInputDto> | undefined;
  *
  * Les valeurs affichées sont résolues via le builder du récapitulatif (cohérence),
  * la pondération et l'impact proviennent du calcul détaillé de l'évaluation.
+ * Un critère excluant pour l'usage est marqué « Bloquant » quel que soit son score.
  *
  * Fonction pure : aucune I/O.
  */
@@ -74,7 +75,9 @@ export function buildDetailUsage(
       label: meta.label,
       valeurAffichee: valeurParCritere[meta.key] ?? VALEUR_NON_DISPONIBLE,
       poids: detail.poids,
-      impact: getImpactCritere(detail.scoreBrut),
+      impact: usage?.criteresExcluants?.includes(meta.key)
+        ? IMPACT_BLOQUANT
+        : getImpactCritere(detail.scoreBrut),
     });
   }
 

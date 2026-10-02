@@ -2,6 +2,7 @@ import React from "react";
 import { MutabiliteOutputDto } from "@mutafriches/shared-types";
 import { DsfrAccordion } from "@shared/components/dsfr/DsfrAccordion";
 import { getMutabilityColor, getMutabilityLabel } from "../../utils/debug.helpers";
+import { BADGE_EXCLU } from "@features/resultats/utils/usagesLabels.utils";
 
 /** Labels francais pour les types d'usage */
 const USAGE_LABELS: Record<string, string> = {
@@ -103,22 +104,30 @@ export const EvaluationSection: React.FC<EvaluationSectionProps> = ({
               <td>{r.rang}</td>
               <td>{USAGE_LABELS[r.usage] ?? r.usage}</td>
               <td>
-                <div className="debug-panel__score-bar">
-                  <div
-                    className="debug-panel__score-bar-fill"
-                    style={{
-                      width: `${Math.max(r.indiceMutabilite, 4)}px`,
-                      maxWidth: "80px",
-                      backgroundColor: getMutabilityColor(r.indiceMutabilite),
-                    }}
-                  />
-                  <span className="debug-panel__score-bar-value">{r.indiceMutabilite}%</span>
-                </div>
+                {r.exclu ? (
+                  <span className="fr-text--xs">Usage bloqué</span>
+                ) : (
+                  <div className="debug-panel__score-bar">
+                    <div
+                      className="debug-panel__score-bar-fill"
+                      style={{
+                        width: `${Math.max(r.indiceMutabilite, 4)}px`,
+                        maxWidth: "80px",
+                        backgroundColor: getMutabilityColor(r.indiceMutabilite),
+                      }}
+                    />
+                    <span className="debug-panel__score-bar-value">{r.indiceMutabilite}%</span>
+                  </div>
+                )}
               </td>
               <td>
                 <span
                   className="fr-badge fr-badge--sm"
-                  style={{ backgroundColor: getMutabilityColor(r.indiceMutabilite) }}
+                  style={{
+                    backgroundColor: r.exclu
+                      ? BADGE_EXCLU.backgroundColor
+                      : getMutabilityColor(r.indiceMutabilite),
+                  }}
                 >
                   {r.potentiel ?? getMutabilityLabel(r.indiceMutabilite)}
                 </span>

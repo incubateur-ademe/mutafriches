@@ -1,6 +1,6 @@
 import React from "react";
 import type { ComparaisonMutabiliteOutputDto, UsageResultat } from "@mutafriches/shared-types";
-import { getUsageInfo, getBadgeConfig } from "../../resultats/utils/usagesLabels.utils";
+import { getUsageInfo, getResultBadgeConfig } from "../../resultats/utils/usagesLabels.utils";
 import "../../resultats/components/ResultTable.css";
 
 interface TableauComparaisonProps {
@@ -80,7 +80,11 @@ export const TableauComparaison: React.FC<TableauComparaisonProps> = ({
                         );
                         const indice = resultat?.indiceMutabilite ?? 0;
                         const rang = resultat?.rang ?? 0;
-                        const badgeConfig = getBadgeConfig(indice);
+                        // Indice conservé même si exclu : l'outil compare les versions, le badge signale l'exclusion
+                        const badgeConfig = getResultBadgeConfig({
+                          indiceMutabilite: indice,
+                          exclu: resultat?.exclu,
+                        });
                         const delta =
                           indiceRef != null && v !== versionCourante ? indice - indiceRef : 0;
 

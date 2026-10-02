@@ -11,14 +11,14 @@ import {
 } from "@mutafriches/shared-types";
 import { RisqueNaturel } from "@mutafriches/shared-types";
 import { Site } from "../entities/site.entity";
-import { MATRICE_SCORING, POIDS_CRITERES } from "./algorithme/algorithme.config";
+import { MATRICE_SCORING, POIDS_CRITERES, REGLES_EXCLUSION } from "./algorithme/algorithme.config";
 import {
   DISTANCE_ACCES_AUTOROUTIER_HORS_RAYON_M,
   DISTANCE_RACCORDEMENT_HORS_RAYON_M,
   SEUIL_PROXIMITE_RESEAU_CHALEUR_M,
 } from "./algorithme/algorithme.constants";
 import { metresVersKm } from "./algorithme/distance.utils";
-import { ScoreParUsage } from "./algorithme/algorithme.types";
+import { RegleExclusion, ScoreParUsage } from "./algorithme/algorithme.types";
 import { FiabiliteCalculator } from "./algorithme/fiabilite.calculator";
 import { getAlgorithmeConfig } from "./algorithme/versions";
 
@@ -30,6 +30,8 @@ interface CalculIntermediaire {
   contraintes: number;
   detailsCalcul?: DetailCalculUsage;
 }
+
+export const POTENTIEL_EXCLU = "Exclu";
 
 // Options pour le calcul de mutabilité
 export interface CalculOptions {
@@ -53,23 +55,35 @@ export class CalculService {
       : undefined;
     const poidsCriteres = (config?.poidsCriteres ?? POIDS_CRITERES) as Record<string, number>;
     const matriceScoring = (config?.matriceScoring ?? MATRICE_SCORING) as Record<string, unknown>;
+    const reglesExclusion = config ? (config.reglesExclusion ?? []) : REGLES_EXCLUSION;
+    const criteres = this.extraireCriteres(site, poidsCriteres);
 
-    // Calculer et trier les résultats par indice décroissant
+    // Usages exclus relégués en fin de classement, chaque groupe trié par indice décroissant
     const resultatsCalcules = Object.values(UsageType)
-      .map((usage) =>
-        this.calculerIndiceMutabilite(site, usage, options, poidsCriteres, matriceScoring),
-      )
-      .sort((a, b) => b.indice - a.indice);
+      .map((usage) => ({
+        ...this.calculerIndiceMutabilite(site, usage, options, poidsCriteres, matriceScoring),
+        criteresExcluants: this.determinerCriteresExcluants(usage, criteres, reglesExclusion),
+      }))
+      .sort((a, b) => {
+        const exclusA = a.criteresExcluants.length > 0 ? 1 : 0;
+        const exclusB = b.criteresExcluants.length > 0 ? 1 : 0;
+        return exclusA - exclusB || b.indice - a.indice;
+      });
 
     // Transformer en format de sortie avec rang
     const resultats: UsageResultat[] | UsageResultatDetaille[] = resultatsCalcules.map(
       (result, index) => {
-        const base = {
+        const exclu = result.criteresExcluants.length > 0;
+        const base: UsageResultat = {
           usage: result.usage,
           rang: index + 1,
           indiceMutabilite: result.indice,
-          potentiel: this.determinerPotentiel(result.indice),
-          explication: this.genererExplication(result.usage, result.indice),
+          potentiel: exclu ? POTENTIEL_EXCLU : this.determinerPotentiel(result.indice),
+          explication: exclu
+            ? `Usage ${result.usage} exclu (${result.criteresExcluants.join(", ")})`
+            : this.genererExplication(result.usage, result.indice),
+          exclu,
+          ...(exclu && { criteresExcluants: result.criteresExcluants }),
         };
 
         // Si mode détaillé, ajouter les champs supplémentaires
@@ -82,7 +96,7 @@ export class CalculService {
           } as UsageResultatDetaille;
         }
 
-        return base as UsageResultat;
+        return base;
       },
     );
 
@@ -145,6 +159,24 @@ export class CalculService {
     }
 
     return resultat;
+  }
+
+  // Critères des règles vérifiées pour cet usage (dédoublonnés) ; vide si l'usage n'est pas exclu
+  protected determinerCriteresExcluants(
+    usage: UsageType,
+    criteres: Record<string, unknown>,
+    reglesExclusion: RegleExclusion[],
+  ): string[] {
+    const criteresExcluants = new Set<string>();
+    for (const regle of reglesExclusion) {
+      if (!regle.usages.includes(usage)) continue;
+      const verifiee = regle.conditions.every(
+        (condition) => criteres[condition.critere] === condition.valeur,
+      );
+      if (verifiee)
+        regle.conditions.forEach((condition) => criteresExcluants.add(condition.critere));
+    }
+    return [...criteresExcluants];
   }
 
   /**

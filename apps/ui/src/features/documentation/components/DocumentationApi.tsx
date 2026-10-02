@@ -341,16 +341,32 @@ Content-Type: application/json
   },
   "resultats": [
     {
-      "rang": 7,
+      "rang": 1,
       "usage": "residentiel",
       "indiceMutabilite": 68,
-      "potentiel": "Favorable"
+      "potentiel": "Très bon",
+      "exclu": false
+    },
+    /* ... */
+    {
+      "rang": 7,
+      "usage": "photovoltaique",
+      "indiceMutabilite": 58,
+      "potentiel": "Exclu",
+      "exclu": true,
+      "criteresExcluants": ["zoneAccelerationEnr"]
     }
   ],
   "evaluationId": "eval-uuid"
 }`}</code>
         </pre>
       </div>
+      <p className="fr-mt-2w">
+        Un usage rendu impossible par une caractéristique du site (zone d'exclusion des EnR, zone
+        humide avec espèces protégées) porte <code>exclu: true</code> et la liste des{" "}
+        <code>criteresExcluants</code>. Il est relégué en fin de classement : son indice reste
+        renseigné mais n'est pas comparable à celui des autres usages.
+      </p>
 
       <h4 className="fr-h6 fr-mt-4w">3. Récupération d'une évaluation</h4>
       <div className="fr-highlight">

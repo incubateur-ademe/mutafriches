@@ -26,7 +26,8 @@ export class MutabiliteSwaggerDto implements IMutabiliteOutput {
   fiabilite: Fiabilite;
 
   @ApiProperty({
-    description: "Résultats pour les 7 usages, triés par potentiel décroissant",
+    description:
+      "Résultats pour les 7 usages, triés par indice décroissant. Les usages exclus par une règle de l'algorithme (`exclu: true`, v1.16+) sont relégués en fin de classement : leur indice reste calculé mais n'est pas comparable aux autres.",
     type: "array",
     items: {
       type: "object",
@@ -36,6 +37,8 @@ export class MutabiliteSwaggerDto implements IMutabiliteOutput {
         indiceMutabilite: { type: "number", minimum: 0, maximum: 100 },
         potentiel: { type: "string" },
         explication: { type: "string" },
+        exclu: { type: "boolean" },
+        criteresExcluants: { type: "array", items: { type: "string" } },
       },
     },
     example: [
@@ -45,6 +48,7 @@ export class MutabiliteSwaggerDto implements IMutabiliteOutput {
         indiceMutabilite: 68,
         potentiel: "Favorable",
         explication: "Site favorable grâce à sa localisation en centre-ville",
+        exclu: false,
       },
       {
         rang: 2,
@@ -52,6 +56,16 @@ export class MutabiliteSwaggerDto implements IMutabiliteOutput {
         indiceMutabilite: 63,
         potentiel: "Favorable",
         explication: "Bonne accessibilité et superficie adaptée",
+        exclu: false,
+      },
+      {
+        rang: 7,
+        usage: UsageType.PHOTOVOLTAIQUE,
+        indiceMutabilite: 58,
+        potentiel: "Exclu",
+        explication: "Usage photovoltaique exclu (zoneAccelerationEnr)",
+        exclu: true,
+        criteresExcluants: ["zoneAccelerationEnr"],
       },
     ],
   })
@@ -83,6 +97,12 @@ export class UsageResultatDetailleSwaggerDto {
 
   @ApiProperty({ example: "Site favorable grâce à sa localisation" })
   explication?: string;
+
+  @ApiProperty({ example: false, required: false })
+  exclu?: boolean;
+
+  @ApiProperty({ example: ["zoneAccelerationEnr"], type: [String], required: false })
+  criteresExcluants?: string[];
 
   @ApiProperty({ example: 45, required: false })
   avantages?: number;

@@ -41,6 +41,8 @@ export function buildResultatsJson(data: ResultatsExportData): Record<string, un
         rang: r.rang,
         indiceMutabilite: r.indiceMutabilite,
         potentiel: r.potentiel,
+        exclu: r.exclu,
+        criteresExcluants: r.criteresExcluants,
         avantages: d.avantages,
         contraintes: d.contraintes,
       };

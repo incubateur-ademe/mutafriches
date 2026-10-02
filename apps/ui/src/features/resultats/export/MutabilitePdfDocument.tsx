@@ -7,7 +7,13 @@ import {
   type ImpactNiveau,
   type UsageResultatDetaille,
 } from "@mutafriches/shared-types";
-import { getBadgeConfig, getUsageInfo } from "../utils/usagesLabels.utils";
+import {
+  BADGE_EXCLU,
+  getResultBadgeConfig,
+  getUsageInfo,
+  getUsagesPodium,
+  MESSAGE_USAGE_EXCLU,
+} from "../utils/usagesLabels.utils";
 import { getPodiumTags } from "../utils/podiumTags";
 import type { ResultatsExportData } from "./types";
 
@@ -21,6 +27,7 @@ const IMPACT_COLORS: Record<ImpactNiveau, { bg: string; text: string }> = {
   neutre: { bg: "#FEECC2", text: "#716043" },
   negatif: { bg: "#FFBDBE", text: "#8D533E" },
   "tres-negatif": { bg: "#FFBDBE", text: "#8D533E" },
+  bloquant: { bg: BADGE_EXCLU.backgroundColor, text: BADGE_EXCLU.textColor },
 };
 
 const s = StyleSheet.create({
@@ -184,7 +191,7 @@ const IndiceBar: React.FC<{ indice: number; couleur: string }> = ({ indice, coul
 export const MutabilitePdfDocument: React.FC<{ data: ResultatsExportData }> = ({ data }) => {
   const { mutabilite, enrichissement, complementaires, site } = data;
   const resultats = mutabilite.resultats as UsageResultatDetaille[];
-  const top3 = resultats.slice(0, 3);
+  const top3 = getUsagesPodium(resultats);
   const sectionsSite = buildRecapitulatifSite(enrichissement, complementaires);
   const titreSite = site.nom ? `${site.nom}, ${site.commune ?? ""}` : (site.commune ?? "Site");
   const nomFooter = site.nom ?? site.commune ?? "";
@@ -209,7 +216,7 @@ export const MutabilitePdfDocument: React.FC<{ data: ResultatsExportData }> = ({
         <View style={s.podiumRow}>
           {top3.map((r) => {
             const info = getUsageInfo(r.usage);
-            const badge = getBadgeConfig(r.indiceMutabilite);
+            const badge = getResultBadgeConfig(r);
             const tags = getPodiumTags(r, enrichissement, complementaires);
             return (
               <View key={r.usage} style={s.podiumCard}>
@@ -238,18 +245,26 @@ export const MutabilitePdfDocument: React.FC<{ data: ResultatsExportData }> = ({
           <Text style={[s.cellCenter, s.bold, { flexGrow: 1.5 }]}>Potentiel</Text>
         </View>
         {resultats.map((r) => {
-          const badge = getBadgeConfig(r.indiceMutabilite);
+          const badge = getResultBadgeConfig(r);
           return (
             <View key={r.usage} style={s.row}>
               <Text style={[s.cell, { flexGrow: 0, flexBasis: 30 }]}>{r.rang}</Text>
               <Text style={[s.cell, { flexGrow: 3 }]}>{getUsageInfo(r.usage).label}</Text>
-              <View style={[s.cell, { flexGrow: 2, flexDirection: "row", alignItems: "center" }]}>
-                <IndiceBar indice={r.indiceMutabilite} couleur={badge.backgroundColor} />
-                <Text style={{ marginLeft: 6 }}>{r.indiceMutabilite}%</Text>
-              </View>
-              <View style={[s.cellCenter, { flexGrow: 1.5 }]}>
-                <Badge label={badge.label} bg={badge.backgroundColor} color={badge.textColor} />
-              </View>
+              {r.exclu ? (
+                <Text style={[s.cell, { flexGrow: 3.5 }]}>{MESSAGE_USAGE_EXCLU}</Text>
+              ) : (
+                <>
+                  <View
+                    style={[s.cell, { flexGrow: 2, flexDirection: "row", alignItems: "center" }]}
+                  >
+                    <IndiceBar indice={r.indiceMutabilite} couleur={badge.backgroundColor} />
+                    <Text style={{ marginLeft: 6 }}>{r.indiceMutabilite}%</Text>
+                  </View>
+                  <View style={[s.cellCenter, { flexGrow: 1.5 }]}>
+                    <Badge label={badge.label} bg={badge.backgroundColor} color={badge.textColor} />
+                  </View>
+                </>
+              )}
             </View>
           );
         })}
@@ -304,7 +319,7 @@ export const MutabilitePdfDocument: React.FC<{ data: ResultatsExportData }> = ({
       {/* Pages usages : un usage par page */}
       {resultats.map((usage) => {
         const info = getUsageInfo(usage.usage);
-        const badge = getBadgeConfig(usage.indiceMutabilite);
+        const badge = getResultBadgeConfig(usage);
         const sections = buildDetailUsage(usage, enrichissement, complementaires);
         const avantages = usage.avantages ?? 0;
         const contraintes = usage.contraintes ?? 0;
@@ -321,20 +336,28 @@ export const MutabilitePdfDocument: React.FC<{ data: ResultatsExportData }> = ({
                 <View style={{ flexDirection: "row", alignItems: "center", marginTop: 2 }}>
                   <Badge label={badge.label} bg={badge.backgroundColor} color={badge.textColor} />
                   <Text style={{ marginLeft: 6 }}>
-                    {Math.round(usage.indiceMutabilite)} % de compatibilité (rang {usage.rang})
+                    {usage.exclu
+                      ? `${MESSAGE_USAGE_EXCLU} (rang ${usage.rang})`
+                      : `${Math.round(usage.indiceMutabilite)} % de compatibilité (rang ${usage.rang})`}
                   </Text>
                 </View>
               </View>
             </View>
 
-            <View style={s.ratioTrack}>
-              <View style={{ width: `${partAvantages}%`, backgroundColor: "#B8FEC9" }} />
-              <View style={{ flexGrow: 1, backgroundColor: "#FFBDBE" }} />
-            </View>
-            <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 3 }}>
-              <Text style={s.muted}>Avantages : {avantages.toFixed(1)}</Text>
-              <Text style={s.muted}>Contraintes : {contraintes.toFixed(1)}</Text>
-            </View>
+            {!usage.exclu && (
+              <>
+                <View style={s.ratioTrack}>
+                  <View style={{ width: `${partAvantages}%`, backgroundColor: "#B8FEC9" }} />
+                  <View style={{ flexGrow: 1, backgroundColor: "#FFBDBE" }} />
+                </View>
+                <View
+                  style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 3 }}
+                >
+                  <Text style={s.muted}>Avantages : {avantages.toFixed(1)}</Text>
+                  <Text style={s.muted}>Contraintes : {contraintes.toFixed(1)}</Text>
+                </View>
+              </>
+            )}
 
             <View style={[s.headerRow, { marginTop: 10 }]}>
               <Text style={[s.cell, s.bold, { flexGrow: 2 }]}>Critère</Text>

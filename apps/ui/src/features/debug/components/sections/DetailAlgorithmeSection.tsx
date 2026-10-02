@@ -9,6 +9,10 @@ import { buildDetailUsage } from "@mutafriches/shared-types";
 import { DsfrAccordion } from "@shared/components/dsfr/DsfrAccordion";
 import { UsageDetailTable, UsageRatioBar } from "@shared/components/recap";
 import { getMutabilityColor } from "../../utils/debug.helpers";
+import { BADGE_EXCLU } from "@features/resultats/utils/usagesLabels.utils";
+
+const couleurUsage = (r: UsageResultatDetaille): string =>
+  r.exclu ? BADGE_EXCLU.backgroundColor : getMutabilityColor(r.indiceMutabilite);
 
 /** Labels français pour les types d'usage */
 const USAGE_LABELS: Record<string, string> = {
@@ -68,14 +72,14 @@ export const DetailAlgorithmeSection: React.FC<DetailAlgorithmeSectionProps> = (
             className={`detail-algo__usage-btn ${r.usage === activeUsage ? "detail-algo__usage-btn--active" : ""}`}
             onClick={() => setSelectedUsage(r.usage)}
             style={{
-              borderColor:
-                r.usage === activeUsage ? getMutabilityColor(r.indiceMutabilite) : undefined,
-              backgroundColor:
-                r.usage === activeUsage ? getMutabilityColor(r.indiceMutabilite) : undefined,
+              borderColor: r.usage === activeUsage ? couleurUsage(r) : undefined,
+              backgroundColor: r.usage === activeUsage ? couleurUsage(r) : undefined,
             }}
           >
             <span className="detail-algo__usage-btn-label">{USAGE_LABELS[r.usage] ?? r.usage}</span>
-            <span className="detail-algo__usage-btn-score">{r.indiceMutabilite}%</span>
+            <span className="detail-algo__usage-btn-score">
+              {r.exclu ? "Exclu" : `${r.indiceMutabilite}%`}
+            </span>
           </button>
         ))}
       </div>
@@ -86,7 +90,7 @@ export const DetailAlgorithmeSection: React.FC<DetailAlgorithmeSectionProps> = (
           <UsageRatioBar
             avantages={details.totalAvantages}
             contraintes={details.totalContraintes}
-            indice={activeResult.indiceMutabilite}
+            indice={activeResult.exclu ? undefined : activeResult.indiceMutabilite}
           />
           <UsageDetailTable
             sections={buildDetailUsage(activeResult, enrichissement, complementaires)}

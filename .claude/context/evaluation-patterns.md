@@ -205,10 +205,35 @@ Un critère est **ignoré** (ne contribue ni aux avantages ni aux contraintes) s
 | Indice | Potentiel |
 |--------|-----------|
 | >= 70% | Excellent |
-| >= 60% | Favorable |
-| >= 50% | Modéré |
-| >= 40% | Peu favorable |
-| < 40% | Défavorable |
+| >= 60% | Très bon |
+| >= 50% | Bon |
+| >= 40% | Moyen |
+| < 40% | Faible |
+| usage exclu | Exclu (`POTENTIEL_EXCLU`) |
+
+### Critères excluants (v1.16, ADR-0048)
+
+`REGLES_EXCLUSION` (`algorithme.config.ts`) déclare des règles binaires **hors matrice** :
+toutes les conditions d'une règle réunies → ses usages sont exclus. Évaluées dans
+`CalculService.determinerCriteresExcluants()` sur les critères extraits (`extraireCriteres`),
+donc après conversion d'unités et ramenage des `null`.
+
+| Règle | Conditions (ET) | Usages exclus |
+|-------|-----------------|---------------|
+| `zone-exclusion-enr` | `zoneAccelerationEnr = exclusion` | `photovoltaique` |
+| `zone-humide-et-especes-protegees` | `presenceZoneHumide = oui` + `presenceEspecesProtegees = oui` | `industrie`, `tertiaire` |
+
+- **Contrat additif** : l'indice reste calculé et exposé. `UsageResultat` gagne `exclu`
+  (toujours renseigné à partir de v1.16) et `criteresExcluants` (seulement si exclu).
+  Ne jamais passer l'indice à `null` : Bénéfriches, les intégrateurs API et l'export CNIG
+  le lisent comme un nombre.
+- **Classement** : exclus relégués en fin de tableau, chaque groupe trié par indice décroissant.
+  Le « meilleur usage » est donc toujours `rang === 1`, sauf si tout est exclu.
+- **Versionnage** : les règles sont portées par `AlgorithmeConfig.reglesExclusion` dans le
+  registre. Absentes avant v1.16 → aucune exclusion en `?versionAlgorithme=v1.15`.
+- **Fiabilité, poids, matrice** : inchangés. `ne-sait-pas` ne déclenche jamais d'exclusion.
+- **UI** : pas de pourcentage pour un exclu, pas de place au podium, critères marqués
+  « Bloquant » dans le détail (niveau d'impact `bloquant`, `buildDetailUsage`).
 
 ---
 
@@ -360,6 +385,7 @@ Les poids sont dans `POIDS_CRITERES` (`algorithme.config.ts`). Le poids total (3
 - [ ] Poids déclarés dans `POIDS_CRITERES` pour chaque critère
 - [ ] Score NEUTRE (0.5) géré dans les deux sens (avantages + contraintes)
 - [ ] Critères ignorés si `undefined`, `null`, ou `"ne-sait-pas"`
+- [ ] Règles d'exclusion déclarées dans `REGLES_EXCLUSION` et portées par l'entrée du registre
 
 ### Fiabilité
 

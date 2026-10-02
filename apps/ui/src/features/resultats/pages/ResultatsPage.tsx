@@ -18,6 +18,7 @@ import { ResultsTable } from "../components/ResultTable";
 import { SiteRecapBanner } from "../components/SiteRecapBanner";
 import { SiteRecapModal } from "../components/SiteRecapModal";
 import { UsageDetailModal } from "../components/UsageDetailModal";
+import { getUsagesPodium } from "../utils/usagesLabels.utils";
 import { useFormContext } from "../../../shared/form/useFormContext";
 import { useIframe, useIframeCallback, useIsIframeMode } from "../../../shared/iframe/useIframe";
 import { createIframeCommunicator } from "../../../shared/iframe/iframeCommunication";
@@ -103,7 +104,7 @@ export const ResultatsPage: React.FC = () => {
           indiceMutabilite: results.resultats[0].indiceMutabilite,
           potentiel: results.resultats[0].potentiel || "",
         },
-        top3Usages: results.resultats.slice(0, 3).map((r) => ({
+        top3Usages: getUsagesPodium(results.resultats).map((r) => ({
           usage: r.usage,
           indiceMutabilite: r.indiceMutabilite,
           rang: r.rang,
@@ -412,7 +413,7 @@ export const ResultatsPage: React.FC = () => {
             </div>
 
             <div className="fr-grid-row fr-grid-row--gutters fr-mb-4w">
-              {mutabilityData.resultats.slice(0, 3).map((result) => (
+              {getUsagesPodium(mutabilityData.resultats).map((result) => (
                 <PodiumCard
                   key={result.usage}
                   result={result}

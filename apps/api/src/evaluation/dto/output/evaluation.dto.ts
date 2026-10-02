@@ -4,6 +4,7 @@ import {
   MutabiliteOutputDto,
   DonneesComplementairesInputDto,
 } from "@mutafriches/shared-types";
+import { VERSION_COURANTE } from "../../services/algorithme/versions";
 
 /**
  * DTO pour la récupération d'une évaluation complète
@@ -74,7 +75,7 @@ export class EvaluationSwaggerDto {
     description:
       "Métadonnées de l'évaluation. `source` indique le canal d'appel (`api` pour cet endpoint, `iframe` ou `standalone` pour les évaluations créées via les autres canaux). `integrator` est renseigné si l'évaluation a été déclenchée par un intégrateur tiers identifié.",
     example: {
-      versionAlgorithme: "v1.15",
+      versionAlgorithme: VERSION_COURANTE,
       source: "api",
       integrator: "benefriches",
       dureeCalculMs: 1250,
