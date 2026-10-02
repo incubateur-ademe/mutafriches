@@ -5,6 +5,7 @@ updates:
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 10
+    # Un paquet rejoint le premier groupe qui le couvre : security doit rester en tête.
     groups:
       security:
         patterns:
@@ -12,3 +13,15 @@ updates:
         update-types:
           - "patch"
           - "minor"
+      # Majeures à monter d'un bloc : séparées, elles mélangent deux versions et cassent la CI.
+      nestjs:
+        patterns:
+          - "@nestjs/*"
+        update-types:
+          - "major"
+      vitest:
+        patterns:
+          - "vitest"
+          - "@vitest/*"
+        update-types:
+          - "major"
