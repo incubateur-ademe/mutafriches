@@ -406,7 +406,7 @@ export const USAGE_TAGS_CONFIG: UsageTagsConfig = {
     { critereId: "distanceReseauChaleur", resolver: resolveReseauChaleur },
   ],
 
-  // 3 - Bureaux (Tertiaire)
+  // 3 - Locaux d'activité (Tertiaire)
   [UsageType.TERTIAIRE]: [
     { critereId: "tailleParcelle", resolver: resolveTailleParcelle },
     { critereId: "distanceCentreVille", resolver: resolveCentreVille },
