@@ -3,7 +3,11 @@ import { normalizeParcelId } from "@mutafriches/shared-types";
 import { enrichissementService } from "@shared/services/api/api.enrichissement.service";
 import { cartofrichesService } from "@shared/services/api/api.cartofriches.service";
 import { extraireCodeInsee } from "@shared/utils/cadastre.utils";
-import { comparerSites, scoreCartofriches } from "../utils/comparaison";
+import {
+  comparerSites,
+  messageIndisponibiliteCartofriches,
+  scoreCartofriches,
+} from "../utils/comparaison";
 import type { SiteCompare } from "../utils/export-csv";
 
 interface EtatComparaison {
@@ -38,6 +42,13 @@ export function useComparaisonCartofriches() {
         enrichissementService.enrichirSite(identifiants),
         cartofrichesService.rechercher(identifiantCartofriches, codeInsee),
       ]);
+
+      // Sans ce garde-fou, une panne du Cerema s'afficherait comme « non trouvée ».
+      const indisponibilite = messageIndisponibiliteCartofriches(recherche);
+      if (indisponibilite) {
+        setEtat({ site: null, chargement: false, erreur: indisponibilite });
+        return;
+      }
 
       const site: SiteCompare = {
         identifiant: enrich.identifiantParcelle,

@@ -5,6 +5,7 @@ import type { CommuneSuggestion } from "@shared/services/geo/api.commune.service
 import { CommuneSearchInput } from "./CommuneSearchInput";
 import { CartofrichesFrichesMap } from "./CartofrichesFrichesMap";
 import { couleurStatut, libelleStatut } from "./fricheMarkerIcon";
+import { messageIndisponibiliteCartofriches } from "../utils/comparaison";
 
 interface CartofrichesSelectionPanelProps {
   /** Compare une friche (ses parcelles) et l'ajoute au comparatif */
@@ -42,9 +43,7 @@ export function CartofrichesSelectionPanel({
     setFriches([]);
     try {
       const result = await cartofrichesService.getFrichesCommune(c.code);
-      if (result.erreur) {
-        setErreur(`Cartofriches indisponible (${result.erreur})`);
-      }
+      setErreur(messageIndisponibiliteCartofriches(result));
       setFriches(result.friches);
     } catch {
       setErreur("Erreur lors du chargement des friches Cartofriches");
