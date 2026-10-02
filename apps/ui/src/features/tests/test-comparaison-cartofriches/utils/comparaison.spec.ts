@@ -11,6 +11,7 @@ import {
   categorieIteDepuisCerema,
   comparerSites,
   compterEcarts,
+  messageIndisponibiliteCartofriches,
   scoreCartofriches,
 } from "./comparaison";
 
@@ -281,5 +282,17 @@ describe("scoreCartofriches", () => {
 
   it("retourne les indices quand au moins un est présent", () => {
     expect(scoreCartofriches(friche({ p_residentiel: 65 }))).toContain("65");
+  });
+});
+
+describe("messageIndisponibiliteCartofriches", () => {
+  it("signale l'indisponibilité quand le proxy remonte une erreur", () => {
+    expect(
+      messageIndisponibiliteCartofriches({ erreur: "Request failed with status code 503" }),
+    ).toBe("Cartofriches indisponible (Request failed with status code 503)");
+  });
+
+  it("retourne null quand l'appel a abouti", () => {
+    expect(messageIndisponibiliteCartofriches({})).toBeNull();
   });
 });

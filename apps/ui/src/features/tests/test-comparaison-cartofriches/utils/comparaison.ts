@@ -412,3 +412,8 @@ export function scoreCartofriches(friche: FrichesCerema | null): string {
     ? scores.map((s) => fmtNombre(s)).join(" / ")
     : "non calculé (beta)";
 }
+
+// Le proxy répond 200 même quand le Cerema est en panne : l'échec n'est porté que par `erreur`.
+export function messageIndisponibiliteCartofriches(resultat: { erreur?: string }): string | null {
+  return resultat.erreur ? `Cartofriches indisponible (${resultat.erreur})` : null;
+}
