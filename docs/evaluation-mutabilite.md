@@ -2,7 +2,7 @@
 
 > **Version doc** : 2.1
 > **Date** : Mai 2026
-> **Algorithme** : v1.16
+> **Algorithme** : v1.17
 > **Objectif** : Évaluer la mutabilité des friches urbaines pour 7 usages potentiels
 
 ---
@@ -26,7 +26,7 @@ Il analyse **31 critères** pour déterminer le meilleur usage futur parmi **7 p
 | **Résidentiel ou mixte** | `residentiel` | Habitat et commerces de proximité | Logements sociaux, résidences, commerces en RDC |
 | **Équipements publics** | `equipements` | Services publics et collectifs | École, médiathèque, gymnase, mairie annexe |
 | **Culturel, touristique** | `culture` | Lieux culturels et d'hébergement | Musée, théâtre, hôtel, galerie d'art |
-| **Tertiaire** | `tertiaire` | Bureaux et services | Sièges sociaux, espaces de coworking, services |
+| **Locaux d'activité** | `tertiaire` | Bureaux, artisanat, services | Bureaux, ateliers artisanaux, cabinets et études, services |
 | **Industriel, logistique** | `industrie` | Production et stockage | Usines, entrepôts, centres de distribution |
 | **Renaturation** | `renaturation` | Espaces naturels | Parcs urbains, jardins partagés, zones humides |
 | **Photovoltaïque au sol** | `photovoltaique` | Production d'énergie solaire | Centrales photovoltaïques, fermes solaires |
@@ -110,7 +110,7 @@ Pour chaque combinaison [Critère + Valeur] × [Usage], la matrice attribue un s
 
 #### Exemple de matrice pour le critère "Propriétaire"
 
-| Valeur du critère | Résidentiel | Équipements publics | Culturel | Tertiaire | Industriel | Renaturation | Photovoltaïque |
+| Valeur du critère | Résidentiel | Équipements publics | Culturel | Locaux d'activité | Industriel | Renaturation | Photovoltaïque |
 |-------------------|-------------|---------------------|----------|-----------|------------|--------------|----------------|
 | Public | TP (+2) | TP (+2) | P (+1) | N (+0.5) | N (+0.5) | P (+1) | P (+1) |
 | Privé | N (+0.5) | NEG (-1) | N (+0.5) | N (+0.5) | N (+0.5) | TN (-2) | NEG (-1) |
@@ -220,7 +220,7 @@ Certaines caractéristiques rendent un usage impossible, quel que soit son indic
 | Règle | Condition | Usages exclus |
 |-------|-----------|---------------|
 | Zone d'exclusion des EnR (loi APER) | `zoneAccelerationEnr` = Exclu des zones d'accélération ENR | Photovoltaïque au sol |
-| Zone humide et espèces protégées | `presenceZoneHumide` = Oui **et** `presenceEspecesProtegees` = Oui | Industrie, Bureaux (tertiaire) |
+| Zone humide et espèces protégées | `presenceZoneHumide` = Oui **et** `presenceEspecesProtegees` = Oui | Industrie, Locaux d'activité (tertiaire) |
 
 - Toutes les conditions d'une règle doivent être réunies. « Ne sait pas » ne déclenche jamais d'exclusion.
 - Un usage exclu garde son indice calculé, exposé par l'API pour compatibilité, mais il est relégué en fin de classement, avec `exclu: true`, `potentiel: "Exclu"` et la liste `criteresExcluants`. L'interface n'affiche pas son pourcentage et marque ces critères « Bloquant » dans le détail de l'usage.
@@ -281,6 +281,8 @@ La fiabilité **ne modifie pas** le classement. C'est un indicateur séparé qui
 
 > **Unité des distances** : `distanceAutoroute` et `distanceRaccordementElectrique` sont fournies en **mètres** par l'enrichissement (et stockées ainsi dans le DTO) puis converties en **km** à la frontière de l'algorithme (`metresVersKm` dans `extraireCriteres`, v1.10 / ADR-0027). Les seuils ci-dessus sont en km. `distanceTransportCommun` et `distanceReseauChaleur` restent en mètres des deux côtés.
 
+> **Locaux d'activité** (v1.17) : l'usage `tertiaire` est rééquilibré vers l'artisanat et les petites activités, qui s'implantent aussi hors des centres et sur des parcelles modestes. **Centre-ville** : neutre (avant : positif), hors centre positif (avant : négatif). **Surface du site** : positif sous 1,5 ha (avant : neutre), neutre à partir de 1,5 ha (avant : négatif). **Commerces et services** : leur absence est neutre (avant : négatif) ; leur présence reste positive.
+
 > **Accès autoroutier** : `distanceAutoroute` est la distance **par la route** jusqu'à l'entrée d'autoroute ou de voie express la plus proche (ADR-0047). Quand aucune entrée n'est à moins de 50 km (`null`), le critère est scoré dans la tranche « > 5 km » plutôt qu'ignoré : il compte donc dans la fiabilité.
 
 ### Critères complémentaires saisis (10)
@@ -300,6 +302,6 @@ La fiabilité **ne modifie pas** le classement. C'est un indicateur séparé qui
 
 ---
 
-> **Dernière mise à jour** : Octobre 2026 (algorithme v1.16)
+> **Dernière mise à jour** : Octobre 2026 (algorithme v1.17)
 > **Contact** : <contact@mutafriches.beta.gouv.fr>
 > **Repository** : [https://github.com/incubateur-ademe/mutafriches](https://github.com/incubateur-ademe/mutafriches)

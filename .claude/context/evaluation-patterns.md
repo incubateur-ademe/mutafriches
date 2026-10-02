@@ -90,7 +90,7 @@ L'algorithme évalue 31 critères pour chacun des 7 usages possibles d'une frich
 1. Résidentiel
 2. Équipements
 3. Culture
-4. Tertiaire
+4. Locaux d'activité (`tertiaire`)
 5. Industrie
 6. Renaturation
 7. Photovoltaïque
@@ -150,6 +150,8 @@ TRES_POSITIF = 2
 > sentinelle depuis un adapter : elle s'affiche telle quelle à l'utilisateur.
 
 > **Distance nulle au réseau de chaleur** (v1.13) : `distanceReseauChaleur` vaut `null` quand aucune distance n'est exploitable (aucun réseau à proximité, ou réseau connu sans tracé). `extraireCriteres` la ramène au seuil de 500 m plutôt que de laisser le critère être ignoré — sinon un site sans réseau connu et un site simplement éloigné n'obtiennent pas le même indice. Cf. ADR-0036.
+
+> **Locaux d'activité** (v1.17) : l'usage `tertiaire` est affiché « Locaux d'activité » (clé technique inchangée : API, CNIG, Metabase). Trois scores changent pour cet usage : `siteEnCentreVille` NEUTRE / hors centre POSITIF (avant : POSITIF / NEGATIF) ; `surfaceSite` < 15 000 m² POSITIF, ≥ 15 000 m² NEUTRE (avant : NEUTRE / NEGATIF) ; `proximiteCommercesServices` absent NEUTRE (avant : NEGATIF).
 
 **Complémentaires manuels** (poids total : 11.5) :
 

@@ -45,8 +45,8 @@ const USAGE_CONFIG: Record<UsageType, UsageConfig> = {
     ],
   },
   [UsageType.TERTIAIRE]: {
-    label: "Bureaux",
-    image: "/illustrations/podium/bureaux.png",
+    label: "Locaux d'activité",
+    image: "/illustrations/podium/locaux-activite.png",
     tags: [
       "présence de pollution",
       "distance du centre ville",

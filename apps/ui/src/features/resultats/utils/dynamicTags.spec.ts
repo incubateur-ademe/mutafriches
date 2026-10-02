@@ -320,10 +320,10 @@ describe("Usage EQUIPEMENTS - Équipements publics", () => {
 });
 
 // ============================================================================
-// TESTS USAGE TERTIAIRE (Bureaux)
+// TESTS USAGE TERTIAIRE (Locaux d'activité)
 // ============================================================================
 
-describe("Usage TERTIAIRE - Bureaux", () => {
+describe("Usage TERTIAIRE - Locaux d'activité", () => {
   describe("Desserte par les réseaux", () => {
     it("devrait afficher 'desserte réseaux' si eau = oui", () => {
       const data = createTagInputData({}, { raccordementEau: RaccordementEau.OUI });

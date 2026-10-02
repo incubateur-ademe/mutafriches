@@ -8,7 +8,10 @@ export function UsagesSection() {
       alt: "Habitat & commerce de proximité",
     },
     { src: "/illustrations/landing/usages/usage-renature.png", alt: "Espace renaturé" },
-    { src: "/illustrations/landing/usages/usage-bureaux.png", alt: "Bureaux" },
+    {
+      src: "/illustrations/landing/usages/usage-locaux-activite.png",
+      alt: "Locaux d'activité",
+    },
     { src: "/illustrations/landing/usages/usage-industrie.png", alt: "Industrie" },
     {
       src: "/illustrations/landing/usages/usages-culturel.png",

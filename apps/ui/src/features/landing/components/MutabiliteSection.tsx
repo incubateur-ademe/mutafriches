@@ -20,7 +20,7 @@ export function MutabiliteSection() {
                 La mutabilité d&apos;un site correspond à sa capacité à changer d&apos;usage.
               </strong>{" "}
               Elle permet d&apos;estimer le potentiel de reconversion du site vers différents usages
-              comme le logement, les équipements publics, les activités tertiaires,
+              comme le logement, les équipements publics, les locaux d&apos;activité,
               l&apos;industrie, de photovoltaïque ou encore la renaturation.
             </p>
 

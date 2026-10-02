@@ -242,12 +242,13 @@ export const MATRICE_SCORING = {
   },
 
   // En centre-ville ou centre-bourg
+  // Locaux d'activité (v1.17) : l'artisanat et les petites activités s'implantent hors centre
   siteEnCentreVille: {
     true: {
       [UsageType.RESIDENTIEL]: ScoreImpact.TRES_POSITIF,
       [UsageType.EQUIPEMENTS]: ScoreImpact.POSITIF,
       [UsageType.CULTURE]: ScoreImpact.NEUTRE,
-      [UsageType.TERTIAIRE]: ScoreImpact.POSITIF,
+      [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
       [UsageType.INDUSTRIE]: ScoreImpact.TRES_NEGATIF,
       [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
       [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.TRES_NEGATIF,
@@ -256,7 +257,7 @@ export const MATRICE_SCORING = {
       [UsageType.RESIDENTIEL]: ScoreImpact.TRES_NEGATIF,
       [UsageType.EQUIPEMENTS]: ScoreImpact.NEGATIF,
       [UsageType.CULTURE]: ScoreImpact.NEUTRE,
-      [UsageType.TERTIAIRE]: ScoreImpact.NEGATIF,
+      [UsageType.TERTIAIRE]: ScoreImpact.POSITIF,
       [UsageType.INDUSTRIE]: ScoreImpact.TRES_POSITIF,
       [UsageType.RENATURATION]: ScoreImpact.POSITIF,
       [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.POSITIF,
@@ -335,6 +336,7 @@ export const MATRICE_SCORING = {
   },
 
   // Commerces / services à proximité
+  // Locaux d'activité (v1.17) : leur absence n'est plus pénalisante, hors centre notamment
   proximiteCommercesServices: {
     true: {
       [UsageType.RESIDENTIEL]: ScoreImpact.TRES_POSITIF,
@@ -349,7 +351,7 @@ export const MATRICE_SCORING = {
       [UsageType.RESIDENTIEL]: ScoreImpact.NEGATIF,
       [UsageType.EQUIPEMENTS]: ScoreImpact.NEGATIF,
       [UsageType.CULTURE]: ScoreImpact.NEUTRE,
-      [UsageType.TERTIAIRE]: ScoreImpact.NEGATIF,
+      [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
       [UsageType.INDUSTRIE]: ScoreImpact.NEUTRE,
       [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
       [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
@@ -870,13 +872,14 @@ export const MATRICE_SCORING = {
   // Fonctions pour valeurs numériques
 
   // Surface du site en m²
+  // Locaux d'activité (v1.17) : favorisés sous 1,5 ha (artisanat, PME), neutres au-delà
   surfaceSite: (value: number): ScoreParUsage => {
     if (value < 10000)
       return {
         [UsageType.RESIDENTIEL]: ScoreImpact.POSITIF,
         [UsageType.EQUIPEMENTS]: ScoreImpact.POSITIF,
         [UsageType.CULTURE]: ScoreImpact.NEUTRE,
-        [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
+        [UsageType.TERTIAIRE]: ScoreImpact.POSITIF,
         [UsageType.INDUSTRIE]: ScoreImpact.TRES_NEGATIF,
         [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
         [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.TRES_NEGATIF,
@@ -886,7 +889,7 @@ export const MATRICE_SCORING = {
         [UsageType.RESIDENTIEL]: ScoreImpact.NEGATIF,
         [UsageType.EQUIPEMENTS]: ScoreImpact.NEGATIF,
         [UsageType.CULTURE]: ScoreImpact.NEUTRE,
-        [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
+        [UsageType.TERTIAIRE]: ScoreImpact.POSITIF,
         [UsageType.INDUSTRIE]: ScoreImpact.POSITIF,
         [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
         [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.TRES_NEGATIF,
@@ -896,7 +899,7 @@ export const MATRICE_SCORING = {
         [UsageType.RESIDENTIEL]: ScoreImpact.NEGATIF,
         [UsageType.EQUIPEMENTS]: ScoreImpact.NEGATIF,
         [UsageType.CULTURE]: ScoreImpact.NEUTRE,
-        [UsageType.TERTIAIRE]: ScoreImpact.NEGATIF,
+        [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
         [UsageType.INDUSTRIE]: ScoreImpact.POSITIF,
         [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
         [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.POSITIF,
@@ -905,7 +908,7 @@ export const MATRICE_SCORING = {
       [UsageType.RESIDENTIEL]: ScoreImpact.NEGATIF,
       [UsageType.EQUIPEMENTS]: ScoreImpact.NEGATIF,
       [UsageType.CULTURE]: ScoreImpact.NEUTRE,
-      [UsageType.TERTIAIRE]: ScoreImpact.NEGATIF,
+      [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
       [UsageType.INDUSTRIE]: ScoreImpact.TRES_POSITIF,
       [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
       [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.TRES_POSITIF,
