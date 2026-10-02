@@ -225,6 +225,24 @@ et `pnpm --filter ui build` verts. Cette dernière vérification n'est pas optio
 
 ---
 
+## Audit du 2026-10-02 — outillage dev/build (hors `--prod`)
+
+Remonté lors du regroupement des bumps Dependabot mineurs et patchs. `pnpm audit --prod` était
+déjà vide ; `pnpm audit` signalait 7 avis (4 high, 3 moderate), tous dans l'outillage. Les 7 sont
+**corrigés**, aucun n'est accepté. État final : `No known vulnerabilities found` sur les deux
+périmètres.
+
+| Paquet | Sévérité | Avis | Installé → résolu | Levier |
+|--------|----------|------|-------------------|--------|
+| `brace-expansion` (v1 et v5) | 4 × high + 2 moderate | GHSA-6j4f-fj2g-mc7p, GHSA-qhr7-859c-m2p7, GHSA-q2hr-2g5m-vwhr | 1.1.18 → 1.1.21 ; 5.0.9 → 5.0.12 | re-résolution (`pnpm update -r`) |
+| `fast-uri` | 1 moderate | GHSA-hrr3-gc8f-f4qj | 3.1.7 → 3.1.8 | plancher d'override relevé (`>=3.1.8 <4`) |
+
+Chemins : `brace-expansion` via `minimatch` sous `eslint` et `@typescript-eslint` ; `fast-uri`
+via `ajv` sous `@nestjs/cli`. `ajv` retenait 3.1.7 malgré un `pnpm update -r fast-uri`, d'où le
+relèvement du plancher existant plutôt qu'un nouvel override.
+
+---
+
 ## Procédure pour une nouvelle vulnérabilité
 
 1. Lancer `pnpm audit --prod` puis `pnpm audit`, et isoler les nouveautés.
