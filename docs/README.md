@@ -121,7 +121,7 @@ L'algorithme calcule un **indice de mutabilité 0-100%** pour **7 usages** possi
 1. Résidentiel ou mixte
 2. Équipements publics
 3. Culturel, touristique
-4. Tertiaire
+4. Locaux d'activité (`tertiaire`)
 5. Industriel, logistique
 6. Renaturation
 7. Photovoltaïque au sol

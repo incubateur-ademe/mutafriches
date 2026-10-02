@@ -26,7 +26,7 @@ Il analyse **31 critères** pour déterminer le meilleur usage futur parmi **7 p
 | **Résidentiel ou mixte** | `residentiel` | Habitat et commerces de proximité | Logements sociaux, résidences, commerces en RDC |
 | **Équipements publics** | `equipements` | Services publics et collectifs | École, médiathèque, gymnase, mairie annexe |
 | **Culturel, touristique** | `culture` | Lieux culturels et d'hébergement | Musée, théâtre, hôtel, galerie d'art |
-| **Tertiaire** | `tertiaire` | Bureaux et services | Sièges sociaux, espaces de coworking, services |
+| **Locaux d'activité** | `tertiaire` | Bureaux, artisanat, services | Bureaux, ateliers artisanaux, cabinets et études, services |
 | **Industriel, logistique** | `industrie` | Production et stockage | Usines, entrepôts, centres de distribution |
 | **Renaturation** | `renaturation` | Espaces naturels | Parcs urbains, jardins partagés, zones humides |
 | **Photovoltaïque au sol** | `photovoltaique` | Production d'énergie solaire | Centrales photovoltaïques, fermes solaires |
@@ -110,7 +110,7 @@ Pour chaque combinaison [Critère + Valeur] × [Usage], la matrice attribue un s
 
 #### Exemple de matrice pour le critère "Propriétaire"
 
-| Valeur du critère | Résidentiel | Équipements publics | Culturel | Tertiaire | Industriel | Renaturation | Photovoltaïque |
+| Valeur du critère | Résidentiel | Équipements publics | Culturel | Locaux d'activité | Industriel | Renaturation | Photovoltaïque |
 |-------------------|-------------|---------------------|----------|-----------|------------|--------------|----------------|
 | Public | TP (+2) | TP (+2) | P (+1) | N (+0.5) | N (+0.5) | P (+1) | P (+1) |
 | Privé | N (+0.5) | NEG (-1) | N (+0.5) | N (+0.5) | N (+0.5) | TN (-2) | NEG (-1) |
@@ -220,7 +220,7 @@ Certaines caractéristiques rendent un usage impossible, quel que soit son indic
 | Règle | Condition | Usages exclus |
 |-------|-----------|---------------|
 | Zone d'exclusion des EnR (loi APER) | `zoneAccelerationEnr` = Exclu des zones d'accélération ENR | Photovoltaïque au sol |
-| Zone humide et espèces protégées | `presenceZoneHumide` = Oui **et** `presenceEspecesProtegees` = Oui | Industrie, Bureaux (tertiaire) |
+| Zone humide et espèces protégées | `presenceZoneHumide` = Oui **et** `presenceEspecesProtegees` = Oui | Industrie, Locaux d'activité (tertiaire) |
 
 - Toutes les conditions d'une règle doivent être réunies. « Ne sait pas » ne déclenche jamais d'exclusion.
 - Un usage exclu garde son indice calculé, exposé par l'API pour compatibilité, mais il est relégué en fin de classement, avec `exclu: true`, `potentiel: "Exclu"` et la liste `criteresExcluants`. L'interface n'affiche pas son pourcentage et marque ces critères « Bloquant » dans le détail de l'usage.

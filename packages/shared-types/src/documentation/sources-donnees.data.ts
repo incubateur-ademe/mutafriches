@@ -34,8 +34,8 @@ export const SOURCES_DONNEES: SourceDonnees[] = [
       "Géométrie de la parcelle (centroïde, contour)",
     ],
     traitementAlgo:
-      "La contenance cadastrale initialise la surface du site, classée par seuils (< 5 000 m², " +
-      "< 10 000 m², < 50 000 m², au-delà). La géométrie et les coordonnées servent de socle à tous " +
+      "La contenance cadastrale initialise la surface du site, classée par seuils (< 10 000 m², " +
+      "< 15 000 m², jusqu'à 50 000 m², au-delà). La géométrie et les coordonnées servent de socle à tous " +
       "les autres appels géolocalisés.",
   },
   {
@@ -79,7 +79,7 @@ export const SOURCES_DONNEES: SourceDonnees[] = [
     traitementAlgo:
       "La distance entre le site et le tracé le plus proche est calculée localement, puis comparée " +
       "à un seuil unique de 500 m : sous ce seuil, la possibilité de raccordement valorise " +
-      "fortement les usages résidentiel, équipements et culture, et positivement le tertiaire. " +
+      "fortement les usages résidentiel, équipements et culture, et positivement les locaux d'activité. " +
       "Au-delà, l'effet est neutre pour les sept usages. Un site sans réseau dans le rayon de " +
       "recherche est traité comme situé au-delà du seuil. Pour les réseaux dont seul " +
       "l'emplacement de la chaufferie est publié (18 % du référentiel), la distance obtenue est " +
@@ -297,7 +297,7 @@ export const SOURCES_DONNEES: SourceDonnees[] = [
     traitementAlgo:
       "Ramenée à un booléen. En quartier prioritaire, la reconversion sert directement les " +
       "politiques de renouvellement urbain : très positif pour le résidentiel et les équipements " +
-      "publics, très négatif pour le tertiaire, négatif pour le photovoltaïque au sol, neutre " +
+      "publics, très négatif pour les locaux d'activité, négatif pour le photovoltaïque au sol, neutre " +
       "pour la culture, l'industrie et la renaturation. Hors quartier prioritaire, le critère " +
       "est neutre sur les sept usages.",
   },

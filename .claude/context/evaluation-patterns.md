@@ -90,7 +90,7 @@ L'algorithme évalue 31 critères pour chacun des 7 usages possibles d'une frich
 1. Résidentiel
 2. Équipements
 3. Culture
-4. Tertiaire
+4. Locaux d'activité (`tertiaire`)
 5. Industrie
 6. Renaturation
 7. Photovoltaïque
