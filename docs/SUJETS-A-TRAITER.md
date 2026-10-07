@@ -87,12 +87,6 @@ Format d'une entrée :
 - **Écarté parce que** : refonte faite côté Metabase seulement ; `apps/api/src/stats/stats.service.ts` garde les anciennes définitions (ni filtre cache, ni filtre démo, parcelles multi-sites non dépliées)
 - **Préalable** : reprendre le périmètre commun du dashboard (`evaluation_source_id IS NULL`, hors `demo`/`mutafriches`, `unnest` des `site_id`)
 
-### Retrait du script `backfill-canal-partenaire`
-
-- **Origine** : ADR-0030
-- **Écarté parce que** : script temporaire, à garder tant que le backfill n'est pas joué partout
-- **Préalable** : backfill joué sur chaque environnement ; retirer aussi l'entrée `package.json`
-
 ## Algorithme et enrichissement
 
 ### Réactivation de `distanceIte`

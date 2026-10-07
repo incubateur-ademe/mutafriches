@@ -43,7 +43,6 @@
     "db:zones-contrainte-enr:import": "node dist/src/scripts/import-zones-contrainte-enr.js",
     "data:zones-contrainte-enr:preparer": "node dist/src/scripts/preparer-zones-contrainte-enr.js",
     "db:partenaires:seed": "node dist/src/scripts/seed-partenaires.js",
-    "db:partenaires:backfill-canal": "node dist/src/scripts/backfill-canal-partenaire.js",
     "partenaires:prefetch": "node dist/src/scripts/prefetch-partenaires.js",
     "partenaires:resolve-idu": "node dist/src/scripts/resolve-idu-partenaire.js",
     "partenaires:reconcilier-cadastre": "node dist/src/scripts/reconcilier-cadastre-partenaire.js"
