@@ -5,7 +5,7 @@ import { Site } from "../entities/site.entity";
 import { FiabiliteCalculator } from "./algorithme/fiabilite.calculator";
 import { CalculService } from "./calcul.service";
 
-// Régression du critère `siteEnZae` (v1.18) : clés de matrice "true"/"false", `false` scoré et
+// Régression du critère `siteEnZae` (v1.18, locaux d'activité très positifs en v1.19) : clés de matrice "true"/"false", `false` scoré et
 // compté en fiabilité, `undefined` ignoré, absent des versions antérieures.
 describe("Scoring de la zone d'activité économique", () => {
   let service: CalculService;
@@ -39,7 +39,7 @@ describe("Scoring de la zone d'activité économique", () => {
       [UsageType.RESIDENTIEL]: -1,
       [UsageType.EQUIPEMENTS]: 0.5,
       [UsageType.CULTURE]: 0.5,
-      [UsageType.TERTIAIRE]: 1,
+      [UsageType.TERTIAIRE]: 2,
       [UsageType.INDUSTRIE]: 2,
       [UsageType.RENATURATION]: 0.5,
       [UsageType.PHOTOVOLTAIQUE]: 0.5,
@@ -78,6 +78,13 @@ describe("Scoring de la zone d'activité économique", () => {
 
     expect(horsZae.fiabilite.poidsTotal).toBe(34);
     expect(horsZae.fiabilite.poidsRenseignes).toBe(sansDonnee.fiabilite.poidsRenseignes + 1);
+  });
+
+  it("garde les locaux d'activité positifs (et non très positifs) en v1.18", async () => {
+    const site = siteAvecZae(true);
+
+    expect((await detailCritere(site, UsageType.TERTIAIRE, "v1.18"))?.scoreBrut).toBe(1);
+    expect((await detailCritere(site, UsageType.TERTIAIRE))?.scoreBrut).toBe(2);
   });
 
   it("ignore le critère dans les versions antérieures à v1.18", async () => {

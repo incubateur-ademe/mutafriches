@@ -2,7 +2,7 @@
 
 > **Version doc** : 2.1
 > **Date** : Mai 2026
-> **Algorithme** : v1.18
+> **Algorithme** : v1.19
 > **Objectif** : Évaluer la mutabilité des friches urbaines pour 7 usages potentiels
 
 ---
@@ -284,7 +284,7 @@ La fiabilité **ne modifie pas** le classement. C'est un indicateur séparé qui
 
 > **Locaux d'activité** (v1.17) : l'usage `tertiaire` est rééquilibré vers l'artisanat et les petites activités, qui s'implantent aussi hors des centres et sur des parcelles modestes. **Centre-ville** : neutre (avant : positif), hors centre positif (avant : négatif). **Surface du site** : positif sous 1,5 ha (avant : neutre), neutre à partir de 1,5 ha (avant : négatif). **Commerces et services** : leur absence est neutre (avant : négatif) ; leur présence reste positive.
 
-> **Zone d'activité économique** (v1.18) : en zone, **industrie** très positif, **locaux d'activité** positif, **résidentiel** négatif, les quatre autres usages neutres ; hors zone, neutre sur les sept usages. Donnée : base Fusac du Cerema, millésime 2025, sites d'activité de type « zone d'activité économique » en activité (hors outre-mer). Test sur le **centroïde** du site : un grand site à cheval sur une zone, centre dehors, est classé hors zone. Fusac n'est pas un zonage réglementaire : plus de la moitié des zones viennent d'OpenStreetMap, le reste de zones d'urbanisme à vocation économique (ADR-0049). Donnée indisponible (`undefined`) hors référentiel ou hors métropole : le critère est ignoré et ne compte pas dans la fiabilité.
+> **Zone d'activité économique** (v1.18, locaux d'activité très positifs en v1.19) : en zone, **industrie** et **locaux d'activité** très positifs (v1.18 : positif pour les locaux d'activité), **résidentiel** négatif, les quatre autres usages neutres ; hors zone, neutre sur les sept usages. Donnée : base Fusac du Cerema, millésime 2025, sites d'activité de type « zone d'activité économique » en activité (hors outre-mer). Test sur le **centroïde** du site : un grand site à cheval sur une zone, centre dehors, est classé hors zone. Fusac n'est pas un zonage réglementaire : plus de la moitié des zones viennent d'OpenStreetMap, le reste de zones d'urbanisme à vocation économique (ADR-0049). Donnée indisponible (`undefined`) hors référentiel ou hors métropole : le critère est ignoré et ne compte pas dans la fiabilité.
 
 > **Accès autoroutier** : `distanceAutoroute` est la distance **par la route** jusqu'à l'entrée d'autoroute ou de voie express la plus proche (ADR-0047). Quand aucune entrée n'est à moins de 50 km (`null`), le critère est scoré dans la tranche « > 5 km » plutôt qu'ignoré : il compte donc dans la fiabilité.
 
@@ -305,6 +305,6 @@ La fiabilité **ne modifie pas** le classement. C'est un indicateur séparé qui
 
 ---
 
-> **Dernière mise à jour** : Octobre 2026 (algorithme v1.18)
+> **Dernière mise à jour** : Octobre 2026 (algorithme v1.19)
 > **Contact** : <contact@mutafriches.beta.gouv.fr>
 > **Repository** : [https://github.com/incubateur-ademe/mutafriches](https://github.com/incubateur-ademe/mutafriches)

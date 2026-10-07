@@ -1202,13 +1202,13 @@ export const MATRICE_SCORING = {
     },
   },
 
-  // Zone d'activité économique (Cerema, Fusac) — v1.18
+  // Zone d'activité économique (Cerema, Fusac) — v1.18, locaux d'activité très positif en v1.19
   siteEnZae: {
     true: {
       [UsageType.RESIDENTIEL]: ScoreImpact.NEGATIF,
       [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
       [UsageType.CULTURE]: ScoreImpact.NEUTRE,
-      [UsageType.TERTIAIRE]: ScoreImpact.POSITIF,
+      [UsageType.TERTIAIRE]: ScoreImpact.TRES_POSITIF,
       [UsageType.INDUSTRIE]: ScoreImpact.TRES_POSITIF,
       [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
       [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,

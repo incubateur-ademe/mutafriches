@@ -391,7 +391,7 @@ Ramené à un booléen : seule une zone saturée compte comme saturée, une zone
 
 **Traitement dans l'algorithme**
 
-Ramenée à un booléen. En zone d'activité économique, très positif pour l'industrie, positif pour les locaux d'activité, négatif pour le résidentiel, neutre pour les quatre autres usages. Hors zone, le critère est neutre sur les sept usages. La base Fusac n'est pas un zonage réglementaire : plus de la moitié des zones proviennent d'OpenStreetMap, le reste de zones d'urbanisme à vocation économique. Un site dont le centre est hors zone mais qui en recouvre une partie est déclaré hors zone (ADR-0049).
+Ramenée à un booléen. En zone d'activité économique, très positif pour l'industrie et les locaux d'activité, négatif pour le résidentiel, neutre pour les quatre autres usages. Hors zone, le critère est neutre sur les sept usages. La base Fusac n'est pas un zonage réglementaire : plus de la moitié des zones proviennent d'OpenStreetMap, le reste de zones d'urbanisme à vocation économique. Un site dont le centre est hors zone mais qui en recouvre une partie est déclaré hors zone (ADR-0049).
 
 **Critères d'évaluation alimentés**
 
