@@ -106,6 +106,22 @@ describe("transformEnrichmentToUiData - saturation du réseau électrique EnR", 
   });
 });
 
+describe("transformEnrichmentToUiData - zone d'activité économique", () => {
+  it("affiche 'Oui' dans une zone d'activité et 'Non' hors zone", () => {
+    expect(transformEnrichmentToUiData(makeEnrichissement({ siteEnZae: true })).siteEnZae).toBe(
+      "Oui",
+    );
+    expect(transformEnrichmentToUiData(makeEnrichissement({ siteEnZae: false })).siteEnZae).toBe(
+      "Non",
+    );
+  });
+
+  it("laisse le champ vide quand la donnée est indisponible (undefined)", () => {
+    const ui = transformEnrichmentToUiData(makeEnrichissement({ siteEnZae: undefined }));
+    expect(ui.siteEnZae).toBe("");
+  });
+});
+
 describe("transformEnrichmentToUiData - distance au réseau de chaleur", () => {
   it("affiche la distance quand elle est renseignée", () => {
     const ui = transformEnrichmentToUiData(makeEnrichissement({ distanceReseauChaleur: 320 }));

@@ -46,6 +46,9 @@ export interface ParcelleUiModel {
   /** Zone de réseau électrique saturé pour les projets EnR (chaîne vide = indisponible) */
   saturationReseauEnr: string;
 
+  /** Site au sein d'une zone d'activité économique (chaîne vide = indisponible) */
+  siteEnZae: string;
+
   /** Exposition à un îlot de chaleur urbain — informatif, hors algorithme */
   ilotChaleurUrbain?: IlotChaleurUrbain;
 
