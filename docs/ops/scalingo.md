@@ -165,9 +165,22 @@ SELECT partenaire_slug, count(*) AS sites FROM partenaire_sites GROUP BY 1 ORDER
 
 ## Lancer un import de référentiel ou un script
 
-Les imports (`db:*:import`) et scripts partenaires ne tournent pas au déploiement : ils se
-lancent une fois par environnement, sur le `dist/` compilé (cf. Gotchas de
-[`CLAUDE.md`](../../CLAUDE.md), `ts-node` n'existe pas au runtime). Ils sont idempotents :
+Le `postdeploy` lance `import-all` (ADR-0050) : après les migrations, il importe chaque
+référentiel de `IMPORT_DATASETS` dont la table est **vide**, et ignore les autres. Un échec
+n'empêche pas le déploiement ; il apparaît dans le récapitulatif en fin de `postdeploy` (log de
+la release) et la table reste vide.
+
+Pour rejouer ou forcer un import, ou lancer un script partenaire, un one-off sur le `dist/`
+compilé suffit (cf. Gotchas de [`CLAUDE.md`](../../CLAUDE.md), `ts-node` n'existe pas au
+runtime). Les imports sont idempotents :
+
+```bash
+scalingo --app mutafriches-preprod --region osc-fr1 run "pnpm db:import:all"
+scalingo --app mutafriches-preprod --region osc-fr1 run "pnpm db:import:all --force=qpv,zae"
+```
+
+Un référentiel déjà rempli n'est réimporté qu'avec `--force` (nouveau millésime, fichier
+commité modifié) ; un import unitaire reste possible :
 
 ```bash
 scalingo --app mutafriches-preprod --region osc-fr1 run "pnpm db:qpv:import"

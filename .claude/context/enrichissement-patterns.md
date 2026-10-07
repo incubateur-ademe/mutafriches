@@ -290,7 +290,14 @@ export function createMockMonApiService(): MockMonApiService {
 }
 ```
 
-### 7. Mettre à jour les types partagés
+### 7. Enregistrer l'import (référentiel local uniquement)
+
+Si le domaine lit une table `raw_*` alimentée par un script `db:xxx:import`, ajouter l'entrée dans
+`IMPORT_DATASETS` (`donnees-externes/imports.registry.ts` : `countTable`, `script`, `source`). Sans
+elle, le `postdeploy` (`import-all`, ADR-0050) n'importe jamais la table ; le test
+`imports.registry.spec.ts` casse si l'entrée manque.
+
+### 8. Mettre à jour les types partagés
 
 Dans `packages/shared-types/`, ajouter le nouveau champ au type d'enrichissement si nécessaire.
 
@@ -303,6 +310,7 @@ Dans `packages/shared-types/`, ajouter le nouveau champ au type d'enrichissement
 - [ ] Les prérequis sont vérifiés avant l'appel API
 - [ ] Les erreurs sont gérées (source échouée + champ manquant)
 - [ ] Le service est câblé dans le module et l'orchestrateur
+- [ ] Si référentiel local : entrée dans `IMPORT_DATASETS` (import au déploiement)
 - [ ] Les tests unitaires couvrent : succès, échec API, prérequis manquants
 - [ ] Les types sont correctement castés (`as Type`)
 - [ ] Pas de secrets en dur

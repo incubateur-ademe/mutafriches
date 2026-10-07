@@ -334,6 +334,7 @@ export interface EnrichissementOutput {
 - [ ] Résultat fusionné via `mergeEnrichmentResult()`
 - [ ] Champ ajouté au DTO de sortie
 - [ ] Mock ajouté dans `__test-helpers__/`
+- [ ] Si la source est un référentiel local (`raw_*`) : entrée dans `IMPORT_DATASETS` (import au déploiement, ADR-0050)
 
 ### Tests
 

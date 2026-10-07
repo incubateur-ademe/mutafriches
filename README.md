@@ -142,6 +142,7 @@ pnpm db:reseaux-chaleur:import          # Référentiel îlots de chaleur urbain
 pnpm db:qpv:import          # Référentiel quartiers prioritaires (QPV, à chaque arrêté)
 pnpm db:zones-contrainte-enr:import  # Zones saturées réseau EnR (Enedis, mensuel — ADR-0046)
 pnpm db:zae:import          # Zones d'activité économique (Cerema Fusac, annuel — ADR-0049)
+pnpm db:import:all          # Tous les référentiels manquants (base locale neuve : build:nest d'abord — ADR-0050)
 ```
 
 Le conteneur PostgreSQL ne publie son port que sur `127.0.0.1` : la base locale, qui peut contenir
@@ -256,8 +257,9 @@ détecter une divergence de `node_modules`, tente de le purger sans TTY et plant
 Conséquence : **le runtime n'appelle jamais pnpm**.
 
 - `Procfile` → `web: node apps/api/dist/src/main` (Node direct) et
-  `postdeploy: cd apps/api && ./node_modules/.bin/drizzle-kit migrate` (shim `.bin` direct,
-  jamais préfixé par `node` — c'est un script shell). `drizzle-kit` est en **dependencies**
+  `postdeploy: cd apps/api && ./node_modules/.bin/drizzle-kit migrate && node dist/src/scripts/import-all.js`
+  (shim `.bin` direct, jamais préfixé par `node` — c'est un script shell ; `import-all` importe
+  les référentiels dont la table est vide, ADR-0050). `drizzle-kit` est en **dependencies**
   d'`apps/api` pour survivre au prune des `devDependencies`.
 - `pnpm-workspace.yaml` → `confirmModulesPurge: false` sécurise les one-shot
   `scalingo run pnpm …`, et `allowBuilds: { … : false }` évite que pnpm ≥ 11 ne bloque
