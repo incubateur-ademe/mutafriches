@@ -8,7 +8,7 @@
     "assets": [
       {
         "include": "scripts/data/**/*",
-        "outDir": "dist/src"
+        "outDir": "dist"
       }
     ]
   }
