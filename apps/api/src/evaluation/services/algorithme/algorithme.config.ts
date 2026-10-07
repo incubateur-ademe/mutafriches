@@ -21,10 +21,10 @@ import {
 import { RegleExclusion, ScoreImpact, ScoreParUsage } from "./algorithme.types";
 
 // Configuration des poids
-// 31 critères au total, poids total = 33 (source de vérité de la doc de l'algo)
+// 32 critères au total, poids total = 34 (source de vérité de la doc de l'algo)
 export const POIDS_CRITERES = {
   // ------------------------------------------------
-  // 21 critères enrichis automatiquement (module enrichissement) — poids 21.5
+  // 22 critères enrichis automatiquement (module enrichissement) — poids 22.5
   // ------------------------------------------------
   surfaceSite: 2,
   surfaceBati: 2,
@@ -46,6 +46,7 @@ export const POIDS_CRITERES = {
   zonageAbcLogement: 0.5,
   siteEnQpv: 1,
   saturationReseauEnr: 1,
+  siteEnZae: 1,
   distanceIte: 0.5,
 
   // ------------------------------------------------
@@ -1189,6 +1190,28 @@ export const MATRICE_SCORING = {
       [UsageType.INDUSTRIE]: ScoreImpact.NEUTRE,
       [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
       [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.TRES_NEGATIF,
+    },
+    false: {
+      [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,
+      [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
+      [UsageType.CULTURE]: ScoreImpact.NEUTRE,
+      [UsageType.TERTIAIRE]: ScoreImpact.NEUTRE,
+      [UsageType.INDUSTRIE]: ScoreImpact.NEUTRE,
+      [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
+      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
+    },
+  },
+
+  // Zone d'activité économique (Cerema, Fusac) — v1.18
+  siteEnZae: {
+    true: {
+      [UsageType.RESIDENTIEL]: ScoreImpact.NEGATIF,
+      [UsageType.EQUIPEMENTS]: ScoreImpact.NEUTRE,
+      [UsageType.CULTURE]: ScoreImpact.NEUTRE,
+      [UsageType.TERTIAIRE]: ScoreImpact.POSITIF,
+      [UsageType.INDUSTRIE]: ScoreImpact.TRES_POSITIF,
+      [UsageType.RENATURATION]: ScoreImpact.NEUTRE,
+      [UsageType.PHOTOVOLTAIQUE]: ScoreImpact.NEUTRE,
     },
     false: {
       [UsageType.RESIDENTIEL]: ScoreImpact.NEUTRE,

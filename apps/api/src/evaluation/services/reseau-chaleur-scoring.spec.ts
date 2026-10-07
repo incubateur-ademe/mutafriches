@@ -106,13 +106,13 @@ describe("Scoring de la distance au réseau de chaleur", () => {
 
   // `null` = recherche effectuée, aucun résultat → compte comme renseigné ; `undefined` =
   // donnée indisponible → ne compte pas. La note étant arrondie au 0,5, l'écart d'un poids 1
-  // sur 33 se lit sur poidsRenseignes, pas sur la note.
+  // sur 34 se lit sur poidsRenseignes, pas sur la note.
   it("compte une distance nulle dans la fiabilité, contrairement à une donnée indisponible", async () => {
     const avecNull = await service.calculer(siteAvecDistance(null));
     const sansDonnee = await service.calculer(siteAvecDistance(undefined));
 
-    expect(avecNull.fiabilite.poidsTotal).toBe(33);
-    expect(sansDonnee.fiabilite.poidsTotal).toBe(33);
+    expect(avecNull.fiabilite.poidsTotal).toBe(34);
+    expect(sansDonnee.fiabilite.poidsTotal).toBe(34);
     expect(avecNull.fiabilite.poidsRenseignes).toBe(sansDonnee.fiabilite.poidsRenseignes + 1);
   });
 });

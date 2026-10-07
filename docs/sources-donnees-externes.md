@@ -10,10 +10,10 @@ qu'ils alimentent.
 
 ## Comment sont utilisées ces données
 
-L'analyse de mutabilité repose sur 31 critères, notés pour 7 usages possibles d'une friche.
-21 critères sont **enrichis automatiquement** à partir des sources ci-dessous ; 10 sont
+L'analyse de mutabilité repose sur 32 critères, notés pour 7 usages possibles d'une friche.
+22 critères sont **enrichis automatiquement** à partir des sources ci-dessous ; 10 sont
 **saisis manuellement** par l'utilisateur. Chaque critère porte un poids ; le poids total
-est de 33. La part des critères effectivement renseignés détermine l'indice de fiabilité
+est de 34. La part des critères effectivement renseignés détermine l'indice de fiabilité
 de l'analyse.
 
 ## Sources enrichies automatiquement
@@ -378,6 +378,26 @@ Ramené à un booléen : seule une zone saturée compte comme saturée, une zone
 | Critère d'évaluation alimenté | Poids |
 | --- | --- |
 | Saturation du réseau électrique pour les projets EnR | 1 |
+
+### Fonciers à usage d'activités (Fusac) : zones d'activité économique
+
+- **Type** : Référentiel local
+- **Opérateur** : Cerema
+- **Documentation** : https://datafoncier.cerema.fr/fusac
+
+**Champs récupérés**
+
+- Appartenance du site à une zone d'activité économique, par test spatial du centroïde contre les sites d'activité de type « zone d'activité économique » en activité du millésime 2025 (base PostGIS `raw_zae`, environ 45 000 sites, rafraîchie à chaque millésime). Donnée indisponible en outre-mer
+
+**Traitement dans l'algorithme**
+
+Ramenée à un booléen. En zone d'activité économique, très positif pour l'industrie, positif pour les locaux d'activité, négatif pour le résidentiel, neutre pour les quatre autres usages. Hors zone, le critère est neutre sur les sept usages. La base Fusac n'est pas un zonage réglementaire : plus de la moitié des zones proviennent d'OpenStreetMap, le reste de zones d'urbanisme à vocation économique. Un site dont le centre est hors zone mais qui en recouvre une partie est déclaré hors zone (ADR-0049).
+
+**Critères d'évaluation alimentés**
+
+| Critère d'évaluation alimenté | Poids |
+| --- | --- |
+| Au sein d'une zone d'activité économique | 1 |
 
 ## Critères saisis manuellement
 

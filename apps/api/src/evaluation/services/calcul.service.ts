@@ -323,6 +323,7 @@ export class CalculService {
    * - v1.7 : ajout de zonageAbcLogement
    * - v1.14 : ajout de siteEnQpv
    * - v1.15 : ajout de saturationReseauEnr
+   * - v1.18 : ajout de siteEnZae
    */
   protected extraireCriteres(
     site: Site,
@@ -419,6 +420,11 @@ export class CalculService {
     // Saturation réseau EnR (v1.15+). Même règle : `false` est scoré, `undefined` ignoré.
     if (!poidsCriteres || "saturationReseauEnr" in poidsCriteres) {
       criteres.saturationReseauEnr = site.saturationReseauEnr;
+    }
+
+    // Zone d'activité économique (v1.18+). Même règle : `false` est scoré, `undefined` ignoré.
+    if (!poidsCriteres || "siteEnZae" in poidsCriteres) {
+      criteres.siteEnZae = site.siteEnZae;
     }
 
     return criteres;

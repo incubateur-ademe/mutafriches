@@ -63,7 +63,7 @@ describe("Scoring de la saturation du réseau électrique EnR", () => {
     const nonSature = await service.calculer(siteAvecSaturation(false));
     const sansDonnee = await service.calculer(siteAvecSaturation(undefined));
 
-    expect(nonSature.fiabilite.poidsTotal).toBe(33);
+    expect(nonSature.fiabilite.poidsTotal).toBe(34);
     expect(nonSature.fiabilite.poidsRenseignes).toBe(sansDonnee.fiabilite.poidsRenseignes + 1);
   });
 });
