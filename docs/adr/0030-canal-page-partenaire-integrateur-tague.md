@@ -2,6 +2,7 @@
 
 **Date** : 2026-07-22
 **Statut** : Accepté
+**Mise à jour (2026-10-07)** : le script temporaire de backfill a été retiré, l'historique ayant été rattrapé.
 
 ## Contexte
 

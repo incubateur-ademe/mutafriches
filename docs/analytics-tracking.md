@@ -170,7 +170,7 @@ ORDER BY 1, 2;
 
 ### Rétroactivité
 
-Le tag `partenaire:<slug>` n'existe que pour les données postérieures au déploiement d'[ADR-0030](adr/0030-canal-page-partenaire-integrateur-tague.md). L'historique se rattrape avec le script temporaire `db:partenaires:backfill-canal` (jointure sur les parcelles de `partenaire_sites`). Attention : sur `enrichissements`/`sites`, ce backfill inclut le trafic de réchauffe du cache (prefetch) ; les `evaluations` restent un signal propre.
+Le tag `partenaire:<slug>` n'existe que pour les données postérieures au déploiement d'[ADR-0030](adr/0030-canal-page-partenaire-integrateur-tague.md). L'historique a été rattrapé en juillet 2026 par un script temporaire de jointure sur les parcelles de `partenaire_sites`, depuis retiré. Attention : sur `enrichissements`/`sites`, ce rattrapage a inclus le trafic de réchauffe du cache (prefetch) ; les `evaluations` restent un signal propre.
 
 ### Mesure d'usage prefetch-free (recommandée) — via `evenements_utilisateur`
 
