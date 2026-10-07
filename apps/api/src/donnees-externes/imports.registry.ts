@@ -94,6 +94,13 @@ export const IMPORT_DATASETS: readonly ImportDatasetDefinition[] = [
     docUrl: "https://observatoire.enedis.fr/services/carte-zones-contrainte-projets-enr",
   },
   {
+    key: "zae",
+    label: "Zones d'activité économique (Cerema, Fusac)",
+    datasetNamePattern: "zae",
+    countTable: "raw_zae",
+    docUrl: "https://datafoncier.cerema.fr/fusac",
+  },
+  {
     key: "decoupage-administratif",
     label: "Découpage administratif (communes / EPCI)",
     datasetNamePattern: "decoupage-administratif-etalab-%",
