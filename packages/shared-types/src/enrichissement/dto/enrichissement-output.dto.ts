@@ -116,6 +116,14 @@ export interface EnrichissementOutputDto {
    */
   saturationReseauEnr?: boolean;
 
+  // Zone d'activité économique (ADR-0049)
+  /**
+   * `true` si le centroïde du site tombe dans une zone d'activité économique (Cerema, Fusac),
+   * `false` si la recherche spatiale a abouti hors de toute zone. `undefined` = référentiel
+   * illisible ou enrichissement antérieur à v1.18.
+   */
+  siteEnZae?: boolean;
+
   // Îlot de chaleur urbain — donnée informative, hors algorithme (ADR-0034)
   /** undefined = enrichissement en échec ; NON_COUVERT = site hors périmètre d'étude */
   ilotChaleurUrbain?: IlotChaleurUrbain;

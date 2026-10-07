@@ -217,6 +217,10 @@ export function getCritereTagLabel(
     case "saturationReseauEnr":
       return null;
 
+    // Hors ZAE, le critère est neutre partout : un tag y serait trompeur
+    case "siteEnZae":
+      return valeur === true ? "zone d'activité" : null;
+
     default:
       return critere;
   }

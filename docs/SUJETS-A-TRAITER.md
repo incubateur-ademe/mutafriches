@@ -63,7 +63,7 @@ Format d'une entrée :
 
 ### Imports et seeds manuels à confirmer par environnement
 
-- **Origine** : #189 (`db:qpv:import` puis pré-chauffe), #213 (`db:zones-contrainte-enr:import`), #208 (`db:partenaires:seed` puis pré-chauffe), #217 (origines Bénéfriches dans `ALLOWED_INTEGRATOR_ORIGINS`)
+- **Origine** : #189 (`db:qpv:import` puis pré-chauffe), #213 (`db:zones-contrainte-enr:import`), ZAE (`db:zae:import`), #208 (`db:partenaires:seed` puis pré-chauffe), #217 (origines Bénéfriches dans `ALLOWED_INTEGRATOR_ORIGINS`)
 - **Écarté parce que** : non lancés par le `postdeploy`, à exécuter à la main
 - **Préalable** : vérifier en base préprod et prod que chaque référentiel est présent
 
@@ -106,6 +106,12 @@ Format d'une entrée :
 - **Origine** : ADR-0046
 - **Écarté parce que** : fichier téléchargé à la main et commité sur un dépôt public, conditions de réutilisation non confirmées
 - **Préalable** : contact Enedis ; demander aussi une diffusion en open data pour automatiser l'import
+
+### ZAE en outre-mer
+
+- **Origine** : ADR-0049
+- **Écarté parce que** : les 431 zones d'activité des départements 97x sont stockées dans Fusac avec des coordonnées hors Lambert-93 malgré le SRID déclaré ; le critère reste indisponible (donc hors fiabilité) pour ces sites
+- **Préalable** : identifier la projection réelle de chaque territoire dans le GeoPackage, reprojeter, vérifier sur un site connu, puis retirer le filtre `NOT LIKE '97%'` et la garde du service
 
 ### Maquettes Figma « Locaux d'activité »
 

@@ -19,7 +19,7 @@ export class MutabiliteSwaggerDto implements IMutabiliteOutput {
       text: "Très fiable",
       description: "Données complètes et vérifiées pour 85% des critères analysés",
       criteresRenseignes: 27,
-      criteresTotal: 31,
+      criteresTotal: 32,
     },
     type: Object,
   })

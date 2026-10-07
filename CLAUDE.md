@@ -158,7 +158,7 @@ Pour **chaque feature identifiée** (un groupe cohérent de modifications, typiq
 - **Vérifier le `README.md`** : à chaque feature, contrôler si le README doit être mis à jour (nouvelle commande, nouvelle source de données, changement d'installation/déploiement, nouvelle route). Ne le modifier que si un élément documenté a réellement changé — pas de doc superflue.
 - **Vérifier la doc des sources de données** : si la feature ajoute, retire ou modifie une source d'enrichissement (nouvelle API/base, changement des champs récupérés ou de leur traitement), mettre à jour `SOURCES_DONNEES` (`packages/shared-types/src/documentation/sources-donnees.data.ts`) **dans le même commit**, puis régénérer le Markdown avec `pnpm docs:sources:gen` (rebuild `shared-types` au préalable). La page UI `/documentation-donnees` et l'export PDF en découlent automatiquement (source de vérité unique, cf. ADR-0026) — ne jamais éditer le `.md` à la main.
 - **Proposer à l'utilisateur des tests manuels E2E côté UI** à réaliser lui-même, **systématiquement** en fin de feature : un parcours pas à pas, numéroté, couvrant le comportement attendu et les cas limites. Signaler les pièges qui fausseraient le test (cache d'enrichissement ou d'évaluation à purger, import de référentiel à rejouer, données de démo). Ne jamais clore une feature sans cette liste.
-- **Donner l'ADRESSE POSTALE avec l'identifiant cadastral** pour chaque site de test. Le parcours commence par une recherche d'adresse sur la carte (`/analyser`) : un identifiant cadastral seul ne permet pas de retrouver la parcelle dans l'UI. Vérifier que l'adresse tombe bien DANS la parcelle visée — `https://api-adresse.data.gouv.fr/reverse/?lat=&lon=` depuis le centroïde donne l'adresse, et un test point-dans-polygone sur la géométrie apicarto confirme la correspondance. Exemple : `49020000AK0118` = **19 rue Georges Morel, 49070 Beaucouzé** (7 193 m², réseau de chaleur à 57 m).
+- **Donner l'ADRESSE POSTALE, l'identifiant cadastral et le NUMÉRO DE PARCELLE À CLIQUER** pour chaque site de test. Le parcours commence par une recherche d'adresse sur la carte (`/analyser`) : un identifiant cadastral seul ne permet pas de retrouver la parcelle dans l'UI. Vérifier que l'adresse tombe bien DANS la parcelle visée — `https://api-adresse.data.gouv.fr/reverse/?lat=&lon=` depuis le centroïde donne l'adresse, et un test point-dans-polygone sur la géométrie apicarto confirme la correspondance. Le « numéro de parcelle à cliquer » est les 4 derniers chiffres de l'identifiant (`AK0118` → **0118**), tel qu'affiché sur la carte : après la recherche d'adresse, la carte s'ouvre sur plusieurs parcelles voisines, et c'est ce numéro qui dit laquelle sélectionner avant « Analyser ce site » (pour un site multi-parcelle, lister chaque numéro à cliquer). Le préciser pour chaque cas, y compris quand la parcelle voisine de la bonne a un numéro proche. Exemple : `49020000AK0118` = **19 rue Georges Morel, 49070 Beaucouzé**, parcelle **0118** (7 193 m², réseau de chaleur à 57 m).
 - **Tracer ce qui est écarté** : un sujet écarté d'une PR (retour de revue hors périmètre, arbitrage en attente, rattrapage à mesurer d'abord) va dans `docs/SUJETS-A-TRAITER.md`, avec son préalable ; l'entrée est retirée par la PR qui le traite.
 - **Proposer un titre et un descriptif de PR**, **systématiquement** en fin de feature, prêts à copier-coller : un titre en Conventional Commits (sous 70 caractères) et un descriptif de quelques phrases — le problème, la solution retenue, le pourquoi. Pas de listes à rallonge ni de recopie du diff. Ne créer ni pousser la PR que sur demande explicite (cf. règle de commit).
 
@@ -303,6 +303,8 @@ pnpm db:reseaux-chaleur:import  # Importer les tracés des réseaux de chaleur u
 pnpm db:qpv:import          # Importer le référentiel des quartiers prioritaires (QPV)
 pnpm db:zones-contrainte-enr:import  # Importer les zones de contrainte réseau EnR (Enedis)
 pnpm data:zones-contrainte-enr:preparer <capca.json>  # Régénérer le GeoJSON commité depuis le fichier Enedis
+pnpm db:zae:import          # Importer les zones d'activité économique (Cerema Fusac)
+pnpm data:zae:preparer <fichier.gpkg>  # Régénérer le GeoJSON commité depuis le GeoPackage Fusac (ogr2ogr requis)
 ```
 
 ## Architecture
@@ -317,7 +319,7 @@ apps/api/src/
 │   ├── dtos/               # Objets de transfert
 │   ├── entities/           # Entités domaine
 │   └── repositories/       # Accès base de données
-├── evaluation/             # Calcul mutabilité (matrice 31 critères × 7 usages)
+├── evaluation/             # Calcul mutabilité (matrice 32 critères × 7 usages)
 │   ├── algorithme/         # Logique de calcul pure
 │   ├── dtos/               # Objets de transfert
 │   └── entities/           # Entités domaine
@@ -335,7 +337,7 @@ apps/api/src/
 L'algorithme de scoring est versionné pour préserver la reproductibilité des évaluations passées et permettre la comparaison entre versions.
 
 - **Source de vérité** : `apps/api/src/evaluation/services/algorithme/versions/` — un fichier par version (`v1.1.ts`, `v1.2.ts`, …), agrégés par `index.ts` (tableau chronologique ascendant, **dernière entrée = version courante**, pointée par `VERSION_COURANTE`). C'est aussi l'ordre renvoyé par `GET /evaluation/algorithme/versions`.
-- **Référence métier** : chaque version doit pointer vers le fichier Excel de référence correspondant (matrice 31×7), conservé dans `docs/sources/` (ou équivalent)
+- **Référence métier** : chaque version doit pointer vers le fichier Excel de référence correspondant (matrice 32×7), conservé dans `docs/sources/` (ou équivalent)
 - **Exposition** : la version courante et la liste complète sont exposées via `GET /evaluation/metadata` et `GET /evaluation/algorithme/versions`. Toute modification doit **immédiatement** se refléter dans ces endpoints (et dans les exemples Swagger associés).
 - **Documentation OBLIGATOIRE** : toute modification de l'algorithme — ajout ou retrait d'un critère, changement de poids, de seuil, de la matrice de scoring, ou de la formule de fiabilité — DOIT être répercutée **dans le même commit** sur :
   - `docs/evaluation-mutabilite.md` (doc métier : liste des critères, poids, poids total, formules, exemples)
@@ -378,6 +380,7 @@ Le test dédié (`versions.spec.ts`) garantit l'ordre chronologique ascendant st
 - **Référentiel local Zonage ABC** (`raw_zonage_abc`) : zone A/Abis/B1/B2/C par commune, importé à chaque arrêté (`pnpm db:zonage-abc:import`) — remplace l'appel live data.gouv.fr pour la même raison (ADR-0032)
 - **Référentiel local Réseaux de chaleur** (`raw_reseaux_chaleur`) : tracés des réseaux de chaleur et de froid, importés depuis France Chaleur Urbaine (`pnpm db:reseaux-chaleur:import`) — remplace l'appel live `/v1/eligibility`, qui mesure la distance sur une géométrie partielle pour environ 8 % des réseaux (ADR-0037)
 - **Référentiel local Zones de contrainte EnR** (`raw_zones_contrainte_enr`) : zones de postes sources saturées pour raccorder des projets EnR (Enedis/RTE), importées depuis un GeoJSON compressé commité (`scripts/data/zones-contrainte-enr.geojson.gz`), régénéré chaque mois à partir d'un fichier Enedis **téléchargé à la main** (protection anti-robots, pas d'API) — rappel par issue GitHub mensuelle (ADR-0046)
+- **Référentiel local ZAE** (`raw_zae`) : sites Fusac (Cerema) de type « zone d'activité économique », test spatial du centroïde, importés depuis un GeoJSON compressé commité (`scripts/data/zae-fusac.geojson.gz`), régénéré à chaque millésime à partir du GeoPackage **téléchargé à la main** (~10 Go décompressé, pas d'API) ; outre-mer exclu (ADR-0049)
 - **Référentiel local ICU** (`raw_icu`) : îlots de chaleur urbain (CSTB), test spatial sur ~600 communes, importé à chaque millésime (`pnpm db:icu:import`) — **donnée informative, hors algorithme** (ADR-0034)
 
 ## Tests
@@ -437,7 +440,7 @@ La modale « Analyser plusieurs sites » (page résultats) embarque un **calendr
 - @.claude/context/enrichissement-patterns.md — Comment ajouter un nouveau domaine ou une nouvelle API externe
 - @.claude/context/security-rules.md — Checklist sécurité (secrets, validation, injection SQL, guards)
 - @.claude/context/feature-example.md — Parcours complet d'ajout d'une source d'enrichissement
-- @.claude/context/evaluation-patterns.md — Algorithme de scoring (matrice 31×7), fiabilité, cache, sémantique `null` vs `undefined`
+- @.claude/context/evaluation-patterns.md — Algorithme de scoring (matrice 32×7), fiabilité, cache, sémantique `null` vs `undefined`
 
 ## Gotchas
 

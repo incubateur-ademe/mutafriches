@@ -1,6 +1,6 @@
 {
   "name": "mutafriches",
-  "version": "1.44.1",
+  "version": "1.45.0",
   "private": true,
   "description": "Monorepo pour l'analyse de mutabilité des friches urbaines",
   "packageManager": "pnpm@11.24.0",
@@ -45,6 +45,8 @@
     "db:qpv:import": "pnpm --filter api run db:qpv:import",
     "db:zones-contrainte-enr:import": "pnpm --filter api run db:zones-contrainte-enr:import",
     "data:zones-contrainte-enr:preparer": "pnpm --filter api run data:zones-contrainte-enr:preparer",
+    "db:zae:import": "pnpm --filter api run db:zae:import",
+    "data:zae:preparer": "pnpm --filter api run data:zae:preparer",
     "db:partenaires:seed": "pnpm --filter api run db:partenaires:seed",
     "partenaires:prefetch": "pnpm --filter api run partenaires:prefetch",
     "partenaires:resolve-idu": "pnpm --filter api run partenaires:resolve-idu",

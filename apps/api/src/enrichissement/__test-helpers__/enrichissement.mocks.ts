@@ -73,6 +73,14 @@ interface MockQpvEnrichissementService {
   enrichir: Mock;
 }
 
+interface MockZaeRepository {
+  estDansZae: Mock;
+}
+
+interface MockZaeEnrichissementService {
+  enrichir: Mock;
+}
+
 interface MockZonesContrainteEnrRepository {
   findStatutZoneContenant: Mock;
 }
@@ -537,6 +545,24 @@ export function createMockQpvRepository(): MockQpvRepository {
  * Mock du QpvEnrichissementService
  */
 export function createMockQpvEnrichissementService(): MockQpvEnrichissementService {
+  return {
+    enrichir: vi.fn(),
+  };
+}
+
+/**
+ * Mock du ZaeRepository
+ */
+export function createMockZaeRepository(): MockZaeRepository {
+  return {
+    estDansZae: vi.fn(),
+  };
+}
+
+/**
+ * Mock du ZaeEnrichissementService
+ */
+export function createMockZaeEnrichissementService(): MockZaeEnrichissementService {
   return {
     enrichir: vi.fn(),
   };

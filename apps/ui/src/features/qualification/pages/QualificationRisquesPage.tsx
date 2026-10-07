@@ -257,6 +257,30 @@ export const QualificationRisquesPage: React.FC = () => {
           }
         />
       </div>
+
+      <hr className="fr-my-4w" />
+
+      {/* Zone 5 - Zone d'activité économique */}
+      <div className="fr-grid-row fr-grid-row--gutters">
+        <EnrichedInfoField
+          id="site-en-zae"
+          label="Au sein d'une zone d'activité économique"
+          value={uiData?.siteEnZae}
+          tooltip={
+            <>
+              Données CEREMA :<br />
+              <a
+                href="https://datafoncier.cerema.fr/fusac"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="fr-link fr-text--xs"
+              >
+                datafoncier.cerema.fr/fusac
+              </a>
+            </>
+          }
+        />
+      </div>
       <hr className="fr-my-4w" />
 
       <StepNavigation

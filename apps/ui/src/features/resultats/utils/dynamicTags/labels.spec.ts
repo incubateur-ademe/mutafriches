@@ -48,6 +48,17 @@ describe("getCritereTagLabel", () => {
     });
   });
 
+  describe("siteEnZae", () => {
+    it("produit un tag en zone d'activité économique", () => {
+      expect(getCritereTagLabel("siteEnZae", true)).toBe("zone d'activité");
+    });
+
+    it("ne produit aucun tag hors zone ni sans donnée", () => {
+      expect(getCritereTagLabel("siteEnZae", false)).toBeNull();
+      expect(getCritereTagLabel("siteEnZae", undefined)).toBeNull();
+    });
+  });
+
   // Garde-fou générique : sans `case`, le podium afficherait la clé technique du critère.
   it("retourne la clé brute pour un critère sans libellé dédié", () => {
     expect(getCritereTagLabel("critereInconnu", 42)).toBe("critereInconnu");

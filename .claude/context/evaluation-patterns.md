@@ -15,13 +15,13 @@ apps/api/src/evaluation/
 │       ├── metadata.dto.ts                  # Enums et versions (GET /evaluation/metadata)
 │       └── mutabilite.dto.ts                # Résultats de calcul (POST /evaluation/calculer)
 ├── entities/
-│   ├── site.entity.ts                       # Objet métier central (31 critères)
+│   ├── site.entity.ts                       # Objet métier central (32 critères)
 │   └── evaluation.entity.ts                 # Évaluation persistée (snapshots + résultats)
 ├── repositories/
 │   └── evaluation.repository.ts             # Persistance + cache (Drizzle ORM)
 ├── services/
 │   ├── algorithme/
-│   │   ├── algorithme.config.ts             # Matrice 31×7 (critères × usages)
+│   │   ├── algorithme.config.ts             # Matrice 32×7 (critères × usages)
 │   │   ├── algorithme.constants.ts          # Seuils, poids, niveaux
 │   │   ├── algorithme.types.ts              # Types internes algorithme
 │   │   ├── fiabilite.calculator.ts          # Calcul fiabilité (0-10)
@@ -81,9 +81,9 @@ OrchestrateurService.calculerMutabilite()
 
 ## Algorithme de scoring
 
-### Matrice 31 critères × 7 usages
+### Matrice 32 critères × 7 usages
 
-L'algorithme évalue 31 critères pour chacun des 7 usages possibles d'une friche.
+L'algorithme évalue 32 critères pour chacun des 7 usages possibles d'une friche.
 
 #### Les 7 usages
 
@@ -105,14 +105,14 @@ POSITIF      = 1
 TRES_POSITIF = 2
 ```
 
-#### Les 31 critères (21 enrichis + 10 complémentaires)
+#### Les 32 critères (22 enrichis + 10 complémentaires)
 
 > Source de vérité : `POIDS_CRITERES` dans `algorithme.config.ts` (les poids ne changent
 > pas avec la dérivation). `raccordementEau` reste structurellement dans
 > `DonneesComplementairesInputDto` (et donc dans le snapshot de cache) mais sa valeur est
 > désormais **dérivée automatiquement** de `surfaceBati`, plus saisie par l'utilisateur.
 
-**Enrichis automatiquement** (poids total : 21.5) :
+**Enrichis automatiquement** (poids total : 22.5) :
 
 | Critère | Poids | Type |
 |---------|-------|------|
@@ -136,6 +136,7 @@ TRES_POSITIF = 2
 | `zonageAbcLogement` | 0.5 | Enum (A / Abis / B1 / B2 / C) |
 | `siteEnQpv` | 1 | Booléen (test spatial du centroïde, ADR-0039) |
 | `saturationReseauEnr` | 1 | Booléen (zone saturée Enedis/RTE, test spatial du centroïde, ADR-0046) |
+| `siteEnZae` | 1 | Booléen (zone d'activité économique Fusac/Cerema, test spatial du centroïde, ADR-0049) |
 | `distanceIte` | 0.5 | Enum (<1km bon état / <1km mauvais état / >1km) |
 
 > **Unité des distances** (v1.10) : `distanceAutoroute` et `distanceRaccordementElectrique` sont enrichis en **mètres** (IGN WFS, Enedis) et stockés ainsi dans le DTO/Site ; `extraireCriteres` les convertit en **km** via `metresVersKm` avant scoring (la matrice reste en km, source de vérité Excel). `distanceTransportCommun` et `distanceReseauChaleur` sont en mètres des deux côtés (pas de conversion). Cf. ADR-0027.
@@ -150,6 +151,8 @@ TRES_POSITIF = 2
 > sentinelle depuis un adapter : elle s'affiche telle quelle à l'utilisateur.
 
 > **Distance nulle au réseau de chaleur** (v1.13) : `distanceReseauChaleur` vaut `null` quand aucune distance n'est exploitable (aucun réseau à proximité, ou réseau connu sans tracé). `extraireCriteres` la ramène au seuil de 500 m plutôt que de laisser le critère être ignoré — sinon un site sans réseau connu et un site simplement éloigné n'obtiennent pas le même indice. Cf. ADR-0036.
+
+> **Zone d'activité économique** (v1.18) : `siteEnZae` vaut `true` si le centroïde est dans un site Fusac de type « zone d'activité économique » (en activité, hors outre-mer), `false` sinon, `undefined` si le référentiel est vide ou illisible (jamais de faux « non »). En zone : `industrie` TRES_POSITIF, `tertiaire` POSITIF, `residentiel` NEGATIF, autres NEUTRE. Hors zone : NEUTRE partout. Ignoré en `?versionAlgorithme=v1.17` et antérieures.
 
 > **Locaux d'activité** (v1.17) : l'usage `tertiaire` est affiché « Locaux d'activité » (clé technique inchangée : API, CNIG, Metabase). Trois scores changent pour cet usage : `siteEnCentreVille` NEUTRE / hors centre POSITIF (avant : POSITIF / NEGATIF) ; `surfaceSite` < 15 000 m² POSITIF, ≥ 15 000 m² NEUTRE (avant : NEUTRE / NEGATIF) ; `proximiteCommercesServices` absent NEUTRE (avant : NEGATIF).
 
@@ -168,7 +171,7 @@ TRES_POSITIF = 2
 | `presenceEspecesProtegees` | 1 | Enum (Oui / Non / Ne sait pas) |
 | `presenceZoneHumide` | 1 | Enum (Oui / Non / Ne sait pas) |
 
-**Poids total : 33**
+**Poids total : 34**
 
 ### Formule de calcul
 
@@ -375,7 +378,7 @@ Modifier uniquement les seuils dans la fonction. Ne pas changer la structure.
 
 ### Modifier les poids
 
-Les poids sont dans `POIDS_CRITERES` (`algorithme.config.ts`). Le poids total (33) est recalculé automatiquement par le `FiabiliteCalculator`.
+Les poids sont dans `POIDS_CRITERES` (`algorithme.config.ts`). Le poids total (34) est recalculé automatiquement par le `FiabiliteCalculator`.
 
 ---
 
@@ -383,7 +386,7 @@ Les poids sont dans `POIDS_CRITERES` (`algorithme.config.ts`). Le poids total (3
 
 ### Algorithme
 
-- [ ] Matrice 31×7 cohérente (chaque critère a un score pour chaque usage)
+- [ ] Matrice 32×7 cohérente (chaque critère a un score pour chaque usage)
 - [ ] Poids déclarés dans `POIDS_CRITERES` pour chaque critère
 - [ ] Score NEUTRE (0.5) géré dans les deux sens (avantages + contraintes)
 - [ ] Critères ignorés si `undefined`, `null`, ou `"ne-sait-pas"`

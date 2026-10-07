@@ -141,6 +141,7 @@ pnpm db:icu:import          # Référentiel îlots de chaleur urbain (ICU, à ch
 pnpm db:reseaux-chaleur:import          # Référentiel îlots de chaleur urbain (réseaux de chaleur, à chaque millésime)
 pnpm db:qpv:import          # Référentiel quartiers prioritaires (QPV, à chaque arrêté)
 pnpm db:zones-contrainte-enr:import  # Zones saturées réseau EnR (Enedis, mensuel — ADR-0046)
+pnpm db:zae:import          # Zones d'activité économique (Cerema Fusac, annuel — ADR-0049)
 ```
 
 Le conteneur PostgreSQL ne publie son port que sur `127.0.0.1` : la base locale, qui peut contenir
@@ -284,7 +285,7 @@ Documentation complète dans le dossier [`docs/`](./docs/) :
 
 - **[Index Général](./docs/README.md)** - Vue d'ensemble et navigation
 - **[Module Enrichissement](./docs/enrichissement.md)** - 13 domaines, APIs externes et bases locales, règles de gestion
-- **[Algorithme d'Évaluation](./docs/evaluation-mutabilite.md)** - Matrice 31×7, calcul mutabilité
+- **[Algorithme d'Évaluation](./docs/evaluation-mutabilite.md)** - Matrice 32×7, calcul mutabilité
 - **[Guide d'Intégration](./docs/integration/README.md)** - Iframe + PostMessage
 - **[Vulnérabilités de dépendances](./docs/security/vulnerabilites-acceptees.md)** - Suivi `pnpm audit` et justifications d'acceptation
 - **[Ops](./docs/ops/README.md)** - Scalingo (logs, psql en lecture), restauration de dump en local
