@@ -18,6 +18,7 @@ import { IteFretEnrichissementService } from "./transport/ite-fret-enrichissemen
 import { UrbanismeEnrichissementService } from "./urbanisme/urbanisme-enrichissement.service";
 import { IcuEnrichissementService } from "./climat/icu-enrichissement.service";
 import { QpvEnrichissementService } from "./qpv/qpv-enrichissement.service";
+import { ZaeEnrichissementService } from "./zae/zae-enrichissement.service";
 import { SaturationReseauEnrEnrichissementService } from "./reseau-electrique-enr/saturation-reseau-enr-enrichissement.service";
 import { RisquesNaturelsEnrichissementService } from "./risques-naturels/risques-naturels-enrichissement.service";
 import { RisquesTechnologiquesEnrichissementService } from "./risques-technologiques/risques-technologiques-enrichissement.service";
@@ -52,6 +53,7 @@ export class EnrichissementService {
     private readonly urbanismeEnrichissement: UrbanismeEnrichissementService,
     private readonly icuEnrichissement: IcuEnrichissementService,
     private readonly qpvEnrichissement: QpvEnrichissementService,
+    private readonly zaeEnrichissement: ZaeEnrichissementService,
     private readonly saturationReseauEnrEnrichissement: SaturationReseauEnrEnrichissementService,
     private readonly risquesNaturelsEnrichissement: RisquesNaturelsEnrichissementService,
     private readonly risquesTechnologiquesEnrichissement: RisquesTechnologiquesEnrichissementService,
@@ -244,6 +246,10 @@ export class EnrichissementService {
         sourcesEchouees,
       );
 
+      // 10.e Zone d'activité économique (Fusac)
+      const zaeResult = await this.zaeEnrichissement.enrichir(siteEval);
+      this.mergeEnrichmentResult(zaeResult, sourcesUtilisees, champsManquants, sourcesEchouees);
+
       // 11. CALCULER LA FIABILITE
       const sourcesUniques = [...new Set(sourcesUtilisees)];
       const champsManquantsUniques = [...new Set(champsManquants)];
@@ -299,6 +305,9 @@ export class EnrichissementService {
 
         // Saturation du réseau électrique pour les projets EnR
         saturationReseauEnr: siteEval.saturationReseauEnr,
+
+        // Zone d'activité économique
+        siteEnZae: siteEval.siteEnZae,
 
         // Îlot de chaleur urbain (informatif, hors algorithme)
         ilotChaleurUrbain: siteEval.ilotChaleurUrbain,
@@ -565,6 +574,10 @@ export class EnrichissementService {
         sourcesEchouees,
       );
 
+      // 11.e Zone d'activité économique (Fusac)
+      const zaeResult = await this.zaeEnrichissement.enrichir(siteEval);
+      this.mergeEnrichmentResult(zaeResult, sourcesUtilisees, champsManquants, sourcesEchouees);
+
       // 12. DETERMINER LE STATUT
       const sourcesUniques = [...new Set(sourcesUtilisees)];
       const champsManquantsUniques = [...new Set(champsManquants)];
@@ -624,6 +637,9 @@ export class EnrichissementService {
 
         // Saturation du réseau électrique pour les projets EnR
         saturationReseauEnr: siteEval.saturationReseauEnr,
+
+        // Zone d'activité économique
+        siteEnZae: siteEval.siteEnZae,
 
         // Îlot de chaleur urbain (informatif, hors algorithme)
         ilotChaleurUrbain: siteEval.ilotChaleurUrbain,

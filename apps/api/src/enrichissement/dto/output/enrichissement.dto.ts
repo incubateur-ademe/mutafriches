@@ -253,6 +253,14 @@ export class EnrichissementSwaggerDto implements IEnrichissementOutput {
   saturationReseauEnr?: boolean;
 
   @ApiProperty({
+    description:
+      "Site situé dans une zone d'activité économique (Cerema, Fusac). false = recherche spatiale effectuée, site hors de toute zone",
+    required: false,
+    example: false,
+  })
+  siteEnZae?: boolean;
+
+  @ApiProperty({
     description: "Position par rapport à la trame verte et bleue",
     required: false,
     example: TrameVerteEtBleue.HORS_TRAME,

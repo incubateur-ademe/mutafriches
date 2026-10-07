@@ -14,6 +14,7 @@ import { TransportEnrichissementService } from "./services/transport/transport-e
 import { IteFretEnrichissementService } from "./services/transport/ite-fret-enrichissement.service";
 import { IcuEnrichissementService } from "./services/climat/icu-enrichissement.service";
 import { QpvEnrichissementService } from "./services/qpv/qpv-enrichissement.service";
+import { ZaeEnrichissementService } from "./services/zae/zae-enrichissement.service";
 import { SaturationReseauEnrEnrichissementService } from "./services/reseau-electrique-enr/saturation-reseau-enr-enrichissement.service";
 import { UrbanismeEnrichissementService } from "./services/urbanisme/urbanisme-enrichissement.service";
 import { RisquesNaturelsEnrichissementService } from "./services/risques-naturels/risques-naturels-enrichissement.service";
@@ -80,6 +81,7 @@ import { IteFretRepository } from "./repositories/ite-fret.repository";
 import { ReseauxChaleurRepository } from "./repositories/reseaux-chaleur.repository";
 import { IcuRepository } from "./repositories/icu.repository";
 import { QpvRepository } from "./repositories/qpv.repository";
+import { ZaeRepository } from "./repositories/zae.repository";
 import { ZonesContrainteEnrRepository } from "./repositories/zones-contrainte-enr.repository";
 
 @Module({
@@ -100,6 +102,7 @@ import { ZonesContrainteEnrRepository } from "./repositories/zones-contrainte-en
     ReseauxChaleurRepository,
     IcuRepository,
     QpvRepository,
+    ZaeRepository,
     ZonesContrainteEnrRepository,
 
     // Services de domaine
@@ -110,6 +113,7 @@ import { ZonesContrainteEnrRepository } from "./repositories/zones-contrainte-en
     IteFretEnrichissementService,
     IcuEnrichissementService,
     QpvEnrichissementService,
+    ZaeEnrichissementService,
     SaturationReseauEnrEnrichissementService,
     UrbanismeEnrichissementService,
     RisquesNaturelsEnrichissementService,

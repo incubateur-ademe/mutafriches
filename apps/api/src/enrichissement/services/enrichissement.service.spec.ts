@@ -18,6 +18,7 @@ import { IteFretEnrichissementService } from "./transport/ite-fret-enrichissemen
 import { UrbanismeEnrichissementService } from "./urbanisme/urbanisme-enrichissement.service";
 import { IcuEnrichissementService } from "./climat/icu-enrichissement.service";
 import { QpvEnrichissementService } from "./qpv/qpv-enrichissement.service";
+import { ZaeEnrichissementService } from "./zae/zae-enrichissement.service";
 import { SaturationReseauEnrEnrichissementService } from "./reseau-electrique-enr/saturation-reseau-enr-enrichissement.service";
 import { RisquesNaturelsEnrichissementService } from "./risques-naturels/risques-naturels-enrichissement.service";
 import { RisquesTechnologiquesEnrichissementService } from "./risques-technologiques/risques-technologiques-enrichissement.service";
@@ -36,6 +37,7 @@ import {
   createMockUrbanismeEnrichissementService,
   createMockIcuEnrichissementService,
   createMockQpvEnrichissementService,
+  createMockZaeEnrichissementService,
   createMockSaturationReseauEnrEnrichissementService,
   createMockRisquesNaturelsEnrichissementService,
   createMockRisquesTechnologiquesEnrichissementService,
@@ -77,6 +79,7 @@ describe("EnrichissementService", () => {
     const mockUrbanisme = createMockUrbanismeEnrichissementService();
     const mockIcu = createMockIcuEnrichissementService();
     const mockQpv = createMockQpvEnrichissementService();
+    const mockZae = createMockZaeEnrichissementService();
     const mockSaturationEnr = createMockSaturationReseauEnrEnrichissementService();
     const mockRisquesNaturels = createMockRisquesNaturelsEnrichissementService();
     const mockRisquesTechnologiques = createMockRisquesTechnologiquesEnrichissementService();
@@ -122,6 +125,13 @@ describe("EnrichissementService", () => {
       sourcesEchouees: [],
     });
 
+    // Configuration par défaut du mock ZAE
+    mockZae.enrichir.mockResolvedValue({
+      success: true,
+      sourcesUtilisees: ["ZAE-Fusac-Cerema"],
+      sourcesEchouees: [],
+    });
+
     // Configuration par défaut du mock saturation réseau EnR
     mockSaturationEnr.enrichir.mockResolvedValue({
       success: true,
@@ -143,6 +153,7 @@ describe("EnrichissementService", () => {
         { provide: UrbanismeEnrichissementService, useValue: mockUrbanisme },
         { provide: IcuEnrichissementService, useValue: mockIcu },
         { provide: QpvEnrichissementService, useValue: mockQpv },
+        { provide: ZaeEnrichissementService, useValue: mockZae },
         { provide: SaturationReseauEnrEnrichissementService, useValue: mockSaturationEnr },
         { provide: RisquesNaturelsEnrichissementService, useValue: mockRisquesNaturels },
         {
@@ -297,12 +308,13 @@ describe("EnrichissementService", () => {
       expect(result.codeInsee).toBe("29232");
       expect(result.commune).toBe("Quimper");
       expect(result.surfaceSite).toBe(1000);
-      expect(result.sourcesUtilisees).toHaveLength(15);
+      expect(result.sourcesUtilisees).toHaveLength(16);
       // Le cast `as EnrichissementOutputDto` du bloc de sortie masque un champ oublié :
       // l'assertion est le seul filet sur la présence du critère dans le DTO.
       expect(result).toHaveProperty("distanceReseauChaleur");
       expect(result).toHaveProperty("siteEnQpv");
       expect(result).toHaveProperty("saturationReseauEnr");
+      expect(result).toHaveProperty("siteEnZae");
     });
 
     it("devrait persister l'enrichissement avec statut SUCCES", async () => {

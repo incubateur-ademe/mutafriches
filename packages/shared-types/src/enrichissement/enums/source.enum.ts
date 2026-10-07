@@ -32,4 +32,5 @@ export enum SourceEnrichissement {
   FRANCE_CHALEUR_URBAINE = "France-Chaleur-Urbaine",
   QPV = "QPV-ANCT",
   ZONES_CONTRAINTE_ENR = "Enedis-Zones-Contrainte-EnR",
+  ZAE_FUSAC = "ZAE-Fusac-Cerema",
 }
