@@ -14,7 +14,7 @@
  */
 
 import { execFileSync } from "child_process";
-import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "fs";
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "fs";
 import { tmpdir } from "os";
 import * as path from "path";
 import { gunzipSync, gzipSync } from "zlib";
@@ -46,6 +46,16 @@ function extraire(gpkg: string, destination: string): void {
   );
 }
 
+// Lecture directe plutôt que existsSync puis readFileSync : pas de fenêtre entre test et lecture
+function lireVersionCommitee(): string | null {
+  try {
+    return gunzipSync(readFileSync(SORTIE)).toString("utf-8");
+  } catch (error: unknown) {
+    if ((error as { code?: string }).code === "ENOENT") return null;
+    throw error;
+  }
+}
+
 function preparer(gpkg: string): void {
   console.log(`Source : ${gpkg}`);
   const dossier = mkdtempSync(path.join(tmpdir(), "zae-"));
@@ -57,7 +67,7 @@ function preparer(gpkg: string): void {
     const contenu = JSON.stringify(collection);
     console.log(`Sites : ${collection.features.length}`);
 
-    if (existsSync(SORTIE) && gunzipSync(readFileSync(SORTIE)).toString("utf-8") === contenu) {
+    if (lireVersionCommitee() === contenu) {
       console.log("\nAucun changement par rapport à la version commitée : fichier non réécrit.");
       return;
     }
