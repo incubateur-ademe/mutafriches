@@ -17,6 +17,7 @@ import * as v115 from "./v1.15";
 import * as v116 from "./v1.16";
 import * as v117 from "./v1.17";
 import * as v118 from "./v1.18";
+import * as v119 from "./v1.19";
 
 export const ALGORITHME_VERSIONS: AlgorithmeConfig[] = [
   {
@@ -148,9 +149,17 @@ export const ALGORITHME_VERSIONS: AlgorithmeConfig[] = [
     matriceScoring: v118.MATRICE_SCORING as unknown as Record<string, unknown>,
     reglesExclusion: v118.REGLES_EXCLUSION,
   },
+  {
+    version: "v1.19",
+    label: "v1.18 + locaux d'activité très positifs en zone d'activité économique",
+    date: "2026-10-07",
+    poidsCriteres: v119.POIDS_CRITERES as unknown as Record<string, number>,
+    matriceScoring: v119.MATRICE_SCORING as unknown as Record<string, unknown>,
+    reglesExclusion: v119.REGLES_EXCLUSION,
+  },
 ];
 
-export const VERSION_COURANTE = "v1.18";
+export const VERSION_COURANTE = "v1.19";
 
 export function getAlgorithmeConfig(version: string): AlgorithmeConfig | undefined {
   return ALGORITHME_VERSIONS.find((v) => v.version === version);

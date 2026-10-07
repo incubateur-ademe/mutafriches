@@ -152,7 +152,7 @@ TRES_POSITIF = 2
 
 > **Distance nulle au réseau de chaleur** (v1.13) : `distanceReseauChaleur` vaut `null` quand aucune distance n'est exploitable (aucun réseau à proximité, ou réseau connu sans tracé). `extraireCriteres` la ramène au seuil de 500 m plutôt que de laisser le critère être ignoré — sinon un site sans réseau connu et un site simplement éloigné n'obtiennent pas le même indice. Cf. ADR-0036.
 
-> **Zone d'activité économique** (v1.18) : `siteEnZae` vaut `true` si le centroïde est dans un site Fusac de type « zone d'activité économique » (en activité, hors outre-mer), `false` sinon, `undefined` si le référentiel est vide ou illisible (jamais de faux « non »). En zone : `industrie` TRES_POSITIF, `tertiaire` POSITIF, `residentiel` NEGATIF, autres NEUTRE. Hors zone : NEUTRE partout. Ignoré en `?versionAlgorithme=v1.17` et antérieures.
+> **Zone d'activité économique** (v1.18, corrigé en v1.19) : `siteEnZae` vaut `true` si le centroïde est dans un site Fusac de type « zone d'activité économique » (en activité, hors outre-mer), `false` sinon, `undefined` si le référentiel est vide ou illisible (jamais de faux « non »). En zone : `industrie` et `tertiaire` TRES_POSITIF (`tertiaire` était POSITIF en v1.18), `residentiel` NEGATIF, autres NEUTRE. Hors zone : NEUTRE partout. Ignoré en `?versionAlgorithme=v1.17` et antérieures.
 
 > **Locaux d'activité** (v1.17) : l'usage `tertiaire` est affiché « Locaux d'activité » (clé technique inchangée : API, CNIG, Metabase). Trois scores changent pour cet usage : `siteEnCentreVille` NEUTRE / hors centre POSITIF (avant : POSITIF / NEGATIF) ; `surfaceSite` < 15 000 m² POSITIF, ≥ 15 000 m² NEUTRE (avant : NEUTRE / NEGATIF) ; `proximiteCommercesServices` absent NEUTRE (avant : NEGATIF).
 
