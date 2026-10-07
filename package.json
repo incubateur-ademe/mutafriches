@@ -46,6 +46,7 @@
     "db:zones-contrainte-enr:import": "pnpm --filter api run db:zones-contrainte-enr:import",
     "data:zones-contrainte-enr:preparer": "pnpm --filter api run data:zones-contrainte-enr:preparer",
     "db:zae:import": "pnpm --filter api run db:zae:import",
+    "db:import:all": "pnpm --filter api run db:import:all",
     "data:zae:preparer": "pnpm --filter api run data:zae:preparer",
     "db:partenaires:seed": "pnpm --filter api run db:partenaires:seed",
     "partenaires:prefetch": "pnpm --filter api run partenaires:prefetch",
