@@ -10,6 +10,9 @@ d'activité économique ? En zone, l'industrie est très positive, les locaux d'
 résidentiel négatif, les quatre autres usages neutres. Hors zone, le critère est neutre sur les
 sept usages.
 
+> **Mise à jour v1.19 (2026-10-07)** : les locaux d'activité passent de positif à très positif en
+> zone, le wording du critère ayant changé. v1.18 reste figée pour les évaluations déjà calculées.
+
 La donnée vient de la base Fusac du Cerema (« fonciers à usage d'activités », licence ouverte 2.0,
 millésime 2025). Constats du 2026-10-07 :
 
