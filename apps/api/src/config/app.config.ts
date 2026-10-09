@@ -76,7 +76,7 @@ export class AppConfig {
     return {
       siteUrl: this.env.METABASE_SITE_URL,
       secretKey: this.env.METABASE_SECRET_KEY,
-      dashboardId: this.env.METABASE_DASHBOARD_ID ?? 3,
+      dashboardId: this.env.METABASE_DASHBOARD_ID ?? 13,
     };
   }
 
