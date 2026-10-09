@@ -6,7 +6,6 @@ import {
 } from "@mutafriches/shared-types";
 import { getUsageInfo, getBadgeConfig } from "../utils/usagesLabels.utils";
 import { getPodiumTags } from "../utils/podiumTags";
-import { DonneeIndisponibleTag, Tag } from "@shared/components/tag";
 import "./PodiumCard.css";
 
 interface PodiumCardProps {
@@ -46,16 +45,13 @@ export const PodiumCard: React.FC<PodiumCardProps> = ({ result, enrichmentData, 
         {/* Titre */}
         <h5 className="podium-card__title">{usageInfo.label}</h5>
 
+        {/* Tags affichés directement */}
         <div className="fr-tags-group fr-tags-group--sm fr-mb-2w fr-mt-2w">
-          {dynamicTags.length > 0 ? (
-            dynamicTags.map((tag, index) => (
-              <Tag key={index} variant="bleu" className="fr-mt-2v">
-                {tag}
-              </Tag>
-            ))
-          ) : (
-            <DonneeIndisponibleTag />
-          )}
+          {dynamicTags.map((tag, index) => (
+            <p key={index} className="fr-tag fr-mt-2v">
+              {tag}
+            </p>
+          ))}
         </div>
       </div>
     </div>
