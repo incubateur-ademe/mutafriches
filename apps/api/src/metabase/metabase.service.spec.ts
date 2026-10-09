@@ -60,18 +60,18 @@ describe("MetabaseService", () => {
       const url = service.generateEmbedUrl();
 
       expect(url).toMatch(
-        /^https:\/\/metabase\.example\.com\/embed\/dashboard\/.+#bordered=true&titled=true$/,
+        /^https:\/\/metabase\.example\.com\/embed\/dashboard\/.+\?tab=25-statistiques-d'usage#bordered=true&titled=false$/,
       );
 
       // Extraire et decoder le token
-      const token = url.split("/embed/dashboard/")[1].split("#")[0];
+      const token = url.split("/embed/dashboard/")[1].split("?")[0];
       const decoded = jwt.verify(token, "super-secret-key") as {
         resource: { dashboard: number };
         params: Record<string, unknown>;
         exp: number;
       };
 
-      expect(decoded.resource).toEqual({ dashboard: 3 });
+      expect(decoded.resource).toEqual({ dashboard: 13 });
       expect(decoded.params).toEqual({});
       expect(decoded.exp).toBeGreaterThan(Math.round(Date.now() / 1000));
     });
@@ -84,12 +84,21 @@ describe("MetabaseService", () => {
       const service = new MetabaseService();
       const url = service.generateEmbedUrl();
 
-      const token = url.split("/embed/dashboard/")[1].split("#")[0];
+      const token = url.split("/embed/dashboard/")[1].split("?")[0];
       const decoded = jwt.verify(token, "super-secret-key") as {
         resource: { dashboard: number };
       };
 
       expect(decoded.resource).toEqual({ dashboard: 7 });
+    });
+
+    it("positionne l'URL sur l'onglet de la matrice d'impact", () => {
+      process.env.METABASE_SITE_URL = "https://metabase.example.com";
+      process.env.METABASE_SECRET_KEY = "super-secret-key";
+
+      const url = new MetabaseService().generateEmbedUrl("matrice");
+
+      expect(url).toContain("?tab=26-matrice-d'impact#");
     });
 
     it("leve une erreur si Metabase n'est pas configure", () => {

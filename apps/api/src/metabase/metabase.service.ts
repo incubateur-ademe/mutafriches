@@ -1,6 +1,13 @@
 import { Injectable, Logger } from "@nestjs/common";
 import * as jwt from "jsonwebtoken";
+import type { VueStatistiques } from "@mutafriches/shared-types";
 import { getAppConfig } from "../config";
+
+// Identifiants d'onglet du dashboard Metabase (visibles dans l'URL ?tab=)
+const ONGLETS_METABASE: Record<VueStatistiques, string> = {
+  usage: "25-statistiques-d'usage",
+  matrice: "26-matrice-d'impact",
+};
 
 @Injectable()
 export class MetabaseService {
@@ -31,10 +38,10 @@ export class MetabaseService {
   }
 
   /**
-   * Genere une URL d'embedding Metabase signee par JWT.
+   * Genere une URL d'embedding Metabase signee par JWT, positionnee sur l'onglet de la vue.
    * Le token expire apres 10 minutes.
    */
-  generateEmbedUrl(): string {
+  generateEmbedUrl(vue: VueStatistiques = "usage"): string {
     if (!this.siteUrl || !this.secretKey) {
       throw new Error("Metabase non configure");
     }
@@ -47,6 +54,8 @@ export class MetabaseService {
 
     const token = jwt.sign(payload, this.secretKey);
 
-    return `${this.siteUrl}/embed/dashboard/${token}#bordered=true&titled=true`;
+    const onglet = encodeURIComponent(ONGLETS_METABASE[vue]);
+
+    return `${this.siteUrl}/embed/dashboard/${token}?tab=${onglet}#bordered=true&titled=false`;
   }
 }
