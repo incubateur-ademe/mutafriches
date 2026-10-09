@@ -1,4 +1,5 @@
 import React from "react";
+import { DonneeIndisponibleTag, LABEL_DONNEE_NON_ACCESSIBLE, Tag } from "@shared/components/tag";
 
 interface EnrichedInfoFieldProps {
   /** Identifiant unique du champ */
@@ -17,8 +18,6 @@ interface EnrichedInfoFieldProps {
   message?: string;
 }
 
-const NON_ACCESSIBLE_LABEL = "Donnée non accessible";
-
 /**
  * Champ d'affichage d'une donnee enrichie (lecture seule)
  * Avec badge "Donnee enrichie" et tooltip optionnel
@@ -35,7 +34,7 @@ export const EnrichedInfoField: React.FC<EnrichedInfoFieldProps> = ({
   const values = Array.isArray(value) ? value : [value];
   const isNonAccessible =
     !value ||
-    (typeof value === "string" && (value === NON_ACCESSIBLE_LABEL || value === "-")) ||
+    (typeof value === "string" && (value === LABEL_DONNEE_NON_ACCESSIBLE || value === "-")) ||
     (Array.isArray(value) && value.length === 0);
 
   return (
@@ -55,22 +54,13 @@ export const EnrichedInfoField: React.FC<EnrichedInfoFieldProps> = ({
           </span>
         </label>
         {isNonAccessible ? (
-          <p className="fr-badge fr-badge--yellow-tournesol fr-icon-close-circle-line fr-badge--icon-left">
-            {NON_ACCESSIBLE_LABEL}
-          </p>
+          <DonneeIndisponibleTag />
         ) : (
           <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
             {values.map((v, index) => (
-              <p
-                key={index}
-                className={
-                  enAlerte
-                    ? "fr-badge fr-badge--error fr-icon-close-circle-line fr-badge--icon-left"
-                    : "fr-badge fr-badge--green-emeraude fr-icon-checkbox-line fr-badge--icon-left"
-                }
-              >
+              <Tag key={index} variant={enAlerte ? "saumon-pale" : "bleu"}>
                 {v}
-              </p>
+              </Tag>
             ))}
           </div>
         )}

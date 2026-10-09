@@ -29,3 +29,6 @@ export const IMPACT_TAG_VARIANT: Record<ImpactNiveau, TagVariant> = {
   "tres-negatif": "saumon",
   bloquant: "rouge-plein",
 };
+
+export const LABEL_DONNEE_NON_ACCESSIBLE = "Donnée non accessible";
+export const LABEL_DONNEE_NON_COUVERTE = "Donnée non couverte";

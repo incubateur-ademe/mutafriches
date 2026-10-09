@@ -1,5 +1,6 @@
 import React from "react";
 import { RaccordementEau } from "@mutafriches/shared-types";
+import { Tag } from "@shared/components/tag";
 
 interface RaccordementEauFieldProps {
   /** Valeur dérivée automatiquement de la surface bâtie */
@@ -8,19 +9,10 @@ interface RaccordementEauFieldProps {
   tooltip?: React.ReactNode;
 }
 
-const BADGES: Record<RaccordementEau, { label: string; className: string }> = {
-  [RaccordementEau.OUI]: {
-    label: "Oui",
-    className: "fr-badge fr-badge--green-emeraude fr-icon-checkbox-line fr-badge--icon-left",
-  },
-  [RaccordementEau.NON]: {
-    label: "Non",
-    className: "fr-badge fr-badge--green-emeraude fr-icon-information-line fr-badge--icon-left",
-  },
-  [RaccordementEau.NE_SAIT_PAS]: {
-    label: "Non déterminé",
-    className: "fr-badge fr-badge--green-emeraude fr-icon-question-line fr-badge--icon-left",
-  },
+const LABELS: Record<RaccordementEau, string> = {
+  [RaccordementEau.OUI]: "Oui",
+  [RaccordementEau.NON]: "Non",
+  [RaccordementEau.NE_SAIT_PAS]: "Non déterminé",
 };
 
 const ID = "raccordement-eau";
@@ -30,8 +22,6 @@ const ID = "raccordement-eau";
  * Remplace l'ancienne liste déroulante saisie par l'utilisateur.
  */
 export const RaccordementEauField: React.FC<RaccordementEauFieldProps> = ({ value, tooltip }) => {
-  const badge = BADGES[value];
-
   return (
     <div className="fr-col-12 fr-col-md-6">
       <div className="fr-input-group">
@@ -52,9 +42,9 @@ export const RaccordementEauField: React.FC<RaccordementEauFieldProps> = ({ valu
             </>
           )}
         </label>
-        <p id={ID} className={badge.className}>
-          {badge.label}
-        </p>
+        <Tag id={ID} variant="bleu">
+          {LABELS[value]}
+        </Tag>
       </div>
     </div>
   );
