@@ -8,12 +8,12 @@ import {
   type UsageResultatDetaille,
 } from "@mutafriches/shared-types";
 import {
-  BADGE_EXCLU,
   getResultBadgeConfig,
   getUsageInfo,
   getUsagesPodium,
   MESSAGE_USAGE_EXCLU,
 } from "../utils/usagesLabels.utils";
+import { IMPACT_TAG_VARIANT, TAG_COLORS } from "@shared/components/tag";
 import { getPodiumTags } from "../utils/podiumTags";
 import type { ResultatsExportData } from "./types";
 
@@ -21,14 +21,12 @@ const BLEU = "#000091";
 const GRIS = "#666666";
 const BORDURE = "#e5e5e5";
 
-const IMPACT_COLORS: Record<ImpactNiveau, { bg: string; text: string }> = {
-  "tres-positif": { bg: "#B8FEC9", text: "#18753C" },
-  positif: { bg: "#C9FCAC", text: "#208D49" },
-  neutre: { bg: "#FEECC2", text: "#716043" },
-  negatif: { bg: "#FFBDBE", text: "#8D533E" },
-  "tres-negatif": { bg: "#FFBDBE", text: "#8D533E" },
-  bloquant: { bg: BADGE_EXCLU.backgroundColor, text: BADGE_EXCLU.textColor },
-};
+const IMPACT_COLORS = Object.fromEntries(
+  Object.entries(IMPACT_TAG_VARIANT).map(([niveau, variant]) => [
+    niveau,
+    { bg: TAG_COLORS[variant].backgroundColor, text: TAG_COLORS[variant].textColor },
+  ]),
+) as Record<ImpactNiveau, { bg: string; text: string }>;
 
 const s = StyleSheet.create({
   page: {

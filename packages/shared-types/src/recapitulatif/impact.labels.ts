@@ -8,7 +8,7 @@ export interface ImpactCritere {
 }
 
 // Critère ayant déclenché une règle d'exclusion de l'usage (v1.16) : prime sur le score
-export const IMPACT_BLOQUANT: ImpactCritere = { label: "Bloquant", niveau: "bloquant" };
+export const IMPACT_BLOQUANT: ImpactCritere = { label: "Incompatible", niveau: "bloquant" };
 
 /**
  * Traduit le score brut d'un critère (ScoreImpact) en libellé + niveau d'impact.

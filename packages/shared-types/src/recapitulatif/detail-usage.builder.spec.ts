@@ -77,7 +77,7 @@ describe("buildDetailUsage", () => {
     expect(total).toBe(3);
   });
 
-  it("marque « Bloquant » un critère excluant, quel que soit son score", () => {
+  it("marque « Incompatible » un critère excluant, quel que soit son score", () => {
     const usageExclu: UsageResultatDetaille = {
       ...usage,
       exclu: true,
@@ -87,7 +87,7 @@ describe("buildDetailUsage", () => {
       (s) => s.criteres,
     );
     expect(criteres.find((c) => c.key === "etatBatiInfrastructure")?.impact).toEqual({
-      label: "Bloquant",
+      label: "Incompatible",
       niveau: "bloquant",
     });
     expect(criteres.find((c) => c.key === "surfaceSite")?.impact.niveau).toBe("positif");

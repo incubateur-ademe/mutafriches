@@ -1,5 +1,6 @@
 import React from "react";
-import { ImpactCritere, ImpactNiveau, SaisieCritere } from "@mutafriches/shared-types";
+import { IMPACT_TAG_VARIANT, Tag } from "@shared/components/tag";
+import { ImpactCritere, SaisieCritere } from "@mutafriches/shared-types";
 
 /**
  * Badge indiquant le mode de saisie d'un critère.
@@ -29,18 +30,9 @@ export const SourceBadge: React.FC<{ label: string }> = ({ label }) => (
   </p>
 );
 
-const IMPACT_BADGE_CLASS: Record<ImpactNiveau, string> = {
-  "tres-positif": "fr-badge--green-emeraude",
-  positif: "fr-badge--success",
-  neutre: "fr-badge--yellow-tournesol",
-  negatif: "fr-badge--error",
-  "tres-negatif": "fr-badge--error",
-  bloquant: "fr-badge--orange-terre-battue",
-};
-
 /**
  * Badge d'impact d'un critère sur un usage (couleur selon le niveau).
  */
 export const ImpactBadge: React.FC<{ impact: ImpactCritere }> = ({ impact }) => (
-  <p className={`fr-badge fr-badge--sm ${IMPACT_BADGE_CLASS[impact.niveau]}`}>{impact.label}</p>
+  <Tag variant={IMPACT_TAG_VARIANT[impact.niveau]}>{impact.label}</Tag>
 );

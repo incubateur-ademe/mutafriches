@@ -223,7 +223,7 @@ Certaines caractéristiques rendent un usage impossible, quel que soit son indic
 | Zone humide et espèces protégées | `presenceZoneHumide` = Oui **et** `presenceEspecesProtegees` = Oui | Industrie, Locaux d'activité (tertiaire) |
 
 - Toutes les conditions d'une règle doivent être réunies. « Ne sait pas » ne déclenche jamais d'exclusion.
-- Un usage exclu garde son indice calculé, exposé par l'API pour compatibilité, mais il est relégué en fin de classement, avec `exclu: true`, `potentiel: "Exclu"` et la liste `criteresExcluants`. L'interface n'affiche pas son pourcentage et marque ces critères « Bloquant » dans le détail de l'usage.
+- Un usage exclu garde son indice calculé, exposé par l'API pour compatibilité, mais il est relégué en fin de classement, avec `exclu: true`, `potentiel: "Exclu"` et la liste `criteresExcluants`. L'interface n'affiche pas son pourcentage et marque ces critères « Incompatible » dans le détail de l'usage.
 - Les poids, la matrice et la fiabilité ne changent pas.
 
 #### 5b. Indice de fiabilité

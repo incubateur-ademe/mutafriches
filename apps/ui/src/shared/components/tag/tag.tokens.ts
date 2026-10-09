@@ -1,3 +1,5 @@
+import type { ImpactNiveau } from "@mutafriches/shared-types";
+
 // Couleurs des tags, relevées sur la maquette Figma « Refonte tags ». Partagées avec l'export PDF.
 export type TagVariant =
   "bleu" | "rose" | "vert-fort" | "vert" | "jaune" | "saumon-pale" | "saumon" | "rouge-plein";
@@ -16,4 +18,14 @@ export const TAG_COLORS: Record<TagVariant, TagColors> = {
   "saumon-pale": { textColor: "#755348", backgroundColor: "#FEDED9" },
   saumon: { textColor: "#8D533E", backgroundColor: "#FFBDBE" },
   "rouge-plein": { textColor: "#FFFFFF", backgroundColor: "#FB7676" },
+};
+
+// Partagé avec l'export PDF
+export const IMPACT_TAG_VARIANT: Record<ImpactNiveau, TagVariant> = {
+  "tres-positif": "vert-fort",
+  positif: "vert",
+  neutre: "bleu",
+  negatif: "saumon-pale",
+  "tres-negatif": "saumon",
+  bloquant: "rouge-plein",
 };
