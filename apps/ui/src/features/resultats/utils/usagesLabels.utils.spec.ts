@@ -10,7 +10,7 @@ const resultat = (usage: UsageType, rang: number, exclu = false): UsageResultat 
 });
 
 describe("getResultBadgeConfig", () => {
-  it("affiche le badge Exclu quel que soit l'indice", () => {
+  it("affiche le badge Incompatible quel que soit l'indice", () => {
     expect(getResultBadgeConfig({ indiceMutabilite: 82, exclu: true })).toBe(BADGE_EXCLU);
   });
 
