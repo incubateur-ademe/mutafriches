@@ -3,31 +3,20 @@ import { IMPACT_TAG_VARIANT, Tag } from "@shared/components/tag";
 import { ImpactCritere, SaisieCritere } from "@mutafriches/shared-types";
 
 /**
- * Badge indiquant le mode de saisie d'un critère.
- * AUTOMATIQUE : vert + coche. MANUELLE : jaune + crayon.
+ * Badge indiquant le mode de saisie d'un critère (automatique : bleu, manuelle : jaune).
  */
-export const SaisieBadge: React.FC<{ saisie: SaisieCritere }> = ({ saisie }) => {
-  if (saisie === "MANUELLE") {
-    return (
-      <p className="fr-badge fr-badge--sm fr-badge--yellow-tournesol fr-badge--icon-left fr-icon-edit-line">
-        Manuelle
-      </p>
-    );
-  }
-  return (
-    <p className="fr-badge fr-badge--sm fr-badge--success fr-badge--icon-left fr-icon-checkbox-circle-line">
-      Automatique
-    </p>
+export const SaisieBadge: React.FC<{ saisie: SaisieCritere }> = ({ saisie }) =>
+  saisie === "MANUELLE" ? (
+    <Tag variant="jaune">Manuelle</Tag>
+  ) : (
+    <Tag variant="bleu">Automatique</Tag>
   );
-};
 
 /**
- * Badge de la source d'enrichissement (vert + coche).
+ * Badge de la source d'enrichissement.
  */
 export const SourceBadge: React.FC<{ label: string }> = ({ label }) => (
-  <p className="fr-badge fr-badge--sm fr-badge--success fr-badge--icon-left fr-icon-checkbox-circle-line">
-    {label}
-  </p>
+  <Tag variant="bleu">{label}</Tag>
 );
 
 /**

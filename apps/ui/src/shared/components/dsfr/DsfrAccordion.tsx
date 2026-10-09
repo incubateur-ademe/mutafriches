@@ -1,4 +1,5 @@
 import React, { useId } from "react";
+import { TAG_COLORS, TagVariant } from "@shared/components/tag";
 import "./DsfrAccordion.css";
 
 /**
@@ -17,6 +18,8 @@ export interface DsfrAccordionBadge {
   icon?: string;
   /** Position de l'icône — défaut "left". */
   iconPosition?: "left" | "right";
+  /** Teinte de la maquette (prioritaire sur `variant`, sans icône). */
+  tag?: TagVariant;
   /** Si true, badge sans `fr-badge--sm`. */
   large?: boolean;
 }
@@ -32,11 +35,20 @@ export interface DsfrAccordionProps {
   children: React.ReactNode;
 }
 
+function tagStyle(tag: TagVariant): React.CSSProperties {
+  const { textColor, backgroundColor } = TAG_COLORS[tag];
+  return { color: textColor, backgroundColor };
+}
+
 function buildBadgeClassName(badge: DsfrAccordionBadge): string {
   const classes = ["fr-badge"];
   if (!badge.large) classes.push("fr-badge--sm");
-  if (badge.variant) classes.push(`fr-badge--${badge.variant}`);
-  if (badge.icon) {
+  if (badge.tag) {
+    classes.push("fr-badge--no-icon");
+  } else if (badge.variant) {
+    classes.push(`fr-badge--${badge.variant}`);
+  }
+  if (badge.icon && !badge.tag) {
     classes.push(badge.icon, `fr-badge--icon-${badge.iconPosition ?? "left"}`);
   }
   return classes.join(" ");
@@ -75,7 +87,14 @@ export const DsfrAccordion: React.FC<DsfrAccordionProps> = ({
           aria-controls={collapseId}
         >
           <span className="dsfr-accordion__label">{title}</span>
-          {badge && <span className={`${buildBadgeClassName(badge)} fr-mr-2w`}>{badge.label}</span>}
+          {badge && (
+            <span
+              className={`${buildBadgeClassName(badge)} fr-mr-2w`}
+              style={badge.tag ? tagStyle(badge.tag) : undefined}
+            >
+              {badge.label}
+            </span>
+          )}
         </button>
       </Heading>
       <div className="fr-collapse" id={collapseId}>
