@@ -8,12 +8,12 @@ import {
   type UsageResultatDetaille,
 } from "@mutafriches/shared-types";
 import {
-  BADGE_EXCLU,
   getResultBadgeConfig,
   getUsageInfo,
   getUsagesPodium,
   MESSAGE_USAGE_EXCLU,
 } from "../utils/usagesLabels.utils";
+import { IMPACT_TAG_VARIANT, TAG_COLORS } from "@shared/components/tag";
 import { getPodiumTags } from "../utils/podiumTags";
 import type { ResultatsExportData } from "./types";
 
@@ -21,14 +21,12 @@ const BLEU = "#000091";
 const GRIS = "#666666";
 const BORDURE = "#e5e5e5";
 
-const IMPACT_COLORS: Record<ImpactNiveau, { bg: string; text: string }> = {
-  "tres-positif": { bg: "#B8FEC9", text: "#18753C" },
-  positif: { bg: "#C9FCAC", text: "#208D49" },
-  neutre: { bg: "#FEECC2", text: "#716043" },
-  negatif: { bg: "#FFBDBE", text: "#8D533E" },
-  "tres-negatif": { bg: "#FFBDBE", text: "#8D533E" },
-  bloquant: { bg: BADGE_EXCLU.backgroundColor, text: BADGE_EXCLU.textColor },
-};
+const IMPACT_COLORS = Object.fromEntries(
+  Object.entries(IMPACT_TAG_VARIANT).map(([niveau, variant]) => [
+    niveau,
+    { bg: TAG_COLORS[variant].backgroundColor, text: TAG_COLORS[variant].textColor },
+  ]),
+) as Record<ImpactNiveau, { bg: string; text: string }>;
 
 const s = StyleSheet.create({
   page: {
@@ -98,8 +96,8 @@ const s = StyleSheet.create({
   },
   tag: {
     fontSize: 7,
-    color: BLEU,
-    backgroundColor: "#E3E3FD",
+    color: TAG_COLORS.bleu.textColor,
+    backgroundColor: TAG_COLORS.bleu.backgroundColor,
     paddingVertical: 2,
     paddingHorizontal: 5,
     borderRadius: 3,
@@ -297,13 +295,17 @@ export const MutabilitePdfDocument: React.FC<{ data: ResultatsExportData }> = ({
                   <View style={s.cellCenter}>
                     <Badge
                       label={auto ? "AUTOMATIQUE" : "MANUELLE"}
-                      bg={auto ? "#B8FEC9" : "#FEECC2"}
-                      color={auto ? "#18753C" : "#716043"}
+                      bg={TAG_COLORS[auto ? "bleu" : "jaune"].backgroundColor}
+                      color={TAG_COLORS[auto ? "bleu" : "jaune"].textColor}
                     />
                   </View>
                   <View style={s.cellCenter}>
                     {c.sourceLabel ? (
-                      <Badge label={c.sourceLabel.toUpperCase()} bg="#B8FEC9" color="#18753C" />
+                      <Badge
+                        label={c.sourceLabel.toUpperCase()}
+                        bg={TAG_COLORS.bleu.backgroundColor}
+                        color={TAG_COLORS.bleu.textColor}
+                      />
                     ) : (
                       <Text style={s.muted}>—</Text>
                     )}
@@ -347,8 +349,15 @@ export const MutabilitePdfDocument: React.FC<{ data: ResultatsExportData }> = ({
             {!usage.exclu && (
               <>
                 <View style={s.ratioTrack}>
-                  <View style={{ width: `${partAvantages}%`, backgroundColor: "#B8FEC9" }} />
-                  <View style={{ flexGrow: 1, backgroundColor: "#FFBDBE" }} />
+                  <View
+                    style={{
+                      width: `${partAvantages}%`,
+                      backgroundColor: TAG_COLORS["vert-fort"].backgroundColor,
+                    }}
+                  />
+                  <View
+                    style={{ flexGrow: 1, backgroundColor: TAG_COLORS.saumon.backgroundColor }}
+                  />
                 </View>
                 <View
                   style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 3 }}

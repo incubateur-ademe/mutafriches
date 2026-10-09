@@ -65,7 +65,7 @@ export const UsageDetailModal: React.FC<UsageDetailModalProps> = ({
           <p className="fr-mb-0 fr-mt-1w">
             <strong>{MESSAGE_USAGE_EXCLU}.</strong>{" "}
             <span style={{ fontWeight: 400 }}>
-              Les critères bloquants sont signalés dans le tableau.
+              Les critères incompatibles sont signalés dans le tableau.
             </span>
           </p>
         ) : (

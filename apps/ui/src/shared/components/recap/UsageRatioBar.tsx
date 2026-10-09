@@ -1,4 +1,5 @@
 import React from "react";
+import { TAG_COLORS } from "@shared/components/tag";
 
 interface UsageRatioBarProps {
   avantages: number;
@@ -34,8 +35,13 @@ export const UsageRatioBar: React.FC<UsageRatioBarProps> = ({ avantages, contrai
           backgroundColor: "var(--background-contrast-grey)",
         }}
       >
-        <div style={{ width: `${partAvantages}%`, backgroundColor: "#B8FEC9" }} />
-        <div style={{ flex: 1, backgroundColor: "#FFBDBE" }} />
+        <div
+          style={{
+            width: `${partAvantages}%`,
+            backgroundColor: TAG_COLORS["vert-fort"].backgroundColor,
+          }}
+        />
+        <div style={{ flex: 1, backgroundColor: TAG_COLORS.saumon.backgroundColor }} />
       </div>
       <div
         className="fr-mb-3w fr-mt-1w"

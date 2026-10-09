@@ -20,7 +20,7 @@ type Complementaires = Partial<DonneesComplementairesInputDto> | undefined;
  *
  * Les valeurs affichées sont résolues via le builder du récapitulatif (cohérence),
  * la pondération et l'impact proviennent du calcul détaillé de l'évaluation.
- * Un critère excluant pour l'usage est marqué « Bloquant » quel que soit son score.
+ * Un critère excluant pour l'usage est marqué « Incompatible » quel que soit son score.
  *
  * Fonction pure : aucune I/O.
  */

@@ -45,21 +45,9 @@ interface SiteDetailProps {
 
 type Phase = "qualification" | "mutabilite";
 
-const BADGE_DONNEES_NATIONALES = {
-  label: "automatique",
-  variant: "success",
-  icon: "fr-icon-checkbox-line",
-};
-const BADGE_SAISIE = {
-  label: "manuelle",
-  variant: "green-tilleul-verveine",
-  icon: "fr-icon-edit-line",
-};
-const BADGE_CALCULE = {
-  label: "calculé",
-  variant: "success",
-  icon: "fr-icon-calculator-line",
-};
+const BADGE_DONNEES_NATIONALES = { label: "automatique", tag: "bleu" } as const;
+const BADGE_SAISIE = { label: "manuelle", tag: "jaune" } as const;
+const BADGE_CALCULE = { label: "calculé", tag: "bleu" } as const;
 
 export const SiteDetail: React.FC<SiteDetailProps> = ({
   site,

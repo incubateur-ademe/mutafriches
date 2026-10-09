@@ -1,4 +1,5 @@
 import { UsageResultat, UsageType } from "@mutafriches/shared-types";
+import { TAG_COLORS, TagVariant } from "@shared/components/tag";
 
 /** Configuration complète d'un usage pour l'affichage */
 interface UsageConfig {
@@ -101,53 +102,24 @@ export interface BadgeConfig {
   backgroundColor: string;
 }
 
+const badge = (label: string, variant: TagVariant): BadgeConfig => ({
+  label,
+  ...TAG_COLORS[variant],
+});
+
 export const getBadgeConfig = (score: number): BadgeConfig => {
-  if (score >= 70) {
-    return {
-      label: "EXCELLENT",
-      textColor: "#18753C",
-      backgroundColor: "#B8FEC9",
-    };
-  }
-  if (score >= 60) {
-    return {
-      label: "TRÈS BON",
-      textColor: "#208D49",
-      backgroundColor: "#C9FCAC",
-    };
-  }
-  if (score >= 50) {
-    return {
-      label: "BON",
-      textColor: "#716043",
-      backgroundColor: "#FEECC2",
-    };
-  }
-  if (score >= 40) {
-    return {
-      label: "MOYEN",
-      textColor: "#716043",
-      backgroundColor: "#FEDED9",
-    };
-  }
-  // Score < 40 : Faible
-  return {
-    label: "FAIBLE",
-    textColor: "#8D533E",
-    backgroundColor: "#FFBDBE",
-  };
+  if (score >= 70) return badge("EXCELLENT", "vert-fort");
+  if (score >= 60) return badge("TRÈS BON", "vert");
+  if (score >= 50) return badge("BON", "jaune");
+  if (score >= 40) return badge("MOYEN", "saumon-pale");
+  return badge("FAIBLE", "saumon");
 };
 
 // Usage exclu par une règle de l'algorithme (v1.16) : aucun indice n'est affiché (ADR-0048)
 export const MESSAGE_USAGE_EXCLU =
   "Certaines caractéristiques du site peuvent bloquer sa mutabilité vers cet usage";
 
-// Couleurs du badge DSFR orange-terre-battue, aussi reprises par l'export PDF
-export const BADGE_EXCLU: BadgeConfig = {
-  label: "EXCLU",
-  textColor: "#755348",
-  backgroundColor: "#FEE9E5",
-};
+export const BADGE_EXCLU: BadgeConfig = badge("INCOMPATIBLE", "rouge-plein");
 
 export const getResultBadgeConfig = (
   result: Pick<UsageResultat, "indiceMutabilite" | "exclu">,

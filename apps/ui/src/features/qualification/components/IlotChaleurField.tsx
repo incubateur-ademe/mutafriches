@@ -1,5 +1,6 @@
 import React from "react";
 import { IlotChaleurUrbain } from "@mutafriches/shared-types";
+import { DonneeIndisponibleTag, Tag } from "@shared/components/tag";
 
 interface IlotChaleurFieldProps {
   /** Valeur enrichie depuis la cartographie ICU du CSTB */
@@ -8,24 +9,9 @@ interface IlotChaleurFieldProps {
   tooltip?: React.ReactNode;
 }
 
-const BADGES: Record<IlotChaleurUrbain, { label: string; className: string }> = {
-  [IlotChaleurUrbain.OUI]: {
-    label: "Oui (+ de 5,5 °C)",
-    className: "fr-badge fr-badge--green-emeraude fr-icon-warning-line fr-badge--icon-left",
-  },
-  [IlotChaleurUrbain.NON]: {
-    label: "Non — aucun îlot de chaleur identifié",
-    className: "fr-badge fr-badge--green-emeraude fr-icon-checkbox-line fr-badge--icon-left",
-  },
-  [IlotChaleurUrbain.NON_COUVERT]: {
-    label: "Commune non couverte",
-    className: "fr-badge fr-badge--yellow-tournesol fr-icon-question-line fr-badge--icon-left",
-  },
-};
-
-const BADGE_INDISPONIBLE = {
-  label: "Donnée non accessible",
-  className: "fr-badge fr-badge--yellow-tournesol fr-icon-close-circle-line fr-badge--icon-left",
+const LABELS: Record<IlotChaleurUrbain.OUI | IlotChaleurUrbain.NON, string> = {
+  [IlotChaleurUrbain.OUI]: "Oui (+ de 5,5 °C)",
+  [IlotChaleurUrbain.NON]: "Non — aucun îlot de chaleur identifié",
 };
 
 const ID = "ilot-chaleur-urbain";
@@ -35,8 +21,6 @@ const ID = "ilot-chaleur-urbain";
  * Donnée informative : elle ne pèse pas sur l'indice de mutabilité (ADR-0034).
  */
 export const IlotChaleurField: React.FC<IlotChaleurFieldProps> = ({ value, tooltip }) => {
-  const badge = value ? BADGES[value] : BADGE_INDISPONIBLE;
-
   return (
     <div className="fr-col-12 fr-col-md-6">
       <div className="fr-input-group">
@@ -57,9 +41,16 @@ export const IlotChaleurField: React.FC<IlotChaleurFieldProps> = ({ value, toolt
             </>
           )}
         </label>
-        <p id={ID} className={badge.className}>
-          {badge.label}
-        </p>
+        {value === IlotChaleurUrbain.OUI || value === IlotChaleurUrbain.NON ? (
+          <Tag id={ID} variant="bleu">
+            {LABELS[value]}
+          </Tag>
+        ) : (
+          <DonneeIndisponibleTag
+            id={ID}
+            motif={value === IlotChaleurUrbain.NON_COUVERT ? "non-couverte" : "non-accessible"}
+          />
+        )}
       </div>
     </div>
   );

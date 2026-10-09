@@ -1,6 +1,10 @@
 import { UsageResultat } from "@mutafriches/shared-types";
 import React from "react";
-import { getUsageInfo, getBadgeConfig, MESSAGE_USAGE_EXCLU } from "../utils/usagesLabels.utils";
+import {
+  getUsageInfo,
+  getResultBadgeConfig,
+  MESSAGE_USAGE_EXCLU,
+} from "../utils/usagesLabels.utils";
 import "./ResultTable.css";
 
 interface ResultsTableProps {
@@ -32,7 +36,7 @@ export const ResultsTable: React.FC<ResultsTableProps> = ({ results, onVoirDetai
                 </thead>
                 <tbody>
                   {results.map((result) => {
-                    const badgeConfig = getBadgeConfig(result.indiceMutabilite);
+                    const badgeConfig = getResultBadgeConfig(result);
                     return (
                       <tr key={result.usage}>
                         <td>
@@ -66,17 +70,15 @@ export const ResultsTable: React.FC<ResultsTableProps> = ({ results, onVoirDetai
                         </td>
                         <td>
                           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                            {!result.exclu && (
-                              <span
-                                className="result-table__badge"
-                                style={{
-                                  color: badgeConfig.textColor,
-                                  backgroundColor: badgeConfig.backgroundColor,
-                                }}
-                              >
-                                {badgeConfig.label}
-                              </span>
-                            )}
+                            <span
+                              className="result-table__badge"
+                              style={{
+                                color: badgeConfig.textColor,
+                                backgroundColor: badgeConfig.backgroundColor,
+                              }}
+                            >
+                              {badgeConfig.label}
+                            </span>
                             {onVoirDetail && (
                               <button
                                 type="button"
