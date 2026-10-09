@@ -96,8 +96,8 @@ const s = StyleSheet.create({
   },
   tag: {
     fontSize: 7,
-    color: BLEU,
-    backgroundColor: "#E3E3FD",
+    color: TAG_COLORS.bleu.textColor,
+    backgroundColor: TAG_COLORS.bleu.backgroundColor,
     paddingVertical: 2,
     paddingHorizontal: 5,
     borderRadius: 3,
@@ -295,13 +295,17 @@ export const MutabilitePdfDocument: React.FC<{ data: ResultatsExportData }> = ({
                   <View style={s.cellCenter}>
                     <Badge
                       label={auto ? "AUTOMATIQUE" : "MANUELLE"}
-                      bg={auto ? "#B8FEC9" : "#FEECC2"}
-                      color={auto ? "#18753C" : "#716043"}
+                      bg={TAG_COLORS[auto ? "bleu" : "jaune"].backgroundColor}
+                      color={TAG_COLORS[auto ? "bleu" : "jaune"].textColor}
                     />
                   </View>
                   <View style={s.cellCenter}>
                     {c.sourceLabel ? (
-                      <Badge label={c.sourceLabel.toUpperCase()} bg="#B8FEC9" color="#18753C" />
+                      <Badge
+                        label={c.sourceLabel.toUpperCase()}
+                        bg={TAG_COLORS.bleu.backgroundColor}
+                        color={TAG_COLORS.bleu.textColor}
+                      />
                     ) : (
                       <Text style={s.muted}>—</Text>
                     )}
@@ -345,8 +349,15 @@ export const MutabilitePdfDocument: React.FC<{ data: ResultatsExportData }> = ({
             {!usage.exclu && (
               <>
                 <View style={s.ratioTrack}>
-                  <View style={{ width: `${partAvantages}%`, backgroundColor: "#B8FEC9" }} />
-                  <View style={{ flexGrow: 1, backgroundColor: "#FFBDBE" }} />
+                  <View
+                    style={{
+                      width: `${partAvantages}%`,
+                      backgroundColor: TAG_COLORS["vert-fort"].backgroundColor,
+                    }}
+                  />
+                  <View
+                    style={{ flexGrow: 1, backgroundColor: TAG_COLORS.saumon.backgroundColor }}
+                  />
                 </View>
                 <View
                   style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 3 }}
