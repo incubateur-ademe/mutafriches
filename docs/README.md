@@ -32,8 +32,8 @@
            │
            ↓
 ┌──────────────────────┐
-│  ENRICHISSEMENT      │ ←── APIs externes + 9 bases locales
-│  13 domaines         │     (IGN, Enedis, GeoRisques, ZAER...)
+│  ENRICHISSEMENT      │ ←── APIs externes + 11 bases locales
+│  Domaines métier     │     (IGN, Enedis, GeoRisques, ZAER...)
 └──────────┬───────────┘
            │
            ↓
@@ -107,11 +107,11 @@ mutafriches/
 
 ### Enrichissement
 
-Le module d'enrichissement interroge une dizaine d'**APIs de données externes** et **9 bases locales PostGIS** pour pré-remplir automatiquement les critères d'un site (mono ou multi-parcelle) :
+Le module d'enrichissement interroge une dizaine d'**APIs de données externes** et **11 bases locales** pour pré-remplir automatiquement les critères d'un site (mono ou multi-parcelle) :
 
-- **13 domaines** : Cadastre, Énergie, Réseau de chaleur, Transport, ITE fret, Urbanisme, Risques Naturels, Risques Technologiques, Pollution, Zonages, ENR/ZAER, Climat/ICU, GeoRisques brut
+- **Domaines** : Cadastre, Énergie, Réseau de chaleur, Transport, ITE fret, Urbanisme, Risques Naturels, Risques Technologiques, Pollution, Zonages, ENR/ZAER, Climat/ICU, QPV, Saturation réseau EnR, ZAE, GeoRisques brut
 - **APIs externes** : IGN, BDNB, Enedis, GeoRisques (×13 endpoints), API Carto, ZAER WFS, data.gouv.fr...
-- **9 bases locales** : Transport, BPE (commerces), Sites pollués ADEME, ITE fret, LOVAC (logements vacants), Zonage ABC, ICU (îlots de chaleur), Réseaux de chaleur, QPV (quartiers prioritaires)
+- **11 bases locales** : Transport, BPE (commerces), Sites pollués ADEME, ITE fret, LOVAC (logements vacants), Zonage ABC, ICU (îlots de chaleur), Réseaux de chaleur, QPV (quartiers prioritaires), Zones de contrainte réseau EnR (Enedis/RTE), ZAE (zones d'activité économique)
 - **Multi-parcelle** : Support de 1 à 60 parcelles par site via l'API (20 sur la carte)
 - **Cache 24h** : Optimisation des performances
 
