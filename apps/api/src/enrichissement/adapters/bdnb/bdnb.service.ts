@@ -1,9 +1,8 @@
-// TODO remove console logs or replace by proper logger
-
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { HttpService } from "@nestjs/axios";
 import { firstValueFrom } from "rxjs";
 import { ApiResponse } from "../shared/api-response.types";
+import { LimiteurDebit } from "./bdnb-limiteur";
 import {
   BdnbBatiment,
   BdnbBatimentGroupeComplet,
@@ -13,10 +12,27 @@ import {
   BdnbServiceResponse,
 } from "./bdnb.types";
 
+// Plafond imposé par l'API (en-tête x-max-items-per-call) : un `limit` supérieur est ramené à 10 sans erreur
+const TAILLE_PAGE = 10;
+// 300 groupes de bâtiments : au-delà, on signale un échec plutôt que de sous-estimer la surface
+const PAGES_MAX = 30;
+const TENTATIVES_MAX = 3;
+// Marge sous la limite de 120 requêtes/minute, partagée avec la pré-chauffe et les autres instances
+const REQUETES_PAR_MINUTE_MAX = 100;
+const ATTENTE_429_MAX_MS = 20000;
+const ATTENTE_429_DEFAUT_MS = 5000;
+const ATTENTE_ERREUR_BASE_MS = 500;
+
+interface ErreurHttp {
+  response?: { status?: number; headers?: Record<string, string> };
+}
+
 @Injectable()
 export class BdnbService {
+  private readonly logger = new Logger(BdnbService.name);
   private readonly baseUrl = "https://api.bdnb.io/v1/bdnb";
   private readonly timeout = 10000; // 10 secondes
+  private readonly limiteur = new LimiteurDebit(REQUETES_PAR_MINUTE_MAX, 60000);
 
   constructor(private readonly httpService: HttpService) {}
 
@@ -32,7 +48,7 @@ export class BdnbService {
     const startTime = Date.now();
 
     try {
-      const response = await this.callBdnbApi(identifiantParcelle);
+      const response = await this.callBdnbApi(identifiantParcelle, "surface_emprise_sol");
 
       if (!response.success) {
         return {
@@ -59,7 +75,7 @@ export class BdnbService {
       };
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Erreur inconnue";
-      console.error(
+      this.logger.error(
         `Erreur lors de la récupération de la surface bâtie: ${errorMessage}`,
         error instanceof Error ? error.stack : undefined,
       );
@@ -129,7 +145,7 @@ export class BdnbService {
       };
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Erreur inconnue";
-      console.error(
+      this.logger.error(
         `Erreur lors de la récupération des bâtiments: ${errorMessage}`,
         error instanceof Error ? error.stack : undefined,
       );
@@ -172,7 +188,7 @@ export class BdnbService {
       };
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Erreur inconnue";
-      console.error(
+      this.logger.error(
         `Erreur lors de la récupération des risques naturels: ${errorMessage}`,
         error instanceof Error ? error.stack : undefined,
       );
@@ -186,48 +202,115 @@ export class BdnbService {
   }
 
   /**
-   * Appel générique à l'API BDNB pour récupérer les données d'une parcelle
+   * Appel générique à l'API BDNB : pagine jusqu'à épuisement des groupes de bâtiments de la parcelle
    */
   private async callBdnbApi(
     identifiantParcelle: string,
+    select?: string,
   ): Promise<ApiResponse<BdnbBatimentGroupeComplet[]>> {
     try {
       const url = `${this.baseUrl}/donnees/batiment_groupe_complet/parcelle`;
-      const params = {
-        parcelle_id: `eq.${identifiantParcelle}`,
-        limit: 100,
-      };
+      const batiments: BdnbBatimentGroupeComplet[] = [];
 
-      const response = await firstValueFrom(
-        this.httpService.get<BdnbBatimentGroupeComplet[]>(url, {
-          params,
-          timeout: this.timeout,
-          headers: {
-            Accept: "application/json",
-            "User-Agent": "Mutafriches-API/1.0",
-          },
-        }),
+      for (let page = 0; page < PAGES_MAX; page++) {
+        const lot = await this.getPage(url, {
+          parcelle_id: `eq.${identifiantParcelle}`,
+          ...(select ? { select } : {}),
+          order: "batiment_groupe_id",
+          limit: TAILLE_PAGE,
+          offset: page * TAILLE_PAGE,
+        });
+        batiments.push(...lot);
+
+        // Réponse 200 avec un tableau (potentiellement vide) = succès technique.
+        // Un tableau vide signifie "parcelle non bâtie" : c'est une information valide,
+        // pas une erreur. Les consommateurs (getSurfaceBatie / getBatiments / getRisquesNaturels)
+        // décident comment exploiter le cas "0 bâtiment".
+        if (lot.length < TAILLE_PAGE) {
+          return { success: true, data: batiments, source: "API BDNB" };
+        }
+      }
+
+      this.logger.warn(
+        `BDNB: plus de ${PAGES_MAX * TAILLE_PAGE} groupes sur ${identifiantParcelle}`,
       );
-
-      const data = response.data;
-
-      // Réponse 200 OK avec un tableau (potentiellement vide) = succès technique.
-      // Un tableau vide signifie "parcelle non bâtie" : c'est une information valide,
-      // pas une erreur. Les consommateurs (getSurfaceBatie / getBatiments / getRisquesNaturels)
-      // décident comment exploiter le cas "0 bâtiment".
       return {
-        success: true,
-        data: data ?? [],
+        success: false,
+        error: `Plus de ${PAGES_MAX * TAILLE_PAGE} groupes de bâtiments, résultat tronqué`,
         source: "API BDNB",
       };
     } catch (error) {
-      console.error("Erreur lors de l'appel à l'API BDNB:", error);
+      this.logger.error(
+        `Erreur lors de l'appel à l'API BDNB: ${error instanceof Error ? error.message : "inconnue"}`,
+      );
       return {
         success: false,
         error: error instanceof Error ? error.message : "Erreur API BDNB",
         source: "API BDNB",
       };
     }
+  }
+
+  /**
+   * Une page de résultats, avec respect du débit et nouvelles tentatives (429, 5xx, timeout)
+   */
+  private async getPage(
+    url: string,
+    params: Record<string, string | number>,
+  ): Promise<BdnbBatimentGroupeComplet[]> {
+    for (let tentative = 1; ; tentative++) {
+      await this.limiteur.acquerir();
+
+      try {
+        const response = await firstValueFrom(
+          this.httpService.get<BdnbBatimentGroupeComplet[]>(url, {
+            params,
+            timeout: this.timeout,
+            headers: {
+              Accept: "application/json",
+              "User-Agent": "Mutafriches-API/1.0",
+            },
+          }),
+        );
+
+        // Un objet d'erreur en 200 ne doit pas passer pour "parcelle non bâtie"
+        if (!Array.isArray(response.data)) {
+          throw new Error("Réponse BDNB inattendue (tableau attendu)");
+        }
+        return response.data;
+      } catch (error) {
+        const attenteMs = this.attenteAvantNouvelEssai(error, tentative);
+        if (attenteMs === null) {
+          throw error;
+        }
+        this.logger.warn(
+          `BDNB: nouvelle tentative ${tentative + 1}/${TENTATIVES_MAX} dans ${attenteMs} ms`,
+        );
+        await new Promise<void>((resolve) => setTimeout(resolve, attenteMs));
+      }
+    }
+  }
+
+  // null = ne pas réessayer
+  private attenteAvantNouvelEssai(error: unknown, tentative: number): number | null {
+    if (tentative >= TENTATIVES_MAX) return null;
+
+    const reponse = (error as ErreurHttp).response;
+    const status = reponse?.status;
+
+    if (status === 429) {
+      // x-rate-limit-reset : instant (ms epoch) de remise à zéro de la fenêtre
+      const reset = Number(reponse?.headers?.["x-rate-limit-reset"]);
+      const attenteMs = Number.isFinite(reset) ? reset - Date.now() + 250 : ATTENTE_429_DEFAUT_MS;
+      return Math.min(Math.max(attenteMs, 250), ATTENTE_429_MAX_MS);
+    }
+
+    // Pas de statut = timeout ou erreur réseau
+    if (status === undefined || status >= 500) {
+      return ATTENTE_ERREUR_BASE_MS * 2 ** (tentative - 1);
+    }
+
+    return null;
   }
 
   /**
