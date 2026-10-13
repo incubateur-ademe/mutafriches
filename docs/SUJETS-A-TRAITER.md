@@ -119,6 +119,12 @@ Format d'une entrée :
 - **Écarté parce que** : hors code ; la carte de la page d'accueil a été retouchée en attendant
 - **Préalable** : export Figma à jour
 
+### Surface bâtie BDNB comptée deux fois sur les groupes à cheval sur plusieurs parcelles
+
+- **Origine** : analyse des pannes BDNB d'octobre 2026
+- **Écarté parce que** : défaut d'exactitude distinct de la disponibilité de l'API ; la vue `batiment_groupe_complet/parcelle` renvoie le groupe entier pour chaque parcelle qu'il touche (`l_parcelle_id` > 1), donc un site multi-parcelle additionne sa surface plusieurs fois (ex. groupe `bdnb-bg-MHVH-E6JW-Y93A`, 596 m², présent sur `490200000A0773` et `490200000A1088`)
+- **Préalable** : mesurer l'écart sur les sites multi-parcelles enrichis, puis dédoublonner par `batiment_groupe_id` dans `enrichirMulti` (le surplus change les indices : valider avec l'équipe métier, éventuellement via une version d'algorithme)
+
 ## Contrat API et dépréciations
 
 ### Retrait des champs et alias dépréciés
