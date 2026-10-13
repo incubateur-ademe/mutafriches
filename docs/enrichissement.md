@@ -2,7 +2,7 @@
 
 ## Vue d'ensemble
 
-Le module d'enrichissement est le cœur de Mutafriches. Il enrichit automatiquement les données d'une parcelle cadastrale en interrogeant une dizaine d'**APIs publiques externes** (dont GéoRisques, qui expose 13 endpoints) et **8 bases locales** (5 PostGIS spatiales + les référentiels communaux LOVAC, zonage ABC et ICU).
+Le module d'enrichissement est le cœur de Mutafriches. Il enrichit automatiquement les données d'une parcelle cadastrale en interrogeant une dizaine d'**APIs publiques externes** (dont GéoRisques, qui expose 13 endpoints) et **11 bases locales** (9 PostGIS spatiales + les référentiels communaux LOVAC et zonage ABC), importées au déploiement (ADR-0050). La liste fait foi dans « Bases Locales » ci-dessous.
 
 **Endpoint** : `POST /enrichissement`
 **Entrée** : Identifiant(s) cadastral(s) — mono-parcelle ou multi-parcelle (1 à 60 parcelles via l'API, 20 sur la carte)
@@ -24,7 +24,7 @@ Le module d'enrichissement est le cœur de Mutafriches. Il enrichit automatiquem
    ↓
 3. Enrichissement SÉQUENTIEL des domaines (dans l'ordre du code) :
    ├─ ÉNERGIE (Enedis + référentiel local réseaux de chaleur)
-   ├─ TRANSPORT (Service Public + IGN + data.gouv)
+   ├─ TRANSPORT (Service Public + IGN + IGN Itinéraire + data.gouv)
    │    └─ ITE FRET (référentiel local raw_ite_fret, Cerema)
    ├─ URBANISME (LOVAC + Zonage ABC logement + BPE)
    ├─ RISQUES NATURELS (RGA + Cavités + Inondation)
@@ -32,7 +32,11 @@ Le module d'enrichissement est le cœur de Mutafriches. Il enrichit automatiquem
    ├─ GEORISQUES BRUT (13 APIs pour intégrateurs)
    ├─ ZONAGES (Environnemental + Patrimonial + Réglementaire)
    ├─ POLLUTION (ADEME + SIS + ICPE)
-   └─ ENR / ZAER (Géoplateforme WFS)
+   ├─ ENR / ZAER (Géoplateforme WFS)
+   ├─ CLIMAT / ICU (référentiel local raw_icu, informatif)
+   ├─ QPV (référentiel local raw_qpv, ANCT)
+   ├─ SATURATION RÉSEAU EnR (référentiel local raw_zones_contrainte_enr, Enedis/RTE)
+   └─ ZAE (référentiel local raw_zae, Cerema Fusac)
    ↓
 4. Construction DTO + Logging
    ↓
@@ -755,6 +759,129 @@ Le critère `zoneAccelerationEnr` (`"non"` | `"oui"` | `"oui-solaire-pv-ombriere
 
 ---
 
+## 11. Domaine CLIMAT / ICU
+
+### Responsabilité
+Indiquer l'exposition du site à un îlot de chaleur urbain. **Donnée informative** : restituée à l'utilisateur, jamais injectée dans le calcul de mutabilité ni dans la fiabilité ([ADR-0034](adr/0034-ilot-chaleur-urbain-donnee-informative.md)).
+
+### Sources utilisées
+
+| Source | Type | Données récupérées |
+|--------|------|-------------------|
+| **CSTB (SCO Sat4BDNB)** | Référentiel local (`raw_icu`) | Zones d'îlot de chaleur et intensité maximale absolue (`iuhi`, °C) sur environ 600 communes |
+
+### Règles de gestion
+
+1. **Prérequis** : coordonnées disponibles, sinon échec (champ manquant `ilotChaleurUrbain`)
+2. **Zone la plus proche** : zone contenant le centroïde, ou la plus proche à moins de 150 m (`TOLERANCE_ZONE_ICU_M`)
+3. **Seuil** : intensité `>= 5,5 °C` → `oui`, sinon `non` (`SEUIL_ILOT_CHALEUR_C`, choix produit : la documentation CSTB ne définit aucun palier)
+4. **Aucune zone à proximité** : si la commune figure au périmètre d'étude → `non`, sinon `non-couvert` et intensité `null`. Les zones ne couvrent que l'enveloppe urbaine dense des communes étudiées : un site périphérique d'une commune étudiée est donc déclaré non concerné, pas non couvert ([ADR-0037](adr/0037-icu-couverture-commune-tolerance-bord.md))
+5. **Lecture en échec** → `undefined`, source échouée
+
+### Champs enrichis
+
+```typescript
+{
+  ilotChaleurUrbain?: "oui" | "non" | "non-couvert"  // undefined = enrichissement en échec
+  intensiteIlotChaleurC?: number | null              // °C, null si hors périmètre d'étude
+}
+```
+
+---
+
+## 12. Domaine QPV
+
+### Responsabilité
+Déterminer si le site est dans un quartier prioritaire de la politique de la ville ([ADR-0039](adr/0039-qpv-referentiel-local-centroide.md)). Critère scoré, poids 1.
+
+### Sources utilisées
+
+| Source | Type | Données récupérées |
+|--------|------|-------------------|
+| **ANCT** | Référentiel local (`raw_qpv`, import `pnpm db:qpv:import`) | Périmètres des quartiers prioritaires, millésime 2024 (1 584 quartiers, 834 communes) |
+
+### Règles de gestion
+
+1. **Prérequis** : coordonnées disponibles, sinon échec (champ manquant `siteEnQpv`)
+2. **Test spatial** : `ST_Intersects` du **centroïde** du site contre les périmètres
+3. **Dans un QPV** → `true` ; **hors de tout QPV** → `false`. C'est un succès de recherche : la source est « utilisée » et le critère compte dans la fiabilité
+4. **Référentiel vide ou lecture en échec** → `undefined`, source échouée : on ne peut pas affirmer que le site est hors QPV
+5. Un site multi-parcelle est testé sur son centroïde global : un grand site à cheval sur un périmètre, centre dehors, est classé hors QPV
+
+Le millésime 2024 vient du GeoJSON ANCT : le WFS Géoplateforme sert la géographie 2015, abrogée, et l'API tabulaire ne descend pas sous la commune.
+
+### Champs enrichis
+
+```typescript
+{
+  siteEnQpv?: boolean  // undefined = référentiel illisible ou enrichissement antérieur à v1.14
+}
+```
+
+---
+
+## 13. Domaine SATURATION RÉSEAU EnR
+
+### Responsabilité
+Indiquer si le site est dans une zone de poste source saturée pour raccorder un projet de production d'énergie renouvelable ([ADR-0046](adr/0046-zones-contrainte-enr-fichier-commite.md)). Critère scoré, poids 1. Ne pas confondre avec `distanceRaccordementElectrique` (domaine Énergie), qui mesure l'éloignement du réseau.
+
+### Sources utilisées
+
+| Source | Type | Données récupérées |
+|--------|------|-------------------|
+| **Enedis / RTE** | Référentiel local (`raw_zones_contrainte_enr`, import `pnpm db:zones-contrainte-enr:import`) | Statut de la zone de poste source (très favorable, favorable, en tension, saturée, régie locale), environ 2 300 zones |
+
+Pas d'API : le fichier Enedis est **téléchargé à la main** chaque mois (protection anti-robots), converti en GeoJSON compressé commité (`apps/api/src/scripts/data/zones-contrainte-enr.geojson.gz`, `pnpm data:zones-contrainte-enr:preparer`), puis réimporté. Une issue GitHub mensuelle sert de rappel.
+
+### Règles de gestion
+
+1. **Prérequis** : coordonnées disponibles, sinon échec (champ manquant `saturationReseauEnr`)
+2. **Test spatial** : `ST_Intersects` du centroïde contre les zones
+3. **Statut `SATUREE`** → `true`. Tous les autres statuts → `false`, **`EN_TENSION` compris** (une zone en tension reste raccordable)
+4. **Hors zone, statut `ELD` (régie locale de distribution) ou référentiel vide** → `undefined`, source échouée : Enedis ne se prononce pas, un « Non » serait affirmé sans fondement
+5. Données indicatives, sans valeur contractuelle
+
+### Champs enrichis
+
+```typescript
+{
+  saturationReseauEnr?: boolean  // undefined = hors périmètre Enedis ou enrichissement antérieur à v1.15
+}
+```
+
+---
+
+## 14. Domaine ZAE
+
+### Responsabilité
+Déterminer si le site est dans une zone d'activité économique ([ADR-0049](adr/0049-zae-fusac-referentiel-local.md)). Critère scoré, poids 1.
+
+### Sources utilisées
+
+| Source | Type | Données récupérées |
+|--------|------|-------------------|
+| **Cerema, Fusac** | Référentiel local (`raw_zae`, import `pnpm db:zae:import`) | Sites d'activité de type « zone d'activité économique » en activité, millésime 2025 (environ 45 000 sites) |
+
+Pas d'API : le GeoPackage Fusac (~10 Go décompressé) est **téléchargé à la main** à chaque millésime, réduit en GeoJSON compressé commité (`apps/api/src/scripts/data/zae-fusac.geojson.gz`, `pnpm data:zae:preparer`, `ogr2ogr` requis), puis réimporté.
+
+### Règles de gestion
+
+1. **Prérequis** : coordonnées disponibles, sinon échec (champ manquant `siteEnZae`)
+2. **Outre-mer** (code INSEE `97*`) : Fusac n'y est pas importé → `undefined`, source échouée
+3. **Test spatial** : `ST_Intersects` du centroïde contre les zones. Dedans → `true`, dehors → `false` (succès de recherche)
+4. **Référentiel vide ou lecture en échec** → `undefined`, source échouée
+5. Fusac n'est pas un zonage réglementaire : plus de la moitié des zones viennent d'OpenStreetMap. Un site dont le centre est hors zone mais qui en recouvre une partie est classé hors zone
+
+### Champs enrichis
+
+```typescript
+{
+  siteEnZae?: boolean  // undefined = référentiel illisible, outre-mer ou enrichissement antérieur à v1.18
+}
+```
+
+---
+
 ## Constantes Globales
 
 ### Cache
@@ -814,13 +941,14 @@ expose 13 endpoints, appelés séparément).
 |---------|-------------------|
 | Cadastre | IGN Cadastre, BDNB |
 | Énergie | Enedis |
-| Transport | API Service Public, IGN WFS |
+| Transport | API Service Public, IGN WFS, IGN Itinéraire |
 | Urbanisme | *(aucune : LOVAC, zonage ABC et BPE sont des référentiels locaux)* |
+| Climat, QPV, saturation EnR, ZAE | *(aucune : référentiels locaux)* |
 | Zonages | API Carto Nature, API Carto GPU |
 | ENR | ZAER WFS Géoplateforme |
 | Risques | GéoRisques (1 API, 13 endpoints) |
 
-### Bases Locales (8)
+### Bases Locales (11)
 
 | Domaine | Table | Données | Type |
 |---------|-------|---------|------|
@@ -832,7 +960,12 @@ expose 13 endpoints, appelés séparément).
 | Urbanisme | raw_zonage_abc | Zonage ABC du logement par commune | Table de correspondance (code INSEE) |
 | Climat | raw_icu | Îlots de chaleur urbain (CSTB) | PostGIS (spatial) |
 | Énergie | raw_reseaux_chaleur | Tracés des réseaux de chaleur (France Chaleur Urbaine) | PostGIS (spatial) |
-| **TOTAL** | | | **8** |
+| QPV | raw_qpv | Quartiers prioritaires de la politique de la ville (ANCT) | PostGIS (spatial) |
+| Saturation réseau EnR | raw_zones_contrainte_enr | Zones de contrainte réseau pour les projets EnR (Enedis/RTE) | PostGIS (spatial) |
+| ZAE | raw_zae | Zones d'activité économique (Cerema, Fusac) | PostGIS (spatial) |
+| **TOTAL** | | | **11** |
+
+Chaque table est enregistrée dans `IMPORT_DATASETS` (`donnees-externes/imports.registry.ts`) : le `postdeploy` importe celles qui sont vides (ADR-0050). Un test (`docs-enrichissement.spec.ts`) vérifie que ce tableau et ce décompte restent alignés sur le registre.
 
 ---
 
@@ -887,6 +1020,7 @@ expose 13 endpoints, appelés séparément).
 
   // === TRANSPORT (suite) ===
   distanceIte?: DistanceIte             // "moins-1km-bon-etat" | "moins-1km-mauvais-etat" | "plus-1km"
+  distanceIteMetres?: number            // Distance réelle en mètres à l'ITE la plus proche
 
   // === URBANISME ===
   tauxLogementsVacants: number
@@ -912,7 +1046,16 @@ expose 13 endpoints, appelés séparément).
 
   // === ENR / ZAER ===
   zaer?: ZaerEnrichissement             // Données ZAER détaillées
-  zoneAccelerationEnr?: string          // Critère calculé : "non" | "oui" | "oui-solaire-pv-ombriere"
+  zoneAccelerationEnr?: string          // Critère calculé : "non" | "oui" | "oui-solaire-pv-ombriere" | "exclusion"
+
+  // === QPV, SATURATION RÉSEAU EnR, ZAE (booléens, undefined = donnée indisponible) ===
+  siteEnQpv?: boolean                   // Centroïde dans un quartier prioritaire
+  saturationReseauEnr?: boolean         // Zone de poste source saturée (statut SATUREE uniquement)
+  siteEnZae?: boolean                   // Centroïde dans une zone d'activité économique
+
+  // === CLIMAT / ICU (informatif, hors algorithme) ===
+  ilotChaleurUrbain?: "oui" | "non" | "non-couvert"
+  intensiteIlotChaleurC?: number | null // °C, null si hors périmètre d'étude
 
   // === DIAGNOSTIC ZONAGES (dev/staging uniquement, absent en production) ===
   diagnosticZonages?: DiagnosticZonages // Données brutes des APIs de zonage
@@ -983,6 +1126,12 @@ expose 13 endpoints, appelés séparément).
 | Zonage patrimonial | Zonages | `zonagePatrimonial` | API Carto GPU |
 | Zonage PLU | Zonages | `zonageReglementaire` | API Carto GPU |
 | Zone ZAER | ENR | `zaer` / `zoneAccelerationEnr` | ZAER WFS Géoplateforme |
+| Distance ITE fret | Transport | `distanceIte` | ITE 3000 (local) |
+| Distance réseau de chaleur | Énergie | `distanceReseauChaleur` | Réseaux de chaleur (local) |
+| Quartier prioritaire (QPV) | QPV | `siteEnQpv` | QPV ANCT (local) |
+| Saturation réseau EnR | Saturation réseau EnR | `saturationReseauEnr` | Zones de contrainte Enedis/RTE (local) |
+| Zone d'activité économique | ZAE | `siteEnZae` | Fusac Cerema (local) |
+| Îlot de chaleur urbain *(informatif, hors algorithme)* | Climat / ICU | `ilotChaleurUrbain` | ICU CSTB (local) |
 
 ---
 
@@ -1043,6 +1192,20 @@ expose 13 endpoints, appelés séparément).
 - **Documentation** : https://geoservices.ign.fr/documentation/services/api-et-services-ogc/wfs
 - **Adapter** : `apps/api/src/enrichissement/adapters/ign-wfs/`
 
+### IGN Itinéraire (distance routière)
+- **URL** : `https://data.geopf.fr/navigation`
+- **Utilisation** : Distance par la route jusqu'à l'entrée d'autoroute la plus proche (ADR-0047)
+- **Limite** : ~10 requêtes/s par IP, d'où au plus 4 itinéraires par site
+- **Adapter** : `apps/api/src/enrichissement/adapters/ign-itineraire/`
+
+### Référentiels locaux importés depuis des fichiers (QPV, ZAE, zones de contrainte EnR, ICU)
+- **Utilisation** : plus aucun appel externe à l'exécution ; test spatial du centroïde en base PostGIS
+- **Repositories** :
+  - `apps/api/src/enrichissement/repositories/qpv.repository.ts` (`raw_qpv`, import `pnpm db:qpv:import`)
+  - `apps/api/src/enrichissement/repositories/zones-contrainte-enr.repository.ts` (`raw_zones_contrainte_enr`, import `pnpm db:zones-contrainte-enr:import`)
+  - `apps/api/src/enrichissement/repositories/zae.repository.ts` (`raw_zae`, import `pnpm db:zae:import`)
+  - `apps/api/src/enrichissement/repositories/icu.repository.ts` (`raw_icu`, import `pnpm db:icu:import`)
+
 ### ZAER WFS (Zones d'Accélération des Énergies Renouvelables)
 - **URL** : `https://data.geopf.fr/wfs` (typename `zaer:zaer`)
 - **Utilisation** : Détection des zones ZAER par intersection géométrique
@@ -1051,6 +1214,6 @@ expose 13 endpoints, appelés séparément).
 
 ---
 
-**Version** : 2.1
-**Dernière mise à jour** : 2026-07-01
+**Version** : 2.2
+**Dernière mise à jour** : 2026-10-13
 **Projet** : Mutafriches - Beta.gouv / ADEME
