@@ -125,6 +125,12 @@ Format d'une entrée :
 - **Écarté parce que** : défaut d'exactitude distinct de la disponibilité de l'API ; la vue `batiment_groupe_complet/parcelle` renvoie le groupe entier pour chaque parcelle qu'il touche (`l_parcelle_id` > 1), donc un site multi-parcelle additionne sa surface plusieurs fois (ex. groupe `bdnb-bg-MHVH-E6JW-Y93A`, 596 m², présent sur `490200000A0773` et `490200000A1088`)
 - **Préalable** : mesurer l'écart sur les sites multi-parcelles enrichis, puis dédoublonner par `batiment_groupe_id` dans `enrichirMulti` (le surplus change les indices : valider avec l'équipe métier, éventuellement via une version d'algorithme)
 
+### Quota mensuel BDNB (10 000 requêtes) épuisé par la pré-chauffe
+
+- **Origine** : analyse des pannes BDNB d'octobre 2026
+- **Écarté parce que** : arbitrage technique et métier en attente. La pré-chauffe des partenaires rejoue ~270 sites (~1 330 appels) tous les 2 à 3 jours quand elle tombe juste après l'expiration du cache de 24 h, sur prod et staging : 19 077 appels en juillet, 24 510 en août, 12 784 en septembre pour la seule prod. Le quota étant porté par l'IP sortante, il est peut-être partagé avec d'autres apps Scalingo
+- **Préalable** : choisir entre une clé API BDNB (quota propre), un cache de longue durée par parcelle (table, migration, ADR ; ~1 800 appels par mois pour les 1 828 parcelles partenaires) et un TTL de pré-chauffe plus long (divise la consommation par ~2)
+
 ## Contrat API et dépréciations
 
 ### Retrait des champs et alias dépréciés

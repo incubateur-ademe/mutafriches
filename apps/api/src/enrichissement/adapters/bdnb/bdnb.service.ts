@@ -22,9 +22,11 @@ const REQUETES_PAR_MINUTE_MAX = 100;
 const ATTENTE_429_MAX_MS = 20000;
 const ATTENTE_429_DEFAUT_MS = 5000;
 const ATTENTE_ERREUR_BASE_MS = 500;
+// Quota mensuel épuisé : inutile de réessayer, on ne sonde l'API qu'à intervalle espacé
+const PAUSE_QUOTA_EPUISE_MS = 15 * 60 * 1000;
 
 interface ErreurHttp {
-  response?: { status?: number; headers?: Record<string, string> };
+  response?: { status?: number; headers?: Record<string, string>; data?: { message?: string } };
 }
 
 @Injectable()
@@ -33,6 +35,7 @@ export class BdnbService {
   private readonly baseUrl = "https://api.bdnb.io/v1/bdnb";
   private readonly timeout = 10000; // 10 secondes
   private readonly limiteur = new LimiteurDebit(REQUETES_PAR_MINUTE_MAX, 60000);
+  private quotaEpuiseJusqua = 0;
 
   constructor(private readonly httpService: HttpService) {}
 
@@ -258,6 +261,10 @@ export class BdnbService {
     url: string,
     params: Record<string, string | number>,
   ): Promise<BdnbBatimentGroupeComplet[]> {
+    if (Date.now() < this.quotaEpuiseJusqua) {
+      throw new Error("Quota mensuel BDNB épuisé");
+    }
+
     for (let tentative = 1; ; tentative++) {
       await this.limiteur.acquerir();
 
@@ -279,6 +286,14 @@ export class BdnbService {
         }
         return response.data;
       } catch (error) {
+        if (this.estQuotaEpuise(error)) {
+          this.quotaEpuiseJusqua = Date.now() + PAUSE_QUOTA_EPUISE_MS;
+          this.logger.error(
+            "BDNB: quota mensuel épuisé, appels suspendus 15 min (remise à zéro : en-tête x-quota-reset)",
+          );
+          throw new Error("Quota mensuel BDNB épuisé");
+        }
+
         const attenteMs = this.attenteAvantNouvelEssai(error, tentative);
         if (attenteMs === null) {
           throw error;
@@ -289,6 +304,16 @@ export class BdnbService {
         await new Promise<void>((resolve) => setTimeout(resolve, attenteMs));
       }
     }
+  }
+
+  // Le quota mensuel et la limite par minute renvoient tous deux un 429
+  private estQuotaEpuise(error: unknown): boolean {
+    const reponse = (error as ErreurHttp).response;
+    return (
+      reponse?.status === 429 &&
+      (reponse.headers?.["x-quota-remaining"] === "0" ||
+        (reponse.data?.message ?? "").startsWith("Quota exceeded"))
+    );
   }
 
   // null = ne pas réessayer
