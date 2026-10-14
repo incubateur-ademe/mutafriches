@@ -237,8 +237,11 @@ Ouvrir un accès revient à ajouter une origine à la variable d'environnement
 `ALLOWED_INTEGRATOR_ORIGINS`. Aucun code à modifier, aucun secret à transmettre.
 
 `ALLOWED_INTEGRATOR_ORIGINS` **s'ajoute** aux seules origines codées dans le guard, celles de
-Mutafriches, dont notre UI a besoin (standalone comme iframe). Bénéfriches, qui nous intègre en
-iframe, y figure comme n'importe quel intégrateur.
+Mutafriches, dont notre UI a besoin (standalone comme iframe). L'iframe tourne sur notre
+domaine : un intégrateur **iframe seul** n'a pas besoin de la variable, il est déclaré dans le
+registre `INTEGRATEURS_IFRAME` (`shared-types`), qui alimente aussi l'en-tête `frame-ancestors`.
+Bénéfriches figure dans la variable parce qu'il appelle **aussi** l'API directement. Les deux
+cas sont détaillés dans [docs/ajout-partenaire.md](./ajout-partenaire.md), section 3.
 
 ### Identification dans les statistiques
 

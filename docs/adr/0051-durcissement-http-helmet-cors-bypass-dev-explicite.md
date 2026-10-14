@@ -28,11 +28,16 @@ risque classique d'en corriger une sur quatre.
 > Les en-têtes de sécurité viennent de `helmet`, CORS ne reflète que les origines connues, et tout
 > bypass de sécurité exige `NODE_ENV=development` explicite.
 
-- **`helmet`** est posé en premier middleware avec CSP, `frameguard`, COEP et COOP **désactivés**, et
-  CORP à `cross-origin`. L'UI est embarquée en iframe par les intégrateurs (Bénéfriches) et charge des
-  tiers (DSFR, tuiles IGN, Metabase, ZCal) : une CSP ou un `X-Frame-Options` posés à l'aveugle
-  casseraient l'intégration. Le reste (HSTS, `nosniff`, `Referrer-Policy`, suppression de
+- **`helmet`** est posé en premier middleware. La CSP se limite à la directive `frame-ancestors`
+  (`'self'`, les hôtes du registre `INTEGRATEURS_IFRAME` de `shared-types`, les origines des deux
+  variables) : elle dit qui peut nous embarquer en iframe et remplace `X-Frame-Options`, que les
+  navigateurs ignorent en sa présence. Les autres directives restent à écrire : l'UI charge des tiers
+  (DSFR, tuiles IGN, Metabase, ZCal) qu'il faut inventorier d'abord. COEP et COOP sont désactivés,
+  CORP à `cross-origin`. Le reste (HSTS, `nosniff`, `Referrer-Policy`, suppression de
   `X-Powered-By`) s'applique.
+- **Le registre des intégrateurs iframe** quitte l'UI pour `shared-types` : une seule liste pour la
+  validation du callback (UI) et `frame-ancestors` (API). L'intégrateur `demo` n'est plus accepté
+  que depuis un hôte local.
 - **CORS** passe par `construireOriginesCors()` (`shared/utils/origines-autorisees.ts`) : nos deux
   domaines, les dashboards ADEME, `ALLOWED_ORIGINS` et `ALLOWED_INTEGRATOR_ORIGINS`, normalisés
   (ADR-0043). En `development`, toute origine locale est acceptée (port Vite glissant). Une requête
@@ -56,12 +61,12 @@ risque classique d'en corriger une sur quatre.
 - Inconvénients : réécrit ce que `helmet` maintient (valeurs, dépréciations) ; laisse `*` en place,
   alors que la liste des intégrateurs navigateur existe déjà dans `ALLOWED_INTEGRATOR_ORIGINS`.
 
-### Option C — Activer aussi CSP et `frame-ancestors` dès maintenant
+### Option C — CSP complète dès maintenant
 
 - Avantages : couverture complète en une PR.
 - Inconvénients : impossible sans relever les origines chargées en production ; risque de casser la
-  carte, Metabase ou l'iframe Bénéfriches sans test. Reporté avec un préalable
-  (`docs/SUJETS-A-TRAITER.md`).
+  carte ou Metabase sans test. Seule `frame-ancestors`, qui ne restreint que l'embarquement, est
+  posée ; le reste est reporté avec un préalable (`docs/SUJETS-A-TRAITER.md`).
 
 ## Conséquences
 
@@ -78,6 +83,8 @@ risque classique d'en corriger une sur quatre.
   obtenait grâce à `*`. Aucun cas connu : les intégrateurs déclarés y figurent déjà pour les `POST`.
 - HSTS (`max-age` d'un an par défaut) engage le domaine sur HTTPS : déjà le cas sur Scalingo.
 - Lancer l'API sans `pnpm dev:api` exige de poser `NODE_ENV=development` soi-même.
+- Un intégrateur iframe absent de `INTEGRATEURS_IFRAME` et des variables voit une iframe blanche,
+  sans message : la déclaration devient obligatoire (`docs/ajout-partenaire.md`, section 3).
 
 ### Migration
 
@@ -88,6 +95,7 @@ doit montrer `Strict-Transport-Security` et `X-Content-Type-Options`, et une req
 ## Liens
 
 - Code : `apps/api/src/main.ts`, `apps/api/src/shared/utils/origines-autorisees.ts`,
+  `packages/shared-types/src/integration/integrateurs-iframe.ts`,
   `apps/api/src/shared/utils/environment.utils.ts`
 - ADR liés : ADR-0011 (guards d'origine), ADR-0043 (normalisation des origines)
 - Suivi : `docs/SUJETS-A-TRAITER.md` (CSP, `ValidationPipe` whitelist, certificat PostgreSQL)

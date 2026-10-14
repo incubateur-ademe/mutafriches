@@ -47,7 +47,8 @@ Pour une application React, consultez l'exemple complet dans [`/react`](./react)
 
 Pour vos tests, utilisez l'intégrateur `"demo"` qui :
 
-- Fonctionne depuis n'importe quel domaine
+- Fonctionne depuis un hôte local (`localhost`, `127.0.0.1`), le seul autorisé à embarquer
+  l'iframe sans déclaration préalable
 - N'a pas de restriction sur l'URL de callback
 - Permet de tester l'intégration en local
 

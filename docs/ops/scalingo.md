@@ -13,7 +13,9 @@ Commandes de **lecture et de diagnostic** sur les environnements déployés.
 | Staging        | `mutafriches-preprod` | `osc-fr1`        | https://mutafriches.incubateur.ademe.dev   |
 | **Production** | `mutafriches`         | `osc-secnum-fr1` | https://mutafriches.beta.gouv.fr           |
 
-L'environnement s'appelle staging (`NODE_ENV=staging`), mais l'**app** s'appelle preprod.
+L'environnement s'appelle staging, mais l'**app** s'appelle preprod. Aucune des deux apps ne pose
+`NODE_ENV` : le buildpack Scalingo fournit `production` sur les deux (vérifiable par l'ordre des
+`servers` de `/api-json`), donc la preprod tourne avec les réglages de production.
 Les régions diffèrent : une commande avec la mauvaise région échoue (« The application was
 not found on the region »), ce qui est un garde-fou plutôt qu'une gêne. Toujours préciser
 la région.
