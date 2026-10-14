@@ -1,13 +1,6 @@
 import { STORAGE_KEYS } from "../../config/storage-keys.config";
 import type { ApiError, ApiErrorResponse } from "./api.types";
 
-/**
- * Génère un ID de session unique (par chargement d'app, non persisté)
- */
-export const generateSessionId = (): string => {
-  return `session-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
-};
-
 /** Identifiant visiteur en mémoire si localStorage indisponible (navigation privée, storage tiers bloqué) */
 let visitorIdMemoryFallback: string | undefined;
 
@@ -17,6 +10,14 @@ const genererUuid = (): string => {
     return crypto.randomUUID();
   }
   return `${Date.now().toString(16)}-${Math.random().toString(16).substring(2, 10)}`;
+};
+
+/**
+ * Génère un ID de session unique (par chargement d'app, non persisté).
+ * Aléa cryptographique : un identifiant devinable permettrait de polluer la session d'un autre.
+ */
+export const generateSessionId = (): string => {
+  return `session-${genererUuid()}`;
 };
 
 /**

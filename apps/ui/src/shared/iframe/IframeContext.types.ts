@@ -1,10 +1,7 @@
 // Types pour le contexte iframe
+import type { IntegrateurIframeConfig } from "@mutafriches/shared-types";
 
-export interface IntegratorConfig {
-  name: string;
-  allowedDomains: string[];
-  defaultCallbackLabel: string;
-}
+export type IntegratorConfig = IntegrateurIframeConfig;
 
 export interface IframeContextValue {
   // Mode iframe activé ou non

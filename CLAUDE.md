@@ -420,7 +420,7 @@ Toutes les variables sont lues via la classe centralisée **`AppConfig`** (`apps
 ### Environnement d'exécution
 
 - `NODE_ENV` : `development`, `staging`, ou `production`
-  - `development` : Mode local, bypass de sécurité sur certains guards
+  - `development` : Mode local, bypass de sécurité sur certains guards. **Doit être explicite** : `pnpm dev:api` le pose via `cross-env` ; un `NODE_ENV` absent applique les réglages de production (guards actifs, CORS restreint) et le signale au démarrage (ADR-0051)
   - `staging` : Environnement de pré-production
   - `production` : Environnement de production
 
@@ -430,6 +430,8 @@ Toutes les variables sont lues via la classe centralisée **`AppConfig`** (`apps
   - Origines par défaut : `mutafriches.beta.gouv.fr`, `mutafriches.incubateur.ademe.dev` (seules nos origines sont codées : Bénéfriches, qui passe par l'iframe, et tout autre intégrateur passent par cette variable)
   - En mode `development` : localhost autorisé automatiquement
   - Exemple : `ALLOWED_INTEGRATOR_ORIGINS=https://custom-domain.fr,https://autre-domaine.fr`
+
+- **Intégrateurs iframe** (`/iframe?integrator=<id>`) : pas de variable, ils sont déclarés dans `INTEGRATEURS_IFRAME` (`packages/shared-types/src/integration/integrateurs-iframe.ts`), qui sert à l'UI (domaine du callback) et à l'API (en-tête CSP `frame-ancestors`). L'iframe appelle l'API depuis notre domaine : seul un partenaire qui appelle **aussi** l'API directement doit figurer dans `ALLOWED_INTEGRATOR_ORIGINS` (cf. `docs/ajout-partenaire.md`, section 3).
 
 - `ALLOWED_ORIGINS` : Liste des origines autorisées pour les événements (tracking interne, séparées par des virgules)
   - Origines par défaut : `mutafriches.beta.gouv.fr`, `mutafriches.incubateur.ademe.dev`
@@ -443,6 +445,9 @@ Toutes les variables sont lues via la classe centralisée **`AppConfig`** (`apps
 | POST /enrichissement | IntegrateurOriginGuard | Bypass | Origines whitelistées |
 | POST /evaluation/calculer | IntegrateurOriginGuard | Bypass | Origines whitelistées |
 | POST /evenements | OriginGuard | localhost + Mutafriches | Mutafriches uniquement |
+| POST /api/donnees-externes/apis/refresh | ApiRefreshTokenGuard | Bypass si token absent | `X-Refresh-Token` (temps constant) |
+
+CORS reflète uniquement nos origines, les dashboards ADEME et les deux variables ci-dessus (`construireOriginesCors`), plus toute origine locale en `development`. Les en-têtes de sécurité viennent de `helmet` ; la CSP se limite à `frame-ancestors` (nous-mêmes, `INTEGRATEURS_IFRAME`, les deux variables), les autres directives restent à écrire.
 
 ### Contact multisites (calendrier ZCal)
 

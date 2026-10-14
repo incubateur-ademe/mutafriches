@@ -92,7 +92,27 @@ N'ajouter ici qu'un partenaire dont les **IDU sont réels** (des identifiants fi
 - [ ] Modifier `apps/api/src/scripts/partenaires/registry.ts`
       — ajouter `"<slug>": <SLUG>_SITES` à `PARTENAIRES_PREFETCH`.
 
-## 3. Production — si le partenaire appelle l'API directement
+## 3. Production — déclarer le partenaire selon son mode d'intégration
+
+Deux mécanismes, deux endroits. Un partenaire qui fait les deux est déclaré aux deux.
+
+| Mode | Déclaré où | Ce que ça autorise |
+|------|-----------|--------------------|
+| **Iframe** (`/iframe?integrator=<id>`) | `INTEGRATEURS_IFRAME` dans `packages/shared-types/src/integration/integrateurs-iframe.ts`, puis déploiement | embarquer l'UI (`frame-ancestors`) et recevoir le `callbackUrl` sur ces hôtes |
+| **API directe** (appels à `POST /enrichissement` et `POST /evaluation/calculer` depuis son site) | variable Scalingo `ALLOWED_INTEGRATOR_ORIGINS`, sans déploiement | passer `IntegrateurOriginGuard` et CORS |
+
+L'iframe tourne sur notre domaine : ses appels API portent l'origine Mutafriches et n'ont
+jamais besoin de la variable. Bénéfriches figure dans les deux listes parce qu'il appelle
+aussi l'API directement ; Mon Espace Collectivité n'est qu'en iframe.
+
+### 3a. Intégrateur iframe
+
+- [ ] Ajouter une entrée à `INTEGRATEURS_IFRAME` : identifiant (celui que le partenaire mettra
+      dans `?integrator=`), hôtes nus sans schéma (`partenaire.fr`, pas `https://partenaire.fr/`),
+      libellé du bouton de retour. Un hôte absent donne une iframe blanche, sans message.
+- [ ] Déployer : la liste est compilée dans l'UI et dans l'en-tête `frame-ancestors` de l'API.
+
+### 3b. Intégrateur API
 
 - [ ] Ajouter l'origine du partenaire à `ALLOWED_INTEGRATOR_ORIGINS` (variable d'env Scalingo)
       — aucun code à modifier (cf. `IntegrateurOriginGuard`).

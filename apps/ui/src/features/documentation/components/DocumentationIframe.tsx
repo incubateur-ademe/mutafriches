@@ -21,8 +21,8 @@ export function DocumentationIframe() {
       <p>Concrètement :</p>
       <ol>
         <li>
-          Testez d'abord avec l'identifiant <code>demo</code> (aucune autorisation préalable
-          nécessaire).
+          Testez d'abord avec l'identifiant <code>demo</code> depuis un hôte local (
+          <code>localhost</code>) : aucune autorisation préalable nécessaire.
         </li>
         <li>
           Demandez votre identifiant officiel à l'équipe Mutafriches : votre domaine est alors

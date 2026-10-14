@@ -30,6 +30,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # Périmètre runtime (Scalingo supprime les devDependencies). Bloquant à partir de high :
+      # une alerte nouvelle doit être corrigée ou tracée dans docs/security/vulnerabilites-acceptees.md
+      - name: Audit runtime dependencies
+        run: pnpm audit --prod --audit-level=high
+
       - name: Check formatting
         run: pnpm format:check
 

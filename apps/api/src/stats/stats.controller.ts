@@ -4,12 +4,10 @@ import type { Request, Response } from "express";
 import type { Periodicity, StatOutput } from "@mutafriches/shared-types";
 import { StatsService } from "./stats.service";
 import { ApiStandardErrors } from "../shared/swagger";
+import { ORIGINES_DASHBOARDS_ADEME } from "../shared/utils";
 import { isValidPeriodicity, computeSinceDate, computeCacheTtl } from "./utils/period.utils";
 
-const CORS_ALLOWED_ORIGINS = [
-  "https://stats.incubateur.ademe.fr",
-  "https://stats.incubateur.ademe.dev",
-];
+const CORS_ALLOWED_ORIGINS: readonly string[] = ORIGINES_DASHBOARDS_ADEME;
 
 @ApiTags("stats")
 @Controller("api/stats")

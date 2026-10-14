@@ -49,3 +49,8 @@ overrides:
   # le loader de config deprecated de drizzle-kit (@esbuild-kit) suit le même floor.
   esbuild: ">=0.28.1" # GHSA-g7r4-m6w7-qqqr
   "@esbuild-kit/core-utils>esbuild": ">=0.28.1"
+
+  # Audit du 2026-10-14 (outillage dev uniquement, cf. docs/security/vulnerabilites-acceptees.md)
+  shell-quote: ">=1.11.0" # GHSA-pqg4-j6r4-53mv injection de commande dans quote() (via concurrently)
+  http-cache-semantics: ">=4.3.0" # GHSA-ch52-4w7c-c8xp fuite de cache inter-utilisateurs (via @swc/cli>got)
+  source-map-js: ">=1.2.2" # GHSA-68fv-2mgg-jv7q DoS de la boucle d'événements (via webpack>postcss)

@@ -6,11 +6,9 @@ import { ImportsService } from "./imports.service";
 import { ApiMonitoringService } from "./api-monitoring.service";
 import { ApiRefreshTokenGuard } from "./api-refresh-token.guard";
 import { ApiStandardErrors } from "../shared/swagger";
+import { ORIGINES_DASHBOARDS_ADEME } from "../shared/utils";
 
-const CORS_ALLOWED_ORIGINS = [
-  "https://stats.incubateur.ademe.fr",
-  "https://stats.incubateur.ademe.dev",
-];
+const CORS_ALLOWED_ORIGINS: readonly string[] = ORIGINES_DASHBOARDS_ADEME;
 
 // Cache court : page de monitoring, la fraîcheur prime sur la mise en cache
 const CACHE_TTL_SECONDS = 30;

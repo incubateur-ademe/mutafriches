@@ -168,9 +168,12 @@ export class EnrichissementController {
         throw error;
       }
 
-      const errorMessage = error instanceof Error ? error.message : "Une erreur est survenue";
+      // Le détail (message d'une API externe, requête SQL) reste dans les logs : il ne sort pas
       throw new HttpException(
-        { statusCode: HttpStatus.INTERNAL_SERVER_ERROR, message: errorMessage },
+        {
+          statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+          message: "Erreur lors de l'enrichissement",
+        },
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
