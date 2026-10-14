@@ -6,6 +6,7 @@ import {
   UnauthorizedException,
 } from "@nestjs/common";
 import type { Request } from "express";
+import { timingSafeEqual } from "crypto";
 import { getAppConfig } from "../config";
 import { isDevelopment } from "../shared/utils";
 
@@ -42,10 +43,21 @@ export class ApiRefreshTokenGuard implements CanActivate {
       throw new UnauthorizedException("Authentification non configurée");
     }
 
-    if (providedToken !== expectedToken) {
+    if (typeof providedToken !== "string" || !jetonsIdentiques(providedToken, expectedToken)) {
       throw new UnauthorizedException("Token de refresh invalide");
     }
 
     return true;
   }
+}
+
+// Comparaison en temps constant : une égalité `!==` s'arrête au premier octet différent et
+// laisse mesurer, caractère par caractère, la longueur puis le contenu du jeton attendu.
+function jetonsIdentiques(fourni: string, attendu: string): boolean {
+  const a = Buffer.from(fourni, "utf8");
+  const b = Buffer.from(attendu, "utf8");
+  if (a.length !== b.length) {
+    return false;
+  }
+  return timingSafeEqual(a, b);
 }

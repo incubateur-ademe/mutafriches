@@ -62,12 +62,15 @@ export class EvenementService {
   private sanitizeString(value: string | undefined): string | undefined {
     if (!value) return undefined;
 
-    return value
-      .replace(/[<>"'`]/g, "")
-      .replace(/(?:javascript|data|vbscript):/gi, "")
-      .replace(/on\w+=/gi, "")
-      .substring(0, 255)
-      .trim();
+    // Répété jusqu'à stabilité : une seule passe laisse « javajavascript:script: » intact
+    let nettoye = value.replace(/[<>"'`]/g, "");
+    let precedent: string;
+    do {
+      precedent = nettoye;
+      nettoye = nettoye.replace(/(?:javascript|data|vbscript):/gi, "").replace(/on\w+=/gi, "");
+    } while (nettoye !== precedent);
+
+    return nettoye.substring(0, 255).trim();
   }
 
   /**

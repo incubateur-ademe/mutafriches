@@ -125,7 +125,7 @@ describe("EnrichissementController", () => {
       });
     });
 
-    it("devrait transformer Error standard en HttpException 500", async () => {
+    it("devrait masquer le message interne derrière un 500 générique", async () => {
       // Arrange
       const standardError = new Error("Service externe indisponible");
       enrichissementService.enrichir.mockRejectedValue(standardError);
@@ -140,7 +140,7 @@ describe("EnrichissementController", () => {
         expect(httpError.getStatus()).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
         expect(httpError.getResponse()).toEqual({
           statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-          message: "Service externe indisponible",
+          message: "Erreur lors de l'enrichissement",
         });
       }
     });
@@ -159,7 +159,7 @@ describe("EnrichissementController", () => {
         expect(httpError.getStatus()).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
         expect(httpError.getResponse()).toEqual({
           statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-          message: "Une erreur est survenue",
+          message: "Erreur lors de l'enrichissement",
         });
       }
     });
@@ -319,7 +319,7 @@ describe("EnrichissementController", () => {
         const httpError = error as HttpException;
         expect(httpError.getStatus()).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
         expect(httpError.getResponse()).toMatchObject({
-          message: "Timeout de 30 secondes depassé",
+          message: "Erreur lors de l'enrichissement",
         });
       }
     });
@@ -393,7 +393,7 @@ describe("EnrichissementController", () => {
         expect(error).toBeInstanceOf(HttpException);
         const httpError = error as HttpException;
         expect(httpError.getResponse()).toMatchObject({
-          message: "",
+          message: "Erreur lors de l'enrichissement",
         });
       }
     });
@@ -410,7 +410,7 @@ describe("EnrichissementController", () => {
         expect(error).toBeInstanceOf(HttpException);
         const httpError = error as HttpException;
         expect(httpError.getResponse()).toMatchObject({
-          message: "Une erreur est survenue",
+          message: "Erreur lors de l'enrichissement",
         });
       }
     });
@@ -427,7 +427,7 @@ describe("EnrichissementController", () => {
         expect(error).toBeInstanceOf(HttpException);
         const httpError = error as HttpException;
         expect(httpError.getResponse()).toMatchObject({
-          message: "Une erreur est survenue",
+          message: "Erreur lors de l'enrichissement",
         });
       }
     });
