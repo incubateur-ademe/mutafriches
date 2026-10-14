@@ -6,15 +6,12 @@ import {
   Logger,
 } from "@nestjs/common";
 import { Request } from "express";
-import { isDevelopment, normaliserOrigines } from "../utils";
+import { isDevelopment, normaliserOrigines, ORIGINES_MUTAFRICHES } from "../utils";
 import { getAppConfig } from "../../config";
 
 // Seules nos propres origines sont codées : l'UI (standalone et iframe) appelle l'API depuis
 // notre domaine. Tout intégrateur tiers passe par ALLOWED_INTEGRATOR_ORIGINS.
-const DEFAULT_ALLOWED_ORIGINS = [
-  "https://mutafriches.beta.gouv.fr",
-  "https://mutafriches.incubateur.ademe.dev",
-];
+const DEFAULT_ALLOWED_ORIGINS: string[] = [...ORIGINES_MUTAFRICHES];
 
 @Injectable()
 export class IntegrateurOriginGuard implements CanActivate {
