@@ -30,10 +30,17 @@ export function isStaging(): boolean {
 }
 
 /**
- * Verifie si l'application est en mode developpement
+ * Vérifie si l'application est en mode développement.
+ * Explicite uniquement : un NODE_ENV absent ne lève aucun bypass de sécurité (guards,
+ * CORS local, jeton de refresh). `start:dev` pose la variable.
  */
 export function isDevelopment(): boolean {
-  return process.env.NODE_ENV === "development" || !process.env.NODE_ENV;
+  return process.env.NODE_ENV === "development";
+}
+
+/** NODE_ENV absent : l'application tourne avec les réglages de production, sans le dire. */
+export function isEnvironnementNonDeclare(): boolean {
+  return !process.env.NODE_ENV;
 }
 
 /**

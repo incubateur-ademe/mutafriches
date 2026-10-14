@@ -6,6 +6,7 @@ export {
   isTest,
   isDeployed,
   isLocal,
+  isEnvironnementNonDeclare,
 } from "./environment.utils";
 export type { Environment } from "./environment.utils";
 export { APP_VERSION } from "./version.utils";
