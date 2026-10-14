@@ -9,10 +9,21 @@ const groupes = (surfaces: number[]): Record<string, unknown>[] =>
     surface_emprise_sol,
   }));
 
-const erreurHttp = (status: number, headers: Record<string, string> = {}): unknown => ({
+const erreurHttp = (
+  status: number,
+  headers: Record<string, string> = {},
+  data?: { message: string },
+): unknown => ({
   message: `Request failed with status code ${status}`,
-  response: { status, headers },
+  response: { status, headers, data },
 });
+
+const erreurQuota = (): unknown =>
+  erreurHttp(
+    429,
+    { "x-quota-remaining": "0" },
+    { message: "Quota exceeded! You reached the limit" },
+  );
 
 describe("BdnbService", () => {
   let service: BdnbService;
@@ -126,5 +137,27 @@ describe("BdnbService", () => {
     const result = await surfaceBatie();
 
     expect(result.success).toBe(false);
+  });
+
+  it("n'insiste pas quand le quota mensuel est épuisé et suspend les appels suivants", async () => {
+    httpGet.mockReturnValue(throwError(() => erreurQuota()));
+
+    const premier = await surfaceBatie();
+    const second = await surfaceBatie();
+
+    expect(premier.success).toBe(false);
+    expect(second.success).toBe(false);
+    expect(httpGet).toHaveBeenCalledTimes(1);
+  });
+
+  it("sonde de nouveau l'API une fois la pause du quota écoulée", async () => {
+    httpGet.mockReturnValueOnce(throwError(() => erreurQuota()));
+    await surfaceBatie();
+
+    vi.setSystemTime(Date.now() + 16 * 60 * 1000);
+    httpGet.mockReturnValue(of({ data: groupes([69]) }));
+    const result = await surfaceBatie();
+
+    expect(result).toMatchObject({ success: true, data: 69 });
   });
 });
