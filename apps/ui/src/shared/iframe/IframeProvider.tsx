@@ -57,7 +57,7 @@ export function IframeProvider({ children }: IframeProviderProps) {
     const integratorConfig = INTEGRATORS[integratorParam] || null;
 
     if (!integratorConfig) {
-      console.error(`Intégrateur non reconnu: ${integratorParam}`);
+      console.error("Intégrateur non reconnu :", integratorParam);
       return DEFAULT_IFRAME_CONTEXT; // Rejeter les intégrateurs non reconnus
     }
 
@@ -68,6 +68,11 @@ export function IframeProvider({ children }: IframeProviderProps) {
     if (callbackUrl) {
       try {
         const url = new URL(callbackUrl);
+        // Seul un lien web est ouvert dans un nouvel onglet : jamais javascript:, data:, file:
+        if (url.protocol !== "https:" && url.protocol !== "http:") {
+          console.error("Schéma d'URL de callback non autorisé :", url.protocol);
+          return DEFAULT_IFRAME_CONTEXT;
+        }
         parentOrigin = url.origin;
         validCallbackUrl = callbackUrl;
 
@@ -89,8 +94,11 @@ export function IframeProvider({ children }: IframeProviderProps) {
 
           if (!isAllowedDomain) {
             console.error(
-              `Domaine non autorisé pour ${integratorParam}: ${hostname}`,
-              `Domaines autorisés: ${integratorConfig.allowedDomains.join(", ")}`,
+              "Domaine non autorisé pour l'intégrateur :",
+              integratorParam,
+              hostname,
+              "Domaines autorisés :",
+              integratorConfig.allowedDomains.join(", "),
             );
             return DEFAULT_IFRAME_CONTEXT;
           }
