@@ -270,3 +270,21 @@ relèvement du plancher existant plutôt qu'un nouvel override.
 Note : `minimumReleaseAge: 1440` dans `pnpm-workspace.yaml` impose un délai de 24 h après
 publication avant qu'une version soit installable. Une version patchée publiée le jour même
 ne sera pas résolue — ce n'est pas une erreur de configuration.
+
+---
+
+## Audit du 2026-10-14 — périmètre complet (devDependencies)
+
+**État initial** : `pnpm audit --prod` propre ; `pnpm audit` → 3 vulnérabilités (1 critical, 2 high),
+toutes dans l'outillage de développement ou de build, jamais présent sur le serveur déployé.
+**État final** : `pnpm audit` → `No known vulnerabilities found`. Les 3 sont **corrigées** par
+plancher dans `pnpm-workspace.yaml`, aucune n'est acceptée.
+
+| Paquet | Sévérité | Avis | Chemin | Atteignabilité | Correction |
+|--------|----------|------|--------|----------------|------------|
+| `shell-quote` | critical | GHSA-pqg4-j6r4-53mv (injection de commande dans `quote()`) | `.>concurrently>shell-quote` | `concurrently` ne sert qu'à `pnpm start:dev` en local, sur des commandes écrites dans `package.json` | plancher `>=1.11.0` |
+| `http-cache-semantics` | high | GHSA-ch52-4w7c-c8xp (fuite de cache inter-utilisateurs) | `@nestjs/cli>@swc/cli>…>got>cacheable-request` | téléchargement de binaires au `pnpm install`, pas de cache partagé | plancher `>=4.3.0` |
+| `source-map-js` | high | GHSA-68fv-2mgg-jv7q (DoS de la boucle d'événements) | `@nestjs/cli>webpack>…>postcss` | build uniquement, sur nos propres sources | plancher `>=1.2.2` |
+
+Depuis cet audit, la CI exécute `pnpm audit --prod --audit-level=high` : une alerte runtime nouvelle
+bloque le pipeline tant qu'elle n'est ni corrigée ni tracée ici.
