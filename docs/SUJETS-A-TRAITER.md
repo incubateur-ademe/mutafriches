@@ -145,23 +145,40 @@ Format d'une entrée :
 
 ## Sécurité
 
-### Configuration CORS
-
-- **Origine** : TODO dans `apps/api/src/main.ts` (`app.enableCors()` sans restriction)
-- **Écarté parce que** : en production l'API et l'UI partagent le domaine ; jamais repris
-- **Préalable** : lister les intégrateurs appelant l'API depuis un navigateur avant de restreindre
-
 ### Alertes CodeQL ouvertes
 
 - **Origine** : onglet Security du dépôt
-- **Écarté parce que** : jamais triées
-- **Préalable** : trier chaque alerte (corriger ou rejeter avec justification) :
-  - #36 `js/http-to-file-access`, `reconcilier-cadastre-partenaire.ts` (introduite par #208) ;
-  - #31 `actions/unpinned-tag`, `partenaires-prefetch.yml` ;
-  - #30 `js/insecure-randomness`, `api.evenements.service.ts` ;
-  - #26 `js/client-side-unvalidated-url-redirection`, `ResultatsPage.tsx` ;
-  - #24 `js/incomplete-multi-character-sanitization`, `evenement.service.ts` ;
-  - #15 `js/tainted-format-string`, `IframeProvider.tsx`.
+- **Écarté parce que** : jamais triées ; #30, #26, #24 et #15 corrigées par la PR de durcissement (ADR-0051)
+- **Préalable** : trier les deux restantes (corriger ou rejeter avec justification) :
+  - #36 `js/http-to-file-access`, `reconcilier-cadastre-partenaire.ts` (introduite par #208) : script
+    local qui écrit un fichier de rapport à partir d'une réponse apicarto, à rejeter avec justification
+    ou à borner (chemin fixe, contenu JSON sérialisé) ;
+  - #31 `actions/unpinned-tag`, `partenaires-prefetch.yml` : épingler les actions sur un SHA, dans
+    les quatre workflows pour rester cohérent.
+
+### Content-Security-Policy
+
+- **Origine** : `helmet` est posé sans CSP (ADR-0051)
+- **Écarté parce que** : l'UI charge des tiers (DSFR, tuiles IGN, Metabase, ZCal, apicarto) et est
+  embarquée en iframe : une CSP écrite à l'aveugle casse la carte ou les statistiques
+- **Préalable** : relever les origines chargées en production (onglet réseau sur `/analyser`,
+  `/statistiques`, `/iframe`), passer d'abord par `Content-Security-Policy-Report-Only`, puis
+  `frame-ancestors` restreint aux intégrateurs déclarés
+
+### `ValidationPipe` sans `whitelist`
+
+- **Origine** : `main.ts` (`new ValidationPipe()` sans option)
+- **Écarté parce que** : `CalculerMutabiliteSwaggerDto` ne porte aucun décorateur `class-validator` ;
+  `whitelist: true` viderait le corps du calcul
+- **Préalable** : décorer les DTO d'entrée (`donneesEnrichies`, `donneesComplementaires`), puis activer
+  `whitelist` et `forbidNonWhitelisted`
+
+### Certificat PostgreSQL non vérifié
+
+- **Origine** : `app.config.ts` (`ssl: { rejectUnauthorized: false }` sur l'URL Scalingo)
+- **Écarté parce que** : Scalingo fournit un certificat auto-signé sur le réseau interne
+- **Préalable** : vérifier si l'addon expose une CA (`SCALINGO_POSTGRESQL_URL` + `sslrootcert`) et
+  épingler le certificat
 
 ### Purge des données au-delà de la durée de conservation
 

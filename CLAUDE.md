@@ -420,7 +420,7 @@ Toutes les variables sont lues via la classe centralisée **`AppConfig`** (`apps
 ### Environnement d'exécution
 
 - `NODE_ENV` : `development`, `staging`, ou `production`
-  - `development` : Mode local, bypass de sécurité sur certains guards
+  - `development` : Mode local, bypass de sécurité sur certains guards. **Doit être explicite** : `pnpm dev:api` le pose via `cross-env` ; un `NODE_ENV` absent applique les réglages de production (guards actifs, CORS restreint) et le signale au démarrage (ADR-0051)
   - `staging` : Environnement de pré-production
   - `production` : Environnement de production
 
@@ -443,6 +443,9 @@ Toutes les variables sont lues via la classe centralisée **`AppConfig`** (`apps
 | POST /enrichissement | IntegrateurOriginGuard | Bypass | Origines whitelistées |
 | POST /evaluation/calculer | IntegrateurOriginGuard | Bypass | Origines whitelistées |
 | POST /evenements | OriginGuard | localhost + Mutafriches | Mutafriches uniquement |
+| POST /api/donnees-externes/apis/refresh | ApiRefreshTokenGuard | Bypass si token absent | `X-Refresh-Token` (temps constant) |
+
+CORS reflète uniquement nos origines, les dashboards ADEME et les deux variables ci-dessus (`construireOriginesCors`), plus toute origine locale en `development`. Les en-têtes de sécurité viennent de `helmet`, sans CSP ni `X-Frame-Options` (iframe intégrateurs).
 
 ### Contact multisites (calendrier ZCal)
 

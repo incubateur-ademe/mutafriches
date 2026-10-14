@@ -96,6 +96,7 @@ const response = await firstValueFrom(this.httpService.get(url));
 - **TOUJOURS** vérifier l'en-tête `Origin` puis `Referer` en fallback
 - **JAMAIS** ajouter `localhost` aux origines autorisées en production
 - Pour ajouter un nouvel intégrateur : utiliser `ALLOWED_INTEGRATOR_ORIGINS`
+- Tout secret comparé à une valeur fournie par le client (jeton de refresh) se compare en **temps constant** (`timingSafeEqual`), jamais avec `===`
 
 ---
 
@@ -125,7 +126,7 @@ const result = await db.select().from(sites).where(eq(sites.codeInsee, codeInsee
 
 ## 6. Rate limiting
 
-- Le ThrottlerGuard global est configuré à **100 requêtes/minute par IP**
+- Le ThrottlerGuard global est configuré à **100 requêtes/minute par IP** (`trust proxy` posé en production pour lire l'IP réelle derrière Scalingo)
 - Ce guard s'applique à tous les endpoints
 - En cas de besoin de limites spécifiques, utiliser `@Throttle()` sur le controller
 
@@ -157,11 +158,13 @@ throw new InternalServerErrorException("Erreur lors de l'enrichissement");
 
 ---
 
-## 8. CORS et cookies
+## 8. CORS, en-têtes HTTP et cookies
 
-- En production, NestJS sert l'API et l'UI depuis le même domaine (pas de CORS)
-- En développement, le proxy Vite gère la communication API ↔ UI
-- **JAMAIS** configurer `Access-Control-Allow-Origin: *` en production
+- En production, NestJS sert l'API et l'UI depuis le même domaine : l'UI n'a pas besoin de CORS
+- CORS ne reflète que les origines de `construireOriginesCors()` (`shared/utils/origines-autorisees.ts`) : nos domaines, les dashboards ADEME, `ALLOWED_ORIGINS` et `ALLOWED_INTEGRATOR_ORIGINS`. Toute origine locale est acceptée en `development` (ADR-0051)
+- **JAMAIS** configurer `Access-Control-Allow-Origin: *` en production, ni rajouter une origine en dur ailleurs que dans ce fichier
+- Les en-têtes de sécurité viennent de `helmet` (`main.ts`). CSP et `X-Frame-Options` restent désactivés : l'UI est embarquée en iframe par les intégrateurs. Ne pas les activer sans lister les tiers chargés (DSFR, tuiles IGN, Metabase, ZCal)
+- Les bypass de sécurité (guards, CORS local, jeton de refresh) n'existent qu'avec `NODE_ENV=development` **explicite** ; un `NODE_ENV` absent applique les réglages de production et le signale au démarrage
 
 ---
 
