@@ -6,7 +6,13 @@ import { NestExpressApplication } from "@nestjs/platform-express";
 import { SwaggerModule } from "@nestjs/swagger";
 import { Request, Response, NextFunction } from "express";
 import { ValidationPipe, Logger } from "@nestjs/common";
-import { estOrigineLocale, isProduction } from "./shared/utils";
+import helmet from "helmet";
+import {
+  construireOriginesCors,
+  estOrigineCorsAutorisee,
+  isEnvironnementNonDeclare,
+  isProduction,
+} from "./shared/utils";
 import { buildSwaggerConfig, getSwaggerSetupOptions } from "./shared/swagger";
 import { getAppConfig } from "./config";
 import { SafeConsoleLogger } from "./shared/logger/safe-console-logger";
@@ -27,8 +33,33 @@ async function bootstrap() {
     // Logger assainissant : évite de dérouler les objets erreur Axios (flood de logs)
     app.useLogger(new SafeConsoleLogger());
 
-    // TODO : Revoir la configuration CORS
-    app.enableCors();
+    if (isEnvironnementNonDeclare()) {
+      logger.warn(
+        "NODE_ENV absent : réglages de production appliqués (guards actifs, CORS restreint). Poser NODE_ENV=development en local.",
+      );
+    }
+
+    // En-têtes de sécurité (ADR-0051). CSP et frameguard restent désactivés : l'UI est embarquée
+    // en iframe par les intégrateurs et charge des tiers (DSFR, tuiles IGN, Metabase, ZCal).
+    app.use(
+      helmet({
+        contentSecurityPolicy: false,
+        frameguard: false,
+        crossOriginEmbedderPolicy: false,
+        crossOriginOpenerPolicy: false,
+        crossOriginResourcePolicy: { policy: "cross-origin" },
+      }),
+    );
+
+    // CORS restreint à nos origines, aux dashboards ADEME et aux intégrateurs déclarés ; toute
+    // origine locale est acceptée en développement (port Vite glissant). Une origine hors liste
+    // serait de toute façon refusée par les guards : on cesse seulement de refléter « * ».
+    const originesCors = construireOriginesCors(config.origins);
+    app.enableCors({
+      origin: (origine: string | undefined, callback) =>
+        callback(null, estOrigineCorsAutorisee(origine, originesCors)),
+      exposedHeaders: ["Content-Disposition", "X-Export-Rapport"],
+    });
 
     // Configuration de la validation
     app.useGlobalPipes(new ValidationPipe());
@@ -46,17 +77,6 @@ async function bootstrap() {
     if (isProduction()) {
       app.set("trust proxy", 1);
       logger.log("Proxy configuré pour l'environnement de production");
-    }
-
-    // Configuration CORS pour le développement : tout port local, le serveur Vite glissant
-    // sur 5174 et suivants quand 5173 est déjà pris.
-    if (!isProduction()) {
-      app.enableCors({
-        origin: (origine: string | undefined, callback) =>
-          callback(null, !origine || estOrigineLocale(origine)),
-        credentials: true,
-      });
-      logger.log("CORS configuré pour le développement (toute origine locale)");
     }
 
     if (isProduction()) {
