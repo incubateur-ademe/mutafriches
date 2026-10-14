@@ -24,5 +24,8 @@ export * from "./cartofriches";
 // Standard CNIG Friches (export des sites partenaires)
 export * from "./cnig";
 
+// Intégrateurs iframe (registre partagé UI / API, frame-ancestors)
+export * from "./integration";
+
 // Shared
 export * from "./shared";

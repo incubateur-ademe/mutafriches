@@ -1,3 +1,4 @@
+import { hotesIntegrateursIframe } from "@mutafriches/shared-types";
 import { estOrigineLocale, normaliserOrigines } from "./origine.utils";
 import { isDevelopment } from "./environment.utils";
 
@@ -45,4 +46,13 @@ export function estOrigineCorsAutorisee(
     return true;
   }
   return autorisees.includes(origine);
+}
+
+// Sources CSP `frame-ancestors` : qui a le droit d'embarquer l'UI en iframe. Nous-mêmes, les
+// intégrateurs iframe du registre partagé (hôtes nus : tout schéma) et les origines déclarées
+// dans les variables d'environnement. Les navigateurs ignorent alors X-Frame-Options.
+export function construireFrameAncestors(origines: OriginesConfigurees): string[] {
+  return [
+    ...new Set(["'self'", ...hotesIntegrateursIframe(), ...construireOriginesCors(origines)]),
+  ];
 }

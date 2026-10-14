@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
+  construireFrameAncestors,
   construireOriginesCors,
   estOrigineCorsAutorisee,
   ORIGINES_DASHBOARDS_ADEME,
@@ -63,5 +64,16 @@ describe("estOrigineCorsAutorisee", () => {
     expect(estOrigineCorsAutorisee("http://localhost:5174", autorisees)).toBe(true);
     expect(estOrigineCorsAutorisee("http://127.0.0.1:3000", autorisees)).toBe(true);
     expect(estOrigineCorsAutorisee("https://attaquant.fr", autorisees)).toBe(false);
+  });
+});
+
+describe("construireFrameAncestors", () => {
+  it("autorise notre propre origine, les intégrateurs iframe et les origines configurées", () => {
+    const sources = construireFrameAncestors({ allowedIntegrators: "https://partenaire.fr" });
+    expect(sources[0]).toBe("'self'");
+    expect(sources).toContain("benefriches.ademe.fr");
+    expect(sources).toContain("monespacecollectivite.anct.gouv.fr");
+    expect(sources).toContain("https://partenaire.fr");
+    expect(new Set(sources).size).toBe(sources.length);
   });
 });

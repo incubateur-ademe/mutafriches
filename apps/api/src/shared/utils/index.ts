@@ -16,6 +16,7 @@ export { mapParLots } from "./lots.utils";
 export {
   ORIGINES_MUTAFRICHES,
   ORIGINES_DASHBOARDS_ADEME,
+  construireFrameAncestors,
   construireOriginesCors,
   estOrigineCorsAutorisee,
 } from "./origines-autorisees";

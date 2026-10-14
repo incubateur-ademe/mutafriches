@@ -8,6 +8,7 @@ import { Request, Response, NextFunction } from "express";
 import { ValidationPipe, Logger } from "@nestjs/common";
 import helmet from "helmet";
 import {
+  construireFrameAncestors,
   construireOriginesCors,
   estOrigineCorsAutorisee,
   isEnvironnementNonDeclare,
@@ -39,12 +40,18 @@ async function bootstrap() {
       );
     }
 
-    // En-têtes de sécurité (ADR-0051). CSP et frameguard restent désactivés : l'UI est embarquée
-    // en iframe par les intégrateurs et charge des tiers (DSFR, tuiles IGN, Metabase, ZCal).
+    // En-têtes de sécurité (ADR-0051). La CSP se limite à `frame-ancestors` : qui peut nous
+    // embarquer en iframe. Les autres directives restent à écrire (tiers chargés par l'UI :
+    // DSFR, tuiles IGN, Metabase, ZCal), cf. docs/SUJETS-A-TRAITER.md.
     app.use(
       helmet({
-        contentSecurityPolicy: false,
-        frameguard: false,
+        contentSecurityPolicy: {
+          useDefaults: false,
+          directives: {
+            "default-src": helmet.contentSecurityPolicy.dangerouslyDisableDefaultSrc,
+            "frame-ancestors": construireFrameAncestors(config.origins),
+          },
+        },
         crossOriginEmbedderPolicy: false,
         crossOriginOpenerPolicy: false,
         crossOriginResourcePolicy: { policy: "cross-origin" },
@@ -119,6 +126,8 @@ async function bootstrap() {
     }
   } catch (err) {
     logger.error("Erreur lors du démarrage de l'application", err as Error);
+    // bufferLogs retient tout jusqu'à useLogger : sans flush, un échec avant ce point sort muet
+    Logger.flush();
     process.exit(1);
   }
 }
