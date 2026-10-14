@@ -100,6 +100,8 @@ Envoyé quand l'analyse est terminée avec les résultats complets :
 
 > **Note multi-parcelle** : En mode multi-parcelle, `identifiantParcelle` contient les identifiants séparés par des virgules et `identifiantsParcelles` contient le tableau complet.
 
+> **Usages exclus** (algorithme v1.16+) : dans les réponses de `POST /evaluation/calculer` et `GET /evaluation/:id`, chaque usage porte `exclu` et, s'il est exclu, `criteresExcluants`. Un usage exclu garde son `indiceMutabilite` (pour compatibilité) mais n'est pas comparable aux autres : il est relégué en fin de `resultats`. Le meilleur usage est donc `rang === 1`, sauf si tous les usages sont exclus. Détail des règles : [algorithme](../evaluation-mutabilite.md).
+
 ### Message `error`
 
 Envoyé en cas d'erreur :
