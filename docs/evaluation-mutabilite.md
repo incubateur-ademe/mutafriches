@@ -253,6 +253,8 @@ La fiabilité **ne modifie pas** le classement. C'est un indicateur séparé qui
 
 ## Liste des 32 critères actifs
 
+> Scores de chaque réponse et tranche pour les 7 usages : voir [matrice-scoring.md](matrice-scoring.md).
+
 ### Critères enrichis automatiquement (22)
 
 | # | Critère | Poids | Valeurs | Champ DTO |

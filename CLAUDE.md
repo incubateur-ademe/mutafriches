@@ -163,7 +163,7 @@ Pour **chaque feature identifiée** (un groupe cohérent de modifications, typiq
   | Si la feature touche… | Mettre à jour |
   |---|---|
   | Une source d'enrichissement (API, référentiel `raw_*`, champ du DTO) | `docs/enrichissement.md` (domaine concerné, « Champs enrichis », « Bases Locales », DTO de sortie, flow), `SOURCES_DONNEES` + `pnpm docs:sources:gen`, `docs/README.md` (décompte des bases locales), `IMPORT_DATASETS` ; `docs-enrichissement.spec.ts` casse si le tableau « Bases Locales » ou un décompte « N bases locales » diverge du registre |
-  | Un critère, un poids, une règle de scoring ou d'exclusion | Les trois fichiers « Documentation OBLIGATOIRE » de la section algorithme, plus `docs/export-cnig.md` si un attribut CNIG change |
+  | Un critère, un poids, une règle de scoring ou d'exclusion | Les quatre fichiers « Documentation OBLIGATOIRE » de la section algorithme (dont `docs/matrice-scoring.md`), plus `docs/export-cnig.md` si un attribut CNIG change |
   | Une route, un DTO d'entrée/sortie ou un guard | `README.md` (tableau des routes), `docs/integration/README.md`, `docs/acces-api-integrateur.md` |
   | Un événement de tracking | `docs/analytics-tracking.md` |
   | Une commande, un script ou une variable d'environnement | `README.md`, section « Commandes courantes » et « Variables d'environnement » de ce fichier |
@@ -288,6 +288,9 @@ pnpm --filter api test src/chemin/fichier.spec.ts   # Un seul fichier (chemin re
 pnpm test:watch             # Tests en mode watch
 pnpm test:coverage          # Tests avec rapport de couverture
 
+# Documentation générée
+pnpm docs:matrice:gen       # Régénère docs/matrice-scoring.md (--check : échoue si divergence)
+
 # Qualité de code
 pnpm lint                   # Linter ESLint
 pnpm format                 # Formatter Prettier
@@ -357,6 +360,7 @@ L'algorithme de scoring est versionné pour préserver la reproductibilité des 
 - **Exposition** : la version courante et la liste complète sont exposées via `GET /evaluation/metadata` et `GET /evaluation/algorithme/versions`. Toute modification doit **immédiatement** se refléter dans ces endpoints (et dans les exemples Swagger associés).
 - **Documentation OBLIGATOIRE** : toute modification de l'algorithme — ajout ou retrait d'un critère, changement de poids, de seuil, de la matrice de scoring, ou de la formule de fiabilité — DOIT être répercutée **dans le même commit** sur :
   - `docs/evaluation-mutabilite.md` (doc métier : liste des critères, poids, poids total, formules, exemples)
+  - `docs/matrice-scoring.md` (matrice complète, **générée** : ne jamais l'éditer à la main). Régénérer avec `pnpm docs:matrice:gen` après tout changement de score, de seuil, de borne de tranche, de poids ou de règle d'exclusion ; `matrice-scoring.doc.spec.ts` (donc `pnpm test`) échoue si le fichier diverge du code. Un nouveau critère exige d'abord son entrée (nom, libellés, tranches) dans `CRITERES` de `algorithme/matrice-scoring.doc.ts`, sinon la génération échoue
   - `.claude/context/evaluation-patterns.md` (doc technique : nombre de critères, répartition enrichis/complémentaires, poids total, sémantique)
   - `packages/shared-types/src/recapitulatif/criteres.metadata.ts` (`CRITERES_METADATA` : le `poids` de chaque critère mirroir `POIDS_CRITERES` — un garde-fou casse en cas de divergence), puis régénérer `docs/sources-donnees-externes.md` via `pnpm docs:sources:gen` (la page `/documentation-donnees` et le PDF en découlent, cf. ADR-0026)
 
@@ -371,13 +375,13 @@ Quand une nouvelle version d'algorithme entre en vigueur :
 3. Adapter les règles (`algorithme.config.ts`, calculateurs) jusqu'à `pnpm test` vert
 4. **Ajouter l'entrée en fin de l'export agrégé** dans `versions/index.ts` (ordre chronologique ascendant strict) et mettre à jour `VERSION_COURANTE`
 5. Mettre à jour les exemples Swagger qui exposent la version (`metadata.dto.ts`, `evaluation.dto.ts`)
-6. **Mettre à jour la doc de l'algorithme** (`docs/evaluation-mutabilite.md` + `.claude/context/evaluation-patterns.md`) : critères, poids, poids total, fiabilité — en cohérence stricte avec `POIDS_CRITERES`
+6. **Mettre à jour la doc de l'algorithme** (`docs/evaluation-mutabilite.md` + `.claude/context/evaluation-patterns.md`, puis `pnpm docs:matrice:gen` pour `docs/matrice-scoring.md`) : critères, poids, poids total, fiabilité, scores par réponse — en cohérence stricte avec `POIDS_CRITERES`, `MATRICE_SCORING` et `REGLES_EXCLUSION`
 7. `pnpm validate`
 8. Commit : `feat(algo): publication vX.Y avec <résumé>`
 
 Le test dédié (`versions.spec.ts`) garantit l'ordre chronologique ascendant strict, le format ISO des dates, l'unicité des versions et que `VERSION_COURANTE` correspond à la dernière entrée du registre.
 
-**Règle d'or** : ne JAMAIS hardcoder la version d'algorithme dans la doc ou les exemples Swagger — toujours la lire dynamiquement depuis `versions/index.ts`. Une version désynchronisée entre code et doc casse la confiance des intégrateurs.
+**Règle d'or** : ne JAMAIS hardcoder la version d'algorithme dans la doc ou les exemples Swagger (`docs/matrice-scoring.md` y échappe : générée, donc toujours synchrone) — toujours la lire dynamiquement depuis `versions/index.ts`. Une version désynchronisée entre code et doc casse la confiance des intégrateurs.
 
 ## APIs externes intégrées
 

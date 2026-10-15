@@ -9,6 +9,7 @@
 - **[Module Enrichissement](./enrichissement.md)** - Collecte automatique des données via APIs externes
 - **[Sources de données externes](./sources-donnees-externes.md)** - Doc partenaires (champs récupérés, traitement, critères alimentés) — générée via `pnpm docs:sources:gen`
 - **[Algorithme d'Évaluation](./evaluation-mutabilite.md)** - Calcul des indices de mutabilité
+- **[Matrice de scoring](./matrice-scoring.md)** - Score de chaque réponse par usage, poids, critères excluants, évolution par version — générée via `pnpm docs:matrice:gen`
 - **[Tracking & Analytics](./analytics-tracking.md)** - Événements, session vs utilisateur, requêtes Metabase
 - **[Export CNIG Friches](./export-cnig.md)** - Export d'un inventaire partenaire au standard national (couverture des 51 attributs)
 - **[Ajouter un partenaire](./ajout-partenaire.md)** - Todolist pour publier une nouvelle page partenaire multisite

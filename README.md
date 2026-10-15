@@ -54,6 +54,7 @@ mutafriches/
 │   ├── README.md               # Index général
 │   ├── enrichissement.md       # Module enrichissement
 │   ├── evaluation-mutabilite.md # Algorithme mutabilité
+│   ├── matrice-scoring.md      # Matrice de scoring par critère et usage
 │   └── integration/            # Guide intégration
 ```
 
@@ -288,6 +289,7 @@ Documentation complète dans le dossier [`docs/`](./docs/) :
 - **[Index Général](./docs/README.md)** - Vue d'ensemble et navigation
 - **[Module Enrichissement](./docs/enrichissement.md)** - Domaines, APIs externes et bases locales, règles de gestion
 - **[Algorithme d'Évaluation](./docs/evaluation-mutabilite.md)** - Matrice 32×7, calcul mutabilité
+- **[Matrice de scoring](./docs/matrice-scoring.md)** - Score de chaque réponse par usage, critères excluants
 - **[Guide d'Intégration](./docs/integration/README.md)** - Iframe + PostMessage
 - **[Vulnérabilités de dépendances](./docs/security/vulnerabilites-acceptees.md)** - Suivi `pnpm audit` et justifications d'acceptation
 - **[Ops](./docs/ops/README.md)** - Scalingo (logs, psql en lecture), restauration de dump en local
