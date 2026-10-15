@@ -30,6 +30,7 @@
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "db:bpe:filter": "node dist/src/scripts/filter-bpe.js",
+    "docs:matrice:gen": "ts-node --transpile-only --compiler-options '{\"rootDir\":\".\"}' src/scripts/generate-matrice-doc.ts",
     "db:bpe:import": "node dist/src/scripts/import-bpe.js",
     "db:transport-stops:import": "node dist/src/scripts/import-transport-stops.js",
     "db:ademe-sites:import": "node dist/src/scripts/import-ademe-sites.js",

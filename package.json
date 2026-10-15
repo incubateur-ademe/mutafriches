@@ -52,6 +52,7 @@
     "partenaires:prefetch": "pnpm --filter api run partenaires:prefetch",
     "partenaires:resolve-idu": "pnpm --filter api run partenaires:resolve-idu",
     "docs:sources:gen": "node scripts/generate-sources-doc.cjs",
+    "docs:matrice:gen": "pnpm --filter api run docs:matrice:gen --",
     "validate": "pnpm format && pnpm lint:fix && pnpm typecheck && pnpm test",
     "setup": "bash scripts/setup.sh",
     "clean": "pnpm -r clean && rm -rf node_modules",
