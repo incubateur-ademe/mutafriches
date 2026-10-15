@@ -91,12 +91,13 @@ Récupérer les données cadastrales de base et initialiser l'objet Site (mono o
    - Si échec → ERREUR `CADASTRE_INTROUVABLE`, arrêt de l'enrichissement
 
 2. **Surface bâtie** (OPTIONNEL)
-   - Interrogation BDNB via identifiant cadastral
-   - Si échec → champ `surfaceBati` reste `undefined`, pas d'arrêt
+   - Lecture du cache `cache_bdnb_parcelles` (TTL 30 jours, ADR-0052), puis BDNB pour les seules parcelles absentes ou périmées, par appels groupés de 10 parcelles
+   - Une parcelle non bâtie (surface 0) est une réponse valide, mise en cache comme les autres
+   - Si la BDNB échoue (quota, panne) : valeur périmée du cache conservée si elle existe, sinon champ `surfaceBati` reste `undefined`, pas d'arrêt
 
 ### Mode multi-parcelle
 
-Lorsque plusieurs identifiants sont fournis (2 à 60 parcelles), le service effectue des calculs supplémentaires (cadastre et BDNB interrogés par lots de 10 appels simultanés) :
+Lorsque plusieurs identifiants sont fournis (2 à 60 parcelles), le service effectue des calculs supplémentaires (cadastre interrogé par lots de 10 appels simultanés ; surface bâtie lue en cache puis demandée à la BDNB par appels groupés) :
 
 1. **Chargement** : toutes les parcelles sont récupérées via l'API Cadastre
 2. **Parcelle prédominante** : la parcelle avec la plus grande surface
@@ -1150,6 +1151,8 @@ Chaque table est enregistrée dans `IMPORT_DATASETS` (`donnees-externes/imports.
 - **Utilisation** : Surface bâtie
 - **Documentation** : https://api-portail.bdnb.io/
 - **Adapter** : `apps/api/src/enrichissement/adapters/bdnb/`
+- **Limites** : 10 000 appels par mois et par IP sortante (429 « Quota exceeded » au-delà, remise à zéro à date fixe lisible dans l'en-tête `x-quota-reset`) et 120 requêtes par minute ; l'API plafonne chaque réponse à 10 lignes. L'adapter limite son débit à 100 requêtes par minute, réessaie sur 429, 5xx et timeout, et suspend ses appels 15 minutes quand le quota est épuisé
+- **Cache** : `cache_bdnb_parcelles` (30 jours par parcelle, table hors référentiels `raw_*`), géré par `SurfaceBatieService` ; voir ADR-0052. Pour forcer un recalcul, vieillir `date_recuperation` plutôt que supprimer les lignes
 
 ### Enedis Open Data
 - **URL** : `https://data.enedis.fr/api`

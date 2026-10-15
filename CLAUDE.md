@@ -386,7 +386,7 @@ Le test dédié (`versions.spec.ts`) garantit l'ordre chronologique ascendant st
 ## APIs externes intégrées
 
 - **IGN Cadastre** (`cadastre.data.gouv.fr`) : données parcellaires, géométrie, surface
-- **BDNB** (`api.bdnb.io`) : surface bâtie
+- **BDNB** (`api.bdnb.io`) : surface bâtie, **10 000 appels/mois par IP** et 120/min ; cache 30 jours par parcelle `cache_bdnb_parcelles` + appels groupés (ADR-0052)
 - **Enedis** (`data.enedis.fr`) : distance raccordement électrique
 - **GéoRisques** (`georisques.gouv.fr`) : 13 APIs risques (RGA, SIS, ICPE, cavités, inondation, CATNAT, etc.)
 - **API Carto Nature** (`apicarto.ign.fr`) : zonages environnementaux (Natura 2000, ZNIEFF, Parcs)
@@ -579,6 +579,12 @@ Pièges rencontrés en session. Chaque entrée documente un piège pour éviter 
 - Les DOM-TOM ont des formats spécifiques (3 chiffres département : `971`, `972`, etc.)
 - Le format complet fait 14 caractères : `DDDCCCSSNNNNPP` (département, commune, section, numéro, parcelle)
 - TOUJOURS valider le format avant d'appeler les APIs cadastrales
+
+### Quota BDNB : 10 000 appels par mois et par IP sortante
+
+- Le quota compte des **appels HTTP** (une parcelle de plus de 10 groupes de bâtiments en coûte plusieurs), est porté par l'**IP sortante** (staging en `osc-fr1`, prod en `osc-secnum-fr1` : quotas distincts, fenêtres à dates différentes) et se lit dans les en-têtes `x-quota-remaining` / `x-quota-reset` (millisecondes epoch). Au-delà : 429 « Quota exceeded » jusqu'à la remise à zéro, à ne pas confondre avec le 429 par minute.
+- Vérifier depuis un conteneur (le quota est celui de l'IP du conteneur) : `scalingo --region osc-secnum-fr1 --app mutafriches run "curl -si '<url BDNB>' | grep -i x-quota"`. Un appel réussi consomme 1 requête.
+- La surface bâtie est servie par `SurfaceBatieService` : cache `cache_bdnb_parcelles` (30 jours), puis appels groupés `in.(…)`. Les pannes de 2026 (fin juillet à mi-août, fin août à mi-septembre) étaient un quota épuisé par la pré-chauffe, pas des rafales. **Ne pas rappeler la BDNB en boucle pour tester** : vieillir `date_recuperation` pour forcer un recalcul.
 
 ### Fiabilité : sémantique `null` vs `undefined`
 
