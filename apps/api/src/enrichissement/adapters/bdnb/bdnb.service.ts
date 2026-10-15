@@ -10,6 +10,7 @@ import {
   BdnbPatrimoine,
   BdnbRisquesNaturels,
   BdnbServiceResponse,
+  SurfaceBatieParcelle,
 } from "./bdnb.types";
 
 // Plafond imposé par l'API (en-tête x-max-items-per-call) : un `limit` supérieur est ramené à 10 sans erreur
@@ -40,55 +41,64 @@ export class BdnbService {
   constructor(private readonly httpService: HttpService) {}
 
   /**
-   * Récupère uniquement la surface bâtie totale d'une parcelle
+   * Surface bâtie de plusieurs parcelles en un seul appel groupé : l'API plafonne à 10 lignes par
+   * page, le coût est donc d'environ (nombre de groupes de bâtiments / 10) appels au lieu d'un par parcelle.
    *
    * Sémantique :
-   * - success=true, data=N (>0)  : bâtiments trouvés, surface bâtie totale = N m²
-   * - success=true, data=0       : recherche effectuée, aucun bâtiment sur la parcelle (terrain non bâti)
-   * - success=false              : erreur technique (timeout, 4xx/5xx, parse...)
+   * - success=true  : une parcelle absente de la réponse est non bâtie (surface 0, réponse valide)
+   * - success=false : erreur technique (timeout, quota, 4xx/5xx, parse...), aucune parcelle du lot n'est connue
    */
-  async getSurfaceBatie(identifiantParcelle: string): Promise<ApiResponse<number>> {
+  async getSurfacesBatiesParLot(
+    identifiants: string[],
+  ): Promise<ApiResponse<Record<string, SurfaceBatieParcelle>>> {
     const startTime = Date.now();
 
-    try {
-      const response = await this.callBdnbApi(identifiantParcelle, "surface_emprise_sol");
+    if (identifiants.length === 0) {
+      return { success: true, data: {}, source: "API BDNB", responseTimeMs: 0 };
+    }
 
-      if (!response.success) {
-        return {
-          success: false,
-          error: response.error || "Erreur technique API BDNB",
-          source: "API BDNB",
-          responseTimeMs: Date.now() - startTime,
-        };
-      }
-
-      // Cas "parcelle non bâtie" : API a répondu OK avec 0 bâtiment
-      // C'est une donnée valide (pas une erreur) → surface = 0 m²
-      const batiments = response.data ?? [];
-      const surfaceTotale = batiments.reduce(
-        (total, batiment) => total + (batiment.surface_emprise_sol || 0),
-        0,
-      );
-
-      return {
-        success: true,
-        data: surfaceTotale,
-        source: "API BDNB - Données cadastrales enrichies",
-        responseTimeMs: Date.now() - startTime,
-      };
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Erreur inconnue";
-      this.logger.error(
-        `Erreur lors de la récupération de la surface bâtie: ${errorMessage}`,
-        error instanceof Error ? error.stack : undefined,
-      );
+    // Les identifiants sont injectés dans un filtre PostgREST : on refuse tout caractère de syntaxe
+    if (!identifiants.every((id) => /^[0-9A-Z]+$/.test(id))) {
       return {
         success: false,
-        error: `Erreur technique lors de l'appel à l'API BDNB: ${errorMessage}`,
+        error: "Identifiant de parcelle invalide",
         source: "API BDNB",
         responseTimeMs: Date.now() - startTime,
       };
     }
+
+    const response = await this.callBdnbApi(
+      `in.(${identifiants.join(",")})`,
+      "parcelle_id,batiment_groupe_id,surface_emprise_sol",
+    );
+
+    if (!response.success) {
+      return {
+        success: false,
+        error: response.error || "Erreur technique API BDNB",
+        source: "API BDNB",
+        responseTimeMs: Date.now() - startTime,
+      };
+    }
+
+    const surfaces: Record<string, SurfaceBatieParcelle> = {};
+    for (const id of identifiants) {
+      surfaces[id] = { surface: 0, groupes: [] };
+    }
+    for (const batiment of response.data ?? []) {
+      const entree = surfaces[batiment.parcelle_id];
+      if (!entree) continue;
+      const surface = batiment.surface_emprise_sol || 0;
+      entree.surface += surface;
+      entree.groupes.push({ id: batiment.batiment_groupe_id, surface });
+    }
+
+    return {
+      success: true,
+      data: surfaces,
+      source: "API BDNB - Données cadastrales enrichies",
+      responseTimeMs: Date.now() - startTime,
+    };
   }
 
   /**
@@ -98,7 +108,7 @@ export class BdnbService {
     const startTime = Date.now();
 
     try {
-      const response = await this.callBdnbApi(identifiantParcelle);
+      const response = await this.callBdnbApi(`eq.${identifiantParcelle}`);
 
       if (!response.success || !response.data || response.data.length === 0) {
         return {
@@ -168,7 +178,7 @@ export class BdnbService {
     const startTime = Date.now();
 
     try {
-      const response = await this.callBdnbApi(identifiantParcelle);
+      const response = await this.callBdnbApi(`eq.${identifiantParcelle}`);
 
       if (!response.success || !response.data || response.data.length === 0) {
         return {
@@ -205,10 +215,11 @@ export class BdnbService {
   }
 
   /**
-   * Appel générique à l'API BDNB : pagine jusqu'à épuisement des groupes de bâtiments de la parcelle
+   * Appel générique à l'API BDNB : pagine jusqu'à épuisement des groupes de bâtiments
+   * @param filtreParcelle - valeur du filtre PostgREST sur `parcelle_id` (`eq.X` ou `in.(X,Y)`)
    */
   private async callBdnbApi(
-    identifiantParcelle: string,
+    filtreParcelle: string,
     select?: string,
   ): Promise<ApiResponse<BdnbBatimentGroupeComplet[]>> {
     try {
@@ -217,9 +228,9 @@ export class BdnbService {
 
       for (let page = 0; page < PAGES_MAX; page++) {
         const lot = await this.getPage(url, {
-          parcelle_id: `eq.${identifiantParcelle}`,
+          parcelle_id: filtreParcelle,
           ...(select ? { select } : {}),
-          order: "batiment_groupe_id",
+          order: "parcelle_id,batiment_groupe_id",
           limit: TAILLE_PAGE,
           offset: page * TAILLE_PAGE,
         });
@@ -227,16 +238,13 @@ export class BdnbService {
 
         // Réponse 200 avec un tableau (potentiellement vide) = succès technique.
         // Un tableau vide signifie "parcelle non bâtie" : c'est une information valide,
-        // pas une erreur. Les consommateurs (getSurfaceBatie / getBatiments / getRisquesNaturels)
-        // décident comment exploiter le cas "0 bâtiment".
+        // pas une erreur. Les consommateurs décident comment exploiter le cas "0 bâtiment".
         if (lot.length < TAILLE_PAGE) {
           return { success: true, data: batiments, source: "API BDNB" };
         }
       }
 
-      this.logger.warn(
-        `BDNB: plus de ${PAGES_MAX * TAILLE_PAGE} groupes sur ${identifiantParcelle}`,
-      );
+      this.logger.warn(`BDNB: plus de ${PAGES_MAX * TAILLE_PAGE} groupes pour ${filtreParcelle}`);
       return {
         success: false,
         error: `Plus de ${PAGES_MAX * TAILLE_PAGE} groupes de bâtiments, résultat tronqué`,

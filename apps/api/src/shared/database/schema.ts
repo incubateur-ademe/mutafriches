@@ -19,6 +19,7 @@ import { rawZae } from "./schemas/raw-zae.schema";
 import { apiHealthSnapshots } from "./schemas/api-health-snapshots.schema";
 import { partenaires } from "./schemas/partenaires.schema";
 import { partenaireSites } from "./schemas/partenaire-sites.schema";
+import { cacheBdnbParcelles } from "./schemas/cache-bdnb-parcelles.schema";
 
 // Export individuel pour drizzle-kit
 export {
@@ -44,6 +45,7 @@ export {
   apiHealthSnapshots,
   partenaires,
   partenaireSites,
+  cacheBdnbParcelles,
 };
 
 // Export groupé pour drizzle ORM
@@ -69,4 +71,5 @@ export const schema = {
   apiHealthSnapshots,
   partenaires,
   partenaireSites,
+  cacheBdnbParcelles,
 };
