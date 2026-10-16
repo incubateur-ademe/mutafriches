@@ -170,10 +170,12 @@ Pour **chaque feature identifiée** (un groupe cohérent de modifications, typiq
   | Un choix d'architecture | ADR dans `docs/adr/` (voir « ADR automatique ») |
   | Un partenaire | `docs/ajout-partenaire.md` |
   | Un compte, un décompte ou une version cité dans la doc (nombre de critères, de domaines, de bases locales, version d'algo) | Tous les fichiers qui le citent : `grep` le chiffre avant de conclure, ne jamais corriger un seul fichier |
+  | Une colonne, une valeur ou un événement lu par une carte Metabase | Demander à l'utilisateur s'il faut mettre Metabase à jour (voir « Metabase : demander la mise à jour des statistiques ») |
 
   Les chiffres écrits en dur dans la doc (« 11 bases locales ») sont la cause principale de dérive : les recompter à chaque feature, ou les remplacer par une formulation sans chiffre.
 - **Proposer à l'utilisateur des tests manuels E2E côté UI** à réaliser lui-même, **systématiquement** en fin de feature : un parcours pas à pas, numéroté, couvrant le comportement attendu et les cas limites. Signaler les pièges qui fausseraient le test (cache d'enrichissement ou d'évaluation à purger, import de référentiel à rejouer, données de démo). Ne jamais clore une feature sans cette liste.
 - **Donner l'ADRESSE POSTALE, l'identifiant cadastral et le NUMÉRO DE PARCELLE À CLIQUER** pour chaque site de test. Le parcours commence par une recherche d'adresse sur la carte (`/analyser`) : un identifiant cadastral seul ne permet pas de retrouver la parcelle dans l'UI. Vérifier que l'adresse tombe bien DANS la parcelle visée — `https://api-adresse.data.gouv.fr/reverse/?lat=&lon=` depuis le centroïde donne l'adresse, et un test point-dans-polygone sur la géométrie apicarto confirme la correspondance. Le « numéro de parcelle à cliquer » est les 4 derniers chiffres de l'identifiant (`AK0118` → **0118**), tel qu'affiché sur la carte : après la recherche d'adresse, la carte s'ouvre sur plusieurs parcelles voisines, et c'est ce numéro qui dit laquelle sélectionner avant « Analyser ce site » (pour un site multi-parcelle, lister chaque numéro à cliquer). Le préciser pour chaque cas, y compris quand la parcelle voisine de la bonne a un numéro proche. Exemple : `49020000AK0118` = **19 rue Georges Morel, 49070 Beaucouzé**, parcelle **0118** (7 193 m², réseau de chaleur à 57 m).
+- **Demander s'il faut mettre à jour Metabase**, **systématiquement** en fin de feature, à côté des tests manuels : indiquer « Impact Metabase : cartes concernées » ou « aucun impact », et ne rien modifier dans Metabase sans accord explicite (voir « Metabase : demander la mise à jour des statistiques »).
 - **Tracer ce qui est écarté** : un sujet écarté d'une PR (retour de revue hors périmètre, arbitrage en attente, rattrapage à mesurer d'abord) va dans `docs/SUJETS-A-TRAITER.md`, avec son préalable ; l'entrée est retirée par la PR qui le traite.
 - **Proposer un titre et un descriptif de PR**, **systématiquement** en fin de feature, prêts à copier-coller : un titre en Conventional Commits (sous 70 caractères) et un descriptif de quelques phrases — le problème, la solution retenue, le pourquoi. Pas de listes à rallonge ni de recopie du diff. Ne créer ni pousser la PR que sur demande explicite (cf. règle de commit).
 
@@ -186,6 +188,35 @@ pnpm format && pnpm lint && pnpm typecheck && pnpm test
 ```
 
 Si des erreurs apparaissent, les corriger immédiatement et relancer jusqu'à ce que tout passe. Ne JAMAIS considérer une tâche comme terminée sans cette vérification.
+
+### Metabase : demander la mise à jour des statistiques
+
+Metabase lit directement la base de production et des valeurs écrites en dur dans des requêtes SQL. Une évolution du code peut donc fausser un chiffre **sans qu'aucun test ne casse** (jointure qui multiplie les lignes, libellé d'usage obsolète, statut qui n'existe plus, intégrateur API invisible).
+
+**À chaque feature, évolution du code, migration ou changement de donnée**, évaluer l'impact sur Metabase et **demander à l'utilisateur s'il faut le mettre à jour**. Ne jamais modifier une carte, un dashboard ou une description sans son accord explicite.
+
+Déclencheurs (liste non exhaustive) :
+
+- **Schéma** : table, colonne, enum ou valeur d'enum ajoutée, renommée ou retirée (migration Drizzle) ; changement du contenu de `site_id` (parcelles jointes par virgules), `integrateur`, `source_utilisation` (`API_DIRECTE`, `PREFETCH`…), `statut`, `evaluation_source_id`, `enrichissement_source_id`.
+- **Tracking** : événement ajouté, retiré ou renommé, ou dont `donnees` change ; parcours qui n'émet plus un événement (l'API directe n'en émet aucun).
+- **Algorithme** : nouvelle version, critère, poids ou libellé d'usage (poids et libellés sont en dur dans des cartes ; les scores de plusieurs versions se mélangent).
+- **Intégrateurs et partenaires** : nouvel intégrateur (hôte d'`Origin`) ou page partenaire. Les classements par canal et par famille sont en dur dans les cartes, et un nouvel intégrateur tombe dans « Autre ».
+- **Enregistrement** : cache 24 h, pré-chauffe, guards, environnement (preprod ou prod), tout ce qui change ce qui est écrit dans `evaluations`, `enrichissements` ou `evenements_utilisateur`.
+- **Contenu JSON lu par une carte** : `donnees_enrichissement`, `donnees_complementaires`, `resultats`.
+
+Préparer la proposition :
+
+1. Chercher les cartes impactées (MCP Metabase `search` et `read_resource`, ou la colonne ou la valeur dans leur SQL) dans les dashboards interne (9), public (13) et V2 (15).
+2. Pour chaque carte : id, ce qui change, correction proposée, chiffre avant et après quand il se mesure en lecture seule (`execute_sql`).
+3. Après accord seulement : modifier, exécuter chaque carte (aucune erreur, ordre de grandeur cohérent), saisir la description (ce que ça mesure, périmètre, limite).
+
+Règles dans les requêtes :
+
+- **Périmètre commun** : `evaluations` hors cache et démonstration (`evaluation_source_id IS NULL AND COALESCE(integrateur, '') NOT IN ('demo', 'mutafriches')`) ; `enrichissements` en plus hors robot (`source_utilisation IS DISTINCT FROM 'PREFETCH'`) ; événements hors démonstration.
+- Ne jamais joindre `evaluations.site_id` à `enrichissements.identifiant_cadastral` (multi-parcelle, lignes multipliées). Usage humain : compter les événements ; API directe : compter les tables.
+- Libellés de l'interface (`usagesLabels.utils.ts`), jamais les clés techniques.
+- **Dashboard 13 public** (embed signé de `/statistiques` et lien public) : tout titre, texte et description est lisible par n'importe qui, sans note interne. Ne jamais supprimer ni recréer un onglet : leurs ids sont en dur dans `metabase.service.ts`.
+- Avant de modifier une question, vérifier ses dashboards : certaines sont partagées (la carte 78 appartient au dashboard 3).
 
 ### Audit de sécurité des dépendances
 
