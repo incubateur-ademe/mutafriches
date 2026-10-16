@@ -54,7 +54,7 @@ La contenance cadastrale initialise la surface du site, classée par seuils (< 1
 
 **Traitement dans l'algorithme**
 
-La surface bâtie est agrégée sur la parcelle puis classée par seuils. Elle sert aussi à dériver automatiquement le critère « raccordement à l'eau » (> 20 m² bâti => raccordé, cf. ADR-0019).
+La surface bâtie est agrégée sur la parcelle puis classée par seuils. Elle sert aussi à dériver automatiquement le critère « raccordement à l'eau » (> 20 m² bâti => raccordé, cf. ADR-0019). Cette donnée évolue peu : elle est conservée 30 jours par parcelle (cf. ADR-0052) avant d'être redemandée à la BDNB.
 
 **Critères d'évaluation alimentés**
 

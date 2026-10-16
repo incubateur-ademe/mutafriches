@@ -3,10 +3,10 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { SourceEnrichissement } from "@mutafriches/shared-types";
 import { CadastreEnrichissementService } from "./cadastre-enrichissement.service";
 import { CadastreService } from "../../adapters/cadastre/cadastre.service";
-import { BdnbService } from "../../adapters/bdnb/bdnb.service";
+import { SurfaceBatieService } from "./surface-batie.service";
 import {
   createMockCadastreService,
-  createMockBdnbService,
+  createMockSurfaceBatieService,
   createMockSiteGeometryService,
 } from "../../__test-helpers__/enrichissement.mocks";
 import { SiteGeometryService } from "../site/site-geometry.service";
@@ -14,26 +14,26 @@ import { SiteGeometryService } from "../site/site-geometry.service";
 describe("CadastreEnrichissementService", () => {
   let service: CadastreEnrichissementService;
   let cadastreService: ReturnType<typeof createMockCadastreService>;
-  let bdnbService: ReturnType<typeof createMockBdnbService>;
+  let surfaceBatieService: ReturnType<typeof createMockSurfaceBatieService>;
   let siteGeometryService: ReturnType<typeof createMockSiteGeometryService>;
 
   beforeEach(async () => {
     const mockCadastre = createMockCadastreService();
-    const mockBdnb = createMockBdnbService();
+    const mockSurfaceBatie = createMockSurfaceBatieService();
     const mockSiteGeometry = createMockSiteGeometryService();
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         CadastreEnrichissementService,
         { provide: CadastreService, useValue: mockCadastre },
-        { provide: BdnbService, useValue: mockBdnb },
+        { provide: SurfaceBatieService, useValue: mockSurfaceBatie },
         { provide: SiteGeometryService, useValue: mockSiteGeometry },
       ],
     }).compile();
 
     service = module.get<CadastreEnrichissementService>(CadastreEnrichissementService);
     cadastreService = mockCadastre;
-    bdnbService = mockBdnb;
+    surfaceBatieService = mockSurfaceBatie;
     siteGeometryService = mockSiteGeometry;
   });
 
@@ -54,10 +54,9 @@ describe("CadastreEnrichissementService", () => {
         },
       });
 
-      bdnbService.getSurfaceBatie.mockResolvedValue({
-        success: true,
-        data: 500,
-      });
+      surfaceBatieService.getSurfaces.mockImplementation((ids: string[]) =>
+        Promise.resolve(new Map(ids.map((id) => [id, 500]))),
+      );
 
       // Act
       const result = await service.enrichir(identifiantTest);
@@ -85,10 +84,9 @@ describe("CadastreEnrichissementService", () => {
         },
       });
 
-      bdnbService.getSurfaceBatie.mockResolvedValue({
-        success: true,
-        data: 500,
-      });
+      surfaceBatieService.getSurfaces.mockImplementation((ids: string[]) =>
+        Promise.resolve(new Map(ids.map((id) => [id, 500]))),
+      );
 
       // Act
       const result = await service.enrichir(identifiantTest);
@@ -114,10 +112,9 @@ describe("CadastreEnrichissementService", () => {
         },
       });
 
-      bdnbService.getSurfaceBatie.mockResolvedValue({
-        success: true,
-        data: 0,
-      });
+      surfaceBatieService.getSurfaces.mockImplementation((ids: string[]) =>
+        Promise.resolve(new Map(ids.map((id) => [id, 0]))),
+      );
 
       // Act
       const result = await service.enrichir(identifiantTest);
@@ -143,10 +140,9 @@ describe("CadastreEnrichissementService", () => {
         },
       });
 
-      bdnbService.getSurfaceBatie.mockResolvedValue({
-        success: false,
-        error: "Service indisponible",
-      });
+      surfaceBatieService.getSurfaces.mockImplementation((ids: string[]) =>
+        Promise.resolve(new Map(ids.map((id) => [id, null]))),
+      );
 
       // Act
       const result = await service.enrichir(identifiantTest);
@@ -203,7 +199,9 @@ describe("CadastreEnrichissementService", () => {
         },
       });
 
-      bdnbService.getSurfaceBatie.mockRejectedValue(new Error("Service error"));
+      surfaceBatieService.getSurfaces.mockImplementation((ids: string[]) =>
+        Promise.resolve(new Map(ids.map((id) => [id, null]))),
+      );
 
       // Act
       const result = await service.enrichir(identifiantTest);
@@ -234,7 +232,6 @@ describe("CadastreEnrichissementService", () => {
         (_, i) => `70310000AS${String(i).padStart(4, "0")}`,
       );
       const cadastre = { enCours: 0, maximum: 0 };
-      const bdnb = { enCours: 0, maximum: 0 };
 
       cadastreService.getParcelleInfo.mockImplementation((id: string) =>
         appelDiffere(cadastre, {
@@ -249,8 +246,8 @@ describe("CadastreEnrichissementService", () => {
           },
         })(),
       );
-      bdnbService.getSurfaceBatie.mockImplementation(() =>
-        appelDiffere(bdnb, { success: true, data: 10 })(),
+      surfaceBatieService.getSurfaces.mockImplementation((ids: string[]) =>
+        Promise.resolve(new Map(ids.map((id) => [id, 10]))),
       );
       siteGeometryService.construireSite.mockReturnValue({ identifiantsParcelles: identifiants });
 
@@ -259,7 +256,8 @@ describe("CadastreEnrichissementService", () => {
       expect(result.result.success).toBe(true);
       expect(cadastreService.getParcelleInfo).toHaveBeenCalledTimes(55);
       expect(cadastre.maximum).toBeLessThanOrEqual(10);
-      expect(bdnb.maximum).toBeLessThanOrEqual(10);
+      expect(surfaceBatieService.getSurfaces).toHaveBeenCalledTimes(1);
+      expect(surfaceBatieService.getSurfaces.mock.calls[0][0]).toHaveLength(55);
       const parcelles = siteGeometryService.construireSite.mock.calls[0][0] as {
         surfaceBati?: number;
       }[];

@@ -3,9 +3,12 @@ import { of, throwError } from "rxjs";
 import { HttpService } from "@nestjs/axios";
 import { BdnbService } from "./bdnb.service";
 
-const groupes = (surfaces: number[]): Record<string, unknown>[] =>
+const PARCELLE = "49020000AK0118";
+
+const groupes = (surfaces: number[], parcelle_id: string = PARCELLE): Record<string, unknown>[] =>
   surfaces.map((surface_emprise_sol, i) => ({
-    batiment_groupe_id: `bg-${i}`,
+    parcelle_id,
+    batiment_groupe_id: `bg-${parcelle_id}-${i}`,
     surface_emprise_sol,
   }));
 
@@ -39,10 +42,17 @@ describe("BdnbService", () => {
     vi.useRealTimers();
   });
 
-  const surfaceBatie = async (): Promise<Awaited<ReturnType<BdnbService["getSurfaceBatie"]>>> => {
-    const promesse = service.getSurfaceBatie("49020000AK0118");
+  type Lot = Awaited<ReturnType<BdnbService["getSurfacesBatiesParLot"]>>;
+
+  const surfacesLot = async (identifiants: string[] = [PARCELLE]): Promise<Lot> => {
+    const promesse = service.getSurfacesBatiesParLot(identifiants);
     await vi.runAllTimersAsync();
     return promesse;
+  };
+
+  const surfaceBatie = async (): Promise<{ success: boolean; data?: number }> => {
+    const lot = await surfacesLot();
+    return { success: lot.success, data: lot.data?.get(PARCELLE)?.surface };
   };
 
   it("somme les surfaces des groupes de bâtiments", async () => {
@@ -74,7 +84,12 @@ describe("BdnbService", () => {
     const params = httpGet.mock.calls.map(
       (appel) => (appel[1] as { params: Record<string, unknown> }).params,
     );
-    expect(params[0]).toMatchObject({ limit: 10, offset: 0, select: "surface_emprise_sol" });
+    expect(params[0]).toMatchObject({
+      limit: 10,
+      offset: 0,
+      parcelle_id: `in.(${PARCELLE})`,
+      select: "parcelle_id,batiment_groupe_id,surface_emprise_sol",
+    });
     expect(params[1]).toMatchObject({ limit: 10, offset: 10 });
   });
 
@@ -159,5 +174,61 @@ describe("BdnbService", () => {
     const result = await surfaceBatie();
 
     expect(result).toMatchObject({ success: true, data: 69 });
+  });
+
+  describe("appel groupé", () => {
+    const AUTRE = "49020000AK0119";
+    const VIDE = "49020000AK0120";
+
+    it("répartit les groupes par parcelle et conserve leur détail", async () => {
+      httpGet.mockReturnValue(of({ data: [...groupes([69, 31]), ...groupes([200], AUTRE)] }));
+
+      const result = await surfacesLot([PARCELLE, AUTRE]);
+
+      expect(result.success).toBe(true);
+      expect(result.data?.get(PARCELLE)?.surface).toBe(100);
+      expect(result.data?.get(PARCELLE)?.groupes).toHaveLength(2);
+      expect(result.data?.get(AUTRE)).toMatchObject({ surface: 200 });
+      expect(httpGet).toHaveBeenCalledTimes(1);
+    });
+
+    it("interroge toutes les parcelles du lot avec un seul filtre", async () => {
+      httpGet.mockReturnValue(of({ data: [] }));
+
+      await surfacesLot([PARCELLE, AUTRE]);
+
+      const params = (httpGet.mock.calls[0][1] as { params: Record<string, unknown> }).params;
+      expect(params.parcelle_id).toBe(`in.(${PARCELLE},${AUTRE})`);
+    });
+
+    it("traite une parcelle absente de la réponse comme non bâtie", async () => {
+      httpGet.mockReturnValue(of({ data: groupes([69]) }));
+
+      const result = await surfacesLot([PARCELLE, VIDE]);
+
+      expect(result.data?.get(VIDE)).toEqual({ surface: 0, groupes: [] });
+    });
+
+    it("ignore une ligne qui concerne une parcelle non demandée", async () => {
+      httpGet.mockReturnValue(of({ data: groupes([500], "49020000ZZ9999") }));
+
+      const result = await surfacesLot([PARCELLE]);
+
+      expect(result.data).toEqual(new Map([[PARCELLE, { surface: 0, groupes: [] }]]));
+    });
+
+    it("refuse un identifiant qui contiendrait de la syntaxe de filtre", async () => {
+      const result = await surfacesLot(["49020000AK0118)&select=*"]);
+
+      expect(result.success).toBe(false);
+      expect(httpGet).not.toHaveBeenCalled();
+    });
+
+    it("ne fait aucun appel pour une liste vide", async () => {
+      const result = await surfacesLot([]);
+
+      expect(result).toMatchObject({ success: true, data: new Map() });
+      expect(httpGet).not.toHaveBeenCalled();
+    });
   });
 });

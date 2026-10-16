@@ -19,8 +19,8 @@ interface MockCadastreService {
   getParcelleInfo: Mock;
 }
 
-interface MockBdnbService {
-  getSurfaceBatie: Mock;
+interface MockSurfaceBatieService {
+  getSurfaces: Mock;
 }
 
 interface MockEnergieEnrichissementService {
@@ -218,11 +218,11 @@ export function createMockCadastreService(): MockCadastreService {
 }
 
 /**
- * Mock du BdnbService
+ * Mock du SurfaceBatieService
  */
-export function createMockBdnbService(): MockBdnbService {
+export function createMockSurfaceBatieService(): MockSurfaceBatieService {
   return {
-    getSurfaceBatie: vi.fn(),
+    getSurfaces: vi.fn(),
   };
 }
 

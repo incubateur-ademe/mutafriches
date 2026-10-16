@@ -6,14 +6,14 @@ import {
 } from "@mutafriches/shared-types";
 import { Site as EvaluationSite } from "../../../evaluation/entities/site.entity";
 import { CadastreService } from "../../adapters/cadastre/cadastre.service";
-import { BdnbService } from "../../adapters/bdnb/bdnb.service";
 import { EnrichmentResult } from "../shared/enrichissement.types";
 import { ParcelleInitiale } from "./cadastre-enrichissement.types";
 import { Site, ParcelleData } from "../../entities/site.entity";
 import { SiteGeometryService } from "../site/site-geometry.service";
+import { SurfaceBatieService } from "./surface-batie.service";
 import { mapParLots } from "../../../shared/utils";
 
-// Un site peut compter 60 parcelles : sans borne, autant d'appels simultanés à l'API Carto et à la BDNB.
+// Un site peut compter 60 parcelles : sans borne, autant d'appels simultanés à l'API Carto.
 const APPELS_SIMULTANES_MAX = 10;
 
 /**
@@ -21,7 +21,7 @@ const APPELS_SIMULTANES_MAX = 10;
  *
  * Responsabilités :
  * - Récupérer les données cadastrales (identifiant, commune, surface, géométrie)
- * - Récupérer la surface bâtie depuis BDNB
+ * - Récupérer la surface bâtie (cache 30 jours puis BDNB)
  * - Initialiser l'objet Site (évaluation) avec les données de base
  * - Enrichir un site multi-parcellaire (appels parallèles par lots)
  */
@@ -31,7 +31,7 @@ export class CadastreEnrichissementService {
 
   constructor(
     private readonly cadastreService: CadastreService,
-    private readonly bdnbService: BdnbService,
+    private readonly surfaceBatieService: SurfaceBatieService,
     private readonly siteGeometryService: SiteGeometryService,
   ) {}
 
@@ -81,7 +81,8 @@ export class CadastreEnrichissementService {
     );
 
     // 3. Récupérer la surface bâtie depuis BDNB (OPTIONNEL)
-    const surfaceBatie = await this.getSurfaceBatie(site.identifiantParcelle);
+    const surfaces = await this.surfaceBatieService.getSurfaces([site.identifiantParcelle]);
+    const surfaceBatie = surfaces.get(site.identifiantParcelle) ?? null;
 
     if (surfaceBatie !== null) {
       site.surfaceBati = surfaceBatie;
@@ -170,16 +171,16 @@ export class CadastreEnrichissementService {
 
     sourcesUtilisees.push(SourceEnrichissement.CADASTRE);
 
-    // 3. Récupérer la surface bâtie par lots (getSurfaceBatie ne lève jamais)
-    const surfacesBaties = await mapParLots(parcellesData, APPELS_SIMULTANES_MAX, (p) =>
-      this.getSurfaceBatie(p.identifiantParcelle),
+    // 3. Récupérer la surface bâtie (cache puis appels BDNB groupés, ne lève jamais)
+    const surfacesBaties = await this.surfaceBatieService.getSurfaces(
+      parcellesData.map((p) => p.identifiantParcelle),
     );
 
     let auMoinsUnBdnbOk = false;
-    for (let i = 0; i < surfacesBaties.length; i++) {
-      const surfaceBati = surfacesBaties[i];
+    for (const parcelle of parcellesData) {
+      const surfaceBati = surfacesBaties.get(parcelle.identifiantParcelle) ?? null;
       if (surfaceBati !== null) {
-        parcellesData[i].surfaceBati = surfaceBati;
+        parcelle.surfaceBati = surfaceBati;
         auMoinsUnBdnbOk = true;
       }
     }
@@ -227,27 +228,6 @@ export class CadastreEnrichissementService {
       };
     } catch (error) {
       this.logger.error("Erreur lors de la recuperation cadastre:", error);
-      return null;
-    }
-  }
-
-  /**
-   * Récupère la surface bâtie depuis BDNB
-   */
-  private async getSurfaceBatie(identifiant: string): Promise<number | null> {
-    try {
-      const result = await this.bdnbService.getSurfaceBatie(identifiant);
-
-      if (!result.success || result.data === undefined) {
-        this.logger.debug(
-          `BDNB: surface batie non disponible (${result.error || "Aucune donnee"})`,
-        );
-        return null;
-      }
-
-      return result.data;
-    } catch (error) {
-      this.logger.error("Erreur lors de la recuperation BDNB:", error);
       return null;
     }
   }

@@ -83,6 +83,8 @@ import { IcuRepository } from "./repositories/icu.repository";
 import { QpvRepository } from "./repositories/qpv.repository";
 import { ZaeRepository } from "./repositories/zae.repository";
 import { ZonesContrainteEnrRepository } from "./repositories/zones-contrainte-enr.repository";
+import { BdnbCacheRepository } from "./repositories/bdnb-cache.repository";
+import { SurfaceBatieService } from "./services/cadastre/surface-batie.service";
 
 @Module({
   imports: [HttpModule],
@@ -104,9 +106,11 @@ import { ZonesContrainteEnrRepository } from "./repositories/zones-contrainte-en
     QpvRepository,
     ZaeRepository,
     ZonesContrainteEnrRepository,
+    BdnbCacheRepository,
 
     // Services de domaine
     CadastreEnrichissementService,
+    SurfaceBatieService,
     EnergieEnrichissementService,
     ReseauChaleurEnrichissementService,
     TransportEnrichissementService,

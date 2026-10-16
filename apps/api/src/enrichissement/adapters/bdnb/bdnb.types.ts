@@ -114,10 +114,20 @@ export interface BdnbServiceResponse {
 }
 
 /**
+ * Surface bâtie d'une parcelle, avec le détail par groupe de bâtiments
+ */
+export interface SurfaceBatieParcelle {
+  surface: number;
+  groupes: { id: string; surface: number }[];
+}
+
+/**
  * Interface du service BDNB
  */
 export interface IBdnbService {
-  getSurfaceBatie(identifiantParcelle: string): Promise<ApiResponse<number>>;
+  getSurfacesBatiesParLot(
+    identifiants: string[],
+  ): Promise<ApiResponse<Map<string, SurfaceBatieParcelle>>>;
   getBatiments(identifiantParcelle: string): Promise<ApiResponse<BdnbServiceResponse>>;
   getRisquesNaturels(identifiantParcelle: string): Promise<ApiResponse<BdnbRisquesNaturels>>;
 }
