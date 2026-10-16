@@ -52,7 +52,7 @@ describe("BdnbService", () => {
 
   const surfaceBatie = async (): Promise<{ success: boolean; data?: number }> => {
     const lot = await surfacesLot();
-    return { success: lot.success, data: lot.data?.[PARCELLE]?.surface };
+    return { success: lot.success, data: lot.data?.get(PARCELLE)?.surface };
   };
 
   it("somme les surfaces des groupes de bâtiments", async () => {
@@ -186,9 +186,9 @@ describe("BdnbService", () => {
       const result = await surfacesLot([PARCELLE, AUTRE]);
 
       expect(result.success).toBe(true);
-      expect(result.data?.[PARCELLE].surface).toBe(100);
-      expect(result.data?.[PARCELLE].groupes).toHaveLength(2);
-      expect(result.data?.[AUTRE]).toMatchObject({ surface: 200 });
+      expect(result.data?.get(PARCELLE)?.surface).toBe(100);
+      expect(result.data?.get(PARCELLE)?.groupes).toHaveLength(2);
+      expect(result.data?.get(AUTRE)).toMatchObject({ surface: 200 });
       expect(httpGet).toHaveBeenCalledTimes(1);
     });
 
@@ -206,7 +206,7 @@ describe("BdnbService", () => {
 
       const result = await surfacesLot([PARCELLE, VIDE]);
 
-      expect(result.data?.[VIDE]).toEqual({ surface: 0, groupes: [] });
+      expect(result.data?.get(VIDE)).toEqual({ surface: 0, groupes: [] });
     });
 
     it("ignore une ligne qui concerne une parcelle non demandée", async () => {
@@ -214,7 +214,7 @@ describe("BdnbService", () => {
 
       const result = await surfacesLot([PARCELLE]);
 
-      expect(result.data).toEqual({ [PARCELLE]: { surface: 0, groupes: [] } });
+      expect(result.data).toEqual(new Map([[PARCELLE, { surface: 0, groupes: [] }]]));
     });
 
     it("refuse un identifiant qui contiendrait de la syntaxe de filtre", async () => {
@@ -227,7 +227,7 @@ describe("BdnbService", () => {
     it("ne fait aucun appel pour une liste vide", async () => {
       const result = await surfacesLot([]);
 
-      expect(result).toMatchObject({ success: true, data: {} });
+      expect(result).toMatchObject({ success: true, data: new Map() });
       expect(httpGet).not.toHaveBeenCalled();
     });
   });

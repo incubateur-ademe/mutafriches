@@ -50,11 +50,11 @@ export class BdnbService {
    */
   async getSurfacesBatiesParLot(
     identifiants: string[],
-  ): Promise<ApiResponse<Record<string, SurfaceBatieParcelle>>> {
+  ): Promise<ApiResponse<Map<string, SurfaceBatieParcelle>>> {
     const startTime = Date.now();
 
     if (identifiants.length === 0) {
-      return { success: true, data: {}, source: "API BDNB", responseTimeMs: 0 };
+      return { success: true, data: new Map(), source: "API BDNB", responseTimeMs: 0 };
     }
 
     // Les identifiants sont injectés dans un filtre PostgREST : on refuse tout caractère de syntaxe
@@ -81,12 +81,13 @@ export class BdnbService {
       };
     }
 
-    const surfaces: Record<string, SurfaceBatieParcelle> = {};
+    // Map et non objet : les clés viennent de l'extérieur (injection de propriété)
+    const surfaces = new Map<string, SurfaceBatieParcelle>();
     for (const id of identifiants) {
-      surfaces[id] = { surface: 0, groupes: [] };
+      surfaces.set(id, { surface: 0, groupes: [] });
     }
     for (const batiment of response.data ?? []) {
-      const entree = surfaces[batiment.parcelle_id];
+      const entree = surfaces.get(batiment.parcelle_id);
       if (!entree) continue;
       const surface = batiment.surface_emprise_sol || 0;
       entree.surface += surface;

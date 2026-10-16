@@ -31,7 +31,7 @@ describe("SurfaceBatieService", () => {
     getSurfacesBatiesParLot.mockImplementation((ids: string[]) =>
       Promise.resolve({
         success: true,
-        data: Object.fromEntries(
+        data: new Map(
           ids.map((id) => [
             id,
             {
@@ -159,7 +159,7 @@ describe("SurfaceBatieService", () => {
       enCours -= 1;
       return {
         success: true,
-        data: Object.fromEntries(lot.map((id) => [id, { surface: 0, groupes: [] }])),
+        data: new Map(lot.map((id) => [id, { surface: 0, groupes: [] }])),
       };
     });
 

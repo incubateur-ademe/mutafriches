@@ -44,7 +44,7 @@ export class SurfaceBatieService {
       const reponse = await this.bdnbService.getSurfacesBatiesParLot(lot);
 
       for (const id of lot) {
-        const surfaceBdnb = reponse.success ? reponse.data?.[id] : undefined;
+        const surfaceBdnb = reponse.success ? reponse.data?.get(id) : undefined;
         if (surfaceBdnb) {
           surfaces.set(id, surfaceBdnb.surface);
           aEnregistrer.push({

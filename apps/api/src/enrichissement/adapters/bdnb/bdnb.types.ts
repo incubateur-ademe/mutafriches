@@ -127,7 +127,7 @@ export interface SurfaceBatieParcelle {
 export interface IBdnbService {
   getSurfacesBatiesParLot(
     identifiants: string[],
-  ): Promise<ApiResponse<Record<string, SurfaceBatieParcelle>>>;
+  ): Promise<ApiResponse<Map<string, SurfaceBatieParcelle>>>;
   getBatiments(identifiantParcelle: string): Promise<ApiResponse<BdnbServiceResponse>>;
   getRisquesNaturels(identifiantParcelle: string): Promise<ApiResponse<BdnbRisquesNaturels>>;
 }
