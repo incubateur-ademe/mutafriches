@@ -54,10 +54,10 @@
   "dependencies": {
     "@mutafriches/shared-types": "workspace:*",
     "@nestjs/axios": "^12.0.1",
-    "@nestjs/common": "^12.1.1",
-    "@nestjs/core": "^12.1.1",
-    "@nestjs/platform-express": "^12.1.1",
-    "@nestjs/swagger": "^12.0.2",
+    "@nestjs/common": "^12.2.0",
+    "@nestjs/core": "^12.2.0",
+    "@nestjs/platform-express": "^12.2.0",
+    "@nestjs/swagger": "^12.0.3",
     "@nestjs/throttler": "^6.7.1",
     "@turf/area": "^7.4.0",
     "@turf/centroid": "^7.4.0",
@@ -66,7 +66,7 @@
     "@turf/union": "^7.4.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.15.1",
-    "dotenv": "^18.0.7",
+    "dotenv": "^18.0.9",
     "drizzle-kit": "^0.31.11",
     "drizzle-orm": "^0.45.4",
     "express": "^5.3.0",
@@ -79,11 +79,11 @@
     "uuid": "^14.0.3"
   },
   "devDependencies": {
-    "@nestjs/cli": "^12.0.8",
-    "@nestjs/schematics": "^12.0.6",
-    "@nestjs/testing": "^12.1.1",
+    "@nestjs/cli": "^12.0.10",
+    "@nestjs/schematics": "^12.0.10",
+    "@nestjs/testing": "^12.2.0",
     "@swc/cli": "^0.8.1",
-    "@swc/core": "^1.16.18",
+    "@swc/core": "^1.16.20",
     "@types/express": "^5.0.6",
     "@types/geojson": "^7946.0.16",
     "@types/jsonwebtoken": "^9.0.10",
@@ -91,7 +91,7 @@
     "@types/proj4": "^2.19.0",
     "@types/supertest": "^7.2.1",
     "@types/swagger-ui-express": "^4.1.8",
-    "@vitest/ui": "^5.0.2",
+    "@vitest/ui": "^5.0.5",
     "cross-env": "^10.0.0",
     "proj4": "^2.22.0",
     "source-map-support": "^0.5.21",
@@ -100,6 +100,6 @@
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
     "unplugin-swc": "^2.0.0",
-    "vitest": "^5.0.2"
+    "vitest": "^5.0.5"
   }
 }
