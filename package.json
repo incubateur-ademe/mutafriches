@@ -51,6 +51,7 @@
     "db:partenaires:seed": "pnpm --filter api run db:partenaires:seed",
     "partenaires:prefetch": "pnpm --filter api run partenaires:prefetch",
     "partenaires:resolve-idu": "pnpm --filter api run partenaires:resolve-idu",
+    "attributaire:peupler": "pnpm --filter api run attributaire:peupler",
     "docs:sources:gen": "node scripts/generate-sources-doc.cjs",
     "docs:matrice:gen": "pnpm --filter api run docs:matrice:gen --",
     "validate": "pnpm format && pnpm lint:fix && pnpm typecheck && pnpm test",
