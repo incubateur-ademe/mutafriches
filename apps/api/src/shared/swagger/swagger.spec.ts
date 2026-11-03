@@ -46,6 +46,7 @@ describe("Swagger OpenAPI document", () => {
     expect(paths).toContain("/evaluation/algorithme/versions");
     expect(paths).toContain("/evaluation/{id}");
     expect(paths).toContain("/api/stats");
+    expect(paths).toContain("/api/attributaire/sites");
   });
 
   it("n'expose pas les endpoints internes", () => {
@@ -60,6 +61,7 @@ describe("Swagger OpenAPI document", () => {
       document.paths["/evaluation/calculer"]?.post,
       document.paths["/evaluation/{id}"]?.get,
       document.paths["/api/stats"]?.get,
+      document.paths["/api/attributaire/sites"]?.get,
     ];
     for (const operation of sample) {
       expect(operation?.responses["400"]).toBeDefined();
