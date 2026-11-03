@@ -355,6 +355,9 @@ pnpm data:zones-contrainte-enr:preparer <capca.json>  # Régénérer le GeoJSON 
 pnpm db:import:all          # Importe tous les référentiels dont la table est vide (--force=<clé,…>, --only=<clé,…>, --strict) ; lancé par le postdeploy
 pnpm db:zae:import          # Importer les zones d'activité économique (Cerema Fusac)
 pnpm data:zae:preparer <fichier.gpkg>  # Régénérer le GeoJSON commité depuis le GeoPackage Fusac (ogr2ogr requis)
+
+# Table attributaire (ADR-0053, pas un import : aucune entrée dans IMPORT_DATASETS)
+pnpm attributaire:peupler   # Recalcule la table depuis la base (--commune=<insee>, --dry-run, --si-necessaire au postdeploy)
 ```
 
 ## Architecture
@@ -375,6 +378,7 @@ apps/api/src/
 │   └── entities/           # Entités domaine
 ├── evenements/             # Tracking événements utilisateur
 ├── stats/                  # Endpoint KPIs publics
+├── attributaire/           # Table attributaire par commune (alimentation + route publique, ADR-0053)
 ├── metabase/               # Intégration dashboard Metabase
 ├── shared/                 # Services, guards, database, utilitaires partagés
 │   ├── database/           # Schémas Drizzle, migrations
@@ -667,7 +671,7 @@ Pièges rencontrés en session. Chaque entrée documente un piège pour éviter 
   "db:epci:import": "node dist/src/scripts/import-epci-communes.js"
   ```
   Pas de `ts-node -r tsconfig-paths/register src/scripts/...ts` qui ne tournera qu'en dev (et même en dev il faut avoir un `dist/` à jour : `pnpm --filter api build:nest`). En prod, Scalingo a compilé `dist/` au build avant le prune, donc tout est disponible.
-- **Les imports de référentiels sont lancés au déploiement par `import-all`** (ADR-0050) : le `postdeploy` enchaîne `drizzle-kit migrate` (en `dependencies`, donc non pruné) puis `node dist/src/scripts/import-all.js`, qui parcourt `IMPORT_DATASETS` et n'importe que les référentiels dont la table est **vide**. Un référentiel déjà rempli n'est **jamais** mis à jour par ce biais : pour un nouveau millésime ou un fichier commité modifié, lancer à la main `scalingo --app <app> run "pnpm db:import:all --force=<clé>"` (ou `pnpm db:xxx:import`).
+- **Les imports de référentiels sont lancés au déploiement par `import-all`** (ADR-0050) : le `postdeploy` enchaîne `drizzle-kit migrate` (en `dependencies`, donc non pruné) puis `node dist/src/scripts/import-all.js`, qui parcourt `IMPORT_DATASETS` et n'importe que les référentiels dont la table est **vide**, puis `peupler-attributaire.js --si-necessaire` (table attributaire remplie si vide, sinon recalcul des lignes d'une ancienne version d'algorithme, ADR-0053). Un référentiel déjà rempli n'est **jamais** mis à jour par ce biais : pour un nouveau millésime ou un fichier commité modifié, lancer à la main `scalingo --app <app> run "pnpm db:import:all --force=<clé>"` (ou `pnpm db:xxx:import`).
 - Un import en échec (data.gouv.fr indisponible) **ne bloque pas** le déploiement : il est loggué en fin de `postdeploy` et la table reste vide, ce que signalent `GET /donnees-externes/imports` (`hasEmptyImport`) et l'alerte « référentiel VIDE » des repositories. Relancer `pnpm db:import:all` ensuite.
 
 ## Points d'attention

@@ -244,6 +244,20 @@ Se fier à `champsComplementairesRequis` plutôt qu'aux clés de `enums.saisie` 
 GET https://mutafriches.beta.gouv.fr/evaluation/{evaluationId}
 ```
 
+### Table attributaire d'une commune
+
+Pour récupérer d'un coup tous les sites déjà analysés dans une commune (sites évalués dans
+Mutafriches et inventaires partenaires), avec leurs critères et leurs indices :
+
+```bash
+GET https://mutafriches.beta.gouv.fr/api/attributaire/sites?codeInsee=77305
+GET https://mutafriches.beta.gouv.fr/api/attributaire/sites?codeInsee=77305&format=geojson
+```
+
+Lecture ouverte, sans `Origin`. Les indices sont recalculés avec la version courante de
+l'algorithme ; les critères saisis sont **déclaratifs** (`saisieDeclarative`), et valent
+`ne-sait-pas` pour un site jamais qualifié. Détail : [table attributaire](../table-attributaire.md).
+
 ### Documentation Swagger
 
 La documentation complète de l'API (schémas, DTOs, exemples) est disponible sur :
@@ -254,7 +268,8 @@ La documentation complète de l'API (schémas, DTOs, exemples) est disponible su
 
 Les deux `POST` (`/enrichissement`, `/evaluation/calculer`) sont réservés aux domaines
 autorisés. Il n'y a **pas de clé d'API** : l'autorisation porte sur le header `Origin` de vos
-requêtes. Les lectures (`GET /evaluation/{id}`, `GET /evaluation/metadata`) sont ouvertes.
+requêtes. Les lectures (`GET /evaluation/{id}`, `GET /evaluation/metadata`,
+`GET /api/attributaire/sites`) sont ouvertes.
 
 Écrivez-nous à `contact@mutafriches.beta.gouv.fr` en précisant :
 

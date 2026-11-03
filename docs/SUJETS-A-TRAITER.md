@@ -131,6 +131,44 @@ Format d'une entrée :
 - **Écarté parce que** : le cache de 30 jours et le groupement des appels ramènent la consommation à ~1 800 appels par mois pour les parcelles partenaires, mais ne protègent pas d'un afflux de parcelles neuves (premier passage = un appel pour ~10 groupes de bâtiments)
 - **Préalable** : surveiller `x-quota-remaining` (`scalingo --region osc-secnum-fr1 --app mutafriches run "curl -si …"`) ; si le volume de parcelles neuves approche 10 000 appels dans la fenêtre, demander une clé API sur `api-portail.bdnb.io` ou évaluer un import local `raw_*`
 
+### Valeurs de zonage sans score dans la matrice
+
+- **Origine** : peuplement de la table attributaire (ADR-0053)
+- **Écarté parce que** : défaut de l'algorithme, antérieur à la table : l'enrichissement produit `zonagePatrimonial` = `monument-historique`, `spr`, `zppaup`, `avap` et `zonageEnvironnemental` = `parc-naturel-regional`, que `MATRICE_SCORING` ne score pas ; le critère est alors ignoré au calcul (sur la copie locale de la prod, environ 1 100 occurrences pour 1 680 sites)
+- **Préalable** : décider avec l'équipe métier si ces valeurs se ramènent à une valeur scorée (`perimetre-abf`, `site-inscrit-classe`…) ou reçoivent un score, puis publier une version d'algorithme
+
+## Table attributaire
+
+### Échelles EPCI et département
+
+- **Origine** : ADR-0053 (route par code commune)
+- **Écarté parce que** : la commune suffit au premier besoin (Montereau-Fault-Yonne)
+- **Préalable** : un besoin exprimé ; `communes.epci_siren` et `communes.departement` permettent d'ajouter `?epci=` ou `?departement=` sans changer la table
+
+### Export CSV ou CNIG par commune
+
+- **Origine** : ADR-0053
+- **Écarté parce que** : JSON et GeoJSON couvrent l'usage SIG ; le CSV CNIG existe déjà par partenaire (ADR-0042)
+- **Préalable** : demande d'une collectivité ; réutiliser `construireFricheCnig` et `versCsv` (`apps/api/src/partenaires/export/`)
+
+### Sites partenaires sans enrichissement en base
+
+- **Origine** : premier peuplement de la table attributaire (62 sites sur 1 680 en local)
+- **Écarté parce que** : le script n'appelle aucune API externe, pour ménager le quota BDNB
+- **Préalable** : vérifier en production combien restent après une semaine de pré-chauffe ; au besoin, un mode `--enrichir-manquants` borné en nombre d'appels
+
+### Sites qui se recoupent
+
+- **Origine** : ADR-0053 (correspondance exacte des ensembles de parcelles)
+- **Écarté parce que** : rattacher un ensemble proche à un site partenaire demande une règle métier (part de surface commune, parcelle prédominante identique)
+- **Préalable** : mesurer les recoupements par commune, puis décider de la règle avec l'équipe
+
+### Renseigner `partenaire_sites.code_insee`
+
+- **Origine** : ADR-0053 (vide pour les 415 sites des 4 partenaires)
+- **Écarté parce que** : la table attributaire lit le code INSEE de l'enrichissement ; seul le filtre `--commune` du script s'en passe en lisant le préfixe des parcelles
+- **Préalable** : migration de données depuis le préfixe des parcelles, ou depuis la commune prédominante du cache d'enrichissement
+
 ## Contrat API et dépréciations
 
 ### Retrait des champs et alias dépréciés

@@ -144,6 +144,7 @@ pnpm db:qpv:import          # Référentiel quartiers prioritaires (QPV, à chaq
 pnpm db:zones-contrainte-enr:import  # Zones saturées réseau EnR (Enedis, mensuel — ADR-0046)
 pnpm db:zae:import          # Zones d'activité économique (Cerema Fusac, annuel — ADR-0049)
 pnpm db:import:all          # Tous les référentiels manquants (base locale neuve : build:nest d'abord — ADR-0050)
+pnpm attributaire:peupler   # Table attributaire depuis la base (--commune=77305, --dry-run ; build:nest d'abord — ADR-0053)
 ```
 
 Le conteneur PostgreSQL ne publie son port que sur `127.0.0.1` : la base locale, qui peut contenir
@@ -184,6 +185,7 @@ pnpm validate               # Tout vérifier (format + lint + typecheck + test)
 | `/evaluation/metadata` | GET | Métadonnées (enums) |
 | `/evenements` | POST | Tracker un événement |
 | `/api/partenaires/:slug/export` | POST | Export CNIG Friches de tous les sites d'un partenaire (CSV ou GeoJSON) |
+| `/api/attributaire/sites?codeInsee=` | GET | Table attributaire publique d'une commune : sites évalués ou partenaires, critères et mutabilité (JSON ou GeoJSON) |
 | `/api/stats` | GET | KPI public principal, format incubateur (objet `StatOutput` unique) |
 | `/api/stats/all` | GET | Tous les KPI publics (tableau de `StatOutput`, dashboard interne) |
 | `/api/metabase/embed-url` | GET | URL d'embedding dashboard Metabase |
@@ -290,6 +292,7 @@ Documentation complète dans le dossier [`docs/`](./docs/) :
 - **[Module Enrichissement](./docs/enrichissement.md)** - Domaines, APIs externes et bases locales, règles de gestion
 - **[Algorithme d'Évaluation](./docs/evaluation-mutabilite.md)** - Matrice 32×7, calcul mutabilité
 - **[Matrice de scoring](./docs/matrice-scoring.md)** - Score de chaque réponse par usage, critères excluants
+- **[Table attributaire](./docs/table-attributaire.md)** - Sites qualifiés par commune, route publique et peuplement
 - **[Guide d'Intégration](./docs/integration/README.md)** - Iframe + PostMessage
 - **[Vulnérabilités de dépendances](./docs/security/vulnerabilites-acceptees.md)** - Suivi `pnpm audit` et justifications d'acceptation
 - **[Ops](./docs/ops/README.md)** - Scalingo (logs, psql en lecture), restauration de dump en local

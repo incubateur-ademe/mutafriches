@@ -12,6 +12,7 @@
 - **[Matrice de scoring](./matrice-scoring.md)** - Score de chaque réponse par usage, poids, critères excluants, évolution par version — générée via `pnpm docs:matrice:gen`
 - **[Tracking & Analytics](./analytics-tracking.md)** - Événements, session vs utilisateur, requêtes Metabase
 - **[Export CNIG Friches](./export-cnig.md)** - Export d'un inventaire partenaire au standard national (couverture des 51 attributs)
+- **[Table attributaire](./table-attributaire.md)** - Sites évalués ou partenaires d'une commune : critères, mutabilité, route publique et peuplement
 - **[Ajouter un partenaire](./ajout-partenaire.md)** - Todolist pour publier une nouvelle page partenaire multisite
 - **[Ouvrir un accès API](./acces-api-integrateur.md)** - Modèle d'onboarding à dupliquer dans Notion (fiche, checklist, mails, curls) et référence (whitelist d'origines, limites)
 - **[Vulnérabilités de dépendances](./security/vulnerabilites-acceptees.md)** - Suivi `pnpm audit` : corrections, acceptations justifiées, planchers d'override
