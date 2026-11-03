@@ -288,3 +288,40 @@ plancher dans `pnpm-workspace.yaml`, aucune n'est acceptée.
 
 Depuis cet audit, la CI exécute `pnpm audit --prod --audit-level=high` : une alerte runtime nouvelle
 bloque le pipeline tant qu'elle n'est ni corrigée ni tracée ici.
+
+---
+
+## Audit du 2026-11-03 — périmètre runtime et outillage
+
+**Déclencheur** : l'étape « Audit runtime dependencies » de la CI échoue sur toutes les branches,
+y compris la PR Dependabot de sécurité #261, qui ne monte que des dépendances directes.
+**État initial** : `pnpm audit --prod` → 6 vulnérabilités (5 high, 1 moderate) ; `pnpm audit` → 14.
+**État final** : `pnpm audit --prod` → `No known vulnerabilities found` ; `pnpm audit` → 2,
+acceptées ci-dessous (outillage de développement, aucun correctif compatible).
+
+### Runtime (`--prod`) — 6 corrigées
+
+| Paquet | Sévérité | Avis | Chemin | Atteignabilité | Correction |
+|--------|----------|------|--------|----------------|------------|
+| `follow-redirects` | 3 × high | GHSA-q3jh-wrc6-jgq8, GHSA-8r9p-f939-6h3c, GHSA-mrwp-f3q8-3g9p (en-têtes sensibles transmis sur redirection) | `apps__api>@nestjs/axios>axios>follow-redirects`, `apps__ui>axios>follow-redirects` | Côté API, chaque appel aux API externes passe par axios ; aucun n'envoie d'en-tête d'authentification, l'exposition est donc faible. Côté UI, axios utilise XHR dans le navigateur, `follow-redirects` n'y est pas chargé | 1.16.0 → **1.16.2**, override `>=1.16.2 <2` : `pnpm update -r --depth Infinity` ne re-résout pas ce transitif malgré la plage `^1.16.0` d'axios |
+| `body-parser` | high | GHSA-27r3-jxmh-p828 (DoS) | `apps__api>…>@nestjs/platform-express>express>body-parser` | Réelle : chaque corps JSON passe par body-parser | 2.3.0 → **2.4.0**, `pnpm update -r body-parser` (plage `^2.3.0` d'express) |
+| `multer` | high | GHSA-q7qp-rjg7-q26m (DoS via `fileFilter` asynchrone après fermeture de la requête) | `apps__api>…>@nestjs/platform-express>multer` | Nulle : aucun endpoint d'upload (cf. audit du 2026-09-11) | 2.4.0 → **2.5.0**, plancher d'override relevé à `>=2.5.0 <3` : `@nestjs/platform-express` 12.1.2 épingle 2.4.0 |
+| `qs` | moderate | GHSA-6pq8-jhm2-2vcw (`stringify` avec `arrayFormat: 'comma'` lève une exception) | `apps__api>…>express>body-parser>qs` | Faible : express n'appelle que `parse` | 6.16.0 → **6.17.1**, plancher relevé à `>=6.16.1` |
+
+`@nestjs/platform-express` 12.3.2 épingle `multer` 2.5.0 : la montée de NestJS (PR #261) rendra le
+plancher redondant, sans le contredire.
+
+### Outillage de développement — 6 corrigées
+
+| Paquet | Sévérité | Avis | Chemin | Correction |
+|--------|----------|------|--------|------------|
+| `zod` | high | GHSA-mrhx-c7xc-m3w5 (épuisement mémoire sur collections contraintes) | `.>eslint-plugin-react-hooks>zod` (lint) | 4.1.13 → **4.6.7**, `pnpm update -r zod` |
+| `@vitest/ui` | moderate | GHSA-p458-7748-mcp3 (`server.fs.deny` mal appliqué) | `apps__api>@vitest/ui` (tests locaux) | 5.0.3 → **5.0.5** avec `vitest`, plages relevées à `^5.0.5` |
+| `fast-uri` | 2 × moderate, 2 × low | GHSA-w74x-v6f9-j3xg, GHSA-wjr9-j795-jxcr, GHSA-xhq7-xmqj-769h, GHSA-333x-w4r6-6crp | `apps__api>@nestjs/cli>…>ajv>fast-uri` (build) | 3.1.8 → **3.1.9**, plancher relevé à `>=3.1.9 <4` |
+
+### Outillage de développement — 2 acceptées
+
+| Paquet | Sévérité | Avis | Chemin | Justification | Plan |
+|--------|----------|------|--------|---------------|------|
+| `minimatch` | moderate | GHSA-g3hv-75wg-m249 (DoS par amplification de `globparts`) | `.>@typescript-eslint/…>minimatch` (10.2.x), `.>eslint>@eslint/config-array>minimatch` (3.1.5) | Lint uniquement, sur les motifs de nos propres fichiers de configuration, jamais sur une entrée externe. Corrigé seulement en 11.0.1 : un override franchirait la majeure déclarée par `typescript-eslint` (`^10`) et `eslint` (`^3`) | Revoir à chaque groupe Dependabot ; lever dès que `typescript-eslint` et `eslint` acceptent `minimatch` 11 |
+| `deepmerge` | low | GHSA-gcqx-w48m-w2h4 (pollution de prototype de l'objet fusionné) | `apps__api>@nestjs/cli>fork-ts-checker-webpack-plugin>deepmerge` | Build uniquement, sur les options du plugin écrites dans notre configuration. Aucune version corrigée publiée (dernière : 4.3.1, mars 2023) | Lever si `@nestjs/cli` abandonne `fork-ts-checker-webpack-plugin` ou si `deepmerge` publie un correctif |
