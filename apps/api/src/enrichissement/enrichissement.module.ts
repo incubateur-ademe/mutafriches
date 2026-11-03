@@ -85,9 +85,10 @@ import { ZaeRepository } from "./repositories/zae.repository";
 import { ZonesContrainteEnrRepository } from "./repositories/zones-contrainte-enr.repository";
 import { BdnbCacheRepository } from "./repositories/bdnb-cache.repository";
 import { SurfaceBatieService } from "./services/cadastre/surface-batie.service";
+import { AttributaireCoreModule } from "../attributaire/attributaire-core.module";
 
 @Module({
-  imports: [HttpModule],
+  imports: [HttpModule, AttributaireCoreModule],
   controllers: [EnrichissementController],
   providers: [
     // Service principal

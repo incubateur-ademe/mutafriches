@@ -27,6 +27,7 @@ import { ZonageOrchestratorService } from "./zonage";
 import { PollutionDetectionService } from "./pollution/pollution-detection.service";
 import { EnrEnrichissementService } from "./enr/enr-enrichissement.service";
 import { EnrCalculator } from "./enr/enr.calculator";
+import { AttributaireService } from "../../attributaire/attributaire.service";
 
 /**
  * Service principal d'enrichissement - Orchestrateur
@@ -66,6 +67,7 @@ export class EnrichissementService {
     // Utilitaires
     private readonly enrichissementRepository: EnrichissementRepository,
     private readonly siteRepository: SiteRepository,
+    private readonly attributaireService: AttributaireService,
   ) {}
 
   /**
@@ -375,6 +377,7 @@ export class EnrichissementService {
       sourceUtilisation,
       integrateur,
     );
+    this.alimenterTableAttributaire([identifiantParcelle], statut, result);
 
     return result;
   }
@@ -708,6 +711,7 @@ export class EnrichissementService {
       sourceUtilisation,
       integrateur,
     );
+    this.alimenterTableAttributaire(identifiants, statut, result);
 
     return result;
   }
@@ -742,6 +746,19 @@ export class EnrichissementService {
     siteEval.geometrie = predominante.geometrie as GeometrieParcelle | undefined;
     siteEval.surfaceSite = predominante.surface;
     return siteEval;
+  }
+
+  // Rafraîchit la ligne du site s'il est évalué ou partenaire ; ignoré sinon (ADR-0053)
+  private alimenterTableAttributaire(
+    identifiants: string[],
+    statut: StatutEnrichissement,
+    donnees: EnrichissementOutputDto,
+  ): void {
+    if (statut === StatutEnrichissement.ECHEC) return;
+    this.attributaireService.rafraichirEnArrierePlan(identifiants, {
+      donnees,
+      complet: statut === StatutEnrichissement.SUCCES,
+    });
   }
 
   /**

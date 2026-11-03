@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import { Test, TestingModule } from "@nestjs/testing";
 import {
   StatutEnrichissement,
@@ -51,6 +51,7 @@ import {
 } from "../__test-helpers__/enrichissement.mocks";
 import { ZonageOrchestratorService } from "./zonage";
 import { SiteRepository } from "../repositories/site.repository";
+import { AttributaireService } from "../../attributaire/attributaire.service";
 
 describe("EnrichissementService", () => {
   let service: EnrichissementService;
@@ -69,6 +70,7 @@ describe("EnrichissementService", () => {
   let zonageOrchestrator: ReturnType<typeof createMockZonageOrchestratorService>;
   let pollutionDetection: ReturnType<typeof createMockPollutionDetectionService>;
   let enrichissementRepository: ReturnType<typeof createMockEnrichissementRepository>;
+  let attributaireService: { rafraichirEnArrierePlan: ReturnType<typeof vi.fn> };
 
   beforeEach(async () => {
     const mockCadastre = createMockCadastreEnrichissementService();
@@ -90,6 +92,7 @@ describe("EnrichissementService", () => {
     const mockPollutionDetection = createMockPollutionDetectionService();
     const mockRepository = createMockEnrichissementRepository();
     const mockSiteRepository = createMockSiteRepository();
+    const mockAttributaire = { rafraichirEnArrierePlan: vi.fn() };
 
     // Configuration par défaut du mock ENR
     mockEnrEnrichissement.enrichir.mockResolvedValue({
@@ -167,6 +170,7 @@ describe("EnrichissementService", () => {
         { provide: EnrCalculator, useValue: mockEnrCalculator },
         { provide: EnrichissementRepository, useValue: mockRepository },
         { provide: SiteRepository, useValue: mockSiteRepository },
+        { provide: AttributaireService, useValue: mockAttributaire },
       ],
     }).compile();
 
@@ -182,6 +186,7 @@ describe("EnrichissementService", () => {
     zonageOrchestrator = mockZonageOrchestrator;
     pollutionDetection = mockPollutionDetection;
     enrichissementRepository = mockRepository;
+    attributaireService = mockAttributaire;
   });
 
   describe("enrichir", () => {
@@ -345,6 +350,10 @@ describe("EnrichissementService", () => {
           commune: "Quimper",
         }),
       );
+      expect(attributaireService.rafraichirEnArrierePlan).toHaveBeenCalledWith(
+        [identifiantTest],
+        expect.objectContaining({ complet: true }),
+      );
     });
 
     it("devrait retourner statut PARTIEL si certains services echouent", async () => {
@@ -406,6 +415,10 @@ describe("EnrichissementService", () => {
           statut: StatutEnrichissement.PARTIEL,
         }),
       );
+      expect(attributaireService.rafraichirEnArrierePlan).toHaveBeenCalledWith(
+        [identifiantTest],
+        expect.objectContaining({ complet: false }),
+      );
     });
 
     it("devrait lancer une erreur si cadastre echoue", async () => {
@@ -418,6 +431,7 @@ describe("EnrichissementService", () => {
 
       // Act & Assert
       await expect(service.enrichir(identifiantTest)).rejects.toThrow();
+      expect(attributaireService.rafraichirEnArrierePlan).not.toHaveBeenCalled();
     });
 
     it("devrait persister l'echec meme si erreur", async () => {
