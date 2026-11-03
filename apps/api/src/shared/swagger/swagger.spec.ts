@@ -74,6 +74,12 @@ describe("Swagger OpenAPI document", () => {
     expect(document.paths["/evaluation/calculer"]?.post?.responses["403"]).toBeDefined();
   });
 
+  it("type la réponse de la table attributaire", () => {
+    const schemas = document.components?.schemas ?? {};
+    expect(schemas).toHaveProperty("TableAttributaireSwaggerDto");
+    expect(schemas).toHaveProperty("SiteAttributaireSwaggerDto");
+  });
+
   it("documente 404 sur GET /evaluation/{id}", () => {
     expect(document.paths["/evaluation/{id}"]?.get?.responses["404"]).toBeDefined();
   });
