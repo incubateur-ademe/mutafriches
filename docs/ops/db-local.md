@@ -123,6 +123,9 @@ COMMIT;
 SQL
 ```
 
+La table attributaire n'est pas un cache : elle se recalcule avec `pnpm attributaire:peupler`
+(après `pnpm --filter api build:nest`), et peut être vidée en local (`TRUNCATE attributaire_sites`).
+
 ## Port 3000 déjà pris
 
 Symptôme : `pnpm dev:api` compile (« Found 0 errors ») puis n'affiche plus rien, et l'UI

@@ -73,6 +73,11 @@ déploiement.
 
 ## Route publique
 
+Référence complète pour les intégrateurs (champs, attributs GeoJSON, QGIS) :
+[guide d'intégration](./integration/README.md#table-attributaire-dune-commune). La même
+route est présentée sur la page « Documentation d'intégration » du site (`/documentation-integration`,
+onglet API REST) et dans Swagger (`/api`, tag « Table attributaire »).
+
 ```bash
 curl "https://mutafriches.beta.gouv.fr/api/attributaire/sites?codeInsee=77305"
 curl "https://mutafriches.beta.gouv.fr/api/attributaire/sites?codeInsee=77305&format=geojson" -o sites.geojson
@@ -122,5 +127,7 @@ partenaires) et ne sont pas vérifiés. Chaque site porte `saisieDeclarative` et
 - Calcul d'une ligne : `apps/api/src/attributaire/attributaire.builder.ts`
 - Sélection des sources : `apps/api/src/attributaire/attributaire.service.ts`
 - Route et sérialisation : `apps/api/src/attributaire/attributaire.controller.ts`, `attributaire.serializer.ts`
+- Schéma Swagger : `apps/api/src/attributaire/dto/output/table-attributaire.dto.ts`
+- Page de documentation du site : `apps/ui/src/features/documentation/components/DocumentationApi.tsx`
 - Script : `apps/api/src/scripts/peupler-attributaire.ts`
 - Contrat partagé : `packages/shared-types/src/attributaire/`

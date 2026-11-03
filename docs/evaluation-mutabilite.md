@@ -305,6 +305,14 @@ La fiabilité **ne modifie pas** le classement. C'est un indicateur séparé qui
 | 31 | **Présence d'espèces protégées** | 1 | Oui / Non / Ne sait pas | `presenceEspecesProtegees` |
 | 32 | **Présence de zone humide** | 1 | Oui / Non / Ne sait pas | `presenceZoneHumide` |
 
+## Résultats publiés par commune
+
+Chaque calcul alimente la [table attributaire](./table-attributaire.md), lisible par
+`GET /api/attributaire/sites?codeInsee=` : une ligne par site, indices recalculés avec la
+version courante de l'algorithme, sur la saisie de la dernière évaluation, ou avec « ne sait
+pas » pour les 9 critères manuels si le site n'a jamais été qualifié. Ces indices peuvent donc
+différer de ceux affichés lors d'une évaluation faite avec une version antérieure.
+
 ---
 
 > **Dernière mise à jour** : Octobre 2026 (algorithme v1.19)

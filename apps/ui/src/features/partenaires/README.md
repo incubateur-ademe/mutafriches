@@ -169,6 +169,8 @@ de source) est signalée sans conseiller de recalcul, qui dégraderait le résul
   (POST `/api/partenaires/:slug/sites`), plus en localStorage.
 - Le calcul utilise les routes API standard (`/enrichissement`, `/evaluation/calculer` en
   `modeDetaille`) via les services partagés — rien de spécifique côté partenaire.
+- La saisie locale part en base au calcul de mutabilité, et la table attributaire la publie,
+  marquée déclarative (`GET /api/attributaire/sites`, ADR-0053, `docs/table-attributaire.md`).
 
 > Décision d'architecture : voir l'ADR « Pages partenaires multisites mutualisées »
 > dans `docs/adr/`.

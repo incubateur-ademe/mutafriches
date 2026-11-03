@@ -164,7 +164,8 @@ Pour **chaque feature identifiée** (un groupe cohérent de modifications, typiq
   |---|---|
   | Une source d'enrichissement (API, référentiel `raw_*`, champ du DTO) | `docs/enrichissement.md` (domaine concerné, « Champs enrichis », « Bases Locales », DTO de sortie, flow), `SOURCES_DONNEES` + `pnpm docs:sources:gen`, `docs/README.md` (décompte des bases locales), `IMPORT_DATASETS` ; `docs-enrichissement.spec.ts` casse si le tableau « Bases Locales » ou un décompte « N bases locales » diverge du registre |
   | Un critère, un poids, une règle de scoring ou d'exclusion | Les quatre fichiers « Documentation OBLIGATOIRE » de la section algorithme (dont `docs/matrice-scoring.md`), plus `docs/export-cnig.md` si un attribut CNIG change |
-  | Une route, un DTO d'entrée/sortie ou un guard | `README.md` (tableau des routes), `docs/integration/README.md`, `docs/acces-api-integrateur.md` |
+  | Une route, un DTO d'entrée/sortie ou un guard | `README.md` (tableau des routes), `docs/integration/README.md`, `docs/acces-api-integrateur.md`, la page publique `/documentation-integration` (`apps/ui/src/features/documentation/components/DocumentationApi.tsx`) si la route est ouverte aux intégrateurs, et le DTO Swagger de sortie |
+  | La table attributaire (colonnes, règles d'alimentation, route `GET /api/attributaire/sites`) | `docs/table-attributaire.md`, la référence de la route dans `docs/integration/README.md`, `DocumentationApi.tsx`, ADR-0053 si une règle change |
   | Un événement de tracking | `docs/analytics-tracking.md` |
   | Une commande, un script ou une variable d'environnement | `README.md`, section « Commandes courantes » et « Variables d'environnement » de ce fichier |
   | Un choix d'architecture | ADR dans `docs/adr/` (voir « ADR automatique ») |
@@ -414,6 +415,8 @@ Quand une nouvelle version d'algorithme entre en vigueur :
 7. `pnpm validate`
 8. Commit : `feat(algo): publication vX.Y avec <résumé>`
 
+La table attributaire se recalcule seule au déploiement suivant (`peupler-attributaire --si-necessaire` dans le `postdeploy`, ADR-0053) : rien à lancer à la main.
+
 Le test dédié (`versions.spec.ts`) garantit l'ordre chronologique ascendant strict, le format ISO des dates, l'unicité des versions et que `VERSION_COURANTE` correspond à la dernière entrée du registre.
 
 **Règle d'or** : ne JAMAIS hardcoder la version d'algorithme dans la doc ou les exemples Swagger (`docs/matrice-scoring.md` y échappe : générée, donc toujours synchrone) — toujours la lire dynamiquement depuis `versions/index.ts`. Une version désynchronisée entre code et doc casse la confiance des intégrateurs.
@@ -485,6 +488,7 @@ Toutes les variables sont lues via la classe centralisée **`AppConfig`** (`apps
 | POST /evaluation/calculer | IntegrateurOriginGuard | Bypass | Origines whitelistées |
 | POST /evenements | OriginGuard | localhost + Mutafriches | Mutafriches uniquement |
 | POST /api/donnees-externes/apis/refresh | ApiRefreshTokenGuard | Bypass si token absent | `X-Refresh-Token` (temps constant) |
+| GET /api/attributaire/sites | Aucun (lecture publique) | Ouvert | Ouvert, `ThrottlerGuard` global |
 
 CORS reflète uniquement nos origines, les dashboards ADEME et les deux variables ci-dessus (`construireOriginesCors`), plus toute origine locale en `development`. Les en-têtes de sécurité viennent de `helmet` ; la CSP se limite à `frame-ancestors` (nous-mêmes, `INTEGRATEURS_IFRAME`, les deux variables), les autres directives restent à écrire.
 

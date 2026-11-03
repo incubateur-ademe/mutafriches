@@ -246,17 +246,90 @@ GET https://mutafriches.beta.gouv.fr/evaluation/{evaluationId}
 
 ### Table attributaire d'une commune
 
-Pour récupérer d'un coup tous les sites déjà analysés dans une commune (sites évalués dans
-Mutafriches et inventaires partenaires), avec leurs critères et leurs indices :
+`GET /api/attributaire/sites` renvoie d'un coup tous les sites déjà analysés dans une commune :
+les sites évalués dans Mutafriches (parcours en ligne, iframe, API) et ceux des inventaires
+partenaires, avec leurs critères et leurs indices de mutabilité. Lecture ouverte, sans `Origin`
+ni clé.
 
 ```bash
-GET https://mutafriches.beta.gouv.fr/api/attributaire/sites?codeInsee=77305
-GET https://mutafriches.beta.gouv.fr/api/attributaire/sites?codeInsee=77305&format=geojson
+curl "https://mutafriches.beta.gouv.fr/api/attributaire/sites?codeInsee=77305"
+curl "https://mutafriches.beta.gouv.fr/api/attributaire/sites?codeInsee=77305&format=geojson" -o sites-77305.geojson
 ```
 
-Lecture ouverte, sans `Origin`. Les indices sont recalculés avec la version courante de
-l'algorithme ; les critères saisis sont **déclaratifs** (`saisieDeclarative`), et valent
-`ne-sait-pas` pour un site jamais qualifié. Détail : [table attributaire](../table-attributaire.md).
+#### Paramètres
+
+| Paramètre | Obligatoire | Valeurs |
+|-----------|-------------|---------|
+| `codeInsee` | oui | Code INSEE de la commune, 5 caractères (`2A`/`2B` pour la Corse) |
+| `format` | non | `json` (défaut) ou `geojson` |
+
+#### Réponse JSON
+
+| Champ | Contenu |
+|-------|---------|
+| `codeInsee`, `commune` | Commune demandée |
+| `dateGeneration` | Date de la réponse |
+| `avertissement` | Rappel que les critères saisis sont déclaratifs |
+| `nombreSites`, `sites[]` | Sites de la commune, liste vide si aucun |
+
+Chaque élément de `sites[]` :
+
+| Champ | Contenu |
+|-------|---------|
+| `cleSite` | Identifiant du site : parcelles normalisées, triées, jointes par des virgules |
+| `parcelles`, `nombreParcelles`, `parcellePredominante` | Parcelles du site ; la prédominante (la plus grande) porte zonages et risques |
+| `codeInsee`, `commune` | Commune prédominante : un site à cheval n'apparaît que dans une commune |
+| `nom`, `partenaire` | Nom et slug du partenaire, pour un site d'inventaire partenaire |
+| `centroide` | `{ latitude, longitude }` en WGS84 |
+| `criteresAutomatiques` | Critères enrichis, mêmes clés et valeurs que `POST /enrichissement` (distances en mètres), plus `raccordementEau` déduit de la surface bâtie. Un critère absent était indisponible ; `null` signifie que la recherche n'a rien trouvé |
+| `dateEnrichissement` | Date de l'enrichissement retenu |
+| `saisieDeclarative` | `true` si `criteresSaisis` vient d'une saisie utilisateur |
+| `criteresSaisis` | Les 9 critères manuels de la dernière évaluation du site, ou `null` s'il n'a jamais été qualifié |
+| `dateSaisie`, `nombreEvaluations` | Date de la saisie retenue ; évaluations de ce même ensemble de parcelles (hors cache et démonstration) |
+| `mutabilite` | `indices` (0-100 par usage), `usagePrioritaire`, `usagesExclus`, `fiabilite` (`note` sur 10, `niveau`) |
+| `versionAlgorithme`, `dateMiseAJour` | Version qui a produit les indices ; dernier recalcul de la ligne |
+
+Trois règles pour lire ces données :
+
+- **Saisie déclarative.** Les critères saisis viennent des utilisateurs de Mutafriches et ne
+  sont pas vérifiés. Pour un site jamais qualifié, la mutabilité est calculée avec
+  `ne-sait-pas` pour les 9 critères manuels, d'où une fiabilité plus basse.
+- **Version courante.** Les indices sont recalculés avec la version courante de l'algorithme :
+  tous les sites d'une commune sont comparables entre eux, mais peuvent différer de ce que
+  l'utilisateur a vu au moment de son évaluation.
+- **Un site = un ensemble de parcelles.** Deux ensembles qui se recoupent (deux parcelles,
+  puis les mêmes plus une troisième) sont deux sites.
+
+#### Réponse GeoJSON
+
+`format=geojson` renvoie une `FeatureCollection` (`application/geo+json`). Chaque entité porte
+l'emprise du site (le centroïde à défaut) et des attributs à plat, les mêmes pour toutes :
+
+| Attributs | Contenu |
+|-----------|---------|
+| `cle_site`, `parcelles` (séparées par `\|`), `nombre_parcelles`, `parcelle_predominante` | Identification |
+| `code_insee`, `commune`, `nom`, `partenaire` | Localisation et partenaire |
+| Un attribut par critère enrichi (`surfaceSite`, `distanceAutoroute`…) et `raccordementEau` | `null` si indisponible ou sans résultat (le JSON, lui, distingue les deux) |
+| `saisie_declarative`, un attribut par critère manuel (`typeProprietaire`…), `date_saisie`, `nombre_evaluations` | Saisie ; `ne-sait-pas` pour un site jamais qualifié |
+| `indice_<usage>` (7 attributs), `usage_prioritaire`, `usages_exclus` (séparés par `\|`), `fiabilite`, `fiabilite_niveau` | Mutabilité |
+| `version_algorithme`, `date_enrichissement`, `date_mise_a_jour` | Traçabilité |
+
+Dans QGIS : *Couche* > *Ajouter une couche* > *Ajouter une couche vecteur*, source *Protocole
+HTTP(S)*, puis coller l'URL avec `format=geojson`.
+
+#### Erreurs et limites
+
+| Cas | Réponse |
+|-----|---------|
+| `codeInsee` absent ou mal formé | `400` |
+| `format` autre que `json` ou `geojson` | `400` |
+| Commune sans site analysé | `200`, `sites: []` |
+
+La réponse est cacheable 5 minutes (`Cache-Control: public, max-age=300`) et soumise à la limite
+de 100 requêtes par minute et par IP. Les en-têtes CORS ne sont pas ouverts : appelez la route
+depuis un serveur, un script ou un SIG, pas depuis le JavaScript d'un site tiers.
+
+Fonctionnement interne (alimentation, recalcul) : [table attributaire](../table-attributaire.md).
 
 ### Documentation Swagger
 

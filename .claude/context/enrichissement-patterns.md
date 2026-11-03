@@ -278,6 +278,10 @@ const result: EnrichissementOutputDto = {
 };
 ```
 
+Un nouveau critère automatique apparaît seul dans la table attributaire : ses colonnes viennent
+des critères `AUTOMATIQUE` de `CRITERES_METADATA` (ADR-0053). L'orchestrateur rafraîchit la ligne
+d'un site évalué ou partenaire après chaque enrichissement réussi (`alimenterTableAttributaire`).
+
 ### 6. Ajouter les mocks de test
 
 Dans `__test-helpers__/enrichissement.mocks.ts` :

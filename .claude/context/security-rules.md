@@ -90,6 +90,13 @@ const response = await firstValueFrom(this.httpService.get(url));
 - S'applique à : `POST /evenements`
 - Les intégrateurs ne doivent PAS envoyer d'événements
 
+### Routes publiques sans guard
+
+- Les lectures (`GET /evaluation/:id`, `GET /evaluation/metadata`, `GET /api/stats`,
+  `GET /api/attributaire/sites`) sont ouvertes : seul le `ThrottlerGuard` global s'applique
+- `GET /api/attributaire/sites` publie la saisie des utilisateurs, marquée `saisieDeclarative` :
+  ne jamais y ajouter `utilisateur_id`, `integrateur` ni `evaluation_id` (ADR-0053)
+
 ### Règles
 
 - **JAMAIS** désactiver un guard en production
@@ -139,6 +146,7 @@ const result = await db.select().from(sites).where(eq(sites.codeInsee, codeInsee
 - **JAMAIS** retourner d'informations système (stack traces, versions, chemins serveur)
 - **JAMAIS** retourner de données internes (IDs de cache, métriques de performance en production)
 - **TOUJOURS** utiliser des DTOs de sortie pour contrôler les champs exposés
+- **JAMAIS** exposer un identifiant d'évaluation dans une route de liste publique : `GET /evaluation/:id` est ouvert et renverrait tout le snapshot
 - Les messages d'erreur doivent être génériques pour le client, détaillés dans les logs
 
 ```typescript
