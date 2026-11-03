@@ -41,6 +41,9 @@ Le module d'enrichissement est le cœur de Mutafriches. Il enrichit automatiquem
 4. Construction DTO + Logging
    ↓
 5. Retour résultat + Mise en cache
+   ↓
+6. Table attributaire : ligne rafraîchie si le site est évalué ou partenaire
+   (non bloquant, ignoré sinon ; cf. docs/table-attributaire.md)
 ```
 
 > **Note sur la parallélisation** : les domaines sont exécutés **séquentiellement** par

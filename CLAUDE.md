@@ -164,7 +164,8 @@ Pour **chaque feature identifiée** (un groupe cohérent de modifications, typiq
   |---|---|
   | Une source d'enrichissement (API, référentiel `raw_*`, champ du DTO) | `docs/enrichissement.md` (domaine concerné, « Champs enrichis », « Bases Locales », DTO de sortie, flow), `SOURCES_DONNEES` + `pnpm docs:sources:gen`, `docs/README.md` (décompte des bases locales), `IMPORT_DATASETS` ; `docs-enrichissement.spec.ts` casse si le tableau « Bases Locales » ou un décompte « N bases locales » diverge du registre |
   | Un critère, un poids, une règle de scoring ou d'exclusion | Les quatre fichiers « Documentation OBLIGATOIRE » de la section algorithme (dont `docs/matrice-scoring.md`), plus `docs/export-cnig.md` si un attribut CNIG change |
-  | Une route, un DTO d'entrée/sortie ou un guard | `README.md` (tableau des routes), `docs/integration/README.md`, `docs/acces-api-integrateur.md` |
+  | Une route, un DTO d'entrée/sortie ou un guard | `README.md` (tableau des routes), `docs/integration/README.md`, `docs/acces-api-integrateur.md`, la page publique `/documentation-integration` (`apps/ui/src/features/documentation/components/DocumentationApi.tsx`) si la route est ouverte aux intégrateurs, et le DTO Swagger de sortie |
+  | La table attributaire (colonnes, règles d'alimentation, route `GET /api/attributaire/sites`) | `docs/table-attributaire.md`, la référence de la route dans `docs/integration/README.md`, `DocumentationApi.tsx`, ADR-0053 si une règle change |
   | Un événement de tracking | `docs/analytics-tracking.md` |
   | Une commande, un script ou une variable d'environnement | `README.md`, section « Commandes courantes » et « Variables d'environnement » de ce fichier |
   | Un choix d'architecture | ADR dans `docs/adr/` (voir « ADR automatique ») |
@@ -355,6 +356,9 @@ pnpm data:zones-contrainte-enr:preparer <capca.json>  # Régénérer le GeoJSON 
 pnpm db:import:all          # Importe tous les référentiels dont la table est vide (--force=<clé,…>, --only=<clé,…>, --strict) ; lancé par le postdeploy
 pnpm db:zae:import          # Importer les zones d'activité économique (Cerema Fusac)
 pnpm data:zae:preparer <fichier.gpkg>  # Régénérer le GeoJSON commité depuis le GeoPackage Fusac (ogr2ogr requis)
+
+# Table attributaire (ADR-0053, pas un import : aucune entrée dans IMPORT_DATASETS)
+pnpm attributaire:peupler   # Recalcule la table depuis la base (--commune=<insee>, --dry-run, --si-necessaire au postdeploy)
 ```
 
 ## Architecture
@@ -375,6 +379,7 @@ apps/api/src/
 │   └── entities/           # Entités domaine
 ├── evenements/             # Tracking événements utilisateur
 ├── stats/                  # Endpoint KPIs publics
+├── attributaire/           # Table attributaire par commune (alimentation + route publique, ADR-0053)
 ├── metabase/               # Intégration dashboard Metabase
 ├── shared/                 # Services, guards, database, utilitaires partagés
 │   ├── database/           # Schémas Drizzle, migrations
@@ -409,6 +414,8 @@ Quand une nouvelle version d'algorithme entre en vigueur :
 6. **Mettre à jour la doc de l'algorithme** (`docs/evaluation-mutabilite.md` + `.claude/context/evaluation-patterns.md`, puis `pnpm docs:matrice:gen` pour `docs/matrice-scoring.md`) : critères, poids, poids total, fiabilité, scores par réponse — en cohérence stricte avec `POIDS_CRITERES`, `MATRICE_SCORING` et `REGLES_EXCLUSION`
 7. `pnpm validate`
 8. Commit : `feat(algo): publication vX.Y avec <résumé>`
+
+La table attributaire se recalcule seule au déploiement suivant (`peupler-attributaire --si-necessaire` dans le `postdeploy`, ADR-0053) : rien à lancer à la main.
 
 Le test dédié (`versions.spec.ts`) garantit l'ordre chronologique ascendant strict, le format ISO des dates, l'unicité des versions et que `VERSION_COURANTE` correspond à la dernière entrée du registre.
 
@@ -481,6 +488,7 @@ Toutes les variables sont lues via la classe centralisée **`AppConfig`** (`apps
 | POST /evaluation/calculer | IntegrateurOriginGuard | Bypass | Origines whitelistées |
 | POST /evenements | OriginGuard | localhost + Mutafriches | Mutafriches uniquement |
 | POST /api/donnees-externes/apis/refresh | ApiRefreshTokenGuard | Bypass si token absent | `X-Refresh-Token` (temps constant) |
+| GET /api/attributaire/sites | Aucun (lecture publique) | Ouvert | Ouvert, `ThrottlerGuard` global |
 
 CORS reflète uniquement nos origines, les dashboards ADEME et les deux variables ci-dessus (`construireOriginesCors`), plus toute origine locale en `development`. Les en-têtes de sécurité viennent de `helmet` ; la CSP se limite à `frame-ancestors` (nous-mêmes, `INTEGRATEURS_IFRAME`, les deux variables), les autres directives restent à écrire.
 
@@ -667,7 +675,7 @@ Pièges rencontrés en session. Chaque entrée documente un piège pour éviter 
   "db:epci:import": "node dist/src/scripts/import-epci-communes.js"
   ```
   Pas de `ts-node -r tsconfig-paths/register src/scripts/...ts` qui ne tournera qu'en dev (et même en dev il faut avoir un `dist/` à jour : `pnpm --filter api build:nest`). En prod, Scalingo a compilé `dist/` au build avant le prune, donc tout est disponible.
-- **Les imports de référentiels sont lancés au déploiement par `import-all`** (ADR-0050) : le `postdeploy` enchaîne `drizzle-kit migrate` (en `dependencies`, donc non pruné) puis `node dist/src/scripts/import-all.js`, qui parcourt `IMPORT_DATASETS` et n'importe que les référentiels dont la table est **vide**. Un référentiel déjà rempli n'est **jamais** mis à jour par ce biais : pour un nouveau millésime ou un fichier commité modifié, lancer à la main `scalingo --app <app> run "pnpm db:import:all --force=<clé>"` (ou `pnpm db:xxx:import`).
+- **Les imports de référentiels sont lancés au déploiement par `import-all`** (ADR-0050) : le `postdeploy` enchaîne `drizzle-kit migrate` (en `dependencies`, donc non pruné) puis `node dist/src/scripts/import-all.js`, qui parcourt `IMPORT_DATASETS` et n'importe que les référentiels dont la table est **vide**, puis `peupler-attributaire.js --si-necessaire` (table attributaire remplie si vide, sinon recalcul des lignes d'une ancienne version d'algorithme, ADR-0053). Un référentiel déjà rempli n'est **jamais** mis à jour par ce biais : pour un nouveau millésime ou un fichier commité modifié, lancer à la main `scalingo --app <app> run "pnpm db:import:all --force=<clé>"` (ou `pnpm db:xxx:import`).
 - Un import en échec (data.gouv.fr indisponible) **ne bloque pas** le déploiement : il est loggué en fin de `postdeploy` et la table reste vide, ce que signalent `GET /donnees-externes/imports` (`hasEmptyImport`) et l'alerte « référentiel VIDE » des repositories. Relancer `pnpm db:import:all` ensuite.
 
 ## Points d'attention

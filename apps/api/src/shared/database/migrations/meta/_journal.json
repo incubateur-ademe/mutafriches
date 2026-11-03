@@ -281,6 +281,13 @@
       "when": 1792080951401,
       "tag": "0039_cache_bdnb_parcelles",
       "breakpoints": true
+    },
+    {
+      "idx": 40,
+      "version": "7",
+      "when": 1793699314398,
+      "tag": "0040_attributaire_sites",
+      "breakpoints": true
     }
   ]
 }

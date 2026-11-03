@@ -5,6 +5,7 @@ import { OrchestrateurService } from "./orchestrateur.service";
 import { CalculService } from "./calcul.service";
 import { EnrichissementService } from "../../enrichissement/services/enrichissement.service";
 import { EvaluationRepository } from "../repositories/evaluation.repository";
+import { AttributaireService } from "../../attributaire/attributaire.service";
 import { Site } from "../entities/site.entity";
 import { createMockEnrichissementService } from "../../enrichissement/__test-helpers__/enrichissement.mocks";
 import {
@@ -30,11 +31,13 @@ describe("OrchestrateurService", () => {
   let enrichissementService: ReturnType<typeof createMockEnrichissementService>;
   let calculService: ReturnType<typeof createMockCalculService>;
   let evaluationRepository: ReturnType<typeof createMockEvaluationRepository>;
+  let attributaireService: { rafraichirEnArrierePlan: ReturnType<typeof vi.fn> };
 
   beforeEach(async () => {
     const mockEnrichissement = createMockEnrichissementService();
     const mockCalcul = createMockCalculService();
     const mockRepository = createMockEvaluationRepository();
+    const mockAttributaire = { rafraichirEnArrierePlan: vi.fn() };
 
     // Configuration par defaut du mock cache (pas de cache)
     mockRepository.findValidCache.mockResolvedValue(null);
@@ -45,6 +48,7 @@ describe("OrchestrateurService", () => {
         { provide: EnrichissementService, useValue: mockEnrichissement },
         { provide: CalculService, useValue: mockCalcul },
         { provide: EvaluationRepository, useValue: mockRepository },
+        { provide: AttributaireService, useValue: mockAttributaire },
       ],
     }).compile();
 
@@ -52,6 +56,7 @@ describe("OrchestrateurService", () => {
     enrichissementService = mockEnrichissement;
     calculService = mockCalcul;
     evaluationRepository = mockRepository;
+    attributaireService = mockAttributaire;
   });
 
   describe("enrichirSite", () => {
@@ -112,6 +117,7 @@ describe("OrchestrateurService", () => {
       expect(calculService.calculer).toHaveBeenCalledWith(mockSite, undefined);
       expect(evaluationRepository.save).toHaveBeenCalled();
       expect(result.evaluationId).toBe("eval-123");
+      expect(attributaireService.rafraichirEnArrierePlan).toHaveBeenCalledWith(["490055000AI0001"]);
       expect(result.fiabilite).toEqual(mockResultatCalcul.fiabilite);
       expect(result.resultats).toEqual(mockResultatCalcul.resultats);
     });
@@ -163,6 +169,7 @@ describe("OrchestrateurService", () => {
         expect(evaluationRepository.findValidCache).not.toHaveBeenCalled();
         expect(calculService.calculer).not.toHaveBeenCalled();
         expect(evaluationRepository.save).not.toHaveBeenCalled();
+        expect(attributaireService.rafraichirEnArrierePlan).not.toHaveBeenCalled();
       });
 
       it("devrait rejeter sans TypeError quand le bloc complémentaire est absent", async () => {
@@ -355,6 +362,9 @@ describe("OrchestrateurService", () => {
       expect(evaluationRepository.save).toHaveBeenCalled();
       const saveCall = evaluationRepository.save.mock.calls[0] as [any, string];
       expect(saveCall[1]).toBe("cached-eval-123");
+      expect(attributaireService.rafraichirEnArrierePlan).toHaveBeenCalledWith([
+        mockEnrichissement.identifiantParcelle,
+      ]);
 
       // Verifie le resultat
       expect(result.fiabilite).toEqual(cachedResultats.fiabilite);

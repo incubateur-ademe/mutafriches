@@ -15,6 +15,7 @@ import { Site } from "../entities/site.entity";
 import { Evaluation } from "../entities/evaluation.entity";
 import { EvaluationRepository } from "../repositories/evaluation.repository";
 import { VERSION_COURANTE } from "./algorithme/versions";
+import { AttributaireService } from "../../attributaire/attributaire.service";
 
 /**
  * Service orchestrateur principal
@@ -28,6 +29,7 @@ export class OrchestrateurService {
     private readonly enrichissementService: EnrichissementService,
     private readonly calculService: CalculService,
     private readonly evaluationRepository: EvaluationRepository,
+    private readonly attributaireService: AttributaireService,
   ) {}
 
   /**
@@ -129,6 +131,7 @@ export class OrchestrateurService {
       );
 
       const evaluationId = await this.evaluationRepository.save(evaluation, cached.id);
+      this.attributaireService.rafraichirEnArrierePlan(siteId.split(","));
 
       return {
         ...cached.resultats,
@@ -176,6 +179,7 @@ export class OrchestrateurService {
 
     // Sauvegarde l'évaluation et retourne l'id
     const evaluationId = await this.evaluationRepository.save(evaluation);
+    this.attributaireService.rafraichirEnArrierePlan(siteId.split(","));
 
     return {
       ...resultats,

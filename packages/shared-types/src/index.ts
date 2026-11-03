@@ -24,6 +24,9 @@ export * from "./cartofriches";
 // Standard CNIG Friches (export des sites partenaires)
 export * from "./cnig";
 
+// Table attributaire (sites qualifiés par commune, route publique)
+export * from "./attributaire";
+
 // Intégrateurs iframe (registre partagé UI / API, frame-ancestors)
 export * from "./integration";
 

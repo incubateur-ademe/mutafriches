@@ -3,6 +3,9 @@
 > Export d'un inventaire complet de sites partenaires au standard national d'échange, depuis
 > une page `/partenaires/:slug`.
 
+Pour tous les sites analysés d'une commune, partenaires ou non, avec leurs critères et leurs
+indices au format JSON ou GeoJSON : voir la [table attributaire](./table-attributaire.md).
+
 ## Le standard
 
 - **Référence** : [Standard CNIG Friches v2023-12 rev. 2025-12](https://cnig.gouv.fr/IMG/pdf/251204_standard_cnig_friches_v2023-12_rev2025-12.pdf),

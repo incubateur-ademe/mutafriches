@@ -257,7 +257,8 @@ choisi librement, puisque seules les origines whitelistées passent le guard.
   iframe (`/iframe?integrator=...`). Le mettre sur un appel API direct ne débloque rien : le
   `403` vient du header `Origin`.
 - **`GET` ≠ `POST`.** Les lectures (`GET /evaluation/:id`, `GET /evaluation/metadata`,
-  `GET /stats`) sont ouvertes ; seuls les deux `POST` passent par le guard.
+  `GET /stats`, `GET /api/attributaire/sites`) sont ouvertes ; seuls les deux `POST` passent
+  par le guard.
 - **Appel serveur à serveur** (script, notebook, batch) : aucun `Origin` n'est envoyé par
   défaut, d'où `403 Origin required`. Le client pose le header lui-même ; c'est la limite
   assumée de l'ADR-0011.

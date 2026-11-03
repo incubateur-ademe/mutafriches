@@ -18,7 +18,8 @@ export function DocumentationApi() {
         <code>Referer</code> en repli) : votre domaine doit figurer dans la liste autorisée par
         l'équipe Mutafriches, sinon la requête est rejetée (<code>403</code>). Cette origine sert
         aussi à reconnaître vos appels dans nos statistiques : aucun identifiant supplémentaire
-        n'est à transmettre.
+        n'est à transmettre. Les lectures <code>(GET)</code> sont ouvertes, sans en-tête{" "}
+        <code>Origin</code>.
       </p>
 
       <p className="fr-text--sm">
@@ -192,6 +193,18 @@ Origin: https://mon-service.gouv.fr
                 <code>/evaluation/metadata</code>
               </td>
               <td>Récupérer les métadonnées (enums, versions)</td>
+            </tr>
+            <tr>
+              <td>
+                <span className="fr-badge fr-badge--info fr-badge--sm">GET</span>
+              </td>
+              <td>
+                <code>/api/attributaire/sites?codeInsee=</code>
+              </td>
+              <td>
+                Lister les sites déjà analysés d'une commune, avec leurs critères et leur mutabilité
+                (JSON ou GeoJSON)
+              </td>
             </tr>
           </tbody>
         </table>
@@ -382,6 +395,98 @@ Content-Type: application/json
   "donneesComplementaires": { /* données saisies */ },
   "mutabilite": { /* résultats de calcul */ }
 }`}</code>
+        </pre>
+      </div>
+
+      <h4 className="fr-h6 fr-mt-4w">4. Sites analysés d'une commune (table attributaire)</h4>
+      <p>
+        Renvoie, pour une commune, chaque site évalué dans Mutafriches ou inventorié par un
+        partenaire : ses parcelles, ses critères enrichis, les critères saisis lors de sa dernière
+        évaluation et ses indices de mutabilité. Un site est un ensemble de parcelles : deux
+        ensembles qui se recoupent sont deux sites.
+      </p>
+      <div className="fr-highlight">
+        <pre>
+          <code>{`GET https://mutafriches.beta.gouv.fr/api/attributaire/sites?codeInsee=77305
+
+// Réponse
+{
+  "codeInsee": "77305",
+  "commune": "Montereau-Fault-Yonne",
+  "dateGeneration": "2026-11-03T10:00:00.000Z",
+  "avertissement": "Les critères saisis sont déclaratifs : ...",
+  "nombreSites": 27,
+  "sites": [
+    {
+      "cleSite": "77305000AV0499,77305000AV0500",
+      "parcelles": ["77305000AV0499", "77305000AV0500"],
+      "codeInsee": "77305",
+      "commune": "Montereau-Fault-Yonne",
+      "nom": "Ex-bâtiment ORANGE",
+      "partenaire": "scet",
+      "centroide": { "latitude": 48.3895, "longitude": 2.9555 },
+      "criteresAutomatiques": {
+        "surfaceSite": 3415,
+        "surfaceBati": 2512,
+        "siteEnCentreVille": true,
+        "zonageAbcLogement": null
+        /* ... */
+      },
+      "saisieDeclarative": true,
+      "criteresSaisis": {
+        "typeProprietaire": "prive",
+        "presencePollution": "non"
+        /* ... les 9 critères manuels */
+      },
+      "nombreEvaluations": 2,
+      "mutabilite": {
+        "indices": { "residentiel": 72.3, "equipements": 68 /* ... */ },
+        "usagePrioritaire": "residentiel",
+        "usagesExclus": [],
+        "fiabilite": { "note": 9, "niveau": "Très fiable" }
+      },
+      "versionAlgorithme": "v1.19"
+    }
+  ]
+}`}</code>
+        </pre>
+      </div>
+
+      <div className="fr-alert fr-alert--warning fr-alert--sm fr-mt-2w">
+        <p>
+          Les critères saisis sont <strong>déclaratifs</strong> (<code>saisieDeclarative</code>) :
+          renseignés par les utilisateurs de Mutafriches, ils n'ont pas été vérifiés. Un site jamais
+          qualifié a <code>criteresSaisis: null</code> et sa mutabilité est calculée avec{" "}
+          <code>&quot;ne-sait-pas&quot;</code> pour chaque critère manuel.
+        </p>
+      </div>
+
+      <ul className="fr-mt-2w">
+        <li>
+          Les indices sont recalculés avec la version courante de l'algorithme : tous les sites
+          d'une commune sont comparables.
+        </li>
+        <li>
+          Dans <code>criteresAutomatiques</code>, un critère absent était indisponible ;{" "}
+          <code>null</code> signifie que la recherche n'a rien trouvé.
+        </li>
+        <li>Un site à cheval sur deux communes n'apparaît que dans sa commune prédominante.</li>
+        <li>
+          Un code INSEE invalide renvoie une erreur <code>400</code> ; une commune sans site, une
+          liste vide.
+        </li>
+      </ul>
+
+      <p className="fr-text--sm fr-mb-1w fr-mt-2w">
+        <strong>Pour un SIG</strong>, ajoutez <code>&amp;format=geojson</code> : chaque site devient
+        une entité (emprise des parcelles) aux attributs à plat, un critère par colonne et{" "}
+        <code>indice_&lt;usage&gt;</code> pour les 7 usages. L'URL se charge directement comme
+        couche vecteur dans QGIS.
+      </p>
+      <div className="fr-highlight">
+        <pre>
+          <code>{`curl "https://mutafriches.beta.gouv.fr/api/attributaire/sites?codeInsee=77305&format=geojson" \\
+  -o sites-77305.geojson`}</code>
         </pre>
       </div>
 

@@ -20,6 +20,7 @@ import { apiHealthSnapshots } from "./schemas/api-health-snapshots.schema";
 import { partenaires } from "./schemas/partenaires.schema";
 import { partenaireSites } from "./schemas/partenaire-sites.schema";
 import { cacheBdnbParcelles } from "./schemas/cache-bdnb-parcelles.schema";
+import { attributaireSites } from "./schemas/attributaire-sites.schema";
 
 // Export individuel pour drizzle-kit
 export {
@@ -46,6 +47,7 @@ export {
   partenaires,
   partenaireSites,
   cacheBdnbParcelles,
+  attributaireSites,
 };
 
 // Export groupé pour drizzle ORM
@@ -72,4 +74,5 @@ export const schema = {
   partenaires,
   partenaireSites,
   cacheBdnbParcelles,
+  attributaireSites,
 };

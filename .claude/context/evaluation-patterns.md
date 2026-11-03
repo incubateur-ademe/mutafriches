@@ -64,6 +64,7 @@ OrchestrateurService.calculerMutabilite()
   │
   ├─ 4. Persister l'évaluation
   │     → EvaluationRepository.save(evaluation)
+  │     → AttributaireService.rafraichirEnArrierePlan (table attributaire, non bloquant, ADR-0053)
   │
   └─ 5. Retourner MutabiliteOutputDto
         → { fiabilite, resultats[], evaluationId }
@@ -345,6 +346,10 @@ site.calculerTauxCompletude(): number
 | POST | `/evaluation/calculer` | IntegrateurOriginGuard | Calcul de mutabilité (cache + scoring) |
 | GET | `/evaluation/metadata` | — | Enums, versions, options disponibles |
 | GET | `/evaluation/:id` | — | Récupérer une évaluation complète |
+
+La table attributaire (`GET /api/attributaire/sites`) relit les évaluations et recalcule leur
+mutabilité avec la version courante ; elle se recalcule au déploiement après un changement de
+version (`peupler-attributaire --si-necessaire`). Cf. `docs/table-attributaire.md`.
 
 ---
 

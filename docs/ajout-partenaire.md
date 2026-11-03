@@ -128,6 +128,8 @@ aussi l'API directement ; Mon Espace Collectivité n'est qu'en iframe.
 - [ ] `pnpm validate` (format + lint + typecheck + test) au vert.
 - [ ] `/partenaires` affiche la carte du partenaire.
 - [ ] `/partenaires/<slug>` charge ; un site s'enrichit et son indice de mutabilité se calcule.
+- [ ] `GET /api/attributaire/sites?codeInsee=<commune>` liste le site après son enrichissement
+      (sans saisie tant que sa mutabilité n'a pas été calculée).
 
 ## 5. Réchauffer le cache (par environnement, après déploiement)
 
@@ -155,6 +157,9 @@ comme des qualifications utilisateur.
 - `storageKey` : unique par partenaire (sinon les sites ajoutés manuellement se mélangeraient).
 - Le calcul utilise les routes API standard (`/enrichissement`, `/evaluation/calculer`) via les
   services partagés — rien de spécifique côté partenaire.
+- **À dire au partenaire à l'ouverture** : sa connaissance terrain reste dans son navigateur,
+  mais elle part en base dès qu'il calcule la mutabilité d'un site, et elle est alors publiée,
+  marquée déclarative, par la table attributaire (`GET /api/attributaire/sites`, ADR-0053).
 
 ## Liens
 

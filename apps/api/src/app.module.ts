@@ -10,6 +10,7 @@ import { PartenairesModule } from "./partenaires/partenaires.module";
 import { DonneesExternesModule } from "./donnees-externes/donnees-externes.module";
 import { CartofrichesModule } from "./cartofriches/cartofriches.module";
 import { MetabaseModule } from "./metabase/metabase.module";
+import { AttributaireModule } from "./attributaire/attributaire.module";
 import { DatabaseModule } from "./shared/database/database.module";
 import { SharedModule } from "./shared/shared.module";
 import { ConfigModule } from "./config";
@@ -33,6 +34,7 @@ import { ConfigModule } from "./config";
     DonneesExternesModule,
     CartofrichesModule,
     MetabaseModule,
+    AttributaireModule,
   ],
   controllers: [AppController],
   providers: [
