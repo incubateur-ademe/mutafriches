@@ -6,10 +6,13 @@ export interface IframeEvaluationSummaryDto {
   // Identifiant unique de l'évaluation pour récupération via API
   evaluationId: string;
 
-  // Identifiant cadastral de la parcelle analysée
+  // Identifiant cadastral du site (multi-parcelle : identifiants joints par virgules)
   identifiantParcelle: string;
 
-  // URL de récupération de l'évaluation complète
+  // Identifiants des parcelles analysées (un seul élément en mono-parcelle)
+  identifiantsParcelles: string[];
+
+  // Chemin de GET /evaluation/:id, absent si l'évaluation n'a pas d'identifiant
   retrieveUrl?: string;
 
   // Fiabilité de l'analyse (simplifié)
