@@ -1141,7 +1141,7 @@ Chaque table est enregistrée dans `IMPORT_DATASETS` (`donnees-externes/imports.
 
 ## Annexe : Référence Rapide des APIs Externes
 
-> **Note** : Pour les détails d'implémentation spécifiques à Mutafriches, consulter les README dans `apps/api/src/enrichissement/adapters/[nom-api]/`
+> **Note** : le code de chaque client est dans `apps/api/src/enrichissement/adapters/<api>/` ; les champs récupérés et leur traitement sont décrits dans [sources-donnees-externes.md](sources-donnees-externes.md).
 
 ### IGN Cadastre
 - **URL** : `https://apicarto.ign.fr/api/cadastre`
