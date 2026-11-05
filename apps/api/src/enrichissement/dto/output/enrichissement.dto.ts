@@ -13,6 +13,9 @@ import {
   GeometrieParcelle,
   GeometrieParcelleIdentifiee,
   ZaerEnrichissement,
+  DistanceIte,
+  ZonageAbcLogement,
+  IlotChaleurUrbain,
 } from "@mutafriches/shared-types";
 
 /**
@@ -157,6 +160,24 @@ export class EnrichissementSwaggerDto implements IEnrichissementOutput {
 
   @ApiProperty({
     description:
+      "Distance à l'installation terminale embranchée fret (ITE) la plus proche, en catégorie. Absent si le référentiel est indisponible",
+    required: false,
+    example: DistanceIte.PLUS_1KM,
+    enum: DistanceIte,
+  })
+  distanceIte?: DistanceIte;
+
+  @ApiProperty({
+    description:
+      "Distance réelle en mètres à l'ITE fret la plus proche. Absent si aucune ITE dans le rayon de recherche",
+    required: false,
+    example: 2350,
+    minimum: 0,
+  })
+  distanceIteMetres?: number;
+
+  @ApiProperty({
+    description:
       "Distance au point de raccordement électrique le plus proche en mètres. null si aucune infrastructure trouvée dans les rayons de recherche (5 km postes, 500 m lignes BT)",
     example: 300,
     minimum: 0,
@@ -181,6 +202,16 @@ export class EnrichissementSwaggerDto implements IEnrichissementOutput {
     maximum: 100,
   })
   tauxLogementsVacants: number;
+
+  @ApiProperty({
+    description:
+      "Zonage ABC de la commune (tension du marché du logement). null = commune absente du référentiel",
+    required: false,
+    example: ZonageAbcLogement.B1,
+    enum: ZonageAbcLogement,
+    nullable: true,
+  })
+  zonageAbcLogement?: ZonageAbcLogement | null;
 
   @ApiProperty({
     description: "Présence de risques technologiques",
@@ -261,6 +292,24 @@ export class EnrichissementSwaggerDto implements IEnrichissementOutput {
   siteEnZae?: boolean;
 
   @ApiProperty({
+    description:
+      "Site situé dans un îlot de chaleur urbain (CSTB). Donnée informative, hors algorithme. non-couvert = commune hors périmètre d'étude",
+    required: false,
+    example: IlotChaleurUrbain.NON_COUVERT,
+    enum: IlotChaleurUrbain,
+  })
+  ilotChaleurUrbain?: IlotChaleurUrbain;
+
+  @ApiProperty({
+    description:
+      "Intensité maximale de l'îlot de chaleur urbain en °C (informatif). null = site hors périmètre d'étude",
+    required: false,
+    example: null,
+    nullable: true,
+  })
+  intensiteIlotChaleurC?: number | null;
+
+  @ApiProperty({
     description: "Position par rapport à la trame verte et bleue",
     required: false,
     example: TrameVerteEtBleue.HORS_TRAME,
@@ -279,21 +328,21 @@ export class EnrichissementSwaggerDto implements IEnrichissementOutput {
   @ApiProperty({
     description: "Liste des sources de données utilisées pour l'enrichissement",
     type: [String],
-    example: ["DVF", "Cadastre", "SIRENE", "Base ICPE", "INPN"],
+    example: ["Cadastre", "BDNB-SurfaceBatie", "Enedis-Raccordement", "Lovac", "QPV-ANCT"],
   })
   sourcesUtilisees: string[];
 
   @ApiProperty({
-    description: "Liste des champs qui n'ont pas pu être enrichis automatiquement",
+    description: "Liste des champs du site qui n'ont pas pu être enrichis automatiquement",
     type: [String],
-    example: ["presencePollution", "valeurArchitecturaleHistorique"],
+    example: ["surfaceBati"],
   })
   champsManquants: string[];
 
   @ApiProperty({
     description: "Liste des sources de données qui ont échoué lors de l'enrichissement",
     type: [String],
-    example: ["GeoRisques-RGA", "BDNB-Risques"],
+    example: ["BDNB-SurfaceBatie"],
   })
   sourcesEchouees: string[];
 
@@ -303,6 +352,7 @@ export class EnrichissementSwaggerDto implements IEnrichissementOutput {
     type: Object,
     example: {
       enZoneZaer: true,
+      enZoneExclusion: false,
       nombreZones: 2,
       filieres: ["SOLAIRE_PV", "EOLIEN"],
       zones: [

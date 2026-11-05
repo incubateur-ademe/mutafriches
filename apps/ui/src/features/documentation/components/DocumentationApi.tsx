@@ -285,31 +285,51 @@ Content-Type: application/json
       <div className="fr-highlight">
         <pre>
           <code>{`{
-  "identifiantParcelle": "49353000AV0202",
+  "identifiantParcelle": "49353000AV0202,49353000AV0203",
   "identifiantsParcelles": ["49353000AV0202", "49353000AV0203"],
   "nombreParcelles": 2,
-  "parcellePredominante": "49353000AV0202",
+  "parcellePredominante": "49353000AV0203",
   "communePredominante": "Trélazé",
+  "codeInsee": "49353",
   "commune": "Trélazé",
-  "surfaceSite": 42780,
+  "coordonnees": { "latitude": 47.4457, "longitude": -0.473 },
+  "geometrie": { /* polygone GeoJSON du site */ },
+  "surfaceSite": 1449,
+  "surfaceBati": 297,
   "siteEnCentreVille": true,
-  "distanceAutoroute": 1.5,
-  "tauxLogementsVacants": 4.9,
+  "distanceAutoroute": 2841,
+  "distanceTransportCommun": 122,
+  "proximiteCommercesServices": true,
+  "distanceIte": "plus-1km",
+  "distanceIteMetres": 1130,
+  "distanceRaccordementElectrique": 23.25,
+  "distanceReseauChaleur": 638,
+  "tauxLogementsVacants": 5.1,
+  "zonageAbcLogement": "b1",
   "risqueRetraitGonflementArgile": "faible-ou-moyen",
-  "risqueCavitesSouterraines": "non",
-  "risqueInondation": "non",
+  "risqueCavitesSouterraines": "oui",
+  "risqueInondation": "oui",
+  "presenceRisquesTechnologiques": true,
+  "siteReferencePollue": true,
+  "zonageReglementaire": "zone-urbaine-u-habitat",
   "zonageEnvironnemental": "hors-zone",
+  "zonagePatrimonial": "non-concerne",
+  "zoneAccelerationEnr": "oui",
   "zaer": {
-    "enZoneZaer": false,
-    "nombreZones": 0,
-    "filieres": [],
-    "zones": []
+    "enZoneZaer": true,
+    "enZoneExclusion": false,
+    "nombreZones": 4,
+    "filieres": ["SOLAIRE_PV", "GEOTHERMIE", "SOLAIRE_THERMIQUE"],
+    "zones": [ /* détail par zone */ ]
   },
-  "champsManquants": [
-    "presencePollution",
-    "valeurArchitecturaleHistorique"
-  ],
-  "fiabilite": 8.5
+  "siteEnQpv": false,
+  "saturationReseauEnr": false,
+  "siteEnZae": false,
+  "ilotChaleurUrbain": "non-couvert",
+  "intensiteIlotChaleurC": null,
+  "sourcesUtilisees": ["Cadastre", "BDNB", "Enedis-Raccordement", /* ... */],
+  "sourcesEchouees": [],
+  "champsManquants": []
 }`}</code>
         </pre>
       </div>
