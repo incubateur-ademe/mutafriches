@@ -125,6 +125,8 @@ export const getResultBadgeConfig = (
   result: Pick<UsageResultat, "indiceMutabilite" | "exclu">,
 ): BadgeConfig => (result.exclu ? BADGE_EXCLU : getBadgeConfig(result.indiceMutabilite));
 
+export const formatRang = (rang: number): string => (rang === 1 ? "1er" : `${rang}e`);
+
 // Le podium ne propose jamais un usage exclu, même si une règle future en excluait plus de 4
 export const getUsagesPodium = <T extends UsageResultat>(resultats: T[]): T[] =>
   resultats.filter((r) => !r.exclu).slice(0, 3);

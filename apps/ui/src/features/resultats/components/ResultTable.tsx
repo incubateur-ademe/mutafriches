@@ -1,6 +1,7 @@
 import { UsageResultat } from "@mutafriches/shared-types";
 import React from "react";
 import {
+  formatRang,
   getUsageInfo,
   getResultBadgeConfig,
   MESSAGE_USAGE_EXCLU,
@@ -40,12 +41,7 @@ export const ResultsTable: React.FC<ResultsTableProps> = ({ results, onVoirDetai
                     return (
                       <tr key={result.usage}>
                         <td>
-                          <strong>
-                            {result.rang === 1 && "1er"}
-                            {result.rang === 2 && "2e"}
-                            {result.rang === 3 && "3e"}
-                            {result.rang > 3 && `${result.rang}e`}
-                          </strong>
+                          <strong>{formatRang(result.rang)}</strong>
                         </td>
                         <td>
                           <strong>{getUsageInfo(result.usage).label}</strong>
