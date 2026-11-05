@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useId } from "react";
 import { DetailUsageSection } from "@mutafriches/shared-types";
 import { ImpactBadge } from "./RecapBadges";
 import "./RecapTable.css";
@@ -7,11 +7,33 @@ interface UsageDetailTableProps {
   sections: DetailUsageSection[];
 }
 
+interface EnTeteInfobulleProps {
+  libelle: string;
+  texte: string;
+}
+
 // Le poids est une magnitude (toujours positif) : pas de signe pour éviter
 // de le confondre avec le sens de l'impact (positif/négatif).
 function formatPonderation(poids: number): string {
   return poids.toFixed(1);
 }
+
+// Id unique par tableau : le panneau de debug en rend une copie, et le DSFR ouvrirait
+// l'infobulle de même id, cachée sous la modale.
+const EnTeteInfobulle: React.FC<EnTeteInfobulleProps> = ({ libelle, texte }) => {
+  const tooltipId = `tooltip-${useId()}`;
+  return (
+    <span className="inline-flex items-center gap-1">
+      {libelle}
+      <button aria-describedby={tooltipId} type="button" className="fr-btn--tooltip fr-btn">
+        infobulle
+      </button>
+      <span className="fr-tooltip fr-placement" id={tooltipId} role="tooltip">
+        {texte}
+      </span>
+    </span>
+  );
+};
 
 /**
  * Tableau du détail d'un usage : critère, valeur, pondération et impact,
@@ -30,38 +52,16 @@ export const UsageDetailTable: React.FC<UsageDetailTableProps> = ({ sections }) 
                   <th scope="col">Critère</th>
                   <th scope="col">Valeur</th>
                   <th scope="col" className="recap-table__center">
-                    <span style={{ display: "inline-flex", alignItems: "center", gap: "0.25rem" }}>
-                      Pondération
-                      <button
-                        aria-describedby="tooltip-ponderation"
-                        type="button"
-                        className="fr-btn--tooltip fr-btn"
-                      >
-                        infobulle
-                      </button>
-                      <span
-                        className="fr-tooltip fr-placement"
-                        id="tooltip-ponderation"
-                        role="tooltip"
-                      >
-                        Poids du critère dans le calcul de mutabilité.
-                      </span>
-                    </span>
+                    <EnTeteInfobulle
+                      libelle="Pondération"
+                      texte="Poids du critère dans le calcul de mutabilité."
+                    />
                   </th>
                   <th scope="col" className="recap-table__center">
-                    <span style={{ display: "inline-flex", alignItems: "center", gap: "0.25rem" }}>
-                      Impact
-                      <button
-                        aria-describedby="tooltip-impact"
-                        type="button"
-                        className="fr-btn--tooltip fr-btn"
-                      >
-                        infobulle
-                      </button>
-                      <span className="fr-tooltip fr-placement" id="tooltip-impact" role="tooltip">
-                        Effet de ce critère sur la compatibilité avec cet usage.
-                      </span>
-                    </span>
+                    <EnTeteInfobulle
+                      libelle="Impact"
+                      texte="Effet de ce critère sur la compatibilité avec cet usage."
+                    />
                   </th>
                 </tr>
               </thead>
