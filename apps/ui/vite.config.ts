@@ -47,7 +47,8 @@ export default defineConfig({
         target: "http://localhost:3000",
         changeOrigin: true,
       },
-      "/friches": {
+      // retrieveUrl de l'iframe est relative : même comportement qu'en prod (main.ts)
+      "/evaluation": {
         target: "http://localhost:3000",
         changeOrigin: true,
       },
