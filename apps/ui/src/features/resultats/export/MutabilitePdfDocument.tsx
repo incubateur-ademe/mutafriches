@@ -4,230 +4,193 @@ import {
   buildDetailUsage,
   buildRecapitulatifSite,
   MENTION_INFORMATIVE,
-  type ImpactNiveau,
   type UsageResultatDetaille,
 } from "@mutafriches/shared-types";
 import {
+  formatRang,
   getResultBadgeConfig,
   getUsageInfo,
   getUsagesPodium,
   MESSAGE_USAGE_EXCLU,
 } from "../utils/usagesLabels.utils";
 import { IMPACT_TAG_VARIANT, TAG_COLORS } from "@shared/components/tag";
+import {
+  enregistrerPolicesPdf,
+  moisAnneeCourants,
+  PDF_COULEURS,
+  PDF_GRAISSE,
+  PDF_MARGES,
+  PDF_POLICE,
+  PdfBadge,
+  PdfBandeSection,
+  PdfEnTete,
+  PdfEnTeteTableau,
+  PdfLigneTableau,
+  PdfPiedDePage,
+  PdfTag,
+  type PdfColonne,
+} from "@shared/pdf";
 import { getPodiumTags } from "../utils/podiumTags";
 import type { ResultatsExportData } from "./types";
 
-const BLEU = "#000091";
-const GRIS = "#666666";
-const BORDURE = "#e5e5e5";
+enregistrerPolicesPdf();
 
-const IMPACT_COLORS = Object.fromEntries(
-  Object.entries(IMPACT_TAG_VARIANT).map(([niveau, variant]) => [
-    niveau,
-    { bg: TAG_COLORS[variant].backgroundColor, text: TAG_COLORS[variant].textColor },
-  ]),
-) as Record<ImpactNiveau, { bg: string; text: string }>;
+const SOUS_TITRE = "Le meilleur usage pour votre site en friche";
+
+const COLONNES_USAGES: PdfColonne[] = [
+  { libelle: "Rang", poids: 0.9 },
+  { libelle: "Usage", poids: 4.2 },
+  { libelle: "Indice de mutabilité", poids: 5 },
+  { libelle: "Potentiel", poids: 1.9 },
+];
+
+// Colonne Critère assez large pour éviter les retours à la ligne : un usage tient sur une page
+const COLONNES_RECAP: PdfColonne[] = [
+  { libelle: "Critère", poids: 5.6 },
+  { libelle: "Valeur", poids: 3.2 },
+  { libelle: "Saisie", poids: 1.7, centree: true },
+  { libelle: "Source", poids: 2.5, centree: true },
+];
+
+const COLONNES_DETAIL: PdfColonne[] = [
+  { libelle: "Critère", poids: 6 },
+  { libelle: "Valeur", poids: 3.4 },
+  { libelle: "Pondération", poids: 1.5, centree: true },
+  { libelle: "Impact", poids: 1.7, centree: true },
+];
 
 const s = StyleSheet.create({
   page: {
-    paddingTop: 92,
-    paddingBottom: 40,
-    paddingHorizontal: 32,
+    paddingTop: PDF_MARGES.haut,
+    paddingBottom: PDF_MARGES.bas,
+    paddingHorizontal: PDF_MARGES.cotes,
+    fontFamily: PDF_POLICE,
     fontSize: 9,
-    color: "#161616",
-    fontFamily: "Helvetica",
+    // react-pdf calcule l'interligne sur le corps du même style (18 sinon) puis l'hérite en
+    // valeur absolue : chaque style qui change de corps redéfinit corps et interligne ensemble
+    lineHeight: 1.2,
+    color: PDF_COULEURS.texte,
   },
-  // En-tête fixe
-  header: {
-    position: "absolute",
-    top: 24,
-    left: 32,
-    right: 32,
-    flexDirection: "row",
-    alignItems: "center",
+  h1: { fontSize: 20, lineHeight: 1.2, fontWeight: PDF_GRAISSE.grasse, marginBottom: 12 },
+  h2: {
+    fontSize: 13,
+    lineHeight: 1.2,
+    fontWeight: PDF_GRAISSE.grasse,
+    marginTop: 20,
+    marginBottom: 10,
   },
-  rfBlock: { marginRight: 12 },
-  rfTitle: { fontSize: 7, fontFamily: "Helvetica-Bold", lineHeight: 1.1 },
-  rfDevise: { fontSize: 6, fontFamily: "Helvetica-Oblique", color: "#3a3a3a", lineHeight: 1.1 },
-  brand: { marginLeft: 6 },
-  brandTitle: { fontSize: 14, fontFamily: "Helvetica-Bold" },
-  brandSub: { fontSize: 8, color: GRIS },
-  // Footer fixe
-  footer: {
-    position: "absolute",
-    bottom: 18,
-    left: 32,
-    right: 32,
-    flexDirection: "row",
-    alignItems: "center",
-    fontSize: 7,
-    color: "#7b7b7b",
+  gras: { fontWeight: PDF_GRAISSE.grasse },
+  mention: { fontSize: 7, lineHeight: 1.2, color: PDF_COULEURS.mention, marginTop: 1 },
+  // Encadré du site (maquette : bordure bleu France, angles droits)
+  encadre: {
+    backgroundColor: PDF_COULEURS.fondEncadre,
+    borderLeft: `4px solid ${PDF_COULEURS.bleuFrance}`,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
   },
-  footerText: { width: "100%", textAlign: "center" },
-  footerPage: { position: "absolute", right: 0 },
-  // Titres
-  h1: { fontSize: 18, fontFamily: "Helvetica-Bold", marginBottom: 10 },
-  h2: { fontSize: 13, fontFamily: "Helvetica-Bold", marginTop: 16, marginBottom: 8 },
-  subtitle: {
-    fontSize: 10,
-    fontFamily: "Helvetica-Bold",
-    marginTop: 10,
-    marginBottom: 4,
-    color: BLEU,
-  },
-  muted: { color: GRIS },
-  bold: { fontFamily: "Helvetica-Bold" },
-  // Callout site
-  callout: {
-    backgroundColor: "#F0F4FE",
-    borderLeft: "4px solid #6A6AF4",
-    borderRadius: 3,
-    padding: 12,
-    marginBottom: 8,
-  },
-  calloutTitle: { fontSize: 15, fontFamily: "Helvetica-Bold", marginBottom: 4 },
-  // Badges
-  badge: {
-    fontSize: 7,
-    fontFamily: "Helvetica-Bold",
-    paddingVertical: 2,
-    paddingHorizontal: 5,
-    borderRadius: 3,
-  },
-  tag: {
-    fontSize: 7,
-    color: TAG_COLORS.bleu.textColor,
-    backgroundColor: TAG_COLORS.bleu.backgroundColor,
-    paddingVertical: 2,
-    paddingHorizontal: 5,
-    borderRadius: 3,
-    margin: 2,
-  },
-  // Tableaux
-  row: {
-    flexDirection: "row",
-    borderBottom: `1px solid ${BORDURE}`,
-    paddingVertical: 4,
-    alignItems: "center",
-  },
-  headerRow: { flexDirection: "row", borderBottom: "1.5px solid #161616", paddingVertical: 4 },
-  cell: { flexGrow: 1, flexBasis: 0, paddingRight: 4 },
-  cellCenter: { flexGrow: 1, flexBasis: 0, textAlign: "center", alignItems: "center" },
-  // Podium
-  podiumRow: { flexDirection: "row", gap: 8 },
-  podiumCard: {
+  encadreTitre: { fontSize: 18, lineHeight: 1.2, fontWeight: PDF_GRAISSE.grasse, marginBottom: 6 },
+  encadreTexte: { fontSize: 9, lineHeight: 1.6, color: PDF_COULEURS.texteCourant },
+  // Podium : react-pdf n'a pas de box-shadow, l'ombre est simulée par une bordure basse
+  podium: { flexDirection: "row", gap: 14 },
+  carte: {
     flexGrow: 1,
     flexBasis: 0,
-    border: `1px solid ${BORDURE}`,
-    borderRadius: 6,
-    padding: 8,
+    border: `1px solid ${PDF_COULEURS.bordureCarte}`,
+    borderBottom: `2.5px solid ${PDF_COULEURS.ombreCarte}`,
+    paddingTop: 8,
+    paddingHorizontal: 8,
+    paddingBottom: 10,
     alignItems: "center",
   },
-  podiumLabel: { fontSize: 9, fontFamily: "Helvetica-Bold", textAlign: "center", marginTop: 4 },
-  podiumTags: { flexDirection: "row", flexWrap: "wrap", justifyContent: "center", marginTop: 6 },
-  // Barre indice / ratio
-  bar: { height: 6, borderRadius: 3, backgroundColor: "#eee" },
-  ratioTrack: {
+  carteLibelle: {
+    fontSize: 10,
+    lineHeight: 1.2,
+    fontWeight: PDF_GRAISSE.moyenne,
+    textAlign: "center",
+    marginTop: 8,
+    minHeight: 24,
+  },
+  carteTags: { flexDirection: "row", flexWrap: "wrap", justifyContent: "center", marginTop: 6 },
+  // Barre d'indice : largeur proportionnelle à l'indice, sans piste, comme sur le site
+  indice: { flexDirection: "row", alignItems: "center" },
+  indicePiste: { flexGrow: 1 },
+  indiceBarre: { height: 5, borderRadius: 2.5 },
+  indiceValeur: { width: 34, textAlign: "right", fontWeight: PDF_GRAISSE.grasse },
+  // Pages usage
+  usageTitre: { flexDirection: "row", alignItems: "center", marginBottom: 6 },
+  usageLibelle: { fontSize: 15, lineHeight: 1.2, fontWeight: PDF_GRAISSE.grasse, marginLeft: 6 },
+  ratio: {
     flexDirection: "row",
     height: 8,
     borderRadius: 4,
     overflow: "hidden",
     marginTop: 6,
   },
+  ratioLegende: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 4,
+    marginBottom: 6,
+    fontSize: 8.5,
+    lineHeight: 1.2,
+  },
 });
 
-const moisAnnee = (): string =>
-  new Date().toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
-
-const Badge: React.FC<{ label: string; bg: string; color: string }> = ({ label, bg, color }) => (
-  <Text style={[s.badge, { backgroundColor: bg, color }]}>{label}</Text>
-);
-
-const Header: React.FC = () => (
-  <View style={s.header} fixed>
-    <View style={s.rfBlock}>
-      <Text style={s.rfTitle}>RÉPUBLIQUE</Text>
-      <Text style={s.rfTitle}>FRANÇAISE</Text>
-      <Text style={s.rfDevise}>Liberté</Text>
-      <Text style={s.rfDevise}>Égalité</Text>
-      <Text style={s.rfDevise}>Fraternité</Text>
+const IndiceBarre: React.FC<{ indice: number; couleur: string }> = ({ indice, couleur }) => (
+  <View style={s.indice}>
+    <View style={s.indicePiste}>
+      <View
+        style={[s.indiceBarre, { width: `${Math.max(indice, 2)}%`, backgroundColor: couleur }]}
+      />
     </View>
-    <Image src="/images/logo-ademe.png" style={{ width: 34, height: 40 }} />
-    <View style={s.brand}>
-      <Text style={s.brandTitle}>Mutafriches</Text>
-      <Text style={s.brandSub}>Le meilleur usage pour votre site en friche</Text>
-    </View>
-  </View>
-);
-
-const Footer: React.FC<{ site: string }> = ({ site }) => (
-  <View style={s.footer} fixed>
-    <Text style={s.footerText}>
-      Mutafriches Ademe - Analyse de mutabilité Site {site} - {moisAnnee()}
-    </Text>
-    <Text
-      style={s.footerPage}
-      render={({ pageNumber, totalPages }) => `${pageNumber}/${totalPages}`}
-    />
-  </View>
-);
-
-// Barre d'indice colorée selon le potentiel.
-const IndiceBar: React.FC<{ indice: number; couleur: string }> = ({ indice, couleur }) => (
-  <View style={[s.bar, { width: 90 }]}>
-    <View
-      style={{
-        height: 6,
-        borderRadius: 3,
-        width: `${Math.max(indice, 5)}%`,
-        backgroundColor: couleur,
-      }}
-    />
+    <Text style={s.indiceValeur}>{Math.round(indice)}%</Text>
   </View>
 );
 
 export const MutabilitePdfDocument: React.FC<{ data: ResultatsExportData }> = ({ data }) => {
   const { mutabilite, enrichissement, complementaires, site } = data;
   const resultats = mutabilite.resultats as UsageResultatDetaille[];
-  const top3 = getUsagesPodium(resultats);
+  const podium = getUsagesPodium(resultats);
   const sectionsSite = buildRecapitulatifSite(enrichissement, complementaires);
   const titreSite = site.nom ? `${site.nom}, ${site.commune ?? ""}` : (site.commune ?? "Site");
-  const nomFooter = site.nom ?? site.commune ?? "";
+  const nombreParcelles = site.parcelles?.length ?? site.nombreParcelles ?? 0;
+  const piedDePage = [
+    "Mutafriches Ademe",
+    `Analyse de mutabilité Site ${site.nom ?? site.commune ?? ""}`,
+    moisAnneeCourants(),
+  ];
 
   return (
     <Document title="Mutafriches — Analyse de mutabilité">
-      {/* Page 1 : récap de l'analyse */}
+      {/* Page 1 : synthèse de l'analyse */}
       <Page size="A4" style={s.page}>
-        <Header />
+        <PdfEnTete sousTitre={SOUS_TITRE} />
         <Text style={s.h1}>Analyse de mutabilité</Text>
 
-        <View style={s.callout}>
-          <Text style={s.calloutTitle}>{titreSite}</Text>
-          <Text style={s.muted}>
-            {(site.parcelles?.length ?? site.nombreParcelles ?? 0) > 1
-              ? `${site.parcelles?.length ?? site.nombreParcelles} parcelles : ${(site.parcelles ?? []).join(", ")}`
+        <View style={s.encadre}>
+          <Text style={s.encadreTitre}>{titreSite}</Text>
+          <Text style={s.encadreTexte}>
+            {nombreParcelles > 1
+              ? `${nombreParcelles} parcelles : ${(site.parcelles ?? []).join(", ")}`
               : `Identifiant : ${site.identifiant ?? ""}`}
           </Text>
         </View>
 
         <Text style={s.h2}>Usages les plus compatibles</Text>
-        <View style={s.podiumRow}>
-          {top3.map((r) => {
+        <View style={s.podium}>
+          {podium.map((r) => {
             const info = getUsageInfo(r.usage);
             const badge = getResultBadgeConfig(r);
-            const tags = getPodiumTags(r, enrichissement, complementaires);
             return (
-              <View key={r.usage} style={s.podiumCard}>
+              <View key={r.usage} style={s.carte}>
                 <View style={{ alignSelf: "flex-start" }}>
-                  <Badge label={badge.label} bg={badge.backgroundColor} color={badge.textColor} />
+                  <PdfBadge libelle={badge.label} couleurs={badge} grand />
                 </View>
-                <Image src={info.image} style={{ width: 40, height: 40, marginTop: 6 }} />
-                <Text style={s.podiumLabel}>{info.label}</Text>
-                <View style={s.podiumTags}>
-                  {tags.map((t, i) => (
-                    <Text key={i} style={s.tag}>
-                      {t}
-                    </Text>
+                <Image src={info.image} style={{ width: 64, height: 64, marginTop: 10 }} />
+                <Text style={s.carteLibelle}>{info.label}</Text>
+                <View style={s.carteTags}>
+                  {getPodiumTags(r, enrichissement, complementaires).map((tag) => (
+                    <PdfTag key={tag} libelle={tag} />
                   ))}
                 </View>
               </View>
@@ -236,89 +199,67 @@ export const MutabilitePdfDocument: React.FC<{ data: ResultatsExportData }> = ({
         </View>
 
         <Text style={s.h2}>Tous les usages</Text>
-        <View style={s.headerRow}>
-          <Text style={[s.cell, s.bold, { flexGrow: 0, flexBasis: 30 }]}>Rang</Text>
-          <Text style={[s.cell, s.bold, { flexGrow: 3 }]}>Usage</Text>
-          <Text style={[s.cell, s.bold, { flexGrow: 2 }]}>Indice de mutabilité</Text>
-          <Text style={[s.cellCenter, s.bold, { flexGrow: 1.5 }]}>Potentiel</Text>
-        </View>
+        <PdfEnTeteTableau colonnes={COLONNES_USAGES} />
         {resultats.map((r) => {
           const badge = getResultBadgeConfig(r);
           return (
-            <View key={r.usage} style={s.row}>
-              <Text style={[s.cell, { flexGrow: 0, flexBasis: 30 }]}>{r.rang}</Text>
-              <Text style={[s.cell, { flexGrow: 3 }]}>{getUsageInfo(r.usage).label}</Text>
+            <PdfLigneTableau key={r.usage} colonnes={COLONNES_USAGES} aeree>
+              {/* Rang, usage et indice en gras, comme le tableau du site (ResultTable) */}
+              <Text style={s.gras}>{formatRang(r.rang)}</Text>
+              <Text style={s.gras}>{getUsageInfo(r.usage).label}</Text>
               {r.exclu ? (
-                <Text style={[s.cell, { flexGrow: 3.5 }]}>{MESSAGE_USAGE_EXCLU}</Text>
+                <Text style={{ fontSize: 8, lineHeight: 1.2, color: PDF_COULEURS.texteCourant }}>
+                  {MESSAGE_USAGE_EXCLU}
+                </Text>
               ) : (
-                <>
-                  <View
-                    style={[s.cell, { flexGrow: 2, flexDirection: "row", alignItems: "center" }]}
-                  >
-                    <IndiceBar indice={r.indiceMutabilite} couleur={badge.backgroundColor} />
-                    <Text style={{ marginLeft: 6 }}>{r.indiceMutabilite}%</Text>
-                  </View>
-                  <View style={[s.cellCenter, { flexGrow: 1.5 }]}>
-                    <Badge label={badge.label} bg={badge.backgroundColor} color={badge.textColor} />
-                  </View>
-                </>
+                <IndiceBarre indice={r.indiceMutabilite} couleur={badge.backgroundColor} />
               )}
-            </View>
+              <View style={{ alignItems: "flex-start" }}>
+                <PdfBadge libelle={badge.label} couleurs={badge} grand />
+              </View>
+            </PdfLigneTableau>
           );
         })}
-        <Footer site={nomFooter} />
+        <PdfPiedDePage segments={piedDePage} />
       </Page>
 
-      {/* Page 2 : récapitulatif du site */}
+      {/* Page 2 : récapitulatif du site, colonnes du site (RecapTable) */}
       <Page size="A4" style={s.page}>
-        <Header />
+        <PdfEnTete sousTitre={SOUS_TITRE} />
         <Text style={s.h1}>Récapitulatif du site</Text>
-        <View style={s.headerRow}>
-          <Text style={[s.cell, s.bold, { flexGrow: 2 }]}>Critère</Text>
-          <Text style={[s.cell, s.bold]}>Valeur</Text>
-          <Text style={[s.cellCenter, s.bold]}>Saisie</Text>
-          <Text style={[s.cellCenter, s.bold]}>Source</Text>
-        </View>
+        <PdfEnTeteTableau colonnes={COLONNES_RECAP} />
         {sectionsSite.map((section) => (
-          <View key={section.id} wrap={false}>
-            <Text style={s.subtitle}>{section.titre}</Text>
+          <React.Fragment key={section.id}>
+            <PdfBandeSection titre={section.titre} />
             {section.criteres.map((c) => {
-              const auto = c.saisie === "AUTOMATIQUE";
+              const couleursSaisie = TAG_COLORS[c.saisie === "MANUELLE" ? "jaune" : "bleu"];
               return (
-                <View key={c.key} style={s.row}>
-                  <View style={[s.cell, { flexGrow: 2 }]}>
+                <PdfLigneTableau key={c.key} colonnes={COLONNES_RECAP}>
+                  <View>
                     <Text>{c.label}</Text>
-                    {c.informatif && <Text style={s.muted}>{MENTION_INFORMATIVE}</Text>}
-                    {c.mention && <Text style={s.muted}>{c.mention}</Text>}
+                    {c.informatif && <Text style={s.mention}>{MENTION_INFORMATIVE}</Text>}
+                    {c.mention && <Text style={s.mention}>{c.mention}</Text>}
                   </View>
-                  <Text style={[s.cell, s.bold]}>{c.valeurAffichee}</Text>
-                  <View style={s.cellCenter}>
-                    <Badge
-                      label={auto ? "AUTOMATIQUE" : "MANUELLE"}
-                      bg={TAG_COLORS[auto ? "bleu" : "jaune"].backgroundColor}
-                      color={TAG_COLORS[auto ? "bleu" : "jaune"].textColor}
-                    />
-                  </View>
-                  <View style={s.cellCenter}>
-                    {c.sourceLabel ? (
-                      <Badge
-                        label={c.sourceLabel.toUpperCase()}
-                        bg={TAG_COLORS.bleu.backgroundColor}
-                        color={TAG_COLORS.bleu.textColor}
-                      />
-                    ) : (
-                      <Text style={s.muted}>—</Text>
-                    )}
-                  </View>
-                </View>
+                  <Text style={s.gras}>{c.valeurAffichee}</Text>
+                  <PdfBadge
+                    libelle={c.saisie === "MANUELLE" ? "Manuelle" : "Automatique"}
+                    couleurs={couleursSaisie}
+                  />
+                  {/* Cellule vide plutôt que null : chaque enfant occupe sa colonne */}
+                  {c.sourceLabel ? (
+                    <PdfBadge libelle={c.sourceLabel} couleurs={TAG_COLORS.bleu} />
+                  ) : (
+                    <View />
+                  )}
+                </PdfLigneTableau>
               );
             })}
-          </View>
+          </React.Fragment>
         ))}
-        <Footer site={nomFooter} />
+        <PdfPiedDePage segments={piedDePage} />
       </Page>
 
-      {/* Pages usages : un usage par page */}
+      {/* Pages usage : un usage par page, colonnes du site (UsageDetailTable) */}
       {resultats.map((usage) => {
         const info = getUsageInfo(usage.usage);
         const badge = getResultBadgeConfig(usage);
@@ -330,25 +271,32 @@ export const MutabilitePdfDocument: React.FC<{ data: ResultatsExportData }> = ({
 
         return (
           <Page key={usage.usage} size="A4" style={s.page}>
-            <Header />
-            <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 8 }}>
-              <Image src={info.image} style={{ width: 38, height: 38, marginRight: 10 }} />
-              <View>
-                <Text style={s.h1}>{info.label}</Text>
-                <View style={{ flexDirection: "row", alignItems: "center", marginTop: 2 }}>
-                  <Badge label={badge.label} bg={badge.backgroundColor} color={badge.textColor} />
-                  <Text style={{ marginLeft: 6 }}>
-                    {usage.exclu
-                      ? `${MESSAGE_USAGE_EXCLU} (rang ${usage.rang})`
-                      : `${Math.round(usage.indiceMutabilite)} % de compatibilité (rang ${usage.rang})`}
-                  </Text>
-                </View>
+            <PdfEnTete sousTitre={SOUS_TITRE} />
+            <View style={[s.usageTitre, { marginBottom: 10 }]}>
+              <Text style={[s.h1, { marginBottom: 0 }]}>Usage n°{usage.rang}</Text>
+              <View style={{ marginLeft: 12 }}>
+                <PdfBadge libelle={badge.label} couleurs={badge} grand />
               </View>
             </View>
+            <View style={s.usageTitre}>
+              <Image src={info.image} style={{ width: 24, height: 24 }} />
+              <Text style={s.usageLibelle}>{info.label}</Text>
+            </View>
 
-            {!usage.exclu && (
+            {usage.exclu ? (
+              <Text style={{ marginBottom: 10 }}>
+                <Text style={s.gras}>{MESSAGE_USAGE_EXCLU}.</Text> Les critères incompatibles sont
+                signalés dans le tableau.
+              </Text>
+            ) : (
               <>
-                <View style={s.ratioTrack}>
+                <Text>
+                  <Text style={s.gras}>
+                    {Math.round(usage.indiceMutabilite)} % de compatibilité
+                  </Text>
+                  {"    "}Indice = avantages / (avantages + contraintes)
+                </Text>
+                <View style={s.ratio}>
                   <View
                     style={{
                       width: `${partAvantages}%`,
@@ -359,40 +307,32 @@ export const MutabilitePdfDocument: React.FC<{ data: ResultatsExportData }> = ({
                     style={{ flexGrow: 1, backgroundColor: TAG_COLORS.saumon.backgroundColor }}
                   />
                 </View>
-                <View
-                  style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 3 }}
-                >
-                  <Text style={s.muted}>Avantages : {avantages.toFixed(1)}</Text>
-                  <Text style={s.muted}>Contraintes : {contraintes.toFixed(1)}</Text>
+                <View style={s.ratioLegende}>
+                  <Text>Avantages : {avantages.toFixed(1)}</Text>
+                  <Text>Contraintes : {contraintes.toFixed(1)}</Text>
                 </View>
               </>
             )}
 
-            <View style={[s.headerRow, { marginTop: 10 }]}>
-              <Text style={[s.cell, s.bold, { flexGrow: 2 }]}>Critère</Text>
-              <Text style={[s.cell, s.bold]}>Valeur</Text>
-              <Text style={[s.cellCenter, s.bold]}>Pondération</Text>
-              <Text style={[s.cellCenter, s.bold, { flexGrow: 1.5 }]}>Impact</Text>
-            </View>
+            <PdfEnTeteTableau colonnes={COLONNES_DETAIL} />
             {sections.map((section) => (
-              <View key={section.id} wrap={false}>
-                <Text style={s.subtitle}>{section.titre}</Text>
-                {section.criteres.map((c) => {
-                  const col = IMPACT_COLORS[c.impact.niveau];
-                  return (
-                    <View key={c.key} style={s.row}>
-                      <Text style={[s.cell, { flexGrow: 2 }]}>{c.label}</Text>
-                      <Text style={[s.cell, s.bold]}>{c.valeurAffichee}</Text>
-                      <Text style={s.cellCenter}>{c.poids.toFixed(1)}</Text>
-                      <View style={[s.cellCenter, { flexGrow: 1.5 }]}>
-                        <Badge label={c.impact.label} bg={col.bg} color={col.text} />
-                      </View>
-                    </View>
-                  );
-                })}
-              </View>
+              <React.Fragment key={section.id}>
+                <PdfBandeSection titre={section.titre} />
+                {section.criteres.map((c) => (
+                  <PdfLigneTableau key={c.key} colonnes={COLONNES_DETAIL}>
+                    <Text>{c.label}</Text>
+                    <Text style={s.gras}>{c.valeurAffichee}</Text>
+                    {/* Le poids est une magnitude : pas de signe, comme sur le site */}
+                    <Text style={s.gras}>{c.poids.toFixed(1)}</Text>
+                    <PdfBadge
+                      libelle={c.impact.label}
+                      couleurs={TAG_COLORS[IMPACT_TAG_VARIANT[c.impact.niveau]]}
+                    />
+                  </PdfLigneTableau>
+                ))}
+              </React.Fragment>
             ))}
-            <Footer site={nomFooter} />
+            <PdfPiedDePage segments={piedDePage} />
           </Page>
         );
       })}

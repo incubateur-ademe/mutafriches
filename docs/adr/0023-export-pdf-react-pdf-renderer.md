@@ -69,7 +69,7 @@ L'export JSON est ajouté en parallèle (objet auto-descriptif), sans nouvelle d
 - Ajouter `@react-pdf/renderer` dans `apps/ui`.
 - Créer la modale de choix de format et les composants du document PDF (`apps/ui/src/features/resultats/`).
 - Câbler le bouton existant ; conserver le tracking `INTERET_EXPORT_RESULTATS` en y ajoutant le format choisi (`pdf` / `json`).
-- Détails : police Helvetica intégrée (accents OK, zéro config) ; illustrations d'usage (PNG du podium) via `Image` ; téléchargement `mutabilite-<commune>-<date>.pdf`.
+- Détails : police Helvetica intégrée (accents OK, zéro config ; remplacée par Marianne, cf. [ADR-0054](0054-police-marianne-bloc-marque-exports-pdf.md)) ; illustrations d'usage (PNG du podium) via `Image` ; téléchargement `mutabilite-<commune>-<date>.pdf`.
 
 ## Liens
 
