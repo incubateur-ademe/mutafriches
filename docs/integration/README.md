@@ -79,7 +79,7 @@ Envoyé quand l'analyse est terminée avec les résultats complets :
     retrieveUrl: "/evaluation/uuid-de-l-evaluation",
     fiabilite: {
       note: 8.5,
-      text: "Bonne"
+      text: "Fiable"
     },
     usagePrincipal: {
       usage: "residentiel",

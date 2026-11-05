@@ -18,11 +18,11 @@
 - Colonne « Évolution » : version d'ajout du critère et versions où ses scores ont changé ; seules les modifications de scores depuis v1.12 sont détaillées, en gras. « v1.1 » : critère présent depuis l'origine.
 - Une valeur qui n'a pas de ligne ci-dessous (ex. parc naturel régional, monument historique) n'est pas scorée : le critère est ignoré pour cet usage.
 - Tranches : s = surface, d = distance, t = taux ; les bornes inclusives ou exclusives sont explicites (≤ ou <).
-- « Locaux d'activité » correspond à l'usage `tertiaire` dans l'API, l'export CNIG et Metabase.
+- Usages : libellés de l'interface, avec entre parenthèses la clé technique de l'API, de l'export CNIG et de Metabase : Habitat & commerce de proximité (`residentiel`), Équipement public (`equipements`), Équipement culturel & touristique (`culture`), Locaux d'activité (`tertiaire`), Industrie (`industrie`), Espace renaturé (`renaturation`), Centrale photovoltaïque au sol (`photovoltaique`).
 
 ## Critères enrichis automatiquement (22, poids 22.5)
 
-| Critère | Poids | Évolution | Réponse | Résidentiel | Équipements | Culture | Locaux d'activité | Industrie | Renaturation | Photovoltaïque |
+| Critère | Poids | Évolution | Réponse | Habitat & commerce de proximité | Équipement public | Équipement culturel & touristique | Locaux d'activité | Industrie | Espace renaturé | Centrale photovoltaïque au sol |
 |---|:-:|---|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
 | **Surface du site (m²)** | 2 | v1.1 ; modif. **v1.17** | < 10 000 | + | + | 0 | + | −− | 0 | −− |
 |  |  |  | 10 000 ≤ s < 15 000 | − | − | 0 | + | + | 0 | −− |
@@ -99,7 +99,7 @@
 
 ## Critères saisis (10, poids 11.5)
 
-| Critère | Poids | Évolution | Réponse | Résidentiel | Équipements | Culture | Locaux d'activité | Industrie | Renaturation | Photovoltaïque |
+| Critère | Poids | Évolution | Réponse | Habitat & commerce de proximité | Équipement public | Équipement culturel & touristique | Locaux d'activité | Industrie | Espace renaturé | Centrale photovoltaïque au sol |
 |---|:-:|---|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
 | **Type de propriétaire** | 1 | v1.1 | Public | ++ | ++ | + | 0 | 0 | + | + |
 |  |  |  | Privé | 0 | − | 0 | 0 | 0 | −− | − |
@@ -143,7 +143,7 @@ Règles binaires hors matrice : quand **toutes** les conditions sont réunies, l
 
 | Règle | Conditions | Usages exclus |
 |---|---|---|
-| Zone d'exclusion des EnR (loi APER) | Zone d'accélération des EnR (ZAER) = **Exclu des zones d'accélération ENR** | Photovoltaïque |
+| Zone d'exclusion des EnR (loi APER) | Zone d'accélération des EnR (ZAER) = **Exclu des zones d'accélération ENR** | Centrale photovoltaïque au sol |
 | Zone humide et espèces protégées | Présence de zone humide = **Oui** **et** Présence d'espèces protégées = **Oui** | Industrie, Locaux d'activité |
 
 ## Versions récentes

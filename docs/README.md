@@ -121,13 +121,13 @@ Le module d'enrichissement interroge une dizaine d'**APIs de données externes**
 
 L'algorithme calcule un **indice de mutabilité 0-100%** pour **7 usages** possibles d'une friche :
 
-1. Résidentiel ou mixte
-2. Équipements publics
-3. Culturel, touristique
+1. Habitat & commerce de proximité (`residentiel`)
+2. Équipement public (`equipements`)
+3. Équipement culturel & touristique (`culture`)
 4. Locaux d'activité (`tertiaire`)
-5. Industriel, logistique
-6. Renaturation
-7. Photovoltaïque au sol
+5. Industrie (`industrie`)
+6. Espace renaturé (`renaturation`)
+7. Centrale photovoltaïque au sol (`photovoltaique`)
 
 **Matrice** : 32 critères × 7 usages
 **Fiabilité** : Indice 0-10 selon la complétude des données d'entrée (pondéré par poids des critères)

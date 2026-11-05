@@ -215,7 +215,7 @@ Règles dans les requêtes :
 
 - **Périmètre commun** : `evaluations` hors cache et démonstration (`evaluation_source_id IS NULL AND COALESCE(integrateur, '') NOT IN ('demo', 'mutafriches')`) ; `enrichissements` en plus hors robot (`source_utilisation IS DISTINCT FROM 'PREFETCH'`) ; événements hors démonstration.
 - Ne jamais joindre `evaluations.site_id` à `enrichissements.identifiant_cadastral` (multi-parcelle, lignes multipliées). Usage humain : compter les événements ; API directe : compter les tables.
-- Libellés de l'interface (`usagesLabels.utils.ts`), jamais les clés techniques.
+- Libellés de l'interface (`USAGE_LABELS`, `packages/shared-types`), jamais les clés techniques.
 - **Dashboard 13 public** (embed signé de `/statistiques` et lien public) : tout titre, texte et description est lisible par n'importe qui, sans note interne. Ne jamais supprimer ni recréer un onglet : leurs ids sont en dur dans `metabase.service.ts`.
 - Avant de modifier une question, vérifier ses dashboards : certaines sont partagées (la carte 78 appartient au dashboard 3).
 
@@ -346,6 +346,8 @@ pnpm db:restore             # Charger un dump dans la base locale (dumps hors d�
 pnpm db:bpe:import          # Importer les données BPE (commerces INSEE)
 pnpm db:transport-stops:import  # Importer les arrêts de transport
 pnpm db:ademe-sites:import  # Importer les sites pollués ADEME
+pnpm db:ite-fret:import     # Importer les installations terminales embranchées fret (ITE, Cerema)
+pnpm db:epci:import         # Importer le découpage administratif (communes et EPCI)
 pnpm db:lovac:import        # Importer le référentiel LOVAC (logements vacants par commune)
 pnpm db:zonage-abc:import   # Importer le référentiel zonage ABC (tension du marché du logement)
 pnpm db:icu:import          # Importer le référentiel des îlots de chaleur urbain (ICU)
@@ -367,19 +369,22 @@ Le projet suit une architecture modulaire NestJS :
 
 ```
 apps/api/src/
-├── enrichissement/         # Enrichissement parcelles (APIs externes + 8 bases locales)
+├── enrichissement/         # Enrichissement parcelles (APIs externes + référentiels locaux, cf. IMPORT_DATASETS)
 │   ├── adapters/           # Clients APIs externes (IGN, Enedis, GéoRisques, ZAER...)
-│   ├── domains/            # Logique métier par domaine (cadastre, énergie, transport...)
-│   ├── dtos/               # Objets de transfert
+│   ├── services/           # Logique métier par domaine (cadastre, énergie, transport...)
+│   ├── dto/                # Objets de transfert
 │   ├── entities/           # Entités domaine
-│   └── repositories/       # Accès base de données
+│   └── repositories/       # Accès base de données (référentiels raw_*)
 ├── evaluation/             # Calcul mutabilité (matrice 32 critères × 7 usages)
-│   ├── algorithme/         # Logique de calcul pure
-│   ├── dtos/               # Objets de transfert
+│   ├── services/algorithme/ # Matrice, poids, règles d'exclusion, versions
+│   ├── dto/                # Objets de transfert
 │   └── entities/           # Entités domaine
 ├── evenements/             # Tracking événements utilisateur
 ├── stats/                  # Endpoint KPIs publics
 ├── attributaire/           # Table attributaire par commune (alimentation + route publique, ADR-0053)
+├── partenaires/            # Pages partenaires multisites et export CNIG
+├── cartofriches/           # Recherche des friches Cartofriches
+├── donnees-externes/       # Registre des imports (IMPORT_DATASETS) et monitoring des APIs
 ├── metabase/               # Intégration dashboard Metabase
 ├── shared/                 # Services, guards, database, utilitaires partagés
 │   ├── database/           # Schémas Drizzle, migrations
@@ -395,7 +400,7 @@ L'algorithme de scoring est versionné pour préserver la reproductibilité des 
 - **Référence métier** : chaque version doit pointer vers le fichier Excel de référence correspondant (matrice 32×7), conservé dans `docs/sources/` (ou équivalent)
 - **Exposition** : la version courante et la liste complète sont exposées via `GET /evaluation/metadata` et `GET /evaluation/algorithme/versions`. Toute modification doit **immédiatement** se refléter dans ces endpoints (et dans les exemples Swagger associés).
 - **Documentation OBLIGATOIRE** : toute modification de l'algorithme — ajout ou retrait d'un critère, changement de poids, de seuil, de la matrice de scoring, ou de la formule de fiabilité — DOIT être répercutée **dans le même commit** sur :
-  - `docs/evaluation-mutabilite.md` (doc métier : liste des critères, poids, poids total, formules, exemples)
+  - `docs/evaluation-mutabilite.md` (doc métier : liste des critères, poids, poids total, formules, exemples) ; `evaluation-mutabilite.doc.spec.ts` (donc `pnpm test`) échoue si ses critères, ses poids, ses décomptes ou ses libellés d'usages divergent du code
   - `docs/matrice-scoring.md` (matrice complète, **générée** : ne jamais l'éditer à la main). Régénérer avec `pnpm docs:matrice:gen` après tout changement de score, de seuil, de borne de tranche, de poids ou de règle d'exclusion ; `matrice-scoring.doc.spec.ts` (donc `pnpm test`) échoue si le fichier diverge du code. Un nouveau critère exige d'abord son entrée (nom, libellés, tranches) dans `CRITERES` de `algorithme/matrice-scoring.doc.ts`, sinon la génération échoue
   - `.claude/context/evaluation-patterns.md` (doc technique : nombre de critères, répartition enrichis/complémentaires, poids total, sémantique)
   - `packages/shared-types/src/recapitulatif/criteres.metadata.ts` (`CRITERES_METADATA` : le `poids` de chaque critère mirroir `POIDS_CRITERES` — un garde-fou casse en cas de divergence), puis régénérer `docs/sources-donnees-externes.md` via `pnpm docs:sources:gen` (la page `/documentation-donnees` et le PDF en découlent, cf. ADR-0026)
@@ -433,7 +438,8 @@ Le test dédié (`versions.spec.ts`) garantit l'ordre chronologique ascendant st
 - **IGN Itinéraire** (`data.geopf.fr/navigation`) : distance par la route jusqu'à l'entrée d'autoroute la plus proche, ~10 requêtes/s par IP (ADR-0047)
 - **ZAER WFS** (`data.geopf.fr`) : zones d'accélération des énergies renouvelables
 - **API Service Public** (`service-public.fr`) : coordonnées mairies (centre-ville)
-- **Bases locales PostGIS** : arrêts de transport (data.gouv), BPE INSEE (commerces), sites pollués ADEME
+- **Bases locales PostGIS** : arrêts de transport (data.gouv), BPE INSEE (commerces), sites pollués ADEME, installations terminales embranchées fret (`raw_ite_fret`, Cerema ITE 3000 : distance et état de l'ITE la plus proche)
+- **Référentiel local QPV** (`raw_qpv`) : quartiers prioritaires de la politique de la ville, géographie 2024 (GeoJSON ANCT), test spatial du centroïde (`pnpm db:qpv:import`, ADR-0039)
 - **Référentiel local LOVAC** (`raw_lovac`) : taux de logements vacants par commune, importé annuellement (`pnpm db:lovac:import`) — remplace l'appel live data.gouv.fr, rate-limité sous charge (cf ADR)
 - **Référentiel local Zonage ABC** (`raw_zonage_abc`) : zone A/Abis/B1/B2/C par commune, importé à chaque arrêté (`pnpm db:zonage-abc:import`) — remplace l'appel live data.gouv.fr pour la même raison (ADR-0032)
 - **Référentiel local Réseaux de chaleur** (`raw_reseaux_chaleur`) : tracés des réseaux de chaleur et de froid, importés depuis France Chaleur Urbaine (`pnpm db:reseaux-chaleur:import`) — remplace l'appel live `/v1/eligibility`, qui mesure la distance sur une géométrie partielle pour environ 8 % des réseaux (ADR-0037)

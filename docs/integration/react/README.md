@@ -86,23 +86,24 @@ const EVENTS = {
 
 ## 📝 Structure des résultats
 
-Les résultats reçus après une analyse complète :
+Les résultats reçus après une analyse complète (`data` du message `mutafriches:completed`, détail
+dans le [guide d'intégration](../README.md#message-completed)) :
 
 ```typescript
 {
-  resultats: [
-    {
-      libelle: "Usage Résidentiel ou mixte",
-      score: 68
-    },
-    // ... autres usages
+  evaluationId: "uuid-de-l-evaluation",
+  fiabilite: { note: 8.5, text: "Fiable" },
+  usagePrincipal: { usage: "residentiel", indiceMutabilite: 75.5, potentiel: "Excellent" },
+  top3Usages: [
+    { usage: "residentiel", indiceMutabilite: 75.5, rang: 1 },
+    // ... 2 autres usages
   ],
-  fiabilite: {
-    note: 9.5,
-    text: "Fiabilité excellente"
-  }
+  // ...
 }
 ```
+
+`usage` est la clé technique : pour l'afficher, reprendre les libellés de l'interface (`residentiel`
+→ « Habitat & commerce de proximité », cf. [algorithme](../../evaluation-mutabilite.md#les-7-usages-évalués)).
 
 ## 🎨 Personnalisation
 
