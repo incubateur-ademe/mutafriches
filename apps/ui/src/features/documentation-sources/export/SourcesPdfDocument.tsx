@@ -1,5 +1,5 @@
 import React from "react";
-import { Document, Image, Page, StyleSheet, Text, View } from "@react-pdf/renderer";
+import { Document, Page, StyleSheet, Text, View } from "@react-pdf/renderer";
 import {
   SOURCES_DONNEES,
   getCriteresManuels,
@@ -10,10 +10,22 @@ import {
   type CritereMetadata,
   type SourceDonnees,
 } from "@mutafriches/shared-types";
+import {
+  enregistrerPolicesPdf,
+  PDF_COULEURS,
+  PDF_GRAISSE,
+  PDF_MARGES,
+  PDF_POLICE,
+  PdfEnTete,
+  PdfPiedDePage,
+} from "@shared/pdf";
 
-const BLEU = "#000091";
-const GRIS = "#666666";
-const BORDURE = "#e5e5e5";
+enregistrerPolicesPdf();
+
+const BLEU = PDF_COULEURS.bleuFrance;
+const GRIS = PDF_COULEURS.mention;
+const BORDURE = PDF_COULEURS.filetLigne;
+const GRAS = PDF_GRAISSE.grasse;
 
 const TYPE_LABELS: Record<SourceDonnees["type"], string> = {
   "api-externe": "API externe",
@@ -22,64 +34,40 @@ const TYPE_LABELS: Record<SourceDonnees["type"], string> = {
 
 const s = StyleSheet.create({
   page: {
-    paddingTop: 92,
-    paddingBottom: 40,
-    paddingHorizontal: 32,
+    paddingTop: PDF_MARGES.haut,
+    paddingBottom: PDF_MARGES.bas,
+    paddingHorizontal: PDF_MARGES.cotes,
+    fontFamily: PDF_POLICE,
     fontSize: 9,
-    color: "#161616",
-    fontFamily: "Helvetica",
+    // Interligne résolu sur le corps du même style : chaque changement de corps le redéfinit
+    lineHeight: 1.3,
+    color: PDF_COULEURS.texte,
   },
-  header: {
-    position: "absolute",
-    top: 24,
-    left: 32,
-    right: 32,
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  rfBlock: { marginRight: 12 },
-  rfTitle: { fontSize: 7, fontFamily: "Helvetica-Bold", lineHeight: 1.1 },
-  rfDevise: { fontSize: 6, fontFamily: "Helvetica-Oblique", color: "#3a3a3a", lineHeight: 1.1 },
-  brand: { marginLeft: 6 },
-  brandTitle: { fontSize: 14, fontFamily: "Helvetica-Bold" },
-  brandSub: { fontSize: 8, color: GRIS },
-  footer: {
-    position: "absolute",
-    bottom: 18,
-    left: 32,
-    right: 32,
-    flexDirection: "row",
-    alignItems: "center",
-    fontSize: 7,
-    color: "#7b7b7b",
-  },
-  footerText: { width: "100%", textAlign: "center" },
-  footerPage: { position: "absolute", right: 0 },
-  h1: { fontSize: 18, fontFamily: "Helvetica-Bold", marginBottom: 10 },
-  h2: { fontSize: 13, fontFamily: "Helvetica-Bold", marginTop: 16, marginBottom: 8 },
+  h1: { fontSize: 18, lineHeight: 1.2, fontWeight: GRAS, marginBottom: 10 },
+  h2: { fontSize: 13, lineHeight: 1.2, fontWeight: GRAS, marginTop: 16, marginBottom: 8 },
   lead: { fontSize: 10, color: GRIS, marginBottom: 10, lineHeight: 1.4 },
   callout: {
-    backgroundColor: "#F0F4FE",
-    borderLeft: "4px solid #6A6AF4",
-    borderRadius: 3,
+    backgroundColor: PDF_COULEURS.fondEncadre,
+    borderLeft: `4px solid ${BLEU}`,
     padding: 12,
     marginBottom: 8,
   },
   sourceBlock: { marginBottom: 14 },
-  sourceTitle: { fontSize: 12, fontFamily: "Helvetica-Bold", color: BLEU, marginBottom: 2 },
-  meta: { fontSize: 8, color: GRIS, marginBottom: 4 },
+  sourceTitle: { fontSize: 12, lineHeight: 1.2, fontWeight: GRAS, color: BLEU, marginBottom: 2 },
+  meta: { fontSize: 8, lineHeight: 1.3, color: GRIS, marginBottom: 4 },
   badge: {
     fontSize: 7,
-    fontFamily: "Helvetica-Bold",
+    lineHeight: 1.2,
+    fontWeight: GRAS,
     color: "#0063CB",
     backgroundColor: "#E8EDFF",
     paddingVertical: 2,
     paddingHorizontal: 5,
     borderRadius: 3,
   },
-  subtitle: { fontSize: 9, fontFamily: "Helvetica-Bold", marginTop: 6, marginBottom: 2 },
+  subtitle: { fontWeight: GRAS, marginTop: 6, marginBottom: 2 },
   li: { marginLeft: 8, marginBottom: 1 },
-  bold: { fontFamily: "Helvetica-Bold" },
+  bold: { fontWeight: GRAS },
   muted: { color: GRIS },
   headerRow: { flexDirection: "row", borderBottom: "1.5px solid #161616", paddingVertical: 3 },
   row: {
@@ -95,34 +83,7 @@ const s = StyleSheet.create({
 const dateComplete = (): string =>
   new Date().toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
 
-const PdfHeader: React.FC = () => (
-  <View style={s.header} fixed>
-    <View style={s.rfBlock}>
-      <Text style={s.rfTitle}>RÉPUBLIQUE</Text>
-      <Text style={s.rfTitle}>FRANÇAISE</Text>
-      <Text style={s.rfDevise}>Liberté</Text>
-      <Text style={s.rfDevise}>Égalité</Text>
-      <Text style={s.rfDevise}>Fraternité</Text>
-    </View>
-    <Image src="/images/logo-ademe.png" style={{ width: 34, height: 40 }} />
-    <View style={s.brand}>
-      <Text style={s.brandTitle}>Mutafriches</Text>
-      <Text style={s.brandSub}>Documentation des sources de données</Text>
-    </View>
-  </View>
-);
-
-const PdfFooter: React.FC = () => (
-  <View style={s.footer} fixed>
-    <Text style={s.footerText}>
-      Mutafriches ADEME — Documentation des sources de données — {dateComplete()}
-    </Text>
-    <Text
-      style={s.footerPage}
-      render={({ pageNumber, totalPages }) => `${pageNumber}/${totalPages}`}
-    />
-  </View>
-);
+const TITRE = "Documentation des sources de données";
 
 const CriteresTable: React.FC<{ criteres: CritereMetadata[] }> = ({ criteres }) => (
   <View>
@@ -145,7 +106,7 @@ export const SourcesPdfDocument: React.FC = () => {
   return (
     <Document title="Mutafriches — Documentation des sources de données">
       <Page size="A4" style={s.page}>
-        <PdfHeader />
+        <PdfEnTete sousTitre={TITRE} />
         <Text style={s.h1}>Documentation des sources de données</Text>
         <Text style={s.lead}>
           Pour chaque source de données externe mobilisée par Mutafriches : les champs récupérés, la
@@ -206,7 +167,7 @@ export const SourcesPdfDocument: React.FC = () => {
           <CriteresTable criteres={criteresManuels} />
         </View>
 
-        <PdfFooter />
+        <PdfPiedDePage segments={["Mutafriches Ademe", TITRE, dateComplete()]} />
       </Page>
     </Document>
   );
