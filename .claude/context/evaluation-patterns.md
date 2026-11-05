@@ -88,13 +88,16 @@ L'algorithme évalue 32 critères pour chacun des 7 usages possibles d'une frich
 
 #### Les 7 usages
 
-1. Résidentiel
-2. Équipements
-3. Culture
+Libellés : `USAGE_LABELS` (`packages/shared-types`), seule nomenclature à employer dans l'UI,
+la doc et Metabase ; la clé technique reste celle de l'API et de l'export CNIG.
+
+1. Habitat & commerce de proximité (`residentiel`)
+2. Équipement public (`equipements`)
+3. Équipement culturel & touristique (`culture`)
 4. Locaux d'activité (`tertiaire`)
-5. Industrie
-6. Renaturation
-7. Photovoltaïque
+5. Industrie (`industrie`)
+6. Espace renaturé (`renaturation`)
+7. Centrale photovoltaïque au sol (`photovoltaique`)
 
 #### Niveaux d'impact (ScoreImpact)
 
@@ -239,7 +242,7 @@ donc après conversion d'unités et ramenage des `null`.
   registre. Absentes avant v1.16 → aucune exclusion en `?versionAlgorithme=v1.15`.
 - **Fiabilité, poids, matrice** : inchangés. `ne-sait-pas` ne déclenche jamais d'exclusion.
 - **UI** : pas de pourcentage pour un exclu, pas de place au podium, critères marqués
-  « Bloquant » dans le détail (niveau d'impact `bloquant`, `buildDetailUsage`).
+  « Incompatible » dans le détail (niveau d'impact `bloquant`, `buildDetailUsage`).
 
 ---
 
@@ -370,14 +373,17 @@ version (`peupler-attributaire --si-necessaire`). Cf. `docs/table-attributaire.m
 Les critères numériques utilisent des fonctions de scoring dans `algorithme.config.ts` :
 
 ```typescript
-// Exemple : surfaceSite
-(valeur: number) => {
-  if (valeur < 5000) return ScoreImpact.NEGATIF;
-  if (valeur < 10000) return ScoreImpact.POSITIF;
-  if (valeur < 50000) return ScoreImpact.TRES_POSITIF;
-  return ScoreImpact.NEUTRE;
-}
+// Exemple : surfaceSite, un ScoreParUsage par tranche (scores abrégés)
+surfaceSite: (value: number): ScoreParUsage => {
+  if (value < 10000) return { [UsageType.RESIDENTIEL]: ScoreImpact.POSITIF, ... };
+  if (value < 15000) return { [UsageType.RESIDENTIEL]: ScoreImpact.NEGATIF, ... };
+  if (value <= 50000) return { [UsageType.RESIDENTIEL]: ScoreImpact.NEGATIF, ... };
+  return { [UsageType.RESIDENTIEL]: ScoreImpact.NEGATIF, ... };
+},
 ```
+
+Une borne modifiée doit aussi l'être dans les `tranches` du critère (`CRITERES` de
+`matrice-scoring.doc.ts`), puis `pnpm docs:matrice:gen`.
 
 Modifier uniquement les seuils dans la fonction. Ne pas changer la structure.
 

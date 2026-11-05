@@ -1,9 +1,9 @@
 # Documentation de l'Algorithme Mutafriches
 
-> **Version doc** : 2.1
-> **Date** : Mai 2026
-> **Algorithme** : v1.19
-> **Objectif** : Évaluer la mutabilité des friches urbaines pour 7 usages potentiels
+> **Objectif** : évaluer la mutabilité des friches urbaines pour 7 usages potentiels.
+> **Version de l'algorithme** : la version courante et l'historique sont exposés par
+> `GET /evaluation/algorithme/versions` ; la [matrice de scoring](matrice-scoring.md), générée
+> depuis le code, l'affiche en tête avec les scores de chaque réponse.
 
 ---
 
@@ -21,15 +21,18 @@ Il analyse **32 critères** pour déterminer le meilleur usage futur parmi **7 p
 
 ### Les 7 usages évalués
 
-| Usage | Code | Description | Exemples |
-|-------|------|-------------|----------|
-| **Résidentiel ou mixte** | `residentiel` | Habitat et commerces de proximité | Logements sociaux, résidences, commerces en RDC |
-| **Équipements publics** | `equipements` | Services publics et collectifs | École, médiathèque, gymnase, mairie annexe |
-| **Culturel, touristique** | `culture` | Lieux culturels et d'hébergement | Musée, théâtre, hôtel, galerie d'art |
+Les libellés sont ceux de l'interface (`USAGE_LABELS`, `packages/shared-types`), à reprendre tels
+quels dans la doc et Metabase. La clé est l'identifiant technique de l'API et de l'export CNIG.
+
+| Usage | Clé | Description | Exemples |
+|-------|-----|-------------|----------|
+| **Habitat & commerce de proximité** | `residentiel` | Logements et commerces de proximité | Logements sociaux, résidences, commerces en rez-de-chaussée |
+| **Équipement public** | `equipements` | Services publics et collectifs | École, médiathèque, gymnase, mairie annexe |
+| **Équipement culturel & touristique** | `culture` | Lieux culturels et d'hébergement | Musée, théâtre, hôtel, galerie d'art |
 | **Locaux d'activité** | `tertiaire` | Bureaux, artisanat, services | Bureaux, ateliers artisanaux, cabinets et études, services |
-| **Industriel, logistique** | `industrie` | Production et stockage | Usines, entrepôts, centres de distribution |
-| **Renaturation** | `renaturation` | Espaces naturels | Parcs urbains, jardins partagés, zones humides |
-| **Photovoltaïque au sol** | `photovoltaique` | Production d'énergie solaire | Centrales photovoltaïques, fermes solaires |
+| **Industrie** | `industrie` | Production et stockage | Usines, entrepôts, centres de distribution |
+| **Espace renaturé** | `renaturation` | Espaces naturels | Parcs urbains, jardins partagés, zones humides |
+| **Centrale photovoltaïque au sol** | `photovoltaique` | Production d'énergie solaire | Centrales photovoltaïques, fermes solaires |
 
 ---
 
@@ -46,13 +49,11 @@ Il analyse **32 critères** pour déterminer le meilleur usage futur parmi **7 p
  ┌─────────────┐         ┌─────────────┐          ┌─────────────┐
  │  COLLECTE   │         │ CONSULTATION│          │   CALCUL    │
  │     DES     │  ────→  │   MATRICE   │  ────→   │     DES     │
- │  27 CRITÈRES│         │  DE SCORING │          │   POINTS    │
+ │  32 CRITÈRES│         │  DE SCORING │          │   POINTS    │
  └─────────────┘         └─────────────┘          └─────────────┘
-  État friche             32 critères ×            Score × Poids
-  Situation               7 usages =               Pour chaque
-  Réglementation          189 valeurs              usage
-  Patrimoine              
-  Écosystème              
+  22 enrichis             32 critères ×            Score × Poids
+  10 saisis               7 usages                 pour chaque
+                                                   usage
        │                        │                        │
        └────────────────────────┼────────────────────────┘
                                 ↓
@@ -61,24 +62,25 @@ Il analyse **32 critères** pour déterminer le meilleur usage futur parmi **7 p
                         │   CALCUL    │
                         │  INDICES %  │
                         └─────────────┘
-                         Positif/(P+N)
-                         pour 7 usages
+                         Avantages /
+                   (Avantages + Contraintes)
                                 ↓
                    ┌────────────┴────────────┐
                    ↓                         ↓
            ┌─────────────┐           ┌─────────────┐
            │   ÉTAPE 5   │           │   ÉTAPE 5   │
            │  CLASSEMENT │           │  FIABILITÉ  │
-           │  1er → 7ème │           │    0-10     │
+           │ et EXCLUSION│           │    0-10     │
            └─────────────┘           └─────────────┘
-             Tri par %                 Poids/34
+             Tri par %                 Poids
+             exclus en fin             renseignés / 34
 ```
 
 ### Étape 1 : Collecte des données
 
 L'algorithme collecte **32 critères** répartis en **2 sources** :
 
-- **22 critères enrichis automatiquement** via le module d'enrichissement (APIs externes)
+- **22 critères enrichis automatiquement** via le module d'enrichissement (APIs externes et référentiels locaux, cf. [enrichissement.md](enrichissement.md))
 - **10 critères complémentaires** saisis manuellement par l'utilisateur (dont `raccordementEau`, désormais dérivé automatiquement de `surfaceBati`)
 
 #### Synthèse des critères et leurs poids
@@ -93,7 +95,7 @@ L'algorithme collecte **32 critères** répartis en **2 sources** :
 
 L'algorithme utilise une **matrice de scoring unique** qui définit comment chaque valeur de critère impacte chaque usage.
 
-Cette matrice contient 32 critères × 7 usages = 224 correspondances de base (davantage avec les valeurs multiples par critère).
+Cette matrice contient 32 critères × 7 usages = 224 correspondances de base (davantage avec les valeurs multiples par critère). Sa version complète est [matrice-scoring.md](matrice-scoring.md).
 
 #### Structure de la matrice
 
@@ -103,20 +105,19 @@ Pour chaque combinaison [Critère + Valeur] × [Usage], la matrice attribue un s
 |-----------------|------|------------------|---------------|
 | **Très positif** | TP | +2 points | Critère très favorable, atout majeur pour l'usage |
 | **Positif** | P | +1 point | Critère favorable, facilite l'usage |
-| **Neutre** | N | +0.5 point | Impact minimal, ni avantage ni contrainte |
+| **Neutre** | N | 0.5 point, compté en avantages **et** en contraintes | Impact minimal, ni avantage ni contrainte |
 | **Négatif** | NEG | -1 point | Critère défavorable, complique l'usage |
-| **Très négatif** | TN | -2 points | Contrainte forte, peut bloquer l'usage |
-| **Non applicable** | - | 0 point | Donnée manquante ou "Ne sait pas" (ignoré) |
+| **Très négatif** | TN | -2 points | Contrainte forte, complique fortement l'usage |
+| **Ignoré** | - | 0 point | Donnée indisponible, sans résultat ou « Ne sait pas » (sauf distances, voir plus bas) |
 
-#### Exemple de matrice pour le critère "Propriétaire"
+#### Exemple de matrice pour le critère « Type de propriétaire »
 
-| Valeur du critère | Résidentiel | Équipements publics | Culturel | Locaux d'activité | Industriel | Renaturation | Photovoltaïque |
+| Valeur du critère | Habitat & commerce de proximité | Équipement public | Équipement culturel & touristique | Locaux d'activité | Industrie | Espace renaturé | Centrale photovoltaïque au sol |
 |-------------------|-------------|---------------------|----------|-----------|------------|--------------|----------------|
-| Public | TP (+2) | TP (+2) | P (+1) | N (+0.5) | N (+0.5) | P (+1) | P (+1) |
-| Privé | N (+0.5) | NEG (-1) | N (+0.5) | N (+0.5) | N (+0.5) | TN (-2) | NEG (-1) |
-| Copropriété | NEG (-1) | NEG (-1) | NEG (-1) | NEG (-1) | NEG (-1) | TN (-2) | NEG (-1) |
-
-La matrice complète est stockée dans un fichier de configuration et consultée pour chaque critère renseigné.
+| Public | TP (+2) | TP (+2) | P (+1) | N (0.5) | N (0.5) | P (+1) | P (+1) |
+| Privé | N (0.5) | NEG (-1) | N (0.5) | N (0.5) | N (0.5) | TN (-2) | NEG (-1) |
+| Mixte public et privé | N (0.5) | N (0.5) | N (0.5) | N (0.5) | N (0.5) | N (0.5) | N (0.5) |
+| Copropriété / Indivision | NEG (-1) | NEG (-1) | NEG (-1) | NEG (-1) | NEG (-1) | TN (-2) | NEG (-1) |
 
 ### Étape 3 : Calcul des points pondérés
 
@@ -130,7 +131,7 @@ Chaque score qualitatif de la matrice est converti en valeur numérique :
 
 - **Très positif** → +2 points
 - **Positif** → +1 point
-- **Neutre** → +0.5 point
+- **Neutre** → 0.5 point
 - **Négatif** → -1 point
 - **Très négatif** → -2 points
 
@@ -142,30 +143,31 @@ Les points sont multipliés par le poids du critère (0.5, 1 ou 2) :
 Points_pondérés = Points × Poids_critère
 ```
 
-**3. Séparation pour le calcul d'indice**
+**3. Répartition entre avantages et contraintes**
 
-Pour préparer le calcul de l'indice (étape 4), on sépare les points pondérés en deux groupes :
+- Score positif ou très positif → ajouté à la **somme des avantages**
+- Score négatif ou très négatif → ajouté, en valeur absolue, à la **somme des contraintes**
+- Score **neutre** → ajouté **aux deux sommes** à la fois
 
-- **Somme des avantages** : addition de tous les points pondérés ≥ 0
-- **Somme des contraintes** : addition de tous les points pondérés < 0 (convertis en valeur absolue)
-
-Cette séparation permet de calculer le ratio avantages/contraintes plutôt qu'une simple différence.
+Le double comptage du neutre reproduit le fichier Excel d'origine : un critère neutre rapproche
+l'indice de 50 % sans le faire basculer.
 
 #### Exemple concret
 
-| Critère | Valeur | Score pour Résidentiel | Points | Poids | Points pondérés |
-|---------|--------|------------------------|--------|-------|-----------------|
-| Propriétaire | Public | Très positif | +2 | 1 | **+2** |
-| Surface | 45 000 m² | Négatif | -1 | 2 | **-2** |
-| Centre-ville | Oui | Très positif | +2 | 2 | **+4** |
-| Pollution | Non | Très positif | +2 | 2 | **+4** |
+| Critère | Valeur | Score pour Habitat & commerce de proximité | Points | Poids | Avantages | Contraintes |
+|---------|--------|------------------------|--------|-------|-----------|-------------|
+| Type de propriétaire | Public | Très positif | +2 | 1 | 2 | |
+| Surface du site | 45 000 m² | Négatif | -1 | 2 | | 2 |
+| En centre-ville | Oui | Très positif | +2 | 1 | 2 | |
+| Présence de pollution | Non | Très positif | +2 | 2 | 4 | |
+| Distance aux transports en commun | ≥ 500 m | Neutre | 0.5 | 1 | 0.5 | 0.5 |
 
-**Résultat pour usage Résidentiel :**
+**Résultat pour l'usage Habitat & commerce de proximité :**
 
-- Somme des avantages = 2 + 4 + 4 = **10 points**
-- Somme des contraintes = |−2| = **2 points**
+- Somme des avantages = 2 + 2 + 4 + 0.5 = **8.5 points**
+- Somme des contraintes = 2 + 0.5 = **2.5 points**
 
-Ce calcul est répété pour chacun des 7 usages avec les scores correspondants de la matrice. Ces sommes seront utilisées à l'étape 4 pour calculer l'indice de mutabilité.
+Ce calcul est répété pour chacun des 7 usages avec les scores correspondants de la matrice.
 
 ### Étape 4 : Calcul de l'indice de mutabilité
 
@@ -177,6 +179,8 @@ L'indice représente le **ratio entre avantages et contraintes** pour chaque usa
 Indice = Somme_Avantages / (Somme_Avantages + Somme_Contraintes) × 100
 ```
 
+L'indice est arrondi à une décimale.
+
 #### Interprétation de l'indice
 
 - **100%** = Aucune contrainte, que des avantages
@@ -185,65 +189,75 @@ Indice = Somme_Avantages / (Somme_Avantages + Somme_Contraintes) × 100
 - **25%** = 3 fois plus de contraintes que d'avantages
 - **0%** = Aucun avantage, que des contraintes
 
-#### Cas particuliers
+#### Niveaux de potentiel
 
-- Si aucun critère n'est renseigné ou tous sont "Ne sait pas" → Indice = 0%
-- Si somme totale = 0 (cas très rare) → Indice = 0%
+| Indice | Potentiel |
+|--------|-----------|
+| ≥ 70 % | Excellent |
+| ≥ 60 % | Très bon |
+| ≥ 50 % | Bon |
+| ≥ 40 % | Moyen |
+| < 40 % | Faible |
+| Usage exclu (étape 5b) | Exclu |
+
+#### Cas particulier
+
+Si aucun critère n'est scoré (tous indisponibles ou « Ne sait pas »), les deux sommes sont
+nulles et l'indice vaut 0 %.
 
 #### Exemple de calcul
 
-Reprenons l'usage Résidentiel de l'étape 3 :
+Reprenons l'usage Habitat & commerce de proximité de l'étape 3 :
 
-- Somme des avantages = 10 points
-- Somme des contraintes = 2 points
-- **Indice = 10 / (10 + 2) × 100 = 83.3%**
+- Somme des avantages = 8.5 points
+- Somme des contraintes = 2.5 points
+- **Indice = 8.5 / (8.5 + 2.5) × 100 = 77.3%**, potentiel « Excellent »
 
-Interprétation : Cet usage présente beaucoup plus d'avantages que de contraintes.
-
-### Étape 5 : Classement et fiabilité
+### Étape 5 : Classement, exclusions et fiabilité
 
 #### 5a. Classement des usages
 
-Les 7 usages sont classés par ordre décroissant d'indice de mutabilité, les usages exclus (voir 5c) étant relégués en fin de classement :
+Les 7 usages sont classés par ordre décroissant d'indice de mutabilité, les usages exclus (voir
+5b) étant relégués en fin de classement, triés entre eux de la même façon. Le meilleur usage est
+donc toujours celui de rang 1, sauf si tous les usages sont exclus.
 
-| Rang | Usage | Indice | Signification |
-|------|-------|--------|---------------|
-| 1 | Usage avec le meilleur ratio | Ex: 83% | Prioritaire |
-| 2-3 | Usages alternatifs viables | Ex: 65-75% | À considérer |
-| 4-5 | Usages possibles mais contraints | Ex: 40-50% | Difficiles |
-| 6-7 | Usages peu adaptés | Ex: <30% | Déconseillés |
-
-#### 5c. Critères excluants (v1.16)
+#### 5b. Critères excluants (depuis v1.16)
 
 Certaines caractéristiques rendent un usage impossible, quel que soit son indice. Elles sont évaluées **après** le calcul des indices, sous forme de règles binaires indépendantes de la matrice de scoring (ADR-0048) :
 
 | Règle | Condition | Usages exclus |
 |-------|-----------|---------------|
-| Zone d'exclusion des EnR (loi APER) | `zoneAccelerationEnr` = Exclu des zones d'accélération ENR | Photovoltaïque au sol |
-| Zone humide et espèces protégées | `presenceZoneHumide` = Oui **et** `presenceEspecesProtegees` = Oui | Industrie, Locaux d'activité (tertiaire) |
+| Zone d'exclusion des EnR (loi APER) | `zoneAccelerationEnr` = Exclu des zones d'accélération ENR | Centrale photovoltaïque au sol |
+| Zone humide et espèces protégées | `presenceZoneHumide` = Oui **et** `presenceEspecesProtegees` = Oui | Industrie, Locaux d'activité |
 
 - Toutes les conditions d'une règle doivent être réunies. « Ne sait pas » ne déclenche jamais d'exclusion.
-- Un usage exclu garde son indice calculé, exposé par l'API pour compatibilité, mais il est relégué en fin de classement, avec `exclu: true`, `potentiel: "Exclu"` et la liste `criteresExcluants`. L'interface n'affiche pas son pourcentage et marque ces critères « Incompatible » dans le détail de l'usage.
+- Un usage exclu garde son indice calculé, exposé par l'API pour compatibilité, mais il est relégué en fin de classement, avec `exclu: true`, `potentiel: "Exclu"` et la liste `criteresExcluants`. L'interface n'affiche pas son pourcentage, l'écarte du podium et marque ces critères « Incompatible » dans le détail de l'usage.
 - Les poids, la matrice et la fiabilité ne changent pas.
 
-#### 5b. Indice de fiabilité
+#### 5c. Indice de fiabilité
 
 Indicateur de confiance basé sur la somme des poids des critères renseignés :
 
 ```
-Fiabilité = (Poids_critères_renseignés / Poids_total) × 10
+Fiabilité = (Poids_critères_renseignés / Poids_total) × 10, arrondie au 0.5 le plus proche
 ```
 
-Le poids total est de **34** (somme de tous les poids des 32 critères). Chaque critère contribue proportionnellement à son poids.
+Le poids total est de **34** (somme de tous les poids des 32 critères). Chaque critère contribue proportionnellement à son poids :
 
-#### Grille d'interprétation
+- **Renseigné** : toute valeur, y compris `null` (la recherche a abouti sans résultat, par exemple aucun arrêt de transport dans le rayon)
+- **Non renseigné** : `undefined` (donnée indisponible, erreur technique) et « Ne sait pas »
 
-| Fiabilité | Interprétation | Recommandation |
-|-----------|-----------------|----------------|
-| **9-10/10** | Excellente | Résultats fiables pour décision |
-| **7-8/10** | Bonne | Résultats exploitables |
-| **5-6/10** | Moyenne | Compléter les données si possible |
-| **< 5/10** | Insuffisante | Données trop partielles, prudence |
+#### Niveaux de fiabilité
+
+Libellés affichés dans l'interface (`NIVEAUX_FIABILITE`, `packages/shared-types`) :
+
+| Note | Niveau | Signification |
+|------|--------|---------------|
+| ≥ 9 | Très fiable | Analyse complète avec toutes les données disponibles |
+| ≥ 7 | Fiable | Données analysées avec un niveau de confiance élevé |
+| ≥ 5 | Moyennement fiable | Analyse partielle, certaines données manquantes |
+| ≥ 3 | Peu fiable | Données insuffisantes pour une analyse complète |
+| < 3 | Très peu fiable | Données très incomplètes, résultats indicatifs uniquement |
 
 #### Note importante
 
@@ -259,49 +273,51 @@ La fiabilité **ne modifie pas** le classement. C'est un indicateur séparé qui
 
 | # | Critère | Poids | Valeurs | Champ DTO |
 |---|---------|-------|---------|-----------|
-| 1 | **Surface du site (m²)** | 2 | < 10 000 / 10-15 000 / 15-50 000 / > 50 000 | `surfaceSite` |
-| 2 | **Surface bâtie (m²)** | 2 | < 5 000 / 5-10 000 / > 10 000 | `surfaceBati` |
-| 3 | **En centre-ville** | 1 | Oui / Non | `siteEnCentreVille` |
-| 4 | **Distance par la route à l'accès autoroutier (km ; DTO en m)** | 0.5 | < 1 / 1-2 / 2-5 / > 5 | `distanceAutoroute` |
-| 5 | **Distance transport en commun (m)** | 1 | < 500 / >= 500 | `distanceTransportCommun` |
-| 6 | **Commerces/services à proximité** | 1 | Oui / Non | `proximiteCommercesServices` |
-| 7 | **Distance raccordement électrique (km ; DTO en m)** | 1 | < 1 / 1-5 / > 5 | `distanceRaccordementElectrique` |
-| 8 | **Taux logements vacants (%)** | 1 | <= 7 / 7-8 / 8-10 / > 10 | `tauxLogementsVacants` |
-| 9 | **Risque RGA** | 0.5 | Aucun / Faible ou moyen / Fort | `risqueRetraitGonflementArgile` |
+| 1 | **Surface du site (m²)** | 2 | < 10 000 / 10 000-15 000 / 15 000-50 000 / > 50 000 | `surfaceSite` |
+| 2 | **Emprise au sol du bâti (m²)** | 2 | < 5 000 ou pas de bâti / 5 000-10 000 / > 10 000 | `surfaceBati` |
+| 3 | **En centre-ville ou centre-bourg** | 1 | Oui / Non | `siteEnCentreVille` |
+| 4 | **Distance par la route à l'accès autoroutier (km ; DTO en m)** | 0.5 | < 1 / 1-2 / 2-5 / ≥ 5 (ou aucun à moins de 50 km) | `distanceAutoroute` |
+| 5 | **Distance aux transports en commun (m)** | 1 | < 500 / ≥ 500 | `distanceTransportCommun` |
+| 6 | **Commerces et services à proximité** | 1 | Oui / Non | `proximiteCommercesServices` |
+| 7 | **Distance au raccordement électrique (km ; DTO en m)** | 1 | < 1 / 1-5 / ≥ 5 (ou aucune infrastructure trouvée) | `distanceRaccordementElectrique` |
+| 8 | **Taux de logements vacants (%)** | 1 | ≤ 7 / 7-8 / 8-10 / > 10 | `tauxLogementsVacants` |
+| 9 | **Risque retrait-gonflement des argiles** | 0.5 | Aucun / Faible ou moyen / Fort | `risqueRetraitGonflementArgile` |
 | 10 | **Risque cavités souterraines** | 0.5 | Non / Oui | `risqueCavitesSouterraines` |
 | 11 | **Risque inondation** | 1 | Non / Oui (TRI/AZI/PAPI/PPR) | `risqueInondation` |
-| 12 | **Risque technologique** | 1 | Oui / Non | `presenceRisquesTechnologiques` |
-| 13 | **Zonage environnemental** | 1 | Hors zone / Réserve naturelle / Natura 2000 / ZNIEFF / Proximité zone | `zonageEnvironnemental` |
-| 14 | **Zonage réglementaire (PLU)** | 2 | Zone U (habitat/équipement/activité) / AU / Activités / CC constructible / CC non-constructible / Agricole / Naturelle / Ne sait pas | `zonageReglementaire` |
-| 15 | **Zonage patrimonial** | 1 | Non concerné / Site inscrit-classé / Périmètre ABF | `zonagePatrimonial` |
-| 16 | **Zone ZAER (ENR)** | 1 | Non / Oui / Oui avec PV ombrière / Exclu des zones d'accélération ENR | `zoneAccelerationEnr` |
-| 17 | **Zonage ABC (logement)** | 0.5 | A / Abis / B1 / B2 / C | `zonageAbcLogement` |
-| 18 | **Distance ITE fret** | 0.5 | < 1 km (bon état) / < 1 km (mauvais état) / > 1 km | `distanceIte` |
-| 19 | **Distance réseau de chaleur (m)** | 1 | < 500 / >= 500 | `distanceReseauChaleur` |
+| 12 | **Risques technologiques** | 1 | Oui / Non | `presenceRisquesTechnologiques` |
+| 13 | **Zonage environnemental** | 1 | Hors zone / Natura 2000 / ZNIEFF type 1 / 2 / Réserve naturelle / À proximité d'une zone protégée | `zonageEnvironnemental` |
+| 14 | **Zonage réglementaire (PLU)** | 2 | Zone urbaine (U) / Zone urbaine - habitat / Zone urbaine - équipement / Zone urbaine - activité / Zone à urbaniser (AU) / Zone à vocation d'activités / Secteur ouvert à la construction / Secteur non ouvert à la construction / Secteur avec règlement d'urbanisme / Zone agricole (A) / Zone naturelle (N) | `zonageReglementaire` |
+| 15 | **Zonage patrimonial** | 1 | Non concerné / Site inscrit / classé / Périmètre ABF | `zonagePatrimonial` |
+| 16 | **Zone d'accélération des EnR (ZAER)** | 1 | Non / Oui / Oui - PV ombrière / Exclu des zones d'accélération ENR | `zoneAccelerationEnr` |
+| 17 | **Zonage ABC (tension du logement)** | 0.5 | A bis / A / B1 / B2 / C | `zonageAbcLogement` |
+| 18 | **Distance à une ITE fret** | 0.5 | Moins d'1 km, en bon état / Moins d'1 km, en mauvais état / Plus d'1 km | `distanceIte` |
+| 19 | **Distance au réseau de chaleur (m)** | 1 | < 500 / ≥ 500 (ou aucun réseau) | `distanceReseauChaleur` |
 | 20 | **Quartier prioritaire de la ville (QPV)** | 1 | Oui / Non | `siteEnQpv` |
 | 21 | **Saturation du réseau électrique pour les projets EnR** | 1 | Oui / Non (zone saturée selon la carte Enedis/RTE ; une zone en tension n'est pas saturée) | `saturationReseauEnr` |
 | 22 | **Au sein d'une zone d'activité économique** | 1 | Oui / Non (centroïde du site dans un site d'activité Fusac de type « zone d'activité économique ») | `siteEnZae` |
 
 > **Unité des distances** : `distanceAutoroute` et `distanceRaccordementElectrique` sont fournies en **mètres** par l'enrichissement (et stockées ainsi dans le DTO) puis converties en **km** à la frontière de l'algorithme (`metresVersKm` dans `extraireCriteres`, v1.10 / ADR-0027). Les seuils ci-dessus sont en km. `distanceTransportCommun` et `distanceReseauChaleur` restent en mètres des deux côtés.
 
+> **Distances sans résultat** : quand la recherche aboutit sans résultat (`null`), trois distances sont scorées dans leur tranche la plus éloignée plutôt qu'ignorées, et comptent donc dans la fiabilité : accès autoroutier (aucune entrée à moins de 50 km, ADR-0047), raccordement électrique (aucune infrastructure Enedis trouvée) et réseau de chaleur (aucun réseau exploitable, ADR-0036).
+
 > **Locaux d'activité** (v1.17) : l'usage `tertiaire` est rééquilibré vers l'artisanat et les petites activités, qui s'implantent aussi hors des centres et sur des parcelles modestes. **Centre-ville** : neutre (avant : positif), hors centre positif (avant : négatif). **Surface du site** : positif sous 1,5 ha (avant : neutre), neutre à partir de 1,5 ha (avant : négatif). **Commerces et services** : leur absence est neutre (avant : négatif) ; leur présence reste positive.
 
-> **Zone d'activité économique** (v1.18, locaux d'activité très positifs en v1.19) : en zone, **industrie** et **locaux d'activité** très positifs (v1.18 : positif pour les locaux d'activité), **résidentiel** négatif, les quatre autres usages neutres ; hors zone, neutre sur les sept usages. Donnée : base Fusac du Cerema, millésime 2025, sites d'activité de type « zone d'activité économique » en activité (hors outre-mer). Test sur le **centroïde** du site : un grand site à cheval sur une zone, centre dehors, est classé hors zone. Fusac n'est pas un zonage réglementaire : plus de la moitié des zones viennent d'OpenStreetMap, le reste de zones d'urbanisme à vocation économique (ADR-0049). Donnée indisponible (`undefined`) hors référentiel ou hors métropole : le critère est ignoré et ne compte pas dans la fiabilité.
+> **Zone d'activité économique** (v1.18, locaux d'activité très positifs en v1.19) : en zone, **Industrie** et **Locaux d'activité** très positifs (v1.18 : positif pour les locaux d'activité), **Habitat & commerce de proximité** négatif, les quatre autres usages neutres ; hors zone, neutre sur les sept usages. Donnée : base Fusac du Cerema, millésime 2025, sites d'activité de type « zone d'activité économique » en activité (hors outre-mer). Test sur le **centroïde** du site : un grand site à cheval sur une zone, centre dehors, est classé hors zone. Fusac n'est pas un zonage réglementaire : plus de la moitié des zones viennent d'OpenStreetMap, le reste de zones d'urbanisme à vocation économique (ADR-0049). Donnée indisponible (`undefined`) hors référentiel ou hors métropole : le critère est ignoré et ne compte pas dans la fiabilité.
 
-> **Accès autoroutier** : `distanceAutoroute` est la distance **par la route** jusqu'à l'entrée d'autoroute ou de voie express la plus proche (ADR-0047). Quand aucune entrée n'est à moins de 50 km (`null`), le critère est scoré dans la tranche « > 5 km » plutôt qu'ignoré : il compte donc dans la fiabilité.
+> **Accès autoroutier** : `distanceAutoroute` est la distance **par la route** jusqu'à l'entrée d'autoroute ou de voie express la plus proche (ADR-0047).
 
 ### Critères complémentaires saisis (10)
 
 | # | Critère | Poids | Valeurs | Champ DTO |
 |---|---------|-------|---------|-----------|
-| 23 | **Type de propriétaire** | 1 | Public / Privé / Copropriété-indivision / Mixte / Ne sait pas | `typeProprietaire` |
-| 24 | **Raccordement aux réseaux d'eau** | 1 | Oui / Non — dérivé automatiquement de `surfaceBati` (ADR-0019), plus saisi | `raccordementEau` |
-| 25 | **État du bâti et infrastructure** | 2 | Bâti intact / Bâti faiblement dégradé (scores identiques à intact, cf. ADR-0025) / Bâti moyennement dégradé / Bâti très dégradé / Bâti dégradé de manière hétérogène / Pas de bâti / Ne sait pas | `etatBatiInfrastructure` |
-| 26 | **Présence de pollution** | 2 | Non / Déjà gérée / Oui-composés volatils / Oui-autres composés / Oui-amiante / Ne sait pas | `presencePollution` |
-| 27 | **Valeur architecturale et historique** | 1 | Sans intérêt / Ordinaire / Intérêt remarquable / Pas de bâti / Ne sait pas | `valeurArchitecturaleHistorique` |
-| 28 | **Qualité du paysage** | 1 | Sans intérêt / Ordinaire / Intérêt remarquable / Ne sait pas | `qualitePaysage` |
-| 29 | **Qualité voie de desserte** | 0.5 | Accessible / Dégradée / Peu accessible / Ne sait pas | `qualiteVoieDesserte` |
-| 30 | **Trame verte et bleue** | 1 | Hors trame / Réservoir biodiversité / Corridor à préserver / Corridor à restaurer / Ne sait pas | `trameVerteEtBleue` |
+| 23 | **Type de propriétaire** | 1 | Public / Privé / Mixte public et privé / Copropriété / Indivision / Ne sait pas | `typeProprietaire` |
+| 24 | **Raccordement à l'eau** | 1 | Oui / Non — dérivé automatiquement de `surfaceBati` (ADR-0019), plus saisi | `raccordementEau` |
+| 25 | **État du bâti et des infrastructures** | 2 | Bâti intact / Bâti faiblement dégradé (scores identiques à intact, cf. ADR-0025) / Bâti moyennement dégradé / Bâti dégradé de manière hétérogène / Bâti très dégradé / Pas de bâti / Ne sait pas | `etatBatiInfrastructure` |
+| 26 | **Présence de pollution** | 2 | Non / Déjà gérée / Oui - composés volatils / Oui - amiante / Oui - autres composés / Ne sait pas | `presencePollution` |
+| 27 | **Valeur architecturale et historique** | 1 | Bâti sans qualité patrimoniale particulière / Bâti courant, mais cohérent avec le site / Bâti à valeur patrimoniale remarquable / Pas de bâti / Ne sait pas | `valeurArchitecturaleHistorique` |
+| 28 | **Qualité du paysage** | 1 | Paysage dégradé ou sans qualité notable / Paysage courant / Paysage remarquable / Ne sait pas | `qualitePaysage` |
+| 29 | **Qualité de la voie de desserte** | 0.5 | Accessible / Accessibilité limitée / Accessibilité dégradée / Ne sait pas | `qualiteVoieDesserte` |
+| 30 | **Trame verte et bleue** | 1 | Hors trame / Réservoir de biodiversité / Corridor à préserver / Corridor à restaurer / Ne sait pas | `trameVerteEtBleue` |
 | 31 | **Présence d'espèces protégées** | 1 | Oui / Non / Ne sait pas | `presenceEspecesProtegees` |
 | 32 | **Présence de zone humide** | 1 | Oui / Non / Ne sait pas | `presenceZoneHumide` |
 
@@ -315,6 +331,5 @@ différer de ceux affichés lors d'une évaluation faite avec une version antér
 
 ---
 
-> **Dernière mise à jour** : Octobre 2026 (algorithme v1.19)
 > **Contact** : <contact@mutafriches.beta.gouv.fr>
 > **Repository** : [https://github.com/incubateur-ademe/mutafriches](https://github.com/incubateur-ademe/mutafriches)
