@@ -272,13 +272,15 @@ export const MutabilitePdfDocument: React.FC<{ data: ResultatsExportData }> = ({
         return (
           <Page key={usage.usage} size="A4" style={s.page}>
             <PdfEnTete sousTitre={SOUS_TITRE} />
-            <Text style={[s.h1, { marginBottom: 10 }]}>Usage n°{usage.rang}</Text>
+            <View style={[s.usageTitre, { marginBottom: 10 }]}>
+              <Text style={[s.h1, { marginBottom: 0 }]}>Usage n°{usage.rang}</Text>
+              <View style={{ marginLeft: 12 }}>
+                <PdfBadge libelle={badge.label} couleurs={badge} grand />
+              </View>
+            </View>
             <View style={s.usageTitre}>
               <Image src={info.image} style={{ width: 24, height: 24 }} />
               <Text style={s.usageLibelle}>{info.label}</Text>
-              <View style={{ marginLeft: 10 }}>
-                <PdfBadge libelle={badge.label} couleurs={badge} grand />
-              </View>
             </View>
 
             {usage.exclu ? (
