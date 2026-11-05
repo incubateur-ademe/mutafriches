@@ -8,7 +8,7 @@ import { VERSION_COURANTE } from "../../services/algorithme/versions";
 
 /**
  * DTO pour la récupération d'une évaluation complète
- * Endpoint: GET /api/friches/evaluations/:id
+ * Endpoint: GET /evaluation/:id
  */
 export class EvaluationSwaggerDto {
   @ApiProperty({

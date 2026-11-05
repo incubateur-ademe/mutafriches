@@ -19,10 +19,10 @@ import { SiteRecapBanner } from "../components/SiteRecapBanner";
 import { SiteRecapModal } from "../components/SiteRecapModal";
 import { UsageDetailModal } from "../components/UsageDetailModal";
 import { getUsagesPodium } from "../utils/usagesLabels.utils";
+import { buildIframeEvaluationSummary } from "../utils/iframeSummary.mapper";
 import { useFormContext } from "../../../shared/form/useFormContext";
 import { useIframe, useIframeCallback, useIsIframeMode } from "../../../shared/iframe/useIframe";
 import { createIframeCommunicator } from "../../../shared/iframe/iframeCommunication";
-import { IframeEvaluationSummaryDto } from "../../../shared/iframe/iframe.types";
 import { evaluationService } from "../../../shared/services/api/api.evaluation.service";
 import { ModalInfo } from "../../../shared/components/common/ModalInfo";
 import { ExportModal, type ExportSelection } from "../components/ExportModal";
@@ -31,7 +31,6 @@ import { buildResultatsJson } from "../export/buildResultatsJson";
 import { downloadBlob, exportFileName } from "../export/downloadFile";
 import type { ResultatsExportData } from "../export/types";
 import { ContactMultisitesModal } from "../components/ContactMultisitesModal";
-import { VERSION_ALGO } from "@mutafriches/shared-types";
 import { DebugPanelGate } from "../../debug/components/DebugPanelGate";
 import { ComparaisonAlgoPanelGate } from "../../comparaison-algo/components/ComparaisonAlgoPanelGate";
 
@@ -90,34 +89,11 @@ export const ResultatsPage: React.FC = () => {
     (results: MutabiliteOutputDto) => {
       if (!isIframeMode || !iframeCommunicator) return;
 
-      // Données détaillées renvoyées vers l'intégrateur
-      const evaluationSummary: IframeEvaluationSummaryDto = {
-        evaluationId: results.evaluationId || "",
-        identifiantParcelle: state.identifiantSite || "",
-        retrieveUrl: `/friches/evaluations/${results.evaluationId}`,
-        fiabilite: {
-          note: results.fiabilite.note,
-          text: results.fiabilite.text,
-        },
-        usagePrincipal: {
-          usage: results.resultats[0].usage,
-          indiceMutabilite: results.resultats[0].indiceMutabilite,
-          potentiel: results.resultats[0].potentiel || "",
-        },
-        top3Usages: getUsagesPodium(results.resultats).map((r) => ({
-          usage: r.usage,
-          indiceMutabilite: r.indiceMutabilite,
-          rang: r.rang,
-        })),
-        metadata: {
-          dateAnalyse: new Date().toISOString(),
-          versionAlgorithme: VERSION_ALGO,
-        },
-      };
-
-      iframeCommunicator.sendCompleted(evaluationSummary);
+      iframeCommunicator.sendCompleted(
+        buildIframeEvaluationSummary(results, state.enrichmentData, state.identifiantSite),
+      );
     },
-    [isIframeMode, iframeCommunicator, state.identifiantSite],
+    [isIframeMode, iframeCommunicator, state.enrichmentData, state.identifiantSite],
   );
 
   // Fonction pour calculer la mutabilité

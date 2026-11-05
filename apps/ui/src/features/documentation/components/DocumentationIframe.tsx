@@ -244,8 +244,9 @@ export function DocumentationIframe() {
   data: {
     evaluationId: "uuid-de-l-evaluation",
     identifiantParcelle: "49353000AV0202",
-    retrieveUrl: "/evaluation/uuid",
-    fiabilite: { note: 8.5, text: "Bonne" },
+    identifiantsParcelles: ["49353000AV0202"],
+    retrieveUrl: "/evaluation/uuid-de-l-evaluation",
+    fiabilite: { note: 8.5, text: "Fiable" },
     usagePrincipal: {
       usage: "residentiel",
       indiceMutabilite: 75.5,
@@ -256,6 +257,12 @@ export function DocumentationIframe() {
 }`}</code>
               </pre>
             </div>
+            <p className="fr-text--sm">
+              En multi-parcelle, <code>identifiantParcelle</code> joint les identifiants par des
+              virgules et <code>identifiantsParcelles</code> en donne la liste.{" "}
+              <code>retrieveUrl</code> est le chemin de <code>GET /evaluation/:id</code>, à préfixer
+              par le domaine Mutafriches pour récupérer l'évaluation complète.
+            </p>
           </div>
         </section>
 
