@@ -9,21 +9,10 @@ import { buildDetailUsage } from "@mutafriches/shared-types";
 import { DsfrAccordion } from "@shared/components/dsfr/DsfrAccordion";
 import { UsageDetailTable, UsageRatioBar } from "@shared/components/recap";
 import { getMutabilityColor } from "../../utils/debug.helpers";
-import { BADGE_EXCLU } from "@features/resultats/utils/usagesLabels.utils";
+import { BADGE_EXCLU, getUsageInfo } from "@features/resultats/utils/usagesLabels.utils";
 
 const couleurUsage = (r: UsageResultatDetaille): string =>
   r.exclu ? BADGE_EXCLU.backgroundColor : getMutabilityColor(r.indiceMutabilite);
-
-/** Labels français pour les types d'usage */
-const USAGE_LABELS: Record<string, string> = {
-  residentiel: "Résidentiel",
-  equipements: "Équipements publics",
-  culture: "Culture et loisirs",
-  tertiaire: "Tertiaire",
-  industrie: "Industrie",
-  renaturation: "Renaturation",
-  photovoltaique: "Photovoltaïque",
-};
 
 interface DetailAlgorithmeSectionProps {
   mutabilityData: MutabiliteOutputDto | null;
@@ -76,7 +65,7 @@ export const DetailAlgorithmeSection: React.FC<DetailAlgorithmeSectionProps> = (
               backgroundColor: r.usage === activeUsage ? couleurUsage(r) : undefined,
             }}
           >
-            <span className="detail-algo__usage-btn-label">{USAGE_LABELS[r.usage] ?? r.usage}</span>
+            <span className="detail-algo__usage-btn-label">{getUsageInfo(r.usage).label}</span>
             <span className="detail-algo__usage-btn-score">
               {r.exclu ? "Exclu" : `${r.indiceMutabilite}%`}
             </span>

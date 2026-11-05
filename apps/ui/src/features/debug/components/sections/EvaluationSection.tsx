@@ -2,18 +2,7 @@ import React from "react";
 import { MutabiliteOutputDto } from "@mutafriches/shared-types";
 import { DsfrAccordion } from "@shared/components/dsfr/DsfrAccordion";
 import { getMutabilityColor, getMutabilityLabel } from "../../utils/debug.helpers";
-import { BADGE_EXCLU } from "@features/resultats/utils/usagesLabels.utils";
-
-/** Labels francais pour les types d'usage */
-const USAGE_LABELS: Record<string, string> = {
-  residentiel: "R\u00E9sidentiel",
-  equipements: "\u00C9quipements publics",
-  culture: "Culture et loisirs",
-  tertiaire: "Tertiaire",
-  industrie: "Industrie",
-  renaturation: "Renaturation",
-  photovoltaique: "Photovolta\u00EFque",
-};
+import { BADGE_EXCLU, getUsageInfo } from "@features/resultats/utils/usagesLabels.utils";
 
 interface EvaluationSectionProps {
   mutabilityData: MutabiliteOutputDto | null;
@@ -102,7 +91,7 @@ export const EvaluationSection: React.FC<EvaluationSectionProps> = ({
           {resultats.map((r) => (
             <tr key={r.usage}>
               <td>{r.rang}</td>
-              <td>{USAGE_LABELS[r.usage] ?? r.usage}</td>
+              <td>{getUsageInfo(r.usage).label}</td>
               <td>
                 {r.exclu ? (
                   <span className="fr-text--xs">Usage bloqué</span>

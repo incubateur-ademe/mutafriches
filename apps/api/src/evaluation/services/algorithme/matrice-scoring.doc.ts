@@ -19,6 +19,7 @@ import {
   ZONAGE_PATRIMONIAL_LABELS,
   ZONAGE_REGLEMENTAIRE_LABELS,
   ZONE_ACCELERATION_ENR_LABELS,
+  USAGE_LABELS,
   UsageType,
 } from "@mutafriches/shared-types";
 import { MATRICE_SCORING, POIDS_CRITERES, REGLES_EXCLUSION } from "./algorithme.config";
@@ -44,15 +45,11 @@ interface DefinitionCritere {
   tranches?: [string, number | undefined][];
 }
 
-const USAGES: { cle: string; nom: string }[] = [
-  { cle: UsageType.RESIDENTIEL, nom: "Résidentiel" },
-  { cle: UsageType.EQUIPEMENTS, nom: "Équipements" },
-  { cle: UsageType.CULTURE, nom: "Culture" },
-  { cle: UsageType.TERTIAIRE, nom: "Locaux d'activité" },
-  { cle: UsageType.INDUSTRIE, nom: "Industrie" },
-  { cle: UsageType.RENATURATION, nom: "Renaturation" },
-  { cle: UsageType.PHOTOVOLTAIQUE, nom: "Photovoltaïque" },
-];
+// Ordre des colonnes : celui de l'enum, repris par l'API et l'export CNIG
+const USAGES: { cle: UsageType; nom: string }[] = Object.values(UsageType).map((cle) => ({
+  cle,
+  nom: USAGE_LABELS[cle],
+}));
 
 const SYMBOLES: Record<string, string> = { "2": "++", "1": "+", "0.5": "0", "-1": "−", "-2": "−−" };
 
@@ -358,7 +355,7 @@ export function genererMatriceScoringMarkdown(): string {
 - Colonne « Évolution » : version d'ajout du critère et versions où ses scores ont changé ; seules les modifications de scores depuis v1.${VERSION_RECENTE_MIN} sont détaillées, en gras. « v1.1 » : critère présent depuis l'origine.
 - Une valeur qui n'a pas de ligne ci-dessous (ex. parc naturel régional, monument historique) n'est pas scorée : le critère est ignoré pour cet usage.
 - Tranches : s = surface, d = distance, t = taux ; les bornes inclusives ou exclusives sont explicites (≤ ou <).
-- « Locaux d'activité » correspond à l'usage \`tertiaire\` dans l'API, l'export CNIG et Metabase.
+- Usages : libellés de l'interface, avec entre parenthèses la clé technique de l'API, de l'export CNIG et de Metabase : ${USAGES.map((u) => `${u.nom} (\`${u.cle}\`)`).join(", ")}.
 
 ## Critères enrichis automatiquement (${enrichis.length}, poids ${somme(enrichis)})
 

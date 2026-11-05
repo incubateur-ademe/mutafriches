@@ -1,4 +1,4 @@
-import { UsageResultat, UsageType } from "@mutafriches/shared-types";
+import { USAGE_LABELS, UsageResultat, UsageType } from "@mutafriches/shared-types";
 import { TAG_COLORS, TagVariant } from "@shared/components/tag";
 
 /** Configuration complète d'un usage pour l'affichage */
@@ -10,7 +10,7 @@ interface UsageConfig {
 
 const USAGE_CONFIG: Record<UsageType, UsageConfig> = {
   [UsageType.RESIDENTIEL]: {
-    label: "Habitat & commerce de proximité",
+    label: USAGE_LABELS[UsageType.RESIDENTIEL],
     image: "/illustrations/podium/habitats.png",
     tags: [
       "taille de la parcelle",
@@ -22,7 +22,7 @@ const USAGE_CONFIG: Record<UsageType, UsageConfig> = {
     ],
   },
   [UsageType.EQUIPEMENTS]: {
-    label: "Équipement public",
+    label: USAGE_LABELS[UsageType.EQUIPEMENTS],
     image: "/illustrations/podium/equipement-public.png",
     tags: [
       "taille de la parcelle",
@@ -34,7 +34,7 @@ const USAGE_CONFIG: Record<UsageType, UsageConfig> = {
     ],
   },
   [UsageType.CULTURE]: {
-    label: "Équipement culturel & touristique",
+    label: USAGE_LABELS[UsageType.CULTURE],
     image: "/illustrations/podium/equipement-culturel.png",
     tags: [
       "état du bâti",
@@ -46,7 +46,7 @@ const USAGE_CONFIG: Record<UsageType, UsageConfig> = {
     ],
   },
   [UsageType.TERTIAIRE]: {
-    label: "Locaux d'activité",
+    label: USAGE_LABELS[UsageType.TERTIAIRE],
     image: "/illustrations/podium/locaux-activite.png",
     tags: [
       "présence de pollution",
@@ -58,7 +58,7 @@ const USAGE_CONFIG: Record<UsageType, UsageConfig> = {
     ],
   },
   [UsageType.INDUSTRIE]: {
-    label: "Industrie",
+    label: USAGE_LABELS[UsageType.INDUSTRIE],
     image: "/illustrations/podium/industrie.png",
     tags: [
       "taille de la parcelle",
@@ -70,7 +70,7 @@ const USAGE_CONFIG: Record<UsageType, UsageConfig> = {
     ],
   },
   [UsageType.RENATURATION]: {
-    label: "Espace renaturé",
+    label: USAGE_LABELS[UsageType.RENATURATION],
     image: "/illustrations/podium/espace-renature.png",
     tags: [
       "type de propriétaire",
@@ -82,7 +82,7 @@ const USAGE_CONFIG: Record<UsageType, UsageConfig> = {
     ],
   },
   [UsageType.PHOTOVOLTAIQUE]: {
-    label: "Centrale photovoltaïque au sol",
+    label: USAGE_LABELS[UsageType.PHOTOVOLTAIQUE],
     image: "/illustrations/podium/centrale-photovoltaique.png",
     tags: [
       "taille de la parcelle",
