@@ -14,6 +14,7 @@ d'architecture (pour le déploiement lui-même, voir la section Scalingo du
 | Restaurer un dump en local, purger les caches, migrer        | [`db-local.md`](./db-local.md) |
 | Libérer le port 3000                                         | [`db-local.md`](./db-local.md#port-3000-déjà-pris) |
 | Remplir ou recalculer la table attributaire                  | [`../table-attributaire.md`](../table-attributaire.md#peuplement) |
+| Ajouter ou mettre à jour un fond de carte Metabase (EPCI)    | [`metabase/README.md`](./metabase/README.md) |
 
 ## Deux règles pour tout ce dossier
 
