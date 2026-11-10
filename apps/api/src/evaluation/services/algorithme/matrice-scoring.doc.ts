@@ -21,12 +21,14 @@ import {
   ZONE_ACCELERATION_ENR_LABELS,
   USAGE_LABELS,
   UsageType,
+  type CritereMatriceDoc,
 } from "@mutafriches/shared-types";
 import { MATRICE_SCORING, POIDS_CRITERES, REGLES_EXCLUSION } from "./algorithme.config";
 import { ScoreParUsage } from "./algorithme.types";
 import { ALGORITHME_VERSIONS, VERSION_COURANTE } from "./versions";
 
-// Génère docs/matrice-scoring.md depuis le code : `pnpm docs:matrice:gen`, garde-fou dans le spec associé.
+// Génère docs/matrice-scoring.md et les données de la page « Comprendre les analyses » depuis le code :
+// `pnpm docs:matrice:gen`, garde-fou dans le spec associé.
 
 type Libelles = Record<string, string>;
 type Scores = Record<string, number>;
@@ -207,6 +209,14 @@ export function cheminDocMatrice(): string {
   return resolve(__dirname, "../../../../../../docs/matrice-scoring.md");
 }
 
+// Données de la page UI « Comprendre les analyses », servies par shared-types
+export function cheminDonneesMatrice(): string {
+  return resolve(
+    __dirname,
+    "../../../../../../packages/shared-types/src/documentation/matrice-scoring.data.json",
+  );
+}
+
 function numeroVersion(version: string): number {
   return Number(version.replace("v1.", ""));
 }
@@ -244,8 +254,13 @@ function lignesCritere(matrice: Record<string, unknown>, critere: DefinitionCrit
   }));
 }
 
+interface Evolution {
+  ajout: string;
+  modifications: string[];
+}
+
 // Version d'ajout et versions récentes où les scores du critère ont changé
-function evolutionCritere(critere: DefinitionCritere): string {
+function evolutionCritere(critere: DefinitionCritere): Evolution {
   let signaturePrecedente: string | undefined;
   let ajout = "";
   const modifications: string[] = [];
@@ -262,6 +277,10 @@ function evolutionCritere(critere: DefinitionCritere): string {
     signaturePrecedente = signature;
   }
 
+  return { ajout, modifications };
+}
+
+function formaterEvolution({ ajout, modifications }: Evolution): string {
   const gras = (version: string): string =>
     numeroVersion(version) >= VERSION_RECENTE_MIN ? `**${version}**` : version;
   const parties = [ajout === "v1.1" ? "v1.1" : `ajout ${gras(ajout)}`];
@@ -281,7 +300,7 @@ function tableau(criteres: DefinitionCritere[]): string {
       const cellules = USAGES.map((u) => SYMBOLES[String(ligne.scores[u.cle])] ?? "?");
       const premiere = index === 0;
       sortie.push(
-        `| ${premiere ? `**${critere.nom}**` : ""} | ${premiere ? poids[critere.cle] : ""} | ${premiere ? evolutionCritere(critere) : ""} | ${ligne.reponse} | ${cellules.join(" | ")} |`,
+        `| ${premiere ? `**${critere.nom}**` : ""} | ${premiere ? poids[critere.cle] : ""} | ${premiere ? formaterEvolution(evolutionCritere(critere)) : ""} | ${ligne.reponse} | ${cellules.join(" | ")} |`,
       );
     });
   }
@@ -315,6 +334,35 @@ function verifierCouverture(): void {
     if (!LIBELLES_REGLES[regle.id])
       throw new Error(`Libellé manquant pour la règle d'exclusion « ${regle.id} »`);
   }
+}
+
+export function genererMatriceScoringDonnees(): CritereMatriceDoc[] {
+  verifierCouverture();
+  const poids = POIDS_CRITERES as Record<string, number>;
+  return CRITERES.map((critere) => {
+    const { ajout, modifications } = evolutionCritere(critere);
+    return {
+      cle: critere.cle,
+      nom: critere.nom,
+      poids: poids[critere.cle],
+      versionAjout: ajout,
+      versionsModification: modifications,
+      lignes: lignesCritere(MATRICE_SCORING as Record<string, unknown>, critere).map((ligne) => ({
+        reponse: ligne.reponse,
+        // Ordre des usages figé, usages non scorés omis
+        scores: Object.fromEntries(
+          USAGES.filter((u) => ligne.scores[u.cle] !== undefined).map((u) => [
+            u.cle,
+            ligne.scores[u.cle],
+          ]),
+        ),
+      })),
+    };
+  });
+}
+
+export function serialiserMatriceScoringDonnees(): string {
+  return `${JSON.stringify(genererMatriceScoringDonnees(), null, 2)}\n`;
 }
 
 export function genererMatriceScoringMarkdown(): string {

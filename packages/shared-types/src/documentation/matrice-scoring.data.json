@@ -1,0 +1,1584 @@
+[
+  {
+    "cle": "surfaceSite",
+    "nom": "Surface du site (m²)",
+    "poids": 2,
+    "versionAjout": "v1.1",
+    "versionsModification": [
+      "v1.17"
+    ],
+    "lignes": [
+      {
+        "reponse": "< 10 000",
+        "scores": {
+          "residentiel": 1,
+          "equipements": 1,
+          "culture": 0.5,
+          "tertiaire": 1,
+          "industrie": -2,
+          "renaturation": 0.5,
+          "photovoltaique": -2
+        }
+      },
+      {
+        "reponse": "10 000 ≤ s < 15 000",
+        "scores": {
+          "residentiel": -1,
+          "equipements": -1,
+          "culture": 0.5,
+          "tertiaire": 1,
+          "industrie": 1,
+          "renaturation": 0.5,
+          "photovoltaique": -2
+        }
+      },
+      {
+        "reponse": "15 000 ≤ s ≤ 50 000",
+        "scores": {
+          "residentiel": -1,
+          "equipements": -1,
+          "culture": 0.5,
+          "tertiaire": 0.5,
+          "industrie": 1,
+          "renaturation": 0.5,
+          "photovoltaique": 1
+        }
+      },
+      {
+        "reponse": "> 50 000",
+        "scores": {
+          "residentiel": -1,
+          "equipements": -1,
+          "culture": 0.5,
+          "tertiaire": 0.5,
+          "industrie": 2,
+          "renaturation": 0.5,
+          "photovoltaique": 2
+        }
+      }
+    ]
+  },
+  {
+    "cle": "surfaceBati",
+    "nom": "Emprise au sol du bâti (m²)",
+    "poids": 2,
+    "versionAjout": "v1.1",
+    "versionsModification": [],
+    "lignes": [
+      {
+        "reponse": "< 5 000 ou pas de bâti",
+        "scores": {
+          "residentiel": 1,
+          "equipements": 0.5,
+          "culture": 0.5,
+          "tertiaire": 0.5,
+          "industrie": -2,
+          "renaturation": 1,
+          "photovoltaique": 1
+        }
+      },
+      {
+        "reponse": "5 000 ≤ s ≤ 10 000",
+        "scores": {
+          "residentiel": 1,
+          "equipements": 0.5,
+          "culture": 0.5,
+          "tertiaire": 0.5,
+          "industrie": -1,
+          "renaturation": 0.5,
+          "photovoltaique": 0.5
+        }
+      },
+      {
+        "reponse": "> 10 000",
+        "scores": {
+          "residentiel": -1,
+          "equipements": 0.5,
+          "culture": 0.5,
+          "tertiaire": 0.5,
+          "industrie": 1,
+          "renaturation": -1,
+          "photovoltaique": -1
+        }
+      }
+    ]
+  },
+  {
+    "cle": "siteEnCentreVille",
+    "nom": "En centre-ville ou centre-bourg",
+    "poids": 1,
+    "versionAjout": "v1.1",
+    "versionsModification": [
+      "v1.17"
+    ],
+    "lignes": [
+      {
+        "reponse": "Oui",
+        "scores": {
+          "residentiel": 2,
+          "equipements": 1,
+          "culture": 0.5,
+          "tertiaire": 0.5,
+          "industrie": -2,
+          "renaturation": 0.5,
+          "photovoltaique": -2
+        }
+      },
+      {
+        "reponse": "Non",
+        "scores": {
+          "residentiel": -2,
+          "equipements": -1,
+          "culture": 0.5,
+          "tertiaire": 1,
+          "industrie": 2,
+          "renaturation": 1,
+          "photovoltaique": 1
+        }
+      }
+    ]
+  },
+  {
+    "cle": "distanceAutoroute",
+    "nom": "Distance par la route à l'accès autoroutier",
+    "poids": 0.5,
+    "versionAjout": "v1.1",
+    "versionsModification": [],
+    "lignes": [
+      {
+        "reponse": "< 1 km",
+        "scores": {
+          "residentiel": 0.5,
+          "equipements": 0.5,
+          "culture": 0.5,
+          "tertiaire": 0.5,
+          "industrie": 2,
+          "renaturation": 0.5,
+          "photovoltaique": -1
+        }
+      },
+      {
+        "reponse": "1 ≤ d < 2 km",
+        "scores": {
+          "residentiel": 0.5,
+          "equipements": 0.5,
+          "culture": 0.5,
+          "tertiaire": 0.5,
+          "industrie": 1,
+          "renaturation": 0.5,
+          "photovoltaique": 1
+        }
+      },
+      {
+        "reponse": "2 ≤ d < 5 km",
+        "scores": {
+          "residentiel": 0.5,
+          "equipements": 0.5,
+          "culture": 0.5,
+          "tertiaire": 0.5,
+          "industrie": -1,
+          "renaturation": 0.5,
+          "photovoltaique": 1
+        }
+      },
+      {
+        "reponse": "≥ 5 km (ou aucun à moins de 50 km)",
+        "scores": {
+          "residentiel": 0.5,
+          "equipements": 0.5,
+          "culture": 0.5,
+          "tertiaire": 0.5,
+          "industrie": -2,
+          "renaturation": 0.5,
+          "photovoltaique": -1
+        }
+      }
+    ]
+  },
+  {
+    "cle": "distanceTransportCommun",
+    "nom": "Distance aux transports en commun",
+    "poids": 1,
+    "versionAjout": "v1.1",
+    "versionsModification": [],
+    "lignes": [
+      {
+        "reponse": "< 500 m",
+        "scores": {
+          "residentiel": 1,
+          "equipements": 1,
+          "culture": 1,
+          "tertiaire": 1,
+          "industrie": 1,
+          "renaturation": 0.5,
+          "photovoltaique": 0.5
+        }
+      },
+      {
+        "reponse": "≥ 500 m",
+        "scores": {
+          "residentiel": 0.5,
+          "equipements": 0.5,
+          "culture": 0.5,
+          "tertiaire": 0.5,
+          "industrie": 0.5,
+          "renaturation": 0.5,
+          "photovoltaique": 0.5
+        }
+      }
+    ]
+  },
+  {
+    "cle": "proximiteCommercesServices",
+    "nom": "Commerces et services à proximité",
+    "poids": 1,
+    "versionAjout": "v1.1",
+    "versionsModification": [
+      "v1.17"
+    ],
+    "lignes": [
+      {
+        "reponse": "Oui",
+        "scores": {
+          "residentiel": 2,
+          "equipements": 2,
+          "culture": 0.5,
+          "tertiaire": 1,
+          "industrie": 0.5,
+          "renaturation": 0.5,
+          "photovoltaique": -1
+        }
+      },
+      {
+        "reponse": "Non",
+        "scores": {
+          "residentiel": -1,
+          "equipements": -1,
+          "culture": 0.5,
+          "tertiaire": 0.5,
+          "industrie": 0.5,
+          "renaturation": 0.5,
+          "photovoltaique": 0.5
+        }
+      }
+    ]
+  },
+  {
+    "cle": "distanceRaccordementElectrique",
+    "nom": "Distance au raccordement électrique",
+    "poids": 1,
+    "versionAjout": "v1.1",
+    "versionsModification": [],
+    "lignes": [
+      {
+        "reponse": "< 1 km",
+        "scores": {
+          "residentiel": 0.5,
+          "equipements": 0.5,
+          "culture": 0.5,
+          "tertiaire": 0.5,
+          "industrie": 0.5,
+          "renaturation": 0.5,
+          "photovoltaique": 2
+        }
+      },
+      {
+        "reponse": "1 ≤ d < 5 km",
+        "scores": {
+          "residentiel": 0.5,
+          "equipements": 0.5,
+          "culture": 0.5,
+          "tertiaire": 0.5,
+          "industrie": 0.5,
+          "renaturation": 0.5,
+          "photovoltaique": -1
+        }
+      },
+      {
+        "reponse": "≥ 5 km (ou aucune infrastructure trouvée)",
+        "scores": {
+          "residentiel": 0.5,
+          "equipements": 0.5,
+          "culture": 0.5,
+          "tertiaire": 0.5,
+          "industrie": 0.5,
+          "renaturation": 0.5,
+          "photovoltaique": -2
+        }
+      }
+    ]
+  },
+  {
+    "cle": "distanceReseauChaleur",
+    "nom": "Distance au réseau de chaleur",
+    "poids": 1,
+    "versionAjout": "v1.13",
+    "versionsModification": [],
+    "lignes": [
+      {
+        "reponse": "< 500 m",
+        "scores": {
+          "residentiel": 2,
+          "equipements": 2,
+          "culture": 2,
+          "tertiaire": 1,
+          "industrie": 0.5,
+          "renaturation": 0.5,
+          "photovoltaique": 0.5
+        }
+      },
+      {
+        "reponse": "≥ 500 m (ou aucun réseau)",
+        "scores": {
+          "residentiel": 0.5,
+          "equipements": 0.5,
+          "culture": 0.5,
+          "tertiaire": 0.5,
+          "industrie": 0.5,
+          "renaturation": 0.5,
+          "photovoltaique": 0.5
+        }
+      }
+    ]
+  },
+  {
+    "cle": "tauxLogementsVacants",
+    "nom": "Taux de logements vacants (%)",
+    "poids": 1,
+    "versionAjout": "v1.1",
+    "versionsModification": [],
+    "lignes": [
+      {
+        "reponse": "≤ 7 %",
+        "scores": {
+          "residentiel": 2,
+          "equipements": 0.5,
+          "culture": 0.5,
+          "tertiaire": 0.5,
+          "industrie": 0.5,
+          "renaturation": 0.5,
+          "photovoltaique": 0.5
+        }
+      },
+      {
+        "reponse": "7 < t ≤ 8 %",
+        "scores": {
+          "residentiel": 1,
+          "equipements": 0.5,
+          "culture": 0.5,
+          "tertiaire": 0.5,
+          "industrie": 0.5,
+          "renaturation": 0.5,
+          "photovoltaique": 0.5
+        }
+      },
+      {
+        "reponse": "8 < t ≤ 10 %",
+        "scores": {
+          "residentiel": -1,
+          "equipements": 0.5,
+          "culture": 0.5,
+          "tertiaire": 0.5,
+          "industrie": 0.5,
+          "renaturation": 0.5,
+          "photovoltaique": 0.5
+        }
+      },
+      {
+        "reponse": "> 10 %",
+        "scores": {
+          "residentiel": -2,
+          "equipements": 0.5,
+          "culture": 0.5,
+          "tertiaire": 0.5,
+          "industrie": 0.5,
+          "renaturation": 0.5,
+          "photovoltaique": 0.5
+        }
+      }
+    ]
+  },
+  {
+    "cle": "risqueRetraitGonflementArgile",
+    "nom": "Risque retrait-gonflement des argiles",
+    "poids": 0.5,
+    "versionAjout": "v1.4",
+    "versionsModification": [],
+    "lignes": [
+      {
+        "reponse": "Aucun",
+        "scores": {
+          "residentiel": 0.5,
+          "equipements": 0.5,
+          "culture": 0.5,
+          "tertiaire": 0.5,
+          "industrie": 0.5,
+          "renaturation": 0.5,
+          "photovoltaique": 0.5
+        }
+      },
+      {
+        "reponse": "Faible ou moyen",
+        "scores": {
+          "residentiel": 0.5,
+          "equipements": 0.5,
+          "culture": 0.5,
+          "tertiaire": 0.5,
+          "industrie": 0.5,
+          "renaturation": 0.5,
+          "photovoltaique": 0.5
+        }
+      },
+      {
+        "reponse": "Fort",
+        "scores": {
+          "residentiel": -1,
+          "equipements": -1,
+          "culture": -1,
+          "tertiaire": -1,
+          "industrie": -1,
+          "renaturation": 1,
+          "photovoltaique": 0.5
+        }
+      }
+    ]
+  },
+  {
+    "cle": "risqueCavitesSouterraines",
+    "nom": "Risque cavités souterraines",
+    "poids": 0.5,
+    "versionAjout": "v1.4",
+    "versionsModification": [],
+    "lignes": [
+      {
+        "reponse": "Non",
+        "scores": {
+          "residentiel": 0.5,
+          "equipements": 0.5,
+          "culture": 0.5,
+          "tertiaire": 0.5,
+          "industrie": 0.5,
+          "renaturation": 0.5,
+          "photovoltaique": 0.5
+        }
+      },
+      {
+        "reponse": "Oui",
+        "scores": {
+          "residentiel": -1,
+          "equipements": -1,
+          "culture": -1,
+          "tertiaire": -1,
+          "industrie": -1,
+          "renaturation": 1,
+          "photovoltaique": 0.5
+        }
+      }
+    ]
+  },
+  {
+    "cle": "risqueInondation",
+    "nom": "Risque inondation",
+    "poids": 1,
+    "versionAjout": "v1.4",
+    "versionsModification": [],
+    "lignes": [
+      {
+        "reponse": "Non",
+        "scores": {
+          "residentiel": 0.5,
+          "equipements": 0.5,
+          "culture": 0.5,
+          "tertiaire": 0.5,
+          "industrie": 0.5,
+          "renaturation": 0.5,
+          "photovoltaique": 0.5
+        }
+      },
+      {
+        "reponse": "Oui",
+        "scores": {
+          "residentiel": -2,
+          "equipements": -2,
+          "culture": -1,
+          "tertiaire": -1,
+          "industrie": -2,
+          "renaturation": 2,
+          "photovoltaique": -1
+        }
+      }
+    ]
+  },
+  {
+    "cle": "presenceRisquesTechnologiques",
+    "nom": "Risques technologiques",
+    "poids": 1,
+    "versionAjout": "v1.1",
+    "versionsModification": [],
+    "lignes": [
+      {
+        "reponse": "Oui",
+        "scores": {
+          "residentiel": -2,
+          "equipements": -2,
+          "culture": -2,
+          "tertiaire": -2,
+          "industrie": 1,
+          "renaturation": 1,
+          "photovoltaique": 1
+        }
+      },
+      {
+        "reponse": "Non",
+        "scores": {
+          "residentiel": 0.5,
+          "equipements": 0.5,
+          "culture": 0.5,
+          "tertiaire": 0.5,
+          "industrie": 0.5,
+          "renaturation": 0.5,
+          "photovoltaique": 0.5
+        }
+      }
+    ]
+  },
+  {
+    "cle": "zonageReglementaire",
+    "nom": "Zonage réglementaire (PLU)",
+    "poids": 2,
+    "versionAjout": "v1.1",
+    "versionsModification": [],
+    "lignes": [
+      {
+        "reponse": "Zone urbaine (U)",
+        "scores": {
+          "residentiel": 2,
+          "equipements": 2,
+          "culture": 1,
+          "tertiaire": 1,
+          "industrie": 0.5,
+          "renaturation": 0.5,
+          "photovoltaique": -1
+        }
+      },
+      {
+        "reponse": "Zone urbaine - habitat",
+        "scores": {
+          "residentiel": 2,
+          "equipements": 1,
+          "culture": 1,
+          "tertiaire": 0.5,
+          "industrie": -2,
+          "renaturation": 0.5,
+          "photovoltaique": -1
+        }
+      },
+      {
+        "reponse": "Zone urbaine - équipement",
+        "scores": {
+          "residentiel": -2,
+          "equipements": 2,
+          "culture": 1,
+          "tertiaire": 0.5,
+          "industrie": -2,
+          "renaturation": 0.5,
+          "photovoltaique": 0.5
+        }
+      },
+      {
+        "reponse": "Zone urbaine - activité",
+        "scores": {
+          "residentiel": -2,
+          "equipements": -1,
+          "culture": -1,
+          "tertiaire": 1,
+          "industrie": 2,
+          "renaturation": 0.5,
+          "photovoltaique": 0.5
+        }
+      },
+      {
+        "reponse": "Zone à urbaniser (AU)",
+        "scores": {
+          "residentiel": 1,
+          "equipements": 1,
+          "culture": 0.5,
+          "tertiaire": 1,
+          "industrie": 0.5,
+          "renaturation": 0.5,
+          "photovoltaique": -1
+        }
+      },
+      {
+        "reponse": "Zone à vocation d'activités",
+        "scores": {
+          "residentiel": -2,
+          "equipements": -1,
+          "culture": -1,
+          "tertiaire": 1,
+          "industrie": 2,
+          "renaturation": -1,
+          "photovoltaique": 0.5
+        }
+      },
+      {
+        "reponse": "Secteur ouvert à la construction",
+        "scores": {
+          "residentiel": 1,
+          "equipements": 1,
+          "culture": 1,
+          "tertiaire": 1,
+          "industrie": 1,
+          "renaturation": -1,
+          "photovoltaique": -1
+        }
+      },
+      {
+        "reponse": "Secteur non ouvert à la construction",
+        "scores": {
+          "residentiel": -2,
+          "equipements": -1,
+          "culture": -1,
+          "tertiaire": -2,
+          "industrie": -2,
+          "renaturation": 2,
+          "photovoltaique": 0.5
+        }
+      },
+      {
+        "reponse": "Secteur avec règlement d'urbanisme",
+        "scores": {
+          "residentiel": 0.5,
+          "equipements": 0.5,
+          "culture": 0.5,
+          "tertiaire": 0.5,
+          "industrie": 0.5,
+          "renaturation": 0.5,
+          "photovoltaique": 0.5
+        }
+      },
+      {
+        "reponse": "Zone agricole (A)",
+        "scores": {
+          "residentiel": -2,
+          "equipements": -1,
+          "culture": -1,
+          "tertiaire": -2,
+          "industrie": -2,
+          "renaturation": 2,
+          "photovoltaique": 0.5
+        }
+      },
+      {
+        "reponse": "Zone naturelle (N)",
+        "scores": {
+          "residentiel": -2,
+          "equipements": -1,
+          "culture": -1,
+          "tertiaire": -2,
+          "industrie": -2,
+          "renaturation": 2,
+          "photovoltaique": 0.5
+        }
+      }
+    ]
+  },
+  {
+    "cle": "zonageEnvironnemental",
+    "nom": "Zonage environnemental",
+    "poids": 1,
+    "versionAjout": "v1.1",
+    "versionsModification": [],
+    "lignes": [
+      {
+        "reponse": "Hors zone",
+        "scores": {
+          "residentiel": 1,
+          "equipements": 1,
+          "culture": 1,
+          "tertiaire": 1,
+          "industrie": 1,
+          "renaturation": 0.5,
+          "photovoltaique": 1
+        }
+      },
+      {
+        "reponse": "Natura 2000",
+        "scores": {
+          "residentiel": -1,
+          "equipements": -1,
+          "culture": -1,
+          "tertiaire": -1,
+          "industrie": -1,
+          "renaturation": 1,
+          "photovoltaique": -1
+        }
+      },
+      {
+        "reponse": "ZNIEFF type 1 / 2",
+        "scores": {
+          "residentiel": -1,
+          "equipements": -1,
+          "culture": -1,
+          "tertiaire": -1,
+          "industrie": -1,
+          "renaturation": 1,
+          "photovoltaique": -1
+        }
+      },
+      {
+        "reponse": "Réserve naturelle",
+        "scores": {
+          "residentiel": -2,
+          "equipements": -2,
+          "culture": -2,
+          "tertiaire": -2,
+          "industrie": -2,
+          "renaturation": 2,
+          "photovoltaique": -2
+        }
+      },
+      {
+        "reponse": "À proximité d'une zone protégée",
+        "scores": {
+          "residentiel": 0.5,
+          "equipements": 0.5,
+          "culture": 0.5,
+          "tertiaire": 0.5,
+          "industrie": 0.5,
+          "renaturation": 1,
+          "photovoltaique": 0.5
+        }
+      }
+    ]
+  },
+  {
+    "cle": "zonagePatrimonial",
+    "nom": "Zonage patrimonial",
+    "poids": 1,
+    "versionAjout": "v1.1",
+    "versionsModification": [],
+    "lignes": [
+      {
+        "reponse": "Non concerné",
+        "scores": {
+          "residentiel": 1,
+          "equipements": 1,
+          "culture": 0.5,
+          "tertiaire": 1,
+          "industrie": 1,
+          "renaturation": 1,
+          "photovoltaique": 1
+        }
+      },
+      {
+        "reponse": "Site inscrit / classé",
+        "scores": {
+          "residentiel": 0.5,
+          "equipements": -1,
+          "culture": 2,
+          "tertiaire": -2,
+          "industrie": -2,
+          "renaturation": -2,
+          "photovoltaique": -2
+        }
+      },
+      {
+        "reponse": "Périmètre ABF",
+        "scores": {
+          "residentiel": 0.5,
+          "equipements": -1,
+          "culture": 2,
+          "tertiaire": -1,
+          "industrie": -1,
+          "renaturation": 0.5,
+          "photovoltaique": -1
+        }
+      }
+    ]
+  },
+  {
+    "cle": "zoneAccelerationEnr",
+    "nom": "Zone d'accélération des EnR (ZAER)",
+    "poids": 1,
+    "versionAjout": "v1.3",
+    "versionsModification": [
+      "v1.12"
+    ],
+    "lignes": [
+      {
+        "reponse": "Non",
+        "scores": {
+          "residentiel": 0.5,
+          "equipements": 0.5,
+          "culture": 0.5,
+          "tertiaire": 0.5,
+          "industrie": 0.5,
+          "renaturation": 0.5,
+          "photovoltaique": 0.5
+        }
+      },
+      {
+        "reponse": "Oui",
+        "scores": {
+          "residentiel": 0.5,
+          "equipements": 0.5,
+          "culture": 0.5,
+          "tertiaire": 0.5,
+          "industrie": 0.5,
+          "renaturation": 0.5,
+          "photovoltaique": 1
+        }
+      },
+      {
+        "reponse": "Oui - PV ombrière",
+        "scores": {
+          "residentiel": 0.5,
+          "equipements": 0.5,
+          "culture": 0.5,
+          "tertiaire": 0.5,
+          "industrie": 0.5,
+          "renaturation": 0.5,
+          "photovoltaique": 2
+        }
+      },
+      {
+        "reponse": "Exclu des zones d'accélération ENR",
+        "scores": {
+          "residentiel": 0.5,
+          "equipements": 0.5,
+          "culture": 0.5,
+          "tertiaire": 0.5,
+          "industrie": 0.5,
+          "renaturation": 0.5,
+          "photovoltaique": -2
+        }
+      }
+    ]
+  },
+  {
+    "cle": "zonageAbcLogement",
+    "nom": "Zonage ABC (tension du logement)",
+    "poids": 0.5,
+    "versionAjout": "v1.7",
+    "versionsModification": [],
+    "lignes": [
+      {
+        "reponse": "Zone A bis",
+        "scores": {
+          "residentiel": 2,
+          "equipements": 0.5,
+          "culture": 0.5,
+          "tertiaire": 0.5,
+          "industrie": 0.5,
+          "renaturation": 0.5,
+          "photovoltaique": 0.5
+        }
+      },
+      {
+        "reponse": "Zone A",
+        "scores": {
+          "residentiel": 2,
+          "equipements": 0.5,
+          "culture": 0.5,
+          "tertiaire": 0.5,
+          "industrie": 0.5,
+          "renaturation": 0.5,
+          "photovoltaique": 0.5
+        }
+      },
+      {
+        "reponse": "Zone B1",
+        "scores": {
+          "residentiel": 1,
+          "equipements": 0.5,
+          "culture": 0.5,
+          "tertiaire": 0.5,
+          "industrie": 0.5,
+          "renaturation": 0.5,
+          "photovoltaique": 0.5
+        }
+      },
+      {
+        "reponse": "Zone B2",
+        "scores": {
+          "residentiel": 1,
+          "equipements": 0.5,
+          "culture": 0.5,
+          "tertiaire": 0.5,
+          "industrie": 0.5,
+          "renaturation": 0.5,
+          "photovoltaique": 0.5
+        }
+      },
+      {
+        "reponse": "Zone C",
+        "scores": {
+          "residentiel": 0.5,
+          "equipements": 0.5,
+          "culture": 0.5,
+          "tertiaire": 0.5,
+          "industrie": 0.5,
+          "renaturation": 0.5,
+          "photovoltaique": 0.5
+        }
+      }
+    ]
+  },
+  {
+    "cle": "distanceIte",
+    "nom": "Distance à une ITE fret",
+    "poids": 0.5,
+    "versionAjout": "v1.8",
+    "versionsModification": [],
+    "lignes": [
+      {
+        "reponse": "Moins d'1 km, en bon état",
+        "scores": {
+          "residentiel": 0.5,
+          "equipements": 0.5,
+          "culture": 0.5,
+          "tertiaire": 0.5,
+          "industrie": 2,
+          "renaturation": 0.5,
+          "photovoltaique": 0.5
+        }
+      },
+      {
+        "reponse": "Moins d'1 km, en mauvais état",
+        "scores": {
+          "residentiel": 0.5,
+          "equipements": 0.5,
+          "culture": 0.5,
+          "tertiaire": 0.5,
+          "industrie": 1,
+          "renaturation": 0.5,
+          "photovoltaique": 0.5
+        }
+      },
+      {
+        "reponse": "Plus d'1 km",
+        "scores": {
+          "residentiel": 0.5,
+          "equipements": 0.5,
+          "culture": 0.5,
+          "tertiaire": 0.5,
+          "industrie": 0.5,
+          "renaturation": 0.5,
+          "photovoltaique": 0.5
+        }
+      }
+    ]
+  },
+  {
+    "cle": "siteEnQpv",
+    "nom": "Quartier prioritaire de la ville (QPV)",
+    "poids": 1,
+    "versionAjout": "v1.14",
+    "versionsModification": [],
+    "lignes": [
+      {
+        "reponse": "Oui",
+        "scores": {
+          "residentiel": 2,
+          "equipements": 2,
+          "culture": 0.5,
+          "tertiaire": -2,
+          "industrie": 0.5,
+          "renaturation": 0.5,
+          "photovoltaique": -1
+        }
+      },
+      {
+        "reponse": "Non",
+        "scores": {
+          "residentiel": 0.5,
+          "equipements": 0.5,
+          "culture": 0.5,
+          "tertiaire": 0.5,
+          "industrie": 0.5,
+          "renaturation": 0.5,
+          "photovoltaique": 0.5
+        }
+      }
+    ]
+  },
+  {
+    "cle": "saturationReseauEnr",
+    "nom": "Saturation du réseau électrique pour les EnR",
+    "poids": 1,
+    "versionAjout": "v1.15",
+    "versionsModification": [],
+    "lignes": [
+      {
+        "reponse": "Oui",
+        "scores": {
+          "residentiel": 0.5,
+          "equipements": 0.5,
+          "culture": 0.5,
+          "tertiaire": 0.5,
+          "industrie": 0.5,
+          "renaturation": 0.5,
+          "photovoltaique": -2
+        }
+      },
+      {
+        "reponse": "Non",
+        "scores": {
+          "residentiel": 0.5,
+          "equipements": 0.5,
+          "culture": 0.5,
+          "tertiaire": 0.5,
+          "industrie": 0.5,
+          "renaturation": 0.5,
+          "photovoltaique": 0.5
+        }
+      }
+    ]
+  },
+  {
+    "cle": "siteEnZae",
+    "nom": "Zone d'activité économique (ZAE)",
+    "poids": 1,
+    "versionAjout": "v1.18",
+    "versionsModification": [
+      "v1.19"
+    ],
+    "lignes": [
+      {
+        "reponse": "Oui",
+        "scores": {
+          "residentiel": -1,
+          "equipements": 0.5,
+          "culture": 0.5,
+          "tertiaire": 2,
+          "industrie": 2,
+          "renaturation": 0.5,
+          "photovoltaique": 0.5
+        }
+      },
+      {
+        "reponse": "Non",
+        "scores": {
+          "residentiel": 0.5,
+          "equipements": 0.5,
+          "culture": 0.5,
+          "tertiaire": 0.5,
+          "industrie": 0.5,
+          "renaturation": 0.5,
+          "photovoltaique": 0.5
+        }
+      }
+    ]
+  },
+  {
+    "cle": "typeProprietaire",
+    "nom": "Type de propriétaire",
+    "poids": 1,
+    "versionAjout": "v1.1",
+    "versionsModification": [],
+    "lignes": [
+      {
+        "reponse": "Public",
+        "scores": {
+          "residentiel": 2,
+          "equipements": 2,
+          "culture": 1,
+          "tertiaire": 0.5,
+          "industrie": 0.5,
+          "renaturation": 1,
+          "photovoltaique": 1
+        }
+      },
+      {
+        "reponse": "Privé",
+        "scores": {
+          "residentiel": 0.5,
+          "equipements": -1,
+          "culture": 0.5,
+          "tertiaire": 0.5,
+          "industrie": 0.5,
+          "renaturation": -2,
+          "photovoltaique": -1
+        }
+      },
+      {
+        "reponse": "Mixte public et privé",
+        "scores": {
+          "residentiel": 0.5,
+          "equipements": 0.5,
+          "culture": 0.5,
+          "tertiaire": 0.5,
+          "industrie": 0.5,
+          "renaturation": 0.5,
+          "photovoltaique": 0.5
+        }
+      },
+      {
+        "reponse": "Copropriété / Indivision",
+        "scores": {
+          "residentiel": -1,
+          "equipements": -1,
+          "culture": -1,
+          "tertiaire": -1,
+          "industrie": -1,
+          "renaturation": -2,
+          "photovoltaique": -1
+        }
+      }
+    ]
+  },
+  {
+    "cle": "raccordementEau",
+    "nom": "Raccordement à l'eau (dérivé de la surface bâtie)",
+    "poids": 1,
+    "versionAjout": "v1.1",
+    "versionsModification": [],
+    "lignes": [
+      {
+        "reponse": "Oui",
+        "scores": {
+          "residentiel": 2,
+          "equipements": 2,
+          "culture": 2,
+          "tertiaire": 2,
+          "industrie": 2,
+          "renaturation": 0.5,
+          "photovoltaique": 0.5
+        }
+      },
+      {
+        "reponse": "Non",
+        "scores": {
+          "residentiel": -2,
+          "equipements": -2,
+          "culture": -2,
+          "tertiaire": -2,
+          "industrie": -2,
+          "renaturation": 1,
+          "photovoltaique": 0.5
+        }
+      }
+    ]
+  },
+  {
+    "cle": "etatBatiInfrastructure",
+    "nom": "État du bâti et des infrastructures",
+    "poids": 2,
+    "versionAjout": "v1.1",
+    "versionsModification": [],
+    "lignes": [
+      {
+        "reponse": "Bâti intact",
+        "scores": {
+          "residentiel": 2,
+          "equipements": 2,
+          "culture": 2,
+          "tertiaire": 2,
+          "industrie": 2,
+          "renaturation": -2,
+          "photovoltaique": -2
+        }
+      },
+      {
+        "reponse": "Bâti faiblement dégradé",
+        "scores": {
+          "residentiel": 2,
+          "equipements": 2,
+          "culture": 2,
+          "tertiaire": 2,
+          "industrie": 2,
+          "renaturation": -2,
+          "photovoltaique": -2
+        }
+      },
+      {
+        "reponse": "Bâti moyennement dégradé",
+        "scores": {
+          "residentiel": 0.5,
+          "equipements": 0.5,
+          "culture": 0.5,
+          "tertiaire": 0.5,
+          "industrie": 0.5,
+          "renaturation": 0.5,
+          "photovoltaique": 0.5
+        }
+      },
+      {
+        "reponse": "Bâti dégradé de manière hétérogène",
+        "scores": {
+          "residentiel": 0.5,
+          "equipements": 0.5,
+          "culture": 0.5,
+          "tertiaire": 0.5,
+          "industrie": 0.5,
+          "renaturation": -1,
+          "photovoltaique": 1
+        }
+      },
+      {
+        "reponse": "Bâti très dégradé",
+        "scores": {
+          "residentiel": -1,
+          "equipements": -1,
+          "culture": -1,
+          "tertiaire": -1,
+          "industrie": -1,
+          "renaturation": 2,
+          "photovoltaique": 2
+        }
+      },
+      {
+        "reponse": "Pas de bâti",
+        "scores": {
+          "residentiel": 0.5,
+          "equipements": 0.5,
+          "culture": 0.5,
+          "tertiaire": 0.5,
+          "industrie": 1,
+          "renaturation": 2,
+          "photovoltaique": 2
+        }
+      }
+    ]
+  },
+  {
+    "cle": "presencePollution",
+    "nom": "Présence de pollution",
+    "poids": 2,
+    "versionAjout": "v1.1",
+    "versionsModification": [],
+    "lignes": [
+      {
+        "reponse": "Non",
+        "scores": {
+          "residentiel": 2,
+          "equipements": 2,
+          "culture": 2,
+          "tertiaire": 2,
+          "industrie": 1,
+          "renaturation": 1,
+          "photovoltaique": 1
+        }
+      },
+      {
+        "reponse": "Déjà gérée",
+        "scores": {
+          "residentiel": 1,
+          "equipements": 1,
+          "culture": 1,
+          "tertiaire": 1,
+          "industrie": 1,
+          "renaturation": 1,
+          "photovoltaique": 1
+        }
+      },
+      {
+        "reponse": "Oui - composés volatils",
+        "scores": {
+          "residentiel": -2,
+          "equipements": -2,
+          "culture": -2,
+          "tertiaire": -1,
+          "industrie": -1,
+          "renaturation": 0.5,
+          "photovoltaique": 0.5
+        }
+      },
+      {
+        "reponse": "Oui - amiante",
+        "scores": {
+          "residentiel": -1,
+          "equipements": -1,
+          "culture": -1,
+          "tertiaire": -1,
+          "industrie": -1,
+          "renaturation": -1,
+          "photovoltaique": -1
+        }
+      },
+      {
+        "reponse": "Oui - autres composés",
+        "scores": {
+          "residentiel": 0.5,
+          "equipements": 0.5,
+          "culture": 0.5,
+          "tertiaire": 0.5,
+          "industrie": 0.5,
+          "renaturation": 0.5,
+          "photovoltaique": 0.5
+        }
+      }
+    ]
+  },
+  {
+    "cle": "valeurArchitecturaleHistorique",
+    "nom": "Valeur architecturale et historique",
+    "poids": 1,
+    "versionAjout": "v1.1",
+    "versionsModification": [],
+    "lignes": [
+      {
+        "reponse": "Bâti sans qualité patrimoniale particulière",
+        "scores": {
+          "residentiel": 0.5,
+          "equipements": 0.5,
+          "culture": -1,
+          "tertiaire": 0.5,
+          "industrie": 1,
+          "renaturation": 1,
+          "photovoltaique": 1
+        }
+      },
+      {
+        "reponse": "Bâti courant, mais cohérent avec le site",
+        "scores": {
+          "residentiel": 0.5,
+          "equipements": 0.5,
+          "culture": 0.5,
+          "tertiaire": 0.5,
+          "industrie": 1,
+          "renaturation": 1,
+          "photovoltaique": 1
+        }
+      },
+      {
+        "reponse": "Bâti à valeur patrimoniale remarquable",
+        "scores": {
+          "residentiel": 0.5,
+          "equipements": 0.5,
+          "culture": 1,
+          "tertiaire": 0.5,
+          "industrie": -1,
+          "renaturation": -2,
+          "photovoltaique": -2
+        }
+      },
+      {
+        "reponse": "Pas de bâti",
+        "scores": {
+          "residentiel": 0.5,
+          "equipements": 0.5,
+          "culture": 0.5,
+          "tertiaire": 0.5,
+          "industrie": 0.5,
+          "renaturation": 2,
+          "photovoltaique": 2
+        }
+      }
+    ]
+  },
+  {
+    "cle": "qualitePaysage",
+    "nom": "Qualité du paysage",
+    "poids": 1,
+    "versionAjout": "v1.1",
+    "versionsModification": [],
+    "lignes": [
+      {
+        "reponse": "Paysage dégradé ou sans qualité notable",
+        "scores": {
+          "residentiel": 0.5,
+          "equipements": 0.5,
+          "culture": -1,
+          "tertiaire": 0.5,
+          "industrie": 1,
+          "renaturation": 1,
+          "photovoltaique": 1
+        }
+      },
+      {
+        "reponse": "Paysage courant",
+        "scores": {
+          "residentiel": 0.5,
+          "equipements": 0.5,
+          "culture": 0.5,
+          "tertiaire": 0.5,
+          "industrie": 1,
+          "renaturation": 1,
+          "photovoltaique": 1
+        }
+      },
+      {
+        "reponse": "Paysage remarquable",
+        "scores": {
+          "residentiel": 0.5,
+          "equipements": 0.5,
+          "culture": 0.5,
+          "tertiaire": 0.5,
+          "industrie": -1,
+          "renaturation": 1,
+          "photovoltaique": -1
+        }
+      }
+    ]
+  },
+  {
+    "cle": "qualiteVoieDesserte",
+    "nom": "Qualité de la voie de desserte",
+    "poids": 0.5,
+    "versionAjout": "v1.1",
+    "versionsModification": [],
+    "lignes": [
+      {
+        "reponse": "Accessible",
+        "scores": {
+          "residentiel": 1,
+          "equipements": 1,
+          "culture": 0.5,
+          "tertiaire": 1,
+          "industrie": 2,
+          "renaturation": 0.5,
+          "photovoltaique": 0.5
+        }
+      },
+      {
+        "reponse": "Accessibilité limitée",
+        "scores": {
+          "residentiel": -1,
+          "equipements": -1,
+          "culture": 0.5,
+          "tertiaire": -1,
+          "industrie": -2,
+          "renaturation": 2,
+          "photovoltaique": 0.5
+        }
+      },
+      {
+        "reponse": "Accessibilité dégradée",
+        "scores": {
+          "residentiel": 0.5,
+          "equipements": 0.5,
+          "culture": 0.5,
+          "tertiaire": 0.5,
+          "industrie": -1,
+          "renaturation": 1,
+          "photovoltaique": 0.5
+        }
+      }
+    ]
+  },
+  {
+    "cle": "trameVerteEtBleue",
+    "nom": "Trame verte et bleue",
+    "poids": 1,
+    "versionAjout": "v1.1",
+    "versionsModification": [],
+    "lignes": [
+      {
+        "reponse": "Hors trame",
+        "scores": {
+          "residentiel": 1,
+          "equipements": 1,
+          "culture": 1,
+          "tertiaire": 1,
+          "industrie": 1,
+          "renaturation": 0.5,
+          "photovoltaique": 1
+        }
+      },
+      {
+        "reponse": "Réservoir de biodiversité",
+        "scores": {
+          "residentiel": -1,
+          "equipements": -1,
+          "culture": -1,
+          "tertiaire": -1,
+          "industrie": -1,
+          "renaturation": 1,
+          "photovoltaique": -1
+        }
+      },
+      {
+        "reponse": "Corridor à préserver",
+        "scores": {
+          "residentiel": -1,
+          "equipements": -1,
+          "culture": -1,
+          "tertiaire": -1,
+          "industrie": -1,
+          "renaturation": 1,
+          "photovoltaique": -1
+        }
+      },
+      {
+        "reponse": "Corridor à restaurer",
+        "scores": {
+          "residentiel": -1,
+          "equipements": -1,
+          "culture": -1,
+          "tertiaire": -1,
+          "industrie": -1,
+          "renaturation": 2,
+          "photovoltaique": -1
+        }
+      }
+    ]
+  },
+  {
+    "cle": "presenceEspecesProtegees",
+    "nom": "Présence d'espèces protégées",
+    "poids": 1,
+    "versionAjout": "v1.5",
+    "versionsModification": [],
+    "lignes": [
+      {
+        "reponse": "Oui",
+        "scores": {
+          "residentiel": -2,
+          "equipements": -2,
+          "culture": -2,
+          "tertiaire": -2,
+          "industrie": -2,
+          "renaturation": 2,
+          "photovoltaique": -2
+        }
+      },
+      {
+        "reponse": "Non",
+        "scores": {
+          "residentiel": 0.5,
+          "equipements": 0.5,
+          "culture": 0.5,
+          "tertiaire": 0.5,
+          "industrie": 0.5,
+          "renaturation": 0.5,
+          "photovoltaique": 0.5
+        }
+      }
+    ]
+  },
+  {
+    "cle": "presenceZoneHumide",
+    "nom": "Présence de zone humide",
+    "poids": 1,
+    "versionAjout": "v1.6",
+    "versionsModification": [],
+    "lignes": [
+      {
+        "reponse": "Oui",
+        "scores": {
+          "residentiel": -2,
+          "equipements": -2,
+          "culture": -2,
+          "tertiaire": -2,
+          "industrie": -2,
+          "renaturation": 2,
+          "photovoltaique": -2
+        }
+      },
+      {
+        "reponse": "Non",
+        "scores": {
+          "residentiel": 0.5,
+          "equipements": 0.5,
+          "culture": 0.5,
+          "tertiaire": 0.5,
+          "industrie": 0.5,
+          "renaturation": 0.5,
+          "photovoltaique": 0.5
+        }
+      }
+    ]
+  }
+]
