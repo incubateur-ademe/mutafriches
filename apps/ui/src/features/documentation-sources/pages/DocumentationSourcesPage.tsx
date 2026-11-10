@@ -131,11 +131,6 @@ export function DocumentationSourcesPage() {
                 </Link>
               </li>
               <li>
-                <Link className="fr-breadcrumb__link" to={ROUTES.DONNEES_UTILISEES}>
-                  Données utilisées
-                </Link>
-              </li>
-              <li>
                 <a className="fr-breadcrumb__link" aria-current="page">
                   Documentation des sources
                 </a>

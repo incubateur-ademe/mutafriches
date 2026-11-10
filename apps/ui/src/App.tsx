@@ -27,6 +27,8 @@ import { DocumentationIntegrationPage } from "./features/documentation/pages/Doc
 import { StatistiquesPage } from "./features/statistiques/pages/StatistiquesPage";
 import { MultisitePage } from "./features/partenaires/core/pages/MultisitePage";
 import { PartenairesPage } from "./features/partenaires/core/pages/PartenairesPage";
+import { ComprendreAnalysesPage } from "./features/comprendre-analyses/pages/ComprendreAnalysesPage";
+import { IntegrerMutafrichesPage } from "./features/integrer/pages/IntegrerMutafrichesPage";
 import { DonneesUtiliseesPage } from "./features/donnees-utilisees/pages/DonneesUtiliseesPage";
 import { DocumentationSourcesPage } from "./features/documentation-sources/pages/DocumentationSourcesPage";
 import { MentionsLegalesPage } from "./features/legal/pages/MentionsLegalesPage";
@@ -69,6 +71,8 @@ function AppContent() {
         <Route path={ROUTES.STATISTIQUES} element={<StatistiquesPage />} />
 
         {/* Documentation */}
+        <Route path={ROUTES.COMPRENDRE_ANALYSES} element={<ComprendreAnalysesPage />} />
+        <Route path={ROUTES.INTEGRER} element={<IntegrerMutafrichesPage />} />
         <Route path={ROUTES.DOCUMENTATION_INTEGRATION} element={<DocumentationIntegrationPage />} />
 
         {/* Statut technique */}
