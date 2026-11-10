@@ -321,7 +321,7 @@ pnpm test:watch             # Tests en mode watch
 pnpm test:coverage          # Tests avec rapport de couverture
 
 # Documentation générée
-pnpm docs:matrice:gen       # Régénère docs/matrice-scoring.md (--check : échoue si divergence)
+pnpm docs:matrice:gen       # Régénère docs/matrice-scoring.md et les données de la page /comprendre-les-analyses (--check : échoue si divergence)
 
 # Qualité de code
 pnpm lint                   # Linter ESLint
@@ -401,7 +401,7 @@ L'algorithme de scoring est versionné pour préserver la reproductibilité des 
 - **Exposition** : la version courante et la liste complète sont exposées via `GET /evaluation/metadata` et `GET /evaluation/algorithme/versions`. Toute modification doit **immédiatement** se refléter dans ces endpoints (et dans les exemples Swagger associés).
 - **Documentation OBLIGATOIRE** : toute modification de l'algorithme — ajout ou retrait d'un critère, changement de poids, de seuil, de la matrice de scoring, ou de la formule de fiabilité — DOIT être répercutée **dans le même commit** sur :
   - `docs/evaluation-mutabilite.md` (doc métier : liste des critères, poids, poids total, formules, exemples) ; `evaluation-mutabilite.doc.spec.ts` (donc `pnpm test`) échoue si ses critères, ses poids, ses décomptes ou ses libellés d'usages divergent du code
-  - `docs/matrice-scoring.md` (matrice complète, **générée** : ne jamais l'éditer à la main). Régénérer avec `pnpm docs:matrice:gen` après tout changement de score, de seuil, de borne de tranche, de poids ou de règle d'exclusion ; `matrice-scoring.doc.spec.ts` (donc `pnpm test`) échoue si le fichier diverge du code. Un nouveau critère exige d'abord son entrée (nom, libellés, tranches) dans `CRITERES` de `algorithme/matrice-scoring.doc.ts`, sinon la génération échoue
+  - `docs/matrice-scoring.md` (matrice complète, **générée** : ne jamais l'éditer à la main). Régénérer avec `pnpm docs:matrice:gen` après tout changement de score, de seuil, de borne de tranche, de poids ou de règle d'exclusion ; `matrice-scoring.doc.spec.ts` (donc `pnpm test`) échoue si le fichier diverge du code. Un nouveau critère exige d'abord son entrée (nom, libellés, tranches) dans `CRITERES` de `algorithme/matrice-scoring.doc.ts`, sinon la génération échoue. La même commande régénère `packages/shared-types/src/documentation/matrice-scoring.data.json`, lu par la page `/comprendre-les-analyses` ; un nouveau critère exige aussi sa définition dans `DEFINITIONS_CRITERES` et, s'il est automatique, sa source dans `sources-criteres.data.ts` (`comprendre-analyses.data.spec.ts` casse sinon)
   - `.claude/context/evaluation-patterns.md` (doc technique : nombre de critères, répartition enrichis/complémentaires, poids total, sémantique)
   - `packages/shared-types/src/recapitulatif/criteres.metadata.ts` (`CRITERES_METADATA` : le `poids` de chaque critère mirroir `POIDS_CRITERES` — un garde-fou casse en cas de divergence), puis régénérer `docs/sources-donnees-externes.md` via `pnpm docs:sources:gen` (la page `/documentation-donnees` et le PDF en découlent, cf. ADR-0026)
 
