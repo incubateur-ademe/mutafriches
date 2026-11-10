@@ -16,10 +16,11 @@ Menu principal
 │   ├── onglet Définitions et coef. des critères
 │   └── onglet Sources des données
 └── Intégrer Mutafriches               /integrer-mutafriches
-    ├── API Mutafriches                → prise de rendez-vous (ZCal)
-    ├── Extension QGIS                 → téléchargement (lien à venir)
+    ├── Extension QGIS                 → utilisation (lien à venir)
+    ├── API Mutafriches                → prise de rendez-vous (ZCal), documentation technique
     ├── Page Mutafriches personnalisée → prise de rendez-vous (ZCal)
-    └── Nos services partenaires       → Bénéfriches (lien externe)
+    ├── Nos services partenaires       → Bénéfriches (lien externe)
+    └── Besoin d'aide pour choisir     → prise de rendez-vous (ZCal)
 
 En-tête (boutons)
 └── Documentation                      /documentation-integration
@@ -68,5 +69,5 @@ Chemins relatifs à `apps/ui/src/`.
 ## Points ouverts
 
 - Visuels de la page « Intégrer Mutafriches » : les quatre blocs affichent une image provisoire.
-- Lien de téléchargement de l'extension QGIS : bouton désactivé en attendant.
+- Lien vers l'extension QGIS : bouton désactivé en attendant.
 - Deux pages décrivent les sources de données (« Comprendre les analyses », onglet Sources, et « Documentation des sources de données ») : à fusionner ou à différencier.
