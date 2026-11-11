@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { ROUTES } from "./shared/config/routes.config";
 import { Tests } from "./features/tests/pages/TestsPage";
 import { IframeProvider } from "./shared/iframe/IframeProvider";
@@ -23,13 +23,14 @@ import { QualificationSitePage } from "./features/qualification/pages/Qualificat
 import { QualificationEnvironnementPage } from "./features/qualification/pages/QualificationEnvironnementPage";
 import { QualificationRisquesPage } from "./features/qualification/pages/QualificationRisquesPage";
 import { ResultatsPage } from "./features/resultats/pages/ResultatsPage";
-import { DocumentationIntegrationPage } from "./features/documentation/pages/DocumentationIntegrationPage";
 import { StatistiquesPage } from "./features/statistiques/pages/StatistiquesPage";
 import { MultisitePage } from "./features/partenaires/core/pages/MultisitePage";
 import { PartenairesPage } from "./features/partenaires/core/pages/PartenairesPage";
 import { ComprendreAnalysesPage } from "./features/comprendre-analyses/pages/ComprendreAnalysesPage";
 import { IntegrerMutafrichesPage } from "./features/integrer/pages/IntegrerMutafrichesPage";
 import { TutorielQgisPage } from "./features/integrer/pages/TutorielQgisPage";
+import { DocumentationApiPage } from "./features/integrer/pages/DocumentationApiPage";
+import { DocumentationIframePage } from "./features/integrer/pages/DocumentationIframePage";
 import { DonneesUtiliseesPage } from "./features/donnees-utilisees/pages/DonneesUtiliseesPage";
 import { DocumentationSourcesPage } from "./features/documentation-sources/pages/DocumentationSourcesPage";
 import { MentionsLegalesPage } from "./features/legal/pages/MentionsLegalesPage";
@@ -75,7 +76,12 @@ function AppContent() {
         <Route path={ROUTES.COMPRENDRE_ANALYSES} element={<ComprendreAnalysesPage />} />
         <Route path={ROUTES.INTEGRER} element={<IntegrerMutafrichesPage />} />
         <Route path={ROUTES.TUTORIEL_QGIS} element={<TutorielQgisPage />} />
-        <Route path={ROUTES.DOCUMENTATION_INTEGRATION} element={<DocumentationIntegrationPage />} />
+        <Route path={ROUTES.DOCUMENTATION_API} element={<DocumentationApiPage />} />
+        <Route path={ROUTES.DOCUMENTATION_IFRAME} element={<DocumentationIframePage />} />
+        <Route
+          path={ROUTES.DOCUMENTATION_INTEGRATION}
+          element={<Navigate to={ROUTES.DOCUMENTATION_API} replace />}
+        />
 
         {/* Statut technique */}
         <Route path={ROUTES.DONNEES_UTILISEES} element={<DonneesUtiliseesPage />} />

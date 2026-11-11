@@ -7,7 +7,7 @@ import { SolutionIntegrationCard } from "../components/SolutionIntegrationCard";
 
 const URL_BENEFRICHES = "https://benefriches.ademe.fr";
 
-// Visuel provisoire des trois autres cartes, en attendant les captures définitives
+// Visuel provisoire des quatre autres cartes, en attendant les captures définitives
 const IMAGE_PROVISOIRE = "/images/placeholder.16x9.png";
 const IMAGE_EXTENSION_QGIS = "/images/tutoriel-qgis/07-carte-et-tableau-de-bord.webp";
 
@@ -63,7 +63,7 @@ export function IntegrerMutafrichesPage() {
                 </button>
               </li>
               <li>
-                <Link to={ROUTES.DOCUMENTATION_INTEGRATION} className="fr-btn fr-btn--secondary">
+                <Link to={ROUTES.DOCUMENTATION_API} className="fr-btn fr-btn--secondary">
                   Lire la documentation
                 </Link>
               </li>
@@ -74,6 +74,22 @@ export function IntegrerMutafrichesPage() {
           qualification et intégrer l'analyse de mutabilité à vos services. Exploitez les résultats
           dans votre environnement de travail et croisez-les avec vos propres données pour éclairer
           vos choix de reconversion.
+        </SolutionIntegrationCard>
+
+        <SolutionIntegrationCard
+          titre="Iframe Mutafriches"
+          accroche="Le parcours d'analyse embarqué dans votre site"
+          tags={["Sans développement serveur", "Analyse site par site"]}
+          image={IMAGE_PROVISOIRE}
+          action={
+            <Link to={ROUTES.DOCUMENTATION_IFRAME} className="fr-btn">
+              Intégrer l'iframe
+            </Link>
+          }
+        >
+          Proposez l'analyse de mutabilité à vos utilisateurs sans quitter votre plateforme.
+          Affichez le parcours Mutafriches dans une de vos pages, récupérez les résultats de chaque
+          analyse et ramenez l'utilisateur vers votre service.
         </SolutionIntegrationCard>
 
         <SolutionIntegrationCard

@@ -22,6 +22,9 @@ export const ROUTES = {
   COMPRENDRE_ANALYSES: "/comprendre-les-analyses",
   INTEGRER: "/integrer-mutafriches",
   TUTORIEL_QGIS: "/integrer-mutafriches/extension-qgis",
+  DOCUMENTATION_API: "/integrer-mutafriches/api",
+  DOCUMENTATION_IFRAME: "/integrer-mutafriches/iframe",
+  // Ancienne adresse de la documentation, redirigée vers la page API
   DOCUMENTATION_INTEGRATION: "/documentation-integration",
   API: "/api",
 
