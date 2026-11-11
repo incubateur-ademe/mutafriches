@@ -169,6 +169,103 @@ Format d'une entrée :
 - **Écarté parce que** : la table attributaire lit le code INSEE de l'enrichissement ; seul le filtre `--commune` du script s'en passe en lisant le préfixe des parcelles
 - **Préalable** : migration de données depuis le préfixe des parcelles, ou depuis la commune prédominante du cache d'enrichissement
 
+## Extension QGIS
+
+> Contexte : l'extension (dépôt `mutafriches-qgis`) appelle l'API existante sans changement de
+> code, site par site (`POST /enrichissement` puis `POST /evaluation/calculer`), avec une origine
+> conventionnelle déclarée dans `ALLOWED_INTEGRATOR_ORIGINS`. Plan complet :
+> `mutafriches-qgis/docs/plan-implementation-reelle.md`.
+
+### Déclarer l'origine de l'extension QGIS
+
+- **Origine** : passage du prototype QGIS au réel sans modifier l'API (2026-11-11)
+- **Écarté parce que** : réglage d'exploitation, pas de code ; à faire en staging
+  (`mutafriches.incubateur.ademe.dev`) et en production : fait le 2026-11-11, reste le canal
+  Metabase
+- **Préalable** : suivre `docs/acces-api-integrateur.md` avec l'origine
+  `https://qgis.mutafriches.beta.gouv.fr` (l'extension pose elle-même l'en-tête `Origin`), puis
+  ajouter le canal « Plugin QGIS » au bloc `CASE` Metabase (`integrateur = 'qgis.mutafriches.beta.gouv.fr'`)
+
+### Publier une release de l'extension QGIS
+
+- **Origine** : tutoriel `/integrer-mutafriches/extension-qgis`
+- **Écarté parce que** : le bouton « Télécharger l'extension » pointe sur
+  `github.com/incubateur-ademe/mutafriches-qgis/releases/latest`, qui n'existe pas tant
+  qu'aucune release n'est publiée
+- **Préalable** : fusionner le mode réel de l'extension, puis publier une release portant le
+  ZIP ; ne pas mettre le tutoriel en production avant
+
+### Suivi de consultation du tutoriel QGIS
+
+- **Origine** : tutoriel `/integrer-mutafriches/extension-qgis`
+- **Écarté parce que** : un nouvel événement demande une migration de `type_evenement_enum`,
+  à grouper avec celle des événements de l'extension pour éviter deux migrations concurrentes
+- **Préalable** : sujet « Événements de l'extension QGIS »
+
+### Identification des utilisateurs de l'extension (structure, e-mail, consentement)
+
+- **Origine** : plan d'implémentation QGIS, chantier M1
+- **Écarté parce que** : aucune table ni route ne peut recevoir ces données ; en attendant,
+  l'extension les garde en local et peut les envoyer à un formulaire externe
+- **Préalable** : ADR sur la donnée personnelle (finalité, conservation, purge) et sur la clé
+  d'API par client (`X-API-Key`, piste de l'ADR-0011) ; tous les utilisateurs partagent d'ici là
+  la même origine et ne se distinguent pas dans les statistiques
+
+### Événements de l'extension QGIS
+
+- **Origine** : plan d'implémentation QGIS, chantier M2
+- **Écarté parce que** : `POST /evenements` n'accepte que les origines Mutafriches et ignore
+  `integrateur` dans le corps ; seuls les enrichissements et les évaluations sont mesurés
+- **Préalable** : clé d'API par client (sujet précédent), puis nouveaux `TypeEvenement` et
+  migration de l'enum
+
+### Import d'inventaire CNIG et traitement par lot
+
+- **Origine** : plan d'implémentation QGIS, chantier M3
+- **Écarté parce que** : l'extension contrôle le fichier CNIG elle-même et enchaîne les appels
+  site par site, ce qui suffit sous 100 requêtes par minute pour quelques dizaines de sites
+- **Préalable** : mesurer les volumes réels (précédent EPFGE : 1 300 sites) ; au-delà d'une
+  cinquantaine de sites par inventaire, route d'import, suivi d'avancement et file de tâches
+
+### Contrôles de cohérence d'un site côté API
+
+- **Origine** : analyse du dépôt pour l'extension QGIS
+- **Écarté parce que** : contiguïté, surface d'un seul tenant et commune unique ne sont
+  vérifiées que dans l'interface web ; l'API accepte un ensemble de parcelles disjointes
+- **Préalable** : règle métier commune au web, à l'API et à l'extension (tolérance, statut
+  bloquant ou « à vérifier »)
+
+### Synthèse territoriale calculée par l'API
+
+- **Origine** : plan d'implémentation QGIS, chantier M4
+- **Écarté parce que** : l'extension agrège elle-même (usages prioritaires, niveaux de
+  fiabilité, profils d'écart, forte compatibilité) ; les seuils d'affichage y sont recopiés
+- **Préalable** : valider la grille des profils de sites et le seuil de forte compatibilité,
+  puis les exposer une fois côté API
+
+### Inventaires envoyés par l'extension et table attributaire publique
+
+- **Origine** : analyse du dépôt pour l'extension QGIS
+- **Écarté parce que** : tout site évalué entre dans `attributaire_sites` et devient lisible par
+  `GET /api/attributaire/sites` ; aucun inventaire n'est privé à son émetteur
+- **Préalable** : arbitrage produit (public par défaut ou non), à rapprocher du sujet « Sites
+  qui se recoupent »
+
+### Partenaire par structure pilote plutôt qu'un partenaire « qgis »
+
+- **Origine** : question posée lors du passage au réel de l'extension
+- **Écarté parce que** : un partenaire unique mélangerait les sites de tous les utilisateurs
+  sur une page publique ; la création passe par le seed et l'ajout est limité à 20 parcelles
+- **Préalable** : pour deux ou trois collectivités testeuses, créer leur partenaire comme pour
+  le SCET (pré-chauffe nocturne et export CNIG) ; `?partenaire=` n'est lu que depuis le site
+
+### Quota BDNB et inventaires de masse
+
+- **Origine** : analyse du dépôt pour l'extension QGIS
+- **Écarté parce que** : un inventaire de plusieurs centaines de sites neufs entame le quota
+  d'environ 10 000 appels par mois
+- **Préalable** : sujet « Clé API BDNB ou import local si les parcelles neuves dépassent le quota »
+
 ## Contrat API et dépréciations
 
 ### Retrait des champs et alias dépréciés
