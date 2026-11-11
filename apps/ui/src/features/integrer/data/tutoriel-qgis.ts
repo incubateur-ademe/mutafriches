@@ -56,11 +56,12 @@ export const ETAPES_TUTORIEL_QGIS: EtapeTutorielQgis[] = [
     paragraphes: [
       "Cliquez sur le bouton Mutafriches : un panneau s'ouvre à droite de la carte. À la première ouverture, indiquez votre structure et votre adresse mail, puis cliquez sur « Suivant ».",
       "Ces informations restent sur votre poste, dans votre profil QGIS. Elles ne sont demandées qu'une fois ; le lien « Modifier » permet d'y revenir.",
+      "Si votre projet QGIS est vide, l'extension y ajoute un fond de carte OpenStreetMap cadré sur la France, pour situer vos sites. Si votre projet contient déjà des couches, elle n'y touche pas : vos sites s'afficheront par-dessus vos propres fonds.",
     ],
     captures: [
       {
         fichier: "02-se-presenter.webp",
-        alt: "QGIS avec le panneau Mutafriches ouvert à droite : formulaire « Bienvenue dans Mutafriches » avec les champs structure et mail, une case de consentement et le bouton « Suivant ».",
+        alt: "QGIS avec un fond de carte de la France au centre et le panneau Mutafriches ouvert à droite : formulaire « Bienvenue dans Mutafriches » avec les champs structure et mail, une case de consentement et le bouton « Suivant ».",
       },
     ],
   },
@@ -70,7 +71,7 @@ export const ETAPES_TUTORIEL_QGIS: EtapeTutorielQgis[] = [
     paragraphes: [
       "L'extension lit un inventaire de friches au standard national CNIG Friches, au format CSV ou GeoJSON : une ligne par site.",
       "Quatre colonnes sont indispensables : l'identifiant du site (site_id), son nom (site_nom), le code INSEE de la commune (comm_insee) et les parcelles cadastrales du site (unite_fonciere_refcad, séparées par une barre verticale), ainsi que sa localisation (geompoint).",
-      "Si vous n'avez pas encore de fichier à ce format, le bouton « Télécharger un fichier exemple » enregistre un modèle à remplir. Ses trois sites sont fictifs : remplacez-les par les vôtres.",
+      "Si vous n'avez pas encore de fichier à ce format, le bouton « Télécharger un fichier exemple » enregistre un modèle à remplir, par défaut dans votre dossier Téléchargements. Ses trois sites sont fictifs : remplacez-les par les vôtres.",
     ],
     captures: [
       {
@@ -117,7 +118,7 @@ export const ETAPES_TUTORIEL_QGIS: EtapeTutorielQgis[] = [
     id: "carte",
     titre: "Lire la carte et le tableau de bord",
     paragraphes: [
-      "À la fin de l'analyse, vos sites apparaissent sur la carte, colorés selon leur usage le plus compatible. Chaque étiquette rappelle le nom du site, cet usage et son indice. La légende des couleurs se trouve dans le panneau Couches.",
+      "À la fin de l'analyse, la carte se recadre sur vos sites, colorés selon leur usage le plus compatible. Chaque étiquette rappelle le nom du site, cet usage et son indice. La légende des couleurs se trouve dans le panneau Couches.",
       "Le panneau devient un tableau de bord de votre territoire : nombre de sites analysés, fiabilité moyenne, répartition des usages les plus compatibles, profils de sites et liste des sites à forte compatibilité.",
       "Dans cette liste, cliquer sur un site le sélectionne et recadre la carte dessus.",
     ],
@@ -194,6 +195,11 @@ export const QUESTIONS_TUTORIEL_QGIS: QuestionTutoriel[] = [
     question: "Un site est en échec alors que sa ligne était « OK »",
     reponse:
       "Une de ses parcelles est probablement introuvable au cadastre, ou le service n'a pas répondu à temps. Vérifiez les identifiants de parcelles (14 caractères) et relancez l'analyse.",
+  },
+  {
+    question: "La carte reste blanche ou sans fond",
+    reponse:
+      "Le fond OpenStreetMap n'est ajouté que dans un projet vide, et il demande une connexion Internet. Dans un projet qui a déjà des couches, ajoutez le fond de votre choix : les sites analysés s'affichent dans tous les cas.",
   },
   {
     question: "Puis-je essayer sans inventaire ?",
