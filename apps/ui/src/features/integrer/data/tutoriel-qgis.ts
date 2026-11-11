@@ -71,7 +71,7 @@ export const ETAPES_TUTORIEL_QGIS: EtapeTutorielQgis[] = [
     paragraphes: [
       "L'extension lit un inventaire de friches au standard national CNIG Friches, au format CSV ou GeoJSON : une ligne par site.",
       "Quatre colonnes sont indispensables : l'identifiant du site (site_id), son nom (site_nom), le code INSEE de la commune (comm_insee) et les parcelles cadastrales du site (unite_fonciere_refcad, séparées par une barre verticale), ainsi que sa localisation (geompoint).",
-      "Si vous n'avez pas encore de fichier à ce format, le bouton « Télécharger un fichier exemple » enregistre un modèle à remplir, par défaut dans votre dossier Téléchargements. Ses trois sites sont fictifs : remplacez-les par les vôtres.",
+      "Si vous n'avez pas encore de fichier à ce format, le bouton « Télécharger un fichier exemple » enregistre un modèle à remplir, par défaut dans votre dossier Téléchargements. Ses trois sites sont fictifs : remplacez-les par les vôtres. Envoyé tel quel, ce fichier est refusé au contrôle.",
     ],
     captures: [
       {
@@ -194,7 +194,7 @@ export const QUESTIONS_TUTORIEL_QGIS: QuestionTutoriel[] = [
   {
     question: "Un site est en échec alors que sa ligne était « OK »",
     reponse:
-      "Une de ses parcelles est probablement introuvable au cadastre, ou le service n'a pas répondu à temps. Vérifiez les identifiants de parcelles (14 caractères) et relancez l'analyse.",
+      "Ses parcelles sont probablement introuvables au cadastre, ou le service n'a pas répondu à temps. Vérifiez les identifiants de parcelles (14 caractères, parcelles existantes) et relancez l'analyse.",
   },
   {
     question: "La carte reste blanche ou sans fond",
