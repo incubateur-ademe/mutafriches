@@ -1,10 +1,11 @@
 import {
   CRITERES_METADATA,
   getSourceCritere,
-  MATRICE_SCORING_DOC,
   type CritereMatriceDoc,
   type SourceCritereDoc,
 } from "@mutafriches/shared-types";
+import { CRITERES_PAR_COEFFICIENT, libelleCritere } from "../utils/criteres";
+import { CLASSES_CONTENEUR_TABLEAU, CLASSES_ENTETE_TABLEAU } from "../utils/tableau";
 import { formatEvolution } from "../utils/format";
 
 const MODES_APPEL: Record<SourceCritereDoc["type"], string> = {
@@ -15,13 +16,20 @@ const MODES_APPEL: Record<SourceCritereDoc["type"], string> = {
 // Seul critère non saisi qui n'a pas de source externe : il est déduit d'un autre critère (ADR-0019)
 const CRITERE_DERIVE = "raccordementEau";
 
-function SourceRow({ critere }: { critere: CritereMatriceDoc }) {
+interface SourcesCriteresTableProps {
+  onClicLienSource?: (critere: string, source: string) => void;
+}
+
+function SourceRow({
+  critere,
+  onClicLienSource,
+}: { critere: CritereMatriceDoc } & SourcesCriteresTableProps) {
   const source = getSourceCritere(CRITERES_METADATA[critere.cle]);
   const derive = critere.cle === CRITERE_DERIVE;
   return (
     <tr>
       <th scope="row" className="fr-cell--multiline">
-        {critere.nom}
+        {libelleCritere(critere)}
       </th>
       <td className="fr-cell--multiline">
         {source ? (
@@ -30,7 +38,7 @@ function SourceRow({ critere }: { critere: CritereMatriceDoc }) {
             {source.producteur}
           </>
         ) : derive ? (
-          "Déduit de l'emprise au sol du bâti"
+          "Déduit de la surface bâtie"
         ) : (
           "Saisie de l'utilisateur"
         )}
@@ -54,6 +62,7 @@ function SourceRow({ critere }: { critere: CritereMatriceDoc }) {
             href={source.urlDoc}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => onClicLienSource?.(critere.cle, source.nom)}
             title={`Documentation de la source ${source.nom} - nouvelle fenêtre`}
           >
             Lien
@@ -71,15 +80,15 @@ function SourceRow({ critere }: { critere: CritereMatriceDoc }) {
   );
 }
 
-export function SourcesCriteresTable() {
+export function SourcesCriteresTable({ onClicLienSource }: SourcesCriteresTableProps) {
   return (
     <div className="fr-table fr-table--sm fr-mb-0">
       <div className="fr-table__wrapper">
-        <div className="fr-table__container">
+        <div className={CLASSES_CONTENEUR_TABLEAU}>
           <div className="fr-table__content">
             <table>
               <caption className="fr-sr-only">Source des données de chaque critère</caption>
-              <thead>
+              <thead className={CLASSES_ENTETE_TABLEAU}>
                 <tr>
                   <th scope="col">Critère</th>
                   <th scope="col" className="fr-cell--multiline">
@@ -97,8 +106,12 @@ export function SourcesCriteresTable() {
                 </tr>
               </thead>
               <tbody>
-                {MATRICE_SCORING_DOC.map((critere) => (
-                  <SourceRow key={critere.cle} critere={critere} />
+                {CRITERES_PAR_COEFFICIENT.map((critere) => (
+                  <SourceRow
+                    key={critere.cle}
+                    critere={critere}
+                    onClicLienSource={onClicLienSource}
+                  />
                 ))}
               </tbody>
             </table>

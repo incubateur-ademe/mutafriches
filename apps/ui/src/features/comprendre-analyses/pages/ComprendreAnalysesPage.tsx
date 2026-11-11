@@ -1,9 +1,25 @@
+import { useEffect, useRef } from "react";
 import { Layout } from "../../../shared/components/layout/Layout";
 import { DsfrTabs } from "../../../shared/components/dsfr/DsfrTabs";
+import { useEventTracking } from "../../../shared/hooks/useEventTracking";
 import { DefinitionsCriteresTable } from "../components/DefinitionsCriteresTable";
 import { SourcesCriteresTable } from "../components/SourcesCriteresTable";
 
 export function ComprendreAnalysesPage() {
+  const {
+    trackConsultationComprendreAnalyses,
+    trackOngletComprendreAnalyses,
+    trackClicLienSourceCritere,
+  } = useEventTracking();
+
+  // Une seule consultation par affichage, y compris sous le double montage du mode strict
+  const consultationTracee = useRef(false);
+  useEffect(() => {
+    if (consultationTracee.current) return;
+    consultationTracee.current = true;
+    void trackConsultationComprendreAnalyses();
+  }, [trackConsultationComprendreAnalyses]);
+
   return (
     <Layout>
       <div className="fr-col-12">
@@ -15,6 +31,8 @@ export function ComprendreAnalysesPage() {
         </p>
 
         <DsfrTabs
+          ongletsFiges
+          onTabChange={(onglet) => void trackOngletComprendreAnalyses(onglet)}
           ariaLabel="Comprendre les analyses : sélection de l'onglet"
           tabs={[
             {
@@ -23,15 +41,27 @@ export function ComprendreAnalysesPage() {
               panel: (
                 <>
                   <p className="fr-text--sm">
-                    Chaque valeur d'un critère reçoit un score par usage, de −2 (très défavorable) à
-                    +2 (très favorable) ; 0,5 est neutre. Ce score est multiplié par le coefficient
-                    du critère.
+                    Les critères sont classés par coefficient décroissant. Chaque valeur d'un
+                    critère reçoit un score par usage, de −2 (très défavorable) à +2 (très
+                    favorable) ; 0,5 est neutre. Ce score est multiplié par le coefficient du
+                    critère. Un picto rouge signale une valeur qui rend l'usage incompatible, seule
+                    ou combinée à une autre.
                   </p>
                   <DefinitionsCriteresTable />
                 </>
               ),
             },
-            { id: "sources", label: "Sources des données", panel: <SourcesCriteresTable /> },
+            {
+              id: "sources",
+              label: "Sources des données",
+              panel: (
+                <SourcesCriteresTable
+                  onClicLienSource={(critere, source) =>
+                    void trackClicLienSourceCritere(critere, source)
+                  }
+                />
+              ),
+            },
           ]}
         />
       </div>
