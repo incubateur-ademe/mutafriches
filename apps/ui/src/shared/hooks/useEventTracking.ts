@@ -187,8 +187,33 @@ export function useEventTracking(options?: { integrateurOverride?: string }) {
     [track],
   );
 
+  const trackConsultationComprendreAnalyses = useCallback(() => {
+    return track(TypeEvenement.CONSULTATION_COMPRENDRE_ANALYSES);
+  }, [track]);
+
+  const trackOngletComprendreAnalyses = useCallback(
+    (onglet: string) => {
+      return track(TypeEvenement.CONSULTATION_ONGLET_COMPRENDRE_ANALYSES, {
+        donnees: { onglet },
+      });
+    },
+    [track],
+  );
+
+  const trackClicLienSourceCritere = useCallback(
+    (critere: string, source: string) => {
+      return track(TypeEvenement.CLIC_LIEN_SOURCE_CRITERE, {
+        donnees: { critere, source },
+      });
+    },
+    [track],
+  );
+
   return {
     track,
+    trackConsultationComprendreAnalyses,
+    trackOngletComprendreAnalyses,
+    trackClicLienSourceCritere,
     trackFeedback,
     trackInteretMultiParcelles,
     trackInteretMiseEnRelation,

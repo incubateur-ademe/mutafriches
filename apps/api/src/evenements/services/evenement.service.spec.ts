@@ -384,6 +384,36 @@ describe("EvenementService - Sécurité", () => {
       expect(savedEvent.donnees?.format).toBeUndefined();
     });
 
+    it("devrait accepter l'onglet, le critère et la source de « Comprendre les analyses »", async () => {
+      await service.enregistrerEvenement({
+        typeEvenement: TypeEvenement.CLIC_LIEN_SOURCE_CRITERE,
+        donnees: {
+          onglet: "sources",
+          critere: "surfaceSite",
+          source: "BD TOPO et calcul d'itinéraire",
+        },
+      });
+
+      const savedEvent = vi.mocked(mockRepository.enregistrerEvenement).mock.calls[0][0];
+      expect(savedEvent.donnees).toMatchObject({
+        onglet: "sources",
+        critere: "surfaceSite",
+        source: "BD TOPO et calcul d'itinéraire",
+      });
+    });
+
+    it("devrait rejeter un onglet, un critère ou une source mal formés", async () => {
+      await service.enregistrerEvenement({
+        typeEvenement: TypeEvenement.CLIC_LIEN_SOURCE_CRITERE,
+        donnees: { onglet: "Sources<b>", critere: "surface site", source: "<script>" },
+      });
+
+      const savedEvent = vi.mocked(mockRepository.enregistrerEvenement).mock.calls[0][0];
+      expect(savedEvent.donnees?.onglet).toBeUndefined();
+      expect(savedEvent.donnees?.critere).toBeUndefined();
+      expect(savedEvent.donnees?.source).toBeUndefined();
+    });
+
     it("devrait valider page avec regex (pathname valide)", async () => {
       const input = {
         typeEvenement: TypeEvenement.VISITE,

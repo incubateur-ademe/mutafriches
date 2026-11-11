@@ -174,6 +174,24 @@ export class EvenementService {
       // Si invalide, on ignore silencieusement
     }
 
+    // onglet: identifiant court (minuscules, chiffres, tirets)
+    if (typeof donnees.onglet === "string" && /^[a-z0-9-]{1,30}$/.test(donnees.onglet)) {
+      sanitized.onglet = donnees.onglet;
+    }
+
+    // critere: clé technique d'un critère (camelCase)
+    if (typeof donnees.critere === "string" && /^[A-Za-z]{1,60}$/.test(donnees.critere)) {
+      sanitized.critere = donnees.critere;
+    }
+
+    // source: nom d'une source de données (lettres, chiffres, ponctuation courante)
+    if (
+      typeof donnees.source === "string" &&
+      /^[\p{L}\p{N} '’.,()-]{1,100}$/u.test(donnees.source)
+    ) {
+      sanitized.source = donnees.source;
+    }
+
     return Object.keys(sanitized).length > 0 ? sanitized : undefined;
   }
 }
