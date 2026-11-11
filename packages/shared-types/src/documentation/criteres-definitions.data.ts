@@ -42,7 +42,7 @@ export const DEFINITIONS_CRITERES: Record<string, string> = {
   siteEnZae: "Appartenance du centre du site à une zone d'activité économique en activité.",
   typeProprietaire: "Nature du ou des propriétaires du site, renseignée par l'utilisateur.",
   raccordementEau:
-    "Raccordement aux réseaux d'eau, déduit de l'emprise au sol du bâti : un site bâti est considéré comme raccordé.",
+    "Raccordement aux réseaux d'eau, déduit de la surface bâtie : un site bâti est considéré comme raccordé.",
   etatBatiInfrastructure:
     "État général des bâtiments et des infrastructures du site, renseigné par l'utilisateur.",
   presencePollution:

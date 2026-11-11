@@ -852,7 +852,15 @@
           "industrie": 0.5,
           "renaturation": 0.5,
           "photovoltaique": -2
-        }
+        },
+        "exclusions": [
+          {
+            "usages": [
+              "photovoltaique"
+            ],
+            "conditionsAssociees": []
+          }
+        ]
       }
     ]
   },
@@ -1532,7 +1540,21 @@
           "industrie": -2,
           "renaturation": 2,
           "photovoltaique": -2
-        }
+        },
+        "exclusions": [
+          {
+            "usages": [
+              "industrie",
+              "tertiaire"
+            ],
+            "conditionsAssociees": [
+              {
+                "critere": "presenceZoneHumide",
+                "reponse": "Oui"
+              }
+            ]
+          }
+        ]
       },
       {
         "reponse": "Non",
@@ -1565,7 +1587,21 @@
           "industrie": -2,
           "renaturation": 2,
           "photovoltaique": -2
-        }
+        },
+        "exclusions": [
+          {
+            "usages": [
+              "industrie",
+              "tertiaire"
+            ],
+            "conditionsAssociees": [
+              {
+                "critere": "presenceEspecesProtegees",
+                "reponse": "Oui"
+              }
+            ]
+          }
+        ]
       },
       {
         "reponse": "Non",

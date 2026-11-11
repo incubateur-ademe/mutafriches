@@ -22,6 +22,7 @@ import {
   USAGE_LABELS,
   UsageType,
   type CritereMatriceDoc,
+  type LigneMatriceDoc,
 } from "@mutafriches/shared-types";
 import { MATRICE_SCORING, POIDS_CRITERES, REGLES_EXCLUSION } from "./algorithme.config";
 import { ScoreParUsage } from "./algorithme.types";
@@ -37,6 +38,8 @@ type FonctionScore = (valeur: number | undefined) => ScoreParUsage;
 interface Ligne {
   reponse: string;
   scores: Scores;
+  // Valeur brute de la matrice, absente pour une tranche numérique
+  valeur?: string;
 }
 
 interface DefinitionCritere {
@@ -251,6 +254,7 @@ function lignesCritere(matrice: Record<string, unknown>, critere: DefinitionCrit
           ? "Non"
           : valeur,
     scores,
+    valeur,
   }));
 }
 
@@ -336,6 +340,26 @@ function verifierCouverture(): void {
   }
 }
 
+// Règles d'exclusion auxquelles participe une réponse ; absent si aucune
+function exclusionsLigne(
+  critere: DefinitionCritere,
+  ligne: Ligne,
+): Pick<LigneMatriceDoc, "exclusions"> {
+  const exclusions = REGLES_EXCLUSION.filter((regle) =>
+    regle.conditions.some((c) => c.critere === critere.cle && String(c.valeur) === ligne.valeur),
+  ).map((regle) => ({
+    usages: regle.usages as string[],
+    conditionsAssociees: regle.conditions
+      .filter((c) => c.critere !== critere.cle)
+      .map((c) => {
+        const autre = CRITERES.find((d) => d.cle === c.critere);
+        const valeur = String(c.valeur);
+        return { critere: c.critere, reponse: autre?.libelles?.[valeur] ?? valeur };
+      }),
+  }));
+  return exclusions.length ? { exclusions } : {};
+}
+
 export function genererMatriceScoringDonnees(): CritereMatriceDoc[] {
   verifierCouverture();
   const poids = POIDS_CRITERES as Record<string, number>;
@@ -356,6 +380,7 @@ export function genererMatriceScoringDonnees(): CritereMatriceDoc[] {
             ligne.scores[u.cle],
           ]),
         ),
+        ...exclusionsLigne(critere, ligne),
       })),
     };
   });
