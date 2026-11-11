@@ -70,14 +70,6 @@ export function Header() {
                       Partenaires
                     </Link>
                   </li>
-                  <li>
-                    <Link
-                      to={ROUTES.DOCUMENTATION_INTEGRATION}
-                      className="fr-btn fr-btn--tertiary fr-icon-book-2-fill fr-btn--icon-left"
-                    >
-                      Documentation
-                    </Link>
-                  </li>
                 </ul>
               </div>
             </div>
@@ -105,11 +97,6 @@ export function Header() {
               <li>
                 <Link to={ROUTES.PARTENAIRES} className="fr-btn">
                   Partenaires
-                </Link>
-              </li>
-              <li>
-                <Link to={ROUTES.DOCUMENTATION_INTEGRATION} className="fr-btn">
-                  Documentation
                 </Link>
               </li>
             </ul>
