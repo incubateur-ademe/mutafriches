@@ -69,7 +69,7 @@ export const ETAPES_TUTORIEL_QGIS: EtapeTutorielQgis[] = [
     id: "preparer",
     titre: "Préparer son inventaire de sites",
     paragraphes: [
-      "L'extension lit un inventaire de friches au standard national CNIG Friches, au format CSV ou GeoJSON : une ligne par site.",
+      "L'extension lit un inventaire de friches au standard CNIG Friches : une ligne par site. Le CSV est le fichier d'échange de référence, validable sur validata.fr et ouvrable dans un tableur ; le GeoJSON est directement exploitable dans un SIG.",
       "Quatre colonnes sont indispensables : l'identifiant du site (site_id), son nom (site_nom), le code INSEE de la commune (comm_insee) et les parcelles cadastrales du site (unite_fonciere_refcad, séparées par une barre verticale), ainsi que sa localisation (geompoint).",
       "Si vous n'avez pas encore de fichier à ce format, le bouton « Télécharger un fichier exemple » enregistre un modèle à remplir, par défaut dans votre dossier Téléchargements. Ses trois sites sont fictifs : remplacez-les par les vôtres. Envoyé tel quel, ce fichier est refusé au contrôle.",
     ],
@@ -102,7 +102,7 @@ export const ETAPES_TUTORIEL_QGIS: EtapeTutorielQgis[] = [
     id: "analyser",
     titre: "Lancer l'analyse",
     paragraphes: [
-      "Cliquez sur « Envoyer mes sites ». Pour chaque site, Mutafriches recueille les données de plus de dix bases nationales, puis calcule l'indice de mutabilité pour sept usages.",
+      "Cliquez sur « Envoyer mes sites ». Pour chaque site, Mutafriches recueille automatiquement ses données d'identification et de qualification auprès de plus de dix bases nationales, puis calcule son indice de mutabilité pour sept usages.",
       "Comptez deux à cinq secondes par site. L'avancement s'affiche site par site ; vous pouvez annuler à tout moment.",
     ],
     captures: [
@@ -112,14 +112,15 @@ export const ETAPES_TUTORIEL_QGIS: EtapeTutorielQgis[] = [
       },
     ],
     aSavoir:
-      "Sans information de terrain dans votre fichier, les critères à saisir (état du bâti, pollution, propriétaire…) sont comptés « ne sait pas ». Le calcul reste possible, mais l'indice de fiabilité s'en ressent.",
+      "L'indice de fiabilité reflète la complétude des informations concernant la friche. Il baisse si des données manquent ou si la connaissance terrain (état du bâti, pollution, propriétaire…) est absente de votre fichier : ces critères sont alors comptés « Je ne sais pas ».",
   },
   {
     id: "carte",
     titre: "Lire la carte et le tableau de bord",
     paragraphes: [
-      "À la fin de l'analyse, la carte se recadre sur vos sites, colorés selon leur usage le plus compatible. Chaque étiquette rappelle le nom du site, cet usage et son indice. La légende des couleurs se trouve dans le panneau Couches.",
-      "Le panneau devient un tableau de bord de votre territoire : nombre de sites analysés, fiabilité moyenne, répartition des usages les plus compatibles, profils de sites et liste des sites à forte compatibilité.",
+      "À la fin de l'analyse, la carte se recadre sur vos sites, colorés selon leur usage le plus compatible. Chaque étiquette rappelle le nom du site, cet usage et son indice de mutabilité. La légende des couleurs se trouve dans le panneau Couches.",
+      "Le panneau devient un tableau de bord de votre territoire : nombre de sites analysés, indice de fiabilité moyen, répartition des usages les plus compatibles, profils de sites et liste des sites à forte compatibilité.",
+      "L'indice de mutabilité d'un usage est un pourcentage de compatibilité : avantages / (avantages + contraintes).",
       "Dans cette liste, cliquer sur un site le sélectionne et recadre la carte dessus.",
     ],
     captures: [
@@ -137,13 +138,13 @@ export const ETAPES_TUTORIEL_QGIS: EtapeTutorielQgis[] = [
       },
     ],
     aSavoir:
-      "Un indice de mutabilité n'est pas une probabilité de réussite : il mesure la compatibilité d'un site avec un usage, au regard des critères connus. Ces résultats sont une première orientation, à croiser avec votre connaissance du territoire.",
+      "Ces résultats constituent une première orientation, basée sur les éléments que nous avons recueillis et que vous avez renseignés. Ils doivent être croisés avec votre connaissance du territoire et ne se substituent pas à des études de programmation. Un indice de mutabilité n'est pas une probabilité de réussite. Pour les sites de plus d'un hectare, il vous est recommandé de privilégier un mixte d'usages dans votre programmation.",
   },
   {
     id: "tables",
     titre: "Exploiter les tables attributaires",
     paragraphes: [
-      "L'extension ajoute deux couches à votre projet. « Mutabilité » porte, pour chaque site, l'usage le plus compatible, son indice, les indices des sept usages, la fiabilité et les parcelles. « Qualification » détaille les critères recueillis et signale les données manquantes.",
+      "L'extension ajoute deux couches à votre projet. « Mutabilité » porte, pour chaque site, l'usage le plus compatible, l'indice de mutabilité de tous les usages, l'indice de fiabilité et les parcelles. « Qualification » détaille l'identification et la qualification du site (données automatiques), la connaissance terrain lue dans votre fichier (données manuelles) et signale les données manquantes.",
       "Ouvrez leurs tables par les boutons du panneau, ou comme pour toute couche QGIS : clic droit sur la couche, puis « Ouvrir la table d'attributs ». Tri, filtres, sélection, jointures et export fonctionnent comme d'habitude.",
     ],
     captures: [
@@ -192,32 +193,39 @@ export const ETAPES_TUTORIEL_QGIS: EtapeTutorielQgis[] = [
 ];
 
 export interface QuestionTutoriel {
+  /** Identifiant stable de l'accordéon */
+  id: string;
   question: string;
   reponse: string;
 }
 
 export const QUESTIONS_TUTORIEL_QGIS: QuestionTutoriel[] = [
   {
+    id: "acces-refuse",
     question: "Le panneau affiche « Accès refusé » ou « API injoignable »",
     reponse:
       "L'extension interroge le service Mutafriches par Internet. Vérifiez votre connexion et, derrière un proxy, les réglages réseau de QGIS. Si le message persiste, écrivez-nous.",
   },
   {
+    id: "fichier-refuse",
     question: "Mon fichier est refusé en entier",
     reponse:
       "Une colonne indispensable manque (site_id, site_nom, comm_insee, unite_fonciere_refcad ou geompoint), ou le fichier n'est ni un CSV ni un GeoJSON. Repartez du fichier exemple.",
   },
   {
+    id: "site-en-echec",
     question: "Un site est en échec alors que sa ligne était « OK »",
     reponse:
       "Ses parcelles sont probablement introuvables au cadastre, ou le service n'a pas répondu à temps. Vérifiez les identifiants de parcelles (14 caractères, parcelles existantes) et relancez l'analyse.",
   },
   {
+    id: "carte-sans-fond",
     question: "La carte reste blanche ou sans fond",
     reponse:
       "Le fond OpenStreetMap n'est ajouté que dans un projet vide, s'il n'a pas été désactivé dans les réglages, et il demande une connexion Internet. Dans un projet qui a déjà des couches, ajoutez le fond de votre choix : les sites analysés s'affichent dans tous les cas.",
   },
   {
+    id: "sans-inventaire",
     question: "Puis-je essayer sans inventaire ?",
     reponse:
       "Oui : le lien « Passer en mode démonstration », en bas de l'écran d'envoi, montre le parcours complet sur des données figées. Le même choix se fait dans les réglages de l'extension.",
