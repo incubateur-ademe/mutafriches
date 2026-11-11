@@ -46,8 +46,9 @@ export function DsfrTabs({
   };
 
   return (
-    // DSFR masque le débordement de fr-tabs, ce qui empêche la barre d'onglets de rester collée
-    <div className={`fr-tabs${ongletsFiges ? " overflow-visible!" : ""}`}>
+    // Le overflow hidden du DSFR empêche la barre d'onglets de rester collée ; clip rogne de la
+    // même façon (le cadre des onglets déborde sinon sur le footer) sans créer de zone de défilement
+    <div className={`fr-tabs${ongletsFiges ? " overflow-clip!" : ""}`}>
       <ul
         className={`fr-tabs__list${ongletsFiges ? " sticky top-[0px] z-[3] bg-[var(--background-default-grey)]" : ""}`}
         role="tablist"
@@ -79,8 +80,8 @@ export function DsfrTabs({
           <div
             key={tab.id}
             id={`tabpanel-${tab.id}-panel`}
-            // Le DSFR garde un panneau inactif en place, masqué par le débordement de fr-tabs :
-            // sans ce masquage il élargirait la page, d'où le display none explicite
+            // Le DSFR garde un panneau inactif dans le flux : un onglet court hériterait de la
+            // hauteur du plus long, d'où le display none explicite
             className={`fr-tabs__panel${isActive ? " fr-tabs__panel--selected" : ongletsFiges ? " hidden!" : ""}`}
             role="tabpanel"
             aria-labelledby={`tabpanel-${tab.id}`}
