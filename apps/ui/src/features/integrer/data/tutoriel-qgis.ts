@@ -173,6 +173,22 @@ export const ETAPES_TUTORIEL_QGIS: EtapeTutorielQgis[] = [
       },
     ],
   },
+  {
+    id: "regler",
+    titre: "Régler l'extension",
+    paragraphes: [
+      "Le lien « Réglages », en bas de l'écran d'envoi, ouvre la page Mutafriches des options de QGIS. Vous la retrouvez aussi par le menu Préférences, Options, ou par le menu Extensions, Mutafriches.",
+      "Vous y choisissez le service utilisé (l'analyse réelle, ou une démonstration sur des données figées), vous modifiez ou effacez votre structure et votre adresse mail, et vous décidez si l'extension ajoute un fond de carte OpenStreetMap quand votre projet est vide.",
+    ],
+    captures: [
+      {
+        fichier: "14-reglages.webp",
+        alt: "Fenêtre Options de QGIS sur la page Mutafriches : choix de l'environnement, structure et adresse mail avec le bouton « Effacer mes informations », case du fond de carte OpenStreetMap et case du mode développeur.",
+      },
+    ],
+    aSavoir:
+      "Changer de service vide les résultats affichés et retire les deux couches Mutafriches du projet : enregistrez-les avant si vous voulez les conserver. Le mode développeur est réservé à l'équipe Mutafriches.",
+  },
 ];
 
 export interface QuestionTutoriel {
@@ -199,11 +215,11 @@ export const QUESTIONS_TUTORIEL_QGIS: QuestionTutoriel[] = [
   {
     question: "La carte reste blanche ou sans fond",
     reponse:
-      "Le fond OpenStreetMap n'est ajouté que dans un projet vide, et il demande une connexion Internet. Dans un projet qui a déjà des couches, ajoutez le fond de votre choix : les sites analysés s'affichent dans tous les cas.",
+      "Le fond OpenStreetMap n'est ajouté que dans un projet vide, s'il n'a pas été désactivé dans les réglages, et il demande une connexion Internet. Dans un projet qui a déjà des couches, ajoutez le fond de votre choix : les sites analysés s'affichent dans tous les cas.",
   },
   {
     question: "Puis-je essayer sans inventaire ?",
     reponse:
-      "Oui : le lien « Passer en mode démonstration », en bas de l'écran d'envoi, montre le parcours complet sur des données figées.",
+      "Oui : le lien « Passer en mode démonstration », en bas de l'écran d'envoi, montre le parcours complet sur des données figées. Le même choix se fait dans les réglages de l'extension.",
   },
 ];
