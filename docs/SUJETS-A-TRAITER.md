@@ -123,7 +123,8 @@ Format d'une entrée :
 
 - **Origine** : analyse des pannes BDNB d'octobre 2026
 - **Écarté parce que** : défaut d'exactitude distinct de la disponibilité de l'API ; la vue `batiment_groupe_complet/parcelle` renvoie le groupe entier pour chaque parcelle qu'il touche (`l_parcelle_id` > 1), donc un site multi-parcelle additionne sa surface plusieurs fois (ex. groupe `bdnb-bg-MHVH-E6JW-Y93A`, 596 m², présent sur `490200000A0773` et `490200000A1088`)
-- **Préalable** : mesurer l'écart sur les sites multi-parcelles enrichis, puis dédoublonner par `batiment_groupe_id` dans `enrichirMulti` (le détail par groupe est déjà conservé dans `cache_bdnb_parcelles.groupes`, aucun appel BDNB supplémentaire à prévoir ; le surplus change les indices : valider avec l'équipe métier, éventuellement via une version d'algorithme)
+- **Mesure du 2026-11-03** (table attributaire, prod) : 244 sites sur 3 004 ont une surface bâtie supérieure à leur surface, dont 130 de plus de 50 % (Ex-Schulmann à Montereau : 27 473 m² bâtis pour 8 466 m²). 73 de ces sites sont **mono-parcelles** : le groupe entier est aussi attribué à une parcelle qu'il ne fait que toucher. L'écart est désormais public, via `GET /api/attributaire/sites` et la question Metabase 245
+- **Préalable** : mesurer l'écart sur les sites multi-parcelles enrichis, puis dédoublonner par `batiment_groupe_id` dans `enrichirMulti` (le détail par groupe est déjà conservé dans `cache_bdnb_parcelles.groupes`, aucun appel BDNB supplémentaire à prévoir ; le surplus change les indices : valider avec l'équipe métier, éventuellement via une version d'algorithme). Le cas mono-parcelle demande en plus de répartir l'emprise d'un groupe entre les parcelles qu'il touche, ou de plafonner à la surface du site : à arbitrer
 
 ### Clé API BDNB ou import local si les parcelles neuves dépassent le quota
 
@@ -162,6 +163,12 @@ Format d'une entrée :
 - **Origine** : ADR-0053 (correspondance exacte des ensembles de parcelles)
 - **Écarté parce que** : rattacher un ensemble proche à un site partenaire demande une règle métier (part de surface commune, parcelle prédominante identique)
 - **Préalable** : mesurer les recoupements par commune, puis décider de la règle avec l'équipe
+
+### Distance de raccordement électrique de 999 000 m dans d'anciens enrichissements
+
+- **Origine** : question Metabase 245 « Table attributaire — critères des sites » (2026-11-03)
+- **Écarté parce que** : sans effet sur les indices, seul l'affichage est faux. Ancienne valeur sentinelle de l'adapter Enedis, supprimée par #182 (11/09/2026) : 999 km et `null` tombent dans la même tranche « au-delà de 5 km » (`raccordement-electrique-scoring.spec.ts`). Elle n'est plus produite (dernière occurrence en octobre 2026), mais 118 sites sur 3 004 la portent encore, parce que leur enrichissement retenu date de janvier à septembre 2026, souvent l'instantané de leur évaluation. La route publique et Metabase affichent donc 999 000 m.
+- **Préalable** : choisir entre ramener une distance de 999 000 m à `null` dans `criteresAutomatiques` (`apps/api/src/attributaire/attributaire.builder.ts`) puis relancer `pnpm attributaire:peupler`, ou attendre que ces sites soient réenrichis. Les autres distances ne portent pas de sentinelle (aucune au-delà de 100 km au 2026-11-03)
 
 ### Renseigner `partenaire_sites.code_insee`
 
@@ -226,6 +233,16 @@ Format d'une entrée :
   site par site, ce qui suffit sous 100 requêtes par minute pour quelques dizaines de sites
 - **Préalable** : mesurer les volumes réels (précédent EPFGE : 1 300 sites) ; au-delà d'une
   cinquantaine de sites par inventaire, route d'import, suivi d'avancement et file de tâches
+
+### Erreur 500 quand aucune parcelle du site n'existe
+
+- **Origine** : test de l'extension QGIS avec son fichier exemple (2026-11-11)
+- **Écarté parce que** : `POST /enrichissement` répond `500 Erreur lors de l'enrichissement`
+  pour un site dont aucune parcelle n'est au cadastre (ex. `99999000ZZ0010`), en production comme
+  en staging ; l'extension traduit ce 500 en message clair, mais un client ne peut pas le
+  distinguer d'une vraie panne
+- **Préalable** : répondre 404 ou 422 avec les parcelles introuvables (ADR-0044 les écarte déjà
+  sans erreur quand il en reste au moins une)
 
 ### Contrôles de cohérence d'un site côté API
 
