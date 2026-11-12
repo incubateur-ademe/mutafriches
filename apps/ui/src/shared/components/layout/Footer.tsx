@@ -54,7 +54,12 @@ export function Footer() {
               </li>
               <li className="fr-footer__bottom-item">
                 <a className="fr-footer__bottom-link" href={ROUTES.DOCUMENTATION_INTEGRATION}>
-                  API & Documentation intégrateurs
+                  Documentation technique (API et iframe)
+                </a>
+              </li>
+              <li className="fr-footer__bottom-item">
+                <a className="fr-footer__bottom-link" href={ROUTES.DONNEES_UTILISEES}>
+                  Données utilisées
                 </a>
               </li>
               <li className="fr-footer__bottom-item">

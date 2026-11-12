@@ -40,6 +40,11 @@ export enum TypeEvenement {
 
   // Export CNIG de tous les sites d'une page partenaire
   EXPORT_SITES_PARTENAIRE = "export_sites_partenaire",
+
+  // Page « Comprendre les analyses » : arrivée, changement d'onglet, clic sur la doc d'une source
+  CONSULTATION_COMPRENDRE_ANALYSES = "consultation_comprendre_analyses",
+  CONSULTATION_ONGLET_COMPRENDRE_ANALYSES = "consultation_onglet_comprendre_analyses",
+  CLIC_LIEN_SOURCE_CRITERE = "clic_lien_source_critere",
 }
 
 export enum ModeUtilisation {

@@ -288,6 +288,13 @@
       "when": 1793699314398,
       "tag": "0040_attributaire_sites",
       "breakpoints": true
+    },
+    {
+      "idx": 41,
+      "version": "7",
+      "when": 1794385622992,
+      "tag": "0041_evenements_comprendre_analyses",
+      "breakpoints": true
     }
   ]
 }

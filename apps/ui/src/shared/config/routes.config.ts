@@ -19,6 +19,8 @@ export const ROUTES = {
   STATISTIQUES: "/statistiques",
 
   // Documentation
+  COMPRENDRE_ANALYSES: "/comprendre-les-analyses",
+  INTEGRER: "/integrer-mutafriches",
   DOCUMENTATION_INTEGRATION: "/documentation-integration",
   API: "/api",
 

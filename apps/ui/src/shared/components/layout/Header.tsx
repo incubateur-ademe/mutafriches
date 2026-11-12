@@ -136,11 +136,20 @@ export function Header() {
               </li>
               <li className="fr-nav__item">
                 <Link
-                  to={ROUTES.DONNEES_UTILISEES}
+                  to={ROUTES.COMPRENDRE_ANALYSES}
                   className="fr-nav__link"
-                  aria-current={isActive(ROUTES.DONNEES_UTILISEES) ? "page" : undefined}
+                  aria-current={isActive(ROUTES.COMPRENDRE_ANALYSES) ? "page" : undefined}
                 >
-                  Données utilisées
+                  Comprendre les analyses
+                </Link>
+              </li>
+              <li className="fr-nav__item">
+                <Link
+                  to={ROUTES.INTEGRER}
+                  className="fr-nav__link"
+                  aria-current={isActive(ROUTES.INTEGRER) ? "page" : undefined}
+                >
+                  Intégrer Mutafriches
                 </Link>
               </li>
             </ul>

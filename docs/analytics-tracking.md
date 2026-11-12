@@ -52,6 +52,18 @@ Sans login, l'égalité « 1 identifiant = 1 personne » casse dans ces cas :
 
 En résumé : `visitor_id` transforme « par visite » en « par navigateur » — bien meilleur que la session, mais toujours une sous-estimation par rapport à « par personne ». Seul un compte authentifié supprime cette marge d'erreur.
 
+## Événements de la page « Comprendre les analyses »
+
+Émis par `/comprendre-les-analyses`, hors parcours d'analyse : ni `evaluation_id` ni identifiant cadastral.
+
+| `type_evenement` | Déclencheur | `donnees` |
+|---|---|---|
+| `consultation_comprendre_analyses` | Arrivée sur la page | — |
+| `consultation_onglet_comprendre_analyses` | Changement d'onglet (pas l'onglet affiché à l'arrivée) | `onglet` : `definitions` ou `sources` |
+| `clic_lien_source_critere` | Clic sur le lien de documentation d'une source | `critere` (clé technique), `source` (nom affiché) |
+
+L'onglet « Définitions » étant ouvert par défaut, ses consultations se lisent sur `consultation_comprendre_analyses` ; `consultation_onglet_comprendre_analyses` avec `onglet = definitions` ne compte que les retours depuis « Sources ». `donnees` est filtré par liste blanche côté API (`EvenementsService.sanitizeDonnees`) : toute nouvelle clé doit y être ajoutée, sinon elle est écartée sans erreur.
+
 ## État de la mesure
 
 - **Provisoire (avant déploiement du `visitor_id`)** : la récurrence est mesurée par `session_id` (une visite). Les chiffres sont une **borne basse indicative**.
