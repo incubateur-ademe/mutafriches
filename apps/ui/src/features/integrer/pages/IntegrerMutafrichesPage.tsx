@@ -7,8 +7,9 @@ import { SolutionIntegrationCard } from "../components/SolutionIntegrationCard";
 
 const URL_BENEFRICHES = "https://benefriches.ademe.fr";
 
-// Visuel provisoire des quatre cartes, en attendant les captures définitives
+// Visuel provisoire des trois autres cartes, en attendant les captures définitives
 const IMAGE_PROVISOIRE = "/images/placeholder.16x9.png";
+const IMAGE_EXTENSION_QGIS = "/images/tutoriel-qgis/07-carte-et-tableau-de-bord.webp";
 
 const MESSAGES_CONTACT = {
   api: "Choisissez un créneau pour demander un accès à l'API Mutafriches à l'équipe.",
@@ -37,12 +38,11 @@ export function IntegrerMutafrichesPage() {
           titre="Extension QGIS"
           accroche="Analysez vos friches sans quitter votre SIG"
           tags={["Utilisation fréquente", "Large stock de sites"]}
-          image={IMAGE_PROVISOIRE}
+          image={IMAGE_EXTENSION_QGIS}
           action={
-            // Lien à brancher quand l'extension sera publiée
-            <button type="button" className="fr-btn" disabled>
+            <Link to={ROUTES.TUTORIEL_QGIS} className="fr-btn">
               Utiliser l'extension
-            </button>
+            </Link>
           }
         >
           Chargez les sites à étudier depuis vos données géographiques et analysez leur mutabilité
