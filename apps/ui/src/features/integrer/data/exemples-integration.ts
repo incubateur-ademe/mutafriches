@@ -15,13 +15,6 @@ Origin: https://mon-service.gouv.fr
   "identifiant": "49353000AV0202"
 }`;
 
-export const ENRICHIR_MONO = `POST https://mutafriches.beta.gouv.fr/enrichissement
-Content-Type: application/json
-
-{
-  "identifiant": "49353000AV0202"
-}`;
-
 export const ENRICHIR_MULTI = `POST https://mutafriches.beta.gouv.fr/enrichissement
 Content-Type: application/json
 
@@ -77,24 +70,6 @@ export const ENRICHIR_REPONSE = `{
   "champsManquants": []
 }`;
 
-export const CALCULER_REQUETE = `POST https://mutafriches.beta.gouv.fr/evaluation/calculer
-Content-Type: application/json
-
-{
-  "donneesEnrichies": { /* réponse complète de l'étape 1, renvoyée telle quelle */ },
-  "donneesComplementaires": {
-    "typeProprietaire": "prive",
-    "etatBatiInfrastructure": "degradation-heterogene",
-    "presencePollution": "ne-sait-pas",
-    "valeurArchitecturaleHistorique": "interet-remarquable",
-    "qualitePaysage": "ordinaire",
-    "qualiteVoieDesserte": "accessible",
-    "trameVerteEtBleue": "hors-trame",
-    "presenceEspecesProtegees": "non",
-    "presenceZoneHumide": "non"
-  }
-}`;
-
 export const CALCULER_REPONSE = `{
   "fiabilite": {
     "note": 8.5,
@@ -120,6 +95,140 @@ export const CALCULER_REPONSE = `{
   ],
   "evaluationId": "eval-uuid"
 }`;
+
+// --- Extraits réduits aux champs utiles (page API, « Votre première analyse ») ---
+
+export const ENRICHIR_ENVOI_COURT = `POST /enrichissement
+
+{
+  "identifiant": "49353000AV0202"
+}`;
+
+export const CALCULER_ENVOI_COURT = `POST /evaluation/calculer
+
+{
+  "donneesEnrichies": { /* réponse de l'étape 1 */ },
+  "donneesComplementaires": {
+    "typeProprietaire": "prive",
+    "etatBatiInfrastructure": "degradation-heterogene",
+    "presencePollution": "ne-sait-pas",
+    "valeurArchitecturaleHistorique": "interet-remarquable",
+    "qualitePaysage": "ordinaire",
+    "qualiteVoieDesserte": "accessible",
+    "trameVerteEtBleue": "hors-trame",
+    "presenceEspecesProtegees": "non",
+    "presenceZoneHumide": "non"
+  }
+}`;
+
+export const ENRICHIR_REPONSE_COURTE = `{
+  "identifiantsParcelles": ["49353000AV0202"],
+  "commune": "Trélazé",
+  "surfaceSite": 1449,
+  "surfaceBati": 297,
+  "siteEnCentreVille": true,
+  "risqueInondation": "oui",
+  /* ... une trentaine d'autres données ... */
+  "sourcesEchouees": [],
+  "champsManquants": []
+}`;
+
+export const CALCULER_REPONSE_COURTE = `{
+  "fiabilite": { "note": 8.5, "text": "Très fiable" },
+  "resultats": [
+    {
+      "rang": 1,
+      "usage": "residentiel",
+      "indiceMutabilite": 68,
+      "potentiel": "Très bon",
+      "exclu": false
+    }
+    /* ... les six autres usages ... */
+  ],
+  "evaluationId": "eval-uuid"
+}`;
+
+// --- Exemples complets, exécutables une fois le domaine autorisé ---
+
+export const EXEMPLE_COMPLET_JS = `// Node.js 18 ou plus récent : node analyse.mjs
+const API = "https://mutafriches.beta.gouv.fr";
+const enTetes = {
+  "Content-Type": "application/json",
+  // Votre domaine autorisé (inutile depuis un navigateur, qui l'envoie seul)
+  Origin: "https://mon-service.gouv.fr",
+};
+
+async function appeler(chemin, corps) {
+  const reponse = await fetch(API + chemin, {
+    method: "POST",
+    headers: enTetes,
+    body: JSON.stringify(corps),
+  });
+  if (!reponse.ok) throw new Error(chemin + " : " + reponse.status + " " + (await reponse.text()));
+  return reponse.json();
+}
+
+// 1. Recueillir les données automatiques du site
+const donneesEnrichies = await appeler("/enrichissement", {
+  identifiants: ["49353000AV0202"],
+});
+
+// 2. Ajouter la connaissance terrain ("ne-sait-pas" si l'information manque)
+const donneesComplementaires = {
+  typeProprietaire: "prive",
+  etatBatiInfrastructure: "degradation-heterogene",
+  presencePollution: "ne-sait-pas",
+  valeurArchitecturaleHistorique: "interet-remarquable",
+  qualitePaysage: "ordinaire",
+  qualiteVoieDesserte: "accessible",
+  trameVerteEtBleue: "hors-trame",
+  presenceEspecesProtegees: "non",
+  presenceZoneHumide: "non",
+};
+
+// 3. Calculer la mutabilité
+const analyse = await appeler("/evaluation/calculer", {
+  donneesEnrichies,
+  donneesComplementaires,
+});
+
+console.log("Fiabilité :", analyse.fiabilite.note, "/ 10");
+for (const resultat of analyse.resultats) {
+  console.log(resultat.rang, resultat.usage, resultat.indiceMutabilite, resultat.exclu ? "(exclu)" : "");
+}`;
+
+export const EXEMPLE_COMPLET_CURL = `# Nécessite curl et jq
+
+# 1. Recueillir les données automatiques du site
+curl -s -X POST https://mutafriches.beta.gouv.fr/enrichissement \\
+  -H "Content-Type: application/json" \\
+  -H "Origin: https://mon-service.gouv.fr" \\
+  -d '{ "identifiants": ["49353000AV0202"] }' \\
+  -o enrichissement.json
+
+# 2. Ajouter la connaissance terrain ("ne-sait-pas" si l'information manque)
+cat > terrain.json <<'FIN'
+{
+  "typeProprietaire": "prive",
+  "etatBatiInfrastructure": "degradation-heterogene",
+  "presencePollution": "ne-sait-pas",
+  "valeurArchitecturaleHistorique": "interet-remarquable",
+  "qualitePaysage": "ordinaire",
+  "qualiteVoieDesserte": "accessible",
+  "trameVerteEtBleue": "hors-trame",
+  "presenceEspecesProtegees": "non",
+  "presenceZoneHumide": "non"
+}
+FIN
+
+# 3. Calculer la mutabilité
+jq -n --slurpfile e enrichissement.json --slurpfile t terrain.json \\
+  '{ donneesEnrichies: $e[0], donneesComplementaires: $t[0] }' \\
+  | curl -s -X POST https://mutafriches.beta.gouv.fr/evaluation/calculer \\
+      -H "Content-Type: application/json" \\
+      -H "Origin: https://mon-service.gouv.fr" \\
+      -d @- \\
+  | jq '{ fiabilite, resultats }'`;
 
 export const RELIRE_REQUETE = `GET https://mutafriches.beta.gouv.fr/evaluation/{id}`;
 
