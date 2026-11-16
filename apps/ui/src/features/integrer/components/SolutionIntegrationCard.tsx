@@ -7,6 +7,8 @@ interface SolutionIntegrationCardProps {
   image: string;
   children: ReactNode;
   action: ReactNode;
+  // Horizontale : image à gauche sur toute la largeur. Verticale : image en haut, pour une grille.
+  disposition?: "horizontale" | "verticale";
 }
 
 export function SolutionIntegrationCard({
@@ -16,21 +18,30 @@ export function SolutionIntegrationCard({
   image,
   children,
   action,
+  disposition = "horizontale",
 }: SolutionIntegrationCardProps) {
+  const horizontale = disposition === "horizontale";
+
   return (
-    <div className="fr-card fr-card--horizontal fr-card--horizontal-half fr-mb-6w">
+    <div
+      className={
+        horizontale
+          ? "fr-card fr-card--lg fr-card--horizontal fr-card--horizontal-half fr-mb-3w"
+          : "fr-card"
+      }
+    >
       <div className="fr-card__body">
         <div className="fr-card__content">
-          <h2 className="fr-card__title">
+          <h2 className="fr-card__title fr-text-title--blue-france">
             {titre}
-            <span className="fr-text--lead fr-text--regular block">{accroche}</span>
+            <span className="fr-text--regular block">{accroche}</span>
           </h2>
-          <p className="fr-card__desc">{children}</p>
+          <p className={horizontale ? "fr-card__desc fr-text--lg" : "fr-card__desc"}>{children}</p>
           <div className="fr-card__start">
             <ul className="fr-tags-group">
               {tags.map((tag) => (
                 <li key={tag}>
-                  <p className="fr-tag">{tag}</p>
+                  <p className={horizontale ? "fr-tag" : "fr-tag fr-tag--sm"}>{tag}</p>
                 </li>
               ))}
             </ul>
