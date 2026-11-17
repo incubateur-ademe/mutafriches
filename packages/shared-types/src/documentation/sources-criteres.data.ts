@@ -115,3 +115,39 @@ export function getSourceCritere(critere: CritereMetadata): SourceCritereDoc | u
     urlDoc: declaree.urlDoc ?? bloc.urlDoc,
   };
 }
+
+/** Donnée restituée dans une analyse sans entrer dans le calcul de mutabilité ni de fiabilité */
+export interface SourceHorsCalculDoc extends SourceCritereDoc {
+  /** Champ du résultat d'enrichissement qui porte la donnée */
+  cle: string;
+  /** Ce que la donnée indique à l'utilisateur */
+  usage: string;
+  /** Bloc de SOURCES_DONNEES qui la documente, quand elle en a un à elle */
+  blocId?: string;
+}
+
+const urlDocBloc = (id: string): string => SOURCES_DONNEES.find((s) => s.id === id)?.urlDoc ?? "";
+
+// Sources affichées sous le tableau des critères : aucune n'alimente un critère noté
+export const SOURCES_HORS_CALCUL: SourceHorsCalculDoc[] = [
+  {
+    cle: "ilotChaleurUrbain",
+    nom: "Îlots de chaleur urbain",
+    producteur: "CSTB",
+    type: "referentiel-local",
+    format: "GeoJSON",
+    urlDoc: urlDocBloc("icu"),
+    usage: "Indique si le site se trouve dans un îlot de chaleur urbain.",
+    blocId: "icu",
+  },
+  {
+    cle: "siteReferencePollue",
+    nom: "Sites et sols pollués",
+    producteur: "ADEME",
+    type: "referentiel-local",
+    format: "GeoJSON",
+    urlDoc:
+      "https://data.ademe.fr/datasets/srd-ademe/full?p=%2Fdata-fair%2Fembed%2Fdataset%2Fsrd-ademe%2Ftable",
+    usage: "Indique si le site est référencé comme pollué.",
+  },
+];

@@ -2,7 +2,8 @@ import { describe, expect, it } from "vitest";
 import { CRITERES_METADATA, CRITERES_METADATA_LIST } from "../recapitulatif/criteres.metadata";
 import { DEFINITIONS_CRITERES } from "./criteres-definitions.data";
 import { MATRICE_SCORING_DOC } from "./matrice-scoring.data";
-import { getSourceCritere } from "./sources-criteres.data";
+import { getSourceCritere, SOURCES_HORS_CALCUL } from "./sources-criteres.data";
+import { SOURCES_DONNEES } from "./sources-donnees.data";
 
 describe("Données de la page « Comprendre les analyses »", () => {
   const cles = Object.keys(CRITERES_METADATA).sort();
@@ -28,6 +29,21 @@ describe("Données de la page « Comprendre les analyses »", () => {
       } else {
         expect(source).toBeUndefined();
       }
+    }
+  });
+
+  it("affiche chaque source documentée : par un critère, ou parmi les données hors calcul", () => {
+    const sourcesDesCriteres = new Set(CRITERES_METADATA_LIST.map((c) => c.source));
+    const blocsSansCritere = SOURCES_DONNEES.filter(
+      (bloc) => !bloc.sourcesEnrichissement.some((s) => sourcesDesCriteres.has(s)),
+    ).map((bloc) => bloc.id);
+
+    expect(SOURCES_HORS_CALCUL.flatMap((s) => s.blocId ?? []).sort()).toEqual(
+      blocsSansCritere.sort(),
+    );
+    for (const source of SOURCES_HORS_CALCUL) {
+      expect(source.urlDoc, source.cle).toMatch(/^https:\/\//);
+      expect(Object.keys(CRITERES_METADATA)).not.toContain(source.cle);
     }
   });
 });
