@@ -39,7 +39,7 @@ Adresse conservée
 
 | Page | Route | Entrée | Public | Contenu | Source des données |
 | --- | --- | --- | --- | --- | --- |
-| Comprendre les analyses | `/comprendre-les-analyses` | Menu | Tous | Critères, définitions, coefficients, score de chaque valeur par usage ; source, format et version de chaque critère | `MATRICE_SCORING_DOC` (généré par `pnpm docs:matrice:gen`), `DEFINITIONS_CRITERES`, `getSourceCritere` (`packages/shared-types/src/documentation/`) |
+| Comprendre les analyses | `/comprendre-les-analyses` | Menu | Tous | Critères, définitions, coefficients, score de chaque valeur par usage ; source, format et version de chaque critère ; sources des données restituées hors calcul (îlots de chaleur, sites pollués) | `MATRICE_SCORING_DOC` (généré par `pnpm docs:matrice:gen`), `DEFINITIONS_CRITERES`, `getSourceCritere`, `SOURCES_HORS_CALCUL` (`packages/shared-types/src/documentation/`) |
 | Intégrer Mutafriches | `/integrer-mutafriches` | Menu, footer, page d'accueil | Collectivités, partenaires | Les quatre façons d'utiliser Mutafriches à l'échelle d'un territoire, avec un appel à l'action par solution | Contenu éditorial, dans la page |
 | Utiliser l'extension QGIS | `/integrer-mutafriches/extension-qgis` | Carte « Extension QGIS » | Géomaticiens, collectivités | Tutoriel en neuf étapes illustrées : installation, inventaire CNIG, contrôle, analyse, carte, tables attributaires, sites à reprendre, réglages ; questions fréquentes en accordéons | `ETAPES_TUTORIEL_QGIS` (`features/integrer/data/tutoriel-qgis.ts`) ; captures `public/images/tutoriel-qgis/`, produites par `scripts/captures-tutoriel.sh` du dépôt `mutafriches-qgis` |
 | Utiliser l'API Mutafriches | `/integrer-mutafriches/api` | Carte « API Mutafriches », ancienne adresse `/documentation-integration` | Développeurs intégrateurs | Schéma du parcours et choix de la solution, demande d'accès, première analyse en trois étapes (envoi et réception côte à côte), lecture du résultat, exemple complet à copier (JavaScript, curl) ; en accordéons : relecture d'une évaluation, sites d'une commune, inventaires, erreurs, référence des appels | Contenu éditorial dans la page ; exemples dans `features/integrer/data/exemples-integration.ts` ; critères de terrain et valeurs admises tirés de `@mutafriches/shared-types` (`features/integrer/data/criteres-terrain.ts`) |
@@ -69,6 +69,7 @@ Chemins relatifs à `apps/ui/src/`.
 - Les pages de détail de « Intégrer Mutafriches » partagent un gabarit : fil d'Ariane (Accueil › Intégrer Mutafriches › page), sommaire en menu latéral collant. Chaque entrée du sommaire vise l'identifiant d'une section.
 - Les tableaux de « Comprendre les analyses » ne se saisissent pas à la main : ils découlent de l'algorithme, et des tests cassent en cas de divergence.
 - Un nouveau critère exige sa définition dans `DEFINITIONS_CRITERES` et, s'il est automatique, sa source dans `sources-criteres.data.ts`.
+- Une source de `SOURCES_DONNEES` qui n'alimente aucun critère doit figurer dans `SOURCES_HORS_CALCUL` (`sources-criteres.data.ts`), sinon `comprendre-analyses.data.spec.ts` casse.
 
 ## A voir
 

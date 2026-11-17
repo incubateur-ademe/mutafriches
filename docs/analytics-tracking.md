@@ -60,7 +60,7 @@ En résumé : `visitor_id` transforme « par visite » en « par navigateur » �
 |---|---|---|
 | `consultation_comprendre_analyses` | Arrivée sur la page | — |
 | `consultation_onglet_comprendre_analyses` | Changement d'onglet (pas l'onglet affiché à l'arrivée) | `onglet` : `definitions` ou `sources` |
-| `clic_lien_source_critere` | Clic sur le lien de documentation d'une source | `critere` (clé technique), `source` (nom affiché) |
+| `clic_lien_source_critere` | Clic sur le lien de documentation d'une source | `critere` (clé technique du critère, ou champ de la donnée hors calcul : `ilotChaleurUrbain`, `siteReferencePollue`), `source` (nom affiché) |
 
 L'onglet « Définitions » étant ouvert par défaut, ses consultations se lisent sur `consultation_comprendre_analyses` ; `consultation_onglet_comprendre_analyses` avec `onglet = definitions` ne compte que les retours depuis « Sources ». `donnees` est filtré par liste blanche côté API (`EvenementsService.sanitizeDonnees`) : toute nouvelle clé doit y être ajoutée, sinon elle est écartée sans erreur.
 
