@@ -52,12 +52,12 @@ export const ETAPES_TUTORIEL_QGIS: EtapeTutorielQgis[] = [
   },
   {
     id: "se-presenter",
-    titre: "Ouvrir le panneau et se présenter",
+    titre: "Ouvrir le plugin et s'identifier",
     paragraphes: [
-      "Cliquez sur le bouton Mutafriches : un panneau s'ouvre à droite de la carte. À la première ouverture, indiquez votre structure et votre adresse mail, puis cliquez sur « Suivant ».",
-      "Ces informations restent sur votre poste, dans votre profil QGIS. Elles ne sont demandées qu'une fois ; le lien « Modifier » permet d'y revenir.",
-      "Si votre projet QGIS est vide, l'extension y ajoute un fond de carte OpenStreetMap cadré sur la France, pour situer vos sites. Si votre projet contient déjà des couches, elle n'y touche pas : vos sites s'afficheront par-dessus vos propres fonds.",
+      "Cliquez sur le bouton Mutafriches : le plugin s'ouvre à droite de la carte. Vous pouvez indiquer votre structure et votre adresse mail (facultatif), puis cliquez sur « Suivant ».",
     ],
+    aSavoir:
+      "Si votre projet QGIS est vide, l'extension y ajoute un fond de carte OpenStreetMap cadré sur la France, pour situer vos sites. Si votre projet contient déjà des couches, elle n'y touche pas : vos sites s'afficheront par-dessus vos propres fonds.",
     captures: [
       {
         fichier: "02-se-presenter.webp",

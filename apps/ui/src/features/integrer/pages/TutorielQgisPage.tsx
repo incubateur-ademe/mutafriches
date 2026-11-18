@@ -28,7 +28,7 @@ export function TutorielQgisPage() {
       id="tutoriel-qgis"
       titre="Utiliser l'extension QGIS"
       libelleFil="Extension QGIS"
-      chapo="Comparez les résultats sur plusieurs sites en friche de votre territoire sans quitter votre SIG, et identifiez plus facilement les opportunités pour construire votre stratégie territoriale : envoyez votre inventaire, retrouvez chaque site sur la carte avec ses usages les plus compatibles, et exploitez les indices de mutabilité dans vos tables attributaires."
+      chapo="Comparez les résultats sur plusieurs sites en friche de votre territoire sans quitter votre SIG, et identifiez plus facilement les opportunités pour construire votre stratégie territoriale."
       sommaire={SOMMAIRE}
     >
       <div className="fr-callout fr-mb-6w">

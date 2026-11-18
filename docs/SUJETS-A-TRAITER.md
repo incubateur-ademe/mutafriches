@@ -202,6 +202,15 @@ Format d'une entrée :
 - **Préalable** : fusionner le mode réel de l'extension, puis publier une release portant le
   ZIP ; ne pas mettre le tutoriel en production avant
 
+### Identification facultative dans l'extension QGIS
+
+- **Origine** : simplification des textes du tutoriel `/integrer-mutafriches/extension-qgis` (2026-11-18)
+- **Écarté parce que** : le tutoriel annonce l'identification comme facultative, alors que
+  l'extension exige encore une structure et une adresse mail valide pour passer l'accueil
+  (`Utilisateur.complet`, `mutafriches/ui/accueil.py`) ; seul le consentement y est facultatif
+- **Préalable** : rendre les deux champs facultatifs dans `mutafriches-qgis` avant la release,
+  ou réécrire la phrase du tutoriel
+
 ### Suivi de consultation du tutoriel QGIS
 
 - **Origine** : tutoriel `/integrer-mutafriches/extension-qgis`
