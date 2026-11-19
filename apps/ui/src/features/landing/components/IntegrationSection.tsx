@@ -43,7 +43,7 @@ export function IntegrationSection() {
                 interfaces et usages.
               </p>
 
-              <Link to={ROUTES.DOCUMENTATION_INTEGRATION} className="fr-btn">
+              <Link to={ROUTES.INTEGRER} className="fr-btn">
                 Accéder à la documentation
               </Link>
               <br />

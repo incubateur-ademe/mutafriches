@@ -5,11 +5,14 @@ import { ZcalEmbed } from "../../../shared/components/common/ZcalEmbed";
 interface ContactMultisitesModalProps {
   isOpen: boolean;
   onClose: () => void;
+  // Objet de l'échange, quand la modale s'ouvre ailleurs que depuis les résultats
+  message?: string;
 }
 
 export const ContactMultisitesModal: React.FC<ContactMultisitesModalProps> = ({
   isOpen,
   onClose,
+  message = "Choisissez un créneau pour discuter de l'analyse de plusieurs sites avec l'équipe Mutafriches.",
 }) => {
   return (
     <ModalInfo
@@ -20,10 +23,7 @@ export const ContactMultisitesModal: React.FC<ContactMultisitesModalProps> = ({
       showIcon={false}
       size="lg"
     >
-      <p>
-        Choisissez un créneau pour discuter de l'analyse de plusieurs sites avec l'équipe
-        Mutafriches.
-      </p>
+      <p>{message}</p>
 
       <ZcalEmbed active={isOpen} />
     </ModalInfo>

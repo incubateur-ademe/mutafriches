@@ -29,6 +29,12 @@ export interface EvenementDonnees {
   partenaireSlug?: string;
   /** Format d'export choisi (ex: "pdf", "json") */
   format?: string;
+  /** Onglet consulté (ex : page « Comprendre les analyses ») */
+  onglet?: string;
+  /** Clé du critère concerné (ex : lien de documentation d'une source) */
+  critere?: string;
+  /** Nom de la source de données concernée */
+  source?: string;
 }
 
 export interface EvenementInputDto {

@@ -16,6 +16,7 @@
 - **[Ajouter un partenaire](./ajout-partenaire.md)** - Todolist pour publier une nouvelle page partenaire multisite
 - **[Ouvrir un accès API](./acces-api-integrateur.md)** - Modèle d'onboarding à dupliquer dans Notion (fiche, checklist, mails, curls) et référence (whitelist d'origines, limites)
 - **[Vulnérabilités de dépendances](./security/vulnerabilites-acceptees.md)** - Suivi `pnpm audit` : corrections, acceptations justifiées, planchers d'override
+- **[Arborescence des pages de documentation](./arborescence-pages-documentation.md)** - Pages de documentation et d'information technique de l'UI : routes, points d'entrée, sources des données
 - **[Sujets à traiter](./SUJETS-A-TRAITER.md)** - Sujets écartés des PR, avec leur préalable
 - **[Ops](./ops/README.md)** - Scalingo (connexion, logs, psql en lecture) et base locale (restauration de dump, purge des caches)
 

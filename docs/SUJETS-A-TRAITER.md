@@ -123,7 +123,8 @@ Format d'une entrée :
 
 - **Origine** : analyse des pannes BDNB d'octobre 2026
 - **Écarté parce que** : défaut d'exactitude distinct de la disponibilité de l'API ; la vue `batiment_groupe_complet/parcelle` renvoie le groupe entier pour chaque parcelle qu'il touche (`l_parcelle_id` > 1), donc un site multi-parcelle additionne sa surface plusieurs fois (ex. groupe `bdnb-bg-MHVH-E6JW-Y93A`, 596 m², présent sur `490200000A0773` et `490200000A1088`)
-- **Préalable** : mesurer l'écart sur les sites multi-parcelles enrichis, puis dédoublonner par `batiment_groupe_id` dans `enrichirMulti` (le détail par groupe est déjà conservé dans `cache_bdnb_parcelles.groupes`, aucun appel BDNB supplémentaire à prévoir ; le surplus change les indices : valider avec l'équipe métier, éventuellement via une version d'algorithme)
+- **Mesure du 2026-11-03** (table attributaire, prod) : 244 sites sur 3 004 ont une surface bâtie supérieure à leur surface, dont 130 de plus de 50 % (Ex-Schulmann à Montereau : 27 473 m² bâtis pour 8 466 m²). 73 de ces sites sont **mono-parcelles** : le groupe entier est aussi attribué à une parcelle qu'il ne fait que toucher. L'écart est désormais public, via `GET /api/attributaire/sites` et la question Metabase 245
+- **Préalable** : mesurer l'écart sur les sites multi-parcelles enrichis, puis dédoublonner par `batiment_groupe_id` dans `enrichirMulti` (le détail par groupe est déjà conservé dans `cache_bdnb_parcelles.groupes`, aucun appel BDNB supplémentaire à prévoir ; le surplus change les indices : valider avec l'équipe métier, éventuellement via une version d'algorithme). Le cas mono-parcelle demande en plus de répartir l'emprise d'un groupe entre les parcelles qu'il touche, ou de plafonner à la surface du site : à arbitrer
 
 ### Clé API BDNB ou import local si les parcelles neuves dépassent le quota
 
@@ -163,11 +164,133 @@ Format d'une entrée :
 - **Écarté parce que** : rattacher un ensemble proche à un site partenaire demande une règle métier (part de surface commune, parcelle prédominante identique)
 - **Préalable** : mesurer les recoupements par commune, puis décider de la règle avec l'équipe
 
+### Distance de raccordement électrique de 999 000 m dans d'anciens enrichissements
+
+- **Origine** : question Metabase 245 « Table attributaire — critères des sites » (2026-11-03)
+- **Écarté parce que** : sans effet sur les indices, seul l'affichage est faux. Ancienne valeur sentinelle de l'adapter Enedis, supprimée par #182 (11/09/2026) : 999 km et `null` tombent dans la même tranche « au-delà de 5 km » (`raccordement-electrique-scoring.spec.ts`). Elle n'est plus produite (dernière occurrence en octobre 2026), mais 118 sites sur 3 004 la portent encore, parce que leur enrichissement retenu date de janvier à septembre 2026, souvent l'instantané de leur évaluation. La route publique et Metabase affichent donc 999 000 m.
+- **Préalable** : choisir entre ramener une distance de 999 000 m à `null` dans `criteresAutomatiques` (`apps/api/src/attributaire/attributaire.builder.ts`) puis relancer `pnpm attributaire:peupler`, ou attendre que ces sites soient réenrichis. Les autres distances ne portent pas de sentinelle (aucune au-delà de 100 km au 2026-11-03)
+
 ### Renseigner `partenaire_sites.code_insee`
 
 - **Origine** : ADR-0053 (vide pour les 415 sites des 4 partenaires)
 - **Écarté parce que** : la table attributaire lit le code INSEE de l'enrichissement ; seul le filtre `--commune` du script s'en passe en lisant le préfixe des parcelles
 - **Préalable** : migration de données depuis le préfixe des parcelles, ou depuis la commune prédominante du cache d'enrichissement
+
+## Extension QGIS
+
+> Contexte : l'extension (dépôt `mutafriches-qgis`) appelle l'API existante sans changement de
+> code, site par site (`POST /enrichissement` puis `POST /evaluation/calculer`), avec une origine
+> conventionnelle déclarée dans `ALLOWED_INTEGRATOR_ORIGINS`. Plan complet :
+> `mutafriches-qgis/docs/plan-implementation-reelle.md`.
+
+### Déclarer l'origine de l'extension QGIS
+
+- **Origine** : passage du prototype QGIS au réel sans modifier l'API (2026-11-11)
+- **Écarté parce que** : réglage d'exploitation, pas de code ; à faire en staging
+  (`mutafriches.incubateur.ademe.dev`) et en production : fait le 2026-11-11, reste le canal
+  Metabase
+- **Préalable** : suivre `docs/acces-api-integrateur.md` avec l'origine
+  `https://qgis.mutafriches.beta.gouv.fr` (l'extension pose elle-même l'en-tête `Origin`), puis
+  ajouter le canal « Plugin QGIS » au bloc `CASE` Metabase (`integrateur = 'qgis.mutafriches.beta.gouv.fr'`)
+
+### Publier une release de l'extension QGIS
+
+- **Origine** : tutoriel `/integrer-mutafriches/extension-qgis`
+- **Écarté parce que** : le bouton « Télécharger l'extension » pointe sur
+  `github.com/incubateur-ademe/mutafriches-qgis/releases/latest`, qui n'existe pas tant
+  qu'aucune release n'est publiée
+- **Préalable** : fusionner le mode réel de l'extension, puis publier une release portant le
+  ZIP ; ne pas mettre le tutoriel en production avant
+
+### Identification facultative dans l'extension QGIS
+
+- **Origine** : simplification des textes du tutoriel `/integrer-mutafriches/extension-qgis` (2026-11-18)
+- **Écarté parce que** : le tutoriel annonce l'identification comme facultative, alors que
+  l'extension exige encore une structure et une adresse mail valide pour passer l'accueil
+  (`Utilisateur.complet`, `mutafriches/ui/accueil.py`) ; seul le consentement y est facultatif
+- **Préalable** : rendre les deux champs facultatifs dans `mutafriches-qgis` avant la release,
+  ou réécrire la phrase du tutoriel
+
+### Suivi de consultation du tutoriel QGIS
+
+- **Origine** : tutoriel `/integrer-mutafriches/extension-qgis`
+- **Écarté parce que** : un nouvel événement demande une migration de `type_evenement_enum`,
+  à grouper avec celle des événements de l'extension pour éviter deux migrations concurrentes
+- **Préalable** : sujet « Événements de l'extension QGIS »
+
+### Identification des utilisateurs de l'extension (structure, e-mail, consentement)
+
+- **Origine** : plan d'implémentation QGIS, chantier M1
+- **Écarté parce que** : aucune table ni route ne peut recevoir ces données ; en attendant,
+  l'extension les garde en local et peut les envoyer à un formulaire externe
+- **Préalable** : ADR sur la donnée personnelle (finalité, conservation, purge) et sur la clé
+  d'API par client (`X-API-Key`, piste de l'ADR-0011) ; tous les utilisateurs partagent d'ici là
+  la même origine et ne se distinguent pas dans les statistiques
+
+### Événements de l'extension QGIS
+
+- **Origine** : plan d'implémentation QGIS, chantier M2
+- **Écarté parce que** : `POST /evenements` n'accepte que les origines Mutafriches et ignore
+  `integrateur` dans le corps ; seuls les enrichissements et les évaluations sont mesurés
+- **Préalable** : clé d'API par client (sujet précédent), puis nouveaux `TypeEvenement` et
+  migration de l'enum
+
+### Import d'inventaire CNIG et traitement par lot
+
+- **Origine** : plan d'implémentation QGIS, chantier M3
+- **Écarté parce que** : l'extension contrôle le fichier CNIG elle-même et enchaîne les appels
+  site par site, ce qui suffit sous 100 requêtes par minute pour quelques dizaines de sites
+- **Préalable** : mesurer les volumes réels (précédent EPFGE : 1 300 sites) ; au-delà d'une
+  cinquantaine de sites par inventaire, route d'import, suivi d'avancement et file de tâches
+
+### Erreur 500 quand aucune parcelle du site n'existe
+
+- **Origine** : test de l'extension QGIS avec son fichier exemple (2026-11-11)
+- **Écarté parce que** : `POST /enrichissement` répond `500 Erreur lors de l'enrichissement`
+  pour un site dont aucune parcelle n'est au cadastre (ex. `99999000ZZ0010`), en production comme
+  en staging ; l'extension traduit ce 500 en message clair, mais un client ne peut pas le
+  distinguer d'une vraie panne
+- **Préalable** : répondre 404 ou 422 avec les parcelles introuvables (ADR-0044 les écarte déjà
+  sans erreur quand il en reste au moins une)
+
+### Contrôles de cohérence d'un site côté API
+
+- **Origine** : analyse du dépôt pour l'extension QGIS
+- **Écarté parce que** : contiguïté, surface d'un seul tenant et commune unique ne sont
+  vérifiées que dans l'interface web ; l'API accepte un ensemble de parcelles disjointes
+- **Préalable** : règle métier commune au web, à l'API et à l'extension (tolérance, statut
+  bloquant ou « à vérifier »)
+
+### Synthèse territoriale calculée par l'API
+
+- **Origine** : plan d'implémentation QGIS, chantier M4
+- **Écarté parce que** : l'extension agrège elle-même (usages prioritaires, niveaux de
+  fiabilité, profils d'écart, forte compatibilité) ; les seuils d'affichage y sont recopiés
+- **Préalable** : valider la grille des profils de sites et le seuil de forte compatibilité,
+  puis les exposer une fois côté API
+
+### Inventaires envoyés par l'extension et table attributaire publique
+
+- **Origine** : analyse du dépôt pour l'extension QGIS
+- **Écarté parce que** : tout site évalué entre dans `attributaire_sites` et devient lisible par
+  `GET /api/attributaire/sites` ; aucun inventaire n'est privé à son émetteur
+- **Préalable** : arbitrage produit (public par défaut ou non), à rapprocher du sujet « Sites
+  qui se recoupent »
+
+### Partenaire par structure pilote plutôt qu'un partenaire « qgis »
+
+- **Origine** : question posée lors du passage au réel de l'extension
+- **Écarté parce que** : un partenaire unique mélangerait les sites de tous les utilisateurs
+  sur une page publique ; la création passe par le seed et l'ajout est limité à 20 parcelles
+- **Préalable** : pour deux ou trois collectivités testeuses, créer leur partenaire comme pour
+  le SCET (pré-chauffe nocturne et export CNIG) ; `?partenaire=` n'est lu que depuis le site
+
+### Quota BDNB et inventaires de masse
+
+- **Origine** : analyse du dépôt pour l'extension QGIS
+- **Écarté parce que** : un inventaire de plusieurs centaines de sites neufs entame le quota
+  d'environ 10 000 appels par mois
+- **Préalable** : sujet « Clé API BDNB ou import local si les parcelles neuves dépassent le quota »
 
 ## Contrat API et dépréciations
 

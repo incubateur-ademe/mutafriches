@@ -1,6 +1,11 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { cheminDocMatrice, genererMatriceScoringMarkdown } from "./matrice-scoring.doc";
+import {
+  cheminDocMatrice,
+  cheminDonneesMatrice,
+  genererMatriceScoringMarkdown,
+  serialiserMatriceScoringDonnees,
+} from "./matrice-scoring.doc";
 
 // Garde-fou : docs/matrice-scoring.md doit refléter MATRICE_SCORING, POIDS_CRITERES et REGLES_EXCLUSION
 describe("docs/matrice-scoring.md", () => {
@@ -11,5 +16,10 @@ describe("docs/matrice-scoring.md", () => {
 
   it("n'a aucun score inconnu (symbole « ? »)", () => {
     expect(genererMatriceScoringMarkdown()).not.toMatch(/\| \? \|/);
+  });
+
+  it("alimente la page « Comprendre les analyses » avec des données à jour", () => {
+    const actuel = readFileSync(cheminDonneesMatrice(), "utf8");
+    expect(actuel).toBe(serialiserMatriceScoringDonnees());
   });
 });

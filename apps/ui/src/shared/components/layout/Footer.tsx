@@ -57,8 +57,13 @@ export function Footer() {
                 </button>
               </li>
               <li className="fr-footer__bottom-item">
-                <a className="fr-footer__bottom-link" href={ROUTES.DOCUMENTATION_INTEGRATION}>
-                  API & Documentation intégrateurs
+                <a className="fr-footer__bottom-link" href={ROUTES.INTEGRER}>
+                  Intégrer Mutafriches (QGIS, API et iframe)
+                </a>
+              </li>
+              <li className="fr-footer__bottom-item">
+                <a className="fr-footer__bottom-link" href={ROUTES.DONNEES_UTILISEES}>
+                  Données utilisées
                 </a>
               </li>
               <li className="fr-footer__bottom-item">

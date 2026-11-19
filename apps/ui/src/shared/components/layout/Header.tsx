@@ -70,14 +70,6 @@ export function Header() {
                       Partenaires
                     </Link>
                   </li>
-                  <li>
-                    <Link
-                      to={ROUTES.DOCUMENTATION_INTEGRATION}
-                      className="fr-btn fr-btn--tertiary fr-icon-book-2-fill fr-btn--icon-left"
-                    >
-                      Documentation
-                    </Link>
-                  </li>
                 </ul>
               </div>
             </div>
@@ -107,11 +99,6 @@ export function Header() {
                   Partenaires
                 </Link>
               </li>
-              <li>
-                <Link to={ROUTES.DOCUMENTATION_INTEGRATION} className="fr-btn">
-                  Documentation
-                </Link>
-              </li>
             </ul>
           </div>
           <nav className="fr-nav" role="navigation" aria-label="Menu principal">
@@ -131,16 +118,25 @@ export function Header() {
                   className="fr-nav__link"
                   aria-current={isActive(ROUTES.ANALYSER) ? "page" : undefined}
                 >
-                  Analyser un site
+                  Tester Mutafriches
                 </Link>
               </li>
               <li className="fr-nav__item">
                 <Link
-                  to={ROUTES.DONNEES_UTILISEES}
+                  to={ROUTES.COMPRENDRE_ANALYSES}
                   className="fr-nav__link"
-                  aria-current={isActive(ROUTES.DONNEES_UTILISEES) ? "page" : undefined}
+                  aria-current={isActive(ROUTES.COMPRENDRE_ANALYSES) ? "page" : undefined}
                 >
-                  Données utilisées
+                  Comprendre les analyses
+                </Link>
+              </li>
+              <li className="fr-nav__item">
+                <Link
+                  to={ROUTES.INTEGRER}
+                  className="fr-nav__link"
+                  aria-current={isActive(ROUTES.INTEGRER) ? "page" : undefined}
+                >
+                  Intégrer Mutafriches
                 </Link>
               </li>
             </ul>
