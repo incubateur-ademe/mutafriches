@@ -348,7 +348,7 @@ export function DocumentationApiPage() {
           <tr>
             <td className="fr-cell--multiline">Quelques sites à étudier à la main</td>
             <td className="fr-cell--multiline">
-              Le parcours <Link to={ROUTES.ANALYSER}>Analyser un site</Link>
+              Le parcours <Link to={ROUTES.ANALYSER}>Tester Mutafriches</Link>
             </td>
           </tr>
         </Tableau>

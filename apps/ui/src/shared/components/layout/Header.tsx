@@ -118,7 +118,7 @@ export function Header() {
                   className="fr-nav__link"
                   aria-current={isActive(ROUTES.ANALYSER) ? "page" : undefined}
                 >
-                  Analyser un site
+                  Tester Mutafriches
                 </Link>
               </li>
               <li className="fr-nav__item">
