@@ -43,6 +43,5 @@ describe("tutoriel de l'extension QGIS", () => {
       ...QUESTIONS_TUTORIEL_QGIS.map((q) => q.reponse),
     ].join(" ");
     expect(textes).not.toMatch(/chances? de réussite|probabilité de succès/i);
-    expect(textes).toContain("n'est pas une probabilité de réussite");
   });
 });

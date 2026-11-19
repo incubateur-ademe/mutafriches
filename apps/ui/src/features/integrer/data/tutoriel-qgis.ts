@@ -65,6 +65,23 @@ export const ETAPES_TUTORIEL_QGIS: EtapeTutorielQgis[] = [
     ],
   },
   {
+    id: "regler",
+    titre: "Régler l'extension",
+    paragraphes: [
+      "Les réglages sont dans la page Mutafriches des options de QGIS : menu Préférences, Options, ou menu Extensions, Mutafriches, « Réglages… ».",
+      "Vous y choisissez le service utilisé (l'analyse réelle, ou une démonstration sur des données figées), vous modifiez ou effacez votre structure et votre adresse mail, et vous décidez si l'extension ajoute un fond de carte OpenStreetMap quand votre projet est vide.",
+      "Le mode développeur donne accès à l'environnement de test et aux réglages de l'API : il est réservé à l'équipe Mutafriches et ne change rien à vos analyses.",
+    ],
+    captures: [
+      {
+        fichier: "14-reglages.webp",
+        alt: "Fenêtre Options de QGIS sur la page Mutafriches : choix de l'environnement, structure et adresse mail avec le bouton « Effacer mes informations », case du fond de carte OpenStreetMap et case du mode développeur.",
+      },
+    ],
+    aSavoir:
+      "Changer de service vide les résultats affichés et retire les deux couches Mutafriches du projet : enregistrez-les avant si vous voulez les conserver.",
+  },
+  {
     id: "se-presenter",
     titre: "Ouvrir le plugin et s'identifier",
     paragraphes: [
@@ -154,8 +171,6 @@ export const ETAPES_TUTORIEL_QGIS: EtapeTutorielQgis[] = [
         alt: "Un site sélectionné depuis la liste des sites à forte compatibilité : la carte est recadrée sur son emprise, surlignée.",
       },
     ],
-    aSavoir:
-      "Ces résultats constituent une première orientation, basée sur les éléments que nous avons recueillis et que vous avez renseignés. Ils doivent être croisés avec votre connaissance du territoire et ne se substituent pas à des études de programmation. Un indice de mutabilité n'est pas une probabilité de réussite. Pour les sites de plus d'un hectare, il vous est recommandé de privilégier un mixte d'usages dans votre programmation.",
   },
   {
     id: "tables",
@@ -181,22 +196,6 @@ export const ETAPES_TUTORIEL_QGIS: EtapeTutorielQgis[] = [
     ],
     aSavoir:
       "Ces couches sont temporaires : pour les conserver, enregistrez-les (clic droit, « Exporter », « Sauvegarder les entités sous… »).",
-  },
-  {
-    id: "regler",
-    titre: "Régler l'extension",
-    paragraphes: [
-      "Les réglages sont dans la page Mutafriches des options de QGIS : menu Préférences, Options, ou menu Extensions, Mutafriches, « Réglages… ».",
-      "Vous y choisissez le service utilisé (l'analyse réelle, ou une démonstration sur des données figées), vous modifiez ou effacez votre structure et votre adresse mail, et vous décidez si l'extension ajoute un fond de carte OpenStreetMap quand votre projet est vide.",
-    ],
-    captures: [
-      {
-        fichier: "14-reglages.webp",
-        alt: "Fenêtre Options de QGIS sur la page Mutafriches : choix de l'environnement, structure et adresse mail avec le bouton « Effacer mes informations », case du fond de carte OpenStreetMap et case du mode développeur.",
-      },
-    ],
-    aSavoir:
-      "Changer de service vide les résultats affichés et retire les deux couches Mutafriches du projet : enregistrez-les avant si vous voulez les conserver. Le mode développeur est réservé à l'équipe Mutafriches.",
   },
 ];
 
