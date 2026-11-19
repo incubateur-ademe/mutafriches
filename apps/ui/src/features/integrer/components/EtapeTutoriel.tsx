@@ -1,4 +1,8 @@
-import { DOSSIER_CAPTURES_QGIS, type EtapeTutorielQgis } from "../data/tutoriel-qgis";
+import {
+  DOSSIER_CAPTURES_QGIS,
+  texteParagraphe,
+  type EtapeTutorielQgis,
+} from "../data/tutoriel-qgis";
 
 interface EtapeTutorielProps {
   numero: number;
@@ -15,7 +19,24 @@ export function EtapeTutoriel({ numero, etape }: EtapeTutorielProps) {
       </h2>
 
       {etape.paragraphes.map((paragraphe) => (
-        <p key={paragraphe}>{paragraphe}</p>
+        <p key={texteParagraphe(paragraphe)}>
+          {typeof paragraphe === "string" ? (
+            paragraphe
+          ) : (
+            <>
+              {paragraphe.avant}
+              <a
+                href={paragraphe.lien.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                title={`${paragraphe.lien.libelle} - nouvelle fenêtre`}
+              >
+                {paragraphe.lien.libelle}
+              </a>
+              {paragraphe.apres}
+            </>
+          )}
+        </p>
       ))}
 
       {etape.actions && (

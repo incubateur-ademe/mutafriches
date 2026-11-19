@@ -32,7 +32,7 @@ export function TutorielQgisPage() {
       sommaire={SOMMAIRE}
     >
       <div className="fr-callout fr-mb-6w">
-        <p className="fr-callout__title fr-h6">Avant de commencer</p>
+        <p className="fr-callout__title fr-h6">Prérequis</p>
         <ul className="fr-callout__text fr-text--md fr-pl-3w">
           <li>QGIS {VERSION_QGIS_TESTEE} ou plus récent, et une connexion Internet.</li>
           <li>
@@ -45,7 +45,7 @@ export function TutorielQgisPage() {
             >
               standard CNIG Friches
             </a>
-            , ou le fichier exemple fourni par l'extension.
+            .
           </li>
         </ul>
         <a

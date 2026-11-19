@@ -19,10 +19,24 @@ export interface CaptureTutoriel {
   alt: string;
 }
 
+/** Paragraphe contenant un lien externe, entre deux portions de texte. */
+export interface ParagrapheAvecLien {
+  avant: string;
+  lien: { libelle: string; url: string };
+  apres: string;
+}
+
+export type ParagrapheTutoriel = string | ParagrapheAvecLien;
+
+export const texteParagraphe = (paragraphe: ParagrapheTutoriel): string =>
+  typeof paragraphe === "string"
+    ? paragraphe
+    : `${paragraphe.avant}${paragraphe.lien.libelle}${paragraphe.apres}`;
+
 export interface EtapeTutorielQgis {
   id: string;
   titre: string;
-  paragraphes: string[];
+  paragraphes: ParagrapheTutoriel[];
   /** Points à suivre dans l'ordre, affichés en liste numérotée. */
   actions?: string[];
   captures: CaptureTutoriel[];
@@ -69,14 +83,17 @@ export const ETAPES_TUTORIEL_QGIS: EtapeTutorielQgis[] = [
     id: "preparer",
     titre: "Préparer son inventaire de sites",
     paragraphes: [
-      "L'extension lit un inventaire de friches au standard CNIG Friches : une ligne par site. Le CSV est le fichier d'échange de référence, validable sur validata.fr et ouvrable dans un tableur ; le GeoJSON est directement exploitable dans un SIG.",
-      "Quatre colonnes sont indispensables : l'identifiant du site (site_id), son nom (site_nom), le code INSEE de la commune (comm_insee) et les parcelles cadastrales du site (unite_fonciere_refcad, séparées par une barre verticale), ainsi que sa localisation (geompoint).",
-      "Si vous n'avez pas encore de fichier à ce format, le bouton « Télécharger un fichier exemple » enregistre un modèle à remplir, par défaut dans votre dossier Téléchargements. Ses trois sites sont fictifs : remplacez-les par les vôtres. Envoyé tel quel, ce fichier est refusé au contrôle.",
+      {
+        avant: "L'extension lit un inventaire de friches au ",
+        lien: { libelle: "standard CNIG Friches", url: URL_STANDARD_CNIG },
+        apres: ", en CSV ou en GeoJSON : une ligne par site.",
+      },
+      "Si vous n'avez pas encore de fichier à ce format, cliquez sur le « ? » à côté de « Fichier de sites », puis sur « Télécharger un modèle de fichier vide » : il contient les colonnes du standard, à remplir avec vos sites.",
     ],
     captures: [
       {
-        fichier: "03-fichier-exemple.webp",
-        alt: "Panneau Mutafriches sur l'écran d'envoi : champ de sélection du fichier de sites et bouton « Télécharger un fichier exemple ».",
+        fichier: "03-modele-de-fichier.webp",
+        alt: "Panneau Mutafriches sur l'écran d'envoi : champ de sélection du fichier de sites, et bulle d'aide ouverte avec le lien « Télécharger un modèle de fichier vide ».",
       },
     ],
   },
@@ -85,16 +102,16 @@ export const ETAPES_TUTORIEL_QGIS: EtapeTutorielQgis[] = [
     titre: "Choisir le fichier et lire le contrôle",
     paragraphes: [
       "Sélectionnez votre fichier : chaque ligne est contrôlée aussitôt et affichée « OK » ou « KO », avec le motif de l'erreur (identifiant en double, parcelle mal formée, code INSEE invalide, localisation absente…).",
-      "Les lignes en erreur sont écartées de l'envoi, les autres restent analysables. Vous pouvez corriger le fichier et le choisir à nouveau, ou envoyer tout de suite les sites prêts.",
+      "Les sites KO sont écartés de l'analyse. Sous la liste, « Analyser les sites OK » lance l'analyse des sites valides ; « Charger de nouveau le fichier » relit votre fichier une fois corrigé.",
     ],
     captures: [
       {
         fichier: "04-controle-ligne-a-ligne.webp",
-        alt: "Contrôle du fichier dans le panneau : 4 sites prêts et 6 lignes en erreur, chaque ligne en erreur portant une étiquette « KO » et son motif.",
+        alt: "Contrôle du fichier dans le panneau : 4 sites OK et 6 sites KO, chaque site en erreur portant une étiquette « KO » et son motif.",
       },
       {
         fichier: "05-fichier-pret.webp",
-        alt: "Contrôle d'un fichier sans erreur : 28 sites lus, toutes les lignes marquées « OK », bouton « Envoyer mes 28 sites » actif.",
+        alt: "Contrôle d'un fichier sans erreur : 28 sites lus, toutes les lignes marquées « OK », bouton « Analyser mes 28 sites » actif.",
       },
     ],
   },
@@ -102,8 +119,8 @@ export const ETAPES_TUTORIEL_QGIS: EtapeTutorielQgis[] = [
     id: "analyser",
     titre: "Lancer l'analyse",
     paragraphes: [
-      "Cliquez sur « Envoyer mes sites ». Pour chaque site, Mutafriches recueille automatiquement ses données d'identification et de qualification auprès de plus de dix bases nationales, puis calcule son indice de mutabilité pour sept usages.",
-      "Comptez deux à cinq secondes par site. L'avancement s'affiche site par site ; vous pouvez annuler à tout moment.",
+      "Cliquez sur « Analyser mes sites ». Pour chaque site, Mutafriches recueille automatiquement ses données d'identification et de qualification auprès de plus de dix bases nationales, puis calcule son indice de mutabilité pour sept usages.",
+      "L'analyse peut prendre de quelques secondes à quelques minutes. L'avancement s'affiche site par site ; vous pouvez annuler à tout moment.",
     ],
     captures: [
       {
@@ -119,7 +136,7 @@ export const ETAPES_TUTORIEL_QGIS: EtapeTutorielQgis[] = [
     titre: "Lire la carte et le tableau de bord",
     paragraphes: [
       "À la fin de l'analyse, la carte se recadre sur vos sites, colorés selon leur usage le plus compatible. Chaque étiquette rappelle le nom du site, cet usage et son indice de mutabilité. La légende des couleurs se trouve dans le panneau Couches.",
-      "Le panneau devient un tableau de bord de votre territoire : nombre de sites analysés, indice de fiabilité moyen, répartition des usages les plus compatibles, profils de sites et liste des sites à forte compatibilité.",
+      "Le panneau devient un tableau de bord de votre territoire : nombre de sites analysés, indice de fiabilité moyen, répartition des usages les plus compatibles, liste des sites à forte compatibilité et profils des sites.",
       "L'indice de mutabilité d'un usage est un pourcentage de compatibilité : avantages / (avantages + contraintes).",
       "Dans cette liste, cliquer sur un site le sélectionne et recadre la carte dessus.",
     ],
@@ -130,7 +147,7 @@ export const ETAPES_TUTORIEL_QGIS: EtapeTutorielQgis[] = [
       },
       {
         fichier: "08-tableau-de-bord-profils.webp",
-        alt: "Suite du tableau de bord : anneau de répartition des usages les plus compatibles et tableau des profils de sites.",
+        alt: "Suite du tableau de bord : liste des sites à forte compatibilité et tableau des profils des sites.",
       },
       {
         fichier: "12-site-sur-la-carte.webp",
@@ -145,7 +162,8 @@ export const ETAPES_TUTORIEL_QGIS: EtapeTutorielQgis[] = [
     titre: "Exploiter les tables attributaires",
     paragraphes: [
       "L'extension ajoute deux couches à votre projet. « Mutabilité » porte, pour chaque site, l'usage le plus compatible, l'indice de mutabilité de tous les usages, l'indice de fiabilité et les parcelles. « Qualification » détaille l'identification et la qualification du site (données automatiques), la connaissance terrain lue dans votre fichier (données manuelles) et signale les données manquantes.",
-      "Ouvrez leurs tables par les boutons du panneau, ou comme pour toute couche QGIS : clic droit sur la couche, puis « Ouvrir la table d'attributs ». Tri, filtres, sélection, jointures et export fonctionnent comme d'habitude.",
+      "Ouvrez leurs tables par les boutons « Voir table de mutabilité » et « Voir table de qualification » du panneau, ou comme pour toute couche QGIS : clic droit sur la couche, puis « Ouvrir la table d'attributs ». Tri, filtres, sélection, jointures et export fonctionnent comme d'habitude.",
+      "Le lien « Améliorer la fiabilité » du tableau de bord ouvre la table de qualification : les critères de terrain inconnus y apparaissent en rouge. Renseignez-les dans votre fichier, puis relancez l'analyse.",
     ],
     captures: [
       {
@@ -156,29 +174,19 @@ export const ETAPES_TUTORIEL_QGIS: EtapeTutorielQgis[] = [
         fichier: "11-table-qualification.webp",
         alt: "Table attributaire de la couche Qualification : surfaces, zonage, desserte et critères de terrain de chaque site.",
       },
+      {
+        fichier: "13-ameliorer-la-fiabilite.webp",
+        alt: "Table de qualification ouverte par « Améliorer la fiabilité » : les critères de terrain « Ne sait pas » sont sur fond rouge, juste après le nom du site.",
+      },
     ],
     aSavoir:
       "Ces couches sont temporaires : pour les conserver, enregistrez-les (clic droit, « Exporter », « Sauvegarder les entités sous… »).",
   },
   {
-    id: "reprendre",
-    titre: "Reprendre les sites à corriger",
-    paragraphes: [
-      "En bas du tableau de bord, la rubrique « Sites nécessitant votre attention » liste les lignes écartées au contrôle et les sites que l'analyse n'a pas pu traiter, avec leur motif.",
-      "Corrigez votre fichier, puis cliquez sur « Analyser un autre inventaire » pour l'envoyer à nouveau.",
-    ],
-    captures: [
-      {
-        fichier: "13-sites-a-reprendre.webp",
-        alt: "Bas du tableau de bord : encadré rouge « 6 sites à reprendre » listant les lignes du fichier écartées.",
-      },
-    ],
-  },
-  {
     id: "regler",
     titre: "Régler l'extension",
     paragraphes: [
-      "Le lien « Réglages », en bas de l'écran d'envoi, ouvre la page Mutafriches des options de QGIS. Vous la retrouvez aussi par le menu Préférences, Options, ou par le menu Extensions, Mutafriches.",
+      "Les réglages sont dans la page Mutafriches des options de QGIS : menu Préférences, Options, ou menu Extensions, Mutafriches, « Réglages… ».",
       "Vous y choisissez le service utilisé (l'analyse réelle, ou une démonstration sur des données figées), vous modifiez ou effacez votre structure et votre adresse mail, et vous décidez si l'extension ajoute un fond de carte OpenStreetMap quand votre projet est vide.",
     ],
     captures: [
@@ -210,13 +218,13 @@ export const QUESTIONS_TUTORIEL_QGIS: QuestionTutoriel[] = [
     id: "fichier-refuse",
     question: "Mon fichier est refusé en entier",
     reponse:
-      "Une colonne indispensable manque (site_id, site_nom, comm_insee, unite_fonciere_refcad ou geompoint), ou le fichier n'est ni un CSV ni un GeoJSON. Repartez du fichier exemple.",
+      "Une colonne indispensable manque (site_id, site_nom, comm_insee, unite_fonciere_refcad ou geompoint), ou le fichier n'est ni un CSV ni un GeoJSON. Repartez du modèle de fichier vide.",
   },
   {
     id: "site-en-echec",
     question: "Un site est en échec alors que sa ligne était « OK »",
     reponse:
-      "Ses parcelles sont probablement introuvables au cadastre, ou le service n'a pas répondu à temps. Vérifiez les identifiants de parcelles (14 caractères, parcelles existantes) et relancez l'analyse.",
+      "Ses parcelles sont probablement introuvables au cadastre, ou le service n'a pas répondu à temps. Vérifiez les identifiants de parcelles (14 caractères, parcelles existantes) et relancez l'analyse. QGIS signale les sites non analysés dans sa barre de messages, à la fin de l'analyse.",
   },
   {
     id: "carte-sans-fond",
@@ -228,6 +236,6 @@ export const QUESTIONS_TUTORIEL_QGIS: QuestionTutoriel[] = [
     id: "sans-inventaire",
     question: "Puis-je essayer sans inventaire ?",
     reponse:
-      "Oui : le lien « Passer en mode démonstration », en bas de l'écran d'envoi, montre le parcours complet sur des données figées. Le même choix se fait dans les réglages de l'extension.",
+      "Oui : dans les réglages de l'extension, choisissez la démonstration. Elle montre le parcours complet sur des données figées.",
   },
 ];

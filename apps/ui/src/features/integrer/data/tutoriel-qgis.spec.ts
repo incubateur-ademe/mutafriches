@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import {
   DOSSIER_CAPTURES_QGIS,
   ETAPES_TUTORIEL_QGIS,
+  texteParagraphe,
   QUESTIONS_TUTORIEL_QGIS,
 } from "./tutoriel-qgis";
 
@@ -35,7 +36,10 @@ describe("tutoriel de l'extension QGIS", () => {
 
   it("ne présente jamais l'indice comme une probabilité de réussite", () => {
     const textes = [
-      ...ETAPES_TUTORIEL_QGIS.flatMap((etape) => [...etape.paragraphes, etape.aSavoir ?? ""]),
+      ...ETAPES_TUTORIEL_QGIS.flatMap((etape) => [
+        ...etape.paragraphes.map(texteParagraphe),
+        etape.aSavoir ?? "",
+      ]),
       ...QUESTIONS_TUTORIEL_QGIS.map((q) => q.reponse),
     ].join(" ");
     expect(textes).not.toMatch(/chances? de réussite|probabilité de succès/i);
