@@ -10,6 +10,10 @@ export const DOSSIER_CAPTURES_QGIS = "/images/tutoriel-qgis";
 export const URL_TELECHARGEMENT_EXTENSION =
   "https://github.com/incubateur-ademe/mutafriches-qgis/releases/latest";
 
+// Inventaire de 5 vrais sites de Montereau-Fault-Yonne, joint à chaque release de l'extension
+export const URL_FICHIER_TEST_QGIS =
+  "https://github.com/incubateur-ademe/mutafriches-qgis/releases/latest/download/friches-cnig-test-montereau-5-sites.csv";
+
 export const URL_STANDARD_CNIG = "https://schema.data.gouv.fr/cnigfr/schema-friches/";
 
 export const VERSION_QGIS_TESTEE = "3.44";
@@ -92,7 +96,7 @@ export const ETAPES_TUTORIEL_QGIS: EtapeTutorielQgis[] = [
     captures: [
       {
         fichier: "02-se-presenter.webp",
-        alt: "QGIS avec un fond de carte de la France au centre et le panneau Mutafriches ouvert à droite : formulaire « Bienvenue dans Mutafriches » avec les champs structure et mail, une case de consentement et le bouton « Suivant ».",
+        alt: "QGIS avec un fond de carte de la France au centre et le panneau Mutafriches ouvert à droite : formulaire « Bienvenue dans Mutafriches » avec les champs facultatifs structure et mail, une case de consentement et le bouton « Suivant ».",
       },
     ],
   },
@@ -106,6 +110,11 @@ export const ETAPES_TUTORIEL_QGIS: EtapeTutorielQgis[] = [
         apres: ", en CSV ou en GeoJSON : une ligne par site.",
       },
       "Si vous n'avez pas encore de fichier à ce format, cliquez sur le « ? » à côté de « Fichier de sites », puis sur « Télécharger un modèle de fichier vide » : il contient les colonnes du standard, à remplir avec vos sites.",
+      {
+        avant: "Pour un premier essai, téléchargez un ",
+        lien: { libelle: "inventaire de test de 5 sites réels", url: URL_FICHIER_TEST_QGIS },
+        apres: " (Montereau-Fault-Yonne), prêt à être analysé.",
+      },
     ],
     captures: [
       {
