@@ -1,7 +1,7 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { ExecutionContext, ForbiddenException } from "@nestjs/common";
 import { IntegrateurOriginGuard } from "./integrateur-origin.guard";
-import { resetAppConfig } from "../../config";
+import { creerRegistreDeTest } from "../../integrateurs/__test-helpers__/registre.mocks";
 
 function createMockExecutionContext(headers: Record<string, string> = {}): ExecutionContext {
   return {
@@ -15,145 +15,128 @@ function createMockExecutionContext(headers: Record<string, string> = {}): Execu
   } as ExecutionContext;
 }
 
-describe("IntegrateurOriginGuard", () => {
-  const originalEnv = process.env;
+function creerGuard(originesDeclarees: string[] = []): IntegrateurOriginGuard {
+  return new IntegrateurOriginGuard(creerRegistreDeTest(originesDeclarees));
+}
 
-  beforeEach(() => {
-    vi.resetModules();
-    process.env = { ...originalEnv };
-    resetAppConfig();
-  });
+describe("IntegrateurOriginGuard", () => {
+  const nodeEnvInitial = process.env.NODE_ENV;
 
   afterEach(() => {
-    process.env = originalEnv;
-    resetAppConfig();
+    process.env.NODE_ENV = nodeEnvInitial;
   });
 
-  describe("Mode developpement (bypass)", () => {
-    it("devrait autoriser toute requete en mode development", () => {
+  describe("Mode développement (bypass)", () => {
+    beforeEach(() => {
       process.env.NODE_ENV = "development";
-      const guard = new IntegrateurOriginGuard();
-      const context = createMockExecutionContext({});
-
-      expect(guard.canActivate(context)).toBe(true);
     });
 
-    it("devrait autoriser meme sans origin en mode development", () => {
-      process.env.NODE_ENV = "development";
-      const guard = new IntegrateurOriginGuard();
-      const context = createMockExecutionContext({});
-
-      expect(guard.canActivate(context)).toBe(true);
+    it("autorise toute requête, même sans origine", async () => {
+      await expect(creerGuard().canActivate(createMockExecutionContext({}))).resolves.toBe(true);
     });
 
-    it("devrait autoriser origine non listee en mode development", () => {
-      process.env.NODE_ENV = "development";
-      const guard = new IntegrateurOriginGuard();
-      const context = createMockExecutionContext({
-        origin: "https://malicious-site.com",
-      });
-
-      expect(guard.canActivate(context)).toBe(true);
+    it("autorise une origine non déclarée", async () => {
+      const context = createMockExecutionContext({ origin: "https://malicious-site.com" });
+      await expect(creerGuard().canActivate(context)).resolves.toBe(true);
     });
   });
 
-  describe("Mode production - Origines par defaut", () => {
+  describe("Nos origines, codées", () => {
     beforeEach(() => {
       process.env.NODE_ENV = "production";
     });
 
-    it("devrait autoriser mutafriches.beta.gouv.fr", () => {
-      const guard = new IntegrateurOriginGuard();
-      const context = createMockExecutionContext({
-        origin: "https://mutafriches.beta.gouv.fr",
-      });
+    it.each(["https://mutafriches.beta.gouv.fr", "https://mutafriches.incubateur.ademe.dev"])(
+      "autorise %s sans rien en base",
+      async (origin) => {
+        await expect(
+          creerGuard().canActivate(createMockExecutionContext({ origin })),
+        ).resolves.toBe(true);
+      },
+    );
 
-      expect(guard.canActivate(context)).toBe(true);
-    });
-
-    it("devrait autoriser mutafriches.incubateur.ademe.dev", () => {
-      const guard = new IntegrateurOriginGuard();
-      const context = createMockExecutionContext({
-        origin: "https://mutafriches.incubateur.ademe.dev",
-      });
-
-      expect(guard.canActivate(context)).toBe(true);
-    });
-
-    it("ne devrait plus autoriser benefriches.ademe.fr sans ALLOWED_INTEGRATOR_ORIGINS", () => {
-      const guard = new IntegrateurOriginGuard();
-      const context = createMockExecutionContext({
-        origin: "https://benefriches.ademe.fr",
-      });
-
-      expect(() => guard.canActivate(context)).toThrow("Origin not allowed");
+    it("n'autorise pas benefriches.ademe.fr tant qu'il n'est pas déclaré", async () => {
+      const context = createMockExecutionContext({ origin: "https://benefriches.ademe.fr" });
+      await expect(creerGuard().canActivate(context)).rejects.toThrow(ForbiddenException);
     });
   });
 
-  describe("Mode production - Origines bloquees", () => {
+  describe("Origines déclarées dans le registre", () => {
     beforeEach(() => {
       process.env.NODE_ENV = "production";
     });
 
-    it("devrait bloquer une origine non autorisee", () => {
-      const guard = new IntegrateurOriginGuard();
-      const context = createMockExecutionContext({
-        origin: "https://malicious-site.com",
-      });
-
-      expect(() => guard.canActivate(context)).toThrow(ForbiddenException);
-      expect(() => guard.canActivate(context)).toThrow("Origin not allowed");
+    it("autorise une origine déclarée", async () => {
+      const guard = creerGuard(["https://benefriches.ademe.fr"]);
+      const context = createMockExecutionContext({ origin: "https://benefriches.ademe.fr" });
+      await expect(guard.canActivate(context)).resolves.toBe(true);
     });
 
-    it("devrait bloquer une requete sans origin ni referer", () => {
-      const guard = new IntegrateurOriginGuard();
-      const context = createMockExecutionContext({});
-
-      expect(() => guard.canActivate(context)).toThrow(ForbiddenException);
-      expect(() => guard.canActivate(context)).toThrow("Origin required");
+    it("normalise l'origine reçue (casse, slash final, port par défaut)", async () => {
+      const guard = creerGuard(["https://partenaire.fr"]);
+      for (const origin of [
+        "https://Partenaire.FR",
+        "https://partenaire.fr/",
+        "https://partenaire.fr:443",
+      ]) {
+        await expect(guard.canActivate(createMockExecutionContext({ origin }))).resolves.toBe(true);
+      }
     });
 
-    it("devrait bloquer localhost en production", () => {
-      const guard = new IntegrateurOriginGuard();
-      const context = createMockExecutionContext({
-        origin: "http://localhost:5173",
-      });
+    it("conserve un port non standard", async () => {
+      const guard = creerGuard(["https://partenaire.fr:8443"]);
+      await expect(
+        guard.canActivate(createMockExecutionContext({ origin: "https://partenaire.fr:8443" })),
+      ).resolves.toBe(true);
+      await expect(
+        guard.canActivate(createMockExecutionContext({ origin: "https://partenaire.fr" })),
+      ).rejects.toThrow(ForbiddenException);
+    });
+  });
 
-      expect(() => guard.canActivate(context)).toThrow(ForbiddenException);
-      expect(() => guard.canActivate(context)).toThrow("Origin not allowed");
+  describe("Origines bloquées", () => {
+    beforeEach(() => {
+      process.env.NODE_ENV = "production";
     });
 
-    // Regression : un startsWith laissait passer les sous-domaines suffixes usurpes
-    it("devrait bloquer un sous-domaine suffixe usurpe de benefriches.ademe.fr", () => {
-      process.env.ALLOWED_INTEGRATOR_ORIGINS = "https://benefriches.ademe.fr";
-      const guard = new IntegrateurOriginGuard();
-      const context = createMockExecutionContext({
-        origin: "https://benefriches.ademe.fr.attacker.com",
-      });
-
-      expect(() => guard.canActivate(context)).toThrow(ForbiddenException);
-      expect(() => guard.canActivate(context)).toThrow("Origin not allowed");
+    it("bloque une origine non déclarée", async () => {
+      const context = createMockExecutionContext({ origin: "https://malicious-site.com" });
+      await expect(creerGuard().canActivate(context)).rejects.toThrow("Origin not allowed");
     });
 
-    it("devrait bloquer un autre suffixe usurpe de benefriches.ademe.fr", () => {
-      process.env.ALLOWED_INTEGRATOR_ORIGINS = "https://benefriches.ademe.fr";
-      const guard = new IntegrateurOriginGuard();
-      const context = createMockExecutionContext({
-        origin: "https://benefriches.ademe.fr.evil.fr",
-      });
-
-      expect(() => guard.canActivate(context)).toThrow(ForbiddenException);
-      expect(() => guard.canActivate(context)).toThrow("Origin not allowed");
+    it("bloque une requête sans origin ni referer", async () => {
+      await expect(creerGuard().canActivate(createMockExecutionContext({}))).rejects.toThrow(
+        "Origin required",
+      );
     });
 
-    it("devrait bloquer un sous-domaine suffixe usurpe de mutafriches.beta.gouv.fr", () => {
-      const guard = new IntegrateurOriginGuard();
+    it("bloque localhost hors développement", async () => {
+      const context = createMockExecutionContext({ origin: "http://localhost:5173" });
+      await expect(creerGuard().canActivate(context)).rejects.toThrow(ForbiddenException);
+    });
+
+    it.each([
+      "https://benefriches.ademe.fr.attacker.com",
+      "https://benefriches.ademe.fr.evil.io",
+      "https://sub.benefriches.ademe.fr",
+      "http://benefriches.ademe.fr",
+    ])("bloque %s quand seul https://benefriches.ademe.fr est déclaré", async (origin) => {
+      const guard = creerGuard(["https://benefriches.ademe.fr"]);
+      await expect(guard.canActivate(createMockExecutionContext({ origin }))).rejects.toThrow(
+        ForbiddenException,
+      );
+    });
+
+    it("bloque un suffixe usurpé de notre propre domaine", async () => {
       const context = createMockExecutionContext({
         origin: "https://mutafriches.beta.gouv.fr.attacker.com",
       });
+      await expect(creerGuard().canActivate(context)).rejects.toThrow(ForbiddenException);
+    });
 
-      expect(() => guard.canActivate(context)).toThrow(ForbiddenException);
-      expect(() => guard.canActivate(context)).toThrow("Origin not allowed");
+    it("bloque Origin: null", async () => {
+      const context = createMockExecutionContext({ origin: "null" });
+      await expect(creerGuard().canActivate(context)).rejects.toThrow(ForbiddenException);
     });
   });
 
@@ -162,221 +145,39 @@ describe("IntegrateurOriginGuard", () => {
       process.env.NODE_ENV = "production";
     });
 
-    it("devrait prioriser le header Origin sur Referer", () => {
-      const guard = new IntegrateurOriginGuard();
+    it("priorise le header Origin sur Referer", async () => {
       const context = createMockExecutionContext({
         origin: "https://mutafriches.beta.gouv.fr",
         referer: "https://malicious-site.com/page",
       });
-
-      expect(guard.canActivate(context)).toBe(true);
+      await expect(creerGuard().canActivate(context)).resolves.toBe(true);
     });
 
-    it("devrait utiliser Referer si Origin absent", () => {
-      const guard = new IntegrateurOriginGuard();
+    it("utilise l'origine du Referer, sans son chemin, si Origin est absent", async () => {
       const context = createMockExecutionContext({
-        referer: "https://mutafriches.beta.gouv.fr/evaluation",
+        referer: "https://mutafriches.beta.gouv.fr/some/path?query=1",
       });
-
-      expect(guard.canActivate(context)).toBe(true);
+      await expect(creerGuard().canActivate(context)).resolves.toBe(true);
     });
 
-    it("devrait extraire l'origine du Referer (sans path)", () => {
-      const guard = new IntegrateurOriginGuard();
-      const context = createMockExecutionContext({
-        referer: "https://mutafriches.incubateur.ademe.dev/analyser?etape=2",
-      });
-
-      expect(guard.canActivate(context)).toBe(true);
-    });
-
-    it("devrait gerer un Referer invalide", () => {
-      const guard = new IntegrateurOriginGuard();
-      const context = createMockExecutionContext({
-        referer: "not-a-valid-url",
-      });
-
-      expect(() => guard.canActivate(context)).toThrow(ForbiddenException);
-      expect(() => guard.canActivate(context)).toThrow("Origin required");
-    });
-  });
-
-  describe("Configuration via variable d'environnement", () => {
-    beforeEach(() => {
-      process.env.NODE_ENV = "production";
-    });
-
-    it("devrait ajouter des origines supplementaires via ALLOWED_INTEGRATOR_ORIGINS", () => {
-      process.env.ALLOWED_INTEGRATOR_ORIGINS =
-        "https://cartofriches.cerema.fr,https://urbanvitaliz.fr";
-      const guard = new IntegrateurOriginGuard();
-
-      const context1 = createMockExecutionContext({
-        origin: "https://cartofriches.cerema.fr",
-      });
-      expect(guard.canActivate(context1)).toBe(true);
-
-      const context2 = createMockExecutionContext({
-        origin: "https://urbanvitaliz.fr",
-      });
-      expect(guard.canActivate(context2)).toBe(true);
-    });
-
-    it("devrait gerer les espaces dans ALLOWED_INTEGRATOR_ORIGINS", () => {
-      process.env.ALLOWED_INTEGRATOR_ORIGINS = " https://site1.com , https://site2.com ";
-      const guard = new IntegrateurOriginGuard();
-
-      const context = createMockExecutionContext({
-        origin: "https://site1.com",
-      });
-      expect(guard.canActivate(context)).toBe(true);
-    });
-
-    it("devrait conserver les origines par defaut avec ALLOWED_INTEGRATOR_ORIGINS", () => {
-      process.env.ALLOWED_INTEGRATOR_ORIGINS = "https://new-partner.com";
-      const guard = new IntegrateurOriginGuard();
-
-      const context = createMockExecutionContext({
-        origin: "https://mutafriches.beta.gouv.fr",
-      });
-      expect(guard.canActivate(context)).toBe(true);
-    });
-  });
-
-  // Un header Origin ne porte jamais de slash final : sans normalisation au parsing,
-  // une entree saisie avec un slash est morte et l'integrateur recoit un 403 muet.
-  describe("Normalisation des origines configurees", () => {
-    beforeEach(() => {
-      process.env.NODE_ENV = "production";
-    });
-
-    it("devrait autoriser une origine configuree avec un slash final", () => {
-      process.env.ALLOWED_INTEGRATOR_ORIGINS = "https://vmap-ofriches.data.arnia-bfc.fr/";
-      const guard = new IntegrateurOriginGuard();
-
-      const context = createMockExecutionContext({
-        origin: "https://vmap-ofriches.data.arnia-bfc.fr",
-      });
-      expect(guard.canActivate(context)).toBe(true);
-    });
-
-    it("devrait autoriser une origine configuree avec plusieurs slashs finaux", () => {
-      process.env.ALLOWED_INTEGRATOR_ORIGINS = "https://partenaire.fr//";
-      const guard = new IntegrateurOriginGuard();
-
-      const context = createMockExecutionContext({
-        origin: "https://partenaire.fr",
-      });
-      expect(guard.canActivate(context)).toBe(true);
-    });
-
-    it("devrait autoriser une origine configuree avec espaces et slash final", () => {
-      process.env.ALLOWED_INTEGRATOR_ORIGINS = " https://partenaire.fr/ , https://autre.fr/ ";
-      const guard = new IntegrateurOriginGuard();
-
-      expect(
-        guard.canActivate(createMockExecutionContext({ origin: "https://partenaire.fr" })),
-      ).toBe(true);
-      expect(guard.canActivate(createMockExecutionContext({ origin: "https://autre.fr" }))).toBe(
-        true,
-      );
-    });
-
-    it("devrait autoriser une origine configuree en casse mixte", () => {
-      process.env.ALLOWED_INTEGRATOR_ORIGINS = "HTTPS://Partenaire.FR/";
-      const guard = new IntegrateurOriginGuard();
-
-      const context = createMockExecutionContext({
-        origin: "https://partenaire.fr",
-      });
-      expect(guard.canActivate(context)).toBe(true);
-    });
-
-    it("devrait conserver le port non standard d'une origine configuree", () => {
-      process.env.ALLOWED_INTEGRATOR_ORIGINS = "https://partenaire.fr:8443/";
-      const guard = new IntegrateurOriginGuard();
-
-      expect(
-        guard.canActivate(createMockExecutionContext({ origin: "https://partenaire.fr:8443" })),
-      ).toBe(true);
-      expect(() =>
-        guard.canActivate(createMockExecutionContext({ origin: "https://partenaire.fr" })),
-      ).toThrow(ForbiddenException);
-    });
-
-    it("devrait ignorer les entrees vides sans tout autoriser", () => {
-      process.env.ALLOWED_INTEGRATOR_ORIGINS = "https://partenaire.fr/,, ,/";
-      const guard = new IntegrateurOriginGuard();
-
-      expect(
-        guard.canActivate(createMockExecutionContext({ origin: "https://partenaire.fr" })),
-      ).toBe(true);
-      expect(() =>
-        guard.canActivate(createMockExecutionContext({ origin: "https://malicious-site.com" })),
-      ).toThrow(ForbiddenException);
-    });
-
-    it("ne devrait pas autoriser Origin null via une entree opaque configuree", () => {
-      process.env.ALLOWED_INTEGRATOR_ORIGINS = "file:///opt/app/";
-      const guard = new IntegrateurOriginGuard();
-
-      expect(() => guard.canActivate(createMockExecutionContext({ origin: "null" }))).toThrow(
-        ForbiddenException,
-      );
-    });
-
-    // Regression : la normalisation ne doit pas assouplir la comparaison stricte
-    it("devrait bloquer un suffixe usurpe d'une origine configuree avec slash final", () => {
-      process.env.ALLOWED_INTEGRATOR_ORIGINS = "https://vmap-ofriches.data.arnia-bfc.fr/";
-      const guard = new IntegrateurOriginGuard();
-
-      const context = createMockExecutionContext({
-        origin: "https://vmap-ofriches.data.arnia-bfc.fr.attacker.com",
-      });
-
-      expect(() => guard.canActivate(context)).toThrow(ForbiddenException);
-      expect(() => guard.canActivate(context)).toThrow("Origin not allowed");
-    });
-
-    it("devrait bloquer un sous-domaine d'une origine configuree avec slash final", () => {
-      process.env.ALLOWED_INTEGRATOR_ORIGINS = "https://partenaire.fr/";
-      const guard = new IntegrateurOriginGuard();
-
-      const context = createMockExecutionContext({
-        origin: "https://evil.partenaire.fr",
-      });
-
-      expect(() => guard.canActivate(context)).toThrow(ForbiddenException);
-      expect(() => guard.canActivate(context)).toThrow("Origin not allowed");
-    });
-
-    it("devrait bloquer le meme hote en http quand https est configure", () => {
-      process.env.ALLOWED_INTEGRATOR_ORIGINS = "https://partenaire.fr/";
-      const guard = new IntegrateurOriginGuard();
-
-      const context = createMockExecutionContext({
-        origin: "http://partenaire.fr",
-      });
-
-      expect(() => guard.canActivate(context)).toThrow(ForbiddenException);
-      expect(() => guard.canActivate(context)).toThrow("Origin not allowed");
+    it("refuse un Referer invalide", async () => {
+      const context = createMockExecutionContext({ referer: "not-a-valid-url" });
+      await expect(creerGuard().canActivate(context)).rejects.toThrow("Origin required");
     });
   });
 
   describe("Mode staging", () => {
-    it("devrait appliquer les memes regles qu'en production", () => {
+    it("applique les mêmes règles qu'en production", async () => {
       process.env.NODE_ENV = "staging";
-      const guard = new IntegrateurOriginGuard();
-
-      const contextAllowed = createMockExecutionContext({
-        origin: "https://mutafriches.beta.gouv.fr",
-      });
-      expect(guard.canActivate(contextAllowed)).toBe(true);
-
-      const contextBlocked = createMockExecutionContext({
-        origin: "https://malicious-site.com",
-      });
-      expect(() => guard.canActivate(contextBlocked)).toThrow(ForbiddenException);
+      const guard = creerGuard();
+      await expect(
+        guard.canActivate(
+          createMockExecutionContext({ origin: "https://mutafriches.beta.gouv.fr" }),
+        ),
+      ).resolves.toBe(true);
+      await expect(
+        guard.canActivate(createMockExecutionContext({ origin: "https://malicious-site.com" })),
+      ).rejects.toThrow(ForbiddenException);
     });
   });
 });

@@ -1,6 +1,14 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { Type } from "@nestjs/common";
 import { vi } from "vitest";
+import { IntegrateursRegistreService } from "../../integrateurs/integrateurs-registre.service";
+import { creerRegistreDeTest } from "../../integrateurs/__test-helpers__/registre.mocks";
+
+// `IntegrateurOriginGuard`, posé sur les contrôleurs, a besoin du registre pour être instancié.
+const registreProvider = {
+  provide: IntegrateursRegistreService,
+  useFactory: () => creerRegistreDeTest(),
+};
 
 /**
  * Type helper pour extraire les types des méthodes mockées
@@ -59,7 +67,7 @@ export async function createTestingModuleWithMocks<
 
   const module = await Test.createTestingModule({
     controllers: [controller],
-    providers,
+    providers: [...providers, registreProvider],
   }).compile();
 
   const controllerInstance = module.get<Controller>(controller);
@@ -116,6 +124,7 @@ export async function createTestingModuleWithService<Controller, Service>(
         provide: serviceClass,
         useValue: serviceMock,
       },
+      registreProvider,
     ],
   }).compile();
 
@@ -163,6 +172,7 @@ export async function createTestingModuleWithTwoServices<Controller, Service1, S
         provide: serviceClass2,
         useValue: serviceMock2,
       },
+      registreProvider,
     ],
   }).compile();
 

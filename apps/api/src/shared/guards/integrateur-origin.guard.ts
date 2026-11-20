@@ -6,28 +6,18 @@ import {
   Logger,
 } from "@nestjs/common";
 import { Request } from "express";
-import { isDevelopment, normaliserOrigines, ORIGINES_MUTAFRICHES } from "../utils";
-import { getAppConfig } from "../../config";
+import { isDevelopment, normaliserOrigine } from "../utils";
+import { IntegrateursRegistreService } from "../../integrateurs/integrateurs-registre.service";
 
-// Seules nos propres origines sont codées : l'UI (standalone et iframe) appelle l'API depuis
-// notre domaine. Tout intégrateur tiers passe par ALLOWED_INTEGRATOR_ORIGINS.
-const DEFAULT_ALLOWED_ORIGINS: string[] = [...ORIGINES_MUTAFRICHES];
-
+// Les origines autorisées viennent du registre des intégrateurs (table `integrateurs`,
+// ADR-0055) : les nôtres, codées, et celles des intégrateurs API et QGIS déclarés.
 @Injectable()
 export class IntegrateurOriginGuard implements CanActivate {
   private readonly logger = new Logger(IntegrateurOriginGuard.name);
-  private readonly allowedOrigins: string[];
 
-  constructor() {
-    const envOrigins = getAppConfig().origins.allowedIntegrators;
-    const originesBrutes = envOrigins
-      ? [...DEFAULT_ALLOWED_ORIGINS, ...envOrigins.split(",")]
-      : DEFAULT_ALLOWED_ORIGINS;
+  constructor(private readonly registre: IntegrateursRegistreService) {}
 
-    this.allowedOrigins = normaliserOrigines(originesBrutes, this.logger);
-  }
-
-  canActivate(context: ExecutionContext): boolean {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     // Bypass en developpement
     if (isDevelopment()) {
       return true;
@@ -43,7 +33,7 @@ export class IntegrateurOriginGuard implements CanActivate {
       throw new ForbiddenException("Origin required");
     }
 
-    if (!this.isAllowedOrigin(origin)) {
+    if (!(await this.isAllowedOrigin(origin))) {
       this.logger.warn(
         `Origin integrateur non autorisee: ${origin} - IP: ${request.ip} - URL: ${request.url}`,
       );
@@ -75,10 +65,10 @@ export class IntegrateurOriginGuard implements CanActivate {
     return null;
   }
 
-  private isAllowedOrigin(origin: string): boolean {
-    // Égalité stricte sur l'origine complète (scheme + host + port).
-    // Un startsWith laisserait passer les sous-domaines suffixes usurpés
-    // (ex. benefriches.ademe.fr.attacker.com).
-    return this.allowedOrigins.includes(origin);
+  private isAllowedOrigin(origin: string): Promise<boolean> {
+    // Égalité stricte sur l'origine complète (scheme + host + port), après la même
+    // normalisation qu'à la déclaration. Un startsWith laisserait passer les sous-domaines
+    // suffixes usurpés (ex. benefriches.ademe.fr.attacker.com).
+    return this.registre.estOrigineAutorisee(normaliserOrigine(origin) ?? origin);
   }
 }

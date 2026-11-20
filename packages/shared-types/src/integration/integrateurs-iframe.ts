@@ -1,7 +1,7 @@
 // Registre des intégrateurs iframe (`/iframe?integrator=<id>`), source unique UI + API.
 // L'UI s'en sert pour valider le domaine du callback ; l'API en dérive `frame-ancestors`.
-// Un intégrateur qui appelle aussi l'API directement doit EN PLUS figurer dans
-// ALLOWED_INTEGRATOR_ORIGINS (variable Scalingo) : cf. docs/ajout-partenaire.md.
+// Un intégrateur qui appelle aussi l'API directement doit EN PLUS déclarer son domaine
+// (table `integrateurs`, ADR-0055) : cf. docs/ajout-partenaire.md.
 
 export interface IntegrateurIframeConfig {
   name: string;

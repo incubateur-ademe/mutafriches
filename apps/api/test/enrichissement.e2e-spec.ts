@@ -7,13 +7,18 @@ import { EnrichissementController } from "../src/enrichissement/enrichissement.c
 import { EnrichissementService } from "../src/enrichissement/services/enrichissement.service";
 import { OrigineDetectionService } from "../src/shared/services/origine-detection.service";
 import { IntegrateurOriginGuard } from "../src/shared/guards";
+import { IntegrateursRegistreService } from "../src/integrateurs/integrateurs-registre.service";
+import { creerRegistreDeTest } from "../src/integrateurs/__test-helpers__/registre.mocks";
 import { createThrottledTestApp, describeThrottling } from "./helpers";
 
 // Origine valide pour les tests (Mutafriches prod)
 const VALID_ORIGIN = "https://mutafriches.beta.gouv.fr";
-// Origine d'un integrateur tiers, autorisée comme en production via la variable d'environnement
+// Origine d'un intégrateur tiers, déclarée dans le registre comme en production
 const VALID_INTEGRATOR_ORIGIN = "https://benefriches.ademe.fr";
-process.env.ALLOWED_INTEGRATOR_ORIGINS = VALID_INTEGRATOR_ORIGIN;
+const registreProvider = {
+  provide: IntegrateursRegistreService,
+  useFactory: () => creerRegistreDeTest([VALID_INTEGRATOR_ORIGIN]),
+};
 
 const mockEnrichissementOutput = {
   identifiantCadastral: "49007000AB0123",
@@ -66,6 +71,7 @@ describe("Enrichissement E2E", () => {
         { provide: EnrichissementService, useValue: mockEnrichissementService },
         { provide: OrigineDetectionService, useValue: mockOrigineDetectionService },
         IntegrateurOriginGuard,
+        registreProvider,
       ],
     });
   });
@@ -178,6 +184,7 @@ describe("Enrichissement E2E - Securite Origin", () => {
         { provide: EnrichissementService, useValue: mocks.mockEnrichissementService },
         { provide: OrigineDetectionService, useValue: mocks.mockOrigineDetectionService },
         IntegrateurOriginGuard,
+        registreProvider,
       ],
     });
   });

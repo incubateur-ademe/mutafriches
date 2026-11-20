@@ -19,4 +19,5 @@ export {
   construireFrameAncestors,
   construireOriginesCors,
   estOrigineCorsAutorisee,
+  estOrigineCorsDeclaree,
 } from "./origines-autorisees";
