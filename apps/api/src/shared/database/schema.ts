@@ -21,6 +21,7 @@ import { partenaires } from "./schemas/partenaires.schema";
 import { partenaireSites } from "./schemas/partenaire-sites.schema";
 import { cacheBdnbParcelles } from "./schemas/cache-bdnb-parcelles.schema";
 import { attributaireSites } from "./schemas/attributaire-sites.schema";
+import { integrateurs } from "./schemas/integrateurs.schema";
 
 // Export individuel pour drizzle-kit
 export {
@@ -48,6 +49,7 @@ export {
   partenaireSites,
   cacheBdnbParcelles,
   attributaireSites,
+  integrateurs,
 };
 
 // Export groupé pour drizzle ORM
@@ -75,4 +77,5 @@ export const schema = {
   partenaireSites,
   cacheBdnbParcelles,
   attributaireSites,
+  integrateurs,
 };
