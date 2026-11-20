@@ -1,7 +1,7 @@
 # ADR-0011 : Sécurisation des endpoints POST par validation d'Origin (sans clé d'API)
 
 **Date** : 2026-03-13
-**Statut** : Accepté
+**Statut** : Accepté, amendé par l'ADR-0055 (les origines ne viennent plus de `ALLOWED_INTEGRATOR_ORIGINS` mais de la table `integrateurs`, alimentée par une déclaration libre)
 
 ## Contexte
 

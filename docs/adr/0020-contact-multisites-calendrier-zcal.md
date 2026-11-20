@@ -1,7 +1,7 @@
 # ADR-0020 : Prise de rendez-vous multisites via calendrier ZCal embarqué
 
 **Date** : 2026-06-24
-**Statut** : Accepté (remplace l'ADR-0015 et l'ADR-0017)
+**Statut** : Accepté (remplace l'ADR-0015 et l'ADR-0017), amendé par l'ADR-0055 (les demandes d'intégration passent par un formulaire ; l'adresse e-mail part dans Brevo, toujours sans stockage en base)
 
 ## Contexte
 
