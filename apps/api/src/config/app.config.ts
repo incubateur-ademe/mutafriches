@@ -68,7 +68,16 @@ export class AppConfig {
   get origins() {
     return {
       allowed: this.env.ALLOWED_ORIGINS,
+      // Reprise seulement : les intégrateurs vivent dans la table `integrateurs` (ADR-0055)
       allowedIntegrators: this.env.ALLOWED_INTEGRATOR_ORIGINS,
+    };
+  }
+
+  // Sans clé ou sans liste, le contact n'est pas transmis (local, review apps)
+  get brevo() {
+    return {
+      apiKey: this.env.BREVO_API_KEY,
+      listeId: this.env.BREVO_LISTE_ID,
     };
   }
 

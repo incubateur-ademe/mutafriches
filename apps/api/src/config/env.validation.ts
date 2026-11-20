@@ -57,9 +57,22 @@ export class EnvironmentVariables {
   @IsString()
   ALLOWED_ORIGINS?: string;
 
+  // Lue uniquement par `integrateurs:synchroniser` pour reprendre les origines dans la table
+  // `integrateurs` (ADR-0055). À retirer une fois la reprise faite sur chaque environnement.
   @IsOptional()
   @IsString()
   ALLOWED_INTEGRATOR_ORIGINS?: string;
+
+  // Brevo : contacts des déclarants (jamais stockés en base, ADR-0055)
+  @IsOptional()
+  @IsString()
+  BREVO_API_KEY?: string;
+
+  // Une liste par environnement ; l'usage est porté par un attribut booléen par canal
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  BREVO_LISTE_ID?: number;
 
   // Metabase
   @IsOptional()
