@@ -27,8 +27,8 @@ d'août 2026 a montré que tout ce qui est lisible en base de production peut fu
 ## Décision
 
 > Nous tenons en base un registre des intégrateurs (table `integrateurs`), alimenté par un
-> formulaire de déclaration ouvert. Le domaine déclaré sert d'identifiant ; l'adresse e-mail du
-> déclarant part dans Brevo et n'est jamais écrite en base.
+> formulaire de déclaration ouvert. Le domaine déclaré sert d'identifiant ; le prénom, le nom et
+> l'adresse e-mail du déclarant partent dans Brevo et ne sont jamais écrits en base.
 
 1. **Une table, quatre canaux** (`api`, `qgis`, `page`, `iframe`) : structure, type de structure,
    origine normalisée, statut (`en_attente`, `actif`, `revoque`) et `cle_stats`, la valeur écrite
@@ -49,8 +49,8 @@ d'août 2026 a montré que tout ce qui est lisible en base de production peut fu
    Le registre iframe du code reste la liste d'autorisation technique.
 5. **Extension QGIS identifiée par le domaine de la structure**, envoyé dans `Origin`, et par
    l'en-tête `X-Mutafriches-Client: qgis/<version>`, qui préfixe l'intégrateur de `qgis:`.
-6. **E-mail obligatoire, chez Brevo uniquement** : un appel à `POST /v3/contacts`, une liste par
-   environnement et un attribut booléen par canal (`USAGE_API`, `USAGE_QGIS`, `USAGE_PAGE`,
+6. **Prénom, nom et e-mail obligatoires, chez Brevo uniquement** (attributs `PRENOM` et `NOM`) :
+   un appel à `POST /v3/contacts`, une liste par environnement et un attribut booléen par canal (`USAGE_API`, `USAGE_QGIS`, `USAGE_PAGE`,
    `USAGE_IFRAME`), pour qu'un même contact cumule ses usages. La ligne porte
    `contact_enregistre` : faux si Brevo n'a pas reçu le contact.
 7. **Reprise de l'existant** par `integrateurs:synchroniser`, lancé au `postdeploy` : origines de

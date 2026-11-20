@@ -201,7 +201,8 @@ Format d'une entrée :
 - **Écarté parce que** : dépôt `mutafriches-qgis`, release séparée ; les versions actuelles
   continuent de fonctionner sous l'origine partagée
 - **Préalable** : dans l'extension, l'accueil appelle `POST /api/integrateurs/declarations`
-  (canal `qgis` : structure, type, e-mail, domaine), mémorise l'origine renvoyée, l'envoie dans
+  (canal `qgis` : structure, type, prénom, nom, e-mail, domaine), mémorise l'origine renvoyée,
+  l'envoie dans
   `Origin` avec `X-Mutafriches-Client: qgis/<version>` ; retirer ensuite l'origine partagée
 
 ### Publier une release de l'extension QGIS
@@ -220,8 +221,8 @@ Format d'une entrée :
   l'extension exige encore une structure et une adresse mail valide pour passer l'accueil
   (`Utilisateur.complet`, `mutafriches/ui/accueil.py`) ; seul le consentement y est facultatif
 - **Préalable** : réécrire la phrase du tutoriel quand l'extension sera branchée sur la
-  déclaration par structure : l'ADR-0055 rend la structure, le domaine et l'adresse e-mail
-  obligatoires
+  déclaration par structure : l'ADR-0055 rend la structure, le domaine, le prénom, le nom et
+  l'adresse e-mail obligatoires
 
 ### Suivi de consultation du tutoriel QGIS
 

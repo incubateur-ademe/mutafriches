@@ -32,8 +32,9 @@ Chaque déclaration crée une ligne dans la table `integrateurs` (canal `api`, s
 scalingo --app mutafriches --region osc-secnum-fr1 run "pnpm integrateurs:lister"
 ```
 
-L'adresse e-mail du déclarant n'est **pas** dans cette table : elle est dans la liste Brevo de
-l'environnement, avec l'attribut `USAGE_API` coché et la structure et le domaine en attributs. La colonne `contact_enregistre` vaut
+Le prénom, le nom et l'adresse e-mail du déclarant ne sont **pas** dans cette table : ils sont
+dans la liste Brevo de l'environnement, avec l'attribut `USAGE_API` coché et la structure et le
+domaine en attributs. La colonne `contact_enregistre` vaut
 `false` quand Brevo n'a pas reçu le contact (panne, clé absente) : ce déclarant n'est pas
 joignable.
 
@@ -189,8 +190,11 @@ révocation.
 
 - **Déclaration** : `POST /api/integrateurs/declarations`, depuis les formulaires du site ou
   l'extension QGIS. Limitée à 5 appels par heure et par IP. Redéclarer un domaine ne crée rien.
-- **Domaines refusés** : schéma autre que `https`, hôte local, adresse IP, port explicite, nos
-  propres domaines (`normaliserDomaineDeclare`).
+- **Domaines refusés** : tout ce qui n'est pas un nom de domaine complet avec son extension
+  (`mon-service`, `intranet`, adresse IP), schéma autre que `https`, port explicite, suffixe
+  local, nos propres domaines. La règle de format est partagée par le formulaire et l'API
+  (`hoteDeDomaineDeclare`, `shared-types`), les domaines réservés restent côté API
+  (`normaliserDomaineDeclare`).
 - **Délais** : une déclaration vaut tout de suite sur le conteneur qui l'a reçue, dans la minute
   sur les autres (CORS ne lit que le cache du registre) ; une révocation prend effet en une
   minute au plus.

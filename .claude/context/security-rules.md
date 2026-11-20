@@ -98,8 +98,8 @@ const response = await firstValueFrom(this.httpService.get(url));
 - `GET /api/attributaire/sites` publie la saisie des utilisateurs, marquée `saisieDeclarative` :
   ne jamais y ajouter `utilisateur_id`, `integrateur` ni `evaluation_id` (ADR-0053)
 - `POST /api/integrateurs/declarations` est ouverte (formulaires du site, extension QGIS) et
-  limitée à 5 appels par heure et par IP. L'adresse e-mail reçue part dans Brevo : ne **jamais**
-  l'écrire en base, dans un log ou dans la réponse (ADR-0055)
+  limitée à 5 appels par heure et par IP. Le prénom, le nom et l'adresse e-mail reçus partent
+  dans Brevo : ne **jamais** les écrire en base, dans un log ou dans la réponse (ADR-0055)
 
 ### Règles
 

@@ -351,7 +351,7 @@ requêtes. Les lectures (`GET /evaluation/{id}`, `GET /evaluation/metadata`,
 **Déclarez votre domaine** avec le formulaire de la page
 [Utiliser l'API](https://mutafriches.beta.gouv.fr/integrer-mutafriches/api) : il est autorisé
 dès l'envoi, sans validation de notre part. Vous indiquez le nom de votre structure, une
-adresse de contact (pour vous prévenir des évolutions de l'API) et :
+contact (prénom, nom et adresse e-mail, pour vous prévenir des évolutions de l'API) et :
 
 - le **domaine exact** depuis lequel partent vos appels (`exemple.fr`, en `https`, sans port).
   La comparaison est stricte : `https://www.exemple.fr` est une autre origine, et les

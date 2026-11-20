@@ -511,7 +511,7 @@ CORS reflète nos origines, les dashboards ADEME, `ALLOWED_ORIGINS` (`construire
 
 ### Contacts des déclarants (Brevo)
 
-L'adresse e-mail d'une déclaration part dans Brevo (`POST /v3/contacts`) et n'est **jamais** écrite en base ni dans les logs (ADR-0055). Une liste par environnement ; l'usage est porté par un attribut booléen par canal (`USAGE_API`, `USAGE_QGIS`, `USAGE_PAGE`, `USAGE_IFRAME`), cumulable parce qu'une mise à jour ne touche que les attributs transmis. Ces quatre attributs et `STRUCTURE`, `TYPE_STRUCTURE`, `DOMAINE` doivent exister dans le compte Brevo (un attribut absent est ignoré sans erreur).
+Le prénom, le nom et l'adresse e-mail d'une déclaration partent dans Brevo (`POST /v3/contacts`) et ne sont **jamais** écrits en base ni dans les logs (ADR-0055). Une liste par environnement ; l'usage est porté par un attribut booléen par canal (`USAGE_API`, `USAGE_QGIS`, `USAGE_PAGE`, `USAGE_IFRAME`), cumulable parce qu'une mise à jour ne touche que les attributs transmis. Ces quatre attributs, `STRUCTURE`, `TYPE_STRUCTURE`, `DOMAINE` et les attributs d'identité `PRENOM` et `NOM` (ceux d'un compte Brevo en français) doivent exister dans le compte Brevo (un attribut absent est ignoré sans erreur).
 
 - `BREVO_API_KEY` : clé d'API Brevo
 - `BREVO_LISTE_ID` : identifiant de la liste de l'environnement (une en staging, une en production)
