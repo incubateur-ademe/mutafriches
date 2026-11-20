@@ -62,8 +62,8 @@ Remplacer `<slug>` par le slug du partenaire (minuscules, sans espace, ex. `aura
 
 **Production — avant mise en ligne (si le partenaire appelle l'API directement)**
 
-- [ ] Ajouter l'origine du partenaire à `ALLOWED_INTEGRATOR_ORIGINS` (var d'env Scalingo) —
-      aucun code à modifier (cf. `IntegrateurOriginGuard`)
+- [ ] Le partenaire déclare son domaine avec le formulaire de `/integrer-mutafriches/api`
+      (table `integrateurs`, ADR-0055) — aucun code ni variable à modifier
 
 **Vérification**
 

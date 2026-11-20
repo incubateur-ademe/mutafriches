@@ -55,15 +55,26 @@ Format d'une entrée :
 - **Écarté parce que** : le test préprod (site Setec) a d'abord buté sur une 413, corrigée par #221 ; le temps de réponse n'a jamais été mesuré
 - **Préalable** : rejouer le calcul en préprod et vérifier qu'il reste sous le délai du routeur Scalingo
 
-### Slash final dans `ALLOWED_INTEGRATOR_ORIGINS`
+### Retirer `ALLOWED_INTEGRATOR_ORIGINS`
 
-- **Origine** : #195, ADR-0043
-- **Écarté parce que** : la normalisation des origines le rend inoffensif ; nettoyage d'hygiène seulement
-- **Préalable** : aucun ; corriger la variable sur chaque app Scalingo
+- **Origine** : ADR-0055 (registre des intégrateurs en base)
+- **Écarté parce que** : la variable n'est plus lue que par `integrateurs:synchroniser`, qui
+  reprend ses origines dans la table `integrateurs` au premier déploiement
+- **Préalable** : vérifier sur chaque environnement que chaque origine figure en `actif`
+  (`pnpm integrateurs:lister`), `env-unset` sur les deux applications, puis retirer la variable
+  de `env.validation.ts`, `app.config.ts`, `.env.example` et de la reprise
+
+### Renommer les intégrateurs repris
+
+- **Origine** : ADR-0055
+- **Écarté parce que** : la reprise ne connaît que l'origine ; les intégrateurs API repris ont
+  leur hôte pour nom de structure et le type « autre »
+- **Préalable** : `UPDATE integrateurs SET structure = …, type_structure = …` sur chaque
+  environnement, une fois
 
 ### Imports et seeds manuels à confirmer par environnement
 
-- **Origine** : #189 (`db:qpv:import` puis pré-chauffe), #213 (`db:zones-contrainte-enr:import`), ZAE (`db:zae:import`), #208 (`db:partenaires:seed` puis pré-chauffe), #217 (origines Bénéfriches dans `ALLOWED_INTEGRATOR_ORIGINS`)
+- **Origine** : #189 (`db:qpv:import` puis pré-chauffe), #213 (`db:zones-contrainte-enr:import`), ZAE (`db:zae:import`), #208 (`db:partenaires:seed` puis pré-chauffe), #217 (origines Bénéfriches, désormais dans la table `integrateurs`, ADR-0055)
 - **Écarté parce que** : non lancés par le `postdeploy`, à exécuter à la main
 - **Préalable** : vérifier en base préprod et prod que chaque référentiel est présent
 
@@ -180,18 +191,18 @@ Format d'une entrée :
 
 > Contexte : l'extension (dépôt `mutafriches-qgis`) appelle l'API existante sans changement de
 > code, site par site (`POST /enrichissement` puis `POST /evaluation/calculer`), avec une origine
-> conventionnelle déclarée dans `ALLOWED_INTEGRATOR_ORIGINS`. Plan complet :
+> partagée reprise dans la table `integrateurs` (« QGIS non déclaré », ADR-0055). Plan complet :
 > `mutafriches-qgis/docs/plan-implementation-reelle.md`.
 
-### Déclarer l'origine de l'extension QGIS
+### Brancher l'extension QGIS sur la déclaration par structure
 
-- **Origine** : passage du prototype QGIS au réel sans modifier l'API (2026-11-11)
-- **Écarté parce que** : réglage d'exploitation, pas de code ; à faire en staging
-  (`mutafriches.incubateur.ademe.dev`) et en production : fait le 2026-11-11, reste le canal
-  Metabase
-- **Préalable** : suivre `docs/acces-api-integrateur.md` avec l'origine
-  `https://qgis.mutafriches.beta.gouv.fr` (l'extension pose elle-même l'en-tête `Origin`), puis
-  ajouter le canal « Plugin QGIS » au bloc `CASE` Metabase (`integrateur = 'qgis.mutafriches.beta.gouv.fr'`)
+- **Origine** : ADR-0055 ; l'API accepte la déclaration et lit l'en-tête client, l'extension ne
+  les utilise pas encore
+- **Écarté parce que** : dépôt `mutafriches-qgis`, release séparée ; les versions actuelles
+  continuent de fonctionner sous l'origine partagée
+- **Préalable** : dans l'extension, l'accueil appelle `POST /api/integrateurs/declarations`
+  (canal `qgis` : structure, type, e-mail, domaine), mémorise l'origine renvoyée, l'envoie dans
+  `Origin` avec `X-Mutafriches-Client: qgis/<version>` ; retirer ensuite l'origine partagée
 
 ### Publier une release de l'extension QGIS
 
@@ -208,8 +219,9 @@ Format d'une entrée :
 - **Écarté parce que** : le tutoriel annonce l'identification comme facultative, alors que
   l'extension exige encore une structure et une adresse mail valide pour passer l'accueil
   (`Utilisateur.complet`, `mutafriches/ui/accueil.py`) ; seul le consentement y est facultatif
-- **Préalable** : rendre les deux champs facultatifs dans `mutafriches-qgis` avant la release,
-  ou réécrire la phrase du tutoriel
+- **Préalable** : réécrire la phrase du tutoriel quand l'extension sera branchée sur la
+  déclaration par structure : l'ADR-0055 rend la structure, le domaine et l'adresse e-mail
+  obligatoires
 
 ### Suivi de consultation du tutoriel QGIS
 
@@ -218,21 +230,13 @@ Format d'une entrée :
   à grouper avec celle des événements de l'extension pour éviter deux migrations concurrentes
 - **Préalable** : sujet « Événements de l'extension QGIS »
 
-### Identification des utilisateurs de l'extension (structure, e-mail, consentement)
-
-- **Origine** : plan d'implémentation QGIS, chantier M1
-- **Écarté parce que** : aucune table ni route ne peut recevoir ces données ; en attendant,
-  l'extension les garde en local et peut les envoyer à un formulaire externe
-- **Préalable** : ADR sur la donnée personnelle (finalité, conservation, purge) et sur la clé
-  d'API par client (`X-API-Key`, piste de l'ADR-0011) ; tous les utilisateurs partagent d'ici là
-  la même origine et ne se distinguent pas dans les statistiques
-
 ### Événements de l'extension QGIS
 
 - **Origine** : plan d'implémentation QGIS, chantier M2
 - **Écarté parce que** : `POST /evenements` n'accepte que les origines Mutafriches et ignore
   `integrateur` dans le corps ; seuls les enrichissements et les évaluations sont mesurés
-- **Préalable** : clé d'API par client (sujet précédent), puis nouveaux `TypeEvenement` et
+- **Préalable** : extension branchée sur la déclaration par structure (sujet ci-dessus), puis
+  ouverture de `POST /evenements` aux origines du registre, nouveaux `TypeEvenement` et
   migration de l'enum
 
 ### Import d'inventaire CNIG et traitement par lot
@@ -291,6 +295,32 @@ Format d'une entrée :
 - **Écarté parce que** : un inventaire de plusieurs centaines de sites neufs entame le quota
   d'environ 10 000 appels par mois
 - **Préalable** : sujet « Clé API BDNB ou import local si les parcelles neuves dépassent le quota »
+
+## Registre des intégrateurs
+
+### Cartes Metabase sur le registre
+
+- **Origine** : ADR-0055
+- **Écarté parce que** : toute modification de Metabase attend un accord explicite
+- **Préalable** : remplacer les `CASE` en dur par `LEFT JOIN integrateurs i ON i.cle_stats =
+  integrateur`, ajouter « déclarés et actifs par canal » et une alerte sur
+  `statut = 'en_attente'` ; le canal QGIS couvre `qgis.mutafriches.beta.gouv.fr` (anciennes
+  versions, auparavant comptées avec le site) et `qgis:%`
+
+### Conservation et vérification des contacts dans Brevo
+
+- **Origine** : ADR-0055 (adresse e-mail obligatoire, conservée chez Brevo uniquement)
+- **Écarté parce que** : réglages du compte Brevo, hors dépôt
+- **Préalable** : durée de conservation alignée sur la politique de confidentialité (36 mois),
+  contrat de sous-traitance confirmé avec le DPO de l'ADEME ; double confirmation de l'adresse
+  si les fausses saisies se multiplient
+
+### Registre iframe servi par la table
+
+- **Origine** : ADR-0055 (l'iframe garde `INTEGRATEURS_IFRAME` pour liste d'autorisation)
+- **Écarté parce que** : un intégrateur iframe demande encore un déploiement ; le rendre
+  dynamique impose un `IframeProvider` asynchrone sur le chemin de Bénéfriches en production
+- **Préalable** : plus de deux ou trois demandes d'iframe par an
 
 ## Contrat API et dépréciations
 

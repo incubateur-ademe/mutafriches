@@ -74,7 +74,7 @@ scalingo --app mutafriches-preprod --region osc-fr1 env | cut -d= -f1
 ```
 
 ```bash
-scalingo --app mutafriches-preprod --region osc-fr1 env-get ALLOWED_INTEGRATOR_ORIGINS
+scalingo --app mutafriches-preprod --region osc-fr1 env-get ALLOWED_ORIGINS
 ```
 
 La modification (`env-set`) redémarre l'app : voir la procédure dédiée dans

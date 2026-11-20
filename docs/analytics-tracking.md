@@ -124,6 +124,16 @@ Le canal se lit d'abord sur `integrateur` (dont la convention `partenaire:<slug>
 > `IFRAME_INTEGREE`. Les intégrateurs nommés ci-dessous, lus sur `integrateur`, ne changent pas
 > de bucket.
 
+> **Registre des intégrateurs (ADR-0055).** Depuis novembre 2026, la table `integrateurs` porte
+> une ligne par structure et par canal, et sa colonne `cle_stats` reprend la valeur écrite dans
+> `integrateur` : hôte (`api`), `qgis:<hôte>` (extension QGIS, depuis la déclaration par
+> structure), `partenaire:<slug>` (`page`), identifiant `integrator` (`iframe`). Une jointure
+> `LEFT JOIN integrateurs i ON i.cle_stats = <table>.integrateur` donne le nom de la structure et
+> le canal sans `CASE` à maintenir ; le bloc ci-dessous reste valable pour les cartes qui ne
+> l'ont pas encore adoptée. Les anciennes versions de l'extension écrivent
+> `qgis.mutafriches.beta.gouv.fr` en `API_DIRECTE` ; avant ce correctif, leurs appels étaient
+> classés `SITE_STANDALONE` sans intégrateur, donc comptés avec le site.
+
 ```sql
 CASE
   WHEN integrateur = 'partenaire:ddt-vosges'          THEN 'DDT Vosges'

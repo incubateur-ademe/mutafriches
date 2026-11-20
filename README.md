@@ -153,6 +153,9 @@ pnpm db:zones-contrainte-enr:import  # Zones saturées réseau EnR (Enedis, mens
 pnpm db:zae:import          # Zones d'activité économique (Cerema Fusac, annuel — ADR-0049)
 pnpm db:import:all          # Tous les référentiels manquants (base locale neuve : build:nest d'abord — ADR-0050)
 pnpm attributaire:peupler   # Table attributaire depuis la base (--commune=77305, --dry-run ; build:nest d'abord — ADR-0053)
+pnpm integrateurs:lister    # Registre des intégrateurs déclarés (build:nest d'abord — ADR-0055)
+pnpm integrateurs:publier <id> <slug|identifiant>  # Activer une page personnalisée ou une iframe
+pnpm integrateurs:revoquer <id>   # Couper l'accès d'un domaine (reactiver pour le rétablir)
 ```
 
 Le conteneur PostgreSQL ne publie son port que sur `127.0.0.1` : la base locale, qui peut contenir
@@ -201,6 +204,7 @@ pnpm validate               # Tout vérifier (format + lint + typecheck + test)
 | `/api/partenaires/:slug/export` | POST | Export CNIG Friches de tous les sites d'un partenaire (CSV ou GeoJSON) |
 | `/api/cartofriches/recherche` | GET | Friche Cartofriches d'un identifiant cadastral |
 | `/api/cartofriches/commune` | GET | Friches Cartofriches d'une commune, avec leurs emprises |
+| `/api/integrateurs/declarations` | POST | Déclarer une utilisation (API, QGIS, page personnalisée, iframe) : domaine API ou QGIS autorisé à l'envoi |
 | `/api/attributaire/sites?codeInsee=` | GET | Table attributaire publique d'une commune : sites évalués ou partenaires, critères et mutabilité (JSON ou GeoJSON) |
 | `/api/stats` | GET | KPI public principal, format incubateur (objet `StatOutput` unique) |
 | `/api/stats/all` | GET | Tous les KPI publics (tableau de `StatOutput`, dashboard interne) |
@@ -365,7 +369,7 @@ Pour le tracking analytics (usage externe de Mutafriches sans iframe), utiliser 
 https://mutafriches.beta.gouv.fr?source={partenaire}
 ```
 
-Les intégrateurs autorisés sont définis dans les variables d'environnement (voir `CLAUDE.md`).
+Les intégrateurs API et QGIS se déclarent eux-mêmes (table `integrateurs`, ADR-0055) ; les intégrateurs iframe sont dans le registre `INTEGRATEURS_IFRAME` (voir `CLAUDE.md`).
 
 ---
 

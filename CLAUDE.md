@@ -361,6 +361,12 @@ pnpm data:zae:preparer <fichier.gpkg>  # Régénérer le GeoJSON commité depuis
 
 # Table attributaire (ADR-0053, pas un import : aucune entrée dans IMPORT_DATASETS)
 pnpm attributaire:peupler   # Recalcule la table depuis la base (--commune=<insee>, --dry-run, --si-necessaire au postdeploy)
+
+# Registre des intégrateurs (ADR-0055, pas un import : aucune entrée dans IMPORT_DATASETS)
+pnpm integrateurs:synchroniser  # Reprend les intégrateurs existants (variable d'origines, registre iframe, partenaires) ; idempotent, lancé par le postdeploy
+pnpm integrateurs:lister        # Liste les déclarations (id, canal, structure, origine, statut)
+pnpm integrateurs:publier <id> <slug|identifiant>  # Active une page personnalisée ou une iframe en attente
+pnpm integrateurs:revoquer <id> # Coupe l'accès d'un domaine en une minute au plus (reactiver pour le rétablir)
 ```
 
 ## Architecture
@@ -382,6 +388,7 @@ apps/api/src/
 ├── evenements/             # Tracking événements utilisateur
 ├── stats/                  # Endpoint KPIs publics
 ├── attributaire/           # Table attributaire par commune (alimentation + route publique, ADR-0053)
+├── integrateurs/           # Registre des intégrateurs : déclaration, origines autorisées, contact Brevo (ADR-0055)
 ├── partenaires/            # Pages partenaires multisites et export CNIG
 ├── cartofriches/           # Recherche des friches Cartofriches
 ├── donnees-externes/       # Registre des imports (IMPORT_DATASETS) et monitoring des APIs
@@ -474,12 +481,15 @@ Toutes les variables sont lues via la classe centralisée **`AppConfig`** (`apps
 
 ### Sécurité des origines (API)
 
-- `ALLOWED_INTEGRATOR_ORIGINS` : Liste des origines supplémentaires autorisées pour les intégrateurs (séparées par des virgules)
-  - Origines par défaut : `mutafriches.beta.gouv.fr`, `mutafriches.incubateur.ademe.dev` (seules nos origines sont codées : Bénéfriches, qui passe par l'iframe, et tout autre intégrateur passent par cette variable)
-  - En mode `development` : localhost autorisé automatiquement
-  - Exemple : `ALLOWED_INTEGRATOR_ORIGINS=https://custom-domain.fr,https://autre-domaine.fr`
+- **Intégrateurs API et QGIS** : pas de variable, ils se déclarent eux-mêmes (`POST /api/integrateurs/declarations`, formulaires du site et extension QGIS) et vivent dans la table `integrateurs` (ADR-0055). Un domaine déclaré est autorisé tout de suite ; `IntegrateursRegistreService` le sert au guard et à CORS (cache d'une minute, recherche en base pour une origine inconnue).
+  - Origines codées : `mutafriches.beta.gouv.fr`, `mutafriches.incubateur.ademe.dev` (l'UI doit fonctionner sans base)
+  - En mode `development` : guard désactivé
+  - Le contrôle d'origine **n'est pas une autorisation** : n'importe qui peut déclarer un domaine. Protections réelles : limite de débit, caches, `pnpm integrateurs:revoquer`
+  - Une révocation vaut pour l'**origine, tous canaux confondus** : ne jamais tester le statut d'une seule ligne, passer par `conditionOrigineActive` et `estOrigineRevoquee` (`IntegrateurRepository`)
+  - CORS ne lit que le cache (`estOrigineEnCache`) : son middleware passe avant la limite de débit, il ne doit jamais déclencher une requête en base par origine reçue
+  - `ALLOWED_INTEGRATOR_ORIGINS` n'est plus lue que par `integrateurs:synchroniser` (reprise) : à retirer une fois la reprise faite sur chaque environnement
 
-- **Intégrateurs iframe** (`/iframe?integrator=<id>`) : pas de variable, ils sont déclarés dans `INTEGRATEURS_IFRAME` (`packages/shared-types/src/integration/integrateurs-iframe.ts`), qui sert à l'UI (domaine du callback) et à l'API (en-tête CSP `frame-ancestors`). L'iframe appelle l'API depuis notre domaine : seul un partenaire qui appelle **aussi** l'API directement doit figurer dans `ALLOWED_INTEGRATOR_ORIGINS` (cf. `docs/ajout-partenaire.md`, section 3).
+- **Intégrateurs iframe** (`/iframe?integrator=<id>`) : pas de variable, ils sont déclarés dans `INTEGRATEURS_IFRAME` (`packages/shared-types/src/integration/integrateurs-iframe.ts`), qui sert à l'UI (domaine du callback) et à l'API (en-tête CSP `frame-ancestors`). Une demande d'iframe entre dans `integrateurs` en `en_attente` et n'ouvre rien seule : ajouter l'entrée au registre, déployer, puis `pnpm integrateurs:publier` (cf. `docs/ajout-partenaire.md`, section 3). Un partenaire qui appelle **aussi** l'API directement déclare son domaine pour le canal `api`.
 
 - `ALLOWED_ORIGINS` : Liste des origines autorisées pour les événements (tracking interne, séparées par des virgules)
   - Origines par défaut : `mutafriches.beta.gouv.fr`, `mutafriches.incubateur.ademe.dev`
@@ -490,13 +500,22 @@ Toutes les variables sont lues via la classe centralisée **`AppConfig`** (`apps
 
 | Route | Guard | Dev | Staging/Prod |
 |-------|-------|-----|--------------|
-| POST /enrichissement | IntegrateurOriginGuard | Bypass | Origines whitelistées |
-| POST /evaluation/calculer | IntegrateurOriginGuard | Bypass | Origines whitelistées |
+| POST /enrichissement | IntegrateurOriginGuard | Bypass | Nos origines et domaines déclarés (table `integrateurs`) |
+| POST /evaluation/calculer | IntegrateurOriginGuard | Bypass | Nos origines et domaines déclarés (table `integrateurs`) |
+| POST /api/integrateurs/declarations | Aucun (formulaires, extension QGIS) | Ouvert | Ouvert, 5 par heure et par IP |
 | POST /evenements | OriginGuard | localhost + Mutafriches | Mutafriches uniquement |
 | POST /api/donnees-externes/apis/refresh | ApiRefreshTokenGuard | Bypass si token absent | `X-Refresh-Token` (temps constant) |
 | GET /api/attributaire/sites | Aucun (lecture publique) | Ouvert | Ouvert, `ThrottlerGuard` global |
 
-CORS reflète uniquement nos origines, les dashboards ADEME et les deux variables ci-dessus (`construireOriginesCors`), plus toute origine locale en `development`. Les en-têtes de sécurité viennent de `helmet` ; la CSP se limite à `frame-ancestors` (nous-mêmes, `INTEGRATEURS_IFRAME`, les deux variables), les autres directives restent à écrire.
+CORS reflète nos origines, les dashboards ADEME, `ALLOWED_ORIGINS` (`construireOriginesCors`) et les domaines déclarés du registre (`estOrigineCorsDeclaree`), plus toute origine locale en `development`. Les en-têtes de sécurité viennent de `helmet` ; la CSP se limite à `frame-ancestors` (nous-mêmes, `INTEGRATEURS_IFRAME`, `ALLOWED_ORIGINS`) : un domaine déclaré pour l'API ne suffit pas à nous embarquer. Les autres directives restent à écrire.
+
+### Contacts des déclarants (Brevo)
+
+L'adresse e-mail d'une déclaration part dans Brevo (`POST /v3/contacts`) et n'est **jamais** écrite en base ni dans les logs (ADR-0055). Une liste par environnement ; l'usage est porté par un attribut booléen par canal (`USAGE_API`, `USAGE_QGIS`, `USAGE_PAGE`, `USAGE_IFRAME`), cumulable parce qu'une mise à jour ne touche que les attributs transmis. Ces quatre attributs et `STRUCTURE`, `TYPE_STRUCTURE`, `DOMAINE` doivent exister dans le compte Brevo (un attribut absent est ignoré sans erreur).
+
+- `BREVO_API_KEY` : clé d'API Brevo
+- `BREVO_LISTE_ID` : identifiant de la liste de l'environnement (une en staging, une en production)
+- Sans clé ou sans liste (local, review apps), le contact n'est pas transmis : la déclaration est acceptée et la ligne garde `contact_enregistre = false`
 
 ### Contact multisites (calendrier ZCal)
 
@@ -581,8 +600,15 @@ Pièges rencontrés en session. Chaque entrée documente un piège pour éviter 
 
 ### Un intégrateur API est identifié par l'hôte de son `Origin`, pas par `?integrateur=`
 
+- La même valeur est dans `integrateurs.cle_stats` (ADR-0055) : hôte pour l'API, `qgis:<hôte>`
+  quand l'extension QGIS se nomme par l'en-tête `X-Mutafriches-Client`, `partenaire:<slug>` pour
+  une page, identifiant `integrator` pour une iframe. Joindre sur cette colonne plutôt que
+  d'ajouter un `CASE`.
+- L'hôte standalone se compare par **égalité stricte**. Jusqu'en novembre 2026, une recherche de
+  sous-chaîne classait `qgis.mutafriches.beta.gouv.fr` en `SITE_STANDALONE` sans intégrateur :
+  les appels de l'extension QGIS antérieurs sont comptés avec le site.
 - `OrigineDetectionService` ne lit `?integrateur=` qu'avec `iframe=true`. En appel API direct,
-  `integrateur` vaut l'hôte de l'origine whitelistée (`benefriches.ademe.fr`) : les buckets
+  `integrateur` vaut l'hôte de l'origine déclarée (`benefriches.ademe.fr`) : les buckets
   Metabase (`ILIKE '%benefriches%'`…) reposent sur cette valeur. Ne pas promettre de slug à
   un intégrateur, et ne pas élargir `?integrateur=` sans réécrire ces buckets (ADR-0030).
 - Jusqu'en septembre 2026, ces appels étaient classés `IFRAME_INTEGREE` à tort (l'iframe tourne
@@ -681,7 +707,7 @@ Pièges rencontrés en session. Chaque entrée documente un piège pour éviter 
   "db:epci:import": "node dist/src/scripts/import-epci-communes.js"
   ```
   Pas de `ts-node -r tsconfig-paths/register src/scripts/...ts` qui ne tournera qu'en dev (et même en dev il faut avoir un `dist/` à jour : `pnpm --filter api build:nest`). En prod, Scalingo a compilé `dist/` au build avant le prune, donc tout est disponible.
-- **Les imports de référentiels sont lancés au déploiement par `import-all`** (ADR-0050) : le `postdeploy` enchaîne `drizzle-kit migrate` (en `dependencies`, donc non pruné) puis `node dist/src/scripts/import-all.js`, qui parcourt `IMPORT_DATASETS` et n'importe que les référentiels dont la table est **vide**, puis `peupler-attributaire.js --si-necessaire` (table attributaire remplie si vide, sinon recalcul des lignes d'une ancienne version d'algorithme, ADR-0053). Un référentiel déjà rempli n'est **jamais** mis à jour par ce biais : pour un nouveau millésime ou un fichier commité modifié, lancer à la main `scalingo --app <app> run "pnpm db:import:all --force=<clé>"` (ou `pnpm db:xxx:import`).
+- **Les imports de référentiels sont lancés au déploiement par `import-all`** (ADR-0050) : le `postdeploy` enchaîne `drizzle-kit migrate` (en `dependencies`, donc non pruné), `node dist/src/scripts/synchroniser-integrateurs.js` (reprise du registre des intégrateurs, ADR-0055 : seule étape dont l'échec **bloque** le déploiement, un registre vide refuserait tous les intégrateurs) puis `node dist/src/scripts/import-all.js`, qui parcourt `IMPORT_DATASETS` et n'importe que les référentiels dont la table est **vide**, puis `peupler-attributaire.js --si-necessaire` (table attributaire remplie si vide, sinon recalcul des lignes d'une ancienne version d'algorithme, ADR-0053). Un référentiel déjà rempli n'est **jamais** mis à jour par ce biais : pour un nouveau millésime ou un fichier commité modifié, lancer à la main `scalingo --app <app> run "pnpm db:import:all --force=<clé>"` (ou `pnpm db:xxx:import`).
 - Un import en échec (data.gouv.fr indisponible) **ne bloque pas** le déploiement : il est loggué en fin de `postdeploy` et la table reste vide, ce que signalent `GET /donnees-externes/imports` (`hasEmptyImport`) et l'alerte « référentiel VIDE » des repositories. Relancer `pnpm db:import:all` ensuite.
 
 ## Points d'attention
