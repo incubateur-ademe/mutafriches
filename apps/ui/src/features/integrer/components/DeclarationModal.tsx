@@ -1,5 +1,8 @@
+import type { ReactNode } from "react";
+import { Link } from "react-router-dom";
 import { CanalIntegrateur } from "@mutafriches/shared-types";
 import { ModalInfo } from "../../../shared/components/common/ModalInfo";
+import { ROUTES } from "../../../shared/config/routes.config";
 import { FormulaireDeclaration } from "./FormulaireDeclaration";
 
 export type CanalModale = CanalIntegrateur.API | CanalIntegrateur.PAGE;
@@ -24,9 +27,16 @@ interface DeclarationModalProps {
   canal: CanalModale | null;
   onClose: () => void;
   onRendezVous: () => void;
+  // Première action après une déclaration API ; par défaut, le lien vers la documentation
+  suiteApi?: ReactNode;
 }
 
-export function DeclarationModal({ canal, onClose, onRendezVous }: DeclarationModalProps) {
+export function DeclarationModal({
+  canal,
+  onClose,
+  onRendezVous,
+  suiteApi,
+}: DeclarationModalProps) {
   // Le dernier canal ouvert reste affiché pendant l'animation de fermeture.
   const contenu = CONTENUS[canal ?? CanalIntegrateur.API];
 
@@ -44,6 +54,16 @@ export function DeclarationModal({ canal, onClose, onRendezVous }: DeclarationMo
           key={canal}
           canal={canal}
           libelleEnvoi={contenu.envoi}
+          suite={
+            canal === CanalIntegrateur.API
+              ? (suiteApi ?? (
+                  // La modale est refermée avant de changer de page, pour libérer le défilement.
+                  <Link to={ROUTES.DOCUMENTATION_API} className="fr-btn" onClick={onClose}>
+                    Lire la documentation de l'API
+                  </Link>
+                ))
+              : undefined
+          }
           onRendezVous={onRendezVous}
         />
       )}

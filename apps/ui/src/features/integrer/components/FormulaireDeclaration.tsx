@@ -1,6 +1,7 @@
 import { FormEvent, ReactNode, useId, useState } from "react";
 import { Link } from "react-router-dom";
 import {
+  StatutIntegrateur,
   TYPES_STRUCTURE,
   TYPE_STRUCTURE_LABELS,
   type CanalIntegrateur,
@@ -24,6 +25,8 @@ import {
 interface FormulaireDeclarationProps {
   canal: CanalIntegrateur;
   libelleEnvoi: string;
+  // Première action proposée une fois l'accès actif : la suite logique du parcours
+  suite?: ReactNode;
   // Affiche, après l'envoi, un bouton pour prendre rendez-vous avec l'équipe
   onRendezVous?: () => void;
 }
@@ -57,6 +60,7 @@ function Champ({ id, label, aide, erreur, children }: ChampProps) {
 export function FormulaireDeclaration({
   canal,
   libelleEnvoi,
+  suite,
   onRendezVous,
 }: FormulaireDeclarationProps) {
   const prefixe = useId();
@@ -100,15 +104,16 @@ export function FormulaireDeclaration({
           <h3 className="fr-alert__title">{confirmation.titre}</h3>
           <p>{confirmation.texte}</p>
         </div>
-        {onRendezVous && (
-          <button
-            type="button"
-            className="fr-btn fr-btn--secondary fr-mt-2w"
-            onClick={onRendezVous}
-          >
-            Prendre rendez-vous avec l'équipe
-          </button>
-        )}
+        <ul className="fr-btns-group fr-btns-group--inline-md fr-mt-2w">
+          {suite && reponse.statut === StatutIntegrateur.ACTIF && <li>{suite}</li>}
+          {onRendezVous && (
+            <li>
+              <button type="button" className="fr-btn fr-btn--secondary" onClick={onRendezVous}>
+                Prendre rendez-vous avec l'équipe
+              </button>
+            </li>
+          )}
+        </ul>
       </div>
     );
   }

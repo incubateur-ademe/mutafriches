@@ -11,7 +11,7 @@ import { DsfrTabs } from "../../../shared/components/dsfr/DsfrTabs";
 import { ROUTES } from "../../../shared/config/routes.config";
 import { ContactMultisitesModal } from "../../resultats/components/ContactMultisitesModal";
 import { BlocCode } from "../components/BlocCode";
-import { FormulaireDeclaration } from "../components/FormulaireDeclaration";
+import { DeclarationModal } from "../components/DeclarationModal";
 import { PageDocumentation, SectionDocumentation } from "../components/PageDocumentation";
 import {
   CRITERES_TERRAIN,
@@ -160,6 +160,40 @@ const APPELS: Appel[] = [
   },
 ];
 
+interface SituationDomaine {
+  cas: string;
+  code?: string;
+  reponse: string;
+  action: string;
+}
+
+// Les trois refus possibles tiennent à l'en-tête Origin : le tableau dit lequel correspond à quoi.
+const SITUATIONS_DOMAINE: SituationDomaine[] = [
+  {
+    cas: "Domaine déclaré, et envoyé tel quel dans Origin",
+    reponse: "Appel accepté",
+    action: "Rien : passez à votre première analyse.",
+  },
+  {
+    cas: "Domaine jamais déclaré",
+    code: "403 Origin not allowed",
+    reponse: "Appel refusé",
+    action: "Déclarez-le : l'appel suivant est accepté.",
+  },
+  {
+    cas: "Domaine déclaré, mais en-tête différent (www. en plus ou en moins, http au lieu de https, sous-domaine)",
+    code: "403 Origin not allowed",
+    reponse: "Appel refusé",
+    action: "Envoyez exactement le domaine déclaré, ou déclarez aussi celui-ci.",
+  },
+  {
+    cas: "Aucun en-tête Origin, cas d'un appel depuis un serveur ou un script",
+    code: "403 Origin required",
+    reponse: "Appel refusé",
+    action: "Ajoutez vous-même l'en-tête Origin, avec votre domaine déclaré.",
+  },
+];
+
 interface ErreurCourante {
   code: string;
   message: string;
@@ -290,6 +324,7 @@ function ARetenir({ children }: { children: ReactNode }) {
 
 export function DocumentationApiPage() {
   const [contactOuvert, setContactOuvert] = useState(false);
+  const [declarationOuverte, setDeclarationOuverte] = useState(false);
 
   return (
     <PageDocumentation
@@ -358,26 +393,47 @@ export function DocumentationApiPage() {
 
       <SectionDocumentation id="acces" titre="Avant de commencer">
         <p>
-          L'API fonctionne <strong>sans clé ni jeton</strong>. Une seule démarche : déclarer le
-          domaine depuis lequel partiront vos appels (par exemple{" "}
-          <code>https://mon-service.gouv.fr</code>). Il est autorisé dès l'envoi du formulaire.
+          L'API fonctionne <strong>sans clé ni jeton</strong>. Elle reconnaît vos appels au domaine
+          d'où ils partent, lu dans l'en-tête HTTP <code>Origin</code> (par exemple{" "}
+          <code>Origin: https://mon-service.gouv.fr</code>). Une seule démarche : déclarer ce
+          domaine, une fois. Il est autorisé dès la déclaration.
         </p>
-        <div className="fr-grid-row">
-          <div className="fr-col-12 fr-col-md-8">
-            <FormulaireDeclaration
-              canal={CanalIntegrateur.API}
-              libelleEnvoi="Déclarer mon domaine"
-              onRendezVous={() => setContactOuvert(true)}
-            />
-          </div>
-        </div>
+        <button type="button" className="fr-btn" onClick={() => setDeclarationOuverte(true)}>
+          Déclarer mon domaine
+        </button>
+
+        <h3 className="fr-h6 fr-mt-4w">Ce que répond l'API selon votre situation</h3>
+        <Tableau
+          legende="Réponse de l'API aux deux appels d'analyse selon le domaine envoyé"
+          colonnes={["Votre situation", "Réponse de l'API", "Que faire"]}
+        >
+          {SITUATIONS_DOMAINE.map((situation) => (
+            <tr key={situation.cas}>
+              <td className="fr-cell--multiline">{situation.cas}</td>
+              <td className="fr-cell--multiline">
+                {situation.code ? <code>{situation.code}</code> : situation.reponse}
+                {situation.code && (
+                  <>
+                    <br />
+                    {situation.reponse}
+                  </>
+                )}
+              </td>
+              <td className="fr-cell--multiline">{situation.action}</td>
+            </tr>
+          ))}
+        </Tableau>
+        <p>
+          Vous ne savez plus si votre domaine est déclaré ? Déclarez-le à nouveau : rien n'est créé
+          en double, et le formulaire vous indique qu'il l'était déjà.
+        </p>
         <ul className="fr-mt-2w">
           <li>
             Adresse de l'API : <code>{URL_PRODUCTION}</code>
           </li>
           <li>Les échanges se font en JSON.</li>
           <li>
-            Sans domaine déclaré, les deux appels d'analyse sont refusés ; les lectures restent
+            Seuls les deux appels d'analyse demandent un domaine déclaré ; les lectures restent
             ouvertes à tous.
           </li>
         </ul>
@@ -715,6 +771,24 @@ export function DocumentationApiPage() {
           Une question technique ? Écrivez-nous à <a href={`mailto:${CONTACT}`}>{CONTACT}</a>.
         </p>
       </SectionDocumentation>
+
+      <DeclarationModal
+        canal={declarationOuverte ? CanalIntegrateur.API : null}
+        onClose={() => setDeclarationOuverte(false)}
+        onRendezVous={() => {
+          setDeclarationOuverte(false);
+          setContactOuvert(true);
+        }}
+        suiteApi={
+          <a
+            className="fr-btn"
+            href="#premiere-analyse"
+            onClick={() => setDeclarationOuverte(false)}
+          >
+            Lancer votre première analyse
+          </a>
+        }
+      />
 
       <ContactMultisitesModal
         isOpen={contactOuvert}
