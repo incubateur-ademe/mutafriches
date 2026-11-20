@@ -89,7 +89,7 @@ function SourcesHorsCalcul({ onClicLienSource }: SourcesCriteresTableProps) {
         Ces données sont restituées dans chaque analyse à titre d'information. Elles n'entrent ni
         dans les indices de mutabilité ni dans l'indice de fiabilité.
       </p>
-      <div className="fr-table fr-table--sm fr-mb-0">
+      <div className="fr-table fr-table--sm fr-table--bordered fr-mb-0">
         <div className="fr-table__wrapper">
           <div className="fr-table__container">
             <div className="fr-table__content">
@@ -157,7 +157,7 @@ function SourcesHorsCalcul({ onClicLienSource }: SourcesCriteresTableProps) {
 export function SourcesCriteresTable({ onClicLienSource }: SourcesCriteresTableProps) {
   return (
     <>
-      <div className="fr-table fr-table--sm fr-mb-0">
+      <div className="fr-table fr-table--sm fr-table--bordered fr-mb-0">
         <div className="fr-table__wrapper">
           <div className={CLASSES_CONTENEUR_TABLEAU}>
             <div className="fr-table__content">
