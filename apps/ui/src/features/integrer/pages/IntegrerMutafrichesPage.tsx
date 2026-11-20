@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { CanalIntegrateur } from "@mutafriches/shared-types";
 import { Layout } from "../../../shared/components/layout/Layout";
 import { ROUTES } from "../../../shared/config/routes.config";
 import { ContactMultisitesModal } from "../../resultats/components/ContactMultisitesModal";
+import { DeclarationModal, type CanalModale } from "../components/DeclarationModal";
 import { SolutionIntegrationCard } from "../components/SolutionIntegrationCard";
 
 const URL_BENEFRICHES = "https://benefriches.ademe.fr";
@@ -16,8 +18,8 @@ const IMAGES = {
 } as const;
 
 const MESSAGES_CONTACT = {
-  api: "Choisissez un créneau pour demander un accès à l'API Mutafriches à l'équipe.",
-  page: "Choisissez un créneau pour demander une page Mutafriches personnalisée à l'équipe.",
+  api: "Choisissez un créneau pour parler de votre intégration de l'API avec l'équipe.",
+  page: "Choisissez un créneau pour présenter votre liste de sites à l'équipe.",
   aide: "Choisissez un créneau pour décrire vos outils et vos sites à l'équipe, qui vous orientera vers la solution adaptée.",
 } as const;
 
@@ -25,6 +27,7 @@ type MotifContact = keyof typeof MESSAGES_CONTACT;
 
 export function IntegrerMutafrichesPage() {
   const [motifContact, setMotifContact] = useState<MotifContact | null>(null);
+  const [declaration, setDeclaration] = useState<CanalModale | null>(null);
 
   return (
     <Layout>
@@ -62,8 +65,12 @@ export function IntegrerMutafrichesPage() {
           action={
             <ul className="fr-btns-group fr-btns-group--inline-md">
               <li>
-                <button type="button" className="fr-btn" onClick={() => setMotifContact("api")}>
-                  Demander l'accès
+                <button
+                  type="button"
+                  className="fr-btn"
+                  onClick={() => setDeclaration(CanalIntegrateur.API)}
+                >
+                  Déclarer mon utilisation
                 </button>
               </li>
               <li>
@@ -89,7 +96,11 @@ export function IntegrerMutafrichesPage() {
               tags={["Utilisation ponctuelle", "Nombre de sites limité"]}
               image={IMAGES.page}
               action={
-                <button type="button" className="fr-btn" onClick={() => setMotifContact("page")}>
+                <button
+                  type="button"
+                  className="fr-btn"
+                  onClick={() => setDeclaration(CanalIntegrateur.PAGE)}
+                >
                   Demander une page personnalisée
                 </button>
               }
@@ -153,6 +164,15 @@ export function IntegrerMutafrichesPage() {
           </button>
         </div>
       </div>
+
+      <DeclarationModal
+        canal={declaration}
+        onClose={() => setDeclaration(null)}
+        onRendezVous={() => {
+          setMotifContact(declaration === CanalIntegrateur.PAGE ? "page" : "api");
+          setDeclaration(null);
+        }}
+      />
 
       <ContactMultisitesModal
         isOpen={motifContact !== null}

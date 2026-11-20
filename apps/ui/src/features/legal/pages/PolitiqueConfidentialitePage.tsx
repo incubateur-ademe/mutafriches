@@ -40,7 +40,14 @@ export const PolitiqueConfidentialitePage: React.FC = () => {
         </li>
         <li>
           votre <strong>adresse e-mail</strong>, uniquement si vous nous l'indiquez via une demande
-          de contact ; elle sert à vous répondre et n'est pas conservée dans nos statistiques.
+          de contact ; elle sert à vous répondre et n'est pas conservée dans nos statistiques ;
+        </li>
+        <li>
+          le <strong>nom de votre structure</strong>, son type, votre{" "}
+          <strong>nom de domaine</strong> et votre <strong>adresse e-mail</strong>, uniquement si
+          vous déclarez utiliser l'API, l'extension QGIS ou l'iframe, ou si vous demandez une page
+          personnalisée. L'adresse e-mail est conservée dans notre outil d'e-mailing, pas dans la
+          base de Mutafriches.
         </li>
       </ul>
 
@@ -51,7 +58,11 @@ export const PolitiqueConfidentialitePage: React.FC = () => {
           mesurer l'usage du service et l'améliorer (statistiques anonymes, dont la part
           d'utilisateurs récurrents et leur provenance) ;
         </li>
-        <li>répondre aux demandes de contact que vous nous adressez.</li>
+        <li>répondre aux demandes de contact que vous nous adressez ;</li>
+        <li>
+          vous informer des évolutions du service que vous avez déclaré utiliser, et vous
+          recontacter à ce sujet.
+        </li>
       </ul>
 
       <h2 className="fr-h5">4. Sur quelle base légale ?</h2>
@@ -66,7 +77,9 @@ export const PolitiqueConfidentialitePage: React.FC = () => {
         Les données d'usage (analyses, événements et identifiant visiteur anonyme) sont conservées
         pendant une durée maximale de <strong>36 mois</strong>. Les adresses e-mail des demandes de
         contact sont conservées le temps nécessaire au traitement de la demande, puis archivées
-        conformément aux délais légaux applicables.
+        conformément aux délais légaux applicables. L'adresse e-mail d'une déclaration d'utilisation
+        est conservée au plus <strong>36 mois</strong> après cette déclaration ; vous pouvez
+        demander son retrait à tout moment.
       </p>
       <p className="fr-text--sm fr-mb-2w">
         Cette durée est provisoire et fera l'objet d'une politique de purge dédiée.
@@ -76,8 +89,9 @@ export const PolitiqueConfidentialitePage: React.FC = () => {
       <p>
         Seules les personnes habilitées de l'équipe Mutafriches et de l'ADEME accèdent aux données,
         pour les finalités décrites ci-dessus. L'hébergement est assuré par Scalingo (France, Union
-        européenne). Aucune donnée n'est cédée à des tiers à des fins commerciales ni transférée
-        hors de l'Union européenne.
+        européenne). Les adresses e-mail des déclarations d'utilisation sont confiées à Brevo,
+        sous-traitant chargé de l'envoi de nos e-mails. Aucune donnée n'est cédée à des tiers à des
+        fins commerciales ni transférée hors de l'Union européenne.
       </p>
 
       <h2 className="fr-h5">7. Cookies et traceurs</h2>

@@ -1,6 +1,7 @@
 import { ReactNode, useState } from "react";
 import { Link } from "react-router-dom";
 import {
+  CanalIntegrateur,
   CHAMPS_COMPLEMENTAIRES_REQUIS,
   MAX_PARCELLES_PAR_SITE_API,
   USAGE_LABELS,
@@ -10,6 +11,7 @@ import { DsfrTabs } from "../../../shared/components/dsfr/DsfrTabs";
 import { ROUTES } from "../../../shared/config/routes.config";
 import { ContactMultisitesModal } from "../../resultats/components/ContactMultisitesModal";
 import { BlocCode } from "../components/BlocCode";
+import { FormulaireDeclaration } from "../components/FormulaireDeclaration";
 import { PageDocumentation, SectionDocumentation } from "../components/PageDocumentation";
 import {
   CRITERES_TERRAIN,
@@ -39,7 +41,7 @@ import {
 
 const CONTACT = "contact@mutafriches.beta.gouv.fr";
 const MESSAGE_CONTACT =
-  "Choisissez un créneau pour demander un accès à l'API Mutafriches à l'équipe.";
+  "Choisissez un créneau pour parler de votre intégration de l'API avec l'équipe.";
 
 const NOMBRE_CRITERES_TERRAIN = CHAMPS_COMPLEMENTAIRES_REQUIS.length;
 const NOMBRE_USAGES = Object.keys(USAGE_LABELS).length;
@@ -171,13 +173,13 @@ const ERREURS: ErreurCourante[] = [
     message: "Origin required",
     cause:
       "Un appel POST est parti sans en-tête Origin, cas habituel d'un appel serveur à serveur.",
-    solution: "Ajoutez l'en-tête Origin avec votre domaine autorisé.",
+    solution: "Ajoutez l'en-tête Origin avec votre domaine déclaré.",
   },
   {
     code: "403",
     message: "Origin not allowed",
-    cause: "Votre domaine ne figure pas dans la liste autorisée.",
-    solution: "Demandez son ajout à l'équipe Mutafriches.",
+    cause: "Votre domaine n'a pas été déclaré, ou l'en-tête ne lui correspond pas exactement.",
+    solution: "Déclarez-le dans le formulaire de la section « Avant de commencer ».",
   },
   {
     code: "400",
@@ -356,29 +358,26 @@ export function DocumentationApiPage() {
 
       <SectionDocumentation id="acces" titre="Avant de commencer">
         <p>
-          L'API fonctionne <strong>sans clé ni jeton</strong>. Une seule démarche : nous indiquer le
+          L'API fonctionne <strong>sans clé ni jeton</strong>. Une seule démarche : déclarer le
           domaine depuis lequel partiront vos appels (par exemple{" "}
-          <code>https://mon-service.gouv.fr</code>), pour que nous l'autorisions.
+          <code>https://mon-service.gouv.fr</code>). Il est autorisé dès l'envoi du formulaire.
         </p>
-        <ul className="fr-btns-group fr-btns-group--inline-md">
-          <li>
-            <button type="button" className="fr-btn" onClick={() => setContactOuvert(true)}>
-              Demander l'accès
-            </button>
-          </li>
-          <li>
-            <a className="fr-btn fr-btn--secondary" href={`mailto:${CONTACT}`}>
-              Écrire à l'équipe
-            </a>
-          </li>
-        </ul>
+        <div className="fr-grid-row">
+          <div className="fr-col-12 fr-col-md-8">
+            <FormulaireDeclaration
+              canal={CanalIntegrateur.API}
+              libelleEnvoi="Déclarer mon domaine"
+              onRendezVous={() => setContactOuvert(true)}
+            />
+          </div>
+        </div>
         <ul className="fr-mt-2w">
           <li>
             Adresse de l'API : <code>{URL_PRODUCTION}</code>
           </li>
           <li>Les échanges se font en JSON.</li>
           <li>
-            Sans domaine autorisé, les deux appels d'analyse sont refusés ; les lectures restent
+            Sans domaine déclaré, les deux appels d'analyse sont refusés ; les lectures restent
             ouvertes à tous.
           </li>
         </ul>
@@ -387,7 +386,7 @@ export function DocumentationApiPage() {
             <p>
               Un navigateur indique tout seul le domaine d'où part l'appel, dans l'en-tête HTTP{" "}
               <code>Origin</code>. Un serveur ne le fait pas : ajoutez cet en-tête vous-même, avec
-              votre domaine autorisé.
+              votre domaine déclaré.
             </p>
             <BlocCode titre="Appel depuis un serveur">{EXEMPLE_ORIGINE}</BlocCode>
             <p className="fr-mt-2w">
