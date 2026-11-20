@@ -5,7 +5,6 @@ import {
   StatutIntegrateur,
   type DeclarationIntegrateurInput,
   type DeclarationIntegrateurOutput,
-  type TrancheNbSites,
   type TypeStructure,
 } from "@mutafriches/shared-types";
 
@@ -19,8 +18,6 @@ export interface SaisieDeclaration {
   nom: string;
   email: string;
   domaine: string;
-  departement: string;
-  nbSitesEstime: TrancheNbSites | "";
   // Champ piège, invisible : seul un robot le remplit.
   telephone: string;
 }
@@ -32,17 +29,14 @@ export const SAISIE_VIDE: SaisieDeclaration = {
   nom: "",
   email: "",
   domaine: "",
-  departement: "",
-  nbSitesEstime: "",
   telephone: "",
 };
 
 export type ChampDeclaration =
-  "structure" | "typeStructure" | "prenom" | "nom" | "email" | "domaine" | "departement";
+  "structure" | "typeStructure" | "prenom" | "nom" | "email" | "domaine";
 export type ErreursDeclaration = Partial<Record<ChampDeclaration, string>>;
 
 const FORMAT_EMAIL = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
-const FORMAT_DEPARTEMENT = /^(\d{2,3}|2[ABab])$/;
 
 export const LIBELLE_DOMAINE: Record<CanalIntegrateur, { label: string; aide: string }> = {
   [CanalIntegrateur.API]: {
@@ -90,13 +84,6 @@ export function validerDeclaration(
     erreurs.domaine =
       "Indiquez un nom de domaine complet, avec son extension, par exemple mon-service.gouv.fr.";
   }
-  if (
-    canal === CanalIntegrateur.PAGE &&
-    saisie.departement.trim() &&
-    !FORMAT_DEPARTEMENT.test(saisie.departement.trim())
-  ) {
-    erreurs.departement = "Indiquez un numéro de département, par exemple 88 ou 2A.";
-  }
 
   return erreurs;
 }
@@ -106,9 +93,6 @@ export function construireDeclaration(
   canal: CanalIntegrateur,
   saisie: SaisieDeclaration,
 ): DeclarationIntegrateurInput {
-  const estPage = canal === CanalIntegrateur.PAGE;
-  const departement = saisie.departement.trim().toUpperCase();
-
   return {
     canal,
     structure: saisie.structure.trim(),
@@ -117,8 +101,6 @@ export function construireDeclaration(
     nom: saisie.nom.trim(),
     email: saisie.email.trim(),
     ...(demandeUnDomaine(canal) ? { domaine: saisie.domaine.trim() } : {}),
-    ...(estPage && departement ? { departement } : {}),
-    ...(estPage && saisie.nbSitesEstime ? { nbSitesEstime: saisie.nbSitesEstime } : {}),
     ...(saisie.telephone ? { telephone: saisie.telephone } : {}),
   };
 }

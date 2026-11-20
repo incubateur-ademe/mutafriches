@@ -65,26 +65,11 @@ describe("validerDeclaration", () => {
   it("ne demande pas de domaine pour une page personnalisée", () => {
     expect(validerDeclaration(CanalIntegrateur.PAGE, { ...SAISIE, domaine: "" })).toEqual({});
   });
-
-  it("contrôle le département d'une page seulement s'il est saisi", () => {
-    const page = { ...SAISIE, domaine: "" };
-    expect(validerDeclaration(CanalIntegrateur.PAGE, { ...page, departement: "2a" })).toEqual({});
-    expect(validerDeclaration(CanalIntegrateur.PAGE, { ...page, departement: "971" })).toEqual({});
-    expect(
-      validerDeclaration(CanalIntegrateur.PAGE, { ...page, departement: "Vosges" }),
-    ).toHaveProperty("departement");
-  });
 });
 
 describe("construireDeclaration", () => {
   it("nettoie la saisie et n'envoie que les champs du canal API", () => {
-    expect(
-      construireDeclaration(CanalIntegrateur.API, {
-        ...SAISIE,
-        departement: "88",
-        nbSitesEstime: "10-a-50",
-      }),
-    ).toEqual({
+    expect(construireDeclaration(CanalIntegrateur.API, SAISIE)).toEqual({
       canal: "api",
       structure: "Métropole de X",
       typeStructure: "collectivite",
@@ -95,22 +80,14 @@ describe("construireDeclaration", () => {
     });
   });
 
-  it("envoie département et tranche pour une page, sans domaine", () => {
-    expect(
-      construireDeclaration(CanalIntegrateur.PAGE, {
-        ...SAISIE,
-        departement: "2a",
-        nbSitesEstime: "10-a-50",
-      }),
-    ).toEqual({
+  it("n'envoie que l'identité et la structure pour une page, sans domaine", () => {
+    expect(construireDeclaration(CanalIntegrateur.PAGE, SAISIE)).toEqual({
       canal: "page",
       structure: "Métropole de X",
       typeStructure: "collectivite",
       prenom: "Camille",
       nom: "Martin",
       email: "sig@exemple.fr",
-      departement: "2A",
-      nbSitesEstime: "10-a-50",
     });
   });
 

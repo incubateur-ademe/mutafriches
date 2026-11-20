@@ -1,11 +1,9 @@
 import { FormEvent, ReactNode, useId, useState } from "react";
 import { Link } from "react-router-dom";
 import {
-  CanalIntegrateur,
-  TRANCHES_NB_SITES,
-  TRANCHE_NB_SITES_LABELS,
   TYPES_STRUCTURE,
   TYPE_STRUCTURE_LABELS,
+  type CanalIntegrateur,
   type DeclarationIntegrateurOutput,
 } from "@mutafriches/shared-types";
 import { ROUTES } from "../../../shared/config/routes.config";
@@ -182,48 +180,8 @@ export function FormulaireDeclaration({
         </Champ>
       )}
 
-      {canal === CanalIntegrateur.PAGE && (
-        <>
-          <Champ
-            id={`${prefixe}-departement`}
-            label="Département concerné (facultatif)"
-            aide="Numéro du département, par exemple 88"
-            erreur={erreurs.departement}
-          >
-            {(attributs) => (
-              <input
-                {...attributs}
-                className="fr-input"
-                type="text"
-                maxLength={3}
-                value={saisie.departement}
-                onChange={(event) => modifier("departement", event.target.value)}
-              />
-            )}
-          </Champ>
-
-          <div className="fr-select-group">
-            <label className="fr-label" htmlFor={`${prefixe}-sites`}>
-              Nombre de sites à étudier (facultatif)
-            </label>
-            <select
-              id={`${prefixe}-sites`}
-              className="fr-select"
-              value={saisie.nbSitesEstime}
-              onChange={(event) => modifier("nbSitesEstime", event.target.value)}
-            >
-              <option value="">Je ne sais pas encore</option>
-              {TRANCHES_NB_SITES.map((tranche) => (
-                <option key={tranche} value={tranche}>
-                  {TRANCHE_NB_SITES_LABELS[tranche]}
-                </option>
-              ))}
-            </select>
-          </div>
-        </>
-      )}
-
-      <div className="fr-grid-row fr-grid-row--gutters">
+      {/* La gouttière retire la marge basse du dernier champ : on la rend, au pas des autres. */}
+      <div className="fr-grid-row fr-grid-row--gutters fr-mb-3v">
         <div className="fr-col-12 fr-col-md-6">
           <Champ id={`${prefixe}-prenom`} label="Votre prénom" erreur={erreurs.prenom}>
             {(attributs) => (
