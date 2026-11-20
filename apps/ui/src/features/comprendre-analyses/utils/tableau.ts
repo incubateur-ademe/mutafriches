@@ -7,4 +7,8 @@
 // au conteneur et élargissent la page.
 export const CLASSES_CONTENEUR_TABLEAU =
   "fr-table__container relative max-h-[calc(100vh-12rem)] min-[78em]:max-h-none min-[78em]:overflow-visible!";
-export const CLASSES_ENTETE_TABLEAU = "sticky! top-[0px] min-[78em]:top-[3rem] z-[2]";
+// Le cadre du tableau est tracé par le DSFR sur son conteneur : l'en-tête collant, placé
+// au-dessus, en masque le haut et la gauche. Il porte donc ses propres traits, en ombre interne
+// pour qu'ils le suivent quand il colle (une bordure CSS se perd avec border-collapse).
+export const CLASSES_ENTETE_TABLEAU =
+  "sticky! top-[0px] min-[78em]:top-[3rem] z-[2] [&_th]:shadow-[inset_0_1px_0_var(--border-contrast-grey)] [&_th:first-child]:shadow-[inset_1px_0_0_var(--border-contrast-grey),inset_0_1px_0_var(--border-contrast-grey)]";

@@ -9,7 +9,7 @@ import { IMPACT_TAG_VARIANT, Tag } from "@shared/components/tag";
 import { getUsageInfo } from "../../resultats/utils/usagesLabels.utils";
 import { CRITERES_PAR_COEFFICIENT, descriptionExclusion, libelleCritere } from "../utils/criteres";
 import { CLASSES_CONTENEUR_TABLEAU, CLASSES_ENTETE_TABLEAU } from "../utils/tableau";
-import { formatPoids, formatScore } from "../utils/format";
+import { avecCesures, formatPoids, formatScore } from "../utils/format";
 
 // Ordre des colonnes de la maquette
 const USAGES: UsageType[] = [
@@ -40,11 +40,12 @@ interface ScoreCellProps {
   exclusion?: ExclusionMatriceDoc;
 }
 
+// `fr-cell--center` : une classe utilitaire seule ne l'emporte pas sur l'alignement à gauche du DSFR.
 function ScoreCell({ score, exclusion }: ScoreCellProps) {
-  if (score === undefined) return <td className="text-center">—</td>;
+  if (score === undefined) return <td className="fr-cell--center">—</td>;
   const impact = getImpactCritere(score);
   return (
-    <td className="text-center">
+    <td className="fr-cell--center">
       <span className="inline-flex items-center gap-[0.25rem]">
         <Tag variant={IMPACT_TAG_VARIANT[impact.niveau]} className="fr-mb-0">
           <span aria-hidden="true">{formatScore(score)}</span>
@@ -62,10 +63,22 @@ export function DefinitionsCriteresTable() {
       <div className="fr-table__wrapper">
         <div className={CLASSES_CONTENEUR_TABLEAU}>
           <div className="fr-table__content">
-            <table>
+            {/* Disposition fixe : les quatre colonnes de texte ont une largeur, les sept usages,
+                sans largeur, se partagent le reste à parts égales. La largeur minimale garde le
+                défilement horizontal sous 78em, où la disposition fixe tasserait les colonnes. */}
+            <table className="w-full min-w-[69rem] table-fixed">
               <caption className="fr-sr-only">
                 Définition, coefficient et scores par usage de chaque critère
               </caption>
+              <colgroup>
+                <col className="w-[12.5%]" />
+                <col className="w-[15%]" />
+                <col className="w-[3.25rem]" />
+                <col className="w-[11%]" />
+                {USAGES.map((usage) => (
+                  <col key={usage} />
+                ))}
+              </colgroup>
               <thead className={CLASSES_ENTETE_TABLEAU}>
                 <tr>
                   <th scope="col">Critère</th>
@@ -73,13 +86,21 @@ export function DefinitionsCriteresTable() {
                   <th scope="col">Coef.</th>
                   <th scope="col">Valeur</th>
                   {USAGES.map((usage) => (
-                    <th key={usage} scope="col" className="fr-cell--multiline text-center">
+                    // Calé en haut, avec une marge : les pictos s'alignent quel que soit le nombre de lignes
+                    // du libellé, sans coller au bord de l'en-tête
+                    <th
+                      key={usage}
+                      scope="col"
+                      className="fr-cell--multiline fr-cell--center fr-cell--top fr-pt-3v px-[0.5rem]!"
+                    >
                       <img
                         src={getUsageInfo(usage).image}
                         alt=""
                         className="mx-auto h-[2rem] w-[2rem] object-contain"
                       />
-                      <span className="fr-text--xs fr-mb-0 block">{USAGE_LABELS[usage]}</span>
+                      <span className="fr-text--xs fr-mb-0 block">
+                        {avecCesures(USAGE_LABELS[usage])}
+                      </span>
                     </th>
                   ))}
                 </tr>
@@ -93,22 +114,22 @@ export function DefinitionsCriteresTable() {
                           <th
                             scope="rowgroup"
                             rowSpan={critere.lignes.length}
-                            className="fr-cell--multiline"
+                            className="fr-cell--multiline break-words"
                           >
                             {libelleCritere(critere)}
                           </th>
                           <td
                             rowSpan={critere.lignes.length}
-                            className="fr-cell--multiline fr-text--xs min-w-[10rem]"
+                            className="fr-cell--multiline fr-text--xs break-words"
                           >
                             {DEFINITIONS_CRITERES[critere.cle]}
                           </td>
-                          <td rowSpan={critere.lignes.length} className="text-center font-bold">
+                          <td rowSpan={critere.lignes.length} className="fr-cell--center font-bold">
                             {formatPoids(critere.poids)}
                           </td>
                         </>
                       )}
-                      <td className="fr-cell--multiline">{ligne.reponse}</td>
+                      <td className="fr-cell--multiline break-words">{ligne.reponse}</td>
                       {USAGES.map((usage) => (
                         <ScoreCell
                           key={usage}

@@ -9,6 +9,15 @@ export const formatScore = (score: number): string => {
   return score >= 1 ? `+${valeur}` : valeur;
 };
 
+// Césure discrète (U+00AD) : invisible tant que le mot tient sur sa ligne. Sans elle, le mot
+// le plus long d'un libellé d'usage impose sa largeur à la colonne et empêche de les égaliser.
+const CESURES: Record<string, string> = {
+  photovoltaïque: "photo\u00ADvoltaïque",
+};
+
+export const avecCesures = (libelle: string): string =>
+  Object.entries(CESURES).reduce((texte, [mot, coupe]) => texte.replace(mot, coupe), libelle);
+
 export const formatEvolution = (
   critere: Pick<CritereMatriceDoc, "versionAjout" | "versionsModification">,
 ): string => {
