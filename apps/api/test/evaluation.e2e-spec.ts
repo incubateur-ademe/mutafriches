@@ -7,13 +7,18 @@ import { EvaluationController } from "../src/evaluation/evaluation.controller";
 import { OrchestrateurService } from "../src/evaluation/services/orchestrateur.service";
 import { OrigineDetectionService } from "../src/shared/services/origine-detection.service";
 import { IntegrateurOriginGuard } from "../src/shared/guards";
+import { IntegrateursRegistreService } from "../src/integrateurs/integrateurs-registre.service";
+import { creerRegistreDeTest } from "../src/integrateurs/__test-helpers__/registre.mocks";
 import { createThrottledTestApp, describeThrottling } from "./helpers";
 
 // Origine valide pour les tests (Mutafriches prod)
 const VALID_ORIGIN = "https://mutafriches.beta.gouv.fr";
-// Origine d'un integrateur tiers, autorisée comme en production via la variable d'environnement
+// Origine d'un intégrateur tiers, déclarée dans le registre comme en production
 const VALID_INTEGRATOR_ORIGIN = "https://benefriches.ademe.fr";
-process.env.ALLOWED_INTEGRATOR_ORIGINS = VALID_INTEGRATOR_ORIGIN;
+const registreProvider = {
+  provide: IntegrateursRegistreService,
+  useFactory: () => creerRegistreDeTest([VALID_INTEGRATOR_ORIGIN]),
+};
 
 const mockMutabiliteOutput = {
   id: "eval-test-123",
@@ -69,6 +74,7 @@ describe("Evaluation E2E", () => {
         { provide: OrchestrateurService, useValue: mockOrchestrateurService },
         { provide: OrigineDetectionService, useValue: mockOrigineDetectionService },
         IntegrateurOriginGuard,
+        registreProvider,
       ],
     });
   });
@@ -221,6 +227,7 @@ describe("Evaluation E2E - Query params booleens", () => {
         { provide: OrchestrateurService, useValue: mocks.mockOrchestrateurService },
         { provide: OrigineDetectionService, useValue: mocks.mockOrigineDetectionService },
         IntegrateurOriginGuard,
+        registreProvider,
       ],
     });
   });
@@ -264,6 +271,7 @@ describe("Evaluation E2E - Securite Origin", () => {
         { provide: OrchestrateurService, useValue: mocks.mockOrchestrateurService },
         { provide: OrigineDetectionService, useValue: mocks.mockOrigineDetectionService },
         IntegrateurOriginGuard,
+        registreProvider,
       ],
     });
   });

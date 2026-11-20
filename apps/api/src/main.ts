@@ -10,12 +10,13 @@ import helmet from "helmet";
 import {
   construireFrameAncestors,
   construireOriginesCors,
-  estOrigineCorsAutorisee,
+  estOrigineCorsDeclaree,
   isEnvironnementNonDeclare,
   isProduction,
 } from "./shared/utils";
 import { buildSwaggerConfig, getSwaggerSetupOptions } from "./shared/swagger";
 import { getAppConfig } from "./config";
+import { IntegrateursRegistreService } from "./integrateurs/integrateurs-registre.service";
 import { SafeConsoleLogger } from "./shared/logger/safe-console-logger";
 
 async function bootstrap() {
@@ -58,13 +59,19 @@ async function bootstrap() {
       }),
     );
 
-    // CORS restreint à nos origines, aux dashboards ADEME et aux intégrateurs déclarés ; toute
-    // origine locale est acceptée en développement (port Vite glissant). Une origine hors liste
-    // serait de toute façon refusée par les guards : on cesse seulement de refléter « * ».
+    // CORS restreint à nos origines, aux dashboards ADEME et aux intégrateurs déclarés dans la
+    // table `integrateurs` ; toute origine locale est acceptée en développement (port Vite
+    // glissant). Une origine hors liste serait de toute façon refusée par les guards : on cesse
+    // seulement de refléter « * ».
     const originesCors = construireOriginesCors(config.origins);
+    const registre = app.get(IntegrateursRegistreService);
     app.enableCors({
-      origin: (origine: string | undefined, callback) =>
-        callback(null, estOrigineCorsAutorisee(origine, originesCors)),
+      origin: (origine: string | undefined, callback) => {
+        // Cache seul : ce middleware passe avant la limite de débit (ADR-0055).
+        void estOrigineCorsDeclaree(origine, originesCors, (declaree) =>
+          registre.estOrigineEnCache(declaree),
+        ).then((autorisee) => callback(null, autorisee));
+      },
       exposedHeaders: ["Content-Disposition", "X-Export-Rapport"],
     });
 

@@ -11,6 +11,7 @@ import { DonneesExternesModule } from "./donnees-externes/donnees-externes.modul
 import { CartofrichesModule } from "./cartofriches/cartofriches.module";
 import { MetabaseModule } from "./metabase/metabase.module";
 import { AttributaireModule } from "./attributaire/attributaire.module";
+import { IntegrateursModule } from "./integrateurs/integrateurs.module";
 import { DatabaseModule } from "./shared/database/database.module";
 import { SharedModule } from "./shared/shared.module";
 import { ConfigModule } from "./config";
@@ -26,6 +27,7 @@ import { ConfigModule } from "./config";
     ConfigModule,
     SharedModule,
     DatabaseModule,
+    IntegrateursModule,
     EnrichissementModule,
     EvaluationModule,
     EvenementsModule,

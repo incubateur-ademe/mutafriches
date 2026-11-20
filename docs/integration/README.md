@@ -54,7 +54,9 @@ Pour vos tests, utilisez l'intégrateur `"demo"` qui :
 
 ### Intégrateur de production
 
-Pour la production, contactez-nous à `contact@mutafriches.beta.gouv.fr` pour obtenir :
+Pour la production, demandez votre identifiant avec le formulaire de la page
+[Intégrer par iframe](https://mutafriches.beta.gouv.fr/integrer-mutafriches/iframe). L'équipe
+vous recontacte avec :
 
 - Votre identifiant d'intégrateur unique
 - L'autorisation de votre domaine
@@ -346,23 +348,29 @@ autorisés. Il n'y a **pas de clé d'API** : l'autorisation porte sur le header 
 requêtes. Les lectures (`GET /evaluation/{id}`, `GET /evaluation/metadata`,
 `GET /api/attributaire/sites`) sont ouvertes.
 
-Écrivez-nous à `contact@mutafriches.beta.gouv.fr` en précisant :
+**Déclarez votre domaine** avec le formulaire de la page
+[Utiliser l'API](https://mutafriches.beta.gouv.fr/integrer-mutafriches/api) : il est autorisé
+dès l'envoi, sans validation de notre part. Vous indiquez le nom de votre structure, une
+contact (prénom, nom et adresse e-mail, pour vous prévenir des évolutions de l'API) et :
 
-- l'**origine exacte** à autoriser, schéma compris (`https://exemple.fr`). La comparaison est
-  stricte : `https://www.exemple.fr` est une autre origine, et les sous-domaines ne sont pas
-  couverts implicitement ;
-- le **contexte d'appel** (page web ou serveur) ;
-- votre **usage** et votre **volumétrie** prévisionnelle.
+- le **domaine exact** depuis lequel partent vos appels (`exemple.fr`, en `https`, sans port).
+  La comparaison est stricte : `https://www.exemple.fr` est une autre origine, et les
+  sous-domaines ne sont pas couverts implicitement. Un hôte local ou une adresse IP ne se
+  déclarent pas.
+
+Le formulaire appelle `POST /api/integrateurs/declarations` (5 déclarations par heure et par
+adresse IP) ; redéclarer un domaine ne crée rien. Staging et production ont chacun leur
+registre : déclarez votre domaine sur l'environnement que vous appelez.
 
 Il n'y a pas d'identifiant d'intégrateur à demander : vos appels sont reconnus dans nos
-statistiques par l'origine autorisée. Le paramètre `?integrateur=` ne concerne que le mode
+statistiques par l'origine déclarée. Le paramètre `?integrateur=` ne concerne que le mode
 iframe.
 
 #### Appels serveur à serveur
 
 Si vos appels ne partent pas d'un navigateur (script, notebook, batch, poste de travail), aucun
 header `Origin` n'est envoyé par défaut et l'API répond `403 Origin required`. Posez-le
-vous-même, avec l'origine que nous avons autorisée :
+vous-même, avec l'origine que vous avez déclarée :
 
 ```bash
 curl -X POST "https://mutafriches.beta.gouv.fr/enrichissement" \
@@ -525,15 +533,16 @@ window.addEventListener('message', (event) => {
 | Erreur HTTPS | En production, l'URL de callback doit être en HTTPS |
 | Iframe ne se charge pas | Vérifiez la connexion internet et l'URL de Mutafriches |
 | Bouton callback absent | Le bouton apparaît uniquement à l'étape 3 après les résultats |
-| Origine non autorisée | Vérifiez que votre domaine est autorisé pour votre intégrateur |
-| `403` sur `/enrichissement` en appel serveur | Ajoutez le header `Origin` avec l'origine autorisée (cf. « Appels serveur à serveur ») |
+| Origine non autorisée (iframe) | Vérifiez que votre domaine est autorisé pour votre intégrateur |
+| `403 Origin not allowed` sur `/enrichissement` | Déclarez votre domaine, ou vérifiez que l'en-tête `Origin` lui correspond exactement (`www.`, `https`) |
+| `403 Origin required` en appel serveur | Ajoutez le header `Origin` avec l'origine déclarée (cf. « Appels serveur à serveur ») |
 | `400 Maximum 60 parcelles par site` | Un site est limité à 60 parcelles ; contactez-nous plutôt que de découper le site |
 
 ## ✅ Checklist de mise en production
 
 - [ ] J'ai testé avec l'intégrateur `"demo"`
 - [ ] J'ai demandé mon identifiant d'intégrateur officiel
-- [ ] Mon domaine est autorisé par Mutafriches
+- [ ] Mon domaine est autorisé par Mutafriches (iframe) ou déclaré par mes soins (API)
 - [ ] Mon URL de callback est en HTTPS
 - [ ] Je vérifie l'origine des messages PostMessage
 - [ ] J'ai configuré la gestion des résultats

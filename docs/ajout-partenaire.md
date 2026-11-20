@@ -94,16 +94,24 @@ N'ajouter ici qu'un partenaire dont les **IDU sont réels** (des identifiants fi
 
 ## 3. Production — déclarer le partenaire selon son mode d'intégration
 
-Deux mécanismes, deux endroits. Un partenaire qui fait les deux est déclaré aux deux.
+Toute demande (page personnalisée, iframe, API, extension QGIS) passe par un formulaire du site
+et crée une ligne dans la table `integrateurs` (ADR-0055). Une page ou une iframe y entre en
+`en_attente` ; l'API et QGIS sont actifs à la déclaration.
 
-| Mode | Déclaré où | Ce que ça autorise |
-|------|-----------|--------------------|
-| **Iframe** (`/iframe?integrator=<id>`) | `INTEGRATEURS_IFRAME` dans `packages/shared-types/src/integration/integrateurs-iframe.ts`, puis déploiement | embarquer l'UI (`frame-ancestors`) et recevoir le `callbackUrl` sur ces hôtes |
-| **API directe** (appels à `POST /enrichissement` et `POST /evaluation/calculer` depuis son site) | variable Scalingo `ALLOWED_INTEGRATOR_ORIGINS`, sans déploiement | passer `IntegrateurOriginGuard` et CORS |
+| Mode | Mise en place | Ce que ça autorise |
+|------|---------------|--------------------|
+| **Page personnalisée** (`/partenaires/<slug>`) | sections 1 et 2, puis `pnpm integrateurs:publier <id> <slug>` | rattacher la demande à sa page (`cle_stats = partenaire:<slug>`) |
+| **Iframe** (`/iframe?integrator=<id>`) | `INTEGRATEURS_IFRAME` dans `packages/shared-types/src/integration/integrateurs-iframe.ts`, déploiement, puis `pnpm integrateurs:publier <id> <identifiant>` | embarquer l'UI (`frame-ancestors`) et recevoir le `callbackUrl` sur ces hôtes |
+| **API directe** (appels à `POST /enrichissement` et `POST /evaluation/calculer` depuis son site) | rien : le partenaire déclare son domaine | passer `IntegrateurOriginGuard` et CORS |
 
-L'iframe tourne sur notre domaine : ses appels API portent l'origine Mutafriches et n'ont
-jamais besoin de la variable. Bénéfriches figure dans les deux listes parce qu'il appelle
-aussi l'API directement ; Mon Espace Collectivité n'est qu'en iframe.
+L'iframe tourne sur notre domaine : ses appels API portent l'origine Mutafriches. Bénéfriches a
+deux lignes dans le registre (`iframe` et `api`) parce qu'il appelle aussi l'API directement ;
+Mon Espace Collectivité n'est qu'en iframe.
+
+L'identifiant `<id>` de la demande se lit avec `pnpm integrateurs:lister`. Le déploiement d'un
+nouveau partenaire ou d'une nouvelle iframe crée de lui-même une ligne de reprise
+(`integrateurs:synchroniser`) : `publier` la remplace par la demande, qui porte la structure
+déclarée et son contact Brevo. Sans demande préalable, cette ligne de reprise suffit.
 
 ### 3a. Intégrateur iframe
 
@@ -111,17 +119,19 @@ aussi l'API directement ; Mon Espace Collectivité n'est qu'en iframe.
       dans `?integrator=`), hôtes nus sans schéma (`partenaire.fr`, pas `https://partenaire.fr/`),
       libellé du bouton de retour. Un hôte absent donne une iframe blanche, sans message.
 - [ ] Déployer : la liste est compilée dans l'UI et dans l'en-tête `frame-ancestors` de l'API.
+- [ ] `pnpm integrateurs:publier <id> <identifiant>` sur chaque environnement, puis transmettre
+      l'identifiant au partenaire.
 
 ### 3b. Intégrateur API
 
-- [ ] Ajouter l'origine du partenaire à `ALLOWED_INTEGRATOR_ORIGINS` (variable d'env Scalingo)
-      — aucun code à modifier (cf. `IntegrateurOriginGuard`).
-      Saisir le schéma et l'hôte seuls (`https://partenaire.fr`), sans slash final ni chemin :
-      un header `Origin` n'en porte jamais. Le guard normalise ces écarts au démarrage
-      (ADR-0043) et journalise chaque entrée réécrite, mais la variable reste plus lisible
-      sans eux. La liste s'ajoute aux origines par défaut, elle ne les remplace pas.
-      Procédure détaillée, cas serveur à serveur et vérification :
+- [ ] Rien à faire côté équipe : le partenaire déclare son domaine avec le formulaire de
+      `/integrer-mutafriches/api`. Suivi, pièges et révocation :
       [docs/acces-api-integrateur.md](./acces-api-integrateur.md).
+
+### 3c. Page personnalisée
+
+- [ ] Après le seed et le déploiement : `pnpm integrateurs:publier <id> <slug>` sur chaque
+      environnement.
 
 ## 4. Vérification
 

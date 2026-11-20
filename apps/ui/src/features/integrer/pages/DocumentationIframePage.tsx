@@ -1,7 +1,9 @@
 import { Link } from "react-router-dom";
+import { CanalIntegrateur } from "@mutafriches/shared-types";
 import { DsfrAccordion } from "../../../shared/components/dsfr/DsfrAccordion";
 import { ROUTES } from "../../../shared/config/routes.config";
 import { BlocCode } from "../components/BlocCode";
+import { FormulaireDeclaration } from "../components/FormulaireDeclaration";
 import { PageDocumentation, SectionDocumentation } from "../components/PageDocumentation";
 import {
   IFRAME_EXEMPLE_MINIMAL,
@@ -75,7 +77,10 @@ export function DocumentationIframePage() {
             Essayez l'intégrateur « Démo locale » sur la page de test, pour comprendre le
             fonctionnement.
           </li>
-          <li>Demandez votre identifiant d'intégrateur officiel à l'équipe Mutafriches.</li>
+          <li>
+            Demandez votre identifiant d'intégrateur officiel avec le{" "}
+            <a href="#demande-identifiant">formulaire ci-dessous</a>.
+          </li>
           <li>
             Ajoutez l'iframe à votre page en remplaçant <code>demo</code> par votre identifiant.
           </li>
@@ -103,10 +108,21 @@ export function DocumentationIframePage() {
             ), sans autorisation préalable.
           </li>
           <li>
-            Votre identifiant officiel est associé à votre domaine, déclaré par l'équipe
-            Mutafriches.
+            Votre identifiant officiel est associé à votre domaine. L'équipe Mutafriches vous le
+            transmet après votre demande : l'iframe n'est pas ouverte automatiquement.
           </li>
         </ul>
+        <h3 id="demande-identifiant" className="fr-h6 fr-mt-4w">
+          Demander votre identifiant
+        </h3>
+        <div className="fr-grid-row fr-mb-4w">
+          <div className="fr-col-12 fr-col-md-8">
+            <FormulaireDeclaration
+              canal={CanalIntegrateur.IFRAME}
+              libelleEnvoi="Envoyer ma demande"
+            />
+          </div>
+        </div>
         <div className="fr-callout fr-callout--brown-caramel">
           <p className="fr-callout__title fr-h6">À savoir</p>
           <p className="fr-callout__text fr-text--md">

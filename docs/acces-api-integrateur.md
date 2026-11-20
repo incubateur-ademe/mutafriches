@@ -1,17 +1,19 @@
-# Ouvrir un accès API à un intégrateur — procédure
+# Accès API d'un intégrateur — suivi et exploitation
 
-Procédure d'exploitation pour autoriser un tiers à appeler directement l'API REST
-(`POST /enrichissement`, `POST /evaluation/calculer`), depuis son site web **ou** depuis un
-traitement serveur à serveur.
+Un tiers qui veut appeler directement l'API REST (`POST /enrichissement`,
+`POST /evaluation/calculer`), depuis son site web **ou** depuis un traitement serveur à serveur,
+**déclare lui-même son domaine** : l'accès est ouvert à l'envoi du formulaire, sans intervention
+de l'équipe (ADR-0055). Ce document décrit ce qui reste à notre charge : suivre, accompagner,
+révoquer.
 
 Le document a deux parties :
 
-1. **[Modèle à dupliquer](#1-modèle-à-dupliquer-dans-notion)** : la fiche, la checklist, les
-   deux mails et les commandes. À copier dans Notion pour chaque nouvel intégrateur ; la
-   fiche remplie (contacts, échanges) reste dans Notion, jamais dans ce dépôt public.
+1. **[Suivi d'une déclaration](#1-suivi-dune-déclaration)** : où la voir, quoi vérifier, le mail
+   d'accueil.
 2. **[Référence](#2-référence)** : le fonctionnement, les pièges, les limites, la révocation.
 
-Côté intégrateur, le mode d'emploi est dans le
+Côté intégrateur, le mode d'emploi est sur la page
+[Utiliser l'API](https://mutafriches.beta.gouv.fr/integrer-mutafriches/api) et dans le
 [guide d'intégration](./integration/README.md#intégration-api-directe-partenaires).
 
 > À ne pas confondre avec [Ajouter un partenaire](./ajout-partenaire.md), qui publie une page
@@ -20,110 +22,40 @@ Côté intégrateur, le mode d'emploi est dans le
 
 ---
 
-## 1. Modèle à dupliquer dans Notion
+## 1. Suivi d'une déclaration
 
-Remplacer `{{ORIGINE}}` (ex. `https://exemple.fr`) et `{{HOTE}}` (ex. `exemple.fr`) partout.
+### Où la voir
 
-### Fiche
+Chaque déclaration crée une ligne dans la table `integrateurs` (canal `api`, statut `actif`) :
 
-| Champ | Valeur |
-|-------|--------|
-| Organisation | |
-| Contact technique (nom, e-mail) | |
-| Contact métier | |
-| Usage prévu | (ex. pré-diagnostic d'un inventaire, intégration dans un outil métier) |
-| Contexte d'appel | navigateur / serveur à serveur |
-| Origine autorisée `{{ORIGINE}}` | |
-| Identifiant en base (`integrateur`) | `{{HOTE}}` (déduit de l'origine) |
-| Volumétrie prévue | sites / mois, pic éventuel |
-| Parcelles max par site | (≤ 60 ?) |
-| Ouvert en staging le | |
-| Ouvert en production le | |
-| Bucket Metabase ajouté | oui / non |
+```bash
+scalingo --app mutafriches --region osc-secnum-fr1 run "pnpm integrateurs:lister"
+```
+
+Le prénom, le nom et l'adresse e-mail du déclarant ne sont **pas** dans cette table : ils sont
+dans la liste Brevo de l'environnement, avec l'attribut `USAGE_API` coché et la structure et le
+domaine en attributs. La colonne `contact_enregistre` vaut
+`false` quand Brevo n'a pas reçu le contact (panne, clé absente) : ce déclarant n'est pas
+joignable.
 
 ### Checklist
 
-**Qualification**
-
-- [ ] Mail n°1 envoyé, réponses reportées dans la fiche.
-- [ ] Origine exacte validée avec le demandeur (schéma + hôte, sans chemin ; `www.` ou non).
-- [ ] Contexte d'appel connu : en serveur à serveur, le demandeur sait qu'il doit poser
-      `Origin` lui-même.
-- [ ] Volumétrie compatible avec les [limites](#limites-à-annoncer) (100 req/min par IP,
-      60 parcelles par site). Sinon, en discuter avant d'ouvrir.
-
-**Staging** (`mutafriches-preprod`)
-
-- [ ] Relire la valeur existante (`env-set` **remplace**, il n'ajoute pas) :
-  ```bash
-  scalingo --app mutafriches-preprod --region osc-fr1 env | grep ALLOWED_INTEGRATOR_ORIGINS
-  ```
-- [ ] Ajouter l'origine à la suite de la valeur existante :
-  ```bash
-  scalingo --app mutafriches-preprod --region osc-fr1 env-set ALLOWED_INTEGRATOR_ORIGINS="<valeur existante>,{{ORIGINE}}"
-  ```
-- [ ] Attendre la fin du redéploiement ; si l'origine a été réécrite, les logs de démarrage
-      le signalent (`Origine autorisée normalisée : ...`).
-- [ ] Jouer les [tests de vérification](#tests-de-vérification) avec
-      `BASE=https://mutafriches.incubateur.ademe.dev`.
-
-**Production** (`mutafriches`)
-
-- [ ] Mêmes étapes avec `--app mutafriches --region osc-secnum-fr1` (autre région que la
-      preprod) et `BASE=https://mutafriches.beta.gouv.fr`.
-- [ ] Mail n°2 envoyé.
-
-**Suivi**
-
+- [ ] La structure et le domaine déclarés sont plausibles (sinon :
+      [révoquer](#révoquer)).
 - [ ] Premiers appels visibles en base ([requête de suivi](#requête-de-suivi)).
-- [ ] Ajouter une ligne `WHEN integrateur ILIKE '%{{HOTE}}%' THEN '<Organisation>'` au bloc
-      `CASE` de [analytics-tracking.md](./analytics-tracking.md#pilotage-par-canal-qualifications--évaluations-par-mois)
-      et dans les questions Metabase qui le reprennent.
-- [ ] Relance à J+7 : l'intégration fonctionne-t-elle, des questions ?
-- [ ] Point à J+30 : volumétrie réelle, retours sur les indices.
-- [ ] Contact ajouté à la liste des intégrateurs à prévenir en cas de changement
-      d'algorithme ou de contrat d'API.
+- [ ] Volumétrie compatible avec les [limites](#limites-à-annoncer) (100 req/min par IP,
+      60 parcelles par site, quota BDNB). Sinon, écrire au contact Brevo.
+- [ ] Mail d'accueil envoyé depuis Brevo si l'intégrateur n'a pas pris rendez-vous.
+- [ ] Relance à J+7 pour un déclarant sans aucun appel.
 
-### Mail n°1 — qualification
+### Mail d'accueil
 
-> **Objet :** Accès à l'API Mutafriches — quelques informations pour ouvrir votre accès
+> **Objet :** Bienvenue sur l'API Mutafriches
 >
 > Bonjour,
 >
-> Merci pour votre intérêt pour Mutafriches. L'API est ouverte aux acteurs publics et à
-> leurs partenaires, sans clé d'accès : nous autorisons l'origine de vos requêtes (le header
-> HTTP `Origin`). Pour préparer l'ouverture, pourriez-vous nous indiquer :
->
-> 1. **L'origine à autoriser**, schéma compris, par exemple `https://exemple.fr`. La
->    comparaison est stricte : `https://www.exemple.fr` est une autre origine, et les
->    sous-domaines ne sont pas couverts. Si vous appelez l'API depuis un script ou un
->    serveur, vous n'avez pas besoin d'un site publié : l'origine sert d'identifiant
->    conventionnel de votre organisation, que vous poserez vous-même en header.
-> 2. **Le contexte d'appel** : depuis une page web (navigateur) ou depuis un serveur, un
->    script ou un notebook.
-> 3. **L'usage prévu** et la **volumétrie** estimée (nombre de sites par mois, pics
->    éventuels).
-> 4. **Le nombre maximal de parcelles** par site que vous pensez analyser (la limite actuelle
->    est de 20).
-> 5. **Un contact technique** à prévenir en cas d'évolution de l'API ou de l'algorithme.
->
-> En attendant, la documentation de l'API est consultable ici :
->
-> - Swagger : https://mutafriches.beta.gouv.fr/api
-> - Guide d'intégration : https://mutafriches.beta.gouv.fr/documentation-integration
->
-> Bien cordialement,
-
-### Mail n°2 — ouverture de l'accès
-
-> **Objet :** Votre accès à l'API Mutafriches est ouvert
->
-> Bonjour,
->
-> Votre accès à l'API Mutafriches est ouvert pour l'origine **`{{ORIGINE}}`**, en
-> pré-production (`https://mutafriches.incubateur.ademe.dev`) comme en production
-> (`https://mutafriches.beta.gouv.fr`). Nous vous recommandons de faire vos essais en
-> pré-production.
+> Vous avez déclaré le domaine **`{{ORIGINE}}`** pour utiliser l'API Mutafriches : votre accès
+> est ouvert, en production (`https://mutafriches.beta.gouv.fr`).
 >
 > **Authentification.** Chaque `POST` doit porter le header `Origin: {{ORIGINE}}`. Un
 > navigateur le pose tout seul ; depuis un serveur ou un script, ajoutez-le vous-même, sans
@@ -178,7 +110,7 @@ Remplacer `{{ORIGINE}}` (ex. `https://exemple.fr`) et `{{HOTE}}` (ex. `exemple.f
 > différents. Écrivez-nous plutôt, la limite peut être revue.
 >
 > **Documentation.** Swagger : https://mutafriches.beta.gouv.fr/api — guide :
-> https://mutafriches.beta.gouv.fr/documentation-integration
+> https://mutafriches.beta.gouv.fr/integrer-mutafriches/api
 >
 > Nous vous préviendrons de toute évolution de l'algorithme ou de l'API. N'hésitez pas à
 > revenir vers nous pour toute question ou retour sur les résultats.
@@ -187,29 +119,45 @@ Remplacer `{{ORIGINE}}` (ex. `https://exemple.fr`) et `{{HOTE}}` (ex. `exemple.f
 
 ### Tests de vérification
 
-À jouer après chaque ouverture, sur l'environnement concerné. Le parcours nominal est celui
-du mail n°2, avec `ORIGINE={{ORIGINE}}` : attendre `201`, `201`, puis `200`.
-
-Non-régression : on vérifie qu'on n'a pas ouvert plus que prévu.
+Pour reproduire un problème signalé par un intégrateur, avec `BASE` et `ORIGINE` à son
+environnement et à son domaine. Le parcours nominal est celui du mail d'accueil : attendre
+`201`, `201`, puis `200`.
 
 ```bash
 # 403 Origin required : sans header Origin
 curl -sS -o /dev/null -w "%{http_code}\n" -X POST "$BASE/enrichissement" \
   -H "Content-Type: application/json" -d '{"identifiant":"49020000AK0118"}'
 
-# 403 Origin not allowed : origine voisine (www. ou sans www., selon celle ouverte)
+# 403 Origin not allowed : origine voisine, non déclarée (www. ou sans www.)
 curl -sS -o /dev/null -w "%{http_code}\n" -X POST "$BASE/enrichissement" \
   -H "Content-Type: application/json" -H "Origin: https://www.{{HOTE}}" \
   -d '{"identifiant":"49020000AK0118"}'
 ```
 
-- [ ] Parcours nominal : `201` / `201` / `200`, sept usages classés.
-- [ ] Sans `Origin` : `403`.
-- [ ] Origine voisine : `403`.
-
 ### Requête de suivi
 
-En lecture sur la base de l'environnement (cf. [ops/scalingo.md](./ops/scalingo.md)) :
+En lecture sur la base de l'environnement (cf. [ops/scalingo.md](./ops/scalingo.md)).
+Déclarés et actifs, tous canaux :
+
+```sql
+SELECT i.canal, i.structure, i.cle_stats, i.statut, i.created_at::date AS declare_le,
+       COUNT(e.id) AS appels_calcul,
+       COUNT(e.id) FILTER (WHERE e.evaluation_source_id IS NULL) AS evaluations_hors_cache,
+       MAX(e.date_calcul)::date AS dernier_appel
+FROM integrateurs i
+LEFT JOIN evaluations e ON e.integrateur = i.cle_stats
+GROUP BY i.id
+ORDER BY i.canal, appels_calcul DESC;
+```
+
+`appels_calcul` compte chaque appel à `POST /evaluation/calculer`, y compris ceux servis par le
+cache de 24 h ; `evaluations_hors_cache` suit le périmètre commun des statistiques. Pour les
+qualifications, la même jointure vaut sur `enrichissements` (une parcelle) et `sites` (plusieurs
+parcelles), avec `enrichissement_source_id IS NULL` pour écarter le cache. L'extension QGIS se
+lit sur les lignes `qgis` : `cle_stats = 'qgis:<hôte>'`, ou `qgis.mutafriches.beta.gouv.fr` pour
+les versions antérieures à la déclaration par structure.
+
+Détail d'un intégrateur API :
 
 ```sql
 SELECT 'enrichissement' AS etape, source_utilisation, COUNT(*), MAX(date_enrichissement) AS dernier
@@ -231,25 +179,36 @@ apparaissent en `IFRAME_INTEGREE` (erreur de classement corrigée depuis).
 
 ### Ce qu'est un « accès API » chez nous
 
-Il n'y a **pas de clé d'API** : l'autorisation repose sur une whitelist d'origines
-(`IntegrateurOriginGuard`, cf. [ADR-0011](./adr/0011-securisation-origin-guard-sans-api-key.md)).
-Ouvrir un accès revient à ajouter une origine à la variable d'environnement
-`ALLOWED_INTEGRATOR_ORIGINS`. Aucun code à modifier, aucun secret à transmettre.
+Il n'y a **pas de clé d'API**. `IntegrateurOriginGuard` accepte nos propres origines, codées, et
+toute origine déclarée en statut `actif` dans la table `integrateurs` pour les canaux `api` et
+`qgis` ([ADR-0055](./adr/0055-registre-integrateurs-declaration-par-domaine.md), qui amende
+l'[ADR-0011](./adr/0011-securisation-origin-guard-sans-api-key.md)). CORS suit la même liste.
 
-`ALLOWED_INTEGRATOR_ORIGINS` **s'ajoute** aux seules origines codées dans le guard, celles de
-Mutafriches, dont notre UI a besoin (standalone comme iframe). L'iframe tourne sur notre
-domaine : un intégrateur **iframe seul** n'a pas besoin de la variable, il est déclaré dans le
-registre `INTEGRATEURS_IFRAME` (`shared-types`), qui alimente aussi l'en-tête `frame-ancestors`.
-Bénéfriches figure dans la variable parce qu'il appelle **aussi** l'API directement. Les deux
-cas sont détaillés dans [docs/ajout-partenaire.md](./ajout-partenaire.md), section 3.
+Le contrôle d'origine **n'est pas une autorisation** : n'importe qui peut déclarer un domaine.
+Il sert à savoir qui appelle. Les protections réelles sont la limite de débit, les caches et la
+révocation.
+
+- **Déclaration** : `POST /api/integrateurs/declarations`, depuis les formulaires du site ou
+  l'extension QGIS. Limitée à 5 appels par heure et par IP. Redéclarer un domaine ne crée rien.
+- **Domaines refusés** : tout ce qui n'est pas un nom de domaine complet avec son extension
+  (`mon-service`, `intranet`, adresse IP), schéma autre que `https`, port explicite, suffixe
+  local, nos propres domaines. La règle de format est partagée par le formulaire et l'API
+  (`hoteDeDomaineDeclare`, `shared-types`), les domaines réservés restent côté API
+  (`normaliserDomaineDeclare`).
+- **Délais** : une déclaration vaut tout de suite sur le conteneur qui l'a reçue, dans la minute
+  sur les autres (CORS ne lit que le cache du registre) ; une révocation prend effet en une
+  minute au plus.
+- **Iframe** : l'iframe tourne sur notre domaine, ses appels portent notre origine. Un
+  intégrateur iframe est déclaré dans `INTEGRATEURS_IFRAME` (`shared-types`), qui alimente aussi
+  `frame-ancestors` ; une origine déclarée pour l'API ne permet pas de nous embarquer.
 
 ### Identification dans les statistiques
 
 L'intégrateur est identifié par **l'hôte de son `Origin`**, enregistré dans la colonne
 `integrateur` (`benefriches.ademe.fr`, par exemple), avec `source_utilisation = API_DIRECTE`.
-Il n'y a pas de slug à lui attribuer : le paramètre `?integrateur=` n'est lu qu'en mode
-iframe (`iframe=true`) et ignoré en appel direct. L'hôte a l'avantage de ne pas pouvoir être
-choisi librement, puisque seules les origines whitelistées passent le guard.
+La même valeur est dans `integrateurs.cle_stats` : c'est la clé de jointure. L'extension QGIS
+envoie en plus `X-Mutafriches-Client: qgis/<version>` et s'écrit `qgis:<hôte>`. Le paramètre
+`?integrateur=` n'est lu qu'en mode iframe (`iframe=true`) et ignoré en appel direct.
 
 ### Pièges fréquents
 
@@ -260,14 +219,16 @@ choisi librement, puisque seules les origines whitelistées passent le guard.
   `GET /stats`, `GET /api/attributaire/sites`) sont ouvertes ; seuls les deux `POST` passent
   par le guard.
 - **Appel serveur à serveur** (script, notebook, batch) : aucun `Origin` n'est envoyé par
-  défaut, d'où `403 Origin required`. Le client pose le header lui-même ; c'est la limite
-  assumée de l'ADR-0011.
+  défaut, d'où `403 Origin required`. Le client pose le header lui-même, avec le domaine
+  déclaré.
 - **Égalité stricte** sur `scheme + host + port` : `https://exemple.fr` et
-  `https://www.exemple.fr` sont deux entrées distinctes, aucun sous-domaine n'est couvert.
-  Les écarts bénins (slash final, casse, port par défaut) sont normalisés au démarrage
+  `https://www.exemple.fr` sont deux déclarations distinctes, aucun sous-domaine n'est couvert.
+  Les écarts bénins (slash final, casse, port par défaut) sont normalisés
   ([ADR-0043](./adr/0043-normalisation-origines-whitelistees.md)).
 - **En local**, le guard est désactivé (`NODE_ENV=development`) : un test local ne prouve
-  rien sur la whitelist.
+  rien sur le registre.
+- **Staging et production ont chacun leur table** : un domaine déclaré sur l'un ne vaut pas
+  sur l'autre.
 
 ### Limites à annoncer
 
@@ -297,14 +258,23 @@ de mutabilité aussi.
 
 ### Révoquer
 
-Retirer l'origine de `ALLOWED_INTEGRATOR_ORIGINS` sur l'environnement concerné (relire la
-valeur avant `env-set`). La révocation est au grain de l'origine : deux intégrateurs qui
-partagent un domaine ne peuvent pas être révoqués séparément (limite connue de l'ADR-0011).
+```bash
+scalingo --app mutafriches --region osc-secnum-fr1 run "pnpm integrateurs:revoquer <id>"
+```
+
+L'identifiant vient de `pnpm integrateurs:lister`. La ligne passe en `revoque`, l'origine est
+refusée en une minute au plus, et une nouvelle déclaration du même domaine ne la réactive pas
+(`pnpm integrateurs:reactiver <id>` le fait). La révocation est au grain de l'origine, **tous
+canaux confondus** : révoquer la ligne `api` d'un domaine bloque aussi sa ligne `qgis`, et le
+domaine ne peut plus être déclaré sur aucun canal. Deux intégrateurs qui partagent un domaine
+ne peuvent pas être révoqués séparément.
 
 ### Liens
 
+- Registre : `apps/api/src/integrateurs/` (table `integrateurs`)
 - Guard : `apps/api/src/shared/guards/integrateur-origin.guard.ts`
 - Détection de l'origine : `apps/api/src/shared/services/origine-detection.service.ts`
-- ADR socle : [ADR-0011](./adr/0011-securisation-origin-guard-sans-api-key.md)
+- ADR : [ADR-0055](./adr/0055-registre-integrateurs-declaration-par-domaine.md),
+  [ADR-0011](./adr/0011-securisation-origin-guard-sans-api-key.md)
 - Guide intégrateur : [docs/integration/README.md](./integration/README.md)
 - Page partenaire (autre besoin) : [docs/ajout-partenaire.md](./ajout-partenaire.md)

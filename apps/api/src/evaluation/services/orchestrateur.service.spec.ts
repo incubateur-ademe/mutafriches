@@ -17,6 +17,7 @@ import {
   PresenceEspecesProtegees,
   PresencePollution,
   PresenceZoneHumide,
+  SourceUtilisation,
   TrameVerteEtBleue,
 } from "@mutafriches/shared-types";
 import {
@@ -504,6 +505,72 @@ describe("OrchestrateurService", () => {
         ...any[],
       ];
       expect(saveCall[0].visitorId).toBe("550e8400-e29b-41d4-a716-446655440000");
+    });
+
+    describe("origine de l'appel (décompte par intégrateur)", () => {
+      // Valeur détectée pour l'extension QGIS d'une structure déclarée (ADR-0055) : c'est elle
+      // qui doit se retrouver dans evaluations.integrateur pour que l'appel soit compté.
+      const origineQgis = {
+        source: SourceUtilisation.API_DIRECTE,
+        integrateur: "qgis:metropole-x.fr",
+      };
+      const input = {
+        donneesEnrichies: mockEnrichissement,
+        donneesComplementaires: mockDonneesComplementaires,
+      };
+
+      function origineSauvegardee(): unknown {
+        const appel = evaluationRepository.save.mock.calls[0] as [{ origine: unknown }, ...any[]];
+        return appel[0].origine;
+      }
+
+      it("enregistre l'origine de l'extension QGIS sur un calcul complet", async () => {
+        evaluationRepository.findValidCache.mockResolvedValue(null);
+        const mockSite = new Site();
+        mockSite.identifiantParcelle = "490055000AI0001";
+        vi.spyOn(Site, "fromEnrichissement").mockReturnValue(mockSite);
+        vi.spyOn(mockSite, "champsEssentielsManquants").mockReturnValue([]);
+        calculService.calculer.mockResolvedValue({
+          fiabilite: { note: 7.5, text: "Bonne" },
+          resultats: [],
+        } as any);
+        evaluationRepository.save.mockResolvedValue("eval-new");
+
+        await service.calculerMutabilite(input, { origine: origineQgis });
+
+        expect(origineSauvegardee()).toEqual(origineQgis);
+      });
+
+      it("enregistre aussi l'origine quand le résultat vient du cache", async () => {
+        evaluationRepository.findValidCache.mockResolvedValue({
+          id: "cached-eval-123",
+          resultats: { fiabilite: { note: 8 }, resultats: [] },
+          donneesEnrichissement: mockEnrichissement,
+          donneesComplementaires: mockDonneesComplementaires,
+        });
+        evaluationRepository.save.mockResolvedValue("new-eval-456");
+
+        await service.calculerMutabilite(input, { origine: origineQgis });
+
+        // Un appel servi par le cache reste un appel de l'intégrateur : il est enregistré
+        // avec son origine, rattaché à l'évaluation source.
+        expect(origineSauvegardee()).toEqual(origineQgis);
+        expect(evaluationRepository.save.mock.calls[0][1]).toBe("cached-eval-123");
+      });
+
+      it("retombe sur API_DIRECTE sans intégrateur quand aucune origine n'est transmise", async () => {
+        evaluationRepository.findValidCache.mockResolvedValue({
+          id: "cached-eval-123",
+          resultats: { fiabilite: { note: 8 }, resultats: [] },
+          donneesEnrichissement: mockEnrichissement,
+          donneesComplementaires: mockDonneesComplementaires,
+        });
+        evaluationRepository.save.mockResolvedValue("new-eval-456");
+
+        await service.calculerMutabilite(input);
+
+        expect(origineSauvegardee()).toEqual({ source: SourceUtilisation.API_DIRECTE });
+      });
     });
 
     it("devrait effectuer le calcul si donnees complementaires contiennent 'je ne sais pas'", async () => {

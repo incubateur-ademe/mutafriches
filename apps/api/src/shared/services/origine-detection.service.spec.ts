@@ -205,6 +205,60 @@ describe("OrigineDetectionService", () => {
       });
     });
 
+    describe("Hôte standalone : égalité stricte", () => {
+      it("ne classe pas en standalone un sous-domaine du nôtre", () => {
+        const req = { headers: { origin: "https://qgis.mutafriches.beta.gouv.fr" } } as any;
+
+        expect(service.detecterOrigine(req)).toEqual({
+          source: SourceUtilisation.API_DIRECTE,
+          integrateur: "qgis.mutafriches.beta.gouv.fr",
+        });
+      });
+
+      it("ne classe pas en standalone un domaine qui contient le nôtre", () => {
+        const req = { headers: { origin: "https://mutafriches.beta.gouv.fr.exemple.com" } } as any;
+
+        expect(service.detecterOrigine(req, false, undefined, "aura", true)).toEqual({
+          source: SourceUtilisation.API_DIRECTE,
+          integrateur: "mutafriches.beta.gouv.fr.exemple.com",
+        });
+      });
+    });
+
+    describe("Extension QGIS (en-tête X-Mutafriches-Client)", () => {
+      it("préfixe l'intégrateur par qgis: quand l'extension se nomme", () => {
+        const req = {
+          headers: { origin: "https://metropole-x.fr", "x-mutafriches-client": "qgis/1.2.0" },
+        } as any;
+
+        expect(service.detecterOrigine(req)).toEqual({
+          source: SourceUtilisation.API_DIRECTE,
+          integrateur: "qgis:metropole-x.fr",
+        });
+      });
+
+      it("laisse l'hôte seul sans l'en-tête, ou pour un autre client", () => {
+        const sansEnTete = { headers: { origin: "https://metropole-x.fr" } } as any;
+        const autreClient = {
+          headers: { origin: "https://metropole-x.fr", "x-mutafriches-client": "script/1.0" },
+        } as any;
+
+        expect(service.detecterOrigine(sansEnTete).integrateur).toBe("metropole-x.fr");
+        expect(service.detecterOrigine(autreClient).integrateur).toBe("metropole-x.fr");
+      });
+
+      it("ne transforme pas un appel du site en appel QGIS", () => {
+        const req = {
+          headers: {
+            origin: "https://mutafriches.beta.gouv.fr",
+            "x-mutafriches-client": "qgis/1.2.0",
+          },
+        } as any;
+
+        expect(service.detecterOrigine(req)).toEqual({ source: SourceUtilisation.SITE_STANDALONE });
+      });
+    });
+
     describe("Gestion des cas limites", () => {
       it("devrait utiliser referrer (avec double r) comme fallback", () => {
         const req = {

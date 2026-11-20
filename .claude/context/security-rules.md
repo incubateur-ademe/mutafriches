@@ -79,7 +79,8 @@ const response = await firstValueFrom(this.httpService.get(url));
 ### IntegrateurOriginGuard
 
 - Vérifie l'origine des requêtes pour les endpoints intégrateurs
-- Origines codées : Mutafriches uniquement ; tout intégrateur tiers (Bénéfriches compris) passe par `ALLOWED_INTEGRATOR_ORIGINS`
+- Origines codées : Mutafriches uniquement ; tout intégrateur tiers (Bénéfriches compris) est une ligne `actif` de la table `integrateurs`, créée par une déclaration libre (ADR-0055)
+- Ce n'est **pas** une autorisation : n'importe qui peut déclarer un domaine. Il identifie l'appelant ; la limite de débit et la révocation protègent le service
 - Bypass en mode `development` uniquement
 - S'applique à : `POST /enrichissement`, `POST /evaluation/calculer`
 
@@ -96,13 +97,17 @@ const response = await firstValueFrom(this.httpService.get(url));
   `GET /api/attributaire/sites`) sont ouvertes : seul le `ThrottlerGuard` global s'applique
 - `GET /api/attributaire/sites` publie la saisie des utilisateurs, marquée `saisieDeclarative` :
   ne jamais y ajouter `utilisateur_id`, `integrateur` ni `evaluation_id` (ADR-0053)
+- `POST /api/integrateurs/declarations` est ouverte (formulaires du site, extension QGIS) et
+  limitée à 5 appels par heure et par IP. Le prénom, le nom et l'adresse e-mail reçus partent
+  dans Brevo : ne **jamais** les écrire en base, dans un log ou dans la réponse (ADR-0055)
 
 ### Règles
 
 - **JAMAIS** désactiver un guard en production
 - **TOUJOURS** vérifier l'en-tête `Origin` puis `Referer` en fallback
 - **JAMAIS** ajouter `localhost` aux origines autorisées en production
-- Pour ajouter un nouvel intégrateur : utiliser `ALLOWED_INTEGRATOR_ORIGINS`
+- Un intégrateur API se déclare seul (`POST /api/integrateurs/declarations`) ; pour le couper : `pnpm integrateurs:revoquer <id>`
+- Ne jamais rendre une iframe ou une page active à la déclaration : `/iframe?integrator=&callbackUrl=` afficherait un lien de retour vers un domaine tiers sur notre domaine
 - Tout secret comparé à une valeur fournie par le client (jeton de refresh) se compare en **temps constant** (`timingSafeEqual`), jamais avec `===`
 
 ---
@@ -169,7 +174,8 @@ throw new InternalServerErrorException("Erreur lors de l'enrichissement");
 ## 8. CORS, en-têtes HTTP et cookies
 
 - En production, NestJS sert l'API et l'UI depuis le même domaine : l'UI n'a pas besoin de CORS
-- CORS ne reflète que les origines de `construireOriginesCors()` (`shared/utils/origines-autorisees.ts`) : nos domaines, les dashboards ADEME, `ALLOWED_ORIGINS` et `ALLOWED_INTEGRATOR_ORIGINS`. Toute origine locale est acceptée en `development` (ADR-0051)
+- CORS ne reflète que les origines de `construireOriginesCors()` (`shared/utils/origines-autorisees.ts` : nos domaines, les dashboards ADEME, `ALLOWED_ORIGINS`) et les domaines déclarés du registre des intégrateurs. Toute origine locale est acceptée en `development` (ADR-0051, ADR-0055)
+- `frame-ancestors` ne contient jamais un domaine déclaré pour l'API : seuls `INTEGRATEURS_IFRAME` et les origines fixes peuvent nous embarquer
 - **JAMAIS** configurer `Access-Control-Allow-Origin: *` en production, ni rajouter une origine en dur ailleurs que dans ce fichier
 - Les en-têtes de sécurité viennent de `helmet` (`main.ts`). CSP et `X-Frame-Options` restent désactivés : l'UI est embarquée en iframe par les intégrateurs. Ne pas les activer sans lister les tiers chargés (DSFR, tuiles IGN, Metabase, ZCal)
 - Les bypass de sécurité (guards, CORS local, jeton de refresh) n'existent qu'avec `NODE_ENV=development` **explicite** ; un `NODE_ENV` absent applique les réglages de production et le signale au démarrage

@@ -1,6 +1,7 @@
 import { ReactNode, useState } from "react";
 import { Link } from "react-router-dom";
 import {
+  CanalIntegrateur,
   CHAMPS_COMPLEMENTAIRES_REQUIS,
   MAX_PARCELLES_PAR_SITE_API,
   USAGE_LABELS,
@@ -10,6 +11,7 @@ import { DsfrTabs } from "../../../shared/components/dsfr/DsfrTabs";
 import { ROUTES } from "../../../shared/config/routes.config";
 import { ContactMultisitesModal } from "../../resultats/components/ContactMultisitesModal";
 import { BlocCode } from "../components/BlocCode";
+import { DeclarationModal } from "../components/DeclarationModal";
 import { PageDocumentation, SectionDocumentation } from "../components/PageDocumentation";
 import {
   CRITERES_TERRAIN,
@@ -39,7 +41,7 @@ import {
 
 const CONTACT = "contact@mutafriches.beta.gouv.fr";
 const MESSAGE_CONTACT =
-  "Choisissez un créneau pour demander un accès à l'API Mutafriches à l'équipe.";
+  "Choisissez un créneau pour parler de votre intégration de l'API avec l'équipe.";
 
 const NOMBRE_CRITERES_TERRAIN = CHAMPS_COMPLEMENTAIRES_REQUIS.length;
 const NOMBRE_USAGES = Object.keys(USAGE_LABELS).length;
@@ -158,6 +160,40 @@ const APPELS: Appel[] = [
   },
 ];
 
+interface SituationDomaine {
+  cas: string;
+  code?: string;
+  reponse: string;
+  action: string;
+}
+
+// Les trois refus possibles tiennent à l'en-tête Origin : le tableau dit lequel correspond à quoi.
+const SITUATIONS_DOMAINE: SituationDomaine[] = [
+  {
+    cas: "Domaine déclaré, et envoyé tel quel dans Origin",
+    reponse: "Appel accepté",
+    action: "Rien : passez à votre première analyse.",
+  },
+  {
+    cas: "Domaine jamais déclaré",
+    code: "403 Origin not allowed",
+    reponse: "Appel refusé",
+    action: "Déclarez-le : l'appel suivant est accepté.",
+  },
+  {
+    cas: "Domaine déclaré, mais en-tête différent (www. en plus ou en moins, http au lieu de https, sous-domaine)",
+    code: "403 Origin not allowed",
+    reponse: "Appel refusé",
+    action: "Envoyez exactement le domaine déclaré, ou déclarez aussi celui-ci.",
+  },
+  {
+    cas: "Aucun en-tête Origin, cas d'un appel depuis un serveur ou un script",
+    code: "403 Origin required",
+    reponse: "Appel refusé",
+    action: "Ajoutez vous-même l'en-tête Origin, avec votre domaine déclaré.",
+  },
+];
+
 interface ErreurCourante {
   code: string;
   message: string;
@@ -171,13 +207,13 @@ const ERREURS: ErreurCourante[] = [
     message: "Origin required",
     cause:
       "Un appel POST est parti sans en-tête Origin, cas habituel d'un appel serveur à serveur.",
-    solution: "Ajoutez l'en-tête Origin avec votre domaine autorisé.",
+    solution: "Ajoutez l'en-tête Origin avec votre domaine déclaré.",
   },
   {
     code: "403",
     message: "Origin not allowed",
-    cause: "Votre domaine ne figure pas dans la liste autorisée.",
-    solution: "Demandez son ajout à l'équipe Mutafriches.",
+    cause: "Votre domaine n'a pas été déclaré, ou l'en-tête ne lui correspond pas exactement.",
+    solution: "Déclarez-le dans le formulaire de la section « Avant de commencer ».",
   },
   {
     code: "400",
@@ -288,6 +324,7 @@ function ARetenir({ children }: { children: ReactNode }) {
 
 export function DocumentationApiPage() {
   const [contactOuvert, setContactOuvert] = useState(false);
+  const [declarationOuverte, setDeclarationOuverte] = useState(false);
 
   return (
     <PageDocumentation
@@ -356,29 +393,47 @@ export function DocumentationApiPage() {
 
       <SectionDocumentation id="acces" titre="Avant de commencer">
         <p>
-          L'API fonctionne <strong>sans clé ni jeton</strong>. Une seule démarche : nous indiquer le
-          domaine depuis lequel partiront vos appels (par exemple{" "}
-          <code>https://mon-service.gouv.fr</code>), pour que nous l'autorisions.
+          L'API fonctionne <strong>sans clé ni jeton</strong>. Elle reconnaît vos appels au domaine
+          d'où ils partent, lu dans l'en-tête HTTP <code>Origin</code> (par exemple{" "}
+          <code>Origin: https://mon-service.gouv.fr</code>). Une seule démarche : déclarer ce
+          domaine, une fois. Il est autorisé dès la déclaration.
         </p>
-        <ul className="fr-btns-group fr-btns-group--inline-md">
-          <li>
-            <button type="button" className="fr-btn" onClick={() => setContactOuvert(true)}>
-              Demander l'accès
-            </button>
-          </li>
-          <li>
-            <a className="fr-btn fr-btn--secondary" href={`mailto:${CONTACT}`}>
-              Écrire à l'équipe
-            </a>
-          </li>
-        </ul>
+        <button type="button" className="fr-btn" onClick={() => setDeclarationOuverte(true)}>
+          Déclarer mon domaine
+        </button>
+
+        <h3 className="fr-h6 fr-mt-4w">Ce que répond l'API selon votre situation</h3>
+        <Tableau
+          legende="Réponse de l'API aux deux appels d'analyse selon le domaine envoyé"
+          colonnes={["Votre situation", "Réponse de l'API", "Que faire"]}
+        >
+          {SITUATIONS_DOMAINE.map((situation) => (
+            <tr key={situation.cas}>
+              <td className="fr-cell--multiline">{situation.cas}</td>
+              <td className="fr-cell--multiline">
+                {situation.code ? <code>{situation.code}</code> : situation.reponse}
+                {situation.code && (
+                  <>
+                    <br />
+                    {situation.reponse}
+                  </>
+                )}
+              </td>
+              <td className="fr-cell--multiline">{situation.action}</td>
+            </tr>
+          ))}
+        </Tableau>
+        <p>
+          Vous ne savez plus si votre domaine est déclaré ? Déclarez-le à nouveau : rien n'est créé
+          en double, et le formulaire vous indique qu'il l'était déjà.
+        </p>
         <ul className="fr-mt-2w">
           <li>
             Adresse de l'API : <code>{URL_PRODUCTION}</code>
           </li>
           <li>Les échanges se font en JSON.</li>
           <li>
-            Sans domaine autorisé, les deux appels d'analyse sont refusés ; les lectures restent
+            Seuls les deux appels d'analyse demandent un domaine déclaré ; les lectures restent
             ouvertes à tous.
           </li>
         </ul>
@@ -387,7 +442,7 @@ export function DocumentationApiPage() {
             <p>
               Un navigateur indique tout seul le domaine d'où part l'appel, dans l'en-tête HTTP{" "}
               <code>Origin</code>. Un serveur ne le fait pas : ajoutez cet en-tête vous-même, avec
-              votre domaine autorisé.
+              votre domaine déclaré.
             </p>
             <BlocCode titre="Appel depuis un serveur">{EXEMPLE_ORIGINE}</BlocCode>
             <p className="fr-mt-2w">
@@ -716,6 +771,24 @@ export function DocumentationApiPage() {
           Une question technique ? Écrivez-nous à <a href={`mailto:${CONTACT}`}>{CONTACT}</a>.
         </p>
       </SectionDocumentation>
+
+      <DeclarationModal
+        canal={declarationOuverte ? CanalIntegrateur.API : null}
+        onClose={() => setDeclarationOuverte(false)}
+        onRendezVous={() => {
+          setDeclarationOuverte(false);
+          setContactOuvert(true);
+        }}
+        suiteApi={
+          <a
+            className="fr-btn"
+            href="#premiere-analyse"
+            onClick={() => setDeclarationOuverte(false)}
+          >
+            Lancer votre première analyse
+          </a>
+        }
+      />
 
       <ContactMultisitesModal
         isOpen={contactOuvert}

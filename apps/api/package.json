@@ -50,7 +50,12 @@
     "partenaires:prefetch": "node dist/src/scripts/prefetch-partenaires.js",
     "partenaires:resolve-idu": "node dist/src/scripts/resolve-idu-partenaire.js",
     "partenaires:reconcilier-cadastre": "node dist/src/scripts/reconcilier-cadastre-partenaire.js",
-    "attributaire:peupler": "node dist/src/scripts/peupler-attributaire.js"
+    "attributaire:peupler": "node dist/src/scripts/peupler-attributaire.js",
+    "integrateurs:synchroniser": "node dist/src/scripts/synchroniser-integrateurs.js",
+    "integrateurs:lister": "node dist/src/scripts/gerer-integrateurs.js lister",
+    "integrateurs:publier": "node dist/src/scripts/gerer-integrateurs.js publier",
+    "integrateurs:revoquer": "node dist/src/scripts/gerer-integrateurs.js revoquer",
+    "integrateurs:reactiver": "node dist/src/scripts/gerer-integrateurs.js reactiver"
   },
   "dependencies": {
     "@mutafriches/shared-types": "workspace:*",

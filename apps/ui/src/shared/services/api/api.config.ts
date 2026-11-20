@@ -39,6 +39,9 @@ export const API_CONFIG = {
       imports: "/api/donnees-externes/imports",
       apis: "/api/donnees-externes/apis",
     },
+    integrateurs: {
+      declarer: "/api/integrateurs/declarations",
+    },
     cartofriches: {
       recherche: "/api/cartofriches/recherche",
       commune: "/api/cartofriches/commune",

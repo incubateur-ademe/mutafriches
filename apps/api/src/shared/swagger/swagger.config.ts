@@ -37,12 +37,12 @@ Cette API expose deux services principaux :
 ### Authentification
 
 Les endpoints exposés aux intégrateurs sont protégés par un contrôle d'**origine HTTP** (header \`Origin\`, fallback \`Referer\`).
-Seules les origines whitelistées (Mutafriches, plus les intégrateurs de la variable \`ALLOWED_INTEGRATOR_ORIGINS\`) sont autorisées.
+Seules les origines Mutafriches et celles déclarées par les intégrateurs (\`POST /api/integrateurs/declarations\`) sont autorisées.
 Pas de clé API à transmettre — l'autorisation se fait au niveau du navigateur ou du serveur appelant.
 
 | Code | Quand | Sens |
 |------|-------|------|
-| \`403 Forbidden\` | Header \`Origin\` absent ou non whitelisté | Contacter l'équipe Mutafriches pour ajouter votre domaine |
+| \`403 Forbidden\` | Header \`Origin\` absent ou non whitelisté | Déclarer votre domaine (\`POST /api/integrateurs/declarations\`) |
 
 ### Rate limiting
 

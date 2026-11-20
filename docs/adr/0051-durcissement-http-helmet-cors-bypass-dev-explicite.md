@@ -1,7 +1,7 @@
 # ADR-0051 : Durcissement HTTP — en-têtes `helmet`, CORS restreint, bypass de développement explicite
 
 **Date** : 2026-10-14
-**Statut** : Accepté
+**Statut** : Accepté, amendé par l'ADR-0055 (CORS lit le registre des intégrateurs ; `frame-ancestors` ne contient plus les origines des intégrateurs API)
 
 ## Contexte
 

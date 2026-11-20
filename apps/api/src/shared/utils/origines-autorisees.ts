@@ -1,5 +1,5 @@
 import { hotesIntegrateursIframe } from "@mutafriches/shared-types";
-import { estOrigineLocale, normaliserOrigines } from "./origine.utils";
+import { estOrigineLocale, normaliserOrigine, normaliserOrigines } from "./origine.utils";
 import { isDevelopment } from "./environment.utils";
 
 // Nos propres origines (UI standalone et iframe) : seules origines codées en dur.
@@ -16,18 +16,13 @@ export const ORIGINES_DASHBOARDS_ADEME = [
 
 export interface OriginesConfigurees {
   allowed?: string;
-  allowedIntegrators?: string;
 }
 
-// Union des origines que CORS peut refléter : les nôtres, les dashboards ADEME et celles
-// des variables ALLOWED_ORIGINS / ALLOWED_INTEGRATOR_ORIGINS. Toute origine absente de
-// cette liste est de toute façon rejetée par les guards : la restriction CORS ne retire
-// aucun accès, elle évite seulement de refléter « * » à n'importe quel site.
+// Origines fixes que CORS peut refléter : les nôtres, les dashboards ADEME et celles de la
+// variable ALLOWED_ORIGINS. Les intégrateurs déclarés (table `integrateurs`, ADR-0055)
+// s'y ajoutent à chaque requête, cf. estOrigineCorsDeclaree.
 export function construireOriginesCors(origines: OriginesConfigurees): string[] {
-  const configurees = [origines.allowed, origines.allowedIntegrators]
-    .filter((valeur): valeur is string => Boolean(valeur))
-    .flatMap((valeur) => valeur.split(","));
-
+  const configurees = origines.allowed ? origines.allowed.split(",") : [];
   const brutes = [...ORIGINES_MUTAFRICHES, ...ORIGINES_DASHBOARDS_ADEME, ...configurees];
 
   return [...new Set(normaliserOrigines(brutes))];
@@ -48,9 +43,27 @@ export function estOrigineCorsAutorisee(
   return autorisees.includes(origine);
 }
 
+// Complète la liste fixe par le registre des intégrateurs. Une origine refusée ici le serait
+// aussi par le guard : la restriction CORS ne retire aucun accès, elle évite de refléter « * ».
+export async function estOrigineCorsDeclaree(
+  origine: string | undefined,
+  autorisees: string[],
+  estDeclaree: (origine: string) => Promise<boolean>,
+): Promise<boolean> {
+  if (!origine || estOrigineCorsAutorisee(origine, autorisees)) {
+    return true;
+  }
+  try {
+    return await estDeclaree(normaliserOrigine(origine) ?? origine);
+  } catch {
+    return false;
+  }
+}
+
 // Sources CSP `frame-ancestors` : qui a le droit d'embarquer l'UI en iframe. Nous-mêmes, les
-// intégrateurs iframe du registre partagé (hôtes nus : tout schéma) et les origines déclarées
-// dans les variables d'environnement. Les navigateurs ignorent alors X-Frame-Options.
+// intégrateurs iframe du registre partagé (hôtes nus : tout schéma) et les origines fixes.
+// Une origine déclarée librement pour l'API n'y figure pas : elle ne doit pas suffire à nous
+// embarquer (ADR-0055). Les navigateurs ignorent alors X-Frame-Options.
 export function construireFrameAncestors(origines: OriginesConfigurees): string[] {
   return [
     ...new Set(["'self'", ...hotesIntegrateursIframe(), ...construireOriginesCors(origines)]),

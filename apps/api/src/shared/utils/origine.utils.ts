@@ -1,7 +1,7 @@
 import type { Logger } from "@nestjs/common";
 
 /**
- * Normalisation des origines whitelistées (ALLOWED_ORIGINS, ALLOWED_INTEGRATOR_ORIGINS).
+ * Normalisation des origines autorisées (ALLOWED_ORIGINS, origine reçue, reprise du registre).
  *
  * Un header `Origin` ne porte jamais de slash final : sans normalisation, une entrée
  * configurée avec un slash ne matche jamais l'égalité stricte des guards et l'appelant

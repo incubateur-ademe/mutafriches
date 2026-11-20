@@ -1,6 +1,11 @@
 import { Injectable } from "@nestjs/common";
 import { Request } from "express";
-import { OrigineUtilisation, SourceUtilisation } from "@mutafriches/shared-types";
+import {
+  EN_TETE_CLIENT_MUTAFRICHES,
+  OrigineUtilisation,
+  PREFIXE_CLIENT_QGIS,
+  SourceUtilisation,
+} from "@mutafriches/shared-types";
 
 /**
  * Service de détection de l'origine des appels API
@@ -8,7 +13,8 @@ import { OrigineUtilisation, SourceUtilisation } from "@mutafriches/shared-types
  * Detecte automatiquement si l'appel provient de :
  * - SITE_STANDALONE : Front React mutafriches.beta.gouv.fr
  * - IFRAME_INTEGREE : Front embarque dans un site partenaire (query param iframe=true)
- * - API_DIRECTE : Appel direct par un consommateur de l'API (integrateur = hôte de l'Origin)
+ * - API_DIRECTE : Appel direct par un consommateur de l'API (integrateur = hôte de l'Origin,
+ *   préfixé `qgis:` quand l'extension QGIS se nomme dans l'en-tête X-Mutafriches-Client)
  */
 @Injectable()
 export class OrigineDetectionService {
@@ -52,7 +58,7 @@ export class OrigineDetectionService {
     }
 
     // 2. Détection automatique depuis la requête
-    const origine = this.detecterOrigineAuto(req);
+    const origine = this.distinguerClientQgis(this.detecterOrigineAuto(req), req);
 
     // 3. Pré-chauffe du cache : robot, jamais un utilisateur. Sans ce marqueur, ses appels
     // sont comptés comme des qualifications et écrasent les statistiques d'usage (ADR-0041).
@@ -119,21 +125,37 @@ export class OrigineDetectionService {
     return /^[a-z0-9-]{1,40}$/.test(slug) ? slug : null;
   }
 
+  // L'extension QGIS envoie le domaine déclaré par la structure, comme le ferait son API :
+  // seul l'en-tête client les distingue dans les statistiques (ADR-0055).
+  private distinguerClientQgis(origine: OrigineUtilisation, req?: Request): OrigineUtilisation {
+    const client = req?.headers[EN_TETE_CLIENT_MUTAFRICHES];
+    const estQgis =
+      typeof client === "string" && client.toLowerCase().startsWith(`${PREFIXE_CLIENT_QGIS}/`);
+
+    if (!estQgis || origine.source !== SourceUtilisation.API_DIRECTE || !origine.integrateur) {
+      return origine;
+    }
+    return { ...origine, integrateur: `${PREFIXE_CLIENT_QGIS}:${origine.integrateur}` };
+  }
+
   /**
    * Detecte l'origine depuis une URL (referrer ou origin)
    */
   private detectFromUrl(url: string): OrigineUtilisation {
-    const isStandalone = this.domainesStandalone.some((domain) => url.includes(domain));
+    const hote = this.extraireIntegrateur(url);
 
-    if (isStandalone) {
+    // Égalité stricte sur l'hôte : une recherche de sous-chaîne classait en standalone tout
+    // domaine contenant le nôtre (qgis.mutafriches.beta.gouv.fr, ou un domaine déclaré
+    // mutafriches.beta.gouv.fr.exemple.com), avec ses query params partenaire et prefetch.
+    if (hote && this.domainesStandalone.includes(hote)) {
       return { source: SourceUtilisation.SITE_STANDALONE };
     }
 
     // Hors domaine Mutafriches = appel API direct : l'iframe tourne sur notre domaine et
-    // pose iframe=true. L'intégrateur est identifié par son hôte whitelisté, pas par un slug.
+    // pose iframe=true. L'intégrateur est identifié par son hôte déclaré, pas par un slug.
     return {
       source: SourceUtilisation.API_DIRECTE,
-      integrateur: this.extraireIntegrateur(url),
+      integrateur: hote,
     };
   }
 
