@@ -15,6 +15,8 @@ export const CONTACT_MUTAFRICHES = "contact@mutafriches.beta.gouv.fr";
 export interface SaisieDeclaration {
   structure: string;
   typeStructure: TypeStructure | "";
+  prenom: string;
+  nom: string;
   email: string;
   domaine: string;
   departement: string;
@@ -26,6 +28,8 @@ export interface SaisieDeclaration {
 export const SAISIE_VIDE: SaisieDeclaration = {
   structure: "",
   typeStructure: "",
+  prenom: "",
+  nom: "",
   email: "",
   domaine: "",
   departement: "",
@@ -33,7 +37,8 @@ export const SAISIE_VIDE: SaisieDeclaration = {
   telephone: "",
 };
 
-export type ChampDeclaration = "structure" | "typeStructure" | "email" | "domaine" | "departement";
+export type ChampDeclaration =
+  "structure" | "typeStructure" | "prenom" | "nom" | "email" | "domaine" | "departement";
 export type ErreursDeclaration = Partial<Record<ChampDeclaration, string>>;
 
 const FORMAT_EMAIL = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
@@ -72,6 +77,12 @@ export function validerDeclaration(
   if (!saisie.typeStructure) {
     erreurs.typeStructure = "Choisissez un type de structure.";
   }
+  if (!saisie.prenom.trim()) {
+    erreurs.prenom = "Indiquez votre prénom.";
+  }
+  if (!saisie.nom.trim()) {
+    erreurs.nom = "Indiquez votre nom.";
+  }
   if (!FORMAT_EMAIL.test(saisie.email.trim())) {
     erreurs.email = "Indiquez une adresse e-mail valide, par exemple nom@domaine.fr.";
   }
@@ -102,6 +113,8 @@ export function construireDeclaration(
     canal,
     structure: saisie.structure.trim(),
     typeStructure: saisie.typeStructure as TypeStructure,
+    prenom: saisie.prenom.trim(),
+    nom: saisie.nom.trim(),
     email: saisie.email.trim(),
     ...(demandeUnDomaine(canal) ? { domaine: saisie.domaine.trim() } : {}),
     ...(estPage && departement ? { departement } : {}),

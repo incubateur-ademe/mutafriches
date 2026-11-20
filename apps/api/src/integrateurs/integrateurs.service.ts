@@ -128,6 +128,8 @@ export class IntegrateursService {
     integrateur: Integrateur,
   ): Promise<void> {
     const resultat = await this.brevo.ajouterContact({
+      prenom: input.prenom.trim(),
+      nom: input.nom.trim(),
       email: input.email,
       canal: input.canal,
       structure: integrateur.structure,

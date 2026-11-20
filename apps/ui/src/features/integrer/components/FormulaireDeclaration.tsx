@@ -223,6 +223,39 @@ export function FormulaireDeclaration({
         </>
       )}
 
+      <div className="fr-grid-row fr-grid-row--gutters">
+        <div className="fr-col-12 fr-col-md-6">
+          <Champ id={`${prefixe}-prenom`} label="Votre prénom" erreur={erreurs.prenom}>
+            {(attributs) => (
+              <input
+                {...attributs}
+                className="fr-input"
+                type="text"
+                autoComplete="given-name"
+                maxLength={100}
+                value={saisie.prenom}
+                onChange={(event) => modifier("prenom", event.target.value)}
+              />
+            )}
+          </Champ>
+        </div>
+        <div className="fr-col-12 fr-col-md-6">
+          <Champ id={`${prefixe}-nom`} label="Votre nom" erreur={erreurs.nom}>
+            {(attributs) => (
+              <input
+                {...attributs}
+                className="fr-input"
+                type="text"
+                autoComplete="family-name"
+                maxLength={100}
+                value={saisie.nom}
+                onChange={(event) => modifier("nom", event.target.value)}
+              />
+            )}
+          </Champ>
+        </div>
+      </div>
+
       <Champ
         id={`${prefixe}-email`}
         label="Adresse e-mail de contact"
@@ -266,8 +299,9 @@ export function FormulaireDeclaration({
       </button>
 
       <p className="fr-hint-text fr-mt-2w">
-        Votre adresse e-mail est conservée dans notre outil d'e-mailing, pas dans la base de
-        Mutafriches. <Link to={ROUTES.POLITIQUE_CONFIDENTIALITE}>Politique de confidentialité</Link>
+        Vos prénom, nom et adresse e-mail sont conservés dans notre outil d'e-mailing, pas dans la
+        base de Mutafriches.{" "}
+        <Link to={ROUTES.POLITIQUE_CONFIDENTIALITE}>Politique de confidentialité</Link>
       </p>
     </form>
   );

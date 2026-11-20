@@ -13,6 +13,8 @@ const SAISIE: SaisieDeclaration = {
   ...SAISIE_VIDE,
   structure: " Métropole de X ",
   typeStructure: "collectivite",
+  prenom: " Camille ",
+  nom: " Martin ",
   email: " sig@exemple.fr ",
   domaine: " exemple.fr ",
 };
@@ -26,6 +28,8 @@ describe("validerDeclaration", () => {
     expect(Object.keys(validerDeclaration(CanalIntegrateur.API, SAISIE_VIDE)).sort()).toEqual([
       "domaine",
       "email",
+      "nom",
+      "prenom",
       "structure",
       "typeStructure",
     ]);
@@ -51,6 +55,12 @@ describe("validerDeclaration", () => {
       expect(validerDeclaration(CanalIntegrateur.API, { ...SAISIE, domaine })).toEqual({});
     },
   );
+
+  it("refuse un prénom ou un nom fait d'espaces", () => {
+    const erreurs = validerDeclaration(CanalIntegrateur.API, { ...SAISIE, prenom: "  ", nom: "" });
+    expect(erreurs).toHaveProperty("prenom");
+    expect(erreurs).toHaveProperty("nom");
+  });
 
   it("ne demande pas de domaine pour une page personnalisée", () => {
     expect(validerDeclaration(CanalIntegrateur.PAGE, { ...SAISIE, domaine: "" })).toEqual({});
@@ -78,6 +88,8 @@ describe("construireDeclaration", () => {
       canal: "api",
       structure: "Métropole de X",
       typeStructure: "collectivite",
+      prenom: "Camille",
+      nom: "Martin",
       email: "sig@exemple.fr",
       domaine: "exemple.fr",
     });
@@ -94,6 +106,8 @@ describe("construireDeclaration", () => {
       canal: "page",
       structure: "Métropole de X",
       typeStructure: "collectivite",
+      prenom: "Camille",
+      nom: "Martin",
       email: "sig@exemple.fr",
       departement: "2A",
       nbSitesEstime: "10-a-50",

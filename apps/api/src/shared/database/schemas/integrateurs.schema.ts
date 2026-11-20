@@ -11,8 +11,8 @@ import type {
  * personnalisée ou l'iframe (ADR-0055). Source des origines autorisées par
  * `IntegrateurOriginGuard` et CORS pour les canaux `api` et `qgis`.
  *
- * Aucune donnée personnelle : l'adresse e-mail du déclarant part dans l'outil d'e-mailing et
- * n'est jamais écrite ici.
+ * Aucune donnée personnelle : le prénom, le nom et l'adresse e-mail du déclarant partent dans
+ * l'outil d'e-mailing et ne sont jamais écrits ici.
  */
 export const integrateurs = pgTable(
   "integrateurs",

@@ -15,6 +15,8 @@ const DECLARATION: DeclarationIntegrateurInput = {
   canal: CanalIntegrateur.API,
   structure: "  Métropole de X ",
   typeStructure: "collectivite",
+  prenom: " Camille ",
+  nom: " Martin ",
   email: "sig@exemple.fr",
   domaine: "https://www.exemple.fr/outil",
 };
@@ -81,6 +83,8 @@ describe("IntegrateursService.declarer", () => {
     });
     expect(ligne.activeLe).toBeInstanceOf(Date);
     expect(JSON.stringify(ligne)).not.toContain("sig@exemple.fr");
+    expect(JSON.stringify(ligne)).not.toContain("Camille");
+    expect(JSON.stringify(ligne)).not.toContain("Martin");
     expect(registre.ajouterOrigine).toHaveBeenCalledWith("https://www.exemple.fr");
   });
 
@@ -117,6 +121,8 @@ describe("IntegrateursService.declarer", () => {
       canal: CanalIntegrateur.PAGE,
       structure: "EPF Z",
       typeStructure: "etablissement_public",
+      prenom: "Alex",
+      nom: "Durand",
       email: "contact@epf-z.fr",
       departement: "88",
       nbSitesEstime: "10-a-50",
@@ -223,6 +229,16 @@ describe("IntegrateursService.declarer", () => {
     await service.declarer(DECLARATION);
 
     expect(repository.marquerContactEnregistre).toHaveBeenCalledTimes(1);
+  });
+
+  it("transmet à Brevo le prénom et le nom, nettoyés", async () => {
+    const { service, brevo } = contexte;
+
+    await service.declarer(DECLARATION);
+
+    expect(brevo.ajouterContact).toHaveBeenCalledWith(
+      expect.objectContaining({ prenom: "Camille", nom: "Martin", email: "sig@exemple.fr" }),
+    );
   });
 
   it("accepte la déclaration même si Brevo échoue", async () => {

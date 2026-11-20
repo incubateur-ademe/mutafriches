@@ -20,6 +20,8 @@ export const ATTRIBUT_USAGE_BREVO: Record<CanalIntegrateur, string> = {
 };
 
 export interface ContactDeclarant {
+  prenom: string;
+  nom: string;
   email: string;
   canal: CanalIntegrateur;
   structure: string;
@@ -27,8 +29,8 @@ export interface ContactDeclarant {
   domaine?: string;
 }
 
-// Transmet le contact d'un déclarant à Brevo, seul endroit où son adresse est conservée
-// (ADR-0055). L'adresse n'est jamais journalisée.
+// Transmet le contact d'un déclarant à Brevo, seul endroit où son prénom, son nom et son
+// adresse sont conservés (ADR-0055). Aucun des trois n'est journalisé.
 @Injectable()
 export class BrevoContactsService {
   private readonly logger = new Logger(BrevoContactsService.name);
@@ -55,6 +57,9 @@ export class BrevoContactsService {
           {
             email: contact.email,
             attributes: {
+              // Attributs d'identité par défaut d'un compte Brevo en français.
+              PRENOM: contact.prenom,
+              NOM: contact.nom,
               STRUCTURE: contact.structure,
               TYPE_STRUCTURE: contact.typeStructure,
               ...(contact.domaine ? { DOMAINE: contact.domaine } : {}),

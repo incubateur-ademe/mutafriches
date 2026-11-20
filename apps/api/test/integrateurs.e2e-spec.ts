@@ -94,6 +94,8 @@ function declarer(contexte: Contexte, declaration: Record<string, unknown>) {
     .send({
       structure: "Métropole de X",
       typeStructure: "collectivite",
+      prenom: "Camille",
+      nom: "Martin",
       email: EMAIL,
       ...declaration,
     });
@@ -208,14 +210,18 @@ describe("Registre des intégrateurs E2E", () => {
       const reponse = await declarer(contexte, { canal: "api", domaine: DOMAINE }).expect(200);
 
       expect(contexte.brevo.ajouterContact).toHaveBeenCalledWith({
+        prenom: "Camille",
+        nom: "Martin",
         email: EMAIL,
         canal: "api",
         structure: "Métropole de X",
         typeStructure: "collectivite",
         domaine: DOMAINE,
       });
-      expect(JSON.stringify(contexte.depot.lignes)).not.toContain(EMAIL);
-      expect(JSON.stringify(reponse.body)).not.toContain(EMAIL);
+      for (const donneePersonnelle of [EMAIL, "Camille", "Martin"]) {
+        expect(JSON.stringify(contexte.depot.lignes)).not.toContain(donneePersonnelle);
+        expect(JSON.stringify(reponse.body)).not.toContain(donneePersonnelle);
+      }
     });
 
     it("garde la déclaration quand Brevo échoue, en la marquant non joignable", async () => {
@@ -255,12 +261,14 @@ describe("Registre des intégrateurs E2E", () => {
       ["type de structure inconnu", { canal: "api", domaine: DOMAINE, typeStructure: "ami" }],
       ["adresse e-mail invalide", { canal: "api", domaine: DOMAINE, email: "sig@" }],
       ["structure vide", { canal: "api", domaine: DOMAINE, structure: "" }],
+      ["prénom absent", { canal: "api", domaine: DOMAINE, prenom: undefined }],
+      ["nom vide", { canal: "qgis", domaine: DOMAINE, nom: "" }],
+      ["domaine sans extension", { canal: "api", domaine: "mon-service" }],
+      ["extension d'une lettre", { canal: "api", domaine: "mon-service.x" }],
       ["domaine absent pour l'API", { canal: "api" }],
       ["domaine absent pour QGIS", { canal: "qgis" }],
       ["domaine absent pour l'iframe", { canal: "iframe" }],
       ["domaine local", { canal: "api", domaine: "localhost" }],
-      ["domaine sans extension", { canal: "api", domaine: "mon-service" }],
-      ["extension d'une lettre", { canal: "api", domaine: "mon-service.x" }],
       ["domaine en http", { canal: "qgis", domaine: "http://metropole-x.fr" }],
       ["notre propre domaine", { canal: "api", domaine: "mutafriches.beta.gouv.fr" }],
       ["département invalide", { canal: "page", departement: "Vosges" }],

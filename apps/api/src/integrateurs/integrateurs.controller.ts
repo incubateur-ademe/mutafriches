@@ -27,8 +27,9 @@ export class IntegrateursController {
       \`Origin\` des appels à \`POST /enrichissement\` et \`POST /evaluation/calculer\`.
     - \`page\` et \`iframe\` : la demande est enregistrée en attente, l'équipe vous recontacte.
 
-    Déclarer deux fois le même domaine ne crée rien (\`dejaDeclare: true\`). L'adresse e-mail sert
-    à vous informer des évolutions du service ; elle n'est pas stockée dans notre base.
+    Déclarer deux fois le même domaine ne crée rien (\`dejaDeclare: true\`). Le prénom, le nom et
+    l'adresse e-mail servent à vous informer des évolutions du service ; ils ne sont pas stockés
+    dans notre base. Le domaine est un nom de domaine complet, avec son extension (\`exemple.fr\`).
     Limite : 5 déclarations par heure et par adresse IP.
     `,
   })

@@ -43,11 +43,11 @@ export const PolitiqueConfidentialitePage: React.FC = () => {
           de contact ; elle sert à vous répondre et n'est pas conservée dans nos statistiques ;
         </li>
         <li>
-          le <strong>nom de votre structure</strong>, son type, votre{" "}
-          <strong>nom de domaine</strong> et votre <strong>adresse e-mail</strong>, uniquement si
-          vous déclarez utiliser l'API, l'extension QGIS ou l'iframe, ou si vous demandez une page
-          personnalisée. L'adresse e-mail est conservée dans notre outil d'e-mailing, pas dans la
-          base de Mutafriches.
+          vos <strong>prénom</strong>, <strong>nom</strong> et <strong>adresse e-mail</strong>,
+          ainsi que le nom de votre structure, son type et votre nom de domaine, uniquement si vous
+          déclarez utiliser l'API, l'extension QGIS ou l'iframe, ou si vous demandez une page
+          personnalisée. Vos prénom, nom et adresse e-mail sont conservés dans notre outil
+          d'e-mailing, pas dans la base de Mutafriches.
         </li>
       </ul>
 
@@ -77,9 +77,9 @@ export const PolitiqueConfidentialitePage: React.FC = () => {
         Les données d'usage (analyses, événements et identifiant visiteur anonyme) sont conservées
         pendant une durée maximale de <strong>36 mois</strong>. Les adresses e-mail des demandes de
         contact sont conservées le temps nécessaire au traitement de la demande, puis archivées
-        conformément aux délais légaux applicables. L'adresse e-mail d'une déclaration d'utilisation
-        est conservée au plus <strong>36 mois</strong> après cette déclaration ; vous pouvez
-        demander son retrait à tout moment.
+        conformément aux délais légaux applicables. Les prénom, nom et adresse e-mail d'une
+        déclaration d'utilisation sont conservés au plus <strong>36 mois</strong> après cette
+        déclaration ; vous pouvez demander leur retrait à tout moment.
       </p>
       <p className="fr-text--sm fr-mb-2w">
         Cette durée est provisoire et fera l'objet d'une politique de purge dédiée.
@@ -89,9 +89,9 @@ export const PolitiqueConfidentialitePage: React.FC = () => {
       <p>
         Seules les personnes habilitées de l'équipe Mutafriches et de l'ADEME accèdent aux données,
         pour les finalités décrites ci-dessus. L'hébergement est assuré par Scalingo (France, Union
-        européenne). Les adresses e-mail des déclarations d'utilisation sont confiées à Brevo,
-        sous-traitant chargé de l'envoi de nos e-mails. Aucune donnée n'est cédée à des tiers à des
-        fins commerciales ni transférée hors de l'Union européenne.
+        européenne). Les prénoms, noms et adresses e-mail des déclarations d'utilisation sont
+        confiés à Brevo, sous-traitant chargé de l'envoi de nos e-mails. Aucune donnée n'est cédée à
+        des tiers à des fins commerciales ni transférée hors de l'Union européenne.
       </p>
 
       <h2 className="fr-h5">7. Cookies et traceurs</h2>

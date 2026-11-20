@@ -11,6 +11,8 @@ import {
 } from "./brevo-contacts.service";
 
 const CONTACT: ContactDeclarant = {
+  prenom: "Camille",
+  nom: "Martin",
   email: "sig@exemple.fr",
   canal: CanalIntegrateur.API,
   structure: "Métropole de X",
@@ -42,6 +44,8 @@ describe("BrevoContactsService", () => {
       {
         email: "sig@exemple.fr",
         attributes: {
+          PRENOM: "Camille",
+          NOM: "Martin",
           STRUCTURE: "Métropole de X",
           TYPE_STRUCTURE: "collectivite",
           DOMAINE: "exemple.fr",

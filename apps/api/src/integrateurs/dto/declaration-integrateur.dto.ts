@@ -39,6 +39,24 @@ export class DeclarationIntegrateurDto implements DeclarationIntegrateurInput {
   typeStructure: TypeStructure;
 
   @ApiProperty({
+    description: "Prénom du déclarant, transmis à l'outil d'e-mailing et jamais stocké en base",
+    example: "Camille",
+  })
+  @IsString()
+  @IsNotEmpty({ message: "Le prénom est obligatoire" })
+  @MaxLength(100)
+  prenom: string;
+
+  @ApiProperty({
+    description: "Nom du déclarant, transmis à l'outil d'e-mailing et jamais stocké en base",
+    example: "Martin",
+  })
+  @IsString()
+  @IsNotEmpty({ message: "Le nom est obligatoire" })
+  @MaxLength(100)
+  nom: string;
+
+  @ApiProperty({
     description: "Adresse de contact, transmise à l'outil d'e-mailing et jamais stockée en base",
     example: "sig@exemple.fr",
   })

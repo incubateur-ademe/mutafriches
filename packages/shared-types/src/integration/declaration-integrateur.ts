@@ -110,7 +110,9 @@ export interface DeclarationIntegrateurInput {
   canal: CanalIntegrateur;
   structure: string;
   typeStructure: TypeStructure;
-  // Transmis à l'outil d'e-mailing, jamais stocké en base.
+  // Identité du déclarant : transmise à l'outil d'e-mailing, jamais stockée en base.
+  prenom: string;
+  nom: string;
   email: string;
   // Obligatoire pour les canaux de CANAUX_AVEC_DOMAINE.
   domaine?: string;
