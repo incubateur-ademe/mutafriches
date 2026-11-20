@@ -73,7 +73,7 @@ export class IntegrateursService {
     const origine = normaliserDomaineDeclare(input.domaine ?? "");
     if (!origine) {
       throw new BadRequestException(
-        "Domaine invalide : indiquez un domaine public en https, sans port (exemple.fr)",
+        "Domaine invalide : indiquez un nom de domaine public avec son extension, en https et sans port (exemple.fr)",
       );
     }
     return origine;

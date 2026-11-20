@@ -36,6 +36,22 @@ describe("validerDeclaration", () => {
     expect(erreurs).toHaveProperty("email");
   });
 
+  it.each(["mon-service", "intranet", "exemple.f", "192.168.1.10", "http://exemple.fr", "a b.fr"])(
+    "refuse le domaine « %s » avant l'envoi",
+    (domaine) => {
+      expect(validerDeclaration(CanalIntegrateur.API, { ...SAISIE, domaine })).toHaveProperty(
+        "domaine",
+      );
+    },
+  );
+
+  it.each(["exemple.fr", "https://www.exemple.fr/outil", "sig.metropole-x.fr"])(
+    "accepte le domaine « %s »",
+    (domaine) => {
+      expect(validerDeclaration(CanalIntegrateur.API, { ...SAISIE, domaine })).toEqual({});
+    },
+  );
+
   it("ne demande pas de domaine pour une page personnalisée", () => {
     expect(validerDeclaration(CanalIntegrateur.PAGE, { ...SAISIE, domaine: "" })).toEqual({});
   });

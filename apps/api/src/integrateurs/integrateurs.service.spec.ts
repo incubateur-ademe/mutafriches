@@ -235,18 +235,23 @@ describe("IntegrateursService.declarer", () => {
     expect(repository.marquerContactEnregistre).not.toHaveBeenCalled();
   });
 
-  it.each(["localhost", "http://exemple.fr", "192.168.0.1", "mutafriches.beta.gouv.fr", ""])(
-    "refuse le domaine « %s »",
-    async (domaine) => {
-      const { service, repository, brevo } = contexte;
+  it.each([
+    "localhost",
+    "mon-service",
+    "exemple.f",
+    "http://exemple.fr",
+    "192.168.0.1",
+    "mutafriches.beta.gouv.fr",
+    "",
+  ])("refuse le domaine « %s »", async (domaine) => {
+    const { service, repository, brevo } = contexte;
 
-      await expect(service.declarer({ ...DECLARATION, domaine })).rejects.toThrow(
-        BadRequestException,
-      );
-      expect(repository.creerSiAbsent).not.toHaveBeenCalled();
-      expect(brevo.ajouterContact).not.toHaveBeenCalled();
-    },
-  );
+    await expect(service.declarer({ ...DECLARATION, domaine })).rejects.toThrow(
+      BadRequestException,
+    );
+    expect(repository.creerSiAbsent).not.toHaveBeenCalled();
+    expect(brevo.ajouterContact).not.toHaveBeenCalled();
+  });
 
   it("ignore en silence une déclaration dont le champ piège est rempli", async () => {
     const { service, repository, registre, brevo } = contexte;

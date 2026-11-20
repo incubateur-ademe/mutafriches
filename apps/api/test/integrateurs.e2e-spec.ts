@@ -259,6 +259,8 @@ describe("Registre des intégrateurs E2E", () => {
       ["domaine absent pour QGIS", { canal: "qgis" }],
       ["domaine absent pour l'iframe", { canal: "iframe" }],
       ["domaine local", { canal: "api", domaine: "localhost" }],
+      ["domaine sans extension", { canal: "api", domaine: "mon-service" }],
+      ["extension d'une lettre", { canal: "api", domaine: "mon-service.x" }],
       ["domaine en http", { canal: "qgis", domaine: "http://metropole-x.fr" }],
       ["notre propre domaine", { canal: "api", domaine: "mutafriches.beta.gouv.fr" }],
       ["département invalide", { canal: "page", departement: "Vosges" }],

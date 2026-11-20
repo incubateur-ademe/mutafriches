@@ -1,6 +1,7 @@
 import {
   CANAUX_AVEC_DOMAINE,
   CanalIntegrateur,
+  hoteDeDomaineDeclare,
   StatutIntegrateur,
   type DeclarationIntegrateurInput,
   type DeclarationIntegrateurOutput,
@@ -58,7 +59,7 @@ export function demandeUnDomaine(canal: CanalIntegrateur): boolean {
   return CANAUX_AVEC_DOMAINE.includes(canal);
 }
 
-// Contrôle avant envoi. Le serveur reste juge du domaine (hôte local, port, domaine réservé).
+// Contrôle avant envoi. Le serveur reste juge du domaine (suffixe local, domaine réservé).
 export function validerDeclaration(
   canal: CanalIntegrateur,
   saisie: SaisieDeclaration,
@@ -74,8 +75,9 @@ export function validerDeclaration(
   if (!FORMAT_EMAIL.test(saisie.email.trim())) {
     erreurs.email = "Indiquez une adresse e-mail valide, par exemple nom@domaine.fr.";
   }
-  if (demandeUnDomaine(canal) && !saisie.domaine.trim()) {
-    erreurs.domaine = "Indiquez le domaine, par exemple mon-service.gouv.fr.";
+  if (demandeUnDomaine(canal) && !hoteDeDomaineDeclare(saisie.domaine)) {
+    erreurs.domaine =
+      "Indiquez un nom de domaine complet, avec son extension, par exemple mon-service.gouv.fr.";
   }
   if (
     canal === CanalIntegrateur.PAGE &&
