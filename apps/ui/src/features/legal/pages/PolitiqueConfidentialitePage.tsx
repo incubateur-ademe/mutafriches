@@ -6,7 +6,7 @@ export const PolitiqueConfidentialitePage: React.FC = () => {
     <Layout>
       <div className="fr-mb-4w">
         <h1 className="fr-h3">Politique de confidentialité</h1>
-        <p className="fr-text--sm fr-mb-0">Dernière mise à jour : 24 juin 2026.</p>
+        <p className="fr-text--sm fr-mb-0">Dernière mise à jour : 20 novembre 2026.</p>
       </div>
 
       <p className="fr-text--lg">
