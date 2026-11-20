@@ -67,7 +67,7 @@ export const PolitiqueConfidentialitePage: React.FC = () => {
 
       <h2 className="fr-h5">4. Sur quelle base légale ?</h2>
       <p>
-        Les traitements reposent sur l'exécution d'une <strong>mission d'intérêt public</strong>
+        Les traitements reposent sur l'exécution d'une <strong>mission d'intérêt public</strong>{" "}
         dont est investie l'ADEME. La mesure d'audience est réalisée à des fins strictement internes
         d'amélioration du service.
       </p>
