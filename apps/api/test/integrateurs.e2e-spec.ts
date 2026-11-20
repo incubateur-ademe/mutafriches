@@ -188,12 +188,8 @@ describe("Registre des intégrateurs E2E", () => {
       });
     });
 
-    it("page personnalisée : la demande attend, sans domaine, avec département et tranche", async () => {
-      const reponse = await declarer(contexte, {
-        canal: "page",
-        departement: "88",
-        nbSitesEstime: "10-a-50",
-      }).expect(200);
+    it("page personnalisée : la demande attend, sans domaine à déclarer", async () => {
+      const reponse = await declarer(contexte, { canal: "page" }).expect(200);
 
       expect(reponse.body).toEqual({ canal: "page", statut: "en_attente", dejaDeclare: false });
       expect(contexte.depot.lignes[0]).toMatchObject({
@@ -201,8 +197,6 @@ describe("Registre des intégrateurs E2E", () => {
         origine: null,
         cleStats: null,
         statut: StatutIntegrateur.EN_ATTENTE,
-        departement: "88",
-        nbSitesEstime: "10-a-50",
       });
     });
 
@@ -271,8 +265,6 @@ describe("Registre des intégrateurs E2E", () => {
       ["domaine local", { canal: "api", domaine: "localhost" }],
       ["domaine en http", { canal: "qgis", domaine: "http://metropole-x.fr" }],
       ["notre propre domaine", { canal: "api", domaine: "mutafriches.beta.gouv.fr" }],
-      ["département invalide", { canal: "page", departement: "Vosges" }],
-      ["tranche de sites inconnue", { canal: "page", nbSitesEstime: "beaucoup" }],
     ])("refuse en 400 sans rien créer : %s", async (_cas, declaration) => {
       await declarer(contexte, declaration).expect(400);
 

@@ -65,8 +65,6 @@ export class DepotIntegrateursEnMemoire {
     const creee: Integrateur = {
       origine: null,
       cleStats: null,
-      departement: null,
-      nbSitesEstime: null,
       contactEnregistre: false,
       activeLe: null,
       createdAt: maintenant,

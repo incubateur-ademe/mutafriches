@@ -16,7 +16,7 @@ export interface SourcesReprise {
   // Valeur de ALLOWED_INTEGRATOR_ORIGINS, séparée par des virgules
   originesVariable?: string;
   integrateursIframe: Record<string, IntegrateurIframeConfig>;
-  partenaires: { slug: string; nom: string; departement: string }[];
+  partenaires: { slug: string; nom: string }[];
 }
 
 function hote(origine: string): string | null {
@@ -88,7 +88,6 @@ export function construireLignesReprise(
     structure: partenaire.nom,
     origine: null,
     cleStats: `partenaire:${partenaire.slug}`,
-    departement: partenaire.departement,
   }));
 
   return [...lignesOrigines, ...lignesIframe, ...lignesPages];

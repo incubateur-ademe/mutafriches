@@ -25,8 +25,6 @@ function versIntegrateur(ligne: NewIntegrateur): Integrateur {
   return {
     origine: null,
     cleStats: null,
-    departement: null,
-    nbSitesEstime: null,
     contactEnregistre: false,
     activeLe: null,
     createdAt: new Date(),
@@ -114,7 +112,7 @@ describe("IntegrateursService.declarer", () => {
     expect(registre.ajouterOrigine).not.toHaveBeenCalled();
   });
 
-  it("enregistre une demande de page sans domaine, avec département et tranche", async () => {
+  it("enregistre une demande de page sans domaine", async () => {
     const { service, repository } = contexte;
 
     const resultat = await service.declarer({
@@ -124,8 +122,6 @@ describe("IntegrateursService.declarer", () => {
       prenom: "Alex",
       nom: "Durand",
       email: "contact@epf-z.fr",
-      departement: "88",
-      nbSitesEstime: "10-a-50",
     });
 
     expect(resultat).toEqual({
@@ -136,9 +132,10 @@ describe("IntegrateursService.declarer", () => {
     });
     expect(repository.trouverParCanalEtOrigine).not.toHaveBeenCalled();
     expect(repository.creerSiAbsent.mock.calls[0][0]).toMatchObject({
+      canal: "page",
       origine: null,
-      departement: "88",
-      nbSitesEstime: "10-a-50",
+      cleStats: null,
+      statut: StatutIntegrateur.EN_ATTENTE,
     });
   });
 

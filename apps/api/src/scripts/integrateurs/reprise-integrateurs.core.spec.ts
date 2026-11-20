@@ -87,7 +87,7 @@ describe("construireLignesReprise", () => {
   it("reprend les pages partenaires avec la clé écrite par le tracking", () => {
     const [ligne] = construireLignesReprise({
       integrateursIframe: {},
-      partenaires: [{ slug: "ddt-88", nom: "DDT des Vosges", departement: "88" }],
+      partenaires: [{ slug: "ddt-88", nom: "DDT des Vosges" }],
     });
 
     expect(ligne).toMatchObject({
@@ -95,7 +95,6 @@ describe("construireLignesReprise", () => {
       structure: "DDT des Vosges",
       origine: null,
       cleStats: "partenaire:ddt-88",
-      departement: "88",
       statut: "actif",
     });
   });
@@ -104,7 +103,7 @@ describe("construireLignesReprise", () => {
     const lignes = construireLignesReprise({
       originesVariable: `https://benefriches.ademe.fr,http://benefriches.ademe.fr,${ORIGINE_QGIS_PARTAGEE}`,
       integrateursIframe: INTEGRATEURS_IFRAME,
-      partenaires: [{ slug: "aura", nom: "AURA", departement: "69" }],
+      partenaires: [{ slug: "aura", nom: "AURA" }],
     });
 
     const cles = lignes.map((ligne) => ligne.cleStats).filter(Boolean);

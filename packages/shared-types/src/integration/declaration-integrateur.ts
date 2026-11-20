@@ -59,17 +59,6 @@ export const TYPE_STRUCTURE_LABELS: Record<TypeStructure, string> = {
   autre: "Autre",
 };
 
-export const TRANCHES_NB_SITES = ["moins-de-10", "10-a-50", "50-a-200", "plus-de-200"] as const;
-
-export type TrancheNbSites = (typeof TRANCHES_NB_SITES)[number];
-
-export const TRANCHE_NB_SITES_LABELS: Record<TrancheNbSites, string> = {
-  "moins-de-10": "Moins de 10 sites",
-  "10-a-50": "De 10 à 50 sites",
-  "50-a-200": "De 50 à 200 sites",
-  "plus-de-200": "Plus de 200 sites",
-};
-
 // En-tête posé par un client non navigateur pour se nommer (`qgis/1.2.0`). Sert à distinguer
 // l'extension QGIS de l'API d'une même structure dans les statistiques.
 export const EN_TETE_CLIENT_MUTAFRICHES = "x-mutafriches-client";
@@ -116,9 +105,6 @@ export interface DeclarationIntegrateurInput {
   email: string;
   // Obligatoire pour les canaux de CANAUX_AVEC_DOMAINE.
   domaine?: string;
-  // Canal page uniquement.
-  departement?: string;
-  nbSitesEstime?: TrancheNbSites;
   // Champ piège : rempli par un robot, jamais par un humain.
   telephone?: string;
 }

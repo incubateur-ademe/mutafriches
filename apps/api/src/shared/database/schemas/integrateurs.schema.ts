@@ -1,10 +1,5 @@
 import { pgTable, varchar, boolean, timestamp, index, unique } from "drizzle-orm/pg-core";
-import type {
-  CanalIntegrateur,
-  StatutIntegrateur,
-  TrancheNbSites,
-  TypeStructure,
-} from "@mutafriches/shared-types";
+import type { CanalIntegrateur, StatutIntegrateur, TypeStructure } from "@mutafriches/shared-types";
 
 /**
  * Registre des intégrateurs : qui a déclaré vouloir utiliser l'API, l'extension QGIS, une page
@@ -37,10 +32,6 @@ export const integrateurs = pgTable(
     cleStats: varchar("cle_stats", { length: 255 }),
 
     statut: varchar("statut", { length: 20 }).$type<StatutIntegrateur>().notNull(),
-
-    /** Canal `page` uniquement */
-    departement: varchar("departement", { length: 3 }),
-    nbSitesEstime: varchar("nb_sites_estime", { length: 20 }).$type<TrancheNbSites>(),
 
     /** Faux si l'outil d'e-mailing n'a pas reçu le contact : déclarant non joignable */
     contactEnregistre: boolean("contact_enregistre").notNull().default(false),

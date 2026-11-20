@@ -6,8 +6,6 @@ CREATE TABLE "integrateurs" (
 	"origine" varchar(255),
 	"cle_stats" varchar(255),
 	"statut" varchar(20) NOT NULL,
-	"departement" varchar(3),
-	"nb_sites_estime" varchar(20),
 	"contact_enregistre" boolean DEFAULT false NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL,

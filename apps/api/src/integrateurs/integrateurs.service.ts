@@ -3,7 +3,6 @@ import { v4 as uuidv4 } from "uuid";
 import {
   CANAUX_ACTIFS_A_LA_DECLARATION,
   CANAUX_AVEC_DOMAINE,
-  CanalIntegrateur,
   StatutIntegrateur,
   type DeclarationIntegrateurInput,
   type DeclarationIntegrateurOutput,
@@ -94,8 +93,6 @@ export class IntegrateursService {
       // Une page ou une iframe reçoit sa clé à la publication.
       cleStats: actif && origine ? cleStatsPourOrigine(input.canal, origine) : null,
       statut,
-      departement: input.canal === CanalIntegrateur.PAGE ? (input.departement ?? null) : null,
-      nbSitesEstime: input.canal === CanalIntegrateur.PAGE ? (input.nbSitesEstime ?? null) : null,
       activeLe: actif ? new Date() : null,
     };
 

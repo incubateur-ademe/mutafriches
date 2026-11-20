@@ -888,18 +888,6 @@
           "primaryKey": false,
           "notNull": true
         },
-        "departement": {
-          "name": "departement",
-          "type": "varchar(3)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "nb_sites_estime": {
-          "name": "nb_sites_estime",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": false
-        },
         "contact_enregistre": {
           "name": "contact_enregistre",
           "type": "boolean",

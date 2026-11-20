@@ -5,7 +5,6 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
-  Matches,
   MaxLength,
   MinLength,
   ValidateIf,
@@ -13,13 +12,11 @@ import {
 import {
   CANAUX_AVEC_DOMAINE,
   CANAUX_INTEGRATEUR,
-  TRANCHES_NB_SITES,
   TYPES_STRUCTURE,
   type CanalIntegrateur,
   type DeclarationIntegrateurInput,
   type DeclarationIntegrateurOutput,
   type StatutIntegrateur,
-  type TrancheNbSites,
   type TypeStructure,
 } from "@mutafriches/shared-types";
 
@@ -73,16 +70,6 @@ export class DeclarationIntegrateurDto implements DeclarationIntegrateurInput {
   @IsNotEmpty({ message: "Le domaine est obligatoire pour ce canal" })
   @MaxLength(255)
   domaine?: string;
-
-  @ApiPropertyOptional({ description: "Code du département (canal page)", example: "88" })
-  @IsOptional()
-  @Matches(/^(\d{2,3}|2[AB])$/, { message: "Code département invalide" })
-  departement?: string;
-
-  @ApiPropertyOptional({ enum: TRANCHES_NB_SITES })
-  @IsOptional()
-  @IsIn(TRANCHES_NB_SITES, { message: "Tranche de sites invalide" })
-  nbSitesEstime?: TrancheNbSites;
 
   // Champ piège, absent de la documentation : rempli, la déclaration est ignorée.
   @IsOptional()
