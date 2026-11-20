@@ -42,7 +42,12 @@ export function Header() {
               <div className="fr-header__service">
                 <a href="/" title="Retour à l'accueil du site - Mutafriches - République Française">
                   <p className="fr-header__service-title">
-                    Mutafriches{" "}
+                    <img
+                      src="/images/logo-mutafriches.svg"
+                      alt="Mutafriches"
+                      className="fr-responsive-img"
+                      style={{ height: "5rem", width: "auto", verticalAlign: "middle" }}
+                    />{" "}
                     <span className="fr-badge fr-badge--success fr-badge--no-icon">BETA</span>
                   </p>
                 </a>

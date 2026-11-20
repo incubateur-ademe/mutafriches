@@ -4,7 +4,13 @@ export function SimpleHeader() {
       {/* Titre et logo */}
       <div className="fr-grid-row fr-grid-row--middle fr-mb-2w">
         <div className="fr-col">
-          <h1>Mutafriches</h1>
+          <h1 className="fr-mb-0">
+            <img
+              src="/images/logo-mutafriches.svg"
+              alt="Mutafriches"
+              style={{ height: "6rem", width: "auto" }}
+            />
+          </h1>
         </div>
         <div className="fr-col-auto">
           <img
