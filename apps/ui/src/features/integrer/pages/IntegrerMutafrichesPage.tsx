@@ -7,6 +7,7 @@ import { SolutionIntegrationCard } from "../components/SolutionIntegrationCard";
 
 const URL_BENEFRICHES = "https://benefriches.ademe.fr";
 const URL_URBANVITALIZ = "https://urbanvitaliz.fr";
+const URL_FORMULAIRE_PAGE_PERSONNALISEE = "https://tally.so/r/RWoN89";
 
 const IMAGES = {
   qgis: "/images/integrer/extension-qgis.webp",
@@ -17,7 +18,6 @@ const IMAGES = {
 
 const MESSAGES_CONTACT = {
   api: "Choisissez un créneau pour demander un accès à l'API Mutafriches à l'équipe.",
-  page: "Choisissez un créneau pour demander une page Mutafriches personnalisée à l'équipe.",
   aide: "Choisissez un créneau pour décrire vos outils et vos sites à l'équipe, qui vous orientera vers la solution adaptée.",
 } as const;
 
@@ -89,9 +89,15 @@ export function IntegrerMutafrichesPage() {
               tags={["Utilisation ponctuelle", "Nombre de sites limité"]}
               image={IMAGES.page}
               action={
-                <button type="button" className="fr-btn" onClick={() => setMotifContact("page")}>
+                <a
+                  className="fr-btn"
+                  href={URL_FORMULAIRE_PAGE_PERSONNALISEE}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="Demander une page personnalisée - nouvelle fenêtre"
+                >
                   Demander une page personnalisée
-                </button>
+                </a>
               }
             >
               Vous disposez déjà d'une liste de friches à étudier ? Retrouvez-les sur une page

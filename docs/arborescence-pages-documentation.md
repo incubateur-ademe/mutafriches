@@ -18,7 +18,7 @@ Menu principal
     ├── Extension QGIS                 → tutoriel /integrer-mutafriches/extension-qgis
     ├── API Mutafriches                → prise de rendez-vous (ZCal), documentation /integrer-mutafriches/api
     │   └── lien vers l'iframe         → documentation /integrer-mutafriches/iframe
-    ├── Page Mutafriches personnalisée → prise de rendez-vous (ZCal)
+    ├── Page Mutafriches personnalisée → formulaire de demande (Tally)
     ├── Nos services partenaires       → Bénéfriches et UrbanVitaliz (liens externes)
     └── Besoin d'aide pour choisir     → prise de rendez-vous (ZCal)
 
