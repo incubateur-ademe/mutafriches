@@ -50,14 +50,15 @@ export class BrevoContactsService {
 
     const startTime = Date.now();
     try {
-      // Les attributs doivent exister côté Brevo : un attribut inconnu est ignoré sans erreur.
+      // Tout attribut transmis doit être défini dans le compte Brevo (documentation de l'API).
       await firstValueFrom(
         this.httpService.post(
           BREVO_CONTACTS_URL,
           {
             email: contact.email,
             attributes: {
-              // Attributs d'identité par défaut d'un compte Brevo en français.
+              // Selon le compte, l'identité se nomme PRENOM/NOM ou FIRSTNAME/LASTNAME : ces
+              // deux attributs sont à créer s'ils n'existent pas.
               PRENOM: contact.prenom,
               NOM: contact.nom,
               STRUCTURE: contact.structure,
