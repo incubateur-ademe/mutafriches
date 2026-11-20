@@ -87,16 +87,17 @@ export const ETAPES_TUTORIEL_QGIS: EtapeTutorielQgis[] = [
   },
   {
     id: "se-presenter",
-    titre: "Ouvrir le plugin et s'identifier",
+    titre: "Ouvrir le plugin et déclarer sa structure",
     paragraphes: [
-      "Cliquez sur le bouton Mutafriches : le plugin s'ouvre à droite de la carte. Vous pouvez indiquer votre structure et votre adresse mail (facultatif), puis cliquez sur « Suivant ».",
+      "Cliquez sur le bouton Mutafriches : le plugin s'ouvre à droite de la carte. Déclarez votre structure (nom, type et domaine, par exemple ma-collectivite.fr), indiquez vos prénom, nom et adresse e-mail, puis cliquez sur « Suivant ».",
+      "Cette déclaration, faite une seule fois, identifie vos analyses auprès de Mutafriches. Vos prénom, nom et adresse e-mail sont conservés dans notre outil d'e-mailing, pas dans la base de Mutafriches.",
     ],
     aSavoir:
       "Si votre projet QGIS est vide, l'extension y ajoute un fond de carte OpenStreetMap cadré sur la France, pour situer vos sites. Si votre projet contient déjà des couches, elle n'y touche pas : vos sites s'afficheront par-dessus vos propres fonds.",
     captures: [
       {
         fichier: "02-se-presenter.webp",
-        alt: "QGIS avec un fond de carte de la France au centre et le panneau Mutafriches ouvert à droite : formulaire « Bienvenue dans Mutafriches » avec les champs facultatifs structure et mail, une case de consentement et le bouton « Suivant ».",
+        alt: "QGIS avec un fond de carte de la France au centre et le panneau Mutafriches ouvert à droite : formulaire « Bienvenue dans Mutafriches » de déclaration de la structure : nom, type, domaine, prénom, nom et adresse e-mail, puis le bouton « Suivant ».",
       },
     ],
   },
