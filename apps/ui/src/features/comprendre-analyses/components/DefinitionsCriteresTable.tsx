@@ -81,10 +81,18 @@ export function DefinitionsCriteresTable() {
               </colgroup>
               <thead className={CLASSES_ENTETE_TABLEAU}>
                 <tr>
-                  <th scope="col">Critère</th>
-                  <th scope="col">Définition</th>
-                  <th scope="col">Coef.</th>
-                  <th scope="col">Valeur</th>
+                  <th scope="col" className="fr-cell--center">
+                    Critère
+                  </th>
+                  <th scope="col" className="fr-cell--center">
+                    Définition
+                  </th>
+                  <th scope="col" className="fr-cell--center">
+                    Coef.
+                  </th>
+                  <th scope="col" className="fr-cell--center">
+                    Valeur
+                  </th>
                   {USAGES.map((usage) => (
                     // Calé en haut, avec une marge : les pictos s'alignent quel que soit le nombre de lignes
                     // du libellé, sans coller au bord de l'en-tête
@@ -114,13 +122,13 @@ export function DefinitionsCriteresTable() {
                           <th
                             scope="rowgroup"
                             rowSpan={critere.lignes.length}
-                            className="fr-cell--multiline break-words"
+                            className="fr-cell--multiline fr-cell--center break-words"
                           >
                             {libelleCritere(critere)}
                           </th>
                           <td
                             rowSpan={critere.lignes.length}
-                            className="fr-cell--multiline fr-text--xs break-words"
+                            className="fr-cell--multiline fr-cell--center fr-text--xs break-words"
                           >
                             {DEFINITIONS_CRITERES[critere.cle]}
                           </td>
@@ -129,7 +137,9 @@ export function DefinitionsCriteresTable() {
                           </td>
                         </>
                       )}
-                      <td className="fr-cell--multiline break-words">{ligne.reponse}</td>
+                      <td className="fr-cell--multiline fr-cell--center break-words">
+                        {ligne.reponse}
+                      </td>
                       {USAGES.map((usage) => (
                         <ScoreCell
                           key={usage}
