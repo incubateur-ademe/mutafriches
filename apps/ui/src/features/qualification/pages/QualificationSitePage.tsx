@@ -312,7 +312,7 @@ export const QualificationSitePage: React.FC = () => {
             onChange={(v) => handleChange("presencePollution", v as PresencePollution | "")}
             siteReferencePollue={uiData?.siteReferencePollue}
             error={touched.presencePollution ? errors.presencePollution : undefined}
-            tooltip="Entrez l'information dont vous disposez sur la présence de pollution sur votre site (sol et bâti). Si la case 'Oui' est présélectionnée, c’est que nous avons retrouvé un risque de pollution à moins de 500 m dans une base de données nationales des sites et sols pollués."
+            tooltip="Entrez l'information dont vous disposez sur la présence de pollution sur votre site (sol et bâti). Si la case 'Oui' est présélectionnée, c’est qu'une base de données nationale signale un risque de pollution à proximité : site pollué (ADEME) ou installation classée (ICPE) à moins de 500 m, secteur d'information sur les sols (SIS) à moins de 1 km, ou ancien site industriel ou activité de service (CASIAS) à moins de 100 m."
           />
 
           <IlotChaleurField

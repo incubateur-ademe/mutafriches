@@ -212,7 +212,7 @@ export class EnrichissementService {
         sourcesEchouees,
       );
 
-      // 9. POLLUTION (ADEME + SIS + ICPE)
+      // 9. POLLUTION (ADEME + SIS + ICPE + CASIAS)
       const pollutionResult = await this.pollutionDetection.enrichir(siteEval);
       this.mergeEnrichmentResult(
         pollutionResult,

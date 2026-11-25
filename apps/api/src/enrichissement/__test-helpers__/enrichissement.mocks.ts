@@ -139,6 +139,10 @@ interface MockIcpeService {
   getIcpeByLatLon: Mock;
 }
 
+interface MockCasiasService {
+  getCasiasByLatLon: Mock;
+}
+
 interface MockGeoRisquesEnrichissementService {
   enrichir: Mock;
 }
@@ -397,6 +401,15 @@ export function createMockSisService(): MockSisService {
 export function createMockIcpeService(): MockIcpeService {
   return {
     getIcpeByLatLon: vi.fn(),
+  };
+}
+
+/**
+ * Mock du CasiasService
+ */
+export function createMockCasiasService(): MockCasiasService {
+  return {
+    getCasiasByLatLon: vi.fn(),
   };
 }
 

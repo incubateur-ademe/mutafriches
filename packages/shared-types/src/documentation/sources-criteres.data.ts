@@ -143,6 +143,14 @@ const SOURCES_PRE_REMPLISSAGE: Record<string, SourceCritereDoc[]> = {
       format: GEORISQUES.format,
       urlDoc: "https://www.georisques.gouv.fr/doc-api",
     },
+    {
+      nom: "Anciens sites industriels et activités de service (CASIAS)",
+      producteur: GEORISQUES.producteur,
+      type: "api-externe",
+      format: GEORISQUES.format,
+      urlDoc:
+        "https://www.georisques.gouv.fr/donnees/bases-de-donnees/inventaire-historique-de-sites-industriels-et-activites-de-service",
+    },
   ],
 };
 

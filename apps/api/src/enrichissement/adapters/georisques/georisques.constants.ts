@@ -20,6 +20,7 @@ export const GEORISQUES_ENDPOINTS = {
   CAVITES: "/cavites",
   OLD: "/old",
   SIS: "/ssp/conclusions_sis",
+  CASIAS: "/ssp/casias",
   ICPE: "/installations_classees",
   AZI: "/gaspar/azi",
   PAPI: "/gaspar/papi",
@@ -38,6 +39,7 @@ export const GEORISQUES_RAYONS_DEFAUT = {
   CAVITES: 1000, // 1 km pour cavités
   OLD: 0, // OLD ne nécessite pas de rayon (recherche par point)
   SIS: 1000, // 1 km pour SIS (max 10000m autorisé par l'API)
+  CASIAS: 100, // Seuil de signalement pollution, pas un rayon d'exploration (ADR-0056)
   ICPE: 1000, // 1 km pour ICPE (max 10000m autorisé par l'API)
   AZI: 1000, // 1 km pour AZI (max 10000m autorisé par l'API)
   PAPI: 1000, // 1 km pour PAPI (max 10000m autorisé par l'API)
@@ -52,6 +54,7 @@ export const GEORISQUES_NOMBRE_RESULTATS_RECENTS = {
   MVT: 5, // 5 mouvements les plus proches
   CAVITES: 5, // 5 cavités les plus proches
   SIS: 5, // 5 SIS les plus proches
+  CASIAS: 5, // 5 sites CASIAS (le total vient du champ `results`)
   ICPE: 5, // 5 ICPE les plus proches
 } as const;
 
@@ -69,6 +72,7 @@ export const GEORISQUES_SOURCES = {
   CAVITES: "GeoRisques - Cavités Souterraines",
   OLD: "GeoRisques - Obligations Légales Débroussaillement",
   SIS: "GeoRisques - Secteurs d'Information sur les Sols",
+  CASIAS: "GeoRisques - Anciens Sites Industriels et Activités de Service",
   ICPE: "GeoRisques - Installations Classées",
   PAPI: "GeoRisques - PAPI",
   PPR: "GeoRisques - PPR",

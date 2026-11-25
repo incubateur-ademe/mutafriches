@@ -161,7 +161,7 @@ describe("construireFricheCnig", () => {
     expect(friche.sol_pollution_existe).toBe("pollution avérée");
   });
 
-  it("signale un site référencé ADEME faute de saisie", () => {
+  it("signale un site référencé par une base nationale faute de saisie", () => {
     const friche = construireFricheCnig({
       site,
       enrichissement: enrichissement({ siteReferencePollue: true }),
@@ -170,6 +170,7 @@ describe("construireFricheCnig", () => {
 
     expect(friche.sol_pollution_existe).toBe("pollution supposée");
     expect(friche.sol_pollution_commentaire).toContain("ADEME");
+    expect(friche.sol_pollution_commentaire).toContain("CASIAS");
   });
 
   it("laisse desserte_distance vide, faute de distance au réseau fluvial", () => {

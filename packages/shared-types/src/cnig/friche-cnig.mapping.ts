@@ -67,7 +67,7 @@ export function batiPollutionCnig(pollution?: PresencePollution): string {
 
 /**
  * `sol_pollution_existe` — existence de pollution du sol.
- * À défaut de saisie, un site référencé dans les bases ADEME vaut « pollution supposée ».
+ * À défaut de saisie, un site signalé par ADEME, SIS, ICPE ou CASIAS vaut « pollution supposée ».
  */
 export function solPollutionExisteCnig(
   pollution?: PresencePollution,

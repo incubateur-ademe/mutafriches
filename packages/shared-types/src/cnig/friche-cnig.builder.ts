@@ -183,7 +183,7 @@ export function construireFricheCnig(input: ConstruireFricheCnigInput): FricheCn
     sol_pollution_origine: CNIG_INCONNU,
     sol_pollution_commentaire:
       enrichissement?.siteReferencePollue === true
-        ? "Site référencé dans les bases ADEME des sites et sols pollués."
+        ? "Site signalé par une base nationale : sites et sols pollués (ADEME), secteur d'information sur les sols (SIS), installation classée (ICPE) ou ancien site industriel (CASIAS)."
         : null,
     sol_depollution_fiche: null,
 

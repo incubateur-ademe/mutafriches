@@ -142,7 +142,7 @@ export const transformEnrichmentToUiData = (
     // Distance à une Installation Terminale Embranchée (ITE) fret
     distanceIte: formatDistanceIte(enrichmentData.distanceIte),
 
-    // Pollution - site reference dans les bases ADEME (sites et sols pollues)
+    // Pollution : site signalé par ADEME, SIS, ICPE ou CASIAS
     siteReferencePollue: enrichmentData.siteReferencePollue === true,
 
     // Zonage ABC logement
