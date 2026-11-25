@@ -43,3 +43,6 @@ docs/ops/metabase/*.geojson
 
 # Matrice de scoring générée (pnpm docs:matrice:gen)
 packages/shared-types/src/documentation/matrice-scoring.data.json
+
+# Worktrees des sessions Claude Code (copies du dépôt, à ne pas reformater depuis ici)
+.claude/worktrees/
