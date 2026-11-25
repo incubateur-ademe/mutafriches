@@ -55,7 +55,7 @@ Pour vos tests, utilisez l'intégrateur `"demo"` qui :
 ### Intégrateur de production
 
 Pour la production, demandez votre identifiant avec le formulaire de la page
-[Intégrer par iframe](https://mutafriches.beta.gouv.fr/integrer-mutafriches/iframe). L'équipe
+[Intégrer par iframe](https://mutafriches.beta.gouv.fr/utiliser-mutafriches/iframe). L'équipe
 vous recontacte avec :
 
 - Votre identifiant d'intégrateur unique
@@ -349,7 +349,7 @@ requêtes. Les lectures (`GET /evaluation/{id}`, `GET /evaluation/metadata`,
 `GET /api/attributaire/sites`) sont ouvertes.
 
 **Déclarez votre domaine** avec le formulaire de la page
-[Utiliser l'API](https://mutafriches.beta.gouv.fr/integrer-mutafriches/api) : il est autorisé
+[Utiliser l'API](https://mutafriches.beta.gouv.fr/utiliser-mutafriches/api) : il est autorisé
 dès l'envoi, sans validation de notre part. Vous indiquez le nom de votre structure, une
 contact (prénom, nom et adresse e-mail, pour vous prévenir des évolutions de l'API) et :
 

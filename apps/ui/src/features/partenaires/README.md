@@ -62,7 +62,7 @@ Remplacer `<slug>` par le slug du partenaire (minuscules, sans espace, ex. `aura
 
 **Production — avant mise en ligne (si le partenaire appelle l'API directement)**
 
-- [ ] Le partenaire déclare son domaine avec le formulaire de `/integrer-mutafriches/api`
+- [ ] Le partenaire déclare son domaine avec le formulaire de `/utiliser-mutafriches/api`
       (table `integrateurs`, ADR-0055) — aucun code ni variable à modifier
 
 **Vérification**

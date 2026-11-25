@@ -207,7 +207,7 @@ Format d'une entrée :
 
 ### Publier une release de l'extension QGIS
 
-- **Origine** : tutoriel `/integrer-mutafriches/extension-qgis`
+- **Origine** : tutoriel `/utiliser-mutafriches/extension-qgis`
 - **Écarté parce que** : le bouton « Télécharger l'extension » pointe sur
   `github.com/incubateur-ademe/mutafriches-qgis/releases/latest`, qui n'existe pas tant
   qu'aucune release n'est publiée
@@ -216,7 +216,7 @@ Format d'une entrée :
 
 ### Identification facultative dans l'extension QGIS
 
-- **Origine** : simplification des textes du tutoriel `/integrer-mutafriches/extension-qgis` (2026-11-18)
+- **Origine** : simplification des textes du tutoriel `/utiliser-mutafriches/extension-qgis` (2026-11-18)
 - **Écarté parce que** : le tutoriel annonce l'identification comme facultative, alors que
   l'extension exige encore une structure et une adresse mail valide pour passer l'accueil
   (`Utilisateur.complet`, `mutafriches/ui/accueil.py`) ; seul le consentement y est facultatif
@@ -226,7 +226,7 @@ Format d'une entrée :
 
 ### Suivi de consultation du tutoriel QGIS
 
-- **Origine** : tutoriel `/integrer-mutafriches/extension-qgis`
+- **Origine** : tutoriel `/utiliser-mutafriches/extension-qgis`
 - **Écarté parce que** : un nouvel événement demande une migration de `type_evenement_enum`,
   à grouper avec celle des événements de l'extension pour éviter deux migrations concurrentes
 - **Préalable** : sujet « Événements de l'extension QGIS »
