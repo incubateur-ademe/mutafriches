@@ -2,7 +2,12 @@ import { describe, expect, it } from "vitest";
 import { CRITERES_METADATA, CRITERES_METADATA_LIST } from "../recapitulatif/criteres.metadata";
 import { DEFINITIONS_CRITERES } from "./criteres-definitions.data";
 import { MATRICE_SCORING_DOC } from "./matrice-scoring.data";
-import { getSourceCritere, SOURCES_HORS_CALCUL } from "./sources-criteres.data";
+import {
+  CRITERES_PRE_REMPLIS,
+  getSourceCritere,
+  getSourcesPreRemplissage,
+  SOURCES_HORS_CALCUL,
+} from "./sources-criteres.data";
 import { SOURCES_DONNEES } from "./sources-donnees.data";
 
 describe("Données de la page « Comprendre les analyses »", () => {
@@ -30,6 +35,19 @@ describe("Données de la page « Comprendre les analyses »", () => {
         expect(source).toBeUndefined();
       }
     }
+  });
+
+  it("ne pré-remplit que des critères saisis, depuis des sources documentées", () => {
+    expect(CRITERES_PRE_REMPLIS).toContain("presencePollution");
+    for (const cle of CRITERES_PRE_REMPLIS) {
+      expect(CRITERES_METADATA[cle]?.saisie, cle).toBe("MANUELLE");
+      const sources = getSourcesPreRemplissage(cle);
+      expect(sources.length, cle).toBeGreaterThan(0);
+      for (const source of sources) {
+        expect(source.urlDoc, source.nom).toMatch(/^https:\/\//);
+      }
+    }
+    expect(getSourcesPreRemplissage("surfaceSite")).toEqual([]);
   });
 
   it("affiche chaque source documentée : par un critère, ou parmi les données hors calcul", () => {

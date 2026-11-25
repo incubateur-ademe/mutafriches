@@ -46,7 +46,7 @@ export const DEFINITIONS_CRITERES: Record<string, string> = {
   etatBatiInfrastructure:
     "État général des bâtiments et des infrastructures du site, renseigné par l'utilisateur.",
   presencePollution:
-    "Connaissance d'une pollution des sols ou du bâti et de sa nature, renseignée par l'utilisateur.",
+    "Connaissance d'une pollution des sols ou du bâti et de sa nature, renseignée par l'utilisateur ; « Oui » est proposé d'office quand un site pollué (ADEME), un secteur d'information sur les sols ou une installation classée est référencé à proximité.",
   valeurArchitecturaleHistorique:
     "Intérêt patrimonial des constructions du site, renseigné par l'utilisateur.",
   qualitePaysage: "Qualité du paysage environnant le site, renseignée par l'utilisateur.",
