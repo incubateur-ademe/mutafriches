@@ -14,10 +14,12 @@ import {
   confirmationDeclaration,
   construireDeclaration,
   demandeUnDomaine,
+  LIBELLE_CONSENTEMENT_CONTACT,
   LIBELLE_DOMAINE,
   messageErreurDeclaration,
   SAISIE_VIDE,
   validerDeclaration,
+  type ChampTexteDeclaration,
   type ErreursDeclaration,
   type SaisieDeclaration,
 } from "../data/declaration-integrateur";
@@ -70,7 +72,7 @@ export function FormulaireDeclaration({
   const [erreurEnvoi, setErreurEnvoi] = useState<string | null>(null);
   const [reponse, setReponse] = useState<DeclarationIntegrateurOutput | null>(null);
 
-  const modifier = (champ: keyof SaisieDeclaration, valeur: string) =>
+  const modifier = (champ: ChampTexteDeclaration, valeur: string) =>
     setSaisie((precedente) => ({ ...precedente, [champ]: valeur }));
 
   const envoyer = async (event: FormEvent<HTMLFormElement>) => {
@@ -222,7 +224,7 @@ export function FormulaireDeclaration({
       <Champ
         id={`${prefixe}-email`}
         label="Adresse e-mail de contact"
-        aide="Pour vous informer des évolutions du service et vous recontacter"
+        aide="Pour le suivi de votre accès et les échanges sur le fonctionnement du service"
         erreur={erreurs.email}
       >
         {(attributs) => (
@@ -237,6 +239,21 @@ export function FormulaireDeclaration({
           />
         )}
       </Champ>
+
+      <div className="fr-checkbox-group fr-checkbox-group--sm fr-mb-3w">
+        <input
+          id={`${prefixe}-accepte-contact`}
+          type="checkbox"
+          checked={saisie.accepteContact}
+          onChange={(event) =>
+            setSaisie((precedente) => ({ ...precedente, accepteContact: event.target.checked }))
+          }
+        />
+        <label className="fr-label" htmlFor={`${prefixe}-accepte-contact`}>
+          {LIBELLE_CONSENTEMENT_CONTACT}
+          <span className="fr-hint-text">Facultatif, sans effet sur votre accès au service</span>
+        </label>
+      </div>
 
       {/* Champ piège : masqué aux personnes, y compris aux lecteurs d'écran. */}
       <div className="fr-hidden" aria-hidden="true">

@@ -132,6 +132,7 @@ export class IntegrateursService {
       structure: integrateur.structure,
       typeStructure: input.typeStructure,
       domaine: integrateur.origine ? new URL(integrateur.origine).hostname : undefined,
+      accepteContact: input.accepteContact === true,
     });
 
     if (resultat.success && !integrateur.contactEnregistre) {

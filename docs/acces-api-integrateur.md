@@ -33,8 +33,10 @@ scalingo --app mutafriches --region osc-secnum-fr1 run "pnpm integrateurs:lister
 ```
 
 Le prénom, le nom et l'adresse e-mail du déclarant ne sont **pas** dans cette table : ils sont
-dans la liste Brevo de l'environnement, avec l'attribut `USAGE_API` coché et la structure et le
-domaine en attributs. La colonne `contact_enregistre` vaut
+dans la liste Brevo de l'environnement, avec l'attribut `USAGE_API` coché, le type d'accès
+demandé (`TYPE_ACCES`) et la structure et le domaine en attributs. `ACCEPTE_CONTACT` n'est coché
+que si le déclarant a accepté d'être sollicité (retours d'expérience, évolutions du service) :
+sans lui, ne lui écrire que pour le fonctionnement de son accès. La colonne `contact_enregistre` vaut
 `false` quand Brevo n'a pas reçu le contact (panne, clé absente) : ce déclarant n'est pas
 joignable.
 

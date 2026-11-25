@@ -103,6 +103,9 @@ export interface DeclarationIntegrateurInput {
   prenom: string;
   nom: string;
   email: string;
+  // Consentement à être sollicité (retours d'expérience, évolutions du service). Sans lui,
+  // l'adresse ne sert qu'au suivi de l'accès et aux échanges sur le fonctionnement du service.
+  accepteContact?: boolean;
   // Obligatoire pour les canaux de CANAUX_AVEC_DOMAINE.
   domaine?: string;
   // Champ piège : rempli par un robot, jamais par un humain.

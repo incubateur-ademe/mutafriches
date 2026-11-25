@@ -18,9 +18,16 @@ export interface SaisieDeclaration {
   nom: string;
   email: string;
   domaine: string;
+  // Case décochée par défaut : le consentement ne se présume pas.
+  accepteContact: boolean;
   // Champ piège, invisible : seul un robot le remplit.
   telephone: string;
 }
+
+export type ChampTexteDeclaration = Exclude<keyof SaisieDeclaration, "accepteContact">;
+
+export const LIBELLE_CONSENTEMENT_CONTACT =
+  "J'accepte d'être contacté·e pour partager mes retours d'expérience et être informé·e des évolutions du service Mutafriches (ADEME)";
 
 export const SAISIE_VIDE: SaisieDeclaration = {
   structure: "",
@@ -29,6 +36,7 @@ export const SAISIE_VIDE: SaisieDeclaration = {
   nom: "",
   email: "",
   domaine: "",
+  accepteContact: false,
   telephone: "",
 };
 
@@ -100,6 +108,7 @@ export function construireDeclaration(
     prenom: saisie.prenom.trim(),
     nom: saisie.nom.trim(),
     email: saisie.email.trim(),
+    accepteContact: saisie.accepteContact,
     ...(demandeUnDomaine(canal) ? { domaine: saisie.domaine.trim() } : {}),
     ...(saisie.telephone ? { telephone: saisie.telephone } : {}),
   };

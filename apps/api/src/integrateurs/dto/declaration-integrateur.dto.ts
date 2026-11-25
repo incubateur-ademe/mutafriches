@@ -1,5 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import {
+  IsBoolean,
   IsEmail,
   IsIn,
   IsNotEmpty,
@@ -60,6 +61,15 @@ export class DeclarationIntegrateurDto implements DeclarationIntegrateurInput {
   @IsEmail({}, { message: "Adresse e-mail invalide" })
   @MaxLength(254)
   email: string;
+
+  @ApiPropertyOptional({
+    description:
+      "Consentement à être contacté pour des retours d'expérience et les évolutions du service. Absent ou faux : l'adresse ne sert qu'au suivi de l'accès",
+    example: false,
+  })
+  @IsOptional()
+  @IsBoolean({ message: "Le consentement doit être un booléen" })
+  accepteContact?: boolean;
 
   @ApiPropertyOptional({
     description: "Domaine envoyé dans l'en-tête Origin (obligatoire sauf pour le canal page)",

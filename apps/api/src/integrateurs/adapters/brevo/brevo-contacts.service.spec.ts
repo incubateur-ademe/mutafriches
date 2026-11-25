@@ -18,6 +18,7 @@ const CONTACT: ContactDeclarant = {
   structure: "Métropole de X",
   typeStructure: "collectivite",
   domaine: "exemple.fr",
+  accepteContact: false,
 };
 
 function creerService(brevo: Partial<AppConfig["brevo"]> = {}) {
@@ -49,6 +50,7 @@ describe("BrevoContactsService", () => {
           STRUCTURE: "Métropole de X",
           TYPE_STRUCTURE: "collectivite",
           DOMAINE: "exemple.fr",
+          TYPE_ACCES: "API",
           USAGE_API: true,
         },
         listIds: [12],
@@ -59,13 +61,13 @@ describe("BrevoContactsService", () => {
   });
 
   it.each([
-    [CanalIntegrateur.API, "USAGE_API"],
-    [CanalIntegrateur.QGIS, "USAGE_QGIS"],
-    [CanalIntegrateur.PAGE, "USAGE_PAGE"],
-    [CanalIntegrateur.IFRAME, "USAGE_IFRAME"],
+    [CanalIntegrateur.API, "USAGE_API", "API"],
+    [CanalIntegrateur.QGIS, "USAGE_QGIS", "Extension QGIS"],
+    [CanalIntegrateur.PAGE, "USAGE_PAGE", "Page personnalisée"],
+    [CanalIntegrateur.IFRAME, "USAGE_IFRAME", "Iframe"],
   ])(
-    "ne transmet que l'attribut d'usage du canal %s (usages cumulables)",
-    async (canal, attribut) => {
+    "ne transmet que l'attribut d'usage du canal %s (usages cumulables) et nomme l'accès demandé",
+    async (canal, attribut, typeAcces) => {
       const { service, post } = creerService();
 
       await service.ajouterContact({ ...CONTACT, canal });
@@ -74,6 +76,7 @@ describe("BrevoContactsService", () => {
       const usages = Object.keys(corps.attributes).filter((cle) => cle.startsWith("USAGE_"));
       expect(usages).toEqual([attribut]);
       expect(corps.attributes[attribut]).toBe(true);
+      expect(corps.attributes.TYPE_ACCES).toBe(typeAcces);
       expect(corps.listIds).toEqual([12]);
     },
   );
@@ -85,6 +88,17 @@ describe("BrevoContactsService", () => {
 
     const corps = post.mock.calls[0][1] as CorpsBrevo;
     expect(corps.attributes).not.toHaveProperty("DOMAINE");
+  });
+
+  it("ne transmet le consentement que s'il est donné, sans jamais l'écraser à faux", async () => {
+    const { service, post } = creerService();
+
+    await service.ajouterContact(CONTACT);
+    await service.ajouterContact({ ...CONTACT, accepteContact: true });
+
+    const [sansAccord, avecAccord] = post.mock.calls.map((appel) => appel[1] as CorpsBrevo);
+    expect(sansAccord.attributes).not.toHaveProperty("ACCEPTE_CONTACT");
+    expect(avecAccord.attributes.ACCEPTE_CONTACT).toBe(true);
   });
 
   it("n'appelle pas Brevo sans clé d'API", async () => {

@@ -1,7 +1,11 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { HttpService } from "@nestjs/axios";
 import { firstValueFrom } from "rxjs";
-import { CanalIntegrateur, type TypeStructure } from "@mutafriches/shared-types";
+import {
+  CANAL_INTEGRATEUR_LABELS,
+  CanalIntegrateur,
+  type TypeStructure,
+} from "@mutafriches/shared-types";
 import { ApiResponse } from "../../../enrichissement/adapters/shared/api-response.types";
 import { AppConfig } from "../../../config";
 
@@ -19,6 +23,15 @@ export const ATTRIBUT_USAGE_BREVO: Record<CanalIntegrateur, string> = {
   [CanalIntegrateur.IFRAME]: "USAGE_IFRAME",
 };
 
+// Libellé du dernier accès demandé, lisible dans une fiche contact et utilisable en segment.
+// Écrasé à chaque déclaration : le cumul des usages reste porté par les attributs `USAGE_*`.
+export const ATTRIBUT_TYPE_ACCES_BREVO = "TYPE_ACCES";
+
+// Consentement aux sollicitations (retours d'expérience, évolutions du service), à créer dans
+// Brevo. Transmis seulement quand il est donné : une déclaration sans case cochée ne retire
+// pas un accord antérieur, qui se retire par désinscription.
+export const ATTRIBUT_CONSENTEMENT_BREVO = "ACCEPTE_CONTACT";
+
 export interface ContactDeclarant {
   prenom: string;
   nom: string;
@@ -27,6 +40,7 @@ export interface ContactDeclarant {
   structure: string;
   typeStructure: TypeStructure;
   domaine?: string;
+  accepteContact: boolean;
 }
 
 // Transmet le contact d'un déclarant à Brevo, seul endroit où son prénom, son nom et son
@@ -64,7 +78,9 @@ export class BrevoContactsService {
               STRUCTURE: contact.structure,
               TYPE_STRUCTURE: contact.typeStructure,
               ...(contact.domaine ? { DOMAINE: contact.domaine } : {}),
+              [ATTRIBUT_TYPE_ACCES_BREVO]: CANAL_INTEGRATEUR_LABELS[contact.canal],
               [ATTRIBUT_USAGE_BREVO[contact.canal]]: true,
+              ...(contact.accepteContact ? { [ATTRIBUT_CONSENTEMENT_BREVO]: true } : {}),
             },
             listIds: [listeId],
             updateEnabled: true,
