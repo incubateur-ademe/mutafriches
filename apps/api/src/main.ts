@@ -43,7 +43,7 @@ async function bootstrap() {
 
     // En-têtes de sécurité (ADR-0051). La CSP se limite à `frame-ancestors` : qui peut nous
     // embarquer en iframe. Les autres directives restent à écrire (tiers chargés par l'UI :
-    // DSFR, tuiles IGN, Metabase, ZCal), cf. docs/SUJETS-A-TRAITER.md.
+    // DSFR, tuiles IGN, Metabase, calendrier de rendez-vous), cf. docs/SUJETS-A-TRAITER.md.
     app.use(
       helmet({
         contentSecurityPolicy: {
