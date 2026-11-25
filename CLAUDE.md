@@ -517,11 +517,12 @@ Le prénom, le nom et l'adresse e-mail d'une déclaration partent dans Brevo (`P
 - `BREVO_LISTE_ID` : identifiant de la liste de l'environnement (une en staging, une en production)
 - Sans clé ou sans liste (local, review apps), le contact n'est pas transmis : la déclaration est acceptée et la ligne garde `contact_enregistre = false`
 
-### Contact multisites (calendrier ZCal)
+### Contact multisites (calendrier de rendez-vous)
 
-La modale « Analyser plusieurs sites » (page résultats) embarque un **calendrier ZCal** en iframe pour la prise de rendez-vous (cf. ADR-0020). **Aucune donnée nominative n'est collectée ni stockée**, et l'application **n'envoie plus d'e-mails transactionnels** (la brique `mailer/`, le module `contact/` et la table `demandes_contact` ont été supprimés). L'ouverture de la modale reste tracée (`OUVERTURE_MODALE_MULTISITES`, sans PII).
+La modale « Analyser plusieurs sites » (page résultats) embarque le **calendrier de rendez-vous de l'incubateur ADEME** (instance Cal.com `rdv.incubateur.ademe.fr`) en iframe (cf. ADR-0020 et ADR-0056). **Aucune donnée nominative n'est collectée ni stockée**, et l'application **n'envoie plus d'e-mails transactionnels** (la brique `mailer/`, le module `contact/` et la table `demandes_contact` ont été supprimés). L'ouverture de la modale reste tracée (`OUVERTURE_MODALE_MULTISITES`, sans PII).
 
-- `VITE_ZCAL_URL` (UI) : URL du calendrier ZCal embarqué (défaut : calendrier de l'équipe). Config dans `apps/ui/src/shared/config/zcal.config.ts`.
+- `VITE_CALENDRIER_RDV_URL` (UI) : URL de réservation Cal.com embarquée (défaut : calendrier de l'équipe). Le script d'embed, l'origine et le chemin en sont dérivés. Config dans `apps/ui/src/shared/config/calendrier-rdv.config.ts`. `VITE_ZCAL_URL` n'est plus lue.
+- Le script d'embed exige une file `window.Cal.q` en place avant son chargement, et ignore un second `inline` tant que le premier est dans le document (`CalendrierRdvEmbed.tsx`).
 - Réintroduire un envoi d'e-mails imposerait de recréer une brique dédiée : voir les ADR-0015 / 0017 (remplacés) comme référence d'implémentation.
 
 ## Documentation contextuelle
@@ -629,8 +630,8 @@ Pièges rencontrés en session. Chaque entrée documente un piège pour éviter 
 
 - Une iframe `loading="lazy"` placée dans le conteneur scrollable d'une modale DSFR (`.fr-modal__body`, `overflow-y: auto`) n'est **jamais chargée par Firefox** : elle reste à la hauteur de son placeholder, sans erreur ni requête réseau. Chromium a un correctif pour le lazy loading dans les scrollers imbriqués, pas Gecko.
 - Symptôme trompeur : « ça marche sur Chrome, pas sur Firefox » alors que rien n'est bloqué (ni CSP, ni ETP, ni liste de traqueurs).
-- Correctif : repasser l'iframe en `loading = "eager"` dès son insertion (cf. `ZcalEmbed.tsx`, ADR-0031). Vérifier en Firefox headless : `firefox --headless --profile <dir> --screenshot out.png <url>`.
-- Le script d'embed ZCal est gardé par `window.zcal` : il ne scanne le DOM qu'une fois par page, réinjecter la balise `<script>` est un no-op.
+- Correctif : repasser l'iframe en `loading = "eager"` dès son insertion (ADR-0031, écrit pour l'ancien embed ZCal). Vérifier en Firefox headless : `firefox --headless --profile <dir> --screenshot out.png <url>`.
+- L'embed Cal.com actuel (`CalendrierRdvEmbed.tsx`, ADR-0056) ne pose pas `loading="lazy"` : le revérifier si le script de l'instance change.
 
 ### Parcelle partenaire absente du cadastre : écartée en silence
 

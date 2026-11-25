@@ -351,7 +351,7 @@ Format d'une entrée :
 ### Content-Security-Policy
 
 - **Origine** : la CSP posée par `helmet` se limite à `frame-ancestors` (ADR-0051)
-- **Écarté parce que** : l'UI charge des tiers (DSFR, tuiles IGN, Metabase, ZCal, apicarto) : les
+- **Écarté parce que** : l'UI charge des tiers (DSFR, tuiles IGN, Metabase, calendrier de rendez-vous, apicarto) : les
   autres directives écrites à l'aveugle cassent la carte ou les statistiques
 - **Préalable** : relever les origines chargées en production (onglet réseau sur `/analyser`,
   `/statistiques`, `/iframe`), passer d'abord par `Content-Security-Policy-Report-Only`

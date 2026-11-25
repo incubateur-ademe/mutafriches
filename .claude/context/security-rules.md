@@ -177,7 +177,7 @@ throw new InternalServerErrorException("Erreur lors de l'enrichissement");
 - CORS ne reflète que les origines de `construireOriginesCors()` (`shared/utils/origines-autorisees.ts` : nos domaines, les dashboards ADEME, `ALLOWED_ORIGINS`) et les domaines déclarés du registre des intégrateurs. Toute origine locale est acceptée en `development` (ADR-0051, ADR-0055)
 - `frame-ancestors` ne contient jamais un domaine déclaré pour l'API : seuls `INTEGRATEURS_IFRAME` et les origines fixes peuvent nous embarquer
 - **JAMAIS** configurer `Access-Control-Allow-Origin: *` en production, ni rajouter une origine en dur ailleurs que dans ce fichier
-- Les en-têtes de sécurité viennent de `helmet` (`main.ts`). CSP et `X-Frame-Options` restent désactivés : l'UI est embarquée en iframe par les intégrateurs. Ne pas les activer sans lister les tiers chargés (DSFR, tuiles IGN, Metabase, ZCal)
+- Les en-têtes de sécurité viennent de `helmet` (`main.ts`). CSP et `X-Frame-Options` restent désactivés : l'UI est embarquée en iframe par les intégrateurs. Ne pas les activer sans lister les tiers chargés (DSFR, tuiles IGN, Metabase, calendrier de rendez-vous `rdv.incubateur.ademe.fr`)
 - Les bypass de sécurité (guards, CORS local, jeton de refresh) n'existent qu'avec `NODE_ENV=development` **explicite** ; un `NODE_ENV` absent applique les réglages de production et le signale au démarrage
 
 ---
