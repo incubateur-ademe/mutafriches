@@ -4,7 +4,7 @@
 
 - Le **menu principal** porte les pages destinées à tous les publics : comprendre le calcul, choisir un mode d'intégration.
 - La page **Intégrer Mutafriches** est l'entrée unique vers les modes d'intégration : quatre solutions y ont leur carte (extension QGIS, API, page personnalisée, services partenaires). L'extension QGIS, l'API et l'iframe ont chacune leur page de détail sous `/integrer-mutafriches/` ; l'iframe n'a pas de carte, sa page s'atteint depuis la documentation de l'API.
-- L'en-tête n'a plus de bouton **Documentation** : le menu principal suffit à atteindre « Intégrer Mutafriches ».
+- L'en-tête n'a plus de bouton **Documentation** : le menu principal suffit à atteindre « Intégrer Mutafriches », par l'entrée « Utiliser Mutafriches » (la page garde son titre).
 - Le **footer** porte les pages techniques : état des sources, détail des données, pages de tests, et un rappel vers « Intégrer Mutafriches ».
 
 ## Arborescence
@@ -14,7 +14,7 @@ Menu principal
 ├── Comprendre les analyses            /comprendre-les-analyses
 │   ├── onglet Définitions et coef. des critères
 │   └── onglet Sources des données
-└── Intégrer Mutafriches               /integrer-mutafriches
+└── Utiliser Mutafriches               /integrer-mutafriches (page « Intégrer Mutafriches »)
     ├── Extension QGIS                 → tutoriel /integrer-mutafriches/extension-qgis
     ├── API Mutafriches                → déclaration du domaine (formulaire en modale), documentation /integrer-mutafriches/api
     │   └── lien vers l'iframe         → documentation /integrer-mutafriches/iframe

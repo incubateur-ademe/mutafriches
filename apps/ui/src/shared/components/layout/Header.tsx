@@ -141,7 +141,7 @@ export function Header() {
                   className="fr-nav__link"
                   aria-current={isActive(ROUTES.INTEGRER) ? "page" : undefined}
                 >
-                  Intégrer Mutafriches
+                  Utiliser Mutafriches
                 </Link>
               </li>
             </ul>
