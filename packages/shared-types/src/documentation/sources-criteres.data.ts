@@ -116,6 +116,44 @@ export function getSourceCritere(critere: CritereMetadata): SourceCritereDoc | u
   };
 }
 
+// Référentiels qui pré-sélectionnent « Oui » à un critère saisi (pollution-detection.service.ts) :
+// l'utilisateur confirme ou corrige, et seule sa réponse est notée
+const SOURCES_PRE_REMPLISSAGE: Record<string, SourceCritereDoc[]> = {
+  presencePollution: [
+    {
+      nom: "Sites et sols pollués",
+      producteur: "ADEME",
+      type: "referentiel-local",
+      format: "GeoJSON",
+      urlDoc:
+        "https://data.ademe.fr/datasets/srd-ademe/full?p=%2Fdata-fair%2Fembed%2Fdataset%2Fsrd-ademe%2Ftable",
+    },
+    {
+      nom: "Secteurs d'information sur les sols (SIS)",
+      producteur: GEORISQUES.producteur,
+      type: "api-externe",
+      format: GEORISQUES.format,
+      urlDoc:
+        "https://www.georisques.gouv.fr/donnees/bases-de-donnees/secteurs-dinformations-sur-les-sols-sis",
+    },
+    {
+      nom: "Installations classées (ICPE)",
+      producteur: GEORISQUES.producteur,
+      type: "api-externe",
+      format: GEORISQUES.format,
+      urlDoc: "https://www.georisques.gouv.fr/doc-api",
+    },
+  ],
+};
+
+/** Sources qui pré-remplissent la réponse d'un critère saisi ; vide pour les autres critères */
+export function getSourcesPreRemplissage(cle: string): SourceCritereDoc[] {
+  return SOURCES_PRE_REMPLISSAGE[cle] ?? [];
+}
+
+/** Clés des critères saisis dont la réponse est pré-remplie */
+export const CRITERES_PRE_REMPLIS: string[] = Object.keys(SOURCES_PRE_REMPLISSAGE);
+
 /** Donnée restituée dans une analyse sans entrer dans le calcul de mutabilité ni de fiabilité */
 export interface SourceHorsCalculDoc extends SourceCritereDoc {
   /** Champ du résultat d'enrichissement qui porte la donnée */
@@ -139,15 +177,5 @@ export const SOURCES_HORS_CALCUL: SourceHorsCalculDoc[] = [
     urlDoc: urlDocBloc("icu"),
     usage: "Indique si le site se trouve dans un îlot de chaleur urbain.",
     blocId: "icu",
-  },
-  {
-    cle: "siteReferencePollue",
-    nom: "Sites et sols pollués",
-    producteur: "ADEME",
-    type: "referentiel-local",
-    format: "GeoJSON",
-    urlDoc:
-      "https://data.ademe.fr/datasets/srd-ademe/full?p=%2Fdata-fair%2Fembed%2Fdataset%2Fsrd-ademe%2Ftable",
-    usage: "Indique si le site est référencé comme pollué.",
   },
 ];

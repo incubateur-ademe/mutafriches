@@ -75,7 +75,7 @@ déploiement.
 
 Référence complète pour les intégrateurs (champs, attributs GeoJSON, QGIS) :
 [guide d'intégration](./integration/README.md#table-attributaire-dune-commune). La même
-route est présentée sur la page « Utiliser l'API Mutafriches » du site (`/integrer-mutafriches/api`) et dans Swagger (`/api`, tag « Table attributaire »).
+route est présentée sur la page « Utiliser l'API Mutafriches » du site (`/utiliser-mutafriches/api`) et dans Swagger (`/api`, tag « Table attributaire »).
 
 ```bash
 curl "https://mutafriches.beta.gouv.fr/api/attributaire/sites?codeInsee=77305"

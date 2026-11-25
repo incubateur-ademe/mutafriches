@@ -125,7 +125,7 @@ déclarée et son contact Brevo. Sans demande préalable, cette ligne de reprise
 ### 3b. Intégrateur API
 
 - [ ] Rien à faire côté équipe : le partenaire déclare son domaine avec le formulaire de
-      `/integrer-mutafriches/api`. Suivi, pièges et révocation :
+      `/utiliser-mutafriches/api`. Suivi, pièges et révocation :
       [docs/acces-api-integrateur.md](./acces-api-integrateur.md).
 
 ### 3c. Page personnalisée

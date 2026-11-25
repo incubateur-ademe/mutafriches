@@ -22,6 +22,8 @@ export default [
       "**/public/dsfr/**",
       "**/*.spec.ts",
       "**/*.test.ts",
+      // Worktrees des sessions Claude Code : copies du dépôt sans dépendances installées
+      "**/.claude/worktrees/**",
     ],
   },
 

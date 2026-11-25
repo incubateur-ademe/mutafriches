@@ -272,7 +272,7 @@ L'aléa argiles est ramené à trois niveaux (aucun, faible/moyen, fort). La pr�
 
 **Traitement dans l'algorithme**
 
-La présence d'une ICPE ou d'un secteur SIS à proximité produit le booléen « risques technologiques » (favorable à l'industrie, défavorable au résidentiel). Les référentiels SIS et ADEME renseignent par ailleurs le caractère pollué du site.
+La présence d'une ICPE ou d'un secteur SIS à proximité produit le booléen « risques technologiques » (favorable à l'industrie, défavorable au résidentiel). Un site pollué ADEME ou une ICPE à moins de 500 m, ou un SIS à moins de 1 km, signale par ailleurs le site comme potentiellement pollué : « Oui » est alors proposé d'office à la question sur la pollution, que l'utilisateur confirme ou corrige.
 
 **Critères d'évaluation alimentés**
 

@@ -1,5 +1,5 @@
 /**
- * Contenu du tutoriel de l'extension QGIS (`/integrer-mutafriches/extension-qgis`).
+ * Contenu du tutoriel de l'extension QGIS (`/utiliser-mutafriches/extension-qgis`).
  *
  * Les captures sont produites par le dépôt `mutafriches-qgis` (`scripts/captures-tutoriel.sh`),
  * dans une vraie session QGIS : ne pas les retoucher à la main, relancer le script.

@@ -13,7 +13,7 @@ Le document a deux parties :
 2. **[Référence](#2-référence)** : le fonctionnement, les pièges, les limites, la révocation.
 
 Côté intégrateur, le mode d'emploi est sur la page
-[Utiliser l'API](https://mutafriches.beta.gouv.fr/integrer-mutafriches/api) et dans le
+[Utiliser l'API](https://mutafriches.beta.gouv.fr/utiliser-mutafriches/api) et dans le
 [guide d'intégration](./integration/README.md#intégration-api-directe-partenaires).
 
 > À ne pas confondre avec [Ajouter un partenaire](./ajout-partenaire.md), qui publie une page
@@ -110,7 +110,7 @@ joignable.
 > différents. Écrivez-nous plutôt, la limite peut être revue.
 >
 > **Documentation.** Swagger : https://mutafriches.beta.gouv.fr/api — guide :
-> https://mutafriches.beta.gouv.fr/integrer-mutafriches/api
+> https://mutafriches.beta.gouv.fr/utiliser-mutafriches/api
 >
 > Nous vous préviendrons de toute évolution de l'algorithme ou de l'API. N'hésitez pas à
 > revenir vers nous pour toute question ou retour sur les résultats.
