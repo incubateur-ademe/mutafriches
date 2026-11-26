@@ -6,6 +6,7 @@ import {
   ETAPES_TUTORIEL_QGIS,
   texteParagraphe,
   QUESTIONS_TUTORIEL_QGIS,
+  URL_TELECHARGEMENT_EXTENSION,
 } from "./tutoriel-qgis";
 
 const DOSSIER_PUBLIC = resolve(__dirname, "../../../../public");
@@ -29,6 +30,24 @@ describe("tutoriel de l'extension QGIS", () => {
     }
   });
 
+  it("ne parle plus de démonstration ni de mode développeur", () => {
+    const textes = [
+      ...ETAPES_TUTORIEL_QGIS.flatMap((etape) => [
+        ...etape.paragraphes.map(texteParagraphe),
+        ...etape.captures.map((capture) => capture.alt),
+        etape.aSavoir ?? "",
+        etape.attention ?? "",
+      ]),
+      ...QUESTIONS_TUTORIEL_QGIS.map((q) => texteParagraphe(q.reponse)),
+    ].join(" ");
+    expect(textes).not.toMatch(/démonstration|données figées|mode développeur/i);
+  });
+
+  // Un lien vers la page des versions n'est pas un téléchargement : le bouton doit servir le ZIP
+  it("télécharge le ZIP de la dernière version, sans numéro de version dans le lien", () => {
+    expect(URL_TELECHARGEMENT_EXTENSION).toMatch(/\/releases\/latest\/download\/[a-z-]+\.zip$/);
+  });
+
   it("donne à chaque étape une ancre unique", () => {
     const ancres = ETAPES_TUTORIEL_QGIS.map((etape) => etape.id);
     expect(new Set(ancres).size).toBe(ancres.length);
@@ -39,8 +58,9 @@ describe("tutoriel de l'extension QGIS", () => {
       ...ETAPES_TUTORIEL_QGIS.flatMap((etape) => [
         ...etape.paragraphes.map(texteParagraphe),
         etape.aSavoir ?? "",
+        etape.attention ?? "",
       ]),
-      ...QUESTIONS_TUTORIEL_QGIS.map((q) => q.reponse),
+      ...QUESTIONS_TUTORIEL_QGIS.map((q) => texteParagraphe(q.reponse)),
     ].join(" ");
     expect(textes).not.toMatch(/chances? de réussite|probabilité de succès/i);
   });

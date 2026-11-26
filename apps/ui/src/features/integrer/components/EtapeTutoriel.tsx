@@ -3,6 +3,7 @@ import {
   texteParagraphe,
   type EtapeTutorielQgis,
 } from "../data/tutoriel-qgis";
+import { TexteTutoriel } from "./TexteTutoriel";
 
 interface EtapeTutorielProps {
   numero: number;
@@ -20,22 +21,7 @@ export function EtapeTutoriel({ numero, etape }: EtapeTutorielProps) {
 
       {etape.paragraphes.map((paragraphe) => (
         <p key={texteParagraphe(paragraphe)}>
-          {typeof paragraphe === "string" ? (
-            paragraphe
-          ) : (
-            <>
-              {paragraphe.avant}
-              <a
-                href={paragraphe.lien.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                title={`${paragraphe.lien.libelle} - nouvelle fenêtre`}
-              >
-                {paragraphe.lien.libelle}
-              </a>
-              {paragraphe.apres}
-            </>
-          )}
+          <TexteTutoriel paragraphe={paragraphe} />
         </p>
       ))}
 
@@ -77,6 +63,13 @@ export function EtapeTutoriel({ numero, etape }: EtapeTutorielProps) {
         <div className="fr-callout fr-callout--blue-ecume fr-mt-3w">
           <p className="fr-callout__title fr-h6">À savoir</p>
           <p className="fr-callout__text fr-text--md">{etape.aSavoir}</p>
+        </div>
+      )}
+
+      {etape.attention && (
+        <div className="fr-alert fr-alert--warning fr-mt-3w">
+          <h3 className="fr-alert__title">Attention</h3>
+          <p>{etape.attention}</p>
         </div>
       )}
     </section>
