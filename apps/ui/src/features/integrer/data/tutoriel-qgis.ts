@@ -78,34 +78,34 @@ export const ETAPES_TUTORIEL_QGIS: EtapeTutorielQgis[] = [
     ],
   },
   {
+    id: "se-presenter",
+    titre: "Ouvrir le plugin et déclarer sa structure",
+    paragraphes: [
+      "Cliquez sur le bouton Mutafriches : le plugin s'ouvre à droite de la carte. Déclarez votre structure (nom, type et domaine, par exemple ma-collectivite.fr), indiquez vos prénom, nom et adresse e-mail, cochez la case « J'accepte d'être contacté·e », obligatoire pour utiliser l'extension, puis cliquez sur « Suivant ».",
+      "Ces informations sont recueillies pour suivre l'utilisation de l'extension. Vos prénom, nom et adresse e-mail sont conservés dans notre outil d'e-mailing, pas dans la base de Mutafriches.",
+    ],
+    aSavoir:
+      "Si votre projet QGIS est vide, l'extension y ajoute un fond de carte OpenStreetMap cadré sur la France, pour situer vos sites. Si votre projet contient déjà des couches, elle n'y touche pas : vos sites s'afficheront par-dessus vos propres fonds.",
+    attention:
+      "Vérifiez vos informations avant de cliquer sur « Suivant » : une fois votre structure déclarée, elles ne sont plus modifiables dans l'extension. Pour les faire corriger ensuite, écrivez à contact@mutafriches.beta.gouv.fr.",
+    captures: [
+      {
+        fichier: "02-se-presenter.webp",
+        alt: "QGIS avec un fond de carte de la France au centre et le panneau Mutafriches ouvert à droite : formulaire « Bienvenue dans Mutafriches » de déclaration de la structure : nom, type, domaine, prénom, nom, adresse e-mail et case d'accord cochée, puis le bouton « Suivant ».",
+      },
+    ],
+  },
+  {
     id: "regler",
-    titre: "Régler l'extension",
+    titre: "Retrouver ses réglages",
     paragraphes: [
       "Les réglages sont dans la page Mutafriches des options de QGIS : menu Préférences, Options, ou menu Extensions, Mutafriches, « Réglages… ».",
-      "Vous y modifiez ou effacez votre structure et votre adresse mail, et vous décidez si l'extension ajoute un fond de carte OpenStreetMap quand votre projet est vide.",
+      "Vous y retrouvez les informations déclarées à l'étape précédente, en lecture seule, et vous décidez si l'extension ajoute un fond de carte OpenStreetMap quand votre projet est vide.",
     ],
     captures: [
       {
         fichier: "14-reglages.webp",
-        alt: "Fenêtre Options de QGIS sur la page Mutafriches : structure et adresse mail avec le bouton « Effacer mes informations », et case du fond de carte OpenStreetMap.",
-      },
-    ],
-    attention:
-      "Changer de service vide les résultats affichés et retire les deux couches Mutafriches du projet : enregistrez-les avant si vous voulez les conserver.",
-  },
-  {
-    id: "se-presenter",
-    titre: "Ouvrir le plugin et déclarer sa structure",
-    paragraphes: [
-      "Cliquez sur le bouton Mutafriches : le plugin s'ouvre à droite de la carte. Déclarez votre structure (nom, type et domaine, par exemple ma-collectivite.fr), indiquez vos prénom, nom et adresse e-mail, puis cliquez sur « Suivant ».",
-      "Ces informations sont recueillies pour suivre l'utilisation de l'extension : vous pouvez les modifier ou les effacer à tout moment dans les réglages. Vos prénom, nom et adresse e-mail sont conservés dans notre outil d'e-mailing, pas dans la base de Mutafriches.",
-    ],
-    aSavoir:
-      "Si votre projet QGIS est vide, l'extension y ajoute un fond de carte OpenStreetMap cadré sur la France, pour situer vos sites. Si votre projet contient déjà des couches, elle n'y touche pas : vos sites s'afficheront par-dessus vos propres fonds.",
-    captures: [
-      {
-        fichier: "02-se-presenter.webp",
-        alt: "QGIS avec un fond de carte de la France au centre et le panneau Mutafriches ouvert à droite : formulaire « Bienvenue dans Mutafriches » de déclaration de la structure : nom, type, domaine, prénom, nom et adresse e-mail, puis le bouton « Suivant ».",
+        alt: "Fenêtre Options de QGIS sur la page Mutafriches : structure, domaine, prénom, nom, adresse e-mail et accord de contact affichés sans champ de saisie, puis case du fond de carte OpenStreetMap.",
       },
     ],
   },
@@ -137,16 +137,17 @@ export const ETAPES_TUTORIEL_QGIS: EtapeTutorielQgis[] = [
     titre: "Choisir le fichier et lire le contrôle",
     paragraphes: [
       "Sélectionnez votre fichier : chaque ligne est contrôlée aussitôt et affichée « OK » ou « KO », avec le motif de l'erreur (identifiant en double, parcelle mal formée, code INSEE invalide, localisation absente…).",
-      "Les sites KO sont écartés de l'analyse. Sous la liste, « Analyser les sites OK » lance l'analyse des sites valides ; « Charger de nouveau le fichier » relit votre fichier une fois corrigé.",
+      "Deux encadrés résument le contrôle : en rouge, les sites KO, écartés de l'analyse et à corriger ; en vert, les sites OK, prêts à être analysés. Chacun n'apparaît que s'il a des sites.",
+      "Sous la liste, « Analyser les sites OK » lance l'analyse des sites valides ; « Charger de nouveau le fichier » relit votre fichier une fois corrigé.",
     ],
     captures: [
       {
         fichier: "04-controle-ligne-a-ligne.webp",
-        alt: "Contrôle du fichier dans le panneau : 4 sites OK et 6 sites KO, chaque site en erreur portant une étiquette « KO » et son motif.",
+        alt: "Contrôle du fichier dans le panneau : un encadré rouge « 6 sites KO », un encadré vert « 4 sites OK », puis chaque site en erreur avec son étiquette « KO » et son motif.",
       },
       {
         fichier: "05-fichier-pret.webp",
-        alt: "Contrôle d'un fichier sans erreur : 28 sites lus, toutes les lignes marquées « OK », bouton « Analyser mes 28 sites » actif.",
+        alt: "Contrôle d'un fichier sans erreur : un encadré vert « 28 sites OK », toutes les lignes marquées « OK », bouton « Analyser mes 28 sites » actif.",
       },
     ],
   },
@@ -221,7 +222,7 @@ export const QUESTIONS_TUTORIEL_QGIS: QuestionTutoriel[] = [
     id: "acces-refuse",
     question: "Le panneau affiche « Accès refusé » ou « API injoignable »",
     reponse:
-      "L'extension interroge le service Mutafriches par Internet. Vérifiez votre connexion et, derrière un proxy, les réglages réseau de QGIS. Si le message persiste, écrivez-nous.",
+      "L'extension interroge le service Mutafriches par Internet. Pour « API injoignable », vérifiez votre connexion et, derrière un proxy, les réglages réseau de QGIS. Pour « Accès refusé », vérifiez le domaine de votre structure par le lien « Modifier », qui apparaît alors en bas du panneau. Si le message persiste, écrivez-nous.",
   },
   {
     id: "fichier-refuse",
@@ -246,6 +247,12 @@ export const QUESTIONS_TUTORIEL_QGIS: QuestionTutoriel[] = [
     question: "Puis-je essayer sans inventaire ?",
     reponse:
       "Oui : l'étape « Préparer son inventaire de sites » propose un inventaire de test de 5 sites réels (Montereau-Fault-Yonne). Téléchargez-le et analysez-le comme votre propre fichier.",
+  },
+  {
+    id: "modifier-informations",
+    question: "Comment modifier les informations de ma structure ?",
+    reponse:
+      "Une fois votre structure déclarée, ses informations ne sont plus modifiables dans l'extension, et la désinstaller ne les efface pas : QGIS les conserve dans votre profil. Pour les faire corriger, écrivez à contact@mutafriches.beta.gouv.fr.",
   },
   {
     id: "a-propos",
