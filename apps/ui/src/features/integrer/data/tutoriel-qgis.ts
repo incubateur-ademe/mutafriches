@@ -1,3 +1,5 @@
+import { SOURCES_DONNEES } from "@mutafriches/shared-types";
+
 /**
  * Contenu du tutoriel de l'extension QGIS (`/utiliser-mutafriches/extension-qgis`).
  *
@@ -46,6 +48,8 @@ export interface EtapeTutorielQgis {
   captures: CaptureTutoriel[];
   /** Encadré d'aide affiché sous l'étape. */
   aSavoir?: string;
+  /** Avertissement affiché sous l'étape, quand un travail peut être perdu. */
+  attention?: string;
 }
 
 export const ETAPES_TUTORIEL_QGIS: EtapeTutorielQgis[] = [
@@ -73,16 +77,15 @@ export const ETAPES_TUTORIEL_QGIS: EtapeTutorielQgis[] = [
     titre: "Régler l'extension",
     paragraphes: [
       "Les réglages sont dans la page Mutafriches des options de QGIS : menu Préférences, Options, ou menu Extensions, Mutafriches, « Réglages… ».",
-      "Vous y choisissez le service utilisé (l'analyse réelle, ou une démonstration sur des données figées), vous modifiez ou effacez votre structure et votre adresse mail, et vous décidez si l'extension ajoute un fond de carte OpenStreetMap quand votre projet est vide.",
-      "Le mode développeur donne accès à l'environnement de test et aux réglages de l'API : il est réservé à l'équipe Mutafriches et ne change rien à vos analyses.",
+      "Vous y modifiez ou effacez votre structure et votre adresse mail, et vous décidez si l'extension ajoute un fond de carte OpenStreetMap quand votre projet est vide.",
     ],
     captures: [
       {
         fichier: "14-reglages.webp",
-        alt: "Fenêtre Options de QGIS sur la page Mutafriches : choix de l'environnement, structure et adresse mail avec le bouton « Effacer mes informations », case du fond de carte OpenStreetMap et case du mode développeur.",
+        alt: "Fenêtre Options de QGIS sur la page Mutafriches : structure et adresse mail avec le bouton « Effacer mes informations », et case du fond de carte OpenStreetMap.",
       },
     ],
-    aSavoir:
+    attention:
       "Changer de service vide les résultats affichés et retire les deux couches Mutafriches du projet : enregistrez-les avant si vous voulez les conserver.",
   },
   {
@@ -90,7 +93,7 @@ export const ETAPES_TUTORIEL_QGIS: EtapeTutorielQgis[] = [
     titre: "Ouvrir le plugin et déclarer sa structure",
     paragraphes: [
       "Cliquez sur le bouton Mutafriches : le plugin s'ouvre à droite de la carte. Déclarez votre structure (nom, type et domaine, par exemple ma-collectivite.fr), indiquez vos prénom, nom et adresse e-mail, puis cliquez sur « Suivant ».",
-      "Cette déclaration, faite une seule fois, identifie vos analyses auprès de Mutafriches. Vos prénom, nom et adresse e-mail sont conservés dans notre outil d'e-mailing, pas dans la base de Mutafriches.",
+      "Ces informations sont recueillies pour suivre l'utilisation de l'extension : vous pouvez les modifier ou les effacer à tout moment dans les réglages. Vos prénom, nom et adresse e-mail sont conservés dans notre outil d'e-mailing, pas dans la base de Mutafriches.",
     ],
     aSavoir:
       "Si votre projet QGIS est vide, l'extension y ajoute un fond de carte OpenStreetMap cadré sur la France, pour situer vos sites. Si votre projet contient déjà des couches, elle n'y touche pas : vos sites s'afficheront par-dessus vos propres fonds.",
@@ -146,7 +149,7 @@ export const ETAPES_TUTORIEL_QGIS: EtapeTutorielQgis[] = [
     id: "analyser",
     titre: "Lancer l'analyse",
     paragraphes: [
-      "Cliquez sur « Analyser mes sites ». Pour chaque site, Mutafriches recueille automatiquement ses données d'identification et de qualification auprès de plus de dix bases nationales, puis calcule son indice de mutabilité pour sept usages.",
+      `Cliquez sur « Analyser mes sites ». Pour chaque site, Mutafriches recueille automatiquement ses données d'identification et de qualification auprès de ${SOURCES_DONNEES.length} sources de données nationales, puis calcule son indice de mutabilité pour sept usages.`,
       "L'analyse peut prendre de quelques secondes à quelques minutes. L'avancement s'affiche site par site ; vous pouvez annuler à tout moment.",
     ],
     captures: [
@@ -173,10 +176,6 @@ export const ETAPES_TUTORIEL_QGIS: EtapeTutorielQgis[] = [
         alt: "Carte de Montereau-Fault-Yonne avec les sites colorés par usage et étiquetés, et le tableau de bord territorial dans le panneau : 28 sites analysés, fiabilité moyenne, jauges par usage.",
       },
       {
-        fichier: "08-tableau-de-bord-profils.webp",
-        alt: "Suite du tableau de bord : liste des sites à forte compatibilité et tableau des profils des sites.",
-      },
-      {
         fichier: "12-site-sur-la-carte.webp",
         alt: "Un site sélectionné depuis la liste des sites à forte compatibilité : la carte est recadrée sur son emprise, surlignée.",
       },
@@ -196,15 +195,11 @@ export const ETAPES_TUTORIEL_QGIS: EtapeTutorielQgis[] = [
         alt: "Table attributaire de la couche Mutabilité ancrée sous la carte : une ligne par site avec l'usage prioritaire et les indices par usage.",
       },
       {
-        fichier: "11-table-qualification.webp",
-        alt: "Table attributaire de la couche Qualification : surfaces, zonage, desserte et critères de terrain de chaque site.",
-      },
-      {
         fichier: "13-ameliorer-la-fiabilite.webp",
         alt: "Table de qualification ouverte par « Améliorer la fiabilité » : les critères de terrain « Ne sait pas » sont sur fond rouge, juste après le nom du site.",
       },
     ],
-    aSavoir:
+    attention:
       "Ces couches sont temporaires : pour les conserver, enregistrez-les (clic droit, « Exporter », « Sauvegarder les entités sous… »).",
   },
 ];
@@ -245,6 +240,6 @@ export const QUESTIONS_TUTORIEL_QGIS: QuestionTutoriel[] = [
     id: "sans-inventaire",
     question: "Puis-je essayer sans inventaire ?",
     reponse:
-      "Oui : dans les réglages de l'extension, choisissez la démonstration. Elle montre le parcours complet sur des données figées.",
+      "Oui : l'étape « Préparer son inventaire de sites » propose un inventaire de test de 5 sites réels (Montereau-Fault-Yonne). Téléchargez-le et analysez-le comme votre propre fichier.",
   },
 ];

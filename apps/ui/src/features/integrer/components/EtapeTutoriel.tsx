@@ -79,6 +79,13 @@ export function EtapeTutoriel({ numero, etape }: EtapeTutorielProps) {
           <p className="fr-callout__text fr-text--md">{etape.aSavoir}</p>
         </div>
       )}
+
+      {etape.attention && (
+        <div className="fr-alert fr-alert--warning fr-mt-3w">
+          <h3 className="fr-alert__title">Attention</h3>
+          <p>{etape.attention}</p>
+        </div>
+      )}
     </section>
   );
 }

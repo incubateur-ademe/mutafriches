@@ -29,6 +29,19 @@ describe("tutoriel de l'extension QGIS", () => {
     }
   });
 
+  it("ne parle plus de démonstration ni de mode développeur", () => {
+    const textes = [
+      ...ETAPES_TUTORIEL_QGIS.flatMap((etape) => [
+        ...etape.paragraphes.map(texteParagraphe),
+        ...etape.captures.map((capture) => capture.alt),
+        etape.aSavoir ?? "",
+        etape.attention ?? "",
+      ]),
+      ...QUESTIONS_TUTORIEL_QGIS.map((q) => q.reponse),
+    ].join(" ");
+    expect(textes).not.toMatch(/démonstration|données figées|mode développeur/i);
+  });
+
   it("donne à chaque étape une ancre unique", () => {
     const ancres = ETAPES_TUTORIEL_QGIS.map((etape) => etape.id);
     expect(new Set(ancres).size).toBe(ancres.length);
@@ -39,6 +52,7 @@ describe("tutoriel de l'extension QGIS", () => {
       ...ETAPES_TUTORIEL_QGIS.flatMap((etape) => [
         ...etape.paragraphes.map(texteParagraphe),
         etape.aSavoir ?? "",
+        etape.attention ?? "",
       ]),
       ...QUESTIONS_TUTORIEL_QGIS.map((q) => q.reponse),
     ].join(" ");
