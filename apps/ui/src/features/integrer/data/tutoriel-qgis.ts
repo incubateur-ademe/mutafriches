@@ -9,12 +9,17 @@ import { SOURCES_DONNEES } from "@mutafriches/shared-types";
 
 export const DOSSIER_CAPTURES_QGIS = "/images/tutoriel-qgis";
 
-export const URL_TELECHARGEMENT_EXTENSION =
-  "https://github.com/incubateur-ademe/mutafriches-qgis/releases/latest";
+const URL_DERNIERE_RELEASE = "https://github.com/incubateur-ademe/mutafriches-qgis/releases/latest";
+
+// ZIP au nom sans version, joint à chaque release par release.yml du dépôt mutafriches-qgis :
+// GitHub redirige vers celui de la dernière release
+export const URL_TELECHARGEMENT_EXTENSION = `${URL_DERNIERE_RELEASE}/download/extension-qgis-mutafriches.zip`;
+
+// Numéro et notes de la dernière version
+export const URL_VERSIONS_EXTENSION = URL_DERNIERE_RELEASE;
 
 // Inventaire de 5 vrais sites de Montereau-Fault-Yonne, joint à chaque release de l'extension
-export const URL_FICHIER_TEST_QGIS =
-  "https://github.com/incubateur-ademe/mutafriches-qgis/releases/latest/download/friches-cnig-test-montereau-5-sites.csv";
+export const URL_FICHIER_TEST_QGIS = `${URL_DERNIERE_RELEASE}/download/friches-cnig-test-montereau-5-sites.csv`;
 
 export const URL_STANDARD_CNIG = "https://schema.data.gouv.fr/cnigfr/schema-friches/";
 
@@ -208,7 +213,7 @@ export interface QuestionTutoriel {
   /** Identifiant stable de l'accordéon */
   id: string;
   question: string;
-  reponse: string;
+  reponse: ParagrapheTutoriel;
 }
 
 export const QUESTIONS_TUTORIEL_QGIS: QuestionTutoriel[] = [
@@ -241,5 +246,16 @@ export const QUESTIONS_TUTORIEL_QGIS: QuestionTutoriel[] = [
     question: "Puis-je essayer sans inventaire ?",
     reponse:
       "Oui : l'étape « Préparer son inventaire de sites » propose un inventaire de test de 5 sites réels (Montereau-Fault-Yonne). Téléchargez-le et analysez-le comme votre propre fichier.",
+  },
+  {
+    id: "a-propos",
+    question: "À propos de l'extension QGIS",
+    reponse: {
+      avant:
+        "L'extension est développée par l'équipe Mutafriches et publiée sur GitHub. Le bouton « Télécharger l'extension » fournit toujours la dernière version ; son numéro et ses nouveautés sont détaillés sur la ",
+      lien: { libelle: "page des versions de l'extension", url: URL_VERSIONS_EXTENSION },
+      apres:
+        ". La version installée se lit dans le gestionnaire d'extensions de QGIS, onglet « Installées ».",
+    },
   },
 ];

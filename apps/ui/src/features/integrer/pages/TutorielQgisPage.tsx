@@ -3,6 +3,7 @@ import { ROUTES } from "../../../shared/config/routes.config";
 import { DsfrAccordion } from "../../../shared/components/dsfr/DsfrAccordion";
 import { PageDocumentation } from "../components/PageDocumentation";
 import { EtapeTutoriel } from "../components/EtapeTutoriel";
+import { TexteTutoriel } from "../components/TexteTutoriel";
 import {
   ETAPES_TUTORIEL_QGIS,
   QUESTIONS_TUTORIEL_QGIS,
@@ -51,11 +52,9 @@ export function TutorielQgisPage() {
         <a
           className="fr-btn fr-icon-download-line fr-btn--icon-left"
           href={URL_TELECHARGEMENT_EXTENSION}
-          target="_blank"
-          rel="noopener noreferrer"
-          title="Télécharger l'extension - nouvelle fenêtre"
+          download
         >
-          Télécharger l'extension
+          Télécharger l'extension (ZIP)
         </a>
       </div>
 
@@ -70,7 +69,9 @@ export function TutorielQgisPage() {
         <div className="fr-accordions-group">
           {QUESTIONS_TUTORIEL_QGIS.map(({ id, question, reponse }) => (
             <DsfrAccordion key={id} id={`question-${id}`} title={question}>
-              <p className="fr-mb-0">{reponse}</p>
+              <p className="fr-mb-0">
+                <TexteTutoriel paragraphe={reponse} />
+              </p>
             </DsfrAccordion>
           ))}
         </div>
