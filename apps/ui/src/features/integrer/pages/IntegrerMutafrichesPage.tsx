@@ -70,7 +70,7 @@ export function IntegrerMutafrichesPage() {
                   className="fr-btn"
                   onClick={() => setDeclaration(CanalIntegrateur.API)}
                 >
-                  Déclarer mon utilisation
+                  Utiliser l'API
                 </button>
               </li>
               <li>

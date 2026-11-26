@@ -18,9 +18,9 @@ Menu principal
     ├── Extension QGIS                 → tutoriel /utiliser-mutafriches/extension-qgis
     ├── API Mutafriches                → déclaration du domaine (formulaire en modale), documentation /utiliser-mutafriches/api
     │   └── lien vers l'iframe         → documentation /utiliser-mutafriches/iframe
-    ├── Page Mutafriches personnalisée → demande par formulaire (modale), puis rendez-vous (ZCal) au choix
+    ├── Page Mutafriches personnalisée → demande par formulaire (modale), puis rendez-vous (calendrier ADEME) au choix
     ├── Nos services partenaires       → Bénéfriches et UrbanVitaliz (liens externes)
-    └── Besoin d'aide pour choisir     → prise de rendez-vous (ZCal)
+    └── Besoin d'aide pour choisir     → prise de rendez-vous (calendrier ADEME)
 
 Footer
 ├── Intégrer Mutafriches (QGIS, API et iframe)  /utiliser-mutafriches

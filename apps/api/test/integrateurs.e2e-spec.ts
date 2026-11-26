@@ -211,11 +211,25 @@ describe("Registre des intégrateurs E2E", () => {
         structure: "Métropole de X",
         typeStructure: "collectivite",
         domaine: DOMAINE,
+        accepteContact: false,
       });
       for (const donneePersonnelle of [EMAIL, "Camille", "Martin"]) {
         expect(JSON.stringify(contexte.depot.lignes)).not.toContain(donneePersonnelle);
         expect(JSON.stringify(reponse.body)).not.toContain(donneePersonnelle);
       }
+    });
+
+    it("transmet le consentement quand la case est cochée, et refuse une valeur non booléenne", async () => {
+      await declarer(contexte, { canal: "api", domaine: DOMAINE, accepteContact: true }).expect(
+        200,
+      );
+
+      expect(contexte.brevo.ajouterContact).toHaveBeenCalledWith(
+        expect.objectContaining({ accepteContact: true }),
+      );
+      await declarer(contexte, { canal: "api", domaine: DOMAINE, accepteContact: "oui" }).expect(
+        400,
+      );
     });
 
     it("garde la déclaration quand Brevo échoue, en la marquant non joignable", async () => {

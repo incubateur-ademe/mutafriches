@@ -164,13 +164,13 @@ un dump de production, n'est pas joignable depuis le réseau (wifi public, cowor
 Les dumps restent hors du dépôt : indiquer leur dossier dans `apps/api/.env` (`DB_BACKUP_DIR`),
 cf. [`docs/ops/db-local.md`](./docs/ops/db-local.md).
 
-### Contact multisites (calendrier ZCal)
+### Contact multisites (calendrier de rendez-vous)
 
-La modale « Analyser plusieurs sites » embarque un **calendrier ZCal** en iframe pour la prise
-de rendez-vous (cf. ADR-0020). Aucune donnée nominative n'est collectée ni stockée, et l'application
+La modale « Analyser plusieurs sites » embarque le **calendrier de rendez-vous de l'incubateur ADEME** (instance Cal.com
+`rdv.incubateur.ademe.fr`) en iframe (cf. ADR-0020 et ADR-0056). Aucune donnée nominative n'est collectée ni stockée, et l'application
 n'envoie plus d'e-mails transactionnels.
 
-L'URL du calendrier est configurable côté UI via `VITE_ZCAL_URL` (défaut : calendrier de l'équipe,
+L'URL du calendrier est configurable côté UI via `VITE_CALENDRIER_RDV_URL` (défaut : calendrier de l'équipe,
 voir `apps/ui/.env.example`).
 
 ### Qualité de code & Tests

@@ -6,7 +6,7 @@ export const PolitiqueConfidentialitePage: React.FC = () => {
     <Layout>
       <div className="fr-mb-4w">
         <h1 className="fr-h3">Politique de confidentialité</h1>
-        <p className="fr-text--sm fr-mb-0">Dernière mise à jour : 20 novembre 2026.</p>
+        <p className="fr-text--sm fr-mb-0">Dernière mise à jour : 25 novembre 2026.</p>
       </div>
 
       <p className="fr-text--lg">
@@ -60,8 +60,12 @@ export const PolitiqueConfidentialitePage: React.FC = () => {
         </li>
         <li>répondre aux demandes de contact que vous nous adressez ;</li>
         <li>
-          vous informer des évolutions du service que vous avez déclaré utiliser, et vous
-          recontacter à ce sujet.
+          suivre l'accès au service que vous avez déclaré utiliser, et vous contacter au sujet de
+          son fonctionnement ;
+        </li>
+        <li>
+          si vous l'avez accepté en cochant la case prévue à cet effet, recueillir vos retours
+          d'expérience et vous informer des évolutions du service.
         </li>
       </ul>
 
@@ -69,7 +73,9 @@ export const PolitiqueConfidentialitePage: React.FC = () => {
       <p>
         Les traitements reposent sur l'exécution d'une <strong>mission d'intérêt public</strong>{" "}
         dont est investie l'ADEME. La mesure d'audience est réalisée à des fins strictement internes
-        d'amélioration du service.
+        d'amélioration du service. Les demandes de retours d'expérience et l'information sur les
+        évolutions du service reposent sur votre <strong>consentement</strong>, que vous pouvez
+        retirer à tout moment, par le lien de désinscription de nos e-mails ou en nous écrivant.
       </p>
 
       <h2 className="fr-h5">5. Combien de temps sont-elles conservées ?</h2>

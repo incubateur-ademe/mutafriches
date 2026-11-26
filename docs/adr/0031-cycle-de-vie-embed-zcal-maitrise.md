@@ -1,7 +1,7 @@
 # ADR-0031 : Cycle de vie de l'embed ZCal maîtrisé côté application
 
 **Date** : 2026-08-27
-**Statut** : Accepté
+**Statut** : Remplacé par l'ADR-0056 (le calendrier n'est plus servi par ZCal)
 
 ## Contexte
 

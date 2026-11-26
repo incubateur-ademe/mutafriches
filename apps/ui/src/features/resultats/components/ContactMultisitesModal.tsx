@@ -1,6 +1,6 @@
 import React from "react";
 import { ModalInfo } from "../../../shared/components/common/ModalInfo";
-import { ZcalEmbed } from "../../../shared/components/common/ZcalEmbed";
+import { CalendrierRdvEmbed } from "../../../shared/components/common/CalendrierRdvEmbed";
 
 interface ContactMultisitesModalProps {
   isOpen: boolean;
@@ -25,7 +25,7 @@ export const ContactMultisitesModal: React.FC<ContactMultisitesModalProps> = ({
     >
       <p>{message}</p>
 
-      <ZcalEmbed active={isOpen} />
+      <CalendrierRdvEmbed active={isOpen} />
     </ModalInfo>
   );
 };

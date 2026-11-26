@@ -228,6 +228,22 @@ describe("IntegrateursService.declarer", () => {
     expect(repository.marquerContactEnregistre).toHaveBeenCalledTimes(1);
   });
 
+  it("ne transmet un consentement à Brevo que s'il est explicitement donné", async () => {
+    const { service, brevo } = contexte;
+
+    await service.declarer(DECLARATION);
+    await service.declarer({ ...DECLARATION, accepteContact: true });
+
+    expect(brevo.ajouterContact).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({ accepteContact: false }),
+    );
+    expect(brevo.ajouterContact).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({ accepteContact: true }),
+    );
+  });
+
   it("transmet à Brevo le prénom et le nom, nettoyés", async () => {
     const { service, brevo } = contexte;
 

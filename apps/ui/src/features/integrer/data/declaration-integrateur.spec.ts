@@ -76,6 +76,7 @@ describe("construireDeclaration", () => {
       prenom: "Camille",
       nom: "Martin",
       email: "sig@exemple.fr",
+      accepteContact: false,
       domaine: "exemple.fr",
     });
   });
@@ -88,7 +89,15 @@ describe("construireDeclaration", () => {
       prenom: "Camille",
       nom: "Martin",
       email: "sig@exemple.fr",
+      accepteContact: false,
     });
+  });
+
+  it("ne présume pas le consentement : il n'est transmis à vrai que case cochée", () => {
+    expect(SAISIE_VIDE.accepteContact).toBe(false);
+    expect(
+      construireDeclaration(CanalIntegrateur.PAGE, { ...SAISIE, accepteContact: true }),
+    ).toHaveProperty("accepteContact", true);
   });
 
   it("transmet le champ piège quand il est rempli", () => {

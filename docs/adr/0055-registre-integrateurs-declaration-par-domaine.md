@@ -53,6 +53,11 @@ d'août 2026 a montré que tout ce qui est lisible en base de production peut fu
    un appel à `POST /v3/contacts`, une liste par environnement et un attribut booléen par canal (`USAGE_API`, `USAGE_QGIS`, `USAGE_PAGE`,
    `USAGE_IFRAME`), pour qu'un même contact cumule ses usages. La ligne porte
    `contact_enregistre` : faux si Brevo n'a pas reçu le contact.
+   *Amendé en novembre 2026* : l'adresse obligatoire ne sert qu'au suivi de l'accès. Être
+   sollicité (retours d'expérience, évolutions du service) demande un consentement séparé,
+   case décochée par défaut, porté par le champ optionnel `accepteContact` et l'attribut
+   `ACCEPTE_CONTACT`, transmis seulement quand il est donné. L'attribut `TYPE_ACCES` nomme en
+   clair le dernier accès demandé.
 7. **Reprise de l'existant** par `integrateurs:synchroniser`, lancé au `postdeploy` : origines de
    la variable, registre iframe et pages partenaires. Deux origines d'un même hôte (http et
    https, deux ports) sont toutes reprises, une seule portant la clé de statistiques ; le script
