@@ -499,6 +499,15 @@ export function DocumentationApiPage() {
                 que Mutafriches n'a pas pu recueillir. Le calcul reste possible : l'indice de
                 fiabilité en tient compte.
               </p>
+              <p>
+                <code>siteReferencePollue</code> vaut <code>true</code> quand une base nationale
+                signale un risque de pollution près du site : site pollué ADEME ou installation
+                classée (ICPE) à moins de 500 m, secteur d'information sur les sols (SIS) à moins de
+                1 km, ancien site industriel ou activité de service (CASIAS) à moins de 100 m. Ce
+                n'est pas une pollution avérée et il n'est pas noté : servez-vous-en pour proposer
+                une réponse à <code>presencePollution</code>, que votre utilisateur confirme ou
+                corrige.
+              </p>
             </DsfrAccordion>
           </div>
         </Etape>

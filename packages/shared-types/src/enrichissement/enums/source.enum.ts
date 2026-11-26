@@ -17,6 +17,7 @@ export enum SourceEnrichissement {
   GEORISQUES_CAVITES = "GeoRisques-Cavites",
   GEORISQUES_OLD = "GeoRisques-OLD",
   GEORISQUES_SIS = "GeoRisques-SIS",
+  GEORISQUES_CASIAS = "GeoRisques-CASIAS",
   GEORISQUES_ICPE = "GeoRisques-ICPE",
   GEORISQUES_AZI = "GeoRisques-AZI",
   GEORISQUES_PAPI = "GeoRisques-PAPI",

@@ -10,7 +10,7 @@ apps/api/src/enrichissement/
 │   ├── shared/
 │   │   └── api-response.types.ts  # Type ApiResponse<T> standard
 │   ├── enedis/                  # Exemple : adapter simple
-│   ├── georisques/              # Exemple : adapter complexe (13 sous-services)
+│   ├── georisques/              # Exemple : adapter complexe (14 sous-services)
 │   └── {mon-api}/               # Nouveau adapter
 ├── services/                    # Logique métier par domaine
 │   ├── shared/

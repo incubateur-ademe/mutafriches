@@ -234,6 +234,8 @@ Trois règles à respecter :
 - **`raccordementEau` n'est plus à transmettre** : il est déduit de la surface bâtie côté serveur, et ignoré s'il est fourni.
 - **Renvoyer intégralement l'objet reçu de `POST /enrichissement`** dans `donneesEnrichies`, sans en reconstruire un sous-ensemble : `codeInsee`, `commune` et `surfaceSite` sont indispensables au calcul et à l'enregistrement.
 
+**Pré-remplir `presencePollution`.** La réponse de `POST /enrichissement` contient `siteReferencePollue` (booléen, non noté) : `true` quand une base nationale signale un risque de pollution près du centroïde du site — site pollué ADEME ou installation classée (ICPE) à moins de 500 m, secteur d'information sur les sols (SIS) à moins de 1 km, ancien site industriel ou activité de service (CASIAS) à moins de 100 m. Ce n'est pas une pollution avérée : Mutafriches s'en sert pour proposer « Oui » à l'utilisateur, qui confirme ou corrige, et seule la valeur transmise dans `presencePollution` entre dans le calcul.
+
 `GET /evaluation/metadata` sert ces informations de façon exploitable par machine :
 
 - `champsComplementairesRequis` : les 9 champs à transmettre ;

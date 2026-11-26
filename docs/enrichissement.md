@@ -2,7 +2,7 @@
 
 ## Vue d'ensemble
 
-Le module d'enrichissement est le cœur de Mutafriches. Il enrichit automatiquement les données d'une parcelle cadastrale en interrogeant une dizaine d'**APIs publiques externes** (dont GéoRisques, qui expose 13 endpoints) et **11 bases locales** (9 PostGIS spatiales + les référentiels communaux LOVAC et zonage ABC), importées au déploiement (ADR-0050). La liste fait foi dans « Bases Locales » ci-dessous.
+Le module d'enrichissement est le cœur de Mutafriches. Il enrichit automatiquement les données d'une parcelle cadastrale en interrogeant une dizaine d'**APIs publiques externes** (dont GéoRisques, dont 14 endpoints sont appelés) et **11 bases locales** (9 PostGIS spatiales + les référentiels communaux LOVAC et zonage ABC), importées au déploiement (ADR-0050). La liste fait foi dans « Bases Locales » ci-dessous.
 
 **Endpoint** : `POST /enrichissement`
 **Entrée** : Identifiant(s) cadastral(s) — mono-parcelle ou multi-parcelle (1 à 60 parcelles via l'API, 20 sur la carte)
@@ -31,7 +31,7 @@ Le module d'enrichissement est le cœur de Mutafriches. Il enrichit automatiquem
    ├─ RISQUES TECHNOLOGIQUES (SIS + ICPE)
    ├─ GEORISQUES BRUT (13 APIs pour intégrateurs)
    ├─ ZONAGES (Environnemental + Patrimonial + Réglementaire)
-   ├─ POLLUTION (ADEME + SIS + ICPE)
+   ├─ POLLUTION (ADEME + SIS + ICPE + CASIAS)
    ├─ ENR / ZAER (Géoplateforme WFS)
    ├─ CLIMAT / ICU (référentiel local raw_icu, informatif)
    ├─ QPV (référentiel local raw_qpv, ANCT)
@@ -49,7 +49,7 @@ Le module d'enrichissement est le cœur de Mutafriches. Il enrichit automatiquem
 > **Note sur la parallélisation** : les domaines sont exécutés **séquentiellement** par
 > l'orchestrateur (`await` chaînés dans `enrichissement.service.ts`). La parallélisation
 > (`Promise.allSettled`) n'intervient qu'**à l'intérieur** de certains domaines : Risques
-> naturels (6 APIs), Risques technologiques (2), GéoRisques brut (13), Pollution (3) et
+> naturels (6 APIs), Risques technologiques (2), GéoRisques brut (13), Pollution (4) et
 > Zonages (3 sous-services).
 
 ### Gestion des erreurs
@@ -502,7 +502,9 @@ SEUIL_DISTANCE_ICPE = 500  // 500m
 ## 7. Domaine POLLUTION
 
 ### Responsabilité
-Détecter si le site est référencé comme pollué (3 sources combinées).
+Détecter si le site est référencé comme potentiellement pollué (4 sources combinées). Le
+booléen n'est pas noté : il propose « Oui » d'office à la question « Présence de pollution »,
+que l'utilisateur confirme ou corrige, et alimente l'export CNIG (« pollution supposée »).
 
 ### Sources utilisées
 
@@ -511,6 +513,7 @@ Détecter si le site est référencé comme pollué (3 sources combinées).
 | **ADEME Sites Pollués** | Base locale PostGIS | Sites pollués géolocalisés (BASOL) |
 | **GeoRisques SIS** | API | Secteurs d'Information sur les Sols |
 | **GeoRisques ICPE** | API | Installations Classées proximité |
+| **GeoRisques CASIAS** | API (`/ssp/casias`) | Anciens sites industriels et activités de service |
 
 ### Règles de gestion
 
@@ -522,13 +525,15 @@ siteReferencePollue = true SI AU MOINS UNE condition vraie :
 1. ADEME : Parcelle dans rayon de recherche d'un site ADEME pollué
 2. SIS : Présence SIS (rayon 1 km)
 3. ICPE : ICPE à moins de 500m
+4. CASIAS : au moins un site recensé à moins de 100m du centroïde
 
 Opérateur logique : OU (inclusif)
 ```
 
 **Constantes** :
 ```typescript
-ICPE_DISTANCE_SEUIL_METRES = 500  // Seuil pollution ICPE
+ICPE_DISTANCE_SEUIL_METRES = 500      // Seuil pollution ICPE
+GEORISQUES_RAYONS_DEFAUT.CASIAS = 100 // Seuil pollution CASIAS (ADR-0056)
 ```
 
 **Détail par source** :
@@ -536,6 +541,16 @@ ICPE_DISTANCE_SEUIL_METRES = 500  // Seuil pollution ICPE
 - `pollutionSis` : boolean
 - `pollutionIcpe` : boolean (si distance <= 500m)
 - `distanceIcpePlusProche` : number (si applicable)
+- `pollutionCasias` : boolean (si au moins un site dans le rayon)
+
+**CASIAS : un rayon court, par construction.** L'inventaire recense des activités passées
+(garages, ateliers, dépôts), sans pollution avérée, et il est très dense en ville : à 500 m,
+80 % des parcelles analysées ont au moins un site CASIAS (88 % en centre-ville), contre 35 % à
+100 m. À Trélazé (49), une seule fiche localisée à la rue, sans numéro, touche 69 des 101
+parcelles analysées à 500 m. Le rayon de l'appel est le seuil lui-même : le total vient du champ `results` de la
+réponse, une courte page suffit et aucune distance n'est recalculée. Sur un grand site, un
+ancien établissement situé à plus de 100 m du centroïde n'est pas vu. Mesures et arbitrage :
+ADR-0056.
 
 ### Champs enrichis
 
@@ -912,6 +927,7 @@ RAYON_RECHERCHE_COMMERCES_M = 500  // 500m (distance de marche)
 ### Pollution
 ```typescript
 ICPE_DISTANCE_SEUIL_METRES = 500  // Seuil pollution ICPE
+// Seuil pollution CASIAS : GEORISQUES_RAYONS_DEFAUT.CASIAS (100 m, ADR-0056)
 ```
 
 ### GeoRisques
@@ -925,6 +941,7 @@ GEORISQUES_RAYONS_DEFAUT = {
   CAVITES: 1000,       // 1 km
   OLD: 0,              // Recherche par point
   SIS: 1000,           // 1 km (max 10 km autorisé API)
+  CASIAS: 100,         // 100 m : seuil de signalement pollution (ADR-0056)
   ICPE: 1000,          // 1 km (max 10 km autorisé API)
   AZI: 1000,           // 1 km (max 10 km autorisé API)
   PAPI: 1000,          // 1 km (max 10 km autorisé API)
@@ -939,7 +956,7 @@ GEORISQUES_RAYONS_DEFAUT = {
 ### APIs externes
 
 Une dizaine d'APIs externes distinctes sont interrogées (GéoRisques compte pour 1 API mais
-expose 13 endpoints, appelés séparément).
+expose 14 endpoints, appelés séparément).
 
 | Domaine | API(s) externe(s) |
 |---------|-------------------|
@@ -950,7 +967,7 @@ expose 13 endpoints, appelés séparément).
 | Climat, QPV, saturation EnR, ZAE | *(aucune : référentiels locaux)* |
 | Zonages | API Carto Nature, API Carto GPU |
 | ENR | ZAER WFS Géoplateforme |
-| Risques | GéoRisques (1 API, 13 endpoints) |
+| Risques, pollution | GéoRisques (1 API, 14 endpoints) |
 
 ### Bases Locales (11)
 
@@ -981,7 +998,7 @@ Chaque table est enregistrée dans `IMPORT_DATASETS` (`donnees-externes/imports.
 - **Cache miss** : 2-5 secondes (dépend des APIs externes)
 - **Parallélisation** : domaines exécutés **séquentiellement** ; parallélisation
   (`Promise.allSettled`) uniquement **intra-domaine** (GéoRisques 13 APIs, Risques naturels 6,
-  Pollution 3, Zonages 3, Risques techno 2)
+  Pollution 4, Zonages 3, Risques techno 2)
 
 ### Stratégie de résilience
 
@@ -1125,7 +1142,7 @@ Chaque table est enregistrée dans `IMPORT_DATASETS` (`donnees-externes/imports.
 | Risque cavités | Risques Naturels | `risqueCavitesSouterraines` | GeoRisques Cavités |
 | Risque inondation | Risques Naturels | `risqueInondation` | GeoRisques TRI + AZI + PAPI + PPR |
 | Risques technologiques | Risques Techno | `presenceRisquesTechnologiques` | GeoRisques SIS + ICPE |
-| Site pollué | Pollution | `siteReferencePollue` | ADEME + SIS + ICPE |
+| Site pollué | Pollution | `siteReferencePollue` | ADEME + SIS + ICPE + CASIAS |
 | Zonage environnemental | Zonages | `zonageEnvironnemental` | API Carto Nature |
 | Zonage patrimonial | Zonages | `zonagePatrimonial` | API Carto GPU |
 | Zonage PLU | Zonages | `zonageReglementaire` | API Carto GPU |
@@ -1163,9 +1180,9 @@ Chaque table est enregistrée dans `IMPORT_DATASETS` (`donnees-externes/imports.
 - **Documentation** : https://data.enedis.fr/
 - **Adapter** : `apps/api/src/enrichissement/adapters/enedis/`
 
-### GeoRisques (13 APIs)
+### GeoRisques (14 endpoints)
 - **URL** : `https://georisques.gouv.fr/api`
-- **Utilisation** : Risques naturels/technologiques (RGA, SIS, ICPE, Cavités, CATNAT, MVT, OLD, PAPI, PPR, TRI, AZI, Zonage Sismique)
+- **Utilisation** : Risques naturels/technologiques (RGA, SIS, ICPE, Cavités, CATNAT, MVT, OLD, PAPI, PPR, TRI, AZI, Zonage Sismique) et détection de pollution (CASIAS, hors des 13 APIs restituées brutes aux intégrateurs)
 - **Documentation** : https://georisques.gouv.fr/doc-api
 - **Adapter** : `apps/api/src/enrichissement/adapters/georisques/`
 

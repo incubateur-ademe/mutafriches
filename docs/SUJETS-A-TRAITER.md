@@ -143,6 +143,12 @@ Format d'une entrée :
 - **Écarté parce que** : le cache de 30 jours et le groupement des appels ramènent la consommation à ~1 800 appels par mois pour les parcelles partenaires, mais ne protègent pas d'un afflux de parcelles neuves (premier passage = un appel pour ~10 groupes de bâtiments)
 - **Préalable** : surveiller `x-quota-remaining` (`scalingo --region osc-secnum-fr1 --app mutafriches run "curl -si …"`) ; si le volume de parcelles neuves approche 10 000 appels dans la fenêtre, demander une clé API sur `api-portail.bdnb.io` ou évaluer un import local `raw_*`
 
+### Rayons SIS et ICPE de la détection de pollution
+
+- **Origine** : ADR-0056 (mesure de densité du 25 novembre 2026)
+- **Écarté parce que** : 66 % des parcelles analysées sont déjà signalées « potentiellement polluées » sans CASIAS ; la part de chaque source (SIS à 1 km, ICPE à 500 m, ADEME à 500 m) n'est pas conservée en base
+- **Préalable** : rejouer la mesure source par source sur un échantillon de parcelles analysées, puis arbitrage produit sur les seuils
+
 ### Valeurs de zonage sans score dans la matrice
 
 - **Origine** : peuplement de la table attributaire (ADR-0053)

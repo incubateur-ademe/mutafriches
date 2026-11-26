@@ -372,7 +372,8 @@ export class EnrichissementSwaggerDto implements IEnrichissementOutput {
   risquesGeorisques?: any;
 
   @ApiProperty({
-    description: "Indique si le site présente des risques de pollution",
+    description:
+      "Site signalé comme potentiellement pollué : site pollué ADEME ou ICPE à moins de 500 m, SIS à moins de 1 km, ou ancien site industriel CASIAS à moins de 100 m",
     example: false,
   })
   siteReferencePollue: boolean;

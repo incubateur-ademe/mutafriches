@@ -64,6 +64,7 @@ import { MvtService } from "./adapters/georisques/mvt/mvt.service";
 import { ZonageSismiqueService } from "./adapters/georisques/zonage-sismique/zonage-sismique.service";
 import { PprService } from "./adapters/georisques/ppr/ppr.service";
 import { SisService } from "./adapters/georisques/sis/sis.service";
+import { CasiasService } from "./adapters/georisques/casias/casias.service";
 import { IcpeService } from "./adapters/georisques/icpe/icpe.service";
 import { OldService } from "./adapters/georisques/old/old.service";
 
@@ -168,6 +169,7 @@ import { AttributaireCoreModule } from "../attributaire/attributaire-core.module
     ZonageSismiqueService,
     PprService,
     SisService,
+    CasiasService,
     IcpeService,
     OldService,
 

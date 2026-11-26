@@ -113,7 +113,7 @@ mutafriches/
 Le module d'enrichissement interroge une dizaine d'**APIs de données externes** et **11 bases locales** pour pré-remplir automatiquement les critères d'un site (mono ou multi-parcelle) :
 
 - **Domaines** : Cadastre, Énergie, Réseau de chaleur, Transport, ITE fret, Urbanisme, Risques Naturels, Risques Technologiques, Pollution, Zonages, ENR/ZAER, Climat/ICU, QPV, Saturation réseau EnR, ZAE, GeoRisques brut
-- **APIs externes** : IGN, BDNB, Enedis, GeoRisques (×13 endpoints), API Carto, ZAER WFS, data.gouv.fr...
+- **APIs externes** : IGN, BDNB, Enedis, GeoRisques (×14 endpoints, dont CASIAS pour la pollution), API Carto, ZAER WFS, data.gouv.fr...
 - **11 bases locales** : Transport, BPE (commerces), Sites pollués ADEME, ITE fret, LOVAC (logements vacants), Zonage ABC, ICU (îlots de chaleur), Réseaux de chaleur, QPV (quartiers prioritaires), Zones de contrainte réseau EnR (Enedis/RTE), ZAE (zones d'activité économique)
 - **Multi-parcelle** : Support de 1 à 60 parcelles par site via l'API (20 sur la carte)
 - **Cache 24h** : Optimisation des performances

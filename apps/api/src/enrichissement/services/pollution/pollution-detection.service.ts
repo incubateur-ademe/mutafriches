@@ -3,6 +3,7 @@ import { SourceEnrichissement } from "@mutafriches/shared-types";
 import { Site } from "../../../evaluation/entities/site.entity";
 import { AdemeSitesPolluesRepository } from "../../repositories/ademe-sites-pollues.repository";
 import { SisService } from "../../adapters/georisques/sis/sis.service";
+import { CasiasService } from "../../adapters/georisques/casias/casias.service";
 import { IcpeService } from "../../adapters/georisques/icpe/icpe.service";
 import { GEORISQUES_RAYONS_DEFAUT } from "../../adapters/georisques/georisques.constants";
 import { EnrichmentResult } from "../shared/enrichissement.types";
@@ -11,15 +12,17 @@ import { EnrichmentResult } from "../shared/enrichissement.types";
 const ICPE_DISTANCE_SEUIL_METRES = 500;
 
 /**
- * Service de détection de pollution combinant 3 sources :
+ * Service de détection de pollution combinant 4 sources :
  * - ADEME Sites Pollués (base PostGIS locale)
  * - GéoRisques SIS (Secteurs d'Information sur les Sols)
  * - GéoRisques ICPE (Installations Classées pour la Protection de l'Environnement)
+ * - GéoRisques CASIAS (anciens sites industriels et activités de service)
  *
  * Le site est considéré comme pollué si AU MOINS UNE des conditions est vraie :
  * - Parcelle à moins de 500m d'un site ADEME
  * - Parcelle dans un secteur SIS
  * - Parcelle à moins de 500m d'une ICPE
+ * - Parcelle à moins de 100m d'un site CASIAS (ADR-0056)
  *
  * Pattern uniforme : enrichir(site) mute site.siteReferencePollue et retourne EnrichmentResult
  */
@@ -31,12 +34,13 @@ export class PollutionDetectionService {
     private readonly ademeSitesPolluesRepository: AdemeSitesPolluesRepository,
     private readonly sisService: SisService,
     private readonly icpeService: IcpeService,
+    private readonly casiasService: CasiasService,
   ) {}
 
   /**
    * Enrichit un site avec la détection de pollution
    *
-   * Mute site.siteReferencePollue avec le résultat combiné des 3 sources
+   * Mute site.siteReferencePollue avec le résultat combiné des 4 sources
    *
    * @param site - Site à enrichir (doit avoir des coordonnées)
    * @returns Résultat de l'enrichissement (sources utilisées/échouées)
@@ -53,6 +57,7 @@ export class PollutionDetectionService {
         "ADEME-Sites-Pollues",
         SourceEnrichissement.GEORISQUES_SIS,
         SourceEnrichissement.GEORISQUES_ICPE,
+        SourceEnrichissement.GEORISQUES_CASIAS,
       );
       site.siteReferencePollue = false;
       return { success: false, sourcesUtilisees, sourcesEchouees };
@@ -64,12 +69,14 @@ export class PollutionDetectionService {
     let pollutionAdeme = false;
     let pollutionSis = false;
     let pollutionIcpe = false;
+    let pollutionCasias = false;
 
-    // Appeler les 3 sources en parallèle
-    const [ademeResult, sisResult, icpeResult] = await Promise.allSettled([
+    // Appeler les 4 sources en parallèle
+    const [ademeResult, sisResult, icpeResult, casiasResult] = await Promise.allSettled([
       this.checkAdeme(latitude, longitude, codeInsee),
       this.checkSis(latitude, longitude),
       this.checkIcpe(latitude, longitude),
+      this.checkCasias(latitude, longitude),
     ]);
 
     // 1. Traiter ADEME
@@ -116,13 +123,25 @@ export class PollutionDetectionService {
       this.logger.warn(`Échec ICPE: ${icpeResult.reason}`);
     }
 
+    // 4. Traiter CASIAS
+    if (casiasResult.status === "fulfilled" && casiasResult.value !== null) {
+      sourcesUtilisees.push(SourceEnrichissement.GEORISQUES_CASIAS);
+      pollutionCasias = casiasResult.value;
+      this.logger.debug(`CASIAS: pollué=${pollutionCasias}`);
+    } else {
+      sourcesEchouees.push(SourceEnrichissement.GEORISQUES_CASIAS);
+      if (casiasResult.status === "rejected") {
+        this.logger.warn(`Échec CASIAS: ${casiasResult.reason}`);
+      }
+    }
+
     // Résultat final : pollué si au moins une source détecte une pollution
-    const siteReferencePollue = pollutionAdeme || pollutionSis || pollutionIcpe;
+    const siteReferencePollue = pollutionAdeme || pollutionSis || pollutionIcpe || pollutionCasias;
     site.siteReferencePollue = siteReferencePollue;
 
     this.logger.log(
       `Détection pollution (lat=${latitude.toFixed(5)}, lon=${longitude.toFixed(5)}): ` +
-        `ADEME=${pollutionAdeme}, SIS=${pollutionSis}, ICPE=${pollutionIcpe} ` +
+        `ADEME=${pollutionAdeme}, SIS=${pollutionSis}, ICPE=${pollutionIcpe}, CASIAS=${pollutionCasias} ` +
         `-> siteReferencePollue=${siteReferencePollue}`,
     );
 
@@ -204,6 +223,26 @@ export class PollutionDetectionService {
       };
     } catch (error) {
       this.logger.error("Erreur lors de la vérification ICPE:", error);
+      return null;
+    }
+  }
+
+  // Signalé si un site CASIAS est recensé dans le rayon seuil (ADR-0056)
+  private async checkCasias(latitude: number, longitude: number): Promise<boolean | null> {
+    try {
+      const result = await this.casiasService.getCasiasByLatLon({
+        latitude,
+        longitude,
+        rayon: GEORISQUES_RAYONS_DEFAUT.CASIAS,
+      });
+
+      if (!result.success || !result.data) {
+        return null;
+      }
+
+      return result.data.presenceCasias;
+    } catch (error) {
+      this.logger.error("Erreur lors de la vérification CASIAS:", error);
       return null;
     }
   }

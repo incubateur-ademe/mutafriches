@@ -81,7 +81,7 @@ export class Site {
   distanceIte?: DistanceIte;
   /** Distance réelle en mètres à l'ITE la plus proche (si trouvée dans le rayon de recherche) */
   distanceIteMetres?: number;
-  /** Site référencé comme pollué (détection auto via ADEME/SIS/ICPE) */
+  /** Site référencé comme pollué (détection auto via ADEME/SIS/ICPE/CASIAS) */
   siteReferencePollue?: boolean;
   /** Exposition à un îlot de chaleur urbain — informatif, hors scoring (ADR-0034) */
   ilotChaleurUrbain?: IlotChaleurUrbain;

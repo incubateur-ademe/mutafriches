@@ -37,7 +37,7 @@ interface PollutionFieldProps {
   value: PresencePollution | "";
   /** Callback de changement */
   onChange: (value: PresencePollution | "") => void;
-  /** Site référencé comme potentiellement pollué (SIS/ICPE/ADEME) */
+  /** Site référencé comme potentiellement pollué (SIS/ICPE/ADEME/CASIAS) */
   siteReferencePollue?: boolean;
   /** Message d'erreur */
   error?: string;

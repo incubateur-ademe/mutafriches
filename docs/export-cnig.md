@@ -56,7 +56,7 @@ conventionnelle du standard (§3.3) — et vides pour les textes, dates et URL.
 | `urba_doc_type` | Déduit du zonage, pour la carte communale et le RNU seulement |
 | `urba_zaer` | Zone d'accélération des énergies renouvelables |
 | `desserte_commentaire` | Distances Mutafriches en clair (voie, transport, fret, électricité, chaleur) |
-| `sol_pollution_commentaire` | Mention du référencement dans les bases ADEME, le cas échéant |
+| `sol_pollution_commentaire` | Mention du signalement par une base nationale (ADEME, SIS, ICPE, CASIAS), le cas échéant |
 | `geompoint` | Centroïde du site, en WKT |
 | `geomsurf` | Emprise du site (union des parcelles), en WKT |
 
@@ -67,7 +67,7 @@ conventionnelle du standard (§3.3) — et vides pour les textes, dates et URL.
 | `bati_etat` | État du bâti et des infrastructures | « Pas de bâti » devient `sans objet` |
 | `bati_patrimoine` | Valeur architecturale et historique | Seul « intérêt remarquable » vaut bâtiment d'intérêt |
 | `bati_pollution` | Présence de pollution | Renseigné uniquement pour l'amiante |
-| `sol_pollution_existe` | Présence de pollution | À défaut de saisie, un site référencé ADEME vaut `pollution supposée` |
+| `sol_pollution_existe` | Présence de pollution | À défaut de saisie, un site signalé par ADEME, SIS, ICPE ou CASIAS vaut `pollution supposée` |
 | `proprio_personne` | Type de propriétaire | Seul un propriétaire public est à coup sûr une personne morale |
 
 Ces cinq attributs ne sont renseignés que pour les sites qualifiés **dans le navigateur qui

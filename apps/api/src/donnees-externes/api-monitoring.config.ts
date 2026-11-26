@@ -172,6 +172,14 @@ export const API_MONITORING_ENTRIES: readonly ApiMonitoringEntry[] = [
     param: "code_insee",
   }),
   geoRisquesEntry({
+    key: "georisques-casias",
+    name: "GéoRisques — CASIAS",
+    endpoint: "/ssp/casias",
+    description: "Anciens sites industriels et activités de service (pollution)",
+    adapterFile: "apps/api/src/enrichissement/adapters/georisques/casias/casias.service.ts",
+    param: "latlon",
+  }),
+  geoRisquesEntry({
     key: "georisques-icpe",
     name: "GéoRisques — ICPE",
     endpoint: "/installations_classees",

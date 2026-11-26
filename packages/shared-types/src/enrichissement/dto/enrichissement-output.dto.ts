@@ -86,7 +86,7 @@ export interface EnrichissementOutputDto {
   risqueCavitesSouterraines?: RisqueCavitesSouterraines;
   risqueInondation?: RisqueInondation;
 
-  // Pollution - site référencé dans les bases ADEME (sites et sols pollués)
+  // Pollution - site signalé par ADEME, SIS, ICPE ou CASIAS (pré-sélection, non noté)
   siteReferencePollue: boolean;
 
   // Zonages réglementaires

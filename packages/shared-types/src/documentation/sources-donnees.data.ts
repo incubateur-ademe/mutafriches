@@ -217,18 +217,23 @@ export const SOURCES_DONNEES: SourceDonnees[] = [
     organisme: "BRGM / Ministère de la Transition écologique + ADEME",
     type: "api-externe",
     urlDoc: "https://www.georisques.gouv.fr/doc-api",
-    sourcesEnrichissement: [SourceEnrichissement.GEORISQUES_ICPE],
+    sourcesEnrichissement: [
+      SourceEnrichissement.GEORISQUES_ICPE,
+      SourceEnrichissement.GEORISQUES_CASIAS,
+    ],
     champsRecuperes: [
       "Installations classées pour la protection de l'environnement (ICPE, statut Seveso)",
       "Secteurs d'information sur les sols (SIS)",
+      "Anciens sites industriels et activités de service (CASIAS) recensés à moins de 100 m du site",
       "Sites et sols pollués (référentiel local ADEME, base PostGIS)",
     ],
     traitementAlgo:
       "La présence d'une ICPE ou d'un secteur SIS à proximité produit le booléen « risques " +
       "technologiques » (favorable à l'industrie, défavorable au résidentiel). Un site pollué ADEME ou " +
-      "une ICPE à moins de 500 m, ou un SIS à moins de 1 km, signale par ailleurs le site comme " +
-      "potentiellement pollué : « Oui » est alors proposé d'office à la question sur la pollution, " +
-      "que l'utilisateur confirme ou corrige.",
+      "une ICPE à moins de 500 m, un SIS à moins de 1 km, ou un ancien site industriel CASIAS à moins " +
+      "de 100 m, signale par ailleurs le site comme potentiellement pollué : « Oui » est alors proposé " +
+      "d'office à la question sur la pollution, que l'utilisateur confirme ou corrige. CASIAS recense " +
+      "des activités passées, sans pollution avérée : son rayon est volontairement court.",
   },
   {
     id: "zaer",

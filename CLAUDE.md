@@ -438,7 +438,7 @@ Le test dédié (`versions.spec.ts`) garantit l'ordre chronologique ascendant st
 - **IGN Cadastre** (`cadastre.data.gouv.fr`) : données parcellaires, géométrie, surface
 - **BDNB** (`api.bdnb.io`) : surface bâtie, **10 000 appels/mois par IP** et 120/min ; cache 30 jours par parcelle `cache_bdnb_parcelles` + appels groupés (ADR-0052)
 - **Enedis** (`data.enedis.fr`) : distance raccordement électrique
-- **GéoRisques** (`georisques.gouv.fr`) : 13 APIs risques (RGA, SIS, ICPE, cavités, inondation, CATNAT, etc.)
+- **GéoRisques** (`georisques.gouv.fr`) : 13 APIs risques (RGA, SIS, ICPE, cavités, inondation, CATNAT, etc.), plus CASIAS (anciens sites industriels) pour la seule détection de pollution, rayon de 100 m (ADR-0056)
 - **API Carto Nature** (`apicarto.ign.fr`) : zonages environnementaux (Natura 2000, ZNIEFF, Parcs)
 - **API Carto GPU** (`apicarto.ign.fr`) : zonages patrimoniaux et réglementaires (PLU, Monuments)
 - **IGN WFS** (`data.geopf.fr`) : tronçons autoroutiers et bretelles BD TOPO, d'où sont déduites les entrées d'autoroute

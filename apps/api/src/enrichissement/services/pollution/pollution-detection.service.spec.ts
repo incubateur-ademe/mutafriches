@@ -6,10 +6,13 @@ import { Site } from "../../../evaluation/entities/site.entity";
 import { AdemeSitesPolluesRepository } from "../../repositories/ademe-sites-pollues.repository";
 import { SisService } from "../../adapters/georisques/sis/sis.service";
 import { IcpeService } from "../../adapters/georisques/icpe/icpe.service";
+import { CasiasService } from "../../adapters/georisques/casias/casias.service";
+import { GEORISQUES_RAYONS_DEFAUT } from "../../adapters/georisques/georisques.constants";
 import {
   createMockAdemeSitesPolluesRepository,
   createMockSisService,
   createMockIcpeService,
+  createMockCasiasService,
 } from "../../__test-helpers__/enrichissement.mocks";
 
 /** Crée un site de test avec des coordonnées */
@@ -28,11 +31,18 @@ describe("PollutionDetectionService", () => {
   let ademeRepository: ReturnType<typeof createMockAdemeSitesPolluesRepository>;
   let sisService: ReturnType<typeof createMockSisService>;
   let icpeService: ReturnType<typeof createMockIcpeService>;
+  let casiasService: ReturnType<typeof createMockCasiasService>;
 
   beforeEach(async () => {
     const mockAdeme = createMockAdemeSitesPolluesRepository();
     const mockSis = createMockSisService();
     const mockIcpe = createMockIcpeService();
+    const mockCasias = createMockCasiasService();
+    // Par défaut : CASIAS répond, aucun site à proximité
+    mockCasias.getCasiasByLatLon.mockResolvedValue({
+      success: true,
+      data: { presenceCasias: false, nombreCasias: 0 },
+    });
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -40,6 +50,7 @@ describe("PollutionDetectionService", () => {
         { provide: AdemeSitesPolluesRepository, useValue: mockAdeme },
         { provide: SisService, useValue: mockSis },
         { provide: IcpeService, useValue: mockIcpe },
+        { provide: CasiasService, useValue: mockCasias },
       ],
     }).compile();
 
@@ -47,6 +58,7 @@ describe("PollutionDetectionService", () => {
     ademeRepository = mockAdeme;
     sisService = mockSis;
     icpeService = mockIcpe;
+    casiasService = mockCasias;
   });
 
   describe("enrichir", () => {
@@ -172,7 +184,7 @@ describe("PollutionDetectionService", () => {
 
       // Assert
       expect(site.siteReferencePollue).toBe(true);
-      expect(result.sourcesUtilisees).toHaveLength(3);
+      expect(result.sourcesUtilisees).toHaveLength(4);
     });
 
     it("ne devrait PAS détecter pollution si toutes les sources négatives", async () => {
@@ -193,7 +205,7 @@ describe("PollutionDetectionService", () => {
 
       // Assert
       expect(site.siteReferencePollue).toBe(false);
-      expect(result.sourcesUtilisees).toHaveLength(3);
+      expect(result.sourcesUtilisees).toHaveLength(4);
       expect(result.sourcesEchouees).toHaveLength(0);
     });
 
@@ -274,23 +286,89 @@ describe("PollutionDetectionService", () => {
         success: false,
         error: "Service indisponible",
       });
+      casiasService.getCasiasByLatLon.mockResolvedValue({
+        success: false,
+        error: "Service indisponible",
+      });
 
       // Act
       const result = await service.enrichir(site);
 
       // Assert
       expect(site.siteReferencePollue).toBe(false);
-      expect(result.sourcesEchouees).toHaveLength(3);
+      expect(result.sourcesEchouees).toHaveLength(4);
       expect(result.sourcesUtilisees).toHaveLength(0);
       expect(result.success).toBe(false);
     });
 
-    it("devrait appeler les 3 sources en parallèle", async () => {
+    it("devrait détecter pollution si CASIAS positif seul", async () => {
+      const site = createTestSite();
+      ademeRepository.isSiteReferencePollue.mockResolvedValue(false);
+      sisService.getSisByLatLon.mockResolvedValue({ success: true, data: { presenceSis: false } });
+      icpeService.getIcpeByLatLon.mockResolvedValue({
+        success: true,
+        data: { nombreIcpe: 0, distancePlusProche: undefined },
+      });
+      casiasService.getCasiasByLatLon.mockResolvedValue({
+        success: true,
+        data: { presenceCasias: true, nombreCasias: 2 },
+      });
+
+      const result = await service.enrichir(site);
+
+      expect(site.siteReferencePollue).toBe(true);
+      expect(result.sourcesUtilisees).toContain(SourceEnrichissement.GEORISQUES_CASIAS);
+      expect(casiasService.getCasiasByLatLon).toHaveBeenCalledWith({
+        latitude: 48.0,
+        longitude: -4.0,
+        rayon: GEORISQUES_RAYONS_DEFAUT.CASIAS,
+      });
+    });
+
+    it("devrait gérer l'échec de CASIAS et continuer avec les autres sources", async () => {
+      const site = createTestSite();
+      ademeRepository.isSiteReferencePollue.mockResolvedValue(false);
+      sisService.getSisByLatLon.mockResolvedValue({ success: true, data: { presenceSis: false } });
+      icpeService.getIcpeByLatLon.mockResolvedValue({
+        success: true,
+        data: { nombreIcpe: 0, distancePlusProche: undefined },
+      });
+      casiasService.getCasiasByLatLon.mockResolvedValue({
+        success: false,
+        error: "Service indisponible",
+      });
+
+      const result = await service.enrichir(site);
+
+      expect(site.siteReferencePollue).toBe(false);
+      expect(result.success).toBe(true);
+      expect(result.sourcesEchouees).toEqual([SourceEnrichissement.GEORISQUES_CASIAS]);
+      expect(result.sourcesUtilisees).toHaveLength(3);
+    });
+
+    it("devrait gérer une exception de CASIAS sans interrompre la détection", async () => {
+      const site = createTestSite();
+      ademeRepository.isSiteReferencePollue.mockResolvedValue(true);
+      sisService.getSisByLatLon.mockResolvedValue({ success: true, data: { presenceSis: false } });
+      icpeService.getIcpeByLatLon.mockResolvedValue({
+        success: true,
+        data: { nombreIcpe: 0, distancePlusProche: undefined },
+      });
+      casiasService.getCasiasByLatLon.mockRejectedValue(new Error("Timeout"));
+
+      const result = await service.enrichir(site);
+
+      expect(site.siteReferencePollue).toBe(true);
+      expect(result.sourcesEchouees).toContain(SourceEnrichissement.GEORISQUES_CASIAS);
+    });
+
+    it("devrait appeler les 4 sources en parallèle", async () => {
       // Arrange
       const site = createTestSite();
       let ademeCallTime = 0;
       let sisCallTime = 0;
       let icpeCallTime = 0;
+      let casiasCallTime = 0;
 
       ademeRepository.isSiteReferencePollue.mockImplementation(async () => {
         ademeCallTime = Date.now();
@@ -310,15 +388,18 @@ describe("PollutionDetectionService", () => {
         return { success: true, data: { nombreIcpe: 0, distancePlusProche: undefined } };
       });
 
+      casiasService.getCasiasByLatLon.mockImplementation(async () => {
+        casiasCallTime = Date.now();
+        await new Promise((resolve) => setTimeout(resolve, 10));
+        return { success: true, data: { presenceCasias: false, nombreCasias: 0 } };
+      });
+
       // Act
       await service.enrichir(site);
 
-      // Assert - les 3 appels doivent être quasi simultanés
-      const maxDiff = Math.max(
-        Math.abs(ademeCallTime - sisCallTime),
-        Math.abs(sisCallTime - icpeCallTime),
-        Math.abs(ademeCallTime - icpeCallTime),
-      );
+      // Assert - les 4 appels doivent être quasi simultanés
+      const instants = [ademeCallTime, sisCallTime, icpeCallTime, casiasCallTime];
+      const maxDiff = Math.max(...instants) - Math.min(...instants);
       expect(maxDiff).toBeLessThan(5);
     });
 
@@ -354,7 +435,9 @@ describe("PollutionDetectionService", () => {
       // Assert
       expect(site.siteReferencePollue).toBe(false);
       expect(result.success).toBe(false);
-      expect(result.sourcesEchouees).toHaveLength(3);
+      expect(result.sourcesEchouees).toHaveLength(4);
+      expect(result.sourcesEchouees).toContain(SourceEnrichissement.GEORISQUES_CASIAS);
+      expect(casiasService.getCasiasByLatLon).not.toHaveBeenCalled();
     });
   });
 });
