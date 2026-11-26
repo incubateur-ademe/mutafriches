@@ -211,15 +211,6 @@ Format d'une entrée :
   l'envoie dans
   `Origin` avec `X-Mutafriches-Client: qgis/<version>` ; retirer ensuite l'origine partagée
 
-### Publier une release de l'extension QGIS
-
-- **Origine** : tutoriel `/utiliser-mutafriches/extension-qgis`
-- **Écarté parce que** : le bouton « Télécharger l'extension » pointe sur
-  `github.com/incubateur-ademe/mutafriches-qgis/releases/latest`, qui n'existe pas tant
-  qu'aucune release n'est publiée
-- **Préalable** : fusionner le mode réel de l'extension, puis publier une release portant le
-  ZIP ; ne pas mettre le tutoriel en production avant
-
 ### Identification facultative dans l'extension QGIS
 
 - **Origine** : simplification des textes du tutoriel `/utiliser-mutafriches/extension-qgis` (2026-11-18)
