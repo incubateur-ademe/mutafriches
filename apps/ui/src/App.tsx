@@ -11,7 +11,7 @@ import { ComparaisonCartofrichesPage } from "./features/tests/test-comparaison-c
 import { isComparaisonCartofrichesEnabled } from "./shared/config/feature-flags.config";
 import { useEventTracking } from "./shared/hooks/useEventTracking";
 import { useEffect, useRef } from "react";
-import { TypeEvenement } from "@mutafriches/shared-types";
+import { CanalIntegrateur, TypeEvenement } from "@mutafriches/shared-types";
 import { useIframe } from "./shared/iframe/useIframe";
 import { ScrollToTop } from "./shared/components/common/ScrollToTop";
 
@@ -75,6 +75,10 @@ function AppContent() {
         {/* Documentation */}
         <Route path={ROUTES.COMPRENDRE_ANALYSES} element={<ComprendreAnalysesPage />} />
         <Route path={ROUTES.INTEGRER} element={<IntegrerMutafrichesPage />} />
+        <Route
+          path={ROUTES.FORMULAIRE_PAGE_MULTISITES}
+          element={<IntegrerMutafrichesPage formulaireOuvert={CanalIntegrateur.PAGE} />}
+        />
         <Route path={ROUTES.TUTORIEL_QGIS} element={<TutorielQgisPage />} />
         <Route path={ROUTES.DOCUMENTATION_API} element={<DocumentationApiPage />} />
         <Route path={ROUTES.DOCUMENTATION_IFRAME} element={<DocumentationIframePage />} />

@@ -24,6 +24,8 @@ export const ROUTES = {
   COMPRENDRE_ANALYSES_SOURCES: "/comprendre-les-analyses?onglet=sources",
   INTEGRER: "/utiliser-mutafriches",
   TUTORIEL_QGIS: "/utiliser-mutafriches/extension-qgis",
+  // Adresse partageable : la page « Intégrer Mutafriches » avec le formulaire de demande ouvert
+  FORMULAIRE_PAGE_MULTISITES: "/utiliser-mutafriches/formulaire-page-multisites",
   DOCUMENTATION_API: "/utiliser-mutafriches/api",
   DOCUMENTATION_IFRAME: "/utiliser-mutafriches/iframe",
   // Ancienne adresse de la documentation, redirigée vers la page API

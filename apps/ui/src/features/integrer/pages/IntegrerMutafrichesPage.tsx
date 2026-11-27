@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { CanalIntegrateur } from "@mutafriches/shared-types";
 import { Layout } from "../../../shared/components/layout/Layout";
 import { ROUTES } from "../../../shared/config/routes.config";
@@ -25,9 +25,21 @@ const MESSAGES_CONTACT = {
 
 type MotifContact = keyof typeof MESSAGES_CONTACT;
 
-export function IntegrerMutafrichesPage() {
+interface IntegrerMutafrichesPageProps {
+  // Formulaire ouvert dès l'arrivée, pour une adresse partageable (cf. ROUTES.FORMULAIRE_PAGE_MULTISITES)
+  formulaireOuvert?: CanalModale;
+}
+
+export function IntegrerMutafrichesPage({ formulaireOuvert }: IntegrerMutafrichesPageProps) {
+  const navigate = useNavigate();
   const [motifContact, setMotifContact] = useState<MotifContact | null>(null);
-  const [declaration, setDeclaration] = useState<CanalModale | null>(null);
+  const [declaration, setDeclaration] = useState<CanalModale | null>(formulaireOuvert ?? null);
+
+  // Depuis l'adresse partageable, on revient à la page : un rechargement ne rouvre pas le formulaire
+  const fermerDeclaration = () => {
+    setDeclaration(null);
+    if (formulaireOuvert) navigate(ROUTES.INTEGRER, { replace: true });
+  };
 
   return (
     <Layout>
@@ -167,10 +179,10 @@ export function IntegrerMutafrichesPage() {
 
       <DeclarationModal
         canal={declaration}
-        onClose={() => setDeclaration(null)}
+        onClose={fermerDeclaration}
         onRendezVous={() => {
           setMotifContact(declaration === CanalIntegrateur.PAGE ? "page" : "api");
-          setDeclaration(null);
+          fermerDeclaration();
         }}
       />
 
