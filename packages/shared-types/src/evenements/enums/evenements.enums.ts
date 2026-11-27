@@ -27,7 +27,7 @@ export enum TypeEvenement {
   INTERET_MISE_EN_RELATION = "interet_mise_en_relation",
   INTERET_EXPORT_RESULTATS = "interet_export_resultats",
 
-  // Ouverture de la modale multisites (clic sur le CTA "Analyser plusieurs sites")
+  // Ouverture de la modale multisites (clic sur le CTA "Échanger avec l'équipe Mutafriches")
   OUVERTURE_MODALE_MULTISITES = "ouverture_modale_multisites",
 
   // Ouverture du recapitulatif du site (clic "voir recapitulatif du site")

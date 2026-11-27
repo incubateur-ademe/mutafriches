@@ -166,7 +166,7 @@ cf. [`docs/ops/db-local.md`](./docs/ops/db-local.md).
 
 ### Contact multisites (calendrier de rendez-vous)
 
-La modale « Analyser plusieurs sites » embarque le **calendrier de rendez-vous de l'incubateur ADEME** (instance Cal.com
+La modale de contact, ouverte par « Échanger avec l'équipe Mutafriches » (page résultats), embarque le **calendrier de rendez-vous de l'incubateur ADEME** (instance Cal.com
 `rdv.incubateur.ademe.fr`) en iframe (cf. ADR-0020 et ADR-0056). Aucune donnée nominative n'est collectée ni stockée, et l'application
 n'envoie plus d'e-mails transactionnels.
 
