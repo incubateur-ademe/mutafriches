@@ -20,6 +20,8 @@ export const ROUTES = {
 
   // Documentation
   COMPRENDRE_ANALYSES: "/comprendre-les-analyses",
+  // Ouvre directement l'onglet « Sources des données »
+  COMPRENDRE_ANALYSES_SOURCES: "/comprendre-les-analyses?onglet=sources",
   INTEGRER: "/utiliser-mutafriches",
   TUTORIEL_QGIS: "/utiliser-mutafriches/extension-qgis",
   DOCUMENTATION_API: "/utiliser-mutafriches/api",
