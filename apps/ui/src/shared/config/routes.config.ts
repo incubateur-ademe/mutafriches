@@ -26,6 +26,8 @@ export const ROUTES = {
   TUTORIEL_QGIS: "/utiliser-mutafriches/extension-qgis",
   // Adresse partageable : la page « Intégrer Mutafriches » avec le formulaire de demande ouvert
   FORMULAIRE_PAGE_MULTISITES: "/utiliser-mutafriches/formulaire-page-multisites",
+  // Adresse partageable de la déclaration d'un domaine API (modale ouverte)
+  FORMULAIRE_API: "/utiliser-mutafriches/formulaire-api",
   DOCUMENTATION_API: "/utiliser-mutafriches/api",
   DOCUMENTATION_IFRAME: "/utiliser-mutafriches/iframe",
   // Ancienne adresse de la documentation, redirigée vers la page API
