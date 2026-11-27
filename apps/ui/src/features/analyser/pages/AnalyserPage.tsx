@@ -49,15 +49,33 @@ export const AnalyserPage: React.FC = () => {
       )}
 
       <div className={isInIframe ? "fr-mt-2w fr-mb-2w" : "fr-mt-6w fr-mb-4w"}>
-        <h1>Trouver le bon usage pour une friche</h1>
+        {/* En iframe, l'usager est déjà dans l'outil d'un intégrateur : on garde l'accroche d'origine */}
+        {isInIframe ? (
+          <>
+            <h1>Trouver le bon usage pour une friche</h1>
 
-        <p className="fr-text--lead">
-          <strong>Pour démarrer l'analyse de l'usage le plus adapté à votre site en friche,</strong>{" "}
-          sélectionner une parcelle sur la carte. Vous pouvez la rechercher en entrant son adresse
-          exacte ou une adresse approchante.
-          <br />
-          Sélectionner la parcelle et cliquer sur 'Analyser ce site'.
-        </p>
+            <p className="fr-text--lead">
+              <strong>
+                Pour démarrer l'analyse de l'usage le plus adapté à votre site en friche,
+              </strong>{" "}
+              sélectionner une parcelle sur la carte. Vous pouvez la rechercher en entrant son
+              adresse exacte ou une adresse approchante.
+              <br />
+              Sélectionner la parcelle et cliquer sur 'Analyser ce site'.
+            </p>
+          </>
+        ) : (
+          <>
+            <h1>Tester Mutafriches sur un de vos sites</h1>
+
+            <p className="fr-text--lead">
+              <strong>Avant d'intégrer Mutafriches dans vos propres outils</strong>, testez
+              l'analyse de l'usage le plus adapté sur un de vos sites en friche. Sélectionnez une ou
+              plusieurs parcelles adjacentes sur la carte directement ou en indiquant leur adresse
+              dans la barre de recherche puis cliquez sur "Analyser ce site".
+            </p>
+          </>
+        )}
 
         <ParcelleSelectionMap onAnalyze={handleAnalyze} height="500px" />
 
