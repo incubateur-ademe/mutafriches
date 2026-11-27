@@ -35,6 +35,13 @@ export function IntegrerMutafrichesPage({ formulaireOuvert }: IntegrerMutafriche
   const [motifContact, setMotifContact] = useState<MotifContact | null>(null);
   const [declaration, setDeclaration] = useState<CanalModale | null>(formulaireOuvert ?? null);
 
+  // D'une adresse de formulaire à l'autre, la page n'est pas remontée : la modale suit l'adresse
+  const [formulairePrecedent, setFormulairePrecedent] = useState(formulaireOuvert);
+  if (formulaireOuvert !== formulairePrecedent) {
+    setFormulairePrecedent(formulaireOuvert);
+    if (formulaireOuvert) setDeclaration(formulaireOuvert);
+  }
+
   // Depuis l'adresse partageable, on revient à la page : un rechargement ne rouvre pas le formulaire
   const fermerDeclaration = () => {
     setDeclaration(null);
