@@ -51,13 +51,8 @@ export function SolutionIntegrationCard({
       </div>
       <div className="fr-card__header">
         <div className="fr-card__img">
-          {/* Visuel entier plutôt que recadré (cover DSFR), complété par son propre fond uni */}
-          <img
-            className="fr-responsive-img object-contain! bg-[#ecf3fc]"
-            src={image}
-            alt=""
-            loading="lazy"
-          />
+          {/* Visuels pré-recadrés au format du cadre ; sur cadre étroit, on garde la droite (tableaux de bord) */}
+          <img className="fr-responsive-img object-right!" src={image} alt="" loading="lazy" />
         </div>
       </div>
     </div>
