@@ -1,11 +1,13 @@
 import { Controller, Get, All, Query, Req, Res, HttpStatus } from "@nestjs/common";
 import { ApiTags, ApiOperation, ApiQuery, ApiResponse, ApiExcludeEndpoint } from "@nestjs/swagger";
 import type { Request, Response } from "express";
-import type { Periodicity, StatOutput } from "@mutafriches/shared-types";
+import type { Periodicity, SitesEvalues, StatOutput } from "@mutafriches/shared-types";
 import { StatsService } from "./stats.service";
 import { ApiStandardErrors } from "../shared/swagger";
 import { ORIGINES_DASHBOARDS_ADEME } from "../shared/utils";
 import { isValidPeriodicity, computeSinceDate, computeCacheTtl } from "./utils/period.utils";
+
+const CACHE_SITES_EVALUES_S = 3600;
 
 const CORS_ALLOWED_ORIGINS: readonly string[] = ORIGINES_DASHBOARDS_ADEME;
 
@@ -71,6 +73,21 @@ export class StatsController {
 
     this.appliquerHeaders(req, res, periodicity);
     res.status(HttpStatus.OK).json(stats);
+  }
+
+  @Get("sites-evalues")
+  @ApiOperation({
+    summary: "Nombre de sites évalués",
+    description:
+      "Nombre de sites distincts ayant fait l'objet d'une analyse de mutabilité, hors réutilisation du cache et démonstration. Un site multi-parcelle compte pour un. Mis en cache une heure.",
+  })
+  @ApiResponse({ status: 200, description: "`{ nombre }` : sites distincts analysés" })
+  @ApiStandardErrors()
+  async getSitesEvalues(@Res() res: Response): Promise<void> {
+    const sitesEvalues: SitesEvalues = await this.statsService.getSitesEvalues();
+
+    res.setHeader("Cache-Control", `public, max-age=${CACHE_SITES_EVALUES_S}`);
+    res.status(HttpStatus.OK).json(sitesEvalues);
   }
 
   @All()

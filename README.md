@@ -208,6 +208,7 @@ pnpm validate               # Tout vérifier (format + lint + typecheck + test)
 | `/api/attributaire/sites?codeInsee=` | GET | Table attributaire publique d'une commune : sites évalués ou partenaires, critères et mutabilité (JSON ou GeoJSON) |
 | `/api/stats` | GET | KPI public principal, format incubateur (objet `StatOutput` unique) |
 | `/api/stats/all` | GET | Tous les KPI publics (tableau de `StatOutput`, dashboard interne) |
+| `/api/stats/sites-evalues` | GET | Nombre de sites distincts analysés, hors cache et démonstration (compteur de la page d'accueil) |
 | `/api/metabase/embed-url` | GET | URL d'embedding dashboard Metabase |
 | `/api/donnees-externes/imports` | GET | Statut des imports de référentiels |
 | `/api/donnees-externes/apis` | GET | Dernier état du monitoring des APIs externes |

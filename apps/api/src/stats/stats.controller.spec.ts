@@ -10,6 +10,7 @@ function createMockStatsService() {
   return {
     getStatPrincipale: vi.fn().mockResolvedValue({ description: "Test", stats: [] }),
     getAllStats: vi.fn().mockResolvedValue([]),
+    getSitesEvalues: vi.fn().mockResolvedValue({ nombre: 2255 }),
   };
 }
 
@@ -60,6 +61,18 @@ describe("StatsController", () => {
 
     controller = setup.controller;
     statsService = setup.service as ReturnType<typeof createMockStatsService>;
+  });
+
+  describe("GET /api/stats/sites-evalues", () => {
+    it("retourne le nombre de sites avec un cache d'une heure", async () => {
+      const res = createMockResponse();
+
+      await controller.getSitesEvalues(res);
+
+      expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
+      expect(res.json).toHaveBeenCalledWith({ nombre: 2255 });
+      expect(res._headers["Cache-Control"]).toBe("public, max-age=3600");
+    });
   });
 
   describe("GET /api/stats", () => {
