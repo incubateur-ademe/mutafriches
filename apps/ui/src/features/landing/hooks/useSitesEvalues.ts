@@ -11,7 +11,7 @@ export function useSitesEvalues(): number | null {
   useEffect(() => {
     let actif = true;
     statsService
-      .getTotalAnalysesAbouties()
+      .getSitesEvalues()
       .then((total) => {
         const arrondi = arrondirAuPalier(total, PALIER);
         if (actif && arrondi > 0) setNombre(arrondi);

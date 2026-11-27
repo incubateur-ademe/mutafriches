@@ -33,8 +33,7 @@ export const API_CONFIG = {
       export: (slug: string) => `/api/partenaires/${slug}/export`,
     },
     stats: {
-      // Total toutes périodes : sommer les points de la série annuelle
-      analysesAbouties: "/api/stats?periodicity=year",
+      sitesEvalues: "/api/stats/sites-evalues",
     },
     metabase: {
       embedUrl: "/api/metabase/embed-url",
