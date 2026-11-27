@@ -32,6 +32,10 @@ export const API_CONFIG = {
       renommerSite: (slug: string, id: string) => `/api/partenaires/${slug}/sites/${id}`,
       export: (slug: string) => `/api/partenaires/${slug}/export`,
     },
+    stats: {
+      // Total toutes périodes : sommer les points de la série annuelle
+      analysesAbouties: "/api/stats?periodicity=year",
+    },
     metabase: {
       embedUrl: "/api/metabase/embed-url",
     },

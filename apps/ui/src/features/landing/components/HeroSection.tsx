@@ -1,7 +1,11 @@
 import { Link } from "react-router-dom";
 import { ROUTES } from "../../../shared/config/routes.config";
+import { useSitesEvalues } from "../hooks/useSitesEvalues";
+import { formaterNombre } from "../utils/sites-evalues.utils";
 
 export function HeroSection() {
+  const sitesEvalues = useSitesEvalues();
+
   return (
     <section style={{ padding: 0, backgroundColor: "#f1f7ff", overflow: "hidden" }}>
       <style>{`
@@ -20,9 +24,11 @@ export function HeroSection() {
               reconversion des friches.
             </p>
 
-            <p className="inline-block text-xs font-bold tracking-wide uppercase text-[var(--text-mention-grey)] mb-6">
-              <strong>Plus de 4 500 sites déjà évalués !</strong>
-            </p>
+            {sitesEvalues !== null && (
+              <p className="inline-block text-xs font-bold tracking-wide uppercase text-[var(--text-mention-grey)] mb-6">
+                <strong>Plus de {formaterNombre(sitesEvalues)} sites déjà évalués !</strong>
+              </p>
+            )}
 
             <div>
               <Link to={ROUTES.ANALYSER} className="fr-btn fr-btn--lg">
