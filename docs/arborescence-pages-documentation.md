@@ -65,6 +65,7 @@ Chemins relatifs à `apps/ui/src/`.
 
 ## Notes
 
+- `/comprendre-les-analyses?onglet=sources` ouvre directement l'onglet « Sources des données » (lien « Découvrir toutes nos sources » de la page d'accueil, `ROUTES.COMPRENDRE_ANALYSES_SOURCES`).
 - `/documentation-integration` reste servie, redirigée vers `/utiliser-mutafriches/api` : elle est citée dans les mails d'onboarding des intégrateurs (`docs/acces-api-integrateur.md`).
 - Les pages de détail de « Intégrer Mutafriches » partagent un gabarit : fil d'Ariane (Accueil › Intégrer Mutafriches › page), sommaire en menu latéral collant. Chaque entrée du sommaire vise l'identifiant d'une section.
 - Les tableaux de « Comprendre les analyses » ne se saisissent pas à la main : ils découlent de l'algorithme, et des tests cassent en cas de divergence.
