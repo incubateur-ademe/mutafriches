@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { ROUTES } from "../../../shared/config/routes.config";
 
@@ -7,6 +8,19 @@ const SOURCES_PRINCIPALES: { nom: string; src: string }[] = [
   { nom: "Géorisques", src: "/images/logos/sources/georisques.png" },
   { nom: "BD TOPO", src: "/images/logos/sources/bd-topo.png" },
 ];
+
+// Numéro en colonne : les lignes suivantes du titre s'alignent sur le texte, pas sous le numéro.
+function TitreEtape({ numero, children }: { numero: number; children: ReactNode }) {
+  return (
+    <h3
+      className="fr-mb-2w flex gap-[0.4em]"
+      style={{ color: "var(--text-action-high-blue-france)" }}
+    >
+      <span>{numero}.</span>
+      <span>{children}</span>
+    </h3>
+  );
+}
 
 export function CommentCaMarcheSection() {
   return (
@@ -21,9 +35,9 @@ export function CommentCaMarcheSection() {
         >
           <div className="fr-grid-row fr-grid-row--gutters fr-grid-row--middle">
             <div className="fr-col-12 fr-col-md-7">
-              <h3 className="fr-mb-2w" style={{ color: "var(--text-action-high-blue-france)" }}>
-                1. Mutafriches qualifie vos sites à partir de bases de données nationales
-              </h3>
+              <TitreEtape numero={1}>
+                Mutafriches qualifie vos sites à partir de bases de données nationales
+              </TitreEtape>
               <p className="fr-mb-2w">
                 Une fois les parcelles de vos sites définies, Mutafriches interroge plus de{" "}
                 <strong>19 critères déterminants</strong> issus des bases de données ouvertes
@@ -74,9 +88,9 @@ export function CommentCaMarcheSection() {
         <div style={{ padding: "2.5rem", backgroundColor: "#f1f7ff", borderRadius: "24px" }}>
           <div className="fr-grid-row fr-grid-row--gutters fr-grid-row--middle">
             <div className="fr-col-12 fr-col-md-7">
-              <h3 className="fr-mb-2w" style={{ color: "var(--text-action-high-blue-france)" }}>
-                2. Mutafriches évalue la mutabilité de vos sites pour 7 usages
-              </h3>
+              <TitreEtape numero={2}>
+                Mutafriches évalue la mutabilité de vos sites pour 7 usages
+              </TitreEtape>
               <p className="fr-mb-3w">
                 Sur la base des critères de qualification, une{" "}
                 <strong>analyse de mutabilité</strong> permet d&apos;évaluer la compatibilité de vos

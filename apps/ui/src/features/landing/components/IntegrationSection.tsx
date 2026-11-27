@@ -30,11 +30,9 @@ export function IntegrationSection() {
               mobilisable.
             </p>
 
-            <div className="text-center">
-              <Link to={ROUTES.INTEGRER} className="fr-btn">
-                Découvrir comment utiliser Mutafriches
-              </Link>
-            </div>
+            <Link to={ROUTES.INTEGRER} className="fr-btn">
+              Découvrir comment utiliser Mutafriches
+            </Link>
           </div>
         </div>
       </div>
