@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Layout } from "../../../shared/components/layout/Layout";
 import { DsfrTabs } from "../../../shared/components/dsfr/DsfrTabs";
 import { useEventTracking } from "../../../shared/hooks/useEventTracking";
@@ -11,6 +12,9 @@ export function ComprendreAnalysesPage() {
     trackOngletComprendreAnalyses,
     trackClicLienSourceCritere,
   } = useEventTracking();
+
+  const [searchParams] = useSearchParams();
+  const ongletInitial = searchParams.get("onglet") === "sources" ? "sources" : "definitions";
 
   // Une seule consultation par affichage, y compris sous le double montage du mode strict
   const consultationTracee = useRef(false);
@@ -32,6 +36,7 @@ export function ComprendreAnalysesPage() {
 
         <DsfrTabs
           ongletsFiges
+          defaultTabId={ongletInitial}
           onTabChange={(onglet) => void trackOngletComprendreAnalyses(onglet)}
           ariaLabel="Comprendre les analyses : sélection de l'onglet"
           tabs={[

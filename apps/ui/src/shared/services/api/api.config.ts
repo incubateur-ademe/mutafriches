@@ -32,6 +32,9 @@ export const API_CONFIG = {
       renommerSite: (slug: string, id: string) => `/api/partenaires/${slug}/sites/${id}`,
       export: (slug: string) => `/api/partenaires/${slug}/export`,
     },
+    stats: {
+      sitesEvalues: "/api/stats/sites-evalues",
+    },
     metabase: {
       embedUrl: "/api/metabase/embed-url",
     },

@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { sql } from "drizzle-orm";
-import type { Periodicity, StatOutput } from "@mutafriches/shared-types";
+import type { Periodicity, SitesEvalues, StatOutput } from "@mutafriches/shared-types";
 import { DatabaseService } from "../shared/database/database.service";
 import { fillGaps, type StatPoint } from "./utils/gap-fill.utils";
 
@@ -28,6 +28,19 @@ export class StatsService {
     ]);
 
     return results;
+  }
+
+  // Un site multi-parcelle est une liste de parcelles : il compte pour un site
+  async getSitesEvalues(): Promise<SitesEvalues> {
+    const result = await this.database.db.execute(sql`
+      SELECT COUNT(DISTINCT site_id)::INT AS nombre
+      FROM evaluations
+      WHERE evaluation_source_id IS NULL
+        AND COALESCE(integrateur, '') NOT IN ('demo', 'mutafriches')
+    `);
+    const lignes = result as unknown as { nombre: number }[];
+
+    return { nombre: Number(lignes[0]?.nombre ?? 0) };
   }
 
   private async getAnalysesAbouties(

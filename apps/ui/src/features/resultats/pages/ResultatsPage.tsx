@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useEventTracking } from "../../../shared/hooks/useEventTracking";
 import { identifiantCadastralTracking } from "../../../shared/form/tracking.utils";
 import {
@@ -33,6 +33,41 @@ import type { ResultatsExportData } from "../export/types";
 import { ContactMultisitesModal } from "../components/ContactMultisitesModal";
 import { DebugPanelGate } from "../../debug/components/DebugPanelGate";
 import { ComparaisonAlgoPanelGate } from "../../comparaison-algo/components/ComparaisonAlgoPanelGate";
+
+interface LienUtiliserMutafrichesProps {
+  // En iframe, la page s'ouvre à part : on ne navigue pas dans l'outil de l'intégrateur
+  nouvelOnglet: boolean;
+  className: string;
+  onClick?: () => void;
+  children: React.ReactNode;
+}
+
+function LienUtiliserMutafriches({
+  nouvelOnglet,
+  className,
+  onClick,
+  children,
+}: LienUtiliserMutafrichesProps) {
+  if (nouvelOnglet) {
+    return (
+      <a
+        href={ROUTES.INTEGRER}
+        target="_blank"
+        rel="noopener noreferrer"
+        title="Utiliser Mutafriches - nouvelle fenêtre"
+        className={className}
+        onClick={onClick}
+      >
+        {children}
+      </a>
+    );
+  }
+  return (
+    <Link to={ROUTES.INTEGRER} className={className} onClick={onClick}>
+      {children}
+    </Link>
+  );
+}
 
 export const ResultatsPage: React.FC = () => {
   const navigate = useNavigate();
@@ -325,38 +360,23 @@ export const ResultatsPage: React.FC = () => {
 
         {mutabilityData && !isLoading && (
           <>
+            {/* Indice de fiabilité */}
             <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: "1rem",
-              }}
+              className="fr-mb-2w"
+              style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}
             >
-              {/* Indice de fiabilité */}
-              <div style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
-                <h5 className="fr-mb-0">
-                  Indice de fiabilité : {mutabilityData.fiabilite.note}/10
-                </h5>
-                <button
-                  aria-describedby="tooltip-fiabilite"
-                  type="button"
-                  className="fr-btn--tooltip fr-btn"
-                >
-                  infobulle
-                </button>
-                <span className="fr-tooltip fr-placement" id="tooltip-fiabilite" role="tooltip">
-                  L'indice de fiabilité reflète la complétude des informations concernant la friche.
-                  Il baisse si des données manquent ou si vous indiquez "Je ne sais pas".
-                </span>
-              </div>
-
+              <h5 className="fr-mb-0">Indice de fiabilité : {mutabilityData.fiabilite.note}/10</h5>
               <button
-                className="fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-download-line"
-                onClick={handleExport}
+                aria-describedby="tooltip-fiabilite"
+                type="button"
+                className="fr-btn--tooltip fr-btn"
               >
-                Exporter les résultats
+                infobulle
               </button>
+              <span className="fr-tooltip fr-placement" id="tooltip-fiabilite" role="tooltip">
+                L'indice de fiabilité reflète la complétude des informations concernant la friche.
+                Il baisse si des données manquent ou si vous indiquez "Je ne sais pas".
+              </span>
             </div>
 
             <SiteRecapBanner
@@ -436,35 +456,49 @@ export const ResultatsPage: React.FC = () => {
               {callbackLabel}
             </button>
           )}
+
+          {mutabilityData && !isLoading && (
+            // Icône en span : posée par classe dans un groupe, elle masquerait le libellé
+            <button className="fr-btn fr-btn--secondary" onClick={handleExport}>
+              <span
+                className="fr-icon-download-line fr-icon--sm fr-mr-1v"
+                aria-hidden="true"
+              ></span>
+              Exporter les résultats
+            </button>
+          )}
         </div>
 
-        {/* CTA : analyse multisites — carte arrondie fond vert clair (vert du badge EXCELLENT) */}
+        {/* CTA : passage à l'échelle du territoire, carte arrondie fond vert clair */}
         <div
           className="fr-mt-4w"
           // Fond vert clair (#B8FEC9, badge EXCELLENT), non couvert par une classe DSFR
           style={{ padding: "2.5rem", backgroundColor: "#B8FEC9", borderRadius: "24px" }}
         >
-          <h4 className="fr-mb-2w">Vous voulez comparer plusieurs sites en friche ?</h4>
-          <p className="fr-mb-3w">
-            Comparez les résultats sur plusieurs sites en friche sur votre territoire et identifiez
-            plus facilement les opportunités pour construire votre stratégie territoriale. Nous
-            avons des solutions à vous proposer.
+          <h4 className="fr-mb-2w">
+            Prêt à utiliser Mutafriches à l'échelle de votre territoire ?
+          </h4>
+          <p className="fr-mb-4w">
+            Intégrez Mutafriches directement dans vos outils pour enrichir votre stratégie
+            territoriale. Qualifiez et analysez plusieurs sites simultanément, identifiez leur
+            potentiel de reconversion et explorez les usages les plus adaptés.
           </p>
-          <ul className="fr-btns-group fr-btns-group--center fr-btns-group--inline">
-            <li>
-              <button
-                className="fr-btn fr-btn--secondary"
-                // Fond blanc forcé : le secondary DSFR est transparent et laisse voir le vert
-                style={{ backgroundColor: "#fff" }}
-                onClick={() => {
-                  trackOuvertureModaleMultisites(mutabilityData?.evaluationId);
-                  setIsContactModalOpen(true);
-                }}
-              >
-                Analyser plusieurs sites
-              </button>
-            </li>
-          </ul>
+          <div className="flex flex-col items-center gap-[1rem]">
+            <LienUtiliserMutafriches nouvelOnglet={isIframeMode} className="fr-btn">
+              Découvrir les possibilités d'utilisation
+            </LienUtiliserMutafriches>
+            <button
+              className="fr-btn fr-btn--secondary"
+              // Fond blanc forcé : le secondary DSFR est transparent et laisse voir le vert
+              style={{ backgroundColor: "#fff" }}
+              onClick={() => {
+                trackOuvertureModaleMultisites(mutabilityData?.evaluationId);
+                setIsContactModalOpen(true);
+              }}
+            >
+              Échanger avec l'équipe Mutafriches
+            </button>
+          </div>
         </div>
       </div>
 
@@ -483,22 +517,34 @@ export const ResultatsPage: React.FC = () => {
         isOpen={isNewAnalysisModalOpen}
         onClose={() => setIsNewAnalysisModalOpen(false)}
         icon="fr-icon-refresh-line"
-        actions={
-          <>
+      >
+        <p>Voulez-vous vraiment démarrer une nouvelle analyse ?</p>
+        <p className="fr-text--sm">Les données actuelles seront perdues.</p>
+        <ul className="fr-btns-group fr-btns-group--inline fr-btns-group--center">
+          <li>
             <button
               className="fr-btn fr-btn--secondary"
               onClick={() => setIsNewAnalysisModalOpen(false)}
             >
               Annuler
             </button>
+          </li>
+          <li>
             <button className="fr-btn" onClick={handleConfirmNewAnalysis}>
               Oui, nouvelle analyse
             </button>
-          </>
-        }
-      >
-        <p>Voulez-vous vraiment démarrer une nouvelle analyse ?</p>
-        <p className="fr-text--sm">Les données actuelles seront perdues.</p>
+          </li>
+        </ul>
+        <p className="text-center fr-mb-0">
+          <LienUtiliserMutafriches
+            nouvelOnglet={isIframeMode}
+            className="fr-link fr-icon-arrow-right-line fr-link--icon-left"
+            // La modale est refermée avant de changer de page, pour libérer le défilement
+            onClick={() => setIsNewAnalysisModalOpen(false)}
+          >
+            Mener des analyses sur plusieurs sites à l'échelle de mon territoire
+          </LienUtiliserMutafriches>
+        </p>
       </ModalInfo>
 
       {/* Modal récapitulatif du site */}

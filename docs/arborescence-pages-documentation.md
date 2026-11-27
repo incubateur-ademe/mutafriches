@@ -17,8 +17,10 @@ Menu principal
 └── Utiliser Mutafriches               /utiliser-mutafriches (page « Intégrer Mutafriches »)
     ├── Extension QGIS                 → tutoriel /utiliser-mutafriches/extension-qgis
     ├── API Mutafriches                → déclaration du domaine (formulaire en modale), documentation /utiliser-mutafriches/api
+    │   └── adresse partageable        /utiliser-mutafriches/formulaire-api (même page, déclaration déjà ouverte)
     │   └── lien vers l'iframe         → documentation /utiliser-mutafriches/iframe
     ├── Page Mutafriches personnalisée → demande par formulaire (modale), puis rendez-vous (calendrier ADEME) au choix
+    │   └── adresse partageable        /utiliser-mutafriches/formulaire-page-multisites (même page, formulaire déjà ouvert)
     ├── Nos services partenaires       → Bénéfriches et UrbanVitaliz (liens externes)
     └── Besoin d'aide pour choisir     → prise de rendez-vous (calendrier ADEME)
 
@@ -65,6 +67,8 @@ Chemins relatifs à `apps/ui/src/`.
 
 ## Notes
 
+- `/comprendre-les-analyses?onglet=sources` ouvre directement l'onglet « Sources des données » (lien « Découvrir toutes nos sources » de la page d'accueil, `ROUTES.COMPRENDRE_ANALYSES_SOURCES`).
+- `/utiliser-mutafriches/formulaire-page-multisites` et `/utiliser-mutafriches/formulaire-api` sont les adresses à partager sur les supports de communication : elles affichent la page « Intégrer Mutafriches » avec la modale de demande de page personnalisée, ou de déclaration d'un domaine API, déjà ouverte (`IntegrerMutafrichesPage`, prop `formulaireOuvert`). À la fermeture, l'adresse redevient `/utiliser-mutafriches`. L'extension QGIS n'a pas d'adresse de formulaire : elle déclare le domaine depuis le plugin, et son tutoriel (`/utiliser-mutafriches/extension-qgis`) se partage directement.
 - `/documentation-integration` reste servie, redirigée vers `/utiliser-mutafriches/api` : elle est citée dans les mails d'onboarding des intégrateurs (`docs/acces-api-integrateur.md`).
 - Les pages de détail de « Intégrer Mutafriches » partagent un gabarit : fil d'Ariane (Accueil › Intégrer Mutafriches › page), sommaire en menu latéral collant. Chaque entrée du sommaire vise l'identifiant d'une section.
 - Les tableaux de « Comprendre les analyses » ne se saisissent pas à la main : ils découlent de l'algorithme, et des tests cassent en cas de divergence.

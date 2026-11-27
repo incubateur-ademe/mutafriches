@@ -166,7 +166,7 @@ cf. [`docs/ops/db-local.md`](./docs/ops/db-local.md).
 
 ### Contact multisites (calendrier de rendez-vous)
 
-La modale « Analyser plusieurs sites » embarque le **calendrier de rendez-vous de l'incubateur ADEME** (instance Cal.com
+La modale de contact, ouverte par « Échanger avec l'équipe Mutafriches » (page résultats), embarque le **calendrier de rendez-vous de l'incubateur ADEME** (instance Cal.com
 `rdv.incubateur.ademe.fr`) en iframe (cf. ADR-0020 et ADR-0056). Aucune donnée nominative n'est collectée ni stockée, et l'application
 n'envoie plus d'e-mails transactionnels.
 
@@ -208,6 +208,7 @@ pnpm validate               # Tout vérifier (format + lint + typecheck + test)
 | `/api/attributaire/sites?codeInsee=` | GET | Table attributaire publique d'une commune : sites évalués ou partenaires, critères et mutabilité (JSON ou GeoJSON) |
 | `/api/stats` | GET | KPI public principal, format incubateur (objet `StatOutput` unique) |
 | `/api/stats/all` | GET | Tous les KPI publics (tableau de `StatOutput`, dashboard interne) |
+| `/api/stats/sites-evalues` | GET | Nombre de sites distincts analysés, hors cache et démonstration (compteur de la page d'accueil) |
 | `/api/metabase/embed-url` | GET | URL d'embedding dashboard Metabase |
 | `/api/donnees-externes/imports` | GET | Statut des imports de référentiels |
 | `/api/donnees-externes/apis` | GET | Dernier état du monitoring des APIs externes |

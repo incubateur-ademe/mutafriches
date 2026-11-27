@@ -19,15 +19,15 @@ export function MutabiliteSection() {
               <strong>
                 La mutabilité d&apos;un site correspond à sa capacité à changer d&apos;usage.
               </strong>{" "}
-              Elle permet d&apos;estimer le potentiel de reconversion du site vers différents usages
-              comme le logement, les équipements publics, les locaux d&apos;activité,
-              l&apos;industrie, de photovoltaïque ou encore la renaturation.
+              Elle permet d&apos;estimer le potentiel de reconversion d&apos;un site vers différents
+              usages comme le logement, les équipements publics, les activités tertiaires,
+              l&apos;industrie, le photovoltaïque ou encore la renaturation.
             </p>
 
             <p>
               Avec Mutafriches, les collectivités locales disposent d&apos;
               <strong>
-                un outil d&apos;aide à la décision pour objectiver l&apos;analyse d&apos;un site
+                un outil d&apos;aide à la décision pour objectiver l&apos;analyse de leurs sites
               </strong>
               , et comparer plusieurs usages possibles. C&apos;est{" "}
               <strong>un premier pas, vers la définition d&apos;une stratégie territoriale.</strong>

@@ -32,3 +32,8 @@ export interface StatOutput {
   /** Valeurs par periode */
   stats: Stat[];
 }
+
+/** Sites distincts analysés, hors cache et démonstration (compteur de la page d'accueil) */
+export interface SitesEvalues {
+  nombre: number;
+}

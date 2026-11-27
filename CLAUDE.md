@@ -519,7 +519,7 @@ Le prénom, le nom et l'adresse e-mail d'une déclaration partent dans Brevo (`P
 
 ### Contact multisites (calendrier de rendez-vous)
 
-La modale « Analyser plusieurs sites » (page résultats) embarque le **calendrier de rendez-vous de l'incubateur ADEME** (instance Cal.com `rdv.incubateur.ademe.fr`) en iframe (cf. ADR-0020 et ADR-0056). **Aucune donnée nominative n'est collectée ni stockée**, et l'application **n'envoie plus d'e-mails transactionnels** (la brique `mailer/`, le module `contact/` et la table `demandes_contact` ont été supprimés). L'ouverture de la modale reste tracée (`OUVERTURE_MODALE_MULTISITES`, sans PII).
+La modale de contact, ouverte par « Échanger avec l'équipe Mutafriches » (page résultats), embarque le **calendrier de rendez-vous de l'incubateur ADEME** (instance Cal.com `rdv.incubateur.ademe.fr`) en iframe (cf. ADR-0020 et ADR-0056). **Aucune donnée nominative n'est collectée ni stockée**, et l'application **n'envoie plus d'e-mails transactionnels** (la brique `mailer/`, le module `contact/` et la table `demandes_contact` ont été supprimés). L'ouverture de la modale reste tracée (`OUVERTURE_MODALE_MULTISITES`, sans PII).
 
 - `VITE_CALENDRIER_RDV_URL` (UI) : URL de réservation Cal.com embarquée (défaut : calendrier de l'équipe). Le script d'embed, l'origine et le chemin en sont dérivés. Config dans `apps/ui/src/shared/config/calendrier-rdv.config.ts`. `VITE_ZCAL_URL` n'est plus lue.
 - Le script d'embed exige une file `window.Cal.q` en place avant son chargement, et ignore un second `inline` tant que le premier est dans le document (`CalendrierRdvEmbed.tsx`).

@@ -14,6 +14,8 @@ interface ModalInfoProps {
   header?: React.ReactNode;
 }
 
+const TENTATIVES_MAX = 100;
+
 export const ModalInfo: React.FC<ModalInfoProps> = ({
   id,
   title,
@@ -47,19 +49,30 @@ export const ModalInfo: React.FC<ModalInfoProps> = ({
     const dialog = dialogRef.current;
     if (!dialog) return;
 
-    // Utiliser l'API DSFR pour ouvrir/fermer
-    const modalInstance = (window as any).dsfr?.(dialog)?.modal;
+    const appliquer = (): boolean => {
+      const modalInstance = (window as any).dsfr?.(dialog)?.modal;
+      if (!modalInstance) return false;
+      if (isOpen) {
+        modalInstance.disclose();
+      } else {
+        modalInstance.conceal();
+      }
+      return true;
+    };
 
-    if (!modalInstance) {
-      console.warn("DSFR modal instance not found");
-      return;
-    }
+    if (appliquer()) return;
 
-    if (isOpen) {
-      modalInstance.disclose();
-    } else {
-      modalInstance.conceal();
-    }
+    // Chargement direct : DSFR n'a pas encore enregistré la modale, on réessaie brièvement
+    let tentatives = 0;
+    const minuteur = window.setInterval(() => {
+      tentatives += 1;
+      if (appliquer() || tentatives >= TENTATIVES_MAX) {
+        window.clearInterval(minuteur);
+        if (tentatives >= TENTATIVES_MAX) console.warn("DSFR modal instance not found");
+      }
+    }, 100);
+
+    return () => window.clearInterval(minuteur);
   }, [isOpen]);
 
   // Écouter l'événement de fermeture DSFR

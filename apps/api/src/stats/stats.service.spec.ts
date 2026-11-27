@@ -69,6 +69,31 @@ describe("StatsService", () => {
     vi.useRealTimers();
   });
 
+  describe("getSitesEvalues", () => {
+    it("retourne le nombre de sites distincts", async () => {
+      dbExecute.mockResolvedValue([{ nombre: 2255 }]);
+
+      await expect(service.getSitesEvalues()).resolves.toEqual({ nombre: 2255 });
+    });
+
+    it("retourne 0 sans évaluation", async () => {
+      dbExecute.mockResolvedValue([]);
+
+      await expect(service.getSitesEvalues()).resolves.toEqual({ nombre: 0 });
+    });
+
+    it("compte des sites distincts, hors cache et démonstration", async () => {
+      dbExecute.mockResolvedValue([{ nombre: 1 }]);
+
+      await service.getSitesEvalues();
+
+      const requete = extractSqlContent(dbExecute.mock.calls[0][0]);
+      expect(requete).toContain("COUNT(DISTINCT site_id)");
+      expect(requete).toContain("evaluation_source_id IS NULL");
+      expect(requete).toContain("'demo', 'mutafriches'");
+    });
+  });
+
   describe("getStatPrincipale", () => {
     it("retourne un objet StatOutput unique (pas un tableau)", async () => {
       vi.useFakeTimers();

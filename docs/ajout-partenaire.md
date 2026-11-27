@@ -104,6 +104,11 @@ et crée une ligne dans la table `integrateurs` (ADR-0055). Une page ou une ifra
 | **Iframe** (`/iframe?integrator=<id>`) | `INTEGRATEURS_IFRAME` dans `packages/shared-types/src/integration/integrateurs-iframe.ts`, déploiement, puis `pnpm integrateurs:publier <id> <identifiant>` | embarquer l'UI (`frame-ancestors`) et recevoir le `callbackUrl` sur ces hôtes |
 | **API directe** (appels à `POST /enrichissement` et `POST /evaluation/calculer` depuis son site) | rien : le partenaire déclare son domaine | passer `IntegrateurOriginGuard` et CORS |
 
+Pour inviter un partenaire à demander sa page, lui transmettre
+`https://mutafriches.beta.gouv.fr/utiliser-mutafriches/formulaire-page-multisites` : le formulaire s'ouvre
+directement. Pour la déclaration d'un domaine API :
+`https://mutafriches.beta.gouv.fr/utiliser-mutafriches/formulaire-api`.
+
 L'iframe tourne sur notre domaine : ses appels API portent l'origine Mutafriches. Bénéfriches a
 deux lignes dans le registre (`iframe` et `api`) parce qu'il appelle aussi l'API directement ;
 Mon Espace Collectivité n'est qu'en iframe.
