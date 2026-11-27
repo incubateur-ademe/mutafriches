@@ -106,7 +106,8 @@ et crée une ligne dans la table `integrateurs` (ADR-0055). Une page ou une ifra
 
 Pour inviter un partenaire à demander sa page, lui transmettre
 `https://mutafriches.beta.gouv.fr/utiliser-mutafriches/formulaire-page-multisites` : le formulaire s'ouvre
-directement.
+directement. Pour la déclaration d'un domaine API :
+`https://mutafriches.beta.gouv.fr/utiliser-mutafriches/formulaire-api`.
 
 L'iframe tourne sur notre domaine : ses appels API portent l'origine Mutafriches. Bénéfriches a
 deux lignes dans le registre (`iframe` et `api`) parce qu'il appelle aussi l'API directement ;
