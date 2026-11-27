@@ -12,21 +12,21 @@ export function HeroSection() {
       <div className="fr-container max-md:py-8 md:py-12">
         <div className="fr-grid-row fr-grid-row--gutters fr-py-12v fr-grid-row--middle">
           <div className="fr-col-12 fr-col-md-7">
-            <h1>Identifier les usages les plus adaptés pour un site</h1>
+            <h1>Identifier les usages les plus adaptés aux friches de votre territoire</h1>
 
             <p className="fr-text--lead fr-mb-3w">
               Mutafriches est un outil d&apos;aide à la décision conçu pour aider les collectivités
-              et les acteurs de l&apos;aménagement à qualifier un site et à y projeter les usages
-              les plus adaptés compte tenu de ses caractéristiques et de son environnement.
+              et les acteurs de l&apos;aménagement à structurer une stratégie territoriale de
+              reconversion des friches.
             </p>
 
             <p className="inline-block text-xs font-bold tracking-wide uppercase text-[var(--text-mention-grey)] mb-6">
-              <strong>Plus de 1500 sites déjà évalués !</strong>
+              <strong>Plus de 4 500 sites déjà évalués !</strong>
             </p>
 
             <div>
               <Link to={ROUTES.ANALYSER} className="fr-btn fr-btn--lg">
-                Analyser mon site
+                Tester Mutafriches
               </Link>
             </div>
           </div>

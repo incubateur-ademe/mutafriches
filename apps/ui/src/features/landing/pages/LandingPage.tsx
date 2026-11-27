@@ -11,8 +11,8 @@ export function LandingPage() {
     <Layout fullWidth>
       <HeroSection />
       <MutabiliteSection />
-      <CommentCaMarcheSection />
       <UsagesSection />
+      <CommentCaMarcheSection />
       <IntegrationSection />
       <IntegrateursSection />
     </Layout>

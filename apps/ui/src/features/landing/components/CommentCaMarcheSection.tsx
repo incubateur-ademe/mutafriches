@@ -1,36 +1,61 @@
 import { Link } from "react-router-dom";
 import { ROUTES } from "../../../shared/config/routes.config";
 
+const SOURCES_PRINCIPALES: { nom: string; src: string }[] = [
+  { nom: "BDNB", src: "/images/logos/sources/bdnb.png" },
+  { nom: "cadastre.data.gouv.fr", src: "/images/logos/sources/cadastre.png" },
+  { nom: "Géorisques", src: "/images/logos/sources/georisques.png" },
+  { nom: "BD TOPO", src: "/images/logos/sources/bd-topo.png" },
+];
+
 export function CommentCaMarcheSection() {
   return (
     <section className="fr-py-8w">
       <div className="fr-container">
         <h2 className="fr-mb-4w">Comment ça marche ?</h2>
 
-        {/* Bloc 1 : Qualification */}
+        {/* Bloc 1 : qualification */}
         <div
           className="fr-mb-4w"
           style={{ padding: "2.5rem", backgroundColor: "#f1f7ff", borderRadius: "24px" }}
         >
           <div className="fr-grid-row fr-grid-row--gutters fr-grid-row--middle">
             <div className="fr-col-12 fr-col-md-7">
-              <h1
-                className="fr-mb-2w"
-                style={{ color: "var(--text-action-high-blue-france, #000091)" }}
-              >
-                1
-              </h1>
-              <h4>Une qualification semi-automatisée de votre site</h4>
+              <h3 className="fr-mb-2w" style={{ color: "var(--text-action-high-blue-france)" }}>
+                1. Mutafriches qualifie vos sites à partir de bases de données nationales
+              </h3>
               <p className="fr-mb-2w">
-                Une fois la ou les parcelles de votre site sélectionnées, Mutafriches source plus de{" "}
+                Une fois les parcelles de vos sites définies, Mutafriches interroge plus de{" "}
                 <strong>19 critères déterminants</strong> issus des bases de données ouvertes
                 nationales.
               </p>
-              <p>
-                Pour fiabiliser l&apos;analyse, l&apos;utilisateur peut{" "}
-                <strong>renseigner des critères plus subjectifs</strong> (qualité du paysage par
+              <p className="fr-mb-3w">
+                Pour fiabiliser l&apos;analyse, vous pouvez{" "}
+                <strong>renseigner des critères plus subjectifs</strong> (intérêt du paysage par
                 ex.) et ne relevant pas de la donnée ouverte (type de propriétaire par ex.).
               </p>
+              <ul
+                className="fr-raw-list flex flex-wrap items-center gap-x-[0.75rem] gap-y-[0.75rem] fr-mb-3w"
+                aria-label="Principales sources de données"
+              >
+                {SOURCES_PRINCIPALES.map((source) => (
+                  <li
+                    key={source.nom}
+                    className="fr-background-default--grey"
+                    style={{ padding: "0.25rem 0.5rem", borderRadius: "12px" }}
+                  >
+                    <img
+                      src={source.src}
+                      alt={source.nom}
+                      className="h-[1.75rem] w-auto block"
+                      loading="lazy"
+                    />
+                  </li>
+                ))}
+              </ul>
+              <Link to={ROUTES.COMPRENDRE_ANALYSES_SOURCES} className="fr-btn fr-btn--secondary">
+                Découvrir toutes nos sources
+              </Link>
             </div>
             <div className="fr-col-12 fr-col-md-5">
               <div className="rounded-lg overflow-hidden">
@@ -45,24 +70,20 @@ export function CommentCaMarcheSection() {
           </div>
         </div>
 
-        {/* Bloc 2 : Évaluation — en mobile : 2 → texte → image → CTA */}
+        {/* Bloc 2 : évaluation */}
         <div style={{ padding: "2.5rem", backgroundColor: "#f1f7ff", borderRadius: "24px" }}>
           <div className="fr-grid-row fr-grid-row--gutters fr-grid-row--middle">
             <div className="fr-col-12 fr-col-md-7">
-              <h1
-                className="fr-mb-2w"
-                style={{ color: "var(--text-action-high-blue-france, #000091)" }}
-              >
-                2
-              </h1>
-              <h4>Une évaluation de la mutabilité du site sur 7 usages</h4>
+              <h3 className="fr-mb-2w" style={{ color: "var(--text-action-high-blue-france)" }}>
+                2. Mutafriches évalue la mutabilité de vos sites pour 7 usages
+              </h3>
               <p className="fr-mb-3w">
-                Sur la base de la qualification semi-automatisée du site, une{" "}
-                <strong>analyse de mutabilité</strong> permet de classer 7 usages de reconversion
-                selon leur compatibilité avec votre site.
+                Sur la base des critères de qualification, une{" "}
+                <strong>analyse de mutabilité</strong> permet d&apos;évaluer la compatibilité de vos
+                sites pour 7 usages de reconversion.
               </p>
               <Link to={ROUTES.ANALYSER} className="fr-btn">
-                Démarrer une analyse
+                Tester sur un site
               </Link>
             </div>
             <div className="fr-col-12 fr-col-md-5">
